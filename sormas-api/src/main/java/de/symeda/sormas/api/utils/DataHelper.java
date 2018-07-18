@@ -147,6 +147,10 @@ public final class DataHelper {
 		return "\\w{3}-\\w{3}-\\w{3}-\\d{2}-[A-Za-z0-9]+";
 	}
 	
+	public static String capitalize(String input) {
+		return input.substring(0, 1).toUpperCase() + input.substring(1);
+	}
+	
 	public static BigDecimal getTruncatedBigDecimal(BigDecimal number) {
 		return number.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0 ? number.setScale(0,  RoundingMode.HALF_UP) : number;
 	}

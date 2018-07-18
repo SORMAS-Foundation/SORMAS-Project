@@ -11,12 +11,12 @@ public final class EpiDataValidator {
 //
 //        boolean success = true;
 //
-//        if (DateTimeComparator.getDateOnlyInstance().compare(binding.burialFrom.getValue(), binding.burialTo.getValue()) > 0) {
+//        if (DateTimeComparator.getDateOnlyInstance().compare(binding.burialFrom.getFieldValue(), binding.burialTo.getFieldValue()) > 0) {
 //            binding.burialFrom.setError(String.format(resources.getString(R.string.validation_date_later), binding.burialFrom.getCaption(), binding.burialTo.getCaption()));
 //            success = false;
 //        }
 //
-//        if (DateTimeComparator.getDateOnlyInstance().compare(binding.burialTo.getValue(), binding.burialFrom.getValue()) < 0) {
+//        if (DateTimeComparator.getDateOnlyInstance().compare(binding.burialTo.getFieldValue(), binding.burialFrom.getFieldValue()) < 0) {
 //            binding.burialTo.setError(String.format(resources.getString(R.string.validation_date_earlier), binding.burialTo.getCaption(), binding.burialFrom.getCaption()));
 //            success = false;
 //        }
@@ -29,12 +29,12 @@ public final class EpiDataValidator {
 //
 //        boolean success = true;
 //
-//        if (DateTimeComparator.getDateOnlyInstance().compare(binding.travelFrom.getValue(), binding.travelTo.getValue()) > 0) {
+//        if (DateTimeComparator.getDateOnlyInstance().compare(binding.travelFrom.getFieldValue(), binding.travelTo.getFieldValue()) > 0) {
 //            binding.travelFrom.setError(String.format(resources.getString(R.string.validation_date_later), binding.travelFrom.getCaption(), binding.travelTo.getCaption()));
 //            success = false;
 //        }
 //
-//        if (DateTimeComparator.getDateOnlyInstance().compare(binding.travelTo.getValue(), binding.travelFrom.getValue()) < 0) {
+//        if (DateTimeComparator.getDateOnlyInstance().compare(binding.travelTo.getFieldValue(), binding.travelFrom.getFieldValue()) < 0) {
 //            binding.travelTo.setError(String.format(resources.getString(R.string.validation_date_earlier), binding.travelTo.getCaption(), binding.travelFrom.getCaption()));
 //            success = false;
 //        }

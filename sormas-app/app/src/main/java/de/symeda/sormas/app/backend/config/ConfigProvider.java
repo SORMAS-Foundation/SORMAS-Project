@@ -86,6 +86,7 @@ public final class ConfigProvider {
 
     /**
      * If device encryption is not active, show a non-cancelable alert that blocks app usage
+     *
      * @param activity
      * @return
      */
@@ -114,7 +115,7 @@ public final class ConfigProvider {
     }
 
     public static User getUser() {
-        synchronized(ConfigProvider.class) {
+        synchronized (ConfigProvider.class) {
             if (instance.user == null) {
                 synchronized (ConfigProvider.class) {
                     if (instance.user == null) {
@@ -130,7 +131,7 @@ public final class ConfigProvider {
     }
 
     public static String getUsername() {
-        synchronized(ConfigProvider.class) {
+        synchronized (ConfigProvider.class) {
             if (instance.username == null) {
                 Config config = DatabaseHelper.getConfigDao().queryForId(KEY_USERNAME);
                 if (config != null) {
@@ -142,7 +143,7 @@ public final class ConfigProvider {
     }
 
     public static String getPassword() {
-        synchronized(ConfigProvider.class) {
+        synchronized (ConfigProvider.class) {
             if (instance.password == null) {
                 Config config = DatabaseHelper.getConfigDao().queryForId(KEY_PASSWORD);
                 if (config != null) {
@@ -165,7 +166,7 @@ public final class ConfigProvider {
 
     public static void clearUsernameAndPassword() {
         // synchronized to make sure this does not interfere with setUserNameAndPassword or getUsername/getPassword
-        synchronized(ConfigProvider.class) {
+        synchronized (ConfigProvider.class) {
 
             ConfigDao configDao = DatabaseHelper.getConfigDao();
             if (configDao.queryForId(KEY_PASSWORD) != null) {
@@ -193,7 +194,7 @@ public final class ConfigProvider {
     }
 
     public static void setUsernameAndPassword(String username, String password) {
-        synchronized(ConfigProvider.class) {
+        synchronized (ConfigProvider.class) {
             if (username == null)
                 throw new NullPointerException("username");
             if (password == null)
@@ -359,7 +360,7 @@ public final class ConfigProvider {
                     }
 
                     if (instance.serverRestUrl == null) {
-                        setServerRestUrl("http://192.168.1.6:6080/sormas-rest/");
+                        setServerRestUrl("https://sormas.org.ng/sormas-rest/");
                     }
                 }
             }

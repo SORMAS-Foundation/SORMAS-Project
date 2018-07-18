@@ -38,6 +38,10 @@ public class BoolResult {
         return mSuccess;
     }
 
+    public boolean isFailed() {
+        return !mSuccess;
+    }
+
     public String getMessage() {
         return mMessage;
     }

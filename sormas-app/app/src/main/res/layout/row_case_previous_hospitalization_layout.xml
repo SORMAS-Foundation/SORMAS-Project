@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="data"
+            type="de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization"/>
+
+        <variable
+            name="callback"
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener"/>
+    </data>
+
+    <LinearLayout
+        android:id="@+id/rowListItemBurial"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+        android:background="@drawable/selector_list_section_row_background"
+        android:elevation="2dp"
+        android:onClickListener="@{(view) -> callback.onClick(view, data)}"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/parentLayoutVerticalPadding"
+        android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+        android:paddingRight="@dimen/rowListItemHorizontalMargin"
+        android:paddingTop="@dimen/parentLayoutVerticalPadding"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/casePreviousHospitalization_admissionAndDischargeDate"
+                style="@style/ControlFirstOfTwoColumnsStyle"
+                app:appendValue="@{data.dischargeDate}"
+                app:value="@{data.admissionDate}"
+                app:valueFormat='@{@string/date_range_format}'/>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/casePreviousHospitalization_isolated"
+                style="@style/ControlSecondOfTwoColumnsStyle"
+                android:textAlignment="viewEnd"
+                app:value="@{data.isolated}"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/casePreviousHospitalization_healthFacility"
+                style="@style/ControlFirstOfTwoColumnsStyle"
+                app:value="@{data.healthFacility}"/>
+
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/casePreviousHospitalization_region"
+                style="@style/ControlSecondOfTwoColumnsStyle"
+                app:value="@{data.region}"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/casePreviousHospitalization_district"
+                style="@style/ControlFirstOfTwoColumnsStyle"
+                app:value="@{data.district}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/casePreviousHospitalization_community"
+                style="@style/ControlSecondOfTwoColumnsStyle"
+                app:value="@{data.community}"/>
+        </LinearLayout>
+
+        <de.symeda.sormas.app.component.controls.ControlTextReadField
+            android:id="@+id/casePreviousHospitalization_description"
+            style="@style/ControlSingleColumnStyle"
+            app:value="@{data.description}"/>
+    </LinearLayout>
+</layout>
+
+
+
+

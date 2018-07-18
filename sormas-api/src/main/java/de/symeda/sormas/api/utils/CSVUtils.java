@@ -10,14 +10,12 @@ import com.opencsv.CSVWriter;
 
 public class CSVUtils {
 	
-	private static final char DEFAULT_SEPARATOR = ';';
-	
-	public static CSVReader createCSVReader(Reader reader) {
-		return new CSVReaderBuilder(reader).withCSVParser(new CSVParserBuilder().withSeparator(DEFAULT_SEPARATOR).build()).build();
+	public static CSVReader createCSVReader(Reader reader, char separator) {
+		return new CSVReaderBuilder(reader).withCSVParser(new CSVParserBuilder().withSeparator(separator).build()).build();
 	}
 	
-	public static CSVWriter createCSVWriter(Writer writer) {
-		return new CSVWriter(writer, DEFAULT_SEPARATOR, CSVWriter.DEFAULT_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END);
+	public static CSVWriter createCSVWriter(Writer writer, char separator) {
+		return new CSVWriter(writer, separator, CSVWriter.DEFAULT_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END);
 	}
 	
 }

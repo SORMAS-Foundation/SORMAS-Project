@@ -32,7 +32,7 @@ public class SimpleListBindingAdapters {
      */
     private SimpleListBindingAdapters() {}
 
-    @BindingAdapter({"entries", "layout", "callback"})
+    @BindingAdapter(value = {"entries", "layout", "callback"}, requireAll = false)
     public static <T> void setEntries(ViewGroup viewGroup,
                                       List<T> oldEntries, int oldLayoutId, IEntryItemOnClickListener oldCallback,
                                       List<T> newEntries, int newLayoutId, IEntryItemOnClickListener newCallback) {

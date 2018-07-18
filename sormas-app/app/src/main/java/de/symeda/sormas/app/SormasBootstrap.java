@@ -4,9 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-/**
- * Created by Orson on 21/11/2017.
- */
+import de.symeda.sormas.app.core.TaskNotificationService;
 
 public class SormasBootstrap extends BroadcastReceiver {
 
@@ -15,7 +13,7 @@ public class SormasBootstrap extends BroadcastReceiver {
 
         if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
 
-            //TaskNotificationService.startTaskNotificationAlarm(context);
+            TaskNotificationService.startTaskNotificationAlarm(context);
         }
     }
 }

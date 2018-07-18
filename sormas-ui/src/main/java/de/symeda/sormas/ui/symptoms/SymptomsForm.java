@@ -464,8 +464,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				} else {
 					onsetSymptom.removeItem(sourceField.getCaption());
 				}
+				onsetSymptom.setEnabled(!onsetSymptom.getItemIds().isEmpty());
 			});
 		}
+		onsetSymptom.setEnabled(false); // will be updated by listener, if needed
 	}
 
 	private void setUpMonkeypoxVisibilities() {

@@ -3,38 +3,38 @@ package de.symeda.sormas.app;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.gms.analytics.Tracker;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.person.CauseOfDeath;
+import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.component.TeboPropertyField;
-import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 
-/**
- * Created by Orson on 11/03/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class BaseFragment extends Fragment {
 
     protected UserRight editOrCreateUserRight;
     protected Tracker tracker;
 
-    public IActivityCommunicator getActivityCommunicator() {
-        return (IActivityCommunicator)getActivity();
-    }
-
-    protected void setActivityCommunicator(IActivityCommunicator activityCommunicator) {
-        // TODO remove calls
+    public BaseActivity getBaseActivity() {
+        return (BaseActivity) getActivity();
     }
 
     @Override
@@ -50,6 +50,16 @@ public class BaseFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout) this.getView().findViewById(R.id.swiperefresh);
+        if (swiperefresh != null) {
+            swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    getBaseActivity().synchronizeChangedData();
+                }
+            });
+        }
     }
 
     @Override
@@ -59,24 +69,24 @@ public class BaseFragment extends Fragment {
 
     protected void setFieldVisibleOrGone(View v, boolean visible) {
         if (visible) {
-            v.setVisibility(View.VISIBLE);
+            v.setVisibility(VISIBLE);
         } else {
-            v.setVisibility(View.GONE);
+            v.setVisibility(GONE);
             v.clearFocus();
         }
     }
 
     protected void setFieldVisible(View v, boolean visible) {
         if (visible) {
-            v.setVisibility(View.VISIBLE);
+            v.setVisibility(VISIBLE);
         } else {
-            v.setVisibility(View.GONE);
+            v.setVisibility(GONE);
             v.clearFocus();
         }
     }
 
     protected void setFieldGone(View v) {
-        v.setVisibility(View.GONE);
+        v.setVisibility(GONE);
         v.clearFocus();
     }
 
@@ -108,17 +118,56 @@ public class BaseFragment extends Fragment {
         }
     }
 
-    protected void setVisibilityByDisease(Class<?> fieldsDtoClazz, Disease disease, ViewGroup viewGroup) {
-        for (int i=0; i<viewGroup.getChildCount(); i++){
+    protected void setVisibilityByDisease(Class<?> dtoClass, Disease disease, ViewGroup viewGroup) {
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
             View child = viewGroup.getChildAt(i);
-            if (child instanceof TeboPropertyField) {
-                String propertyId = ((TeboPropertyField)child).getPropertyId();
-                boolean definedOrMissing = Diseases.DiseasesConfiguration.isDefinedOrMissing(fieldsDtoClazz, propertyId, disease);
-                child.setVisibility(definedOrMissing ? View.VISIBLE : View.GONE);
-            }
-            else if (child instanceof ViewGroup) {
-                setVisibilityByDisease(fieldsDtoClazz, disease, (ViewGroup)child);
+            if (child instanceof ControlPropertyField) {
+                boolean visibleAllowed = isVisibleAllowed(dtoClass, disease, (ControlPropertyField) child);
+                child.setVisibility(visibleAllowed && child.getVisibility() == VISIBLE ? VISIBLE : GONE);
+            } else if (child instanceof ViewGroup) {
+                setVisibilityByDisease(dtoClass, disease, (ViewGroup) child);
             }
         }
+    }
+
+    protected boolean isVisibleAllowed(Class<?> dtoClass, Disease disease, ControlPropertyField field) {
+        String propertyId = field.getPropertyIdWithoutPrefix();
+        return Diseases.DiseasesConfiguration.isDefinedOrMissing(dtoClass, propertyId, disease);
+    }
+
+    protected void setVisibleWhen(final ControlPropertyField targetField, ControlPropertyField sourceField, final Object sourceValue) {
+        if (sourceField.getValue() != null && sourceField.getValue().equals(sourceValue)) {
+            targetField.setVisibility(VISIBLE);
+        } else {
+            targetField.setVisibility(GONE);
+        }
+
+        sourceField.addValueChangedListener(new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                if (field.getValue() != null && field.getValue().equals(sourceValue)) {
+                    targetField.setVisibility(VISIBLE);
+                } else {
+                    targetField.hideField(true);
+                }
+            }
+        });
+    }
+
+    protected ControlPropertyField findFieldByPropertyId(String propertyIdWithoutPrefix, ViewGroup viewGroup) {
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            View child = viewGroup.getChildAt(i);
+            if (child instanceof ControlPropertyField) {
+                if (propertyIdWithoutPrefix.equals(((ControlPropertyField) child).getPropertyIdWithoutPrefix())) {
+                    return (ControlPropertyField)child;
+                }
+            } else if (child instanceof ViewGroup) {
+                ControlPropertyField field = findFieldByPropertyId(propertyIdWithoutPrefix, (ViewGroup) child);
+                if (field != null) {
+                    return field;
+                }
+            }
+        }
+        return null;
     }
 }

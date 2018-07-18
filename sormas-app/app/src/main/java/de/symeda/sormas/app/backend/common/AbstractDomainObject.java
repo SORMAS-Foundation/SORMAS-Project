@@ -122,27 +122,28 @@ public  class AbstractDomainObject extends BaseObservable implements Serializabl
 			return true;
 		}
 
-		Iterator<PropertyDescriptor> propertyIterator = AdoPropertyHelper.getEmbeddedAdoProperties(this.getClass());
-		while (propertyIterator.hasNext()) {
-			try {
-				PropertyDescriptor property = propertyIterator.next();
-				AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(this);
-
-				if (embeddedAdo == null) {
-					throw new IllegalArgumentException("No embedded entity was created for " + property.getName());
-				}
-
-				if (embeddedAdo.isUnreadOrChildUnread()) {
-					return true;
-				}
-			} catch (InvocationTargetException e) {
-				Log.e(getClass().getName(), "Error while trying to invoke read method to request unread state", e);
-				throw new RuntimeException(e);
-			} catch (IllegalAccessException e) {
-				Log.e(getClass().getName(), "Error while trying to invoke read method to request unread state", e);
-				throw new RuntimeException(e);
-			}
-		}
+		// ignore this for now, so we can limit queries to the base data needed for list views #679
+//		Iterator<PropertyDescriptor> propertyIterator = AdoPropertyHelper.getEmbeddedAdoProperties(this.getClass());
+//		while (propertyIterator.hasNext()) {
+//			try {
+//				PropertyDescriptor property = propertyIterator.next();
+//				AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(this);
+//
+//				if (embeddedAdo == null) {
+//					throw new IllegalArgumentException("No embedded entity was created for " + property.getName());
+//				}
+//
+//				if (embeddedAdo.isUnreadOrChildUnread()) {
+//					return true;
+//				}
+//			} catch (InvocationTargetException e) {
+//				Log.e(getClass().getName(), "Error while trying to invoke read method to request unread state", e);
+//				throw new RuntimeException(e);
+//			} catch (IllegalAccessException e) {
+//				Log.e(getClass().getName(), "Error while trying to invoke read method to request unread state", e);
+//				throw new RuntimeException(e);
+//			}
+//		}
 
 		return false;
 	}
@@ -249,7 +250,10 @@ public  class AbstractDomainObject extends BaseObservable implements Serializabl
 
 	@Override
 	public String toString() {
-		return I18nProperties.getFieldCaption(getI18nPrefix());
+		return getEntityName();
 	}
 
+	public String getEntityName() {
+		return I18nProperties.getFieldCaption(getI18nPrefix());
+	}
 }

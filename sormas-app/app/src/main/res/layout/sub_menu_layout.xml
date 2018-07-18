@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/button_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/sub_menu_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/sub_menu_button_margin"
+            android:layout_gravity="end"
+            android:scaleType="center"
+            app:backgroundTint="@color/sub_menu_button"
+            app:elevation="5dp" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/lighterBlue"
+        android:paddingTop="@dimen/subMenuPadding"
+        android:paddingBottom="@dimen/subMenuPadding">
+
+        <TextView
+            android:id="@+id/sub_menu_title"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/subMenuHeaderHeight"
+            android:background="@drawable/background_sub_menu_title"
+            android:textAllCaps="true"
+            android:textAlignment="center"
+            android:textSize="@dimen/subMenuTitleTextSize"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/normalText"
+            android:gravity="center" />
+
+        <GridView
+            android:id="@+id/sub_menu_grid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:horizontalSpacing="@dimen/subMenuSpacing"
+            android:verticalSpacing="@dimen/subMenuSpacing"
+            android:numColumns="@integer/sub_menu_columns_number" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -12,43 +12,34 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.core.INotificationContext;
+import java.lang.ref.WeakReference;
 
-/**
- * Created by Orson on 01/03/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.core.NotificationContext;
 
 public class NotificationHelper {
 
-
-    //Mainly called from outside
     public static void showNotification(ViewDataBinding binding, NotificationType type, int messageResId) {
         showNotification(binding, NotificationPosition.TOP, type, messageResId);
     }
 
-    //Mainly called from outside
     public static void showNotification(ViewDataBinding binding, NotificationType type, String message) {
         showNotification(binding, NotificationPosition.TOP, type, message);
     }
 
-    //Mainly called from outside
-    public static void hideNotification(ViewDataBinding binding) {
-        if (binding == null)
-            return;
+    public static void showNotification(NotificationContext communicator, NotificationType type, String message) {
+        showNotification(communicator, NotificationPosition.TOP, type, message);
+    }
 
-        hideNotification(binding.getRoot());
+    public static void showNotification(NotificationContext communicator, NotificationType type, int messageResId) {
+        showNotification(communicator, NotificationPosition.TOP, type, messageResId);
     }
 
     public static void hideNotification(View notificationRoot) {
         View view = notificationRoot;
 
         if (notificationRoot.getId() != R.id.notificationFrame)
-            view = (LinearLayout)notificationRoot.findViewById(R.id.notificationFrame);
+            view = (LinearLayout) notificationRoot.findViewById(R.id.notificationFrame);
 
         if (view == null)
             return;
@@ -56,21 +47,7 @@ public class NotificationHelper {
         view.setVisibility(View.GONE);
     }
 
-
-
-
-    //Mainly called from outside
-    public static void showNotification(INotificationContext communicator, NotificationType type, String message) {
-        showNotification(communicator, NotificationPosition.TOP, type, message);
-    }
-
-    //Mainly called from outside
-    public static void showNotification(INotificationContext communicator, NotificationType type, int messageResId) {
-        showNotification(communicator, NotificationPosition.TOP, type, messageResId);
-    }
-
-    //Mainly called from outside
-    public static void hideNotification(INotificationContext communicator) {
+    public static void hideNotification(NotificationContext communicator) {
         View rootView = communicator.getRootView();
 
         if (rootView == null)
@@ -79,7 +56,7 @@ public class NotificationHelper {
         View view = rootView;
 
         if (rootView.getId() != R.id.notificationFrame)
-            view = (LinearLayout)rootView.findViewById(R.id.notificationFrame);
+            view = (LinearLayout) rootView.findViewById(R.id.notificationFrame);
 
         if (view == null)
             return;
@@ -87,8 +64,9 @@ public class NotificationHelper {
         view.setVisibility(View.GONE);
     }
 
-
-    //--------------------------------
+    public static void showNotification(View notificationFrame, NotificationType type, String message) {
+        showNotification(notificationFrame, NotificationPosition.TOP, type, message);
+    }
 
     private static void showNotification(View notificationFrame, TextView tvNotificationMessage, NotificationPosition position, NotificationType type, String message) {
         if (notificationFrame == null)
@@ -99,7 +77,7 @@ public class NotificationHelper {
 
         Resources resources = notificationFrame.getResources();
 
-        int backgroundColor =  resources.getColor(type.getBackgroundColor());
+        int backgroundColor = resources.getColor(type.getBackgroundColor());
         int textColor = resources.getColor(type.getTextColor());
 
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) notificationFrame.getLayoutParams();
@@ -111,18 +89,17 @@ public class NotificationHelper {
             layoutParams.gravity = Gravity.BOTTOM;
 
         notificationFrame.setOnClickListener(new View.OnClickListener() {
-            private View nf;
+            private WeakReference<View> nf;
 
             @Override
             public void onClick(View v) {
-                hideNotification(nf);
+                if (nf.get() != null) hideNotification(nf.get());
             }
 
-            private View.OnClickListener init(View nf){
-                this.nf = nf;
+            private View.OnClickListener init(View nf) {
+                this.nf = new WeakReference<>(nf);
                 return this;
             }
-
         }.init(notificationFrame));
 
         notificationFrame.setBackgroundColor(backgroundColor);
@@ -130,78 +107,44 @@ public class NotificationHelper {
         tvNotificationMessage.setText(message);
 
         notificationFrame.setVisibility(View.VISIBLE);
+
+        if (type == NotificationType.INFO || type == NotificationType.SUCCESS) {
+            notificationFrame.postDelayed(new Runnable() {
+                private WeakReference<View> nf;
+
+                public void run() {
+                    if (nf.get() != null) hideNotification(nf.get());
+                }
+
+                private Runnable init(View nf) {
+                    this.nf = new WeakReference<>(nf);
+                    return this;
+                }
+            }.init(notificationFrame), 3000);
+        }
     }
 
-    //Many functions call this
-    //First Set
     private static void showNotification(View notificationRoot, NotificationPosition position, NotificationType type, String message) {
-        LinearLayout notificationFrame = (LinearLayout)notificationRoot.findViewById(R.id.notificationFrame);
-        TextView tvNotificationMessage = (TextView)notificationRoot.findViewById(R.id.tvNotificationMessage);
-
-        if (notificationFrame == null)
-            return;
-
-        if (tvNotificationMessage == null)
-            return;
-
+        LinearLayout notificationFrame = (LinearLayout) notificationRoot.findViewById(R.id.notificationFrame);
+        TextView tvNotificationMessage = (TextView) notificationRoot.findViewById(R.id.tvNotificationMessage);
         showNotification(notificationFrame, tvNotificationMessage, position, type, message);
     }
 
-    public static void showNotification(INotificationContext communicator, NotificationPosition position, NotificationType type, int messageResId) {
-        View rootView = communicator.getRootView();
-
-        if (rootView == null)
-            return;
-
-        Context context = rootView.getContext();
-
-        if (context == null)
-            return;
-
-        Resources resources = context.getResources();
-
-        if (resources == null)
-            return;
-
-        showNotification(communicator.getRootView(), position, type, resources.getString(messageResId));
+    public static void showNotification(NotificationContext communicator, NotificationPosition position, NotificationType type, int messageResId) {
+        showNotification(communicator.getRootView(), position, type, communicator.getRootView().getResources().getString(messageResId));
     }
 
-    public static void showNotification(INotificationContext communicator, NotificationPosition position, NotificationType type, String message) {
-        View rootView = communicator.getRootView();
-
-        if (rootView == null)
-            return;
-
-        showNotification(rootView, position, type, message);
+    public static void showNotification(NotificationContext communicator, NotificationPosition position, NotificationType type, String message) {
+        showNotification(communicator.getRootView(), position, type, message);
     }
 
     public static void showNotification(ViewDataBinding binding, NotificationPosition position, NotificationType type, int messageResId) {
-        if (messageResId <= 0)
-            return;
-
-        if (binding == null)
-            return;
-
-        View notificationRoot = binding.getRoot();
-
-        if (notificationRoot == null)
-            return;
-
-        Resources resources = notificationRoot.getResources();
-        String message = resources.getString(messageResId);
-
-        showNotification(binding.getRoot(), position, type, message);
+        showNotification(binding.getRoot(), position, type, binding.getRoot().getResources().getString(messageResId));
     }
 
     public static void showNotification(ViewDataBinding binding, NotificationPosition position, NotificationType type, String message) {
-        if (binding == null)
-            return;
-
         showNotification(binding.getRoot(), position, type, message);
     }
-
-
-
 
     //Second Set
     public static void showNotification(View notificationFrame, TextView tvNotificationMessage, NotificationPosition position, NotificationType type, int messageResId) {
@@ -220,28 +163,6 @@ public class NotificationHelper {
         showNotification(notificationFrame, tvNotificationMessage, NotificationPosition.TOP, type, messageResId);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //--------------------------------
-
-    //<editor-fold desc="Dialog Notifications">
-
     private static void showDialogNotification(View notificationFrame, TextView tvNotificationMessage, NotificationPosition position, NotificationType type, String message) {
         if (notificationFrame == null)
             return;
@@ -251,25 +172,24 @@ public class NotificationHelper {
 
         Resources resources = notificationFrame.getResources();
 
-        int backgroundColor =  resources.getColor(type.getInverseBackgroundColor());
+        int backgroundColor = resources.getColor(type.getInverseBackgroundColor());
         int textColor = resources.getColor(type.getInverseTextColor());
 
         notificationFrame.setOnClickListener(new View.OnClickListener() {
-            private View nf;
+            private WeakReference<View> nf;
 
             @Override
             public void onClick(View v) {
-                hideDialogNotification(nf);
+                if (nf.get() != null) hideNotification(nf.get());
             }
 
-            private View.OnClickListener init(View nf){
-                this.nf = nf;
+            private View.OnClickListener init(View nf) {
+                this.nf = new WeakReference<>(nf);
                 return this;
             }
-
         }.init(notificationFrame));
 
-        LayerDrawable drawable = (LayerDrawable) resources.getDrawable(R.drawable.background_notification_dialog);
+        LayerDrawable drawable = (LayerDrawable) resources.getDrawable(R.drawable.background_full_width_border);
         Drawable backgroundLayer = drawable.findDrawableByLayerId(R.id.backgroundLayer);
         backgroundLayer.setColorFilter(backgroundColor, PorterDuff.Mode.SRC_OVER);
 
@@ -278,11 +198,26 @@ public class NotificationHelper {
 
         notificationFrame.setBackground(drawable);
         notificationFrame.setVisibility(View.VISIBLE);
+
+        if (type == NotificationType.INFO || type == NotificationType.SUCCESS) {
+            notificationFrame.postDelayed(new Runnable() {
+                private WeakReference<View> nf;
+
+                public void run() {
+                    if (nf.get() != null) hideNotification(nf.get());
+                }
+
+                private Runnable init(View nf) {
+                    this.nf = new WeakReference<>(nf);
+                    return this;
+                }
+            }.init(notificationFrame), 3000);
+        }
     }
 
     private static void showDialogNotification(View notificationRoot, NotificationPosition position, NotificationType type, String message) {
-        LinearLayout notificationFrame = (LinearLayout)notificationRoot.findViewById(R.id.notificationFrame);
-        TextView tvNotificationMessage = (TextView)notificationRoot.findViewById(R.id.tvNotificationMessage);
+        LinearLayout notificationFrame = (LinearLayout) notificationRoot.findViewById(R.id.notificationFrame);
+        TextView tvNotificationMessage = (TextView) notificationRoot.findViewById(R.id.tvNotificationMessage);
 
         if (notificationFrame == null)
             return;
@@ -293,7 +228,7 @@ public class NotificationHelper {
         showDialogNotification(notificationFrame, tvNotificationMessage, position, type, message);
     }
 
-    public static void showDialogNotification(INotificationContext communicator, NotificationPosition position, NotificationType type, int messageResId) {
+    public static void showDialogNotification(NotificationContext communicator, NotificationPosition position, NotificationType type, int messageResId) {
         View rootView = communicator.getRootView();
 
         if (rootView == null)
@@ -312,7 +247,7 @@ public class NotificationHelper {
         showDialogNotification(communicator.getRootView(), position, type, resources.getString(messageResId));
     }
 
-    public static void showDialogNotification(INotificationContext communicator, NotificationPosition position, NotificationType type, String message) {
+    public static void showDialogNotification(NotificationContext communicator, NotificationPosition position, NotificationType type, String message) {
         View rootView = communicator.getRootView();
 
         if (rootView == null)
@@ -347,7 +282,6 @@ public class NotificationHelper {
     }
 
 
-
     public static void showDialogNotification(View notificationFrame, TextView tvNotificationMessage, NotificationPosition position, NotificationType type, int messageResId) {
         if (messageResId <= 0)
             return;
@@ -363,19 +297,6 @@ public class NotificationHelper {
     public static void showDialogNotification(View notificationFrame, TextView tvNotificationMessage, NotificationType type, int messageResId) {
         showDialogNotification(notificationFrame, tvNotificationMessage, NotificationPosition.TOP, type, messageResId);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     //Mainly called from outside
@@ -400,7 +321,7 @@ public class NotificationHelper {
         View view = notificationRoot;
 
         if (notificationRoot.getId() != R.id.notificationFrame)
-            view = (LinearLayout)notificationRoot.findViewById(R.id.notificationFrame);
+            view = (LinearLayout) notificationRoot.findViewById(R.id.notificationFrame);
 
         if (view == null)
             return;
@@ -409,17 +330,17 @@ public class NotificationHelper {
     }
 
     //Mainly called from outside
-    public static void showDialogNotification(INotificationContext communicator, NotificationType type, String message) {
+    public static void showDialogNotification(NotificationContext communicator, NotificationType type, String message) {
         showDialogNotification(communicator, NotificationPosition.TOP, type, message);
     }
 
     //Mainly called from outside
-    public static void showDialogNotification(INotificationContext communicator, NotificationType type, int messageResId) {
+    public static void showDialogNotification(NotificationContext communicator, NotificationType type, int messageResId) {
         showDialogNotification(communicator, NotificationPosition.TOP, type, messageResId);
     }
 
     //Mainly called from outside
-    public static void hideDialogNotification(INotificationContext communicator) {
+    public static void hideDialogNotification(NotificationContext communicator) {
         View rootView = communicator.getRootView();
 
         if (rootView == null)
@@ -428,13 +349,11 @@ public class NotificationHelper {
         View view = rootView;
 
         if (rootView.getId() != R.id.notificationFrame)
-            view = (LinearLayout)rootView.findViewById(R.id.notificationFrame);
+            view = (LinearLayout) rootView.findViewById(R.id.notificationFrame);
 
         if (view == null)
             return;
 
         view.setVisibility(View.GONE);
     }
-
-    //</editor-fold>
 }

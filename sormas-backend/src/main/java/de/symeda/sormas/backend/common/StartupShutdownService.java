@@ -96,6 +96,8 @@ public class StartupShutdownService {
 		upgrade();
 		
 		createImportTemplateFiles();
+		
+		configFacade.validateAppUrls();
 	}
 	
 	public void importAdministrativeDivisions(String countryName) {

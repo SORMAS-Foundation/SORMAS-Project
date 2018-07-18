@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cell_root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/summaryCellHeight"
+    android:orientation="vertical"
+    android:background="@drawable/background_summary_cell"
+    android:gravity="center">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/summaryVisualizationMarginBottom">
+
+        <com.github.lzyzsd.circleprogress.DonutProgress
+            android:id="@+id/circular_progress"
+            android:layout_width="@dimen/circularProgressDefaultWidth"
+            android:layout_height="@dimen/circularProgressDefaultHeight"
+            style="@style/CircularProgressDefaultStyle" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center">
+
+            <TextView
+                android:id="@+id/value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/SummaryVisualizationValueStyle" />
+
+            <TextView
+                android:id="@+id/percentage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/SummaryVisualizationPercentageStyle" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/SummaryCellTitleStyle" />
+
+</LinearLayout>

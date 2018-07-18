@@ -21,6 +21,7 @@
     <string name="action_create">Create</string>
     <string name="action_createCaseFromContact">Create a case for this contact person</string>
     <string name="action_create_case">Create Case</string>
+    <string name="action_create_case_from_contact">Create a case for this contact person</string>
     <string name="action_delete">Delete</string>
     <string name="action_dimiss">Dismiss</string>
     <string name="action_dismiss">Dismiss</string>
@@ -46,6 +47,7 @@
     <string name="action_markAllAsRead">Mark All As Read</string>
     <string name="action_move">Move</string>
     <string name="action_move_to_another_health_facility">Move to another Health Facility</string>
+    <string name="action_transfer_case">Transfer case</string>
     <string name="action_new">New</string>
     <string name="action_new_case">New Case</string>
     <string name="action_new_contact">New Contact</string>
@@ -56,10 +58,14 @@
     <string name="action_not_executable">Not Executable</string>
     <string name="action_ok">Ok</string>
     <string name="action_open_case">Open Case</string>
+    <string name="action_open_contact">Open Contact</string>
+    <string name="action_open_event">Open Event</string>
+    <string name="action_open_source_case">Open Source Case</string>
+    <string name="action_open_resulting_case">Open Resulting Case</string>
     <string name="action_open_reports">Open Reports</string>
     <string name="action_open_syncLog">Synchronization conflicts</string>
     <string name="action_options">Options</string>
-    <string name="action_pick_gps">Pick GPS</string>
+    <string name="action_pick_gps">Pick current GPS for address</string>
     <string name="action_redownload_app">Redownload</string>
     <string name="action_redownload_app_later">Redownload later</string>
     <string name="action_reload">Refresh</string>
@@ -121,6 +127,7 @@
     <string name="caption_new_case">New Case</string>
     <string name="caption_new_contact">New Contact</string>
     <string name="caption_new_sample">New Sample</string>
+    <string name="caption_new_event_participant">New Person Involved</string>
     <string name="caption_patient_information">Patient Information</string>
     <string name="caption_person_information">Person Information</string>
     <string name="caption_person_involved">Person Involved</string>
@@ -136,6 +143,7 @@
     <string name="caption_weekly_report_start">Start</string>
     <string name="caption_weekly_report_week">Epi Week</string>
     <string name="caption_weekly_report_year">Year</string>
+    <string name="caption_smallpox_vaccination_scar_img">Smallpox Vaccination Scar</string>
 
     <string name="case_transfer">Transfer case \u279D</string>
     <string name="case_uuid_unknown">Case ID N/A</string>
@@ -168,9 +176,9 @@
     <string name="desc_details">Details</string>
     <string name="desc_last_exposure_date">Last Exposure Date</string>
     <string name="desc_last_exposure_place">Last Exposure Place</string>
-    <string name="desc_password">Password</string>
+    <string name="desc_login_password">Password</string>
     <string name="desc_specify">Specify</string>
-    <string name="desc_username">User Name</string>
+    <string name="desc_login_username">Username</string>
     <string name="disease_unknown">Disease N/A</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="drawer_open">Open navigation drawer</string>
@@ -185,7 +193,7 @@
     <string name="entity_task">Task</string>
     <string name="entity_visit">Visit</string>
     <string name="entity_weekly_report">Weekly report</string>
-    <string name="epiData_infoText">Please indicate if any of the following is relevant for the patient during the incubation period or illness.</string>
+    <string name="description_epidemiological_info">Please indicate if any of the following is relevant for the patient during the incubation period or illness.</string>
     <string name="epid_burial_date_unknown">Date N/A</string>
     <string name="epid_burial_location_unknown">Location N/A</string>
     <string name="epid_burial_person_unknown">Person/Relation N/A</string>
@@ -200,7 +208,7 @@
     <string name="field_yes_no_no">No</string>
     <string name="field_yes_no_unk">Unk</string>
     <string name="field_yes_no_yes">Yes</string>
-    <string name="form_p_date_of_birth">Date of birth (year / month / day)</string>
+    <string name="caption_date_of_birth">Date of birth (year / month / day)</string>
     <string name="form_password">Password</string>
     <string name="form_username">Username</string>
     <string name="gender_unknown">Gender N/A</string>
@@ -212,6 +220,7 @@
     <string name="heading_contact_new">New Contact</string>
     <string name="heading_contact_task_info">Contact Task</string>
     <string name="heading_dialog_placeholder">Dialog Heading</string>
+    <string name="heading_event_new">New Event</string>
     <string name="heading_event_task_info">Event Task</string>
     <string name="heading_level1_cases_landing">Case Directory</string>
     <string name="heading_level1_contacts_landing">Contact Directory</string>
@@ -346,14 +355,16 @@
     <string name="hint_last_exposure_date">Last Exposure Date</string>
     <string name="hint_last_exposure_place">Last Exposure Place</string>
     <string name="hint_login">Please log in to your account.</string>
+    <string name="hint_login_username">Username</string>
+    <string name="hint_login_password">Your Password</string>
     <string name="hint_logout">Logging out of SORMAS...</string>
     <string name="hint_new_pin">Please choose a new four-digit PIN to authenticate when opening the SORMAS app in the future.</string>
     <string name="hint_new_pin_again">Please enter the new PIN again.</string>
+    <string name="hint_enter_location">Please enter a location</string>
     <string name="hint_no_records_found">There were no %1$s found.</string>
     <string name="hint_no_records_found_add_new">There were no %1$s found. To add a new entry, press the "+" symbol at the top right of the toolbar.</string>
     <string name="hint_no_sync_errors">There are no synchronization conflicts to display.</string>
     <string name="hint_no_weekly_report">You have not yet confirmed the report for last week.</string>
-    <string name="hint_password">Your Password</string>
     <string name="hint_report_not_submitted">No <i>report</i> submitted</string>
     <string name="hint_report_not_yet_submitted">Not yet submitted</string>
     <string name="hint_sample_synchronization">Samples are being synchronized...</string>
@@ -362,18 +373,23 @@
     <string name="hint_select_entry">Select Option</string>
     <string name="hint_select_entry_leave_blank">Leave Option Blank</string>
     <string name="hint_select_entry_not_available">Option N/A</string>
+    <string name="hint_select_year">Select Year</string>
+    <string name="hint_select_month">Select Month</string>
+    <string name="hint_select_day">Select Day</string>
     <string name="hint_specify">Specify</string>
     <string name="hint_specify_detail">Specify Detail</string>
     <string name="hint_synchronization">Synchronizing with SORMAS server...</string>
     <string name="hint_task_synchronization">Tasks are being synchronized...</string>
     <string name="hint_user_report">Please briefly describe the problem you have experienced. Don\'t enter any personal or otherwise sensitive data!</string>
-    <string name="hint_username">Your User Name</string>
     <string name="hint_visit_synchronization">Visits are being synchronized...</string>
     <string name="hint_weekly_report_info">In EPID-week %1$s from %2$s to %3$s, you have reported the following disease cases:</string>
     <string name="hint_weekly_report_no_data">No data available for this epi week.</string>
 
     <string name="inadequate_specimen_cond">Specimen condition not adequate</string>
     <string name="indicator_case_unclassified">Unclassified</string>
+    <string name="indicator_required">*</string>
+    <string name="indicator_soft_required">*</string>
+    <string name="indicator_warning">WARN</string>
     <string name="infoText_move_case_discard_changes">Moving the case will discard any unsaved changes. Do you want to continue?</string>
     <string name="infoText_resetPIN">To reset your PIN you will <b>need your SORMAS user password.</b></string>
     <string name="invalid">Invalid</string>
@@ -395,17 +411,23 @@
     <string name="label_lesions_locations">Localisation of the lesions</string>
     <string name="label_list_item_person_ill">Deceased person was ill</string>
     <string name="label_list_item_touched_body">Case touched or carried body</string>
-    <string name="label_password">Password</string>
+    <string name="label_login_username">Username</string>
+    <string name="label_login_password">Password</string>
     <string name="label_person_ill">Person ill / </string>
     <string name="label_present_condition">Present Condition</string>
     <string name="label_sormas_version">SORMAS</string>
     <string name="label_specify">Specify</string>
     <string name="label_today">today</string>
-    <string name="label_username">User Name</string>
 
     <string name="login_change_settings"><u>Change Settings</u></string>
     <string name="login_heading_1">Surveillance Outbreak</string>
     <string name="login_heading_2">Response Management &amp; Analysis System</string>
+    <string name="login_sub_heading_1">Disease Prevention</string>
+    <string name="login_sub_heading_2">Disease Detection</string>
+    <string name="login_sub_heading_3">Outbreak Response</string>
+    <string name="login_sign_in">Sign In</string>
+    <string name="login_sign_in_tag_line">Sign into SORMAS to continue the journey of saving lives.</string>
+
 
     <string name="main_menu_cases">Cases</string>
     <string name="main_menu_contacts">Contacts</string>
@@ -433,7 +455,7 @@
     <string name="notification_case_move_validation_error">%1$s could not be moved because of a validation error.</string>
     <string name="notification_empty_password">Please enter a password.</string>
     <string name="notification_empty_username">Please enter a username.</string>
-    <string name="notification_error_init_move_case">There was an internal problem while attempting to initiate a move case.</string>
+    <string name="notification_error_init_move_case">There was an internal problem while attempting to open the transfer case dialog.</string>
     <string name="notification_internal_error">There has been an internal error, contact administrator.</string>
     <string name="notification_reach_last_menu">You are at the last page. Use the navigation menu to view a specify page or the back button to visit the previous page.</string>
     <string name="notification_records_not_retrieved">Unable to retrieve %1$s</string>
@@ -456,15 +478,9 @@
     <string name="sample_shipmentStatus">Shipment status</string>
     <string name="sample_shipped">Shipped</string>
     <string name="sampling_date_unknown">Sampling Date N/A</string>
-    <string name="select_or_create_person_infoText">Select anyone of the persons below that match by tapping.</string>
-    <string name="select_or_create_person_no_records_infoText">No records found matching the first and last name.</string>
+    <string name="description_pick_or_create_person">Select a matching person below by tapping on them or click the "+ Create" button if you don't find any matches.</string>
+    <string name="description_pick_or_create_person_no_records">No matching persons found. Click the "+ Create" button below to create a new person.</string>
     <string name="server_connection_error">Could not connect to SORMAS server. Synchronization canceled. Try again later.</string>
-    <string name="service_1">Disease Prevention</string>
-    <string name="service_2">Disease Detection</string>
-    <string name="service_3">Outbreak Response</string>
-    <string name="sign_in">Sign In</string>
-    <string name="sign_in_tagline">Sign into SORMAS to continue the journey of saving lives.</string>
-
     <string name="snackbar_case_disease">Please specify the case disease.</string>
     <string name="snackbar_case_facility">Please enter the health facility.</string>
     <string name="snackbar_case_facility_details">Please enter the name and description of the health facility.</string>
@@ -532,7 +548,8 @@
 
     <string name="sormas_logo_desc">SORMAS Logo</string>
     <string name="status_unknown">Status N/A</string>
-    <string name="symptoms_infoText">Please tick an answer for ALL symptoms indicating if they occurred during this illness between symptom onset and case detection:</string>
+    <string name="description_symptoms">Please select an answer for ALL symptoms indicating if they occurred during this illness between symptom onset and case detection:</string>
+    <string name="description_symptoms_visit">Please select an answer for ALL symptoms indicating if they occurred during this illness between the last and this visit:</string>
     <string name="sync_error">Synchronization failed. Please try again later.</string>
     <string name="synclog_server">Server: </string>
     <string name="synclog_yours">Yours: </string>
@@ -583,6 +600,7 @@
     <string name="user_unknown">User Unknown</string>
     <string name="uuid_unknown">ID N/A</string>
 
+    <string name="validation_field_empty">Please specify a value for all fields marked as required.</string>
     <string name="validation_case_disease">Please select the disease for this case.</string>
     <string name="validation_case_disease_details">Please enter the name of the disease.</string>
     <string name="validation_community">Please select a ward.</string>

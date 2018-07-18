@@ -3,20 +3,11 @@ package de.symeda.sormas.app.util;
 import android.databinding.InverseMethod;
 
 import de.symeda.sormas.app.core.YesNo;
-import de.symeda.sormas.app.shared.ShipmentStatus;
 
 import de.symeda.sormas.app.backend.sample.Sample;
-
-/**
- * Created by Orson on 16/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
+import de.symeda.sormas.app.shared.ShipmentStatus;
 
 public class SampleHelper {
-
 
     public static ShipmentStatus getShipmentStatus(Sample record) {
         if (record.getReferredTo() != null) {

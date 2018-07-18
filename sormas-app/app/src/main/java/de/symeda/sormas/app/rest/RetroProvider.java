@@ -1,10 +1,12 @@
 package de.symeda.sormas.app.rest;
 
 import android.accounts.AuthenticatorException;
+import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -19,6 +21,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
 import java.net.ConnectException;
 import java.util.Date;
@@ -26,9 +29,19 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.core.NotificationContext;
+import de.symeda.sormas.app.core.async.AsyncTaskResult;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
+import de.symeda.sormas.app.util.AppUpdateController;
+import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.Consumer;
 import okhttp3.Credentials;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
@@ -99,7 +112,7 @@ public final class RetroProvider {
         AuthenticationInterceptor interceptor = new AuthenticationInterceptor(authToken);
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-        httpClient.readTimeout(5*60, TimeUnit.SECONDS); // for infrastructure data - actually 30 seconds should be enough...
+        httpClient.readTimeout(5 * 60, TimeUnit.SECONDS); // for infrastructure data - actually 30 seconds should be enough...
         // adds "Accept-Encoding: gzip" by default
         httpClient.addInterceptor(interceptor);
         for (Interceptor additionalInterceptor : additionalInterceptors) {
@@ -122,7 +135,7 @@ public final class RetroProvider {
 
                 @Override
                 protected Response<CompatibilityCheckResponse> doInBackground(Void... params) {
-                    Call<CompatibilityCheckResponse> compatibilityCall = infoFacadeRetro.isCompatibleToApi(InfoProvider.getVersion());
+                    Call<CompatibilityCheckResponse> compatibilityCall = infoFacadeRetro.isCompatibleToApi(InfoProvider.get().getVersion());
                     try {
                         return compatibilityCall.execute();
                     } catch (IOException e) {
@@ -145,16 +158,13 @@ public final class RetroProvider {
         if (compatibilityResponse.isSuccessful()) {
             // success - now check compatibility
             CompatibilityCheckResponse compatibilityCheckResponse = compatibilityResponse.body();
-            if (compatibilityCheckResponse == CompatibilityCheckResponse.ERROR) {
-                throw new ConnectException("Could not synchronize because there was an error determining the current server version.");
-            } else if (compatibilityCheckResponse == CompatibilityCheckResponse.TOO_NEW) {
+            if (compatibilityCheckResponse == CompatibilityCheckResponse.TOO_NEW) {
                 throw new ConnectException("Could not synchronize because the app version is newer than the server version.");
             } else if (compatibilityCheckResponse == CompatibilityCheckResponse.TOO_OLD) {
                 // get the current server version, throw an exception including the app url that is then processed in the UI
                 matchAppAndApiVersions(infoFacadeRetro);
             }
-        }
-        else {
+        } else {
             switch (compatibilityResponse.code()) {
                 case 401:
                     throw new AuthenticatorException(context.getResources().getString(R.string.snackbar_http_401));
@@ -192,11 +202,85 @@ public final class RetroProvider {
 
         try {
             instance = new RetroProvider(context);
-        } catch (Exception e){
+        } catch (Exception e) {
             instance = null;
             throw e;
         }
     }
+
+    public static void connectAsyncHandled(FragmentActivity activity, final boolean showUpgradePrompt, final boolean matchExactVersion, final Consumer<Boolean> callback) {
+
+        if (!(activity instanceof NotificationContext)) {
+            throw new UnsupportedOperationException("Activity needs to implement NotificationContext: " + activity.toString());
+        }
+
+        if (!RetroProvider.isConnected()) {
+            new DefaultAsyncTask(activity.getApplicationContext()) {
+
+                WeakReference<Activity> activityReference;
+                boolean versionCompatible = false;
+
+                @Override
+                protected void doInBackground(TaskResultHolder resultHolder) throws ConnectException, AuthenticatorException, RetroProvider.ApiVersionException {
+                    RetroProvider.connect(getApplicationReference().get());
+                    versionCompatible = true;
+                    if (matchExactVersion) {
+                        RetroProvider.matchAppAndApiVersions();
+                    }
+                }
+
+                @Override
+                protected AsyncTaskResult handleException(Exception e) {
+                    if (e instanceof ConnectException
+                            || e instanceof AuthenticatorException
+                            || e instanceof RetroProvider.ApiVersionException)
+                        return new AsyncTaskResult<>(e); // expected exceptions
+                    return super.handleException(e);
+                }
+
+                @Override
+                protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                    if (taskResult.getResultStatus().isSuccess()) {
+                        callback.accept(true);
+                    } else {
+                        if (taskResult.getError() instanceof RetroProvider.ApiVersionException) {
+                            RetroProvider.ApiVersionException e = (RetroProvider.ApiVersionException) taskResult.getError();
+                            if (showUpgradePrompt
+                                    && !DataHelper.isNullOrEmpty(e.getAppUrl())
+                                    && activityReference.get() != null) {
+                                boolean canWorkOffline = ConfigProvider.getUser() != null;
+                                AppUpdateController.getInstance().updateApp(activityReference.get(), e.getAppUrl(), e.getVersion(), versionCompatible || canWorkOffline,
+                                        new Callback() {
+                                            @Override
+                                            public void call() {
+                                                callback.accept(false);
+                                            }
+                                        });
+                            } else {
+                                if (activityReference.get() != null) {
+                                    NotificationHelper.showNotification((NotificationContext) activityReference.get(), NotificationType.ERROR, e.getMessage());
+                                }
+                                callback.accept(false);
+                            }
+                        } else {
+                            if (activityReference.get() != null) {
+                                NotificationHelper.showNotification((NotificationContext) activityReference.get(), NotificationType.ERROR, taskResult.getError().getMessage());
+                            }
+                            callback.accept(false);
+                        }
+                    }
+                }
+
+                private DefaultAsyncTask init(Activity activity) {
+                    activityReference = new WeakReference<>(activity);
+                    return this;
+                }
+            }.init(activity).executeOnThreadPool();
+        } else {
+            callback.accept(true);
+        }
+    }
+
 
     public static void disconnect() {
         instance = null;
@@ -235,7 +319,7 @@ public final class RetroProvider {
         if (versionResponse.isSuccessful()) {
             // Check if the versions match
             String serverApiVersion = versionResponse.body();
-            String appApiVersion = InfoProvider.getVersion();
+            String appApiVersion = InfoProvider.get().getVersion();
             if (!serverApiVersion.equals(appApiVersion)) {
                 // Retrieve the app URL
                 Response<String> appUrlResponse;
@@ -244,7 +328,7 @@ public final class RetroProvider {
 
                         @Override
                         protected Response<String> doInBackground(Void... params) {
-                            Call<String> versionCall = localInfoFacadeRetro != null ? localInfoFacadeRetro.getAppUrl(InfoProvider.getVersion()) : getInfoFacade().getAppUrl(InfoProvider.getVersion());
+                            Call<String> versionCall = localInfoFacadeRetro != null ? localInfoFacadeRetro.getAppUrl(InfoProvider.get().getVersion()) : getInfoFacade().getAppUrl(InfoProvider.get().getVersion());
                             try {
                                 return versionCall.execute();
                             } catch (IOException e) {
@@ -466,26 +550,33 @@ public final class RetroProvider {
     public static class ApiVersionException extends Exception {
         private String appUrl;
         private String version;
+
         public ApiVersionException() {
             super();
         }
+
         public ApiVersionException(String message) {
             super(message);
         }
+
         public ApiVersionException(String message, String appUrl, String version) {
             super(message);
             this.appUrl = appUrl;
             this.version = version;
         }
+
         public ApiVersionException(String message, Throwable cause) {
             super(message, cause);
         }
+
         public ApiVersionException(Throwable cause) {
             super(cause);
         }
+
         public String getAppUrl() {
             return appUrl;
         }
+
         public String getVersion() {
             return version;
         }

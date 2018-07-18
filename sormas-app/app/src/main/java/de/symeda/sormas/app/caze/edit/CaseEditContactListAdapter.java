@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.caze.edit;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -22,32 +21,18 @@ import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.databinding.RowReadContactListItemLayoutBinding;
 
-/**
- * Created by Orson on 19/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class CaseEditContactListAdapter extends DataBoundAdapter<RowReadContactListItemLayoutBinding> implements ISetOnListItemClickListener {
 
     private static final String TAG = CaseEditContactListAdapter.class.getSimpleName();
 
-    private final Context context;
     private List<Contact> data = new ArrayList<>();
     private OnListItemClickListener mOnListItemClickListener;
 
     private LayerDrawable backgroundRowItem;
     private Drawable unreadListItemIndicator;
 
-    public CaseEditContactListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener) {
-        this(context, rowLayout, onListItemClickListener, new ArrayList<Contact>());
-    }
-
-    public CaseEditContactListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<Contact> data) {
+    public CaseEditContactListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Contact> data) {
         super(rowLayout);
-        this.context = context;
         this.mOnListItemClickListener = onListItemClickListener;
 
         if (data == null)

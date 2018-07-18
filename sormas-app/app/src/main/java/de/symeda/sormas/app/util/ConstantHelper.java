@@ -1,9 +1,5 @@
 package de.symeda.sormas.app.util;
 
-/**
- * Created by Orson on 07/12/2017.
- */
-
 public class ConstantHelper {
     public static final String ARG_NAVIGATION_CAPSULE_INTENT_DATA = "navigationCapsuleIntentDataArg";
 
@@ -25,8 +21,5 @@ public class ConstantHelper {
     public static final String ARG_VISIT_COOPERATIVE = "visitCooperativeArg";
     public static final String ARG_EDIT_OR_CREATE_USER_RIGHT = "editOrCreateUserRightArg";
 
-    public static final String KEY_SAMPLE_MATERIAL = "sampleMaterialInfo";
-
     public static final String KEY_ACTIVE_MENU = "activeMenuKey";
-    public static final int INDEX_FIRST_MENU = 0;
 }

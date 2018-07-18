@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiDataBurial"/>
+
+        <variable
+            name="callback"
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/parentLayoutVerticalPadding"
+            android:paddingBottom="@dimen/parentLayoutVerticalPadding"
+            android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+            android:paddingRight="@dimen/rowListItemHorizontalMargin">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/heading_sub_case_epid_burial_visited"
+                style="@style/SubHeadingStyle"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiDataBurial_burialDateFrom"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@{data.burialDateFrom}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiDataBurial_burialDateTo"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:value="@{data.burialDateTo}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/epiDataBurial_burialRelation"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.burialPersonname}"
+                app:appendValue="@{data.burialRelation}"
+                app:valueFormat='@{@string/two_strings_with_brackets_format}'
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/epiDataBurial_address"
+                style="@style/ControlSingleColumnStyle"
+                app:maxLines="2"
+                app:value="@{data.burialAddress}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiDataBurial_burialIll"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@{data.burialIll}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiDataepiDataBurial_burialTouching"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:value="@{data.burialTouching}"/>
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnDismiss"
+                android:layout_width="wrap_content"
+                android:layout_gravity="right"
+                android:paddingLeft="@dimen/contentHorizontalSpacing"
+                android:paddingRight="@dimen/contentHorizontalSpacing"
+                android:layout_marginTop="@dimen/primaryButtonMarginTop"
+                android:text="@string/action_dismiss"
+                android:drawableLeft="@drawable/ic_clear_black_24dp"
+                android:drawablePadding="@dimen/contentHorizontalSpacing"
+                android:drawableTint="@color/whiteOpaque"
+                android:onClickListener="@{(view) -> callback.onClick(view, data)}"
+                style="@style/PrimaryButtonStyle"
+                />
+
+        </LinearLayout>
+    </ScrollView>
+</layout>
+

@@ -74,7 +74,6 @@ import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.symptom.Symptom;
 
 /**
  * Created by Orson on 02/12/2017.
@@ -119,7 +118,7 @@ public class MemoryDatabaseHelper {
 
     public static void init(Context context) {
         if (instance != null) {
-            Log.e(MemoryDatabaseHelper.class.getName(),"MemoryDatabaseHelper has already been initalized");
+            Log.e(MemoryDatabaseHelper.class.getName(), "MemoryDatabaseHelper has already been initalized");
         }
         instance = new MemoryDatabaseHelper(context);
 
@@ -218,7 +217,6 @@ public class MemoryDatabaseHelper {
     }
 
 
-
     public static class TEMPERATURE_SOURCE {
 
         public static List<TemperatureSource> getTemperatureSources() {
@@ -232,10 +230,10 @@ public class MemoryDatabaseHelper {
             List<Item> temperature = new ArrayList<>();
 
             if (withNull)
-                temperature.add(new Item("",null));
+                temperature.add(new Item("", null));
 
             for (Float temperatureValue : SymptomsHelper.getTemperatureValues()) {
-                temperature.add(new Item(SymptomsHelper.getTemperatureString(temperatureValue),temperatureValue));
+                temperature.add(new Item(SymptomsHelper.getTemperatureString(temperatureValue), temperatureValue));
             }
 
             return temperature;
@@ -479,7 +477,7 @@ public class MemoryDatabaseHelper {
             taskList.clear();
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Task> list = TaskGenerator.get(min);
-            for (Task t: list) {
+            for (Task t : list) {
                 if (t.getTaskStatus() == TaskStatus.PENDING) {
                     taskList.add(t);
                 }
@@ -492,7 +490,7 @@ public class MemoryDatabaseHelper {
             taskList.clear();
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Task> list = TaskGenerator.get(min);
-            for (Task t: list) {
+            for (Task t : list) {
                 if (t.getTaskStatus() == TaskStatus.DONE) {
                     taskList.add(t);
                 }
@@ -505,7 +503,7 @@ public class MemoryDatabaseHelper {
             taskList.clear();
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Task> list = TaskGenerator.get(min);
-            for (Task t: list) {
+            for (Task t : list) {
                 if (t.getTaskStatus() == TaskStatus.NOT_EXECUTABLE) {
                     taskList.add(t);
                 }
@@ -528,7 +526,7 @@ public class MemoryDatabaseHelper {
             caseList.clear();
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Case> list = CaseGenerator.get(min);
-            for (Case item: list) {
+            for (Case item : list) {
                 if (item.getInvestigationStatus() == InvestigationStatus.PENDING) {
                     caseList.add(item);
                 }
@@ -541,7 +539,7 @@ public class MemoryDatabaseHelper {
             caseList.clear();
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Case> list = CaseGenerator.get(min);
-            for (Case item: list) {
+            for (Case item : list) {
                 if (item.getInvestigationStatus() == InvestigationStatus.DONE) {
                     caseList.add(item);
                 }
@@ -554,7 +552,7 @@ public class MemoryDatabaseHelper {
             caseList.clear();
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Case> list = CaseGenerator.get(min);
-            for (Case item: list) {
+            for (Case item : list) {
                 if (item.getInvestigationStatus() == InvestigationStatus.DISCARDED) {
                     caseList.add(item);
                 }
@@ -577,7 +575,7 @@ public class MemoryDatabaseHelper {
             contactList.clear();
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Contact> list = ContactGenerator.get(min);
-            for (Contact item: list) {
+            for (Contact item : list) {
                 if (item.getFollowUpStatus() == FollowUpStatus.FOLLOW_UP) {
                     contactList.add(item);
                 }
@@ -590,7 +588,7 @@ public class MemoryDatabaseHelper {
             contactList.clear();
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Contact> list = ContactGenerator.get(min);
-            for (Contact item: list) {
+            for (Contact item : list) {
                 if (item.getFollowUpStatus() == FollowUpStatus.COMPLETED) {
                     contactList.add(item);
                 }
@@ -603,7 +601,7 @@ public class MemoryDatabaseHelper {
             contactList.clear();
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Contact> list = ContactGenerator.get(min);
-            for (Contact item: list) {
+            for (Contact item : list) {
                 if (item.getFollowUpStatus() == FollowUpStatus.CANCELED) {
                     contactList.add(item);
                 }
@@ -616,7 +614,7 @@ public class MemoryDatabaseHelper {
             contactList.clear();
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Contact> list = ContactGenerator.get(min);
-            for (Contact item: list) {
+            for (Contact item : list) {
                 if (item.getFollowUpStatus() == FollowUpStatus.LOST) {
                     contactList.add(item);
                 }
@@ -629,7 +627,7 @@ public class MemoryDatabaseHelper {
             contactList.clear();
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Contact> list = ContactGenerator.get(min);
-            for (Contact item: list) {
+            for (Contact item : list) {
                 if (item.getFollowUpStatus() == FollowUpStatus.NO_FOLLOW_UP) {
                     contactList.add(item);
                 }
@@ -652,7 +650,7 @@ public class MemoryDatabaseHelper {
             eventList.clear();
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Event> list = EventGenerator.get(min);
-            for (Event item: list) {
+            for (Event item : list) {
                 if (item.getEventStatus() == EventStatus.POSSIBLE) {
                     eventList.add(item);
                 }
@@ -665,7 +663,7 @@ public class MemoryDatabaseHelper {
             eventList.clear();
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Event> list = EventGenerator.get(min);
-            for (Event item: list) {
+            for (Event item : list) {
                 if (item.getEventStatus() == EventStatus.CONFIRMED) {
                     eventList.add(item);
                 }
@@ -678,7 +676,7 @@ public class MemoryDatabaseHelper {
             eventList.clear();
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Event> list = EventGenerator.get(min);
-            for (Event item: list) {
+            for (Event item : list) {
                 if (item.getEventStatus() == EventStatus.NO_EVENT) {
                     eventList.add(item);
                 }
@@ -701,7 +699,7 @@ public class MemoryDatabaseHelper {
             sampleList.clear();
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Sample> list = SampleGenerator.get(min);
-            for (Sample item: list) {
+            for (Sample item : list) {
                 if (!item.isShipped() && !item.isReceived() && item.getReferredTo() == null) {
                     sampleList.add(item);
                 }
@@ -714,7 +712,7 @@ public class MemoryDatabaseHelper {
             sampleList.clear();
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Sample> list = SampleGenerator.get(min);
-            for (Sample item: list) {
+            for (Sample item : list) {
                 if (item.isShipped() && !item.isReceived() && item.getReferredTo() == null) {
                     sampleList.add(item);
                 }
@@ -727,7 +725,7 @@ public class MemoryDatabaseHelper {
             sampleList.clear();
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Sample> list = SampleGenerator.get(min);
-            for (Sample item: list) {
+            for (Sample item : list) {
                 if (item.isReceived() && item.getReferredTo() == null) {
                     sampleList.add(item);
                 }
@@ -740,7 +738,7 @@ public class MemoryDatabaseHelper {
             sampleList.clear();
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Sample> list = SampleGenerator.get(min);
-            for (Sample item: list) {
+            for (Sample item : list) {
                 if (item.getReferredTo() != null) {
                     sampleList.add(item);
                 }
@@ -807,7 +805,7 @@ class OccupationTypeGenerator extends BaseDataGenerator {
     public static List<OccupationType> get(int number) {
         List<OccupationType> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -833,7 +831,7 @@ class DeathCauseGenerator extends BaseDataGenerator {
     public static List<CauseOfDeath> get(int number) {
         List<CauseOfDeath> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -859,7 +857,7 @@ class DiseaseGenerator extends BaseDataGenerator {
     public static List<Disease> get(int number) {
         List<Disease> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -885,7 +883,7 @@ class TypeOfPlaceGenerator extends BaseDataGenerator {
     public static List<TypeOfPlace> get(int number) {
         List<TypeOfPlace> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -915,7 +913,7 @@ class VisitGenerator extends BaseDataGenerator {
             data1.setReportLat(getRandomDouble());
             data1.setReportLon(getRandomDouble());
 
-            for(int j = 0; j < 20; j++) {
+            for (int j = 0; j < 20; j++) {
                 data1.setSymptoms(SymptomsGenerator.getSingle());
             }
 
@@ -928,7 +926,7 @@ class VisitGenerator extends BaseDataGenerator {
     public static List<Visit> get(int number) {
         List<Visit> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -970,7 +968,7 @@ class EventParticipantGenerator extends BaseDataGenerator {
     public static List<EventParticipant> get(int number) {
         List<EventParticipant> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -1003,7 +1001,7 @@ class SampleTestGenerator extends BaseDataGenerator {
     public static List<SampleTest> get(int number) {
         List<SampleTest> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -1059,7 +1057,7 @@ class SampleGenerator extends BaseDataGenerator {
             pool.add(data1);
         }
 
-        for(int i = 0; i < Math.round(pool.size()/20); i++) {
+        for (int i = 0; i < Math.round(pool.size() / 20); i++) {
             pool.get(i).setReferredTo(randomItem(pool));
         }
     }
@@ -1067,7 +1065,7 @@ class SampleGenerator extends BaseDataGenerator {
     public static List<Sample> get(int number) {
         List<Sample> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -1091,9 +1089,9 @@ class PersonGenerator extends BaseDataGenerator {
             data1.setLastName(getRandomName());
             data1.setNickname(getRandomName());
             data1.setMothersMaidenName(getRandomName());
-            data1.setBirthdateDD((int)DataUtils.toItems(de.symeda.sormas.api.utils.DateHelper.getDaysInMonth(),false).get(7).getValue());
-            data1.setBirthdateMM((int)DataUtils.getMonthItems(false).get(7).getValue());
-            data1.setBirthdateYYYY((int)DataUtils.toItems(de.symeda.sormas.api.utils.DateHelper.getYearsToNow(),false).get(20).getValue());
+            data1.setBirthdateDD((int) DataUtils.toItems(de.symeda.sormas.api.utils.DateHelper.getDaysInMonth(), false).get(7).getValue());
+            data1.setBirthdateMM((int) DataUtils.getMonthItems(false).get(7).getValue());
+            data1.setBirthdateYYYY((int) DataUtils.toItems(de.symeda.sormas.api.utils.DateHelper.getYearsToNow(), false).get(20).getValue());
             data1.setApproximateAge(getRandomAge());
             data1.setApproximateAgeType(getRandomApproximateAgeType());
             data1.setAddress(LocationGenerator.getSingle());
@@ -1121,7 +1119,7 @@ class PersonGenerator extends BaseDataGenerator {
     public static List<Person> get(int number) {
         List<Person> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -1158,7 +1156,7 @@ class PreviousHospitalizationGenerator extends BaseDataGenerator {
     public static List<PreviousHospitalization> get(int number) {
         List<PreviousHospitalization> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -1168,7 +1166,7 @@ class PreviousHospitalizationGenerator extends BaseDataGenerator {
     public static List<PreviousHospitalization> get(Hospitalization hos, int number) {
         List<PreviousHospitalization> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             PreviousHospitalization previousHospitalization = pool.get(index);
             previousHospitalization.setHospitalization(hos);
             toReturn.add(pool.get(index));
@@ -1207,7 +1205,7 @@ class HospitalizationGenerator extends BaseDataGenerator {
     public static List<Hospitalization> get(int number) {
         List<Hospitalization> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -1292,9 +1290,6 @@ class SymptomsGenerator extends BaseDataGenerator {
             data1.setRapidBreathing(getRandomSymptomState());
             data1.setSwollenGlands(getRandomSymptomState());
 
-            //Orson Watch out - gotta remove it
-            data1.setFirstSymptom(Symptom.FEVER);
-
             pool.add(data1);
         }
     }
@@ -1302,7 +1297,7 @@ class SymptomsGenerator extends BaseDataGenerator {
     public static List<Symptoms> get(int number) {
         List<Symptoms> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -1336,7 +1331,7 @@ class EpiDataTravelGenerator extends BaseDataGenerator {
     public static List<EpiDataTravel> get(int number) {
         List<EpiDataTravel> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -1346,7 +1341,7 @@ class EpiDataTravelGenerator extends BaseDataGenerator {
     public static List<EpiDataTravel> get(EpiData epiData, int number) {
         List<EpiDataTravel> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             EpiDataTravel toSet = pool.get(index);
             toSet.setEpiData(epiData);
             toReturn.add(pool.get(index));
@@ -1381,7 +1376,7 @@ class EpiDataGatheringGenerator extends BaseDataGenerator {
     public static List<EpiDataGathering> get(int number) {
         List<EpiDataGathering> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -1391,7 +1386,7 @@ class EpiDataGatheringGenerator extends BaseDataGenerator {
     public static List<EpiDataGathering> get(EpiData epiData, int number) {
         List<EpiDataGathering> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             EpiDataGathering toSet = pool.get(index);
             toSet.setEpiData(epiData);
             toReturn.add(pool.get(index));
@@ -1430,7 +1425,7 @@ class EpiDataBurialGenerator extends BaseDataGenerator {
     public static List<EpiDataBurial> get(int number) {
         List<EpiDataBurial> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -1440,7 +1435,7 @@ class EpiDataBurialGenerator extends BaseDataGenerator {
     public static List<EpiDataBurial> get(EpiData epiData, int number) {
         List<EpiDataBurial> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             EpiDataBurial toSet = pool.get(index);
             toSet.setEpiData(epiData);
             toReturn.add(pool.get(index));
@@ -1452,7 +1447,6 @@ class EpiDataBurialGenerator extends BaseDataGenerator {
     public static EpiDataBurial getSingle() {
         return randomItem(pool);
     }
-
 
 
 }
@@ -1502,7 +1496,7 @@ class EpiDataGenerator extends BaseDataGenerator {
     public static List<EpiData> get(int number) {
         List<EpiData> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -1561,7 +1555,7 @@ class CaseGenerator extends BaseDataGenerator {
     public static List<Case> get(int number) {
         List<Case> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -1605,7 +1599,7 @@ class ContactGenerator extends BaseDataGenerator {
     public static List<Contact> get(int number) {
         List<Contact> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -1652,7 +1646,7 @@ class EventGenerator extends BaseDataGenerator {
     public static List<Event> get(int number) {
         List<Event> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -1689,7 +1683,7 @@ class LocationGenerator extends BaseDataGenerator {
     public static List<Location> get(int number) {
         List<Location> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -1719,7 +1713,7 @@ class CommunityGenerator extends BaseDataGenerator {
     public static List<Community> get(int number) {
         List<Community> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -1749,7 +1743,7 @@ class RegionGenerator extends BaseDataGenerator {
     public static List<Region> get(int number) {
         List<Region> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -1780,7 +1774,7 @@ class DistrictGenerator extends BaseDataGenerator {
     public static List<District> get(int number) {
         List<District> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -1817,7 +1811,7 @@ class FacilityGenerator extends BaseDataGenerator {
     public static List<Facility> get(int number) {
         List<Facility> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -1861,7 +1855,7 @@ class UserRoleGenerator extends BaseDataGenerator {
     public static List<UserRole> get(int number) {
         List<UserRole> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -1898,7 +1892,7 @@ class UserGenerator extends BaseDataGenerator {
             pool.add(data1);
         }
 
-        for(User u: pool) {
+        for (User u : pool) {
             u.setAssociatedOfficer(randomItem(pool));
         }
     }
@@ -1906,7 +1900,7 @@ class UserGenerator extends BaseDataGenerator {
     public static List<User> get(int number) {
         List<User> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -1951,7 +1945,7 @@ class TaskGenerator extends BaseDataGenerator {
     public static List<Task> get(int number) {
         List<Task> toReturn = new ArrayList<>();
 
-        for(int index = 0; index < number; index++) {
+        for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
         }
 
@@ -2034,15 +2028,15 @@ abstract class BaseDataGenerator {
     protected static final int DEFAULT_RECORD_NUMBER = 100;
 
     private static String lexicon = "ABCDEFGHIJKLMNOPQRSTUVWXYZ12345674890";
-    private static String[] beginning = { "Kr", "Ca", "Ra", "Mrok", "Cru",
+    private static String[] beginning = {"Kr", "Ca", "Ra", "Mrok", "Cru",
             "Ray", "Bre", "Zed", "Drak", "Mor", "Jag", "Mer", "Jar", "Mjol",
             "Zork", "Mad", "Cry", "Zur", "Creo", "Azak", "Azur", "Rei", "Cro",
-            "Mar", "Luk" };
-    private static String[] middle = { "air", "ir", "mi", "sor", "mee", "clo",
+            "Mar", "Luk"};
+    private static String[] middle = {"air", "ir", "mi", "sor", "mee", "clo",
             "red", "cra", "ark", "arc", "miri", "lori", "cres", "mur", "zer",
-            "marac", "zoir", "slamar", "salmar", "urak" };
-    private static String[] end = { "d", "ed", "ark", "arc", "es", "er", "der",
-            "tron", "med", "ure", "zur", "cred", "mur" };
+            "marac", "zoir", "slamar", "salmar", "urak"};
+    private static String[] end = {"d", "ed", "ark", "arc", "es", "er", "der",
+            "tron", "med", "ure", "zur", "cred", "mur"};
 
     private static List<String> addressList = new ArrayList<String>() {{
         add("196 Woodside Circle Mobile, FL 36602");
@@ -2115,7 +2109,7 @@ abstract class BaseDataGenerator {
         return min + rn.nextInt(max);
     }
 
-    private static long getRandomTimeBetweenTwoDates (long beginTime, long endTime) {
+    private static long getRandomTimeBetweenTwoDates(long beginTime, long endTime) {
         long diff = endTime - beginTime + 1;
         return beginTime + (long) (Math.random() * diff);
     }
@@ -2144,7 +2138,7 @@ abstract class BaseDataGenerator {
 
     public static Date getRandomDate(boolean includeFutureDates) {
         long beginTime = Timestamp.valueOf("1990-01-01 00:00:00").getTime();
-        long endTime = includeFutureDates ?  Timestamp.valueOf("2018-08-23 00:58:00").getTime() : Timestamp.valueOf("2017-12-30 00:58:00").getTime();
+        long endTime = includeFutureDates ? Timestamp.valueOf("2018-08-23 00:58:00").getTime() : Timestamp.valueOf("2017-12-30 00:58:00").getTime();
 
 
         //SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
@@ -2187,7 +2181,7 @@ abstract class BaseDataGenerator {
 
     public static String getRandomName() {
         return beginning[rand.nextInt(beginning.length)] +
-                middle[rand.nextInt(middle.length)]+
+                middle[rand.nextInt(middle.length)] +
                 end[rand.nextInt(end.length)];
     }
 
@@ -2235,9 +2229,9 @@ abstract class BaseDataGenerator {
     public static String getRandomString() {
         Random rnd = new Random();
         StringBuilder builder = new StringBuilder();
-        while(builder.toString().length() == 0) {
-            int length = rnd.nextInt(5)+randomNumber(1, 5);
-            for(int i = 0; i < length; i++) {
+        while (builder.toString().length() == 0) {
+            int length = rnd.nextInt(5) + randomNumber(1, 5);
+            for (int i = 0; i < length; i++) {
                 builder.append(lexicon.charAt(rand.nextInt(lexicon.length())));
             }
         }
@@ -2431,9 +2425,6 @@ abstract class BaseDataGenerator {
     }
 
 
-
-
-
     public static List<ContactRelation> getAllContactRelation() {
         List<ContactRelation> list = new ArrayList<ContactRelation>() {{
             add(ContactRelation.SAME_HOUSEHOLD);
@@ -2514,14 +2505,14 @@ abstract class BaseDataGenerator {
     }
 
     public static List<ApproximateAgeType> getAllApproximateAgeType() {
-        return new  ArrayList<ApproximateAgeType>() {{
+        return new ArrayList<ApproximateAgeType>() {{
             add(ApproximateAgeType.YEARS);
             add(ApproximateAgeType.MONTHS);
         }};
     }
 
     public static List<PresentCondition> getAllPresentCondition() {
-        return new  ArrayList<PresentCondition>() {{
+        return new ArrayList<PresentCondition>() {{
             add(PresentCondition.ALIVE);
             add(PresentCondition.DEAD);
             add(PresentCondition.BURIED);
@@ -2542,7 +2533,6 @@ abstract class BaseDataGenerator {
             add(DeathPlaceType.OTHER);
         }};
     }
-
 
 
     public static SymptomState getRandomSymptomState() {
@@ -2632,8 +2622,6 @@ abstract class BaseDataGenerator {
 
         return randomItem(list);
     }
-
-
 
 
     public static List<CaseOutcome> getAllCaseOutcome() {
@@ -2781,7 +2769,6 @@ abstract class BaseDataGenerator {
     }
 
 
-
     public static WaterSource getRandomWaterSource() {
         List<WaterSource> list = new ArrayList<WaterSource>() {{
             add(WaterSource.PIPE_NETWORK);
@@ -2793,7 +2780,6 @@ abstract class BaseDataGenerator {
 
         return randomItem(list);
     }
-
 
 
     public static List<WaterSource> getAllWaterSource() {

@@ -50,7 +50,7 @@ public abstract class SearchStrategyFor<ADO extends AbstractDomainObject> {
             ISearchStrategy<Case> searchStrategy = null;
 
             if (by == SearchBy.BY_FILTER_STATUS) {
-                searchStrategy = new CaseSearchByStatusStrategy((InvestigationStatus)status);
+                searchStrategy = new CaseBaseSearchByInvestigationStatusStrategy((InvestigationStatus)status);
             } else {
                 searchStrategy = new CaseSearchByAllStrategy();
             }

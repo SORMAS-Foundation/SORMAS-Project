@@ -14,31 +14,18 @@ import de.symeda.sormas.api.epidata.TravelType;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.TeboButtonType;
-import de.symeda.sormas.app.component.TeboSpinner;
-import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
 import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.databinding.DialogEpidTravelsLayoutBinding;
+import de.symeda.sormas.app.databinding.DialogCaseEpidTravelEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
-
-/**
- * Created by Orson on 19/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
 
 public class EpiDataTravelDialog extends BaseTeboAlertDialog {
 
     public static final String TAG = EpiDataTravelDialog.class.getSimpleName();
 
     private EpiDataTravel data;
-    private IEntryItemOnClickListener onAddressLinkClickedCallback;
-    private DialogEpidTravelsLayoutBinding mContentBinding;
+    private DialogCaseEpidTravelEditLayoutBinding mContentBinding;
 
     private List<Item> travelTypeList;
 
@@ -48,7 +35,7 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
     }
 
     public EpiDataTravelDialog(final FragmentActivity activity, int headingResId, int subHeadingResId, EpiDataTravel epiDataTravel) {
-        super(activity, R.layout.dialog_root_layout, R.layout.dialog_epid_travels_layout,
+        super(activity, R.layout.dialog_root_layout, R.layout.dialog_case_epid_travel_edit_layout,
                 R.layout.dialog_root_three_button_panel_layout, headingResId, subHeadingResId);
 
         this.data = epiDataTravel;
@@ -58,9 +45,6 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
 
     @Override
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        /*DialogEpiDataTravelLayoutBinding _contentBinding = (DialogEpiDataTravelLayoutBinding)contentBinding;
-
-        _contentBinding.spnState.enableErrorState("Hello");*/
         if (callback != null)
             callback.call(null);
     }
@@ -79,7 +63,7 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
 
     @Override
     protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
-        this.mContentBinding = (DialogEpidTravelsLayoutBinding)binding;
+        this.mContentBinding = (DialogCaseEpidTravelEditLayoutBinding) binding;
     }
 
     @Override
@@ -87,41 +71,19 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
         if (!binding.setVariable(BR.data, data)) {
             Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
-
-        if (!binding.setVariable(BR.addressLinkCallback, onAddressLinkClickedCallback)) {
-            Log.e(TAG, "There is no variable 'addressLinkCallback' in layout " + layoutName);
-        }
     }
 
     @Override
-    protected void initializeData(TaskResultHolder resultHolder, boolean executionComplete) {
+    protected void prepareDialogData() {
 
     }
 
     @Override
     protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-        //DialogEpidTravelsLayoutBinding _contentBinding = (DialogEpidTravelsLayoutBinding)contentBinding;
+        mContentBinding.epiDataTravelTravelDateFrom.initializeDateField(getFragmentManager());
+        mContentBinding.epiDataTravelTravelDateTo.initializeDateField(getFragmentManager());
 
-        mContentBinding.dtpTravelFromDate.initialize(getFragmentManager());
-        mContentBinding.dtpTravelToDate.initialize(getFragmentManager());
-
-        mContentBinding.spnTravelType.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
-
-            @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return (travelTypeList.size() > 0) ? DataUtils.addEmptyItem(travelTypeList)
-                        : travelTypeList;
-            }
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-        });
+        mContentBinding.epiDataTravelTravelType.initializeSpinner(travelTypeList);
     }
 
     @Override
@@ -145,18 +107,18 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    public TeboButtonType dismissButtonType() {
-        return TeboButtonType.BTN_LINE_SECONDARY;
+    public ControlButtonType dismissButtonType() {
+        return ControlButtonType.LINE_SECONDARY;
     }
 
     @Override
-    public TeboButtonType okButtonType() {
-        return TeboButtonType.BTN_LINE_PRIMARY;
+    public ControlButtonType okButtonType() {
+        return ControlButtonType.LINE_PRIMARY;
     }
 
     @Override
-    public TeboButtonType deleteButtonType() {
-        return TeboButtonType.BTN_LINE_DANGER;
+    public ControlButtonType deleteButtonType() {
+        return ControlButtonType.LINE_DANGER;
     }
 
 }

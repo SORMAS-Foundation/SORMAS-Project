@@ -11,10 +11,6 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 
-/**
- * Created by Orson on 09/01/2018.
- */
-
 public class BaseFormNavigationCapsule<T extends AbstractDomainObject, TFormNavigationCapsule extends BaseFormNavigationCapsule> implements INavigationCapsule<T> {
 
     private Context context;
@@ -73,18 +69,8 @@ public class BaseFormNavigationCapsule<T extends AbstractDomainObject, TFormNavi
     }
 
     @Override
-    public SearchBy getSearchStrategy() {
-        return searchBy;
-    }
-
-    @Override
     public int getActiveMenuKey() {
         return activeMenuKey;
-    }
-
-    @Override
-    public List<IStatusElaborator> getOtherStatus() {
-        return otherStatus;
     }
 
     @Override

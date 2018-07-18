@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cell_root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/summaryCellHeight"
+    android:orientation="vertical"
+    android:background="@drawable/background_summary_cell"
+    android:gravity="center">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/summaryCellTotalMarginBottom"
+        style="@style/SummaryCellTitleStyle" />
+
+    <TextView
+        android:id="@+id/value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="@dimen/summaryCellTotalTextSize"
+        android:includeFontPadding="false"
+        android:baselineAlignBottom="true" />
+
+</LinearLayout>

@@ -7,21 +7,11 @@
 
     <data>
         <import type="de.symeda.sormas.api.person.PresentCondition" />
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.person.Person"/>
 
 
         <variable name="presentConditionClass" type="Class" />
-
-        <variable
-            name="checkedCallback"
-            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
 
 
         <variable
@@ -60,40 +50,26 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.TeboTextInputEditText
-                        android:id="@+id/txtLastName"
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/person_firstName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        app:hint="@string/hint_event_pinvolv_last_name"
-                        app:labelCaption="@string/label_event_pinvolv_last_name"
-                        app:description="@string/desc_event_pinvolv_last_name"
-                        app:required="true"
-                        app:value="@={data.lastName}"
-                        app:nextFocusDown="@+id/txtControl1"
-                        app:imeOptions="actionNext"
-                        app:onShowInputErrorListener="@{showNotificationCallback}"
-                        app:onHideInputErrorListener="@{hideNotificationCallback}"
-                        />
-
-                    <de.symeda.sormas.app.component.TeboTextInputEditText
-                        android:id="@+id/txtFirstName"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
-                        app:hint="@string/hint_event_pinvolv_first_name"
-                        app:labelCaption="@string/label_event_pinvolv_first_name"
-                        app:description="@string/desc_event_pinvolv_first_name"
                         app:required="true"
                         app:value="@={data.firstName}"
-                        app:nextFocusDown="@+id/txtControl1"
-                        app:imeOptions="actionNext"
-                        app:onShowInputErrorListener="@{showNotificationCallback}"
-                        app:onHideInputErrorListener="@{hideNotificationCallback}"
-                        />
+                        app:imeOptions="actionNext" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/person_lastName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginBottom="@dimen/textControlMarginBottom"
+                        android:layout_marginStart="@dimen/control_spacing"
+                        app:required="true"
+                        app:value="@={data.lastName}"
+                        app:imeOptions="actionNext" />
 
 
                 </LinearLayout>
@@ -105,41 +81,72 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.TeboTextInputEditText
-                        android:id="@+id/txtNickname"
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/person_nickname"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        app:hint="@string/hint_event_pinvolv_nickname"
-                        app:labelCaption="@string/label_event_pinvolv_nickname"
-                        app:description="@string/desc_event_pinvolv_nickname"
-                        app:required="true"
                         app:value="@={data.nickname}"
-                        app:nextFocusDown="@+id/txtControl1"
-                        app:imeOptions="actionNext"
-                        app:onShowInputErrorListener="@{showNotificationCallback}"
-                        app:onHideInputErrorListener="@{hideNotificationCallback}"
-                        />
+                        app:imeOptions="actionNext" />
 
 
-                    <de.symeda.sormas.app.component.TeboTextInputEditText
-                        android:id="@+id/txtMotherMaidenName"
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/person_mothersMaidenName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
-                        app:hint="@string/hint_event_pinvolv_mum_maiden_name"
-                        app:labelCaption="@string/label_event_pinvolv_mum_maiden_name"
-                        app:description="@string/desc_event_pinvolv_mum_maiden_name"
-                        app:required="true"
-                        app:value="@={data.mothersMaidenName}"
-                        app:nextFocusDown="@+id/txtControl1"
-                        app:imeOptions="actionNext"
-                        app:onShowInputErrorListener="@{showNotificationCallback}"
-                        app:onHideInputErrorListener="@{hideNotificationCallback}"
-                        />
+                        android:layout_marginStart="@dimen/control_spacing"
+                        app:value="@={data.mothersMaidenName}" />
+
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/caption_date_of_birth"
+                    style="@style/ControlLabelStyle"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+
+
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        android:id="@+id/person_birthdateYYYY"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginBottom="@dimen/textControlMarginBottom"
+                        app:showCaption="false"
+                        app:value="@={data.birthdateYYYY}" />
+
+
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        android:id="@+id/person_birthdateMM"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginBottom="@dimen/textControlMarginBottom"
+                        android:layout_marginStart="@dimen/control_spacing"
+                        app:showCaption="false"
+                        app:value="@={data.birthdateMM}" />
+
+
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        android:id="@+id/person_birthdateDD"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginBottom="@dimen/textControlMarginBottom"
+                        android:layout_marginStart="@dimen/control_spacing"
+                        app:showCaption="false"
+                        app:value="@={data.birthdateDD}" />
 
 
                 </LinearLayout>
@@ -151,93 +158,26 @@
                     android:orientation="horizontal"
                     >
 
-
-                    <de.symeda.sormas.app.component.TeboSpinner
-                        android:id="@+id/spnYear"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        app:hint="@string/hint_event_pinvolv_year"
-                        app:labelCaption="@string/label_event_pinvolv_year"
-                        app:description="@string/desc_event_pinvolv_year"
-                        app:required="true"
-                        app:spinnerMode="dialog"
-                        app:value="@={data.birthdateYYYY}"
-                        />
-
-
-                    <de.symeda.sormas.app.component.TeboSpinner
-                        android:id="@+id/spnMonth"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
-                        app:hint="@string/hint_event_pinvolv_month"
-                        app:labelCaption="@string/label_event_pinvolv_month"
-                        app:description="@string/desc_event_pinvolv_month"
-                        app:required="true"
-                        app:spinnerMode="dialog"
-                        app:value="@={data.birthdateMM}"
-                        />
-
-
-                    <de.symeda.sormas.app.component.TeboSpinner
-                        android:id="@+id/spnDate"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
-                        app:hint="@string/hint_event_pinvolv_date"
-                        app:labelCaption="@string/label_event_pinvolv_date"
-                        app:description="@string/desc_event_pinvolv_date"
-                        app:required="true"
-                        app:spinnerMode="dialog"
-                        app:value="@={data.birthdateDD}"
-                        />
-
-
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
-
-                    <de.symeda.sormas.app.component.TeboTextRead
-                        android:id="@+id/txtAge"
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/person_approximateAge"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_event_pinvolv_age"
-                        app:labelCaption="@string/label_event_pinvolv_age"
-                        app:formStyle="true"
+                        app:distinct="true"
                         app:value="@{data.approximateAge}"
                         app:appendValue="@{data.approximateAgeType.toString()}"
-                        app:valueFormat="@{@string/two_words_spaced_format}"
-                        app:defaultValue='@{@string/age_unknown}'
-                        />
+                        app:valueFormat="@{@string/two_strings_with_space_format}" />
 
 
-                    <de.symeda.sormas.app.component.TeboSpinner
-                        android:id="@+id/spnAgeType"
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        android:id="@+id/person_approximateAgeType"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
-                        app:hint="@string/hint_event_pinvolv_age_unit"
-                        app:labelCaption="@string/label_event_pinvolv_age_unit"
-                        app:description="@string/desc_event_pinvolv_age_unit"
-                        app:required="true"
-                        app:spinnerMode="dialog"
-                        app:value="@={data.approximateAgeType}"
-                        />
+                        android:layout_marginStart="@dimen/control_spacing"
+                        app:value="@={data.approximateAgeType}" />
 
 
                     <!--app:value="@={data.approximateAgeType}"-->
@@ -246,18 +186,12 @@
                 </LinearLayout>
 
 
-                <de.symeda.sormas.app.component.TeboSpinner
-                    android:id="@+id/spnGender"
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/person_sex"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_event_pinvolv_gender"
-                    app:labelCaption="@string/label_event_pinvolv_gender"
-                    app:description="@string/desc_event_pinvolv_gender"
-                    app:required="true"
-                    app:spinnerMode="dialog"
-                    app:value="@={data.sex}"
-                    />
+                    app:value="@={data.sex}" />
 
 
                 <LinearLayout
@@ -266,68 +200,33 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.TeboTextInputEditText
-                        android:id="@+id/txtPhoneNumber"
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/person_phone"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        app:hint="@string/hint_event_pinvolv_pnumber"
-                        app:labelCaption="@string/label_event_pinvolv_pnumber"
-                        app:description="@string/desc_event_pinvolv_pnumber"
-                        app:required="true"
                         app:value="@={data.phone}"
-                        app:nextFocusDown="@+id/txtControl1"
-                        app:imeOptions="actionNext"
-                        app:onShowInputErrorListener="@{showNotificationCallback}"
-                        app:onHideInputErrorListener="@{hideNotificationCallback}"
-                        />
+                        app:imeOptions="actionNext" />
 
-                    <de.symeda.sormas.app.component.TeboTextInputEditText
-                        android:id="@+id/txtPhoneNumberOwner"
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/person_phoneOwner"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
-                        app:hint="@string/hint_event_pinvolv_pnumber_owner"
-                        app:labelCaption="@string/label_event_pinvolv_pnumber_owner"
-                        app:description="@string/desc_event_pinvolv_pnumber_owner"
-                        app:required="true"
-                        app:value="@={data.phoneOwner}"
-                        app:nextFocusDown="@+id/txtControl1"
-                        app:imeOptions="actionNext"
-                        app:onShowInputErrorListener="@{showNotificationCallback}"
-                        app:onHideInputErrorListener="@{hideNotificationCallback}"
-                        />
+                        android:layout_marginStart="@dimen/control_spacing"
+                        app:value="@={data.phoneOwner}" />
 
                 </LinearLayout>
 
-                <de.symeda.sormas.app.component.TeboSwitch
-                    android:id="@+id/swhPresentCondition"
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/person_presentCondition"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:paddingTop="@dimen/defaultControlVerticalPadding"
-                    app:paddingBottom="@dimen/defaultControlVerticalPadding"
-                    app:background="@drawable/control_switch_background_border"
-                    app:borderSize="@dimen/defaultControlStrokeWidth"
-                    app:textColor="@color/control_switch_color_selector"
-                    app:hint="@string/hint_event_pinvolv_present_condition"
-                    app:labelCaption="@string/label_event_pinvolv_present_condition"
-                    app:description="@string/desc_event_pinvolv_present_condition"
-                    app:required="true"
-                    app:orientation="horizontal"
-                    app:slim="false"
-                    app:includeUnknown="@{true}"
                     app:enumClass="@{presentConditionClass}"
-                    app:defaultValue="@{null}"
-                    app:abbrevUnknown="@{false}"
-                    app:value="@={data.presentCondition}"
-                    app:onCheckedChangeListener="@{checkedCallback}"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
-                    />
+                    app:value="@={data.presentCondition}" />
 
             </LinearLayout>
 
@@ -352,32 +251,24 @@
                 android:paddingRight="@dimen/parentLayoutHorizontalPadding"
                 >
 
-                <de.symeda.sormas.app.component.TeboTextLinkEdit
-                    android:id="@+id/txtPermAddress"
+                <de.symeda.sormas.app.component.controls.ControlTextPopupField
+                    android:id="@+id/person_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:background="@drawable/control_link_edittextview_background_selector"
-                    app:drawablePadding="@dimen/contentHorizontalSpacing"
-                    app:drawableLeft="@drawable/ic_edit_location_black_24dp"
-                    app:drawableTint="@color/control_link_edittextview_color_selector"
-                    app:textColor="@color/control_link_edittextview_color_selector"
-                    app:textColorHint="@color/control_link_edittextview_hint_color_selector"
-                    app:hint="@string/hint_event_pinvolv_perm_res_addy"
-                    app:labelCaption="@string/label_event_pinvolv_perm_res_addy"
-                    app:description="@string/desc_event_pinvolv_perm_res_addy"
-                    app:onLinkClick="@{(view) -> addressLinkCallback.onClick(view, data)}"
-                    />
+                    app:iconStart="@drawable/ic_edit_location_black_24dp"
+                    app:hint="@string/hint_enter_location"
+                    app:locationValue="@={data.address}" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/heading_sub_event_pinvolv_occupation"
-                    style="@style/ReadActivitySubHeadingStyle"
+                    style="@style/SubHeadingStyle"
                     />
 
-                <de.symeda.sormas.app.component.TeboSpinner
-                    android:id="@+id/spnOccupationType"
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/person_occupationType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
@@ -385,7 +276,7 @@
                     app:labelCaption="@string/label_event_pinvolv_occupation_type"
                     app:description="@string/desc_event_pinvolv_occupation_type"
                     app:required="true"
-                    app:spinnerMode="dialog"
+
                     app:value="@={data.occupationType}"
                     />
 

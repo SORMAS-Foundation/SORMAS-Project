@@ -5,78 +5,43 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 
-import de.symeda.sormas.app.core.INotificationContext;
-import de.symeda.sormas.app.util.ConstantHelper;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 
-/**
- * Created by Orson on 03/12/2017.
- */
-
-public abstract class BaseLandingActivity extends AbstractSormasActivity implements INotificationContext {
+public abstract class BaseLandingActivity extends BaseActivity {
 
     public static final String TAG = BaseLandingActivity.class.getSimpleName();
 
-    private View rootView;
     private CharSequence mainViewTitle;
 
-
-    private View fragmentFrame = null;
-    private BaseLandingActivityFragment activeFragment;
+    private BaseLandingFragment activeFragment;
     private MenuItem newMenu = null;
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        initializeActivity(savedInstanceState);
+    protected void onCreateInner(Bundle savedInstanceState) {
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    protected boolean setHomeAsUpIndicator() {
+    protected boolean isSubActivitiy() {
         return true;
     }
 
     @Override
-    public void showFragmentView() {
-        if (fragmentFrame != null)
-            fragmentFrame.setVisibility(View.VISIBLE);
+    protected boolean openPage(PageMenuItem menuItem) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void hideFragmentView() {
-        if (fragmentFrame != null)
-            fragmentFrame.setVisibility(View.GONE);
+    protected void onResume() {
+        super.onResume();
+        replaceFragment(buildLandingFragment());
     }
 
-    protected void initializeBaseActivity(Bundle savedInstanceState) {
-        rootView = findViewById(R.id.base_layout);
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getExtras();
-        initializeActivity(arguments);
+    public abstract BaseLandingFragment buildLandingFragment();
 
-        /*if (setHomeAsUpIndicator())
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_blue_36dp);
-
-        setupDrawer(navigationView);*/
-
-        fragmentFrame = findViewById(R.id.fragment_frame);
-        if (fragmentFrame != null) {
-            if (savedInstanceState == null) {
-                replaceFragment(getActiveLandingFragment());
-            }
-        }
+    public BaseLandingFragment getActiveFragment() {
+        return activeFragment;
     }
 
-    protected abstract void initializeActivity(Bundle arguments);
-
-    public abstract BaseLandingActivityFragment getActiveLandingFragment();
-
-    public void replaceFragment(BaseLandingActivityFragment f) {
+    public void replaceFragment(BaseLandingFragment f) {
         BaseFragment previousFragment = activeFragment;
         activeFragment = f;
 
@@ -94,19 +59,6 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity impleme
             }
             ft.commit();
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (activeFragment != null)
-            activeFragment.onResume();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        //outState.putInt(KEY_PAGE, currentTab);
-        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -134,15 +86,6 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity impleme
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        /*if (menuDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }*/
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void setTitle(CharSequence title) {
         mainViewTitle = title;
         String userRole = "";
@@ -160,10 +103,5 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity impleme
     @Override
     public void onStop() {
         super.onStop();
-    }
-
-    @Override
-    public View getRootView() {
-        return rootView;
     }
 }

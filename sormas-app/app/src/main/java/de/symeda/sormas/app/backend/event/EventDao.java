@@ -71,5 +71,4 @@ public class EventDao extends AbstractAdoDao<Event> {
 
         return super.saveAndSnapshot(event);
     }
-
 }

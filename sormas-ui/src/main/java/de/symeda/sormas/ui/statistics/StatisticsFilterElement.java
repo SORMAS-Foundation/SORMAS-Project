@@ -23,7 +23,7 @@ public abstract class StatisticsFilterElement extends HorizontalLayout {
 		List<TokenizableValue> result = new ArrayList<>(values.length);
 		for (int i = 0; i < values.length; i++) {
 			if (attribute != null || subAttribute != null) {
-				result.add(new TokenizableValue(StatisticsHelper.formatAttributeValue(values[i], attribute, subAttribute), i));
+				result.add(new TokenizableValue(StatisticsHelper.buildGroupingKey(values[i], attribute, subAttribute), i));
 			} else {
 				result.add(new TokenizableValue(values[i], i));
 			}

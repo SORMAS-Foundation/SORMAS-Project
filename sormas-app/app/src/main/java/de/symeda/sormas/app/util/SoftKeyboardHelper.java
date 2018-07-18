@@ -14,25 +14,20 @@ import android.view.inputmethod.InputMethodManager;
  * sampson.orson@gmail.com
  * sampson.orson@technologyboard.org
  */
-
 public class SoftKeyboardHelper {
 
-
     public static void hideKeyboard(FragmentActivity activity, Fragment fragment) {
-
-        InputMethodManager imm = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(fragment.getView().getWindowToken(), 0);
-    }
-
-    public static void hideKeyboard(AppCompatActivity activity, Fragment fragment) {
-
-        InputMethodManager imm = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(fragment.getView().getWindowToken(), 0);
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null && fragment.getView() != null) {
+            imm.hideSoftInputFromWindow(fragment.getView().getWindowToken(), 0);
+        }
     }
 
     public static void hideKeyboard(AppCompatActivity activity, IBinder binder) {
-
         InputMethodManager imm = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(binder, 0);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(binder, 0);
+        }
     }
+
 }

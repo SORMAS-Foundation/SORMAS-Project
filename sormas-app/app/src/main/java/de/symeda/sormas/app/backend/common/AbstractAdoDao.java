@@ -10,6 +10,8 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
@@ -262,21 +264,19 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             ADO snapshot = null;
             boolean withSnapshot = ado.getId() != null;
             if (withSnapshot) {
-                if (ado.isModified()) {
-                    // there should already be a snapshot
-                    snapshot = querySnapshotByUuid(ado.getUuid());
-                    if (snapshot == null) {
-                        Log.w(this.getClass().getSimpleName(), "Snapshot was missing for " + ado);
-                    } else if (!ado.getChangeDate().equals(snapshot.getChangeDate())) {
-                        throw new DaoException("Change date does not match. Looks like sync was done between opening and saving the entity.");
-                    }
-                }
 
+                snapshot = querySnapshotByUuid(ado.getUuid());
                 if (snapshot == null) {
+                    if (ado.isModified()) {
+                        Log.w(this.getClass().getSimpleName(), "Snapshot was missing for " + ado);
+                    }
+
                     // we need to build a snapshot of the current version, so we can use it for comparison when merging
                     snapshot = queryForId(ado.getId());
                     snapshot.setId(null);
                     snapshot.setSnapshot(true);
+                } else if (!ado.getChangeDate().equals(snapshot.getChangeDate())) {
+                    throw new DaoException("Change date does not match. Looks like sync was done between opening and saving the entity.");
                 }
             }
 
@@ -474,6 +474,9 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         ADO current = queryUuid(source.getUuid());
         ADO snapshot = querySnapshotByUuid(source.getUuid());
         String sourceEntityString = source.toString();
+        if (StringUtils.isEmpty(sourceEntityString)) {
+            sourceEntityString = source.getEntityName();
+        }
 
         try {
 
@@ -970,6 +973,17 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             return result != null;
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform isAnyModified");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean isEmpty() {
+
+        try {
+            ADO result = queryBuilder().queryForFirst();
+            return result == null;
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform isEmpty");
             throw new RuntimeException(e);
         }
     }

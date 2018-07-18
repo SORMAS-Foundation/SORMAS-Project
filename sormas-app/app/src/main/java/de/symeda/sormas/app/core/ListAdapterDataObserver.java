@@ -3,10 +3,6 @@ package de.symeda.sormas.app.core;
 import android.support.v7.widget.RecyclerView.AdapterDataObserver;
 import android.view.View;
 
-/**
- * Created by Orson on 06/12/2017.
- */
-
 public class ListAdapterDataObserver extends AdapterDataObserver {
 
     private IListActivityAdapterDataObserverCommunicator communicator;

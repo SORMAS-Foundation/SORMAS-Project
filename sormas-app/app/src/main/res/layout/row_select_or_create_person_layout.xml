@@ -57,12 +57,12 @@
                 >
 
                 <TextView
-                    android:id="@+id/txtGender"
+                    android:id="@+id/person_sex"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
-                    android:textSize="@dimen/listActivityRowSecondaryTextSize"
-                    android:textColor="@color/listActivityRowSecondaryText"
+                    android:textSize="@dimen/row_entry_secondary_text_size"
+                    android:textColor="@color/row_entry_secondary_text"
                     app:value="@{data.sex}"
                     app:prependValue="@{@string/label_gender}"
                     app:defaultValue='@{@string/not_available}'
@@ -70,12 +70,12 @@
                     />
 
                 <TextView
-                    android:id="@+id/txtAge"
+                    android:id="@+id/person_approximateAge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:textSize="@dimen/listActivityRowSecondaryTextSize"
-                    android:textColor="@color/listActivityRowSecondaryText"
+                    android:textSize="@dimen/row_entry_secondary_text_size"
+                    android:textColor="@color/row_entry_secondary_text"
                     app:ageWithDateValue="@{data}"
                     app:prependValue="@{@string/label_age}"
                     app:defaultValue='@{@string/not_available}'
@@ -85,12 +85,12 @@
             </RelativeLayout>
 
             <TextView
-                android:id="@+id/txtPresentCondition"
+                android:id="@+id/person_presentCondition"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="top"
-                android:textSize="@dimen/listActivityRowSecondaryTextSize"
-                android:textColor="@color/listActivityRowSecondaryText"
+                android:textSize="@dimen/row_entry_secondary_text_size"
+                android:textColor="@color/row_entry_secondary_text"
                 app:value="@{data.presentCondition}"
                 app:prependValue="@{@string/label_present_condition}"
                 app:defaultValue='@{@string/not_available}'
@@ -102,8 +102,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="top"
-                android:textSize="@dimen/listActivityRowSecondaryTextSize"
-                android:textColor="@color/listActivityRowSecondaryText"
+                android:textSize="@dimen/row_entry_secondary_text_size"
+                android:textColor="@color/row_entry_secondary_text"
                 android:singleLine="false"
                 android:maxLines="5"
                 app:locationValue="@{data.address}"

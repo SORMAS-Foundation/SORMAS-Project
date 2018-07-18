@@ -1,78 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge  xmlns:android="http://schemas.android.com/apk/res/android">
 
-
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <LinearLayout
-            android:id="@+id/captionFrame"
+            android:id="@+id/label_frame"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            >
+            android:orientation="horizontal">
+
             <TextView
-                android:id="@+id/lblControlLabel"
-                android:labelFor="@+id/txtControlInput"
+                android:id="@+id/label"
+                android:labelFor="@+id/input"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/controlLabelColor"
-                android:textSize="@dimen/controlLabelSize"
-                android:paddingTop="@dimen/controlLabelMarginTop"
-                android:paddingBottom="@dimen/controlLabelMarginBottom"
-                android:fontFamily="sans-serif-medium"
-                android:textAllCaps="true"
-                android:focusable="true"
-                android:clickable="true"
-                android:focusableInTouchMode="true"
-                />
+                style="@style/ControlLabelStyle" />
+
             <TextView
-                android:id="@+id/lblRequired"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_gravity="top"
-                android:paddingLeft="@dimen/contentHorizontalSpacing"
-                android:text="*"
-                android:textColor="@color/watchOut"
-                android:textSize="@dimen/controlLabelSize"
-                android:fontFamily="sans-serif-medium"/>
+                android:id="@+id/required_indicator"
+                style="@style/RequiredIndicatorStyle" />
+
             <TextView
-                android:id="@+id/lblSoftRequired"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_gravity="top"
-                android:paddingLeft="@dimen/contentHorizontalSpacing"
-                android:text="*"
-                android:textColor="@color/warning"
-                android:textSize="@dimen/controlLabelSize"
-                android:fontFamily="sans-serif-medium"/>
+                android:id="@+id/soft_required_indicator"
+                style="@style/SoftRequiredIndicatorStyle" />
+
+            <TextView
+                android:id="@+id/warning_indicator"
+                style="@style/WarningIndicatorStyle" />
+
         </LinearLayout>
+
         <EditText
-            android:id="@+id/txtControlInput"
+            android:id="@+id/input"
             android:layout_width="match_parent"
             android:inputType="date"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/textViewTopPadding"
-            android:paddingBottom="@dimen/textViewBottomPadding"
-            android:background="@drawable/selector_text_control_edit"
-            android:cursorVisible="false"
-            android:fontFamily="sans-serif"
-            android:gravity="center_vertical"
-            android:maxLines="1"
-            android:singleLine="true"
-            android:textColor="@color/controlTextColor"
-            android:textCursorDrawable="@drawable/cursor"
-            android:textIsSelectable="false"
-            android:textSize="@dimen/defaultControlTextSize"
-            />
-
-        <!--android:textColorHint="@color/controlTextViewHint"-->
-        <!--style="@style/DatePickerEditTextViewSingleRowStyle"-->
+            style="@style/ControlDateOrTimePickerInputStyle" />
 
     </LinearLayout>
 </merge>

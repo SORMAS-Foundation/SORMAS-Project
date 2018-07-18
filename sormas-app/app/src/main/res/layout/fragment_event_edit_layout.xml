@@ -2,329 +2,194 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription"
     android:descendantFocusability="beforeDescendants"
     android:id="@+id/base_layout">
 
     <data>
         <import type="de.symeda.sormas.api.event.EventType" />
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
+        <import type="de.symeda.sormas.api.event.TypeOfPlace" />
+        <import type="de.symeda.sormas.api.Disease" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.event.Event"/>
-
-
         <variable name="eventTypeClass" type="Class" />
-
-        <variable
-            name="checkedCallback"
-            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
-
-
-        <variable
-            name="addressLinkCallback"
-            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
-
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="@dimen/parentLayoutVerticalMargin"
-            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-            >
+            android:padding="@dimen/fragment_padding"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:id="@+id/main_content">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
+                android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.TeboTextUuidRead
-                    android:id="@+id/txtAlertId"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_alert_id"
-                    app:labelCaption="@string/label_alert_id"
-                    app:uuidValue="@{data.uuid}"
-                    app:shortUuid="@{true}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_uuid"
+                    app:shortUuidValue="@{data.uuid}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtReportDate"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
-                    app:description="@string/desc_alert_report_date"
-                    app:labelCaption="@string/label_alert_report_date"
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_eventStatus"
+                    app:value="@{data.eventStatus}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_reportDateTime"
                     app:value="@{data.reportDateTime}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_reportingUser"
+                    app:value="@{data.reportingUser}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_surveillanceOfficer"
+                app:value="@{data.surveillanceOfficer}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
+                android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtReportingUser"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_alert_reporting_user"
-                    app:labelCaption="@string/label_alert_reporting_user"
-                    app:value="@{data.reportingUser}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/event_eventDate"
+                    app:value="@={data.eventDate}"
+                    app:softRequired="true"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtSurveillanceOfficer"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
-                    app:description="@string/desc_alert_surveillance_officer"
-                    app:labelCaption="@string/label_alert_surveillance_officer"
-                    app:value="@{data.surveillanceOfficer}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/event_eventType"
+                    app:enumClass="@{eventTypeClass}"
+                    app:value="@={data.eventType}"
+                    app:required="true"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
 
-
-            <de.symeda.sormas.app.component.TeboSwitch
-                android:id="@+id/swhAlertType"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:paddingTop="@dimen/defaultControlVerticalPadding"
-                app:paddingBottom="@dimen/defaultControlVerticalPadding"
-                app:background="@drawable/control_switch_background_border"
-                app:borderSize="@dimen/defaultControlStrokeWidth"
-                app:textColor="@color/control_switch_color_selector"
-                app:hint="@string/hint_alert_type"
-                app:labelCaption="@string/label_alert_type"
-                app:description="@string/desc_alert_type"
-                app:orientation="horizontal"
-                app:slim="false"
-                app:includeUnknown="@{false}"
-                app:enumClass="@{eventTypeClass}"
-                app:defaultValue="@{null}"
-                app:abbrevUnknown="@{false}"
-                app:value="@={data.eventType}"
-                app:onCheckedChangeListener="@{checkedCallback}"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
-                />
-
-            <de.symeda.sormas.app.component.TeboTextInputEditText
-                android:id="@+id/txtAlertDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_alert_description"
-                app:labelCaption="@string/label_alert_description"
-                app:description="@string/desc_alert_description"
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/event_eventDesc"
                 app:value="@={data.eventDesc}"
-                app:nextFocusDown="@+id/spnDisease"
-                app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
-                />
+                app:required="true"
+                style="@style/ControlSingleColumnStyle" />
 
-
-            <de.symeda.sormas.app.component.TeboSpinner
-                android:id="@+id/spnDisease"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_alert_disease"
-                app:labelCaption="@string/label_alert_disease"
-                app:description="@string/desc_alert_disease"
-                app:spinnerMode="dialog"
-                app:value="@={data.disease}"
-                app:nextFocusDown="@+id/txtOtherDisease"
-                />
+                android:orientation="horizontal">
 
-            <de.symeda.sormas.app.component.TeboTextInputEditText
-                android:id="@+id/txtOtherDisease"
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/event_disease"
+                    app:value="@={data.disease}"
+                    app:required="true"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/event_diseaseDetails"
+                    app:value="@={data.diseaseDetails}"
+                    app:required="true"
+                    app:dependencyParentField="@{eventDisease}"
+                    app:dependencyParentValue="@{Disease.OTHER}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+            <de.symeda.sormas.app.component.controls.ControlTextPopupField
+                android:id="@+id/event_eventLocation"
+                app:iconStart="@drawable/ic_edit_location_black_24dp"
+                app:hint="@string/hint_enter_location"
+                app:locationValue="@={data.eventLocation}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_alert_other_disease"
-                app:labelCaption="@string/label_alert_other_disease"
-                app:description="@string/desc_alert_other_disease"
-                app:value="@={data.diseaseDetails}"
-                app:nextFocusDown="@+id/dtpDateOfAlert"
-                app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
-                />
+                android:orientation="horizontal">
 
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/event_typeOfPlace"
+                    app:value="@={data.typeOfPlace}"
+                    app:softRequired="true"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
 
-            <de.symeda.sormas.app.component.TeboDatePicker
-                android:id="@+id/dtpDateOfAlert"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_alert_date"
-                app:labelCaption="@string/label_alert_date"
-                app:description="@string/desc_alert_date"
-                app:value="@={data.eventDate}"
-                />
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/event_typeOfPlaceText"
+                    app:value="@={data.typeOfPlaceText}"
+                    app:dependencyParentField="@{eventTypeOfPlace}"
+                    app:dependencyParentValue="@{TypeOfPlace.OTHER}"
+                    app:softRequired="true"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
+            </LinearLayout>
 
-            <de.symeda.sormas.app.component.TeboSpinner
-                android:id="@+id/spnTypeOfPlace"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_alert_type_of_place"
-                app:labelCaption="@string/label_alert_type_of_place"
-                app:description="@string/desc_alert_type_of_place"
-                app:spinnerMode="dialog"
-                app:value="@={data.typeOfPlace}"
-                />
-
-
-            <de.symeda.sormas.app.component.TeboTextInputEditText
-                android:id="@+id/txtOtherEventPlace"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_alert_other_type_of_place"
-                app:labelCaption="@string/label_alert_other_type_of_place"
-                app:description="@string/desc_alert_other_type_of_place"
-                app:value="@={data.typeOfPlaceText}"
-                app:nextFocusDown="@+id/txtAlertLocation"
-                app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
-                />
-
-
-            <!--app:hint="Eg. No. 32 Hey Street, Maitama, Abuja, FCT"-->
-            <de.symeda.sormas.app.component.TeboTextLinkEdit
-                android:id="@+id/txtAddress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:background="@drawable/control_link_edittextview_background_selector"
-                app:drawablePadding="@dimen/contentHorizontalSpacing"
-                app:drawableLeft="@drawable/ic_edit_location_black_24dp"
-                app:drawableTint="@color/control_link_edittextview_color_selector"
-                app:textColor="@color/control_link_edittextview_color_selector"
-                app:textColorHint="@color/control_link_edittextview_hint_color_selector"
-                app:hint="@string/hint_alert_location"
-                app:labelCaption="@string/label_alert_location"
-                app:description="@string/desc_alert_location"
-                app:onLinkClick="@{(view) -> addressLinkCallback.onClick(view, data)}"
-                />
-
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/heading_sub_alert_source_of_information"
-                style="@style/ReadActivitySubHeadingStyle"
-                />
+                style="@style/SubHeadingStyle" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
+                android:orientation="horizontal">
 
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/event_srcFirstName"
+                    app:value="@{data.srcFirstName}"
+                    app:softRequired="true"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                <de.symeda.sormas.app.component.TeboTextInputEditText
-                    android:id="@+id/txtSourceLastName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_alert_source_lastname"
-                    app:labelCaption="@string/label_alert_source_lastname"
-                    app:description="@string/desc_alert_source_lastname"
-                    app:value="@={data.srcLastName}"
-                    app:nextFocusDown="@+id/txtSourceFirstName"
-                    app:imeOptions="actionNext"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
-                    />
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/event_srcLastName"
+                    app:value="@{data.srcLastName}"
+                    app:softRequired="true"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
-
-                <de.symeda.sormas.app.component.TeboTextInputEditText
-                    android:id="@+id/txtSourceFirstName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
-                    app:hint="@string/hint_alert_source_firstname"
-                    app:labelCaption="@string/label_alert_source_firstname"
-                    app:description="@string/desc_alert_source_firstname"
-                    app:value="@={data.srcFirstName}"
-                    app:nextFocusDown="@+id/txtSourceTelNumber"
-                    app:imeOptions="actionNext"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
-                    />
             </LinearLayout>
 
-
-            <de.symeda.sormas.app.component.TeboTextInputEditText
-                android:id="@+id/txtSourceTelNumber"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_alert_source_tel"
-                app:labelCaption="@string/label_alert_source_tel"
-                app:description="@string/desc_alert_source_tel"
-                app:value="@={data.srcTelNo}"
-                app:nextFocusDown="@+id/txtSourceEmail"
-                app:inputType="phone"
-                app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
-                />
+                android:orientation="horizontal">
 
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/event_srcTelNo"
+                    app:value="@{data.srcTelNo}"
+                    app:softRequired="true"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
 
-            <de.symeda.sormas.app.component.TeboTextInputEditText
-                android:id="@+id/txtSourceEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_alert_source_email"
-                app:labelCaption="@string/label_alert_source_email"
-                app:description="@string/desc_alert_source_email"
-                app:value="@={data.srcEmail}"
-                app:imeOptions="actionNext"
-                app:inputType="textEmailAddress"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
-                />
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/event_srcEmail"
+                    app:value="@{data.srcEmail}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
+            </LinearLayout>
 
         </LinearLayout>
 

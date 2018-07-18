@@ -1,28 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge  xmlns:android="http://schemas.android.com/apk/res/android">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/lblControlLabel"
-            android:labelFor="@+id/txtControlInput"
-            android:layout_width="match_parent"
+            android:id="@+id/label"
+            android:labelFor="@+id/text_view"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:includeFontPadding="false"
-            android:scrollHorizontally="true"
-            android:maxLines="1"
-            android:ellipsize="end"
-            style="@style/ControlReadLabelStyle" />
+            style="@style/ControlLabelStyle" />
+
         <TextView
-            android:id="@+id/txtControlInput"
+            android:id="@+id/text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
-            android:singleLine="true"
+            android:maxLines="2"
             android:ellipsize="end"
-            style="@style/ReadTextFieldViewSingleRowStyle" />
+            style="@style/ControlTextFieldReadStyle" />
 
     </LinearLayout>
+
 </merge>

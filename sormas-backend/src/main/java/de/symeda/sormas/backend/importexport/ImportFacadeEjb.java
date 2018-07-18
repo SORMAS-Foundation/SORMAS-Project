@@ -119,7 +119,7 @@ public class ImportFacadeEjb implements ImportFacade {
 		}
 
 		Path filePath = Paths.get(getCaseImportTemplateFilePath());
-		CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()));
+		CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator());
 		writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
 		writer.flush();
 		writer.close();
@@ -171,8 +171,8 @@ public class ImportFacadeEjb implements ImportFacade {
 
 	@Override
 	public boolean importCasesFromCsvFile(Reader reader, Writer errorReportwriter, String userUuid) throws IOException, InvalidColumnException {
-		CSVReader csvReader = CSVUtils.createCSVReader(reader);
-		CSVWriter errorReportCsvWriter = CSVUtils.createCSVWriter(errorReportwriter);
+		CSVReader csvReader = CSVUtils.createCSVReader(reader, configFacade.getCsvSeparator());
+		CSVWriter errorReportCsvWriter = CSVUtils.createCSVWriter(errorReportwriter, configFacade.getCsvSeparator());
 
 		// Build dictionary of column paths
 		String[] headersLine = csvReader.readNext();

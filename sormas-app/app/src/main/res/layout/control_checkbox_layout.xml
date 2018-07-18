@@ -1,63 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge  xmlns:android="http://schemas.android.com/apk/res/android">
-    <LinearLayout
-        android:id="@+id/controlFrame"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
-
-        <CheckBox
-            android:id="@+id/chkControlInput"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:gravity="center_vertical"
-            android:layout_gravity="center_vertical"
-            android:textSize="@dimen/defaultControlTextSize"
-            android:scaleX="1.2"
-            android:scaleY="1.2"
-            android:button="@null"
-            android:background="?android:attr/listChoiceIndicatorMultiple"
-            />
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
         <LinearLayout
-            android:id="@+id/captionFrame"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:id="@+id/control_frame"
             android:orientation="horizontal"
-            android:layout_marginLeft="@dimen/contentHorizontalSpacing"
-            android:gravity="center_vertical"
-            android:layout_gravity="center_vertical"
-            >
-            <TextView
-                android:id="@+id/lblControlLabel"
-                android:labelFor="@+id/chkControlInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/controlHalfMarginBottom">
+
+            <CheckBox
+                android:id="@+id/checkbox"
+                android:layout_width="@dimen/checkBoxWidth"
+                android:layout_height="@dimen/checkBoxHeight"
+                android:gravity="center_vertical"
+                android:layout_gravity="center_vertical"
+                android:textSize="@dimen/defaultControlTextSize"
+                android:scaleX="1.2"
+                android:scaleY="1.2"
+                android:button="@null"
+                android:background="?android:attr/listChoiceIndicatorMultiple" />
+
+            <LinearLayout
+                android:id="@+id/label_frame"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/CheckboxLabelStyle" />
-            <TextView
-                android:id="@+id/lblRequired"
-                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_gravity="top"
-                android:paddingLeft="@dimen/contentHorizontalSpacing"
-                android:text="*"
-                android:textColor="@color/watchOut"
-                android:textSize="@dimen/controlLabelSize"
-                android:fontFamily="sans-serif-medium"/>
-            <TextView
-                android:id="@+id/lblSoftRequired"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_gravity="top"
-                android:paddingLeft="@dimen/contentHorizontalSpacing"
-                android:text="*"
-                android:textColor="@color/warning"
-                android:textSize="@dimen/controlLabelSize"
-                android:fontFamily="sans-serif-medium"/>
+                android:orientation="horizontal"
+                android:layout_marginStart="@dimen/contentHorizontalSpacing"
+                android:gravity="center_vertical"
+                android:layout_gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/label"
+                    android:labelFor="@+id/checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/CheckBoxLabelStyle" />
+
+                <TextView
+                    android:id="@+id/required_indicator"
+                    style="@style/RequiredIndicatorStyle" />
+
+                <TextView
+                    android:id="@+id/soft_required_indicator"
+                    style="@style/SoftRequiredIndicatorStyle" />
+
+                <TextView
+                    android:id="@+id/warning_indicator"
+                    style="@style/WarningIndicatorStyle" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
-    </LinearLayout>
 </merge>

@@ -28,12 +28,12 @@
     </ScrollView>
 
 
-    <de.symeda.sormas.app.component.menu.LandingPageMenuControl
+    <de.symeda.sormas.app.component.menu.PageMenuControl
         android:id="@+id/landingPageMenuControl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:cellLayout="@layout/control_landing_page_menu_item_cell_layout"
+        app:cellLayout="@layout/sub_menu_list_item_layout"
         app:collapsible="false"
         app:marginBottomOffsetResId="@id/landingSummaryFrame"
         app:visibility="true" />

@@ -13,7 +13,7 @@ import de.symeda.sormas.app.component.Item;
 
 public class DataUtils {
 
-    public static <E>  List<Item> getEnumItems(Class<E> clazz) {
+    public static <E> List<Item> getEnumItems(Class<E> clazz) {
         E[] enumConstants = clazz.getEnumConstants();
         List<Item> list = new ArrayList<Item>();
         list.add(new Item<E>("",null));
@@ -76,7 +76,7 @@ public class DataUtils {
     public static <E>  List<Item> addEmptyItem(List<Item> items) {
         boolean hasEmptyItem = false;
         for (int i = 0; i < items.size(); i++) {
-             if (items.get(i).getKey() == "") {
+             if (items.get(i).getKey().equals("")) {
                  hasEmptyItem = true;
                  break;
              }

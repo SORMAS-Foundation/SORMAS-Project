@@ -20,7 +20,7 @@
         >
 
         <LinearLayout
-            android:id="@+id/rowListItem"
+            android:id="@+id/row_item"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
@@ -63,7 +63,7 @@
                     android:id="@+id/txtSamplingDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/listActivityRowDateTextSize"
+                    android:textSize="@dimen/row_entry_date_text_size"
                     android:textColor="@color/listActivityRowDateText"
                     android:fontFamily="sans-serif"
                     app:timeAgoValue="@{data.sampleDateTime}"
@@ -80,7 +80,7 @@
                     android:layout_marginRight="8dp" />
 
                 <TextView
-                    android:id="@+id/txtDisease"
+                    android:id="@+id/caseData_disease"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/listActivityRowTertiaryTextSize"
@@ -114,19 +114,19 @@
                         android:scrollHorizontally="true"
                         android:maxLines="1"
                         android:ellipsize="end"
-                        app:personValue="@{data}"
+                        app:personValue="@{data.associatedCase.person}"
                         app:defaultValue='@{@string/person_unknown}'
                         />
 
                     <TextView
-                        android:id="@+id/txtLaboratoryName"
+                        android:id="@+id/sample_lab"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="top"
                         android:layout_marginBottom="@dimen/listActivityRowSecondaryTextMarginBottom"
-                        android:textSize="@dimen/listActivityRowSecondaryTextSize"
-                        android:textColor="@color/listActivityRowSecondaryText"
+                        android:textSize="@dimen/row_entry_secondary_text_size"
+                        android:textColor="@color/row_entry_secondary_text"
                         app:facilityValue="@{data.lab}"
                         app:defaultValue='@{@string/sample_lab_unknown}'
                         />

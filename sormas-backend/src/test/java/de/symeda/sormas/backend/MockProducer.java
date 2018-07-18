@@ -1,9 +1,11 @@
 package de.symeda.sormas.backend;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Field;
 import java.security.Principal;
 import java.util.Properties;
 
@@ -14,6 +16,9 @@ import javax.jms.ConnectionFactory;
 import javax.jms.Topic;
 import javax.mail.Session;
 import javax.transaction.UserTransaction;
+
+import de.symeda.sormas.api.utils.InfoProvider;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 /**
  * Creates mocks for resources needed in bean test / external services. <br />
@@ -28,17 +33,25 @@ public class MockProducer {
 	private static Topic topic = mock(Topic.class);
 	private static ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 	private static TimerService timerService = mock(TimerService.class);
-	private static Properties properties = mock(Properties.class);
+	private static Properties properties = new Properties();
 	private static UserTransaction userTransaction = mock(UserTransaction.class);
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
 	static {
-		Properties props = new Properties();
-		props.setProperty("country.name","nigeria");
+		properties.setProperty(ConfigFacadeEjb.COUNTRY_NAME,"nigeria");
+		properties.setProperty(ConfigFacadeEjb.CSV_SEPARATOR, ";");
+		
+		try {
+			Field instance = InfoProvider.class.getDeclaredField("instance");
+			instance.setAccessible(true);
+			instance.set(null, spy(InfoProvider.class));
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
 
 		// Make sure that the default session does not use a local mail server (if mock-javamail is removed)
-		mailSession = Session.getInstance(props);
+		mailSession = Session.getInstance(properties);
 	}
 
 	static {
@@ -47,7 +60,7 @@ public class MockProducer {
 
 	public static void resetMocks() {
 
-		reset(sessionContext, principal, topic, connectionFactory, timerService, properties, userTransaction);
+		reset(sessionContext, principal, topic, connectionFactory, timerService, userTransaction);
 		wireMocks();
 	}
 
@@ -90,5 +103,4 @@ public class MockProducer {
 	public static UserTransaction getUserTransaction() {
 		return userTransaction;
 	}
-
 }

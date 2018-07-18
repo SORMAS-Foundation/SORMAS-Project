@@ -20,12 +20,6 @@
         <variable
             name="okCallback"
             type="de.symeda.sormas.app.component.dialog.IDialogOkOnClickListener" />
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
     </data>
 
     <ScrollView
@@ -66,7 +60,7 @@
             android:paddingRight="@dimen/rowListItemHorizontalMargin"
             android:orientation="vertical"
             android:elevation="8dp"
-            android:background="@drawable/background_notification_dialog"
+            android:background="@drawable/background_full_width_border"
             android:paddingTop="16dp"
             android:paddingBottom="16dp"
             android:visibility="gone"

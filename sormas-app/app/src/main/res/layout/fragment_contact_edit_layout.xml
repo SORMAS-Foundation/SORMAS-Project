@@ -2,33 +2,16 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription"
     android:descendantFocusability="beforeDescendants"
     android:id="@+id/base_layout">
 
     <data>
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.contact.Contact"/>
         <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
         <variable name="contactProximityClass" type="Class" />
-
-        <variable
-            name="checkedCallback"
-            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
-        <variable
-            name="createCaseCallback"
-            type="android.view.View.OnClickListener" />
-        <variable
-            name="openCaseCallback"
-            type="android.view.View.OnClickListener" />
-        <variable
-            name="openCaseLinkCallback"
-            type="de.symeda.sormas.app.component.OnLinkClickListener" />
     </data>
 
     <ScrollView
@@ -38,393 +21,233 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="@dimen/parentLayoutVerticalMargin"
-            >
+            android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/mainContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
                 android:orientation="vertical"
-                >
+                android:padding="@dimen/fragment_padding"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:id="@+id/main_content">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
-                    <de.symeda.sormas.app.component.TeboTextUuidRead
-                        android:id="@+id/txtContactId"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_contact_id"
-                        app:labelCaption="@string/label_contact_id"
-                        app:uuidValue="@{data.uuid}"
-                        app:shortUuid="@{true}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                    android:orientation="horizontal">
 
-                    <de.symeda.sormas.app.component.TeboTextRead
-                        android:id="@+id/txtFollowUpStatus"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_contact_followup_status"
-                        app:labelCaption="@string/label_contact_followup_status"
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/contact_uuid"
+                        app:shortUuidValue="@{data.uuid}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/contact_contactStatus"
+                        app:value="@{data.contactStatus}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/contact_contactClassification"
+                    app:value="@={data.contactClassification}"
+                    app:required="true"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/contact_lastContactDate"
+                    app:value="@={data.lastContactDate}"
+                    app:softRequired="true"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/contact_followUpStatus"
                         app:value="@{data.followUpStatus}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                </LinearLayout>
-
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtFollowUpStatusComment"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:singleLine="false"
-                    app:maxLines="2"
-                    app:description="@string/desc_contact_followup_status_comment"
-                    app:labelCaption="@string/label_contact_followup_status_comment"
-                    app:value="@{data.followUpComment}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
-                    <de.symeda.sormas.app.component.TeboTextRead
-                        android:id="@+id/txtReportingUser"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_contact_reporting_user"
-                        app:labelCaption="@string/label_contact_reporting_user"
-                        app:value="@{data.reportingUser}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
-
-                    <de.symeda.sormas.app.component.TeboTextRead
-                        android:id="@+id/txtReportDate"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_contact_reporting_date"
-                        app:labelCaption="@string/label_contact_reporting_date"
-                        app:value="@{data.reportDateTime}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
-                    <de.symeda.sormas.app.component.TeboTextRead
-                        android:id="@+id/txtContactPerson"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_contact_person"
-                        app:labelCaption="@string/label_contact_person"
-                        app:personValue="@{data.person}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
-
-                    <de.symeda.sormas.app.component.TeboTextRead
-                        android:id="@+id/txtFollowUpUntil"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_contact_followup_until"
-                        app:labelCaption="@string/label_contact_followup_until"
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/contact_followUpUntil"
                         app:value="@{data.followUpUntil}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_followUpComment"
+                    app:value="@{data.followUpComment}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_person"
+                    app:value="@{data.person}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/contact_reportingUser"
+                        app:value="@{data.reportingUser}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/contact_reportDateTime"
+                        app:value="@{data.reportDateTime}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
 
                 <ImageView style="@style/FullHorizontalDividerStyle"/>
 
-                <de.symeda.sormas.app.component.TeboDatePicker
-                    android:id="@+id/dtpDateOfLastContact"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_contact_last_contact_date"
-                    app:labelCaption="@string/label_contact_last_contact_date"
-                    app:description="@string/desc_contact_last_contact_date"
-                    app:required="true"
-                    app:value="@={data.lastContactDate}"
-                    />
-
-                <de.symeda.sormas.app.component.TeboRadioGroup
-                    android:id="@+id/chkContactProximity"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_contact_type"
-                    app:labelCaption="@string/label_contact_type"
-                    app:description="@string/desc_contact_type"
-                    app:required="true"
-                    app:horizontalFlow="false"
-                    app:scaleX="1"
-                    app:scaleY="1"
-                    app:radioButtonMarginStart="@dimen/radioButtonMarginStart"
-                    app:includeMarginStart="true"
-                    app:radioButtonLabelMarginStart="@dimen/radioButtonLabelMarginStart"
+                <de.symeda.sormas.app.component.controls.ControlRadioGroupField
+                    android:id="@+id/contact_contactProximity"
                     app:enumClass="@{contactProximityClass}"
                     app:value="@={data.contactProximity}"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
-                    />
+                    app:softRequired="true"
+                    style="@style/ControlSingleColumnStyle" />
 
-                <de.symeda.sormas.app.component.TeboSpinner
-                    android:id="@+id/spnContactRelationship"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_contact_relationship_with_case"
-                    app:labelCaption="@string/label_contact_relationship_with_case"
-                    app:description="@string/desc_contact_relationship_with_case"
-                    app:required="true"
-                    app:spinnerMode="dialog"
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/contact_relationToCase"
                     app:value="@={data.relationToCase}"
-                    />
+                    app:softRequired="true"
+                    style="@style/ControlSingleColumnStyle" />
 
-                <de.symeda.sormas.app.component.TeboTextInputEditText
-                    android:id="@+id/txtContactDescription"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_contact_description"
-                    app:labelCaption="@string/label_contact_description"
-                    app:description="@string/desc_contact_description"
-                    app:required="true"
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/contact_description"
                     app:value="@={data.description}"
-                    app:nextFocusDown="@+id/txtControl1"
-                    app:imeOptions="actionNext"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
-                    />
+                    style="@style/ControlSingleColumnStyle" />
+
+                <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sub_heading_source_case"
+                    style="@style/SubHeadingStyle" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/heading_sub_contact_source_case"
-                        style="@style/ReadActivitySubHeadingStyle"
-                        />
+                    <de.symeda.sormas.app.component.controls.ControlLinkField
+                        android:id="@+id/caseData_uuid"
+                        app:shortUuidValue="@{caze.uuid}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                    <!--<de.symeda.sormas.app.component.TeboTextLinkRead
-                        android:id="@+id/btnCreateCase"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_contact_case_id"
-                        app:labelCaption="@string/label_contact_case_id"
-                        app:value="@{data.caze.uuid}"
-                        app:defaultValue='@{@string/not_available}'
-                        />-->
-
-                    <de.symeda.sormas.app.component.TeboHint
-                        android:id="@+id/txtSourceCase"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:showCaption="false"
-                        app:singleLine="false"
-                        app:maxLines="5"
-                        app:inputType="textMultiLine"
-                        app:labelCaption="@string/label_contact_open_case"
-                        app:description="@string/desc_contact_open_case"
-                        app:value="@{@string/hint_contact_open_case}"
-                        />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        >
-                        <de.symeda.sormas.app.component.TeboTextLinkRead
-                            android:id="@+id/txtCaseId"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                            app:description="@string/desc_contact_case_id"
-                            app:labelCaption="@string/label_contact_case_id"
-                            app:uuidValue="@{data.caseUuid}"
-                            app:shortUuid="@{true}"
-                            app:defaultValue='@{@string/not_available}'
-                            app:onLinkClick="@{(view) -> openCaseLinkCallback.onClick(view, data)}"
-                            />
-
-                        <de.symeda.sormas.app.component.TeboTextRead
-                            android:id="@+id/txtCaseClassification"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:paddingLeft="@dimen/formLayoutGutterSize"
-                            android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                            app:description="@string/desc_contact_case_classification"
-                            app:labelCaption="@string/label_contact_case_classification"
-                            app:value="@{caze.caseClassification}"
-                            app:defaultValue='@{@string/not_available}'
-                            />
-
-                    </LinearLayout>
-
-                    <de.symeda.sormas.app.component.TeboTextRead
-                        android:id="@+id/txtCaseName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_contact_case_name"
-                        app:labelCaption="@string/label_contact_case_name"
-                        app:personValue="@{caze.person}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        >
-
-                        <de.symeda.sormas.app.component.TeboTextRead
-                            android:id="@+id/txtAge"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                            app:description="@string/desc_contact_case_age"
-                            app:labelCaption="@string/label_contact_case_age"
-                            app:value="@{caze.person.approximateAge}"
-                            app:appendValue="@{caze.person.approximateAgeType.toString()}"
-                            app:valueFormat="@{@string/two_words_spaced_format}"
-                            app:defaultValue='@{@string/not_available}'
-                            />
-
-                        <de.symeda.sormas.app.component.TeboTextRead
-                            android:id="@+id/txtGender"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                            android:paddingLeft="@dimen/formLayoutGutterSize"
-                            app:description="@string/desc_contact_case_sex"
-                            app:labelCaption="@string/label_contact_case_sex"
-                            app:value="@{caze.person.sex}"
-                            app:defaultValue='@{@string/not_available}'
-                            />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        >
-
-                        <de.symeda.sormas.app.component.TeboTextRead
-                            android:id="@+id/txtDisease"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                            app:description="@string/desc_contact_case_disease"
-                            app:labelCaption="@string/label_contact_case_disease"
-                            app:value="@{data.caseDisease}"
-                            app:defaultValue='@{@string/not_available}'
-                            />
-
-                        <de.symeda.sormas.app.component.TeboTextRead
-                            android:id="@+id/txtSymptomsOnset"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                            android:paddingLeft="@dimen/formLayoutGutterSize"
-                            app:description="@string/desc_contact_case_symptoms_onset"
-                            app:labelCaption="@string/label_contact_case_symptoms_onset"
-                            app:value="@{caze.symptoms.onsetDate}"
-                            app:defaultValue='@{@string/not_available}'
-                            />
-
-                    </LinearLayout>
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_person"
+                        app:value="@{caze.person}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_caseClassification"
+                        app:value="@{caze.caseClassification}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_outcome"
+                        app:value="@{caze.outcome}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_disease"
+                        app:value="@{data.caseDisease}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/symptoms_onsetDate"
+                        app:value="@{caze.symptoms.onsetDate}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/person_approximateAge"
+                        app:ageWithDateValue="@{caze.person}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/person_sex"
+                        app:value="@{caze.person.sex}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
-            <RelativeLayout
-                android:id="@+id/contactPageBottomCtrlPanel"
+            <LinearLayout
+                android:id="@+id/task_buttons_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/background_notification_dialog"
-                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                android:orientation="vertical"
+                android:background="@drawable/background_full_width_border"
+                android:paddingLeft="@dimen/buttonPanelHorizontalMargin"
+                android:paddingRight="@dimen/buttonPanelHorizontalMargin"
                 android:paddingTop="@dimen/buttonPanelVerticalMargin"
                 android:paddingBottom="@dimen/buttonPanelVerticalMargin"
-                android:elevation="16dp"
-                >
+                android:elevation="16dp">
 
-                <de.symeda.sormas.app.component.TeboButton
-                    android:id="@+id/btnCreateCase"
+                <de.symeda.sormas.app.component.controls.ControlButton
+                    android:id="@+id/open_source_case"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    app:text="@string/action_create_case"
-                    app:buttonType="line_primary"
+                    android:layout_marginBottom="@dimen/controlHalfMarginBottom"
+                    android:text="@string/action_open_source_case"
+                    app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                     app:rounded="true"
-                    app:drawableLeft="@drawable/ic_create_case_black_24dp"
-                    app:onButtonOnClick="@{createCaseCallback}"
-                    />
+                    app:iconStart="@drawable/ic_open_case_black_24dp" />
 
-                <de.symeda.sormas.app.component.TeboButton
-                    android:id="@+id/btnOpenCase"
+                <de.symeda.sormas.app.component.controls.ControlButton
+                    android:id="@+id/create_case"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    app:text="@string/action_open_case"
-                    app:buttonType="line_primary"
+                    android:layout_marginBottom="@dimen/controlHalfMarginBottom"
+                    android:text="@string/action_create_case_from_contact"
+                    app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                     app:rounded="true"
-                    app:drawableLeft="@drawable/ic_open_case_black_24dp"
-                    app:onButtonOnClick="@{openCaseCallback}"
-                    />
+                    app:iconStart="@drawable/ic_create_case_black_24dp" />
 
+                <de.symeda.sormas.app.component.controls.ControlButton
+                    android:id="@+id/open_resulting_case"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_open_resulting_case"
+                    app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
+                    app:rounded="true"
+                    app:iconStart="@drawable/ic_open_case_black_24dp" />
 
-
-            </RelativeLayout>
+            </LinearLayout>
 
         </LinearLayout>
-
 
     </ScrollView>
 
 </layout>
-

@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.caze.read;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -9,42 +8,30 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
-import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
-import de.symeda.sormas.app.databinding.RowReadCaseTaskListItemLayoutBinding;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.task.Task;
-
-/**
- * Created by Orson on 11/01/2018.
- */
+import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
+import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
+import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.databinding.RowReadCaseTaskListItemLayoutBinding;
 
 public class CaseReadTaskListAdapter extends DataBoundAdapter<RowReadCaseTaskListItemLayoutBinding> {
 
     private static final String TAG = CaseReadTaskListAdapter.class.getSimpleName();
 
-    private final Context context;
-    private List<Task> data = new ArrayList<>();
+    private List<Task> data;
     private OnListItemClickListener mOnListItemClickListener;
-    //private ActionCallback mActionCallback;
 
     private LayerDrawable backgroundRowItem;
     private Drawable unreadListItemIndicator;
 
-    public CaseReadTaskListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener) {
-        this(context, rowLayout, onListItemClickListener, new ArrayList<Task>());
-    }
-
-    public CaseReadTaskListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<Task> data) {
+    public CaseReadTaskListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Task> data) {
         super(rowLayout);
-        this.context = context;
         this.mOnListItemClickListener = onListItemClickListener;
 
         if (data == null)

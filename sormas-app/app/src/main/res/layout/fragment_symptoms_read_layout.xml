@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/base_layout"
+        android:descendantFocusability="beforeDescendants">
+
+    <data>
+
+        <variable
+            name="data"
+            type="de.symeda.sormas.app.backend.symptoms.Symptoms"/>
+
+        <variable
+            name="locationClickCallback"
+            type="de.symeda.sormas.app.component.OnLinkClickListener"/>
+    </data>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/parentLayoutVerticalMargin"
+            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+            android:paddingTop="@dimen/parentLayoutVerticalMargin"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/symptoms_onsetSymptom"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    android:layout_weight="1"
+                    app:value="@{data.onsetSymptom}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/symptoms_onsetDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    android:layout_marginStart="@dimen/control_spacing"
+                    android:layout_weight="1"
+                    app:value="@{data.onsetDate}"/>
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/symptoms_temperature"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:appendValue="@{data.temperatureSource.toString()}"
+                app:value="@{data.temperature}"
+                app:valueFormat='@{@string/two_strings_with_brackets_format}'/>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/symptoms_patientIllLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:value="@{data.patientIllLocation}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlTagViewField
+                android:id="@+id/symptoms_symptomsOccurred"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/tagViewVerticalSeparator"/>
+
+            <de.symeda.sormas.app.component.controls.ControlTagViewField
+                android:id="@+id/symptoms_symptomsUnknownOccurred"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/tagViewVerticalSeparator"/>
+
+            <TextView
+                android:id="@+id/lesions_locations_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/field_caption_margin_left"
+                android:layout_marginTop="@dimen/field_yes_no_caption_margin_top"
+                android:layout_weight="0.6"
+                android:text="@string/label_lesions_locations"
+                android:textColor="?android:attr/editTextColor"
+                android:textSize="@dimen/field_caption_size"/>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/symptoms_lesionsFace"
+                style="@style/ControlSingleColumnStyle"
+                app:goneIfEmpty="@{data.lesions}"
+                app:slim="true"
+                app:value="@{data.lesionsFace}"
+                app:visibilityChild="@{lesionsLocationsLabel}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/symptoms_otherHemorrhagicSymptoms"
+                style="@style/ControlSingleColumnStyle"
+                app:appendValue="@{data.otherHemorrhagicSymptomsText}"
+                app:goneIfEmpty="@{data.otherHemorrhagicSymptomsText}"
+                app:value="@{data.otherHemorrhagicSymptoms}"
+                app:valueFormat="@{@string/two_strings_with_hyphen_format}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/symptoms_otherNonHemorrhagicSymptoms"
+                style="@style/ControlSingleColumnStyle"
+                app:appendValue="@{data.otherNonHemorrhagicSymptomsText}"
+                app:goneIfEmpty="@{data.otherNonHemorrhagicSymptomsText}"
+                app:value="@{data.otherNonHemorrhagicSymptoms}"
+                app:valueFormat="@{@string/two_strings_with_hyphen_format}"/>
+
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+</layout>
+

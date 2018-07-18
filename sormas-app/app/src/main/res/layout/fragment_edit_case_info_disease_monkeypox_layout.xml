@@ -7,12 +7,6 @@
 
     <data>
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
         <variable name="yesNoUnknownClass" type="Class" />
@@ -32,49 +26,24 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/heading_sub_case_addition_med_info"
-            style="@style/ReadActivitySubHeadingStyle"
+            android:text="@string/sub_heading_additional_medical_information"
+            style="@style/SubHeadingStyle"
             />
 
-        <de.symeda.sormas.app.component.TeboSwitch
-            android:id="@+id/swhSmallpoxVaccinationRecieved"
+        <de.symeda.sormas.app.component.controls.ControlSwitchField
+            android:id="@+id/caseData_smallpoxVaccinationReceived"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/textControlMarginBottom"
-            app:paddingTop="@dimen/defaultControlVerticalPadding"
-            app:paddingBottom="@dimen/defaultControlVerticalPadding"
-            app:background="@drawable/control_switch_background_border"
-            app:borderSize="@dimen/defaultControlStrokeWidth"
-            app:textColor="@color/control_switch_color_selector"
-            app:hint="@string/hint_case_quest_pregnancy"
-            app:labelCaption="@string/label_case_quest_pregnancy"
-            app:description="@string/desc_case_quest_pregnancy"
-            app:required="true"
-            app:orientation="horizontal"
-            app:slim="false"
-            app:includeUnknown="@{false}"
             app:enumClass="@{yesNoUnknownClass}"
-            app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-            app:abbrevUnknown="@{false}"
-            app:value="@={data.smallpoxVaccinationReceived}"
-            app:onCheckedChangeListener="@{null}"
-            app:onShowInputErrorListener="@{showNotificationCallback}"
-            app:onHideInputErrorListener="@{hideNotificationCallback}"
-            />
+            app:value="@={data.smallpoxVaccinationReceived}" />
 
-        <de.symeda.sormas.app.component.TeboDatePicker
-            android:id="@+id/dtpLastVaccinationDate"
+        <de.symeda.sormas.app.component.controls.ControlDateField
+            android:id="@+id/caseData_vaccinationDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/textControlMarginBottom"
-            android:paddingLeft="@dimen/formLayoutGutterSize"
-            android:visibility="gone"
-            app:hint="@string/hint_case_last_vaccination_date"
-            app:labelCaption="@string/label_case_last_vaccination_date"
-            app:description="@string/desc_case_last_vaccination_date"
-            app:required="true"
-            app:value="@={data.vaccinationDate}"
-            />
+            app:value="@={data.vaccinationDate}" />
 
 
     </LinearLayout>

@@ -1,48 +1,32 @@
 package de.symeda.sormas.app.event.read;
 
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
-import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
-import de.symeda.sormas.app.databinding.RowReadEventPersonsInvolvedItemLayoutBinding;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
+import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
+import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.RowReadPersonsInvolvedListItemLayoutBinding;
-
-/**
- * Created by Orson on 26/12/2017.
- */
-
-
 
 public class EventReadPersonsInvolvedAdapter extends DataBoundAdapter<RowReadPersonsInvolvedListItemLayoutBinding> {
 
     private static final String TAG = EventReadPersonsInvolvedAdapter.class.getSimpleName();
 
-    private final Context context;
-    private List<EventParticipant> data = new ArrayList<>();
+    private List<EventParticipant> data;
     private OnListItemClickListener mOnListItemClickListener;
-    //private ActionCallback mActionCallback;
 
     private LayerDrawable backgroundRowItem;
     private Drawable unreadListItemIndicator;
 
-    public EventReadPersonsInvolvedAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener) {
-        this(context, rowLayout, onListItemClickListener, new ArrayList<EventParticipant>());
-    }
-
-    public EventReadPersonsInvolvedAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<EventParticipant> data) {
+    public EventReadPersonsInvolvedAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<EventParticipant> data) {
         super(rowLayout);
-        this.context = context;
         this.mOnListItemClickListener = onListItemClickListener;
 
         if (data == null)
@@ -59,11 +43,6 @@ public class EventReadPersonsInvolvedAdapter extends DataBoundAdapter<RowReadPer
         EventParticipant record = data.get(position);
         holder.setData(record);
         holder.setOnListItemClickListener(this.mOnListItemClickListener);
-
-
-        //holder.binding.setCallback(mOnListItemClickListener);
-
-        //holder.itemView.callOnClick();
 
         //Sync Icon
         if (record.isModifiedOrChildModified()) {

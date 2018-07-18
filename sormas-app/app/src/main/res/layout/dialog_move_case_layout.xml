@@ -6,13 +6,6 @@
 
     <data>
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
-        <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
     </data>
 
 
@@ -24,110 +17,55 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingLeft="@dimen/rowListItemHorizontalMargin"
-            android:paddingRight="@dimen/rowListItemHorizontalMargin"
-            >
+            android:padding="@dimen/fragment_padding"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:id="@+id/main_content">
 
-            <!--<TextView
-                android:id="@+id/txtDialogHint"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@={config.subHeading}"
-                android:textColor="@color/pageHintText"
-                android:textSize="@dimen/defaultPageHintTextSize"/>-->
+            <requestFocus/>
 
-
-            <de.symeda.sormas.app.component.TeboSpinner
-                android:id="@+id/spnState"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                app:slim="true"
-                app:hint="@string/hint_case_state"
-                app:description="@string/desc_case_state"
-                app:labelCaption="@string/label_case_state"
-                app:required="true"
-                app:spinnerMode="dialog"
-                app:nextFocusDown="@+id/spnLga"
-                app:imeOptions="actionNext"
-                app:value="@={data.region}"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
-                />
+                android:orientation="horizontal">
 
-            <de.symeda.sormas.app.component.TeboSpinner
-                android:id="@+id/spnLga"
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_region"
+                    app:value="@={data.region}"
+                    app:required="true"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_district"
+                    app:value="@={data.district}"
+                    app:required="true"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                app:slim="true"
-                app:hint="@string/hint_case_lga"
-                app:description="@string/desc_case_lga"
-                app:labelCaption="@string/label_case_lga"
-                app:required="true"
-                app:spinnerMode="dialog"
-                app:nextFocusDown="@+id/spnWard"
-                app:imeOptions="actionNext"
-                app:value="@={data.district}"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
-                />
+                android:orientation="horizontal">
 
-            <de.symeda.sormas.app.component.TeboSpinner
-                android:id="@+id/spnWard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                app:slim="true"
-                app:hint="@string/hint_case_ward"
-                app:description="@string/desc_case_ward"
-                app:labelCaption="@string/label_case_ward"
-                app:required="true"
-                app:spinnerMode="dialog"
-                app:nextFocusDown="@+id/spnCity"
-                app:imeOptions="actionNext"
-                app:value="@={data.community}"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
-                />
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_community"
+                    app:value="@={data.community}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
 
-            <de.symeda.sormas.app.component.TeboSpinner
-                android:id="@+id/spnFacility"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                app:slim="true"
-                app:hint="@string/hint_case_health_facility"
-                app:description="@string/desc_case_health_facility"
-                app:labelCaption="@string/label_case_health_facility"
-                app:required="true"
-                app:spinnerMode="dialog"
-                app:nextFocusDown="@+id/spnCity"
-                app:imeOptions="actionNext"
-                app:value="@={data.healthFacility}"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
-                />
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_healthFacility"
+                    app:value="@={data.healthFacility}"
+                    app:required="true"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
-            <de.symeda.sormas.app.component.TeboTextInputEditText
-                android:id="@+id/txtFacilityDetails"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                android:visibility="gone"
-                app:slim="true"
-                app:hint="@string/hint_case_health_facility_desc"
-                app:description="@string/desc_case_health_facility_desc"
-                app:labelCaption="@string/label_case_health_facility_desc"
-                app:required="true"
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/caseData_healthFacilityDetails"
                 app:value="@={data.healthFacilityDetails}"
-                app:nextFocusDown="@+id/checkbox1"
-                app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
-                />
+                app:required="true"
+                style="@style/ControlSingleColumnStyle" />
 
         </LinearLayout>
     </ScrollView>

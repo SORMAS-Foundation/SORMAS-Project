@@ -13,13 +13,12 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.app.BaseListActivityFragment;
+import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
@@ -32,13 +31,8 @@ import de.symeda.sormas.app.searchstrategy.SearchStrategyFor;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.util.SubheadingHelper;
 
-/**
- * Created by Orson on 07/12/2017.
- */
+public class EventListFragment extends BaseListFragment<EventListAdapter> implements OnListItemClickListener {
 
-public class EventListFragment extends BaseListActivityFragment<EventListAdapter> implements OnListItemClickListener {
-
-    private boolean dataLoaded = false;
     private AsyncTask searchTask;
     private List<Event> events;
     private LinearLayoutManager linearLayoutManager;
@@ -51,16 +45,16 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, filterStatus);
-        SaveSearchStrategyState(outState, searchBy);
-        SaveRecordUuidState(outState, recordUuid);
+        saveFilterStatusState(outState, filterStatus);
+        saveSearchStrategyState(outState, searchBy);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
+        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
 
         filterStatus = (EventStatus) getFilterStatusArg(arguments);
         searchBy = (SearchBy) getSearchStrategyArg(arguments);
@@ -78,7 +72,7 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
 
     @Override
     public EventListAdapter getNewListAdapter() {
-        return new EventListAdapter(this.getActivity(), R.layout.row_event_list_item_layout, this, this.events);
+        return new EventListAdapter(R.layout.row_event_list_item_layout, this, this.events);
     }
 
     @Override
@@ -104,63 +98,33 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
     public void onResume() {
         super.onResume();
 
-        //TODO: Orson - reverse this relationship
         getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Event"));
 
-        try {
-            dataLoaded = false;
-            if (!dataLoaded) {
-                ISearchExecutor<Event> executor = SearchStrategyFor.EVENT.selector(searchBy, filterStatus, recordUuid);
-                searchTask = executor.search(new ISearchResultCallback<Event>() {
-                    @Override
-                    public void preExecute() {
-                        getActivityCommunicator().showPreloader();
-                        getActivityCommunicator().hideFragmentView();
-                    }
-
-                    @Override
-                    public void searchResult(List<Event> result, BoolResult resultStatus) {
-                        getActivityCommunicator().hidePreloader();
-
-                        if (!resultStatus.isSuccess()) {
-                            String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Events");
-                            NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, message);
-
-                            return;
-                        }
-
-                        events = result;
-
-                        EventListFragment.this.getListAdapter().replaceAll(events);
-                        EventListFragment.this.getListAdapter().notifyDataSetChanged();
-
-                        dataLoaded = true;
-
-                        getActivityCommunicator().hidePreloader();
-                        getActivityCommunicator().showFragmentView();
-                    }
-
-                    private ISearchResultCallback<Event> init() {
-                        getActivityCommunicator().showPreloader();
-
-                        return this;
-                    }
-                }.init());
+        ISearchExecutor<Event> executor = SearchStrategyFor.EVENT.selector(searchBy, filterStatus, recordUuid);
+        searchTask = executor.search(new ISearchResultCallback<Event>() {
+            @Override
+            public void preExecute() {
+                getBaseActivity().showPreloader();
             }
-        } catch (Exception ex) {
-            getActivityCommunicator().hidePreloader();
-            dataLoaded = false;
-        }
 
-        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
-        if (swiperefresh != null) {
-            swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
+            @Override
+            public void searchResult(List<Event> result, BoolResult resultStatus) {
+                getBaseActivity().hidePreloader();
+
+                if (!resultStatus.isSuccess()) {
+                    String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Events");
+                    NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, message);
+                    return;
                 }
-            });
-        }
+
+                events = result;
+
+                if (EventListFragment.this.isResumed()) {
+                    EventListFragment.this.getListAdapter().replaceAll(events);
+                    EventListFragment.this.getListAdapter().notifyDataSetChanged();
+                }
+            }
+        });
     }
 
     @Override
@@ -172,8 +136,8 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
         recyclerViewForList.setAdapter(getListAdapter());
     }
 
-    public static EventListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule) {
-        return newInstance(communicator, EventListFragment.class, capsule);
+    public static EventListFragment newInstance(IListNavigationCapsule capsule) {
+        return newInstance(EventListFragment.class, capsule);
     }
 
     @Override

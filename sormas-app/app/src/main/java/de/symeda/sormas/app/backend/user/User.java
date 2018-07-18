@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.backend.user;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.j256.ormlite.field.DatabaseField;
@@ -191,6 +193,10 @@ public class User extends AbstractDomainObject {
 	}
 
 	public boolean hasUserRight(UserRight userRight) {
+		if (userRight == null) {
+			throw new IllegalArgumentException("userRight parameter can not be null");
+		}
+
 		for (UserRole userRole : userRight.getUserRoles()) {
 			if (hasUserRole(userRole)) {
 				return true;

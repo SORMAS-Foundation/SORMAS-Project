@@ -8,7 +8,6 @@ import android.util.Log;
 import com.google.android.gms.analytics.Tracker;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.app.R;
@@ -34,9 +33,6 @@ import de.symeda.sormas.app.backend.sample.SampleTestDtoHelper;
 import de.symeda.sormas.app.backend.task.TaskDtoHelper;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.backend.visit.VisitDtoHelper;
-import de.symeda.sormas.app.component.dialog.CommunityLoader;
-import de.symeda.sormas.app.component.dialog.DistrictLoader;
-import de.symeda.sormas.app.component.dialog.RegionLoader;
 import de.symeda.sormas.app.core.TaskNotificationService;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;

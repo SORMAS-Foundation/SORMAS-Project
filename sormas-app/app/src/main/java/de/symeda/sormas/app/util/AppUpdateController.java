@@ -39,7 +39,7 @@ public class AppUpdateController {
     private String appUrl;
     private String fileName;
     private Activity activity;
-    private Callback negativeCallback;
+    private Callback dismissCallback;
     private Tracker tracker;
 
     private AppUpdateController() { }
@@ -63,10 +63,13 @@ public class AppUpdateController {
      * class when this method is called will be dismissed and removed.
      *
      * # Testing the app update process
-     * This functionality requires manual testing. Let the InfoResource return a custom value in getVersion(), and build an .apk version that manually assigns
-     * the same value to appApiVersion in RetroProvider. Put this version on your server, adjust the app.url in sormas.properties, and start the server that returns
-     * the fake version. Revert the changes to the appApiVersion assignment and start the app - it should now display the dialog to request downloading the new
-     * app version. To test all functionality provided by this class, you can start the server without the fake version return in getVersion() and restart it with
+     * This functionality requires manual testing:
+     * 1. Let the InfoResource return a custom value in getVersion(), and build an .apk version that manually assigns the same value to appApiVersion
+     * in RetroProvider. Put this version on your server, adjust the app.url in sormas.properties, and start the server that returns the fake version.
+     * You can put the apk file into domains/sormas/eclipseApps/sormas-ui/VAADIN and point the app.url to http://YOUR_IP:6080/sormas-ui/VAADIN/sormas-release.apk
+     * 2. Revert the changes to the appApiVersion assignment and start the app - it should now display the dialog to request downloading the new
+     * app version.
+     * 3. To test all functionality provided by this class, you can start the server without the fake version return in getVersion() and restart it with
      * the fake return value after logging into the app, and you can move a corrupted file to your phone to test how the app behaves when the .apk file cannot
      * be installed.
      *
@@ -77,10 +80,10 @@ public class AppUpdateController {
      *                 in case the result returned is not RESULT_OK or RESULT_CANCELED
      * @param allowDismiss True if the user should be able to dismiss the dialog, e.g. by clicking a "Download later" button; otherwise, the button will
      *                     either be hidden or replaced by a button that closes the app
-     * @param negativeCallback ICallback that will be called after the logic added in this class has been executed when the user has
+     * @param dismissCallback ICallback that will be called after the logic added in this class has been executed when the user has
      *                         clicked the negative button
      */
-    public void updateApp(final Activity activity, final String appUrl, final String version, boolean allowDismiss, final Callback negativeCallback) {
+    public void updateApp(final Activity activity, final String appUrl, final String version, boolean allowDismiss, final Callback dismissCallback) {
         // don't do anything if there is already an actively displayed dialog
         if (displayedDialog != null && displayedDialog.isShowing()) {
             return;
@@ -107,9 +110,9 @@ public class AppUpdateController {
         this.activity = activity;
         this.allowDismiss = allowDismiss;
         this.appUrl = appUrl;
-        this.negativeCallback = negativeCallback;
+        this.dismissCallback = dismissCallback;
         this.tracker = ((SormasApplication) activity.getApplication()).getDefaultTracker();
-        this.fileName = appUrl.substring(appUrl.lastIndexOf("/"), appUrl.lastIndexOf(".")) + "-" + version + ".apk";
+        this.fileName = appUrl.substring(appUrl.lastIndexOf("/"));
 
         // Check if the required version has already been downloaded
         File file = new File(activity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName);
@@ -164,7 +167,7 @@ public class AppUpdateController {
             }
         };
 
-        return new ConfirmationDialog(activity, title, message, positiveButtonText, negativeButtonText, positiveCallback, negativeCallback);
+        return new ConfirmationDialog(activity, title, message, positiveButtonText, negativeButtonText, positiveCallback, dismissCallback);
     }
 
     private ConfirmationDialog buildDownloadFailedDialog() {
@@ -183,7 +186,7 @@ public class AppUpdateController {
             }
         };
 
-        return new ConfirmationDialog(activity, title, message, positiveButtonText, negativeButtonText, positiveCallback, negativeCallback);
+        return new ConfirmationDialog(activity, title, message, positiveButtonText, negativeButtonText, positiveCallback, dismissCallback);
     }
 
     private ConfirmationDialog buildInstallAppDialog() {
@@ -202,7 +205,7 @@ public class AppUpdateController {
             }
         };
 
-        return new ConfirmationDialog(activity, title, message, positiveButtonText, negativeButtonText, positiveCallback, negativeCallback);
+        return new ConfirmationDialog(activity, title, message, positiveButtonText, negativeButtonText, positiveCallback, dismissCallback);
     }
 
     private ConfirmationDialog buildInstallFailedDialog() {
@@ -221,7 +224,7 @@ public class AppUpdateController {
             }
         };
 
-        return new ConfirmationDialog(activity, title, message, positiveButtonText, negativeButtonText, positiveCallback, negativeCallback);
+        return new ConfirmationDialog(activity, title, message, positiveButtonText, negativeButtonText, positiveCallback, dismissCallback);
     }
 
     private ConfirmationDialog buildInstallNotPossibleDialog() {

@@ -19,7 +19,7 @@
 
         <!---->
         <LinearLayout
-            android:id="@+id/rowListItem"
+            android:id="@+id/row_item"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -55,7 +55,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/txtDisease"
+                    android:id="@+id/caseData_disease"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/listActivityRowPrimaryTextSize"

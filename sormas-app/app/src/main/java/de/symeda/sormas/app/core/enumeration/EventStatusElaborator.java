@@ -2,31 +2,21 @@ package de.symeda.sormas.app.core.enumeration;
 
 import android.content.res.Resources;
 
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.app.R;
 
-import de.symeda.sormas.api.event.EventStatus;
-
-/**
- * Created by Orson on 25/12/2017.
- */
 public class EventStatusElaborator implements IStatusElaborator {
 
-    private Resources resources = null;
     private EventStatus status = null;
 
-    public EventStatusElaborator(EventStatus status, Resources resources) {
+    public EventStatusElaborator(EventStatus status) {
         this.status = status;
-        this.resources = resources;
     }
 
     @Override
     public String getFriendlyName() {
-        if (status == EventStatus.POSSIBLE) {
-            return resources.getString(R.string.status_event_possible);
-        } else if (status == EventStatus.CONFIRMED) {
-            return resources.getString(R.string.status_event_confirmed);
-        } else if (status == EventStatus.NO_EVENT) {
-            return resources.getString(R.string.status_event_no_event);
+        if (status != null) {
+            return status.toShortString();
         }
 
         return "";

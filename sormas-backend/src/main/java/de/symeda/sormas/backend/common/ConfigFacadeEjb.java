@@ -10,6 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.InfoProvider;
+import de.symeda.sormas.api.utils.VersionHelper;
 
 /**
  * Provides the application configuration settings
@@ -17,18 +21,22 @@ import de.symeda.sormas.api.ConfigFacade;
 @Stateless(name="ConfigFacade")
 public class ConfigFacadeEjb implements ConfigFacade {
 
-	private static final String COUNTRY_NAME = "country.name";
+	public static final String COUNTRY_NAME = "country.name";
 	
-	private static final String APP_URL = "app.url";
+	public static final String VERSION_PLACEHOLER = "%version";
 	
-	private static final String TEMP_FILES_PATH = "temp.path";
-	private static final String GENERATED_FILES_PATH = "generated.path";
+	public static final String APP_URL = "app.url";
+	public static final String APP_LEGACY_URL = "app.legacy.url";
 	
-	private static final String EMAIL_SENDER_ADDRESS = "email.sender.address";
-	private static final String EMAIL_SENDER_NAME = "email.sender.name";
-	private static final String SMS_SENDER_NAME = "sms.sender.name";
-	private static final String SMS_AUTH_KEY = "sms.auth.key";
-	private static final String SMS_AUTH_SECRET = "sms.auth.secret";
+	public static final String TEMP_FILES_PATH = "temp.path";
+	public static final String GENERATED_FILES_PATH = "generated.path";
+	public static final String CSV_SEPARATOR = "csv.separator";
+	
+	public static final String EMAIL_SENDER_ADDRESS = "email.sender.address";
+	public static final String EMAIL_SENDER_NAME = "email.sender.name";
+	public static final String SMS_SENDER_NAME = "sms.sender.name";
+	public static final String SMS_AUTH_KEY = "sms.auth.key";
+	public static final String SMS_AUTH_SECRET = "sms.auth.secret";
 	
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(ConfigFacadeEjb.class);
@@ -36,20 +44,20 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Resource(lookup="sormas/Properties")
 	private Properties props;
 
-	@Override
-	public String getProperty(String name) {
-		return getProp(name, null);
-	}
-
-	private String getProp(String name, String defaultValue) {
+	protected String getProperty(String name, String defaultValue) {
 		String prop = props.getProperty(name);
 
 		if (prop == null){
 			return defaultValue;
 		} else {
-			return prop.trim();
+			return prop;
 		}
 	}
+	
+	protected boolean getBoolean(String name, boolean defaultValue) {
+		return Boolean.parseBoolean(getProperty(name, Boolean.toString(defaultValue)));
+	}
+	
 
 	@Override
 	public String getCountryName() {
@@ -58,9 +66,18 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	@Override
 	public String getAppUrl() {
-		return getProperty(APP_URL, null);
+		String appUrl = getProperty(APP_URL, null);
+		if (appUrl != null) {
+			appUrl = appUrl.replaceAll(VERSION_PLACEHOLER, InfoProvider.get().getVersion());
+		}
+		return appUrl;
 	}
-	
+
+	@Override
+	public String getAppLegacyUrl() {
+		return getProperty(APP_LEGACY_URL, null);
+	}
+
 	@Override
 	public String getTempFilesPath() {
 		return getProperty(TEMP_FILES_PATH, "/opt/sormas-temp/");
@@ -95,13 +112,50 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public String getSmsAuthSecret() {
 		return getProperty(SMS_AUTH_SECRET, "");
 	}
-	
-	private String getProperty(String name, String defaultValue){
-		return getProp(name, defaultValue);
+
+	@Override
+	public char getCsvSeparator() {
+		String seperatorString = getProperty(CSV_SEPARATOR, ",");
+		if (seperatorString.length() != 1) {
+			throw new IllegalArgumentException(CSV_SEPARATOR + " must be a single character instead of '" + seperatorString + "'");
+		}
+		return seperatorString.charAt(0);
 	}
 	
-	private boolean getBoolean(String name, boolean defaultValue) {
-		return Boolean.parseBoolean(getProperty(name, Boolean.toString(defaultValue)));
+	@Override
+	public void validateAppUrls() {
+		String appUrl = getAppUrl();
+		String appLegacyUrl = getAppLegacyUrl();
+		
+		// must contain version information
+		int[] appVersion = VersionHelper.extractVersion(appUrl);
+		if (!DataHelper.isNullOrEmpty(appUrl) && !VersionHelper.isVersion(appVersion)) {
+			throw new IllegalArgumentException("Property '" + ConfigFacadeEjb.APP_URL + "' must contain a valid version: '" + appUrl + "'");
+		}
+		int[] appLegacyVersion = VersionHelper.extractVersion(appLegacyUrl);
+		if (!DataHelper.isNullOrEmpty(appLegacyUrl) && !VersionHelper.isVersion(appLegacyVersion)) {
+			throw new IllegalArgumentException("Property '" + ConfigFacadeEjb.APP_LEGACY_URL + "' must contain a valid version: '" + appLegacyUrl + "'");
+		}
+		
+		// legacy must be empty or before app version
+		if (appLegacyVersion != null && appVersion != null) {
+			if (!VersionHelper.isBefore(appLegacyVersion, appVersion)) {
+				throw new IllegalArgumentException("Property '" + ConfigFacadeEjb.APP_LEGACY_URL + "' must have a version smaller "
+						+ "than property '" + ConfigFacadeEjb.APP_URL + "': '" + appLegacyUrl + "' - '" + appUrl + "'");
+			}
+		}
+		
+		// both have to be compatible
+		if (appVersion != null && InfoProvider.get().isCompatibleToApi(appVersion) != CompatibilityCheckResponse.COMPATIBLE) {
+			throw new IllegalArgumentException("Property '" + ConfigFacadeEjb.APP_URL + "' does not point to a compatible app version: '"
+					+ appUrl + "'. Minimum is '" + InfoProvider.get().getMinimumRequiredVersion() + "'");
+		}
+		
+		if (appLegacyVersion != null && InfoProvider.get().isCompatibleToApi(appLegacyVersion) != CompatibilityCheckResponse.COMPATIBLE) {
+			throw new IllegalArgumentException("Property '" + ConfigFacadeEjb.APP_LEGACY_URL + "' does not point to a compatible app version: '"
+					+ appLegacyUrl + "'. Minimum is '" + InfoProvider.get().getMinimumRequiredVersion() + "'");
+		}
+
 	}
 	
 	@LocalBean

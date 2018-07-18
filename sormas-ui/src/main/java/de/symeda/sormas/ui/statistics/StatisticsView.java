@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
@@ -33,6 +33,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.Month;
 import de.symeda.sormas.api.MonthOfYear;
@@ -67,8 +68,6 @@ public class StatisticsView extends AbstractStatisticsView {
 	private static final long serialVersionUID = -4440568319850399685L;
 
 	public static final String VIEW_NAME = "statistics";
-
-	public static final String UNKNOWN = "Unknown";
 
 	private VerticalLayout filtersLayout;
 	private VerticalLayout resultsLayout;
@@ -380,7 +379,7 @@ public class StatisticsView extends AbstractStatisticsView {
 				List<Object> values = StatisticsHelper.getAllAttributeValues(xAxisAttribute, xAxisSubAttribute);
 				List<StatisticsGroupingKey> filterValues = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(xAxisAttribute, xAxisSubAttribute);
 				for (Object value : values) {
-					Object formattedValue = StatisticsHelper.formatAttributeValue(value, xAxisAttribute, xAxisSubAttribute);
+					Object formattedValue = StatisticsHelper.buildGroupingKey(value, xAxisAttribute, xAxisSubAttribute);
 					if (formattedValue != null && (CollectionUtils.isEmpty(filterValues) || filterValues.contains(formattedValue))) {
 						xAxisCaptions.putIfAbsent((StatisticsGroupingKey) formattedValue, formattedValue.toString());
 					}
@@ -394,14 +393,15 @@ public class StatisticsView extends AbstractStatisticsView {
 				});
 
 				if (appendUnknownXAxisCaption) {
-					hcjs.append("'Unknown'");
+					hcjs.append("'").append(getEscapedFragment(StatisticsHelper.UNKNOWN)).append("'");
 				}
 			} else {
-				hcjs.append("'Total'");
+				hcjs.append("'").append(getEscapedFragment(StatisticsHelper.TOTAL)).append("'");
 			}
 			hcjs.append("]},");
 
-			hcjs.append("yAxis: { min: 0, title: { text: 'Number of Cases' }, allowDecimals: false, softMax: 10, "
+			hcjs.append("yAxis: { min: 0, title: { text: '").append(getEscapedFragment(StatisticsHelper.CASE_COUNT)).append("' },")
+				.append("allowDecimals: false, softMax: 10, "
 					+ "stackLabels: { enabled: true, "
 					+ "style: {fontWeight: 'normal', textOutline: '0', gridLineColor: '#000000', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } } },");
 
@@ -433,10 +433,10 @@ public class StatisticsView extends AbstractStatisticsView {
 
 		hcjs.append("series: [");
 		if (seriesIdIndex < 1 && xAxisIdIndex < 1) {
-			hcjs.append("{ name: 'Number of cases', dataLabels: { allowOverlap: false }")
-			.append(", data: [['Total',").append(resultData.get(0)[0].toString()).append("]]}");
+			hcjs.append("{ name: '").append(getEscapedFragment(StatisticsHelper.CASE_COUNT)).append("', dataLabels: { allowOverlap: false }")
+			.append(", data: [['").append(getEscapedFragment(StatisticsHelper.CASE_COUNT)).append("',").append(resultData.get(0)[0].toString()).append("]]}");
 		} else if (visualizationComponent.getVisualizationChartType() == StatisticsVisualizationChartType.PIE) {
-			hcjs.append("{ name: 'Number of cases', dataLabels: { allowOverlap: false }")
+			hcjs.append("{ name: '").append(getEscapedFragment(StatisticsHelper.CASE_COUNT)).append("', dataLabels: { allowOverlap: false }")
 			.append(", data: [");
 			TreeMap<StatisticsGroupingKey, Object[]> seriesElements = new TreeMap<>(new StatisticsKeyComparator());
 			Object[] unknownSeriesElement = null;
@@ -456,12 +456,12 @@ public class StatisticsView extends AbstractStatisticsView {
 			});
 			if (unknownSeriesElement != null) {
 				Object seriesValue = unknownSeriesElement[0];
-				hcjs.append("['").append("Unknown").append("',").append(seriesValue).append("],");
+				hcjs.append("['").append(getEscapedFragment(StatisticsHelper.CASE_COUNT)).append("',").append(seriesValue).append("],");
 			}
 			hcjs.append("]}");
 		} else {
-			StatisticsGroupingKey seriesKey = null;
-			Object seriesCaption = null;
+			//StatisticsGroupingKey seriesKey = null;
+			Object seriesKey = null;
 			TreeMap<StatisticsGroupingKey, String> seriesStrings = new TreeMap<>(new StatisticsKeyComparator());
 			final StringBuilder currentSeriesString = new StringBuilder();
 			final StringBuilder unknownSeriesString = new StringBuilder();
@@ -470,34 +470,33 @@ public class StatisticsView extends AbstractStatisticsView {
 
 			for (Object[] row : resultData) {
 				// Retrieve series caption of the current row
-				Object rowSeriesCaption;
+				Object rowSeriesKey;
 				if (seriesIdIndex >= 1) {
 					if (!StatisticsHelper.isNullOrUnknown(row[seriesIdIndex])) {
-						rowSeriesCaption = seriesCaptions.get(row[seriesIdIndex]);
+						rowSeriesKey = row[seriesIdIndex]; // seriesCaptions.get(
 					} else {
-						rowSeriesCaption = "Unknown";
+						rowSeriesKey = StatisticsHelper.UNKNOWN;
 					}
 				} else {
-					rowSeriesCaption = "Total";
+					rowSeriesKey = StatisticsHelper.TOTAL;
 				}
 
 				// If the first row or a row with a new caption is processed, save the data and begin a new series
-				if (!DataHelper.equal(seriesCaption, rowSeriesCaption)) {
-					finalizeChartSegment(seriesCaption, currentSeriesValues, unknownSeriesString, currentSeriesString, totalSeriesString, seriesStrings, seriesKey);
+				if (!DataHelper.equal(seriesKey, rowSeriesKey)) {
+					finalizeChartSegment(seriesKey, currentSeriesValues, unknownSeriesString, currentSeriesString, totalSeriesString, seriesStrings);
 
 					// Append the start sequence of the next series String
-					if (StatisticsHelper.isNullOrUnknown(rowSeriesCaption)) {
-						seriesCaption = "Unknown";
-						seriesKey = null;
-						unknownSeriesString.append("{ name: '").append("Unknown").append("', dataLabels: { allowOverlap: false }, data: [");
-					} else if (rowSeriesCaption.equals("Total")) {
-						seriesCaption = "Total";
-						seriesKey = null;
-						totalSeriesString.append("{name : '").append("Total").append("', dataLabels: { allowOverlap: false }, data: [");
+					if (StatisticsHelper.isNullOrUnknown(rowSeriesKey)) {
+						seriesKey =  StatisticsHelper.UNKNOWN;
+						unknownSeriesString.append("{ name: '").append(getEscapedFragment(StatisticsHelper.UNKNOWN)).append("', dataLabels: { allowOverlap: false }, data: [");
+					} else if (rowSeriesKey.equals(StatisticsHelper.TOTAL)) {
+						seriesKey =  StatisticsHelper.TOTAL;
+						totalSeriesString.append("{name : '").append(getEscapedFragment(StatisticsHelper.TOTAL)).append("', dataLabels: { allowOverlap: false }, data: [");
 					} else {
-						seriesCaption = rowSeriesCaption;
 						seriesKey = (StatisticsGroupingKey) row[seriesIdIndex];
-						currentSeriesString.append("{ name: '").append(rowSeriesCaption).append("', dataLabels: { allowOverlap: false }, data: [");
+						currentSeriesString.append("{ name: '")
+							.append(StringEscapeUtils.escapeEcmaScript(seriesCaptions.get(seriesKey)))
+							.append("', dataLabels: { allowOverlap: false }, data: [");
 					}
 				}
 
@@ -513,7 +512,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			}
 
 			// Add the last series
-			finalizeChartSegment(seriesCaption, currentSeriesValues, unknownSeriesString, currentSeriesString, totalSeriesString, seriesStrings, seriesKey);
+			finalizeChartSegment(seriesKey, currentSeriesValues, unknownSeriesString, currentSeriesString, totalSeriesString, seriesStrings);
 
 			seriesStrings.forEach((key, value) -> {
 				hcjs.append(value);
@@ -540,19 +539,22 @@ public class StatisticsView extends AbstractStatisticsView {
 		resultsLayout.addComponent(chart);
 		resultsLayout.setExpandRatio(chart, 1);
 	}
+	
+	private String getEscapedFragment(String i18nFragmentKeykey) {
+		return StringEscapeUtils.escapeEcmaScript(I18nProperties.getFragment(i18nFragmentKeykey));
+	}
 
-	private void finalizeChartSegment(Object seriesCaption, TreeMap<Integer, Long> currentKeyValues, final StringBuilder unknownKeyString,
-			final StringBuilder currentKeyString, final StringBuilder totalKeyString, TreeMap<StatisticsGroupingKey, String> columnStrings,
-			StatisticsGroupingKey seriesKey) {
-		if (seriesCaption != null) {
-			if (StatisticsHelper.isNullOrUnknown(seriesCaption)) {
+	private void finalizeChartSegment(Object seriesKey, TreeMap<Integer, Long> currentKeyValues, StringBuilder unknownKeyString,
+			StringBuilder currentKeyString, StringBuilder totalKeyString, TreeMap<StatisticsGroupingKey, String> columnStrings) {
+		if (seriesKey != null) {
+			if (StatisticsHelper.isNullOrUnknown(seriesKey)) {
 				currentKeyValues.forEach((key, value) -> {
 					unknownKeyString.append("[").append(key).append(",").append(value).append("],");
 				});
 				unknownKeyString.append("]},");
 				currentKeyValues.clear();
 				currentKeyString.setLength(0);
-			} else if (seriesCaption.equals("Total")) {
+			} else if (seriesKey.equals(StatisticsHelper.TOTAL)) {
 				currentKeyValues.forEach((key, value) -> {
 					totalKeyString.append("[").append(key).append(",").append(value).append("],");
 				});
@@ -560,11 +562,12 @@ public class StatisticsView extends AbstractStatisticsView {
 				currentKeyValues.clear();
 				currentKeyString.setLength(0);
 			} else {
+				StatisticsGroupingKey seriesGroupingKey = (StatisticsGroupingKey)seriesKey;
 				currentKeyValues.forEach((key, value) -> {
 					currentKeyString.append("[").append(key).append(",").append(value).append("],");
 				});
 				currentKeyString.append("]},");
-				columnStrings.put(seriesKey, currentKeyString.toString());
+				columnStrings.put(seriesGroupingKey, currentKeyString.toString());
 				currentKeyValues.clear();
 				currentKeyString.setLength(0);
 			}
@@ -719,13 +722,13 @@ public class StatisticsView extends AbstractStatisticsView {
 		caseCriteria = new StatisticsCaseCriteria();
 
 		for (StatisticsFilterComponent filterComponent : filterComponents) {
-			Map<Object, StatisticsFilterElement> filterElements = filterComponent.getFilterElements();
+			StatisticsFilterElement filterElement = filterComponent.getFilterElement();
 			switch (filterComponent.getSelectedAttribute()) {
 			case SEX:
-				if (filterElements.get(StatisticsCaseAttribute.SEX).getSelectedValues() != null) {
+				if (filterElement.getSelectedValues() != null) {
 					List<Sex> sexes = new ArrayList<>();
-					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseAttribute.SEX).getSelectedValues()) {
-						if (tokenizableValue.getValue() == "Unknown") {
+					for (TokenizableValue tokenizableValue : filterElement.getSelectedValues()) {
+						if (tokenizableValue.getValue() == StatisticsHelper.UNKNOWN) {
 							caseCriteria.sexUnknown(true);
 						} else {
 							sexes.add((Sex) tokenizableValue.getValue());
@@ -735,27 +738,27 @@ public class StatisticsView extends AbstractStatisticsView {
 				}
 				break;
 			case DISEASE:
-				if (filterElements.get(StatisticsCaseAttribute.DISEASE).getSelectedValues() != null) {
+				if (filterElement.getSelectedValues() != null) {
 					List<Disease> diseases = new ArrayList<>();
-					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseAttribute.DISEASE).getSelectedValues()) {
+					for (TokenizableValue tokenizableValue : filterElement.getSelectedValues()) {
 						diseases.add((Disease) tokenizableValue.getValue());
 					}
 					caseCriteria.diseases(diseases);
 				}
 				break;
 			case CLASSIFICATION:
-				if (filterElements.get(StatisticsCaseAttribute.CLASSIFICATION).getSelectedValues() != null) {
+				if (filterElement.getSelectedValues() != null) {
 					List<CaseClassification> classifications = new ArrayList<>();
-					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseAttribute.CLASSIFICATION).getSelectedValues()) {
+					for (TokenizableValue tokenizableValue : filterElement.getSelectedValues()) {
 						classifications.add((CaseClassification) tokenizableValue.getValue());
 					}
 					caseCriteria.classifications(classifications);
 				}
 				break;	
 			case OUTCOME:
-				if (filterElements.get(StatisticsCaseAttribute.OUTCOME).getSelectedValues() != null) {
+				if (filterElement.getSelectedValues() != null) {
 					List<CaseOutcome> outcomes = new ArrayList<>();
-					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseAttribute.OUTCOME).getSelectedValues()) {
+					for (TokenizableValue tokenizableValue : filterElement.getSelectedValues()) {
 						outcomes.add((CaseOutcome) tokenizableValue.getValue());
 					}
 					caseCriteria.outcomes(outcomes);
@@ -767,16 +770,16 @@ public class StatisticsView extends AbstractStatisticsView {
 			case AGE_INTERVAL_CHILDREN_FINE:
 			case AGE_INTERVAL_CHILDREN_MEDIUM:
 			case AGE_INTERVAL_BASIC:
-				if (filterElements.get(filterComponent.getSelectedAttribute()).getSelectedValues() != null) {
+				if (filterElement.getSelectedValues() != null) {
 					List<IntegerRange> ageIntervals = new ArrayList<>();
-					for (TokenizableValue tokenizableValue : filterElements.get(filterComponent.getSelectedAttribute()).getSelectedValues()) {
+					for (TokenizableValue tokenizableValue : filterElement.getSelectedValues()) {
 						ageIntervals.add((IntegerRange) tokenizableValue.getValue());
 					}
 					caseCriteria.addAgeIntervals(ageIntervals);
 				}
 				break;
 			case REGION_DISTRICT:
-				StatisticsFilterRegionDistrictElement regionDistrictElement = (StatisticsFilterRegionDistrictElement) filterElements.get(StatisticsCaseAttribute.REGION_DISTRICT);
+				StatisticsFilterRegionDistrictElement regionDistrictElement = (StatisticsFilterRegionDistrictElement) filterElement;
 				if (regionDistrictElement.getSelectedRegions() != null) {
 					List<RegionReferenceDto> regions = new ArrayList<>();
 					for (TokenizableValue tokenizableValue : regionDistrictElement.getSelectedRegions()) {
@@ -795,71 +798,71 @@ public class StatisticsView extends AbstractStatisticsView {
 			default:
 				switch (filterComponent.getSelectedSubAttribute()) {
 				case YEAR:
-					if (filterElements.get(StatisticsCaseSubAttribute.YEAR).getSelectedValues() != null) {
+					if (filterElement.getSelectedValues() != null) {
 						List<Year> years = new ArrayList<>();
-						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.YEAR).getSelectedValues()) {
+						for (TokenizableValue tokenizableValue : filterElement.getSelectedValues()) {
 							years.add((Year) tokenizableValue.getValue());
 						}
 						caseCriteria.years(years, filterComponent.getSelectedAttribute());
 					}
 					break;
 				case QUARTER:
-					if (filterElements.get(StatisticsCaseSubAttribute.QUARTER).getSelectedValues() != null) {
+					if (filterElement.getSelectedValues() != null) {
 						List<Quarter> quarters = new ArrayList<>();
-						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.QUARTER).getSelectedValues()) {
+						for (TokenizableValue tokenizableValue : filterElement.getSelectedValues()) {
 							quarters.add((Quarter) tokenizableValue.getValue());
 						}
 						caseCriteria.quarters(quarters, filterComponent.getSelectedAttribute());
 					}
 					break;
 				case MONTH:
-					if (filterElements.get(StatisticsCaseSubAttribute.MONTH).getSelectedValues() != null) {
+					if (filterElement.getSelectedValues() != null) {
 						List<Month> months = new ArrayList<>();
-						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.MONTH).getSelectedValues()) {
+						for (TokenizableValue tokenizableValue : filterElement.getSelectedValues()) {
 							months.add((Month) tokenizableValue.getValue());
 						}
 						caseCriteria.months(months, filterComponent.getSelectedAttribute());
 					}
 					break;
 				case EPI_WEEK:
-					if (filterElements.get(StatisticsCaseSubAttribute.EPI_WEEK).getSelectedValues() != null) {
+					if (filterElement.getSelectedValues() != null) {
 						List<EpiWeek> epiWeeks = new ArrayList<>();
-						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.EPI_WEEK).getSelectedValues()) {
+						for (TokenizableValue tokenizableValue : filterElement.getSelectedValues()) {
 							epiWeeks.add((EpiWeek) tokenizableValue.getValue());
 						}
 						caseCriteria.epiWeeks(epiWeeks, filterComponent.getSelectedAttribute());
 					}
 					break;
 				case QUARTER_OF_YEAR:
-					if (filterElements.get(StatisticsCaseSubAttribute.QUARTER_OF_YEAR).getSelectedValues() != null) {
+					if (filterElement.getSelectedValues() != null) {
 						List<QuarterOfYear> quartersOfYear = new ArrayList<>();
-						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.QUARTER_OF_YEAR).getSelectedValues()) {
+						for (TokenizableValue tokenizableValue : filterElement.getSelectedValues()) {
 							quartersOfYear.add((QuarterOfYear) tokenizableValue.getValue());
 						}
 						caseCriteria.quartersOfYear(quartersOfYear, filterComponent.getSelectedAttribute());
 					}
 					break;
 				case MONTH_OF_YEAR:
-					if (filterElements.get(StatisticsCaseSubAttribute.MONTH_OF_YEAR).getSelectedValues() != null) {
+					if (filterElement.getSelectedValues() != null) {
 						List<MonthOfYear> monthsOfYear = new ArrayList<>();
-						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.MONTH_OF_YEAR).getSelectedValues()) {
+						for (TokenizableValue tokenizableValue : filterElement.getSelectedValues()) {
 							monthsOfYear.add((MonthOfYear) tokenizableValue.getValue());
 						}
 						caseCriteria.monthsOfYear(monthsOfYear, filterComponent.getSelectedAttribute());
 					}
 					break;
 				case EPI_WEEK_OF_YEAR:
-					if (filterElements.get(StatisticsCaseSubAttribute.EPI_WEEK_OF_YEAR).getSelectedValues() != null) {
+					if (filterElement.getSelectedValues() != null) {
 						List<EpiWeek> epiWeeksOfYear = new ArrayList<>();
-						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.EPI_WEEK_OF_YEAR).getSelectedValues()) {
+						for (TokenizableValue tokenizableValue : filterElement.getSelectedValues()) {
 							epiWeeksOfYear.add((EpiWeek) tokenizableValue.getValue());
 						}
 						caseCriteria.epiWeeksOfYear(epiWeeksOfYear, filterComponent.getSelectedAttribute());
 					}
 					break;
 				case DATE_RANGE:
-					caseCriteria.dateRange((Date) filterElements.get(StatisticsCaseSubAttribute.DATE_RANGE).getSelectedValues().get(0).getValue(), 
-							(Date) filterElements.get(StatisticsCaseSubAttribute.DATE_RANGE).getSelectedValues().get(1).getValue(), 
+					caseCriteria.dateRange((Date) filterElement.getSelectedValues().get(0).getValue(), 
+							(Date) filterElement.getSelectedValues().get(1).getValue(), 
 							filterComponent.getSelectedAttribute());
 					break;
 				default:

@@ -33,7 +33,7 @@ public class TestEnvironmentInterceptor implements Interceptor {
 
         // API version
         if (uri.getPath().endsWith("version")) {
-            responseString = "\""+InfoProvider.getVersion()+"\"";
+            responseString = "\""+InfoProvider.get().getVersion()+"\"";
         } else if (uri.getPath().contains("persons/all")) {
             responseString = "[]";
         } else if (uri.getPath().contains("persons/push")) {

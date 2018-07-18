@@ -9,20 +9,12 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IDashboardNavigationCapsule;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.dashboard.ISummaryLoadingStatusCommunicator;
 import de.symeda.sormas.app.util.ConstantHelper;
 
-/**
- * Created by Orson on 08/04/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
 public abstract class BaseSummaryFragment<E extends Enum<E>, TAdapter extends EnumMapDataBinderAdapter<E>> extends BaseFragment { // implements ISummaryLoadingStatus
 
     private RecyclerView.LayoutManager mLayoutManager;
@@ -60,13 +52,8 @@ public abstract class BaseSummaryFragment<E extends Enum<E>, TAdapter extends En
         return view;
     }
 
-    //<editor-fold desc="Public Methods">
     public int getRootListLayout() {
         return R.layout.fragment_root_summary_layout;
-    }
-
-    public int getMinHeightResId() {
-        return R.dimen.summaryFragmentMinHeight;
     }
 
     public RecyclerView getRecyclerView() {
@@ -102,10 +89,6 @@ public abstract class BaseSummaryFragment<E extends Enum<E>, TAdapter extends En
             mEmptySummaryHint.setVisibility(View.GONE);
     }
 
-    //</editor-fold>
-
-    //<editor-fold desc="Abstract Methods">
-
     protected abstract int getSectionTitleResId();
 
     protected abstract int getEntityResId();
@@ -118,12 +101,9 @@ public abstract class BaseSummaryFragment<E extends Enum<E>, TAdapter extends En
 
     public abstract String getIdentifier();
 
-    //</editor-fold>
 
-    protected static <TFragment extends BaseSummaryFragment, TCapsule extends IDashboardNavigationCapsule> TFragment newInstance(IActivityCommunicator activityCommunicator, Class<TFragment> f, TCapsule dataCapsule) throws IllegalAccessException, java.lang.InstantiationException {
+    protected static <TFragment extends BaseSummaryFragment, TCapsule extends IDashboardNavigationCapsule> TFragment newInstance(Class<TFragment> f, TCapsule dataCapsule) throws IllegalAccessException, java.lang.InstantiationException {
         TFragment fragment = f.newInstance();
-
-        fragment.setActivityCommunicator(activityCommunicator);
 
         Bundle bundle = fragment.getArguments();
         if (bundle == null) {
@@ -138,15 +118,4 @@ public abstract class BaseSummaryFragment<E extends Enum<E>, TAdapter extends En
         fragment.setArguments(bundle);
         return fragment;
     }
-
-
-    /*@Override
-    public void onAllSummaryLoadingCompleted(ICallback<BoolResult> callback) {
-        mDashboardActivityCommunicator.registerOnSummaryLoadingCompletedCallback(getIdentifier(), callback);
-    }
-
-    @Override
-    public void notifyActivitySummaryLoadingCompleted() {
-        mDashboardActivityCommunicator.loadingCompleted(getIdentifier());
-    }*/
 }

@@ -5,6 +5,10 @@
     android:focusableInTouchMode="true"
     android:id="@+id/base_layout">
 
+    <data>
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
+    </data>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -17,55 +21,48 @@
             android:focusable="true"
             android:focusableInTouchMode="true">
 
-            <de.symeda.sormas.app.component.TeboTextInputEditText
-                android:id="@+id/txtSettingsServerUrl"
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/settings_serverUrl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="Server Address"
-                app:description="This is the URL to the restful API"
-                app:labelCaption="Server Address"/>
+                android:layout_marginBottom="@dimen/textControlMarginBottom" />
 
-            <de.symeda.sormas.app.component.TeboButton
-                android:id="@+id/btnSettingsChangePIN"
+            <de.symeda.sormas.app.component.controls.ControlButton
+                android:id="@+id/change_pin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/buttonControlMarginBottom"
-                app:text="@string/action_change_PIN"
-                app:buttonType="line_secondary"
-                app:rounded="true"
-                />
+                android:text="@string/action_change_PIN"
+                app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
+                app:rounded="true" />
 
 
-            <de.symeda.sormas.app.component.TeboButton
-                android:id="@+id/btnSettingsRepullData"
+            <de.symeda.sormas.app.component.controls.ControlButton
+                android:id="@+id/resynchronize_data"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/buttonControlMarginBottom"
-                app:buttonType="line_secondary"
-                app:text="@string/action_repull_data"
-                app:rounded="true"
-                />
+                app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
+                android:text="@string/action_repull_data"
+                app:rounded="true" />
 
-            <de.symeda.sormas.app.component.TeboButton
-                android:id="@+id/btnSettingsSyncLog"
+            <de.symeda.sormas.app.component.controls.ControlButton
+                android:id="@+id/show_sync_log"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/buttonControlMarginBottom"
-                app:text="@string/action_open_syncLog"
-                app:buttonType="line_secondary"
-                app:rounded="true"
-                />
+                android:text="@string/action_open_syncLog"
+                app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
+                app:rounded="true" />
 
-            <de.symeda.sormas.app.component.TeboButton
-                android:id="@+id/btnSettingsLogout"
+            <de.symeda.sormas.app.component.controls.ControlButton
+                android:id="@+id/logout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/buttonControlMarginBottom"
-                app:text="@string/action_logout"
-                app:buttonType="line_secondary"
-                app:rounded="true"
-                />
+                android:text="@string/action_logout"
+                app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
+                app:rounded="true" />
 
             <TextView
                 android:id="@+id/sormas_version"

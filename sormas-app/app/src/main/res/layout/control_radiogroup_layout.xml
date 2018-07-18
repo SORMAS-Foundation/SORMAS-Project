@@ -1,56 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge  xmlns:android="http://schemas.android.com/apk/res/android">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
     <LinearLayout
-        android:id="@+id/controlFrame"
+        android:id="@+id/control_frame"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:id="@+id/captionFrame"
+            android:id="@+id/label_frame"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_gravity="center_vertical"
-            >
+            android:layout_gravity="center_vertical">
+
             <TextView
-                android:id="@+id/lblControlLabel"
-                android:labelFor="@+id/txtControlInput"
+                android:id="@+id/label"
+                android:labelFor="@+id/input"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/CheckboxLabelStyle" />
+                style="@style/RadioGroupLabelStyle" />
+
             <TextView
-                android:id="@+id/lblRequired"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_gravity="top"
-                android:paddingLeft="@dimen/contentHorizontalSpacing"
-                android:text="*"
-                android:textColor="@color/watchOut"
-                android:textSize="@dimen/controlLabelSize"
-                android:fontFamily="sans-serif-medium"/>
+                android:id="@+id/required_indicator"
+                style="@style/RequiredIndicatorStyle" />
+
             <TextView
-                android:id="@+id/lblSoftRequired"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_gravity="top"
-                android:paddingLeft="@dimen/contentHorizontalSpacing"
-                android:text="*"
-                android:textColor="@color/warning"
-                android:textSize="@dimen/controlLabelSize"
-                android:fontFamily="sans-serif-medium"/>
+                android:id="@+id/soft_required_indicator"
+                style="@style/SoftRequiredIndicatorStyle" />
+
+            <TextView
+                android:id="@+id/warning_indicator"
+                style="@style/WarningIndicatorStyle" />
+
         </LinearLayout>
 
         <RadioGroup
-            android:id="@+id/rbgControlInput"
+            android:id="@+id/input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            />
+            android:layout_marginBottom="@dimen/controlMarginBottom" />
 
     </LinearLayout>
+
 </merge>

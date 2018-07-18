@@ -12,58 +12,31 @@ import java.util.List;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.location.Location;
-import de.symeda.sormas.app.backend.region.District;
-import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.TeboButtonType;
-import de.symeda.sormas.app.component.TeboSpinner;
-import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
-import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.InfrastructureHelper;
 import de.symeda.sormas.app.util.LocationService;
-
-/**
- * Created by Orson on 02/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
 
 public class LocationDialog extends BaseTeboAlertDialog {
 
     public static final String TAG = LocationDialog.class.getSimpleName();
 
-    private Location data;
     private FragmentActivity activity;
+
+    private Location data;
+    private List<Item> initialRegions;
+    private List<Item> initialDistricts;
+    private List<Item> initialCommunities;
+
     private DialogLocationLayoutBinding mContentBinding;
-
-    private RegionLoader regionLoader;
-    private DistrictLoader districtLoader;
-    private CommunityLoader communityLoader;
-
     private IEntryItemOnClickListener pickGpsCallback;
 
     public LocationDialog(final FragmentActivity activity, Location location) {
-        this(activity, R.string.heading_location_dialog, -1, null, null, null, location);
-    }
-
-
-    public LocationDialog(final FragmentActivity activity, RegionLoader regionLoader,
-                          DistrictLoader districtLoader, CommunityLoader communityLoader, Location location) {
-        this(activity, R.string.heading_location_dialog, -1, regionLoader, districtLoader, communityLoader, location);
-    }
-
-    public LocationDialog(final FragmentActivity activity, int headingResId, int subHeadingResId,
-                          RegionLoader regionLoader, DistrictLoader districtLoader,
-                          CommunityLoader communityLoader, Location location) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_location_layout,
-                R.layout.dialog_root_two_button_panel_layout, headingResId, subHeadingResId);
-
+                R.layout.dialog_root_two_button_panel_layout,R.string.heading_location_dialog, -1);
 
         this.activity = activity;
         this.data = location;
@@ -108,23 +81,10 @@ public class LocationDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void initializeData(TaskResultHolder resultHolder, boolean executionComplete) {
-        if (!executionComplete) {
-            resultHolder.forOther().add(regionLoader == null? RegionLoader.getInstance() : regionLoader);
-            resultHolder.forOther().add(districtLoader == null? DistrictLoader.getInstance() : districtLoader);
-            resultHolder.forOther().add(communityLoader == null? CommunityLoader.getInstance() : communityLoader);
-        } else {
-            ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
-
-            if (otherIterator.hasNext())
-                this.regionLoader = otherIterator.next();
-
-            if (otherIterator.hasNext())
-                this.districtLoader = otherIterator.next();
-
-            if (otherIterator.hasNext())
-                this.communityLoader = otherIterator.next();
-        }
+    protected void prepareDialogData() {
+        initialRegions = InfrastructureHelper.loadRegions();
+        initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
+        initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
     }
 
     @Override
@@ -133,71 +93,9 @@ public class LocationDialog extends BaseTeboAlertDialog {
 
         updateGpsTextView();
 
-        mContentBinding.spnState.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return data.getRegion();
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                /*Community comm = DatabaseHelper.getCommunityDao().queryForAll().get(0);
-                return DataUtils.toItems(DatabaseHelper.getFacilityDao()
-                        .getHealthFacilitiesByCommunity(comm, false));*/
-
-
-                //return DataUtils.toItems(communityList);
-
-                List<Item> regions = regionLoader.load();
-
-
-                return (regions.size() > 0) ? DataUtils.addEmptyItem(regions) : regions;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-        });
-
-        mContentBinding.spnLga.initialize(mContentBinding.spnState, new TeboSpinner.ISpinnerInitSimpleConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return data.getDistrict();
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                List<Item> districts = districtLoader.load((Region)parentValue);
-
-                return (districts.size() > 0) ? DataUtils.addEmptyItem(districts) : districts;
-
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-        });
-
-        mContentBinding.spnWard.initialize(mContentBinding.spnLga, new TeboSpinner.ISpinnerInitSimpleConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return data.getCommunity();
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                List<Item> communities = communityLoader.load((District)parentValue);
-
-                return (communities.size() > 0) ? DataUtils.addEmptyItem(communities) : communities;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-        });
+        InfrastructureHelper.initializeRegionFields(mContentBinding.locationRegion, initialRegions,
+                mContentBinding.locationDistrict, initialDistricts,
+                mContentBinding.locationCommunity, initialCommunities);
     }
 
     @Override
@@ -216,20 +114,20 @@ public class LocationDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    public TeboButtonType dismissButtonType() {
-        return TeboButtonType.BTN_LINE_DANGER;
+    public ControlButtonType dismissButtonType() {
+        return ControlButtonType.LINE_DANGER;
     }
 
     @Override
-    public TeboButtonType okButtonType() {
-        return TeboButtonType.BTN_LINE_PRIMARY;
+    public ControlButtonType okButtonType() {
+        return ControlButtonType.LINE_PRIMARY;
     }
 
     private void updateGpsTextView() {
         if (mContentBinding == null)
             return;
 
-        mContentBinding.txtGpsLatLon.setValue(data.getGpsLocation());
+        mContentBinding.locationLatLon.setValue(data.getGpsLocation());
     }
 
     private void setupCallbacks() {
@@ -237,17 +135,31 @@ public class LocationDialog extends BaseTeboAlertDialog {
 
             @Override
             public void onClick(View v, Object item) {
-                android.location.Location phoneLocation = LocationService.instance().getLocation(activity);
-                if (phoneLocation != null) {
-                    data.setLatitude(phoneLocation.getLatitude());
-                    data.setLongitude(phoneLocation.getLongitude());
-                    data.setLatLonAccuracy(phoneLocation.getAccuracy());
-                } else {
-                    data.setLatitude(null);
-                    data.setLongitude(null);
-                    data.setLatLonAccuracy(null);
-                }
-                updateGpsTextView();
+
+                final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActivity(),
+                        R.string.heading_confirmation_dialog,
+                        R.string.heading_sub_confirmation_notification_dialog_pick_gps);
+
+                confirmationDialog.setOnPositiveClickListener(new de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface.PositiveOnClickListener() {
+                    @Override
+                    public void onOkClick(View v, Object confirmationItem, View viewRoot) {
+                        confirmationDialog.dismiss();
+
+                        android.location.Location phoneLocation = LocationService.instance().getLocation(activity);
+                        if (phoneLocation != null) {
+                            data.setLatitude(phoneLocation.getLatitude());
+                            data.setLongitude(phoneLocation.getLongitude());
+                            data.setLatLonAccuracy(phoneLocation.getAccuracy());
+                        } else {
+                            data.setLatitude(null);
+                            data.setLongitude(null);
+                            data.setLatLonAccuracy(null);
+                        }
+                        updateGpsTextView();
+                    }
+                });
+
+                confirmationDialog.show(null);
             }
         };
     }

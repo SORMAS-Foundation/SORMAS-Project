@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiDataGathering"/>
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+            android:paddingRight="@dimen/rowListItemHorizontalMargin"
+            >
+
+            <de.symeda.sormas.app.component.controls.ControlDateField
+                android:id="@+id/epiDataGathering_gatheringDate"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.gatheringDate}"
+                />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/epiDataGathering_description"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.description}"
+                />
+
+            <de.symeda.sormas.app.component.controls.ControlTextPopupField
+                android:id="@+id/epiDataGathering_gatheringAddress"
+                style="@style/ControlSingleColumnStyle"
+                app:iconStart="@drawable/ic_edit_location_black_24dp"
+                app:hint="@string/hint_case_epid_social_event_address"
+                app:locationValue="@={data.gatheringAddress}"
+                />
+
+        </LinearLayout>
+    </ScrollView>
+</layout>
+

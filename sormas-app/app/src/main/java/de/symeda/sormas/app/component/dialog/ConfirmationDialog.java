@@ -11,9 +11,8 @@ import com.google.android.gms.analytics.Tracker;
 import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
-import de.symeda.sormas.app.component.TeboButtonType;
+import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.DialogConfirmationLayoutBinding;
 
 /**
@@ -106,7 +105,7 @@ public class ConfirmationDialog extends de.symeda.sormas.app.component.dialog.Ba
     }
 
     @Override
-    protected void initializeData(TaskResultHolder resultHolder, boolean executionComplete) {
+    protected void prepareDialogData() {
 
     }
 
@@ -136,8 +135,8 @@ public class ConfirmationDialog extends de.symeda.sormas.app.component.dialog.Ba
     }
 
     @Override
-    public TeboButtonType dismissButtonType() {
-        return TeboButtonType.BTN_LINE_DANGER;
+    public ControlButtonType dismissButtonType() {
+        return ControlButtonType.LINE_DANGER;
     }
 
     @Override

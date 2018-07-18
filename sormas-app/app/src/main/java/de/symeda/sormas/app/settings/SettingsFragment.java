@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.settings;
 
-import android.accounts.AuthenticatorException;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,37 +10,27 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-
-import java.net.ConnectException;
 
 import de.symeda.sormas.api.utils.InfoProvider;
-import de.symeda.sormas.app.BaseLandingActivityFragment;
-import de.symeda.sormas.app.EnterPinActivity;
+import de.symeda.sormas.app.BaseLandingFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.component.SyncLogDialog;
+import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
+import de.symeda.sormas.app.component.dialog.SyncLogDialog;
 import de.symeda.sormas.app.component.dialog.TeboProgressDialog;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
-import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.core.notification.NotificationPosition;
-import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.FragmentSettingsLayoutBinding;
+import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
-import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.util.AppUpdateController;
+import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
-import de.symeda.sormas.app.util.SyncCallback;
 
 /**
  * Created by Orson on 03/11/2017.
  */
 
-public class SettingsFragment extends BaseLandingActivityFragment {
+public class SettingsFragment extends BaseLandingFragment {
 
     private final int SHOW_DEV_OPTIONS_CLICK_LIMIT = 5;
 
@@ -55,40 +44,40 @@ public class SettingsFragment extends BaseLandingActivityFragment {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings_layout, container, false);
 
-        binding.txtSettingsServerUrl.setValue(ConfigProvider.getServerRestUrl());
-        binding.btnSettingsChangePIN.setOnButtonOnClick(new View.OnClickListener() {
+        binding.settingsServerUrl.setValue(ConfigProvider.getServerRestUrl());
+        binding.changePin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 changePIN(v);
             }
         });
-        binding.btnSettingsRepullData.setOnButtonOnClick(new View.OnClickListener() {
+        binding.resynchronizeData.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 repullData(v);
             }
         });
-        binding.btnSettingsSyncLog.setOnButtonOnClick(new View.OnClickListener() {
+        binding.showSyncLog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openSyncLog(v);
             }
         });
-        binding.btnSettingsLogout.setOnButtonOnClick(new View.OnClickListener() {
+        binding.logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 logout(v);
             }
         });
-        binding.btnSettingsRepullData.setVisibility(View.GONE);
+        binding.resynchronizeData.setVisibility(View.GONE);
 
-        binding.sormasVersion.setText("SORMAS " + InfoProvider.getVersion());
+        binding.sormasVersion.setText("SORMAS " + InfoProvider.get().getVersion());
         binding.sormasVersion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 versionClickedCount++;
                 if (versionClickedCount >= SHOW_DEV_OPTIONS_CLICK_LIMIT) {
-                    binding.txtSettingsServerUrl.setVisibility(View.VISIBLE);
-                    binding.btnSettingsLogout.setVisibility(View.VISIBLE);
+                    binding.settingsServerUrl.setVisibility(View.VISIBLE);
+                    binding.logout.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -101,11 +90,11 @@ public class SettingsFragment extends BaseLandingActivityFragment {
         super.onResume();
 
         boolean hasUser = ConfigProvider.getUser() != null;
-        binding.txtSettingsServerUrl.setVisibility(versionClickedCount >= SHOW_DEV_OPTIONS_CLICK_LIMIT ? View.VISIBLE : View.GONE);
-        binding.btnSettingsChangePIN.setVisibility(hasUser ? View.VISIBLE : View.GONE);
-        binding.btnSettingsRepullData.setVisibility(hasUser ? View.VISIBLE : View.GONE);
-        binding.btnSettingsSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
-        binding.btnSettingsLogout.setVisibility(hasUser && versionClickedCount >= SHOW_DEV_OPTIONS_CLICK_LIMIT ? View.VISIBLE : View.GONE);
+        binding.settingsServerUrl.setVisibility(versionClickedCount >= SHOW_DEV_OPTIONS_CLICK_LIMIT ? View.VISIBLE : View.GONE);
+        binding.changePin.setVisibility(hasUser ? View.VISIBLE : View.GONE);
+        binding.resynchronizeData.setVisibility(hasUser ? View.VISIBLE : View.GONE);
+        binding.showSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
+        binding.logout.setVisibility(hasUser && versionClickedCount >= SHOW_DEV_OPTIONS_CLICK_LIMIT ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -116,7 +105,7 @@ public class SettingsFragment extends BaseLandingActivityFragment {
     }
 
     public String getServerUrl() {
-        return binding.txtSettingsServerUrl.getValue();
+        return binding.settingsServerUrl.getValue();
     }
 
     public void changePIN(View view) {
@@ -125,53 +114,22 @@ public class SettingsFragment extends BaseLandingActivityFragment {
         startActivity(intent);
     }
 
-    /**
-     * Only possible when server connection is available
-     */
     private void repullData(View view) {
 
-        if (!RetroProvider.isConnected()) {
-            try {
-                RetroProvider.connect(getContext());
-            } catch (AuthenticatorException e) {
-                //Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                NotificationHelper.showNotification((INotificationContext)getActivity(), NotificationPosition.BOTTOM, NotificationType.ERROR, e.getMessage());
-            } catch (RetroProvider.ApiVersionException e) {
-                if (e.getAppUrl() != null) {
-                    //TODO: Orson Remove Version Check
-                    AppUpdateController.getInstance().updateApp(this.getActivity(), e.getAppUrl(), e.getVersion(), true, null);
-                    return;
-                } else {
-                    //Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                    NotificationHelper.showNotification((INotificationContext)getActivity(), NotificationPosition.BOTTOM, NotificationType.ERROR, e.getMessage());
-                }
-            } catch (ConnectException e) {
-                //Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                NotificationHelper.showNotification((INotificationContext)getActivity(), NotificationPosition.BOTTOM, NotificationType.ERROR, e.getMessage());
+        final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActivity(),
+                R.string.heading_confirmation_dialog,
+                R.string.heading_sub_confirmation_notification_dialog_resync);
+
+        confirmationDialog.setOnPositiveClickListener(new de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface.PositiveOnClickListener() {
+            @Override
+            public void onOkClick(View v, Object confirmationItem, View viewRoot) {
+                confirmationDialog.dismiss();
+
+                getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.CompleteAndRepull, true, true, null, null);
             }
-        }
+        });
 
-        if (RetroProvider.isConnected()) {
-            progressDialog.show(new Callback.IAction<AlertDialog>() {
-                @Override
-                public void call(AlertDialog result) {
-
-                }
-            });
-            //binding.configProgressBar.setVisibility(View.VISIBLE);
-
-            SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.CompleteAndRepull, getContext(), new SyncCallback() {
-                @Override
-                public void call(boolean syncFailed, String syncFailedMessage) {
-                    SettingsFragment.this.onResume();
-                    progressDialog.dismiss();
-                    //binding.configProgressBar.setVisibility(View.GONE);
-                }
-            });
-        } else {
-            //Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_no_connection, Snackbar.LENGTH_LONG).show();
-            NotificationHelper.showNotification((INotificationContext)getActivity(), NotificationPosition.BOTTOM, NotificationType.ERROR, R.string.snackbar_no_connection);
-        }
+        confirmationDialog.show(null);
     }
 
     public void openSyncLog(View view) {
@@ -227,20 +185,5 @@ public class SettingsFragment extends BaseLandingActivityFragment {
     @Override
     public RecyclerView.LayoutManager createLayoutManager() {
         return null;
-    }
-
-    @Override
-    public int getMenuData() {
-        return -1;
-    }
-
-    @Override
-    public boolean onLandingPageMenuClick(AdapterView parent, View view, LandingPageMenuItem menuItem, int position, long id) {
-        return false;
-    }
-
-    @Override
-    public int onNotificationCountChangingAsync(AdapterView parent, LandingPageMenuItem menuItem, int position) {
-        return 0;
     }
 }

@@ -1,7 +1,7 @@
 <resources>
-<!-- Martin
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />-->
+    <!-- Martin
+        <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+        <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />-->
 
     <!-- Toolbar styles -->
     <style name="AppToolbar" parent="Widget.AppCompat.Toolbar">
@@ -13,7 +13,9 @@
         <!-- navigation icon color -->
         <item name="colorControlNormal">@color/blue</item>
         <item name="colorControlHighlight">@color/toolbarActionButtonPressed</item>
-        <item name="subtitleTextAppearance">@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle</item>
+        <item name="subtitleTextAppearance">
+            @style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle
+        </item>
         <!--<item name="titleTextAppearance">@style/SormasActionBarTitleTextStyle</item>-->
         <item name="android:minHeight">@dimen/toolBarMinHeight</item>
     </style>
@@ -21,7 +23,9 @@
     <style name="AppToolbarPopup" parent="Base.ThemeOverlay.AppCompat.ActionBar">
         <item name="android:textColorPrimary">@color/popupMenuListText</item>
         <item name="android:minHeight">@dimen/toolBarPopupMinHeight</item>
-        <item name="android:listPreferredItemHeightSmall">@dimen/toolBarListPreferredItemHeightSmall</item>
+        <item name="android:listPreferredItemHeightSmall">
+            @dimen/toolBarListPreferredItemHeightSmall
+        </item>
         <item name="android:dropDownListViewStyle">@style/PopupMenuListView</item>
     </style>
 
@@ -77,8 +81,7 @@
     <!-- /Toolbar styles -->
 
 
-
-    <style name="CheckboxLabelStyle">
+    <style name="CheckBoxLabelStyle">
         <item name="android:textColor">@color/controlLabelColor</item>
         <item name="android:textSize">@dimen/controlLabelSize</item>
         <item name="android:fontFamily">sans-serif-medium</item>
@@ -134,12 +137,27 @@
         <item name="android:textStyle">italic</item>
     </style>
 
-
-
-    <style name="EditTextViewSingleRowStyle">
+    <style name="ControlSingleColumnStyle">
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingTop">@dimen/textViewTopPadding</item>
-        <item name="android:paddingBottom">@dimen/textViewBottomPadding</item>
+    </style>
+
+    <style name="ControlFirstOfTwoColumnsStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginEnd">@dimen/control_spacing</item>
+    </style>
+
+    <style name="ControlSecondOfTwoColumnsStyle" parent="ControlFirstOfTwoColumnsStyle">
+        <item name="android:layout_marginEnd">0dp</item>
+    </style>
+
+    <style name="ControlTextFieldStyle">
+        <item name="android:layout_height">@dimen/maxControlHeight</item>
+        <item name="android:minHeight">@dimen/maxControlHeight</item>
+        <item name="android:maxHeight">@dimen/maxControlHeight</item>
+        <item name="android:layout_marginBottom">@dimen/controlMarginBottom</item>
         <item name="android:background">@drawable/selector_text_control_edit</item>
         <item name="android:cursorVisible">true</item>
         <item name="android:fontFamily">sans-serif</item>
@@ -153,16 +171,111 @@
         <item name="android:textSize">@dimen/defaultControlTextSize</item>
     </style>
 
-    <style name="ControlReadLabelStyle">
-        <item name="android:textColor">@color/controlReadLabelColor</item>
-        <item name="android:textSize">@dimen/controlReadLabelSize</item>
-        <item name="android:paddingTop">@dimen/controlReadLabelPaddingTop</item>
-        <item name="android:paddingBottom">@dimen/controlReadLabelPaddingBottom</item>
+    <style name="ControlTextFieldMultiRowStyle" parent="ControlTextFieldStyle">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/textViewTopPadding</item>
+        <item name="android:paddingBottom">@dimen/textViewBottomPadding</item>
+
+    </style>
+
+    <style name="ControlTextFieldSlimStyle" parent="ControlTextFieldStyle">
+        <item name="android:textSize">@dimen/slimControlTextSize</item>
+        <item name="android:paddingTop">@dimen/slimTextViewTopPadding</item>
+        <item name="android:paddingBottom">@dimen/slimTextViewBottomPadding</item>
+        <item name="android:layout_height">@dimen/slimControlHeight</item>
+        <item name="android:minHeight">@dimen/slimControlHeight</item>
+        <item name="android:maxHeight">@dimen/slimControlHeight</item>
+    </style>
+
+    <style name="ControlTextFieldReadStyle">
+        <item name="android:background">@color/controlReadTextViewBackground</item>
+        <item name="android:cursorVisible">true</item>
         <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textAllCaps">true</item>
+        <item name="android:gravity">center_vertical</item>
         <item name="android:focusable">false</item>
+        <item name="android:textColor">@color/controlReadTextColor</item>
+        <item name="android:textColorHint">@color/controlReadTextViewHint</item>
+        <item name="android:textSize">@dimen/controlReadTextSize</item>
+        <item name="android:layout_marginBottom">@dimen/controlMarginBottom</item>
+    </style>
+
+    <style name="ControlTextFieldReadDistinctStyle" parent="ControlTextFieldReadStyle">
+        <item name="android:background">@drawable/background_control_text_read_form_style</item>
+        <item name="android:paddingTop">@dimen/teboTextReadVerticalPadding</item>
+        <item name="android:paddingBottom">@dimen/teboTextReadVerticalPadding</item>
+        <item name="android:paddingStart">@dimen/textViewRightPadding</item>
+        <item name="android:paddingEnd">@dimen/textViewRightPadding</item>
+
+    </style>
+
+    <style name="ControlTextFieldReadDistinctSlimStyle" parent="ControlTextFieldReadDistinctStyle">
+        <item name="android:layout_height">@dimen/slimControlHeight</item>
+        <item name="android:minHeight">@dimen/slimControlHeight</item>
+        <item name="android:maxHeight">@dimen/slimControlHeight</item>
+    </style>
+
+    <style name="ControlPopupTextViewEditStyle">
+        <item name="android:paddingLeft">@dimen/textViewLeftPadding</item>
+        <item name="android:paddingRight">@dimen/textViewRightPadding</item>
+        <item name="android:paddingTop">@dimen/textViewTopPadding</item>
+        <item name="android:paddingBottom">@dimen/textViewBottomPadding</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:maxLines">5</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:background">@drawable/control_link_edittextview_background_selector
+        </item>
+        <item name="android:textColor">@color/control_link_edittextview_color_selector</item>
+        <item name="android:textColorHint">@color/control_link_edittextview_hint_color_selector
+        </item>
+        <item name="android:drawablePadding">@dimen/contentHorizontalSpacing</item>
+        <item name="android:layout_marginBottom">@dimen/controlMarginBottom</item>
+    </style>
+
+    <style name="ControlPopupTextViewEditSlimStyle" parent="ControlPopupTextViewEditStyle">
+        <item name="android:textSize">@dimen/slimControlTextSize</item>
+        <item name="android:layout_height">@dimen/slimControlHeight</item>
+        <item name="android:paddingTop">@dimen/slimTextViewTopPadding</item>
+        <item name="android:paddingBottom">@dimen/slimTextViewBottomPadding</item>
+    </style>
+
+    <style name="ControlDateOrTimePickerInputStyle" parent="@style/ControlTextFieldStyle">
+        <item name="android:cursorVisible">false</item>
+        <item name="android:textIsSelectable">false</item>
+    </style>
+
+    <style name="ControlDateOrTimePickerSlimInputStyle" parent="@style/ControlTextFieldSlimStyle">
+        <item name="android:cursorVisible">false</item>
+        <item name="android:textIsSelectable">false</item>
+    </style>
+
+    <style name="ControlSpinnerStyle">
+        <item name="android:layout_height">@dimen/maxSpinnerHeight</item>
+        <item name="android:minHeight">@dimen/maxSpinnerHeight</item>
+        <item name="android:maxHeight">@dimen/maxSpinnerHeight</item>
+        <item name="android:layout_marginBottom">@dimen/controlMarginBottom</item>
+    </style>
+
+    <style name="ControlSpinnerSlimStyle">
+        <item name="android:layout_height">@dimen/dropdownListSlimItemHeight</item>
+        <item name="android:minHeight">@dimen/dropdownListSlimItemHeight</item>
+        <item name="android:maxHeight">@dimen/dropdownListSlimItemHeight</item>
+        <item name="android:paddingTop">@dimen/slimTextViewTopPadding</item>
+        <item name="android:paddingBottom">@dimen/slimTextViewBottomPadding</item>
+        <item name="android:textSize">@dimen/slimControlTextSize</item>
+    </style>
+
+    <style name="ControlLinkStyle">
+        <item name="android:height">@dimen/linkButtonHeight</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">@dimen/formActivityLinkButtonTextSize</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Button</item>
+        <item name="android:textColor">@color/selector_color_form_activity_link_button</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:maxLines">1</item>
         <item name="android:clickable">true</item>
-        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
     </style>
 
     <style name="ControlLabelStyle">
@@ -172,37 +285,68 @@
         <item name="android:paddingBottom">@dimen/controlLabelMarginBottom</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:focusable">true</item>
         <item name="android:clickable">true</item>
-        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:scrollHorizontally">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">2</item>
+    </style>
+
+    <style name="ControlLabelRowStyle" parent="ControlLabelStyle">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">@dimen/row_entry_secondary_text_size</item>
+        <item name="android:textColor">@color/listActivityRowPrimaryText</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="ImageCaptionStyle">
+        <item name="android:textColor">@color/controlLabelColor</item>
+        <item name="android:textSize">@dimen/controlLabelSize</item>
+        <item name="android:layout_marginBottom">@dimen/field_padding_8</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="RadioGroupLabelStyle" parent="ControlLabelStyle">
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+    </style>
+
+    <style name="RequiredIndicatorStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">top</item>
+        <item name="android:paddingStart">6dp</item>
+        <item name="android:text">@string/indicator_required</item>
+        <item name="android:textColor">@color/watchOut</item>
+        <item name="android:textSize">@dimen/textSizeNormal</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="SoftRequiredIndicatorStyle" parent="@style/RequiredIndicatorStyle">
+        <item name="android:text">@string/indicator_soft_required</item>
+        <item name="android:textColor">@color/controlLabelColor</item>
+    </style>
+
+    <style name="WarningIndicatorStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">top</item>
+        <item name="android:layout_marginStart">6dp</item>
+        <item name="android:text">@string/indicator_warning</item>
+        <item name="android:background">@drawable/background_rounded_edges_warning</item>
+        <item name="android:textColor">@color/whiteOpaque</item>
+        <item name="android:textSize">@dimen/verySmallTextSize</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:minWidth">30dp</item>
+        <item name="android:padding">2dp</item>
     </style>
 
     <style name="DarkColorStyle">
         <item name="android:textColor">@color/normalText</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textAllCaps">true</item>
-    </style>
-
-    <style name="ReadTextFieldViewSingleRowStyle">
-        <item name="android:background">@color/controlReadTextViewBackground</item>
-        <item name="android:cursorVisible">true</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:focusable">false</item>
-        <item name="android:textColor">@color/controlReadTextColor</item>
-        <item name="android:textColorHint">@color/controlReadTextViewHint</item>
-        <item name="android:textSize">@dimen/controlReadTextSize</item>
-    </style>
-
-    <style name="FormActivityLinkButtonStyle">
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:height">@dimen/linkButtonHeight</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textSize">@dimen/formActivityLinkButtonTextSize</item>
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Button</item>
-        <item name="android:textColor">@color/selector_color_form_activity_link_button</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusable">true</item>
     </style>
 
     <style name="PrimaryButtonStyle">
@@ -214,6 +358,7 @@
         <item name="android:background">@drawable/selector_button_primary</item>
         <item name="android:elevation">@dimen/primaryButtonElevation</item>
     </style>
+
     <style name="SecondaryButtonStyle">
         <item name="android:layout_height">@dimen/secondaryButtonHeight</item>
         <item name="android:gravity">center</item>
@@ -223,6 +368,7 @@
         <item name="android:background">@drawable/selector_button_secondary</item>
         <item name="android:elevation">@dimen/secondaryButtonElevation</item>
     </style>
+
     <style name="SuccessButtonStyle">
         <item name="android:layout_height">@dimen/primaryButtonHeight</item>
         <item name="android:gravity">center</item>
@@ -232,6 +378,7 @@
         <item name="android:background">@drawable/selector_button_success</item>
         <item name="android:elevation">@dimen/primaryButtonElevation</item>
     </style>
+
     <style name="DangerButtonStyle">
         <item name="android:layout_height">@dimen/primaryButtonHeight</item>
         <item name="android:gravity">center</item>
@@ -241,6 +388,7 @@
         <item name="android:background">@drawable/selector_button_danger</item>
         <item name="android:elevation">@dimen/primaryButtonElevation</item>
     </style>
+
     <style name="WarningButtonStyle">
         <item name="android:layout_height">@dimen/primaryButtonHeight</item>
         <item name="android:gravity">center</item>
@@ -260,6 +408,7 @@
         <item name="android:background">@drawable/selector_button_inverse_primary</item>
         <!--<item name="android:elevation">@dimen/inverseButtonElevation</item>-->
     </style>
+
     <style name="WarningInverseButtonStyle">
         <item name="android:layout_height">@dimen/primaryButtonHeight</item>
         <item name="android:gravity">center</item>
@@ -269,6 +418,7 @@
         <item name="android:background">@drawable/selector_button_inverse_warning</item>
         <item name="android:elevation">@dimen/inverseButtonElevation</item>
     </style>
+
     <style name="DangerInverseButtonStyle">
         <item name="android:layout_height">@dimen/primaryButtonHeight</item>
         <item name="android:gravity">center</item>
@@ -278,6 +428,7 @@
         <item name="android:background">@drawable/selector_button_inverse_danger</item>
         <item name="android:elevation">@dimen/inverseButtonElevation</item>
     </style>
+
     <style name="LoginHeading1">
         <item name="android:textColor">@color/normalText</item>
         <item name="android:textSize">@dimen/loginHeadingTextSize</item>
@@ -290,8 +441,8 @@
         <item name="android:layout_marginBottom">@dimen/loginHeading2LayoutMarginBottom</item>
     </style>
 
-    <style name="LoginServiceText">
-        <item name="android:textColor">@color/text_70</item>
+    <style name="LoginSubHeadingText">
+        <item name="android:textColor">@color/gray_70</item>
         <item name="android:textSize">@dimen/loginServiceTextSize</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textAllCaps">true</item>
@@ -303,7 +454,12 @@
         <item name="android:fontFamily">sans-serif-black</item>
     </style>
 
-    <style name="LoginServiceSeparator">
+    <style name="LoginSignInTagLineText">
+        <item name="android:textColor">@color/gray_70</item>
+        <item name="android:layout_marginBottom">32dp</item>
+    </style>
+
+    <style name="LoginSubHeadingSeparator">
         <item name="android:layout_width">@dimen/serviceSeparatorWidth</item>
         <item name="android:layout_height">@dimen/serviceSeparatorHeight</item>
         <item name="android:layout_gravity">center_vertical</item>
@@ -312,9 +468,10 @@
         <item name="android:background">@drawable/service_separator</item>
     </style>
 
-    <style name="ChangeSettingStyle">
+    <style name="SubtleButtonStyle">
         <item name="android:gravity">center</item>
         <item name="android:height">@dimen/primaryButtonHeight</item>
+        <item name="android:background">@android:color/transparent</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Button</item>
         <item name="android:textAlignment">center</item>
@@ -374,30 +531,35 @@
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="LandingSummaryCellTitleStyle">
+    <style name="SummaryCellTitleStyle">
         <item name="android:gravity">center</item>
-        <item name="android:textSize">@dimen/landingSummaryCellTitleSize</item>
+        <item name="android:textSize">@dimen/summaryCellTitleTextSize</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="LandingSummaryCellPercentageStyle">
+    <style name="SummaryVisualizationValueStyle">
         <item name="android:gravity">center</item>
-        <item name="android:textSize">@dimen/landingSummaryCellPercentageSize</item>
+        <item name="android:textSize">@dimen/summaryVisualizationValueTextSize</item>
+    </style>
+
+    <style name="SummaryVisualizationPercentageStyle">
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/summaryVisualizationPercentageTextSize</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="DonutProgressDefaultStyle">
+    <style name="CircularProgressDefaultStyle">
         <item name="android:layout_gravity">center</item>
-        <item name="donut_unfinished_color">@color/circularProgressUnfinishedDefault</item>
         <item name="donut_finished_color">@color/circularProgressFinishedDefault</item>
-        <item name="donut_finished_stroke_width">@dimen/donutFinishedStrokeWidth</item>
-        <item name="donut_unfinished_stroke_width">@dimen/donutUnfinishedStrokeWidth</item>
-        <item name="donut_max">@integer/donutMax</item>
-        <item name="donut_text_size">@dimen/donutTextSize</item>
+        <item name="donut_unfinished_color">@color/circularProgressUnfinishedDefault</item>
+        <item name="donut_finished_stroke_width">@dimen/circularProgressFinishedStrokeWidth</item>
+        <item name="donut_unfinished_stroke_width">@dimen/circularProgressUnfinishedStrokeWidth
+        </item>
+        <item name="donut_max">@integer/circularProgressMaxValue</item>
+        <item name="donut_text_size">@dimen/circularProgressTextSize</item>
     </style>
-
 
     <style name="EnterPinInputDisplayStyle">
         <item name="android:ellipsize">start</item>
@@ -411,20 +573,30 @@
     </style>
 
 
-
-    <style name="ReadActivitySubHeadingStyle">
+    <!-- Sub heading with bottom margin -->
+    <style name="SubHeadingStyle">
         <item name="android:textColor">@color/normalText</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textSize">@dimen/readActivitySubHeadingTextSize</item>
         <item name="android:layout_marginBottom">@dimen/parentLayoutVerticalMargin</item>
     </style>
 
-
-
-    <style name="ReadActivitySubHeadingNoBMarginStyle">
+    <!-- Sub heading without bottom margin -->
+    <style name="SubHeadingCompactStyle">
         <item name="android:textColor">@color/normalText</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textSize">@dimen/readActivitySubHeadingTextSize</item>
+    </style>
+
+    <!-- Description of the area below a sub heading -->
+    <style name="SubHeadingDescriptionStyle">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_marginBottom">@dimen/subHeadlineMarginBottom</item>
+        <item name="android:singleLine">false</item>
+        <item name="android:textColor">@color/controlTextColor</item>
+        <item name="android:textIsSelectable">false</item>
+        <item name="android:textSize">@dimen/defaultSubHeadingDescriptionTextSize</item>
     </style>
 
     <style name="ReadActivitySubListHeadingNoBMarginStyle">
@@ -464,10 +636,9 @@
         <item name="android:background">@color/formEditBottomBorder</item>
         <item name="android:layout_marginTop">@dimen/contentVerticalSpacing</item>
         <item name="android:layout_marginBottom">@dimen/contentVerticalSpacing</item>
-        <item name="android:layout_marginLeft">@dimen/formLayoutGutterSize</item>
-        <item name="android:layout_marginRight">@dimen/formLayoutGutterSize</item>
+        <item name="android:layout_marginLeft">@dimen/control_spacing</item>
+        <item name="android:layout_marginRight">@dimen/control_spacing</item>
     </style>
-
 
 
     <style name="MiniHorizontalDividerStyle">
@@ -484,7 +655,6 @@
         <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:background">@color/viewSeparator</item>
     </style>
-
 
 
     <!-- Tooltip -->

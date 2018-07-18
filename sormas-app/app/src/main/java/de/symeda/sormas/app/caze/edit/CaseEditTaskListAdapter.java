@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.caze.edit;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -22,32 +21,18 @@ import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.backend.task.Task;
 
-/**
- * Created by Orson on 16/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class CaseEditTaskListAdapter extends DataBoundAdapter<RowEditTaskListItemLayoutBinding> {
 
     private static final String TAG = CaseEditTaskListAdapter.class.getSimpleName();
 
-    private final Context context;
-    private List<Task> data = new ArrayList<>();
+    private List<Task> data;
     private OnListItemClickListener mOnListItemClickListener;
 
     private LayerDrawable backgroundRowItem;
     private Drawable unreadListItemIndicator;
 
-    public CaseEditTaskListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener) {
-        this(context, rowLayout, onListItemClickListener, new ArrayList<Task>());
-    }
-
-    public CaseEditTaskListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<Task> data) {
+    public CaseEditTaskListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Task> data) {
         super(rowLayout);
-        this.context = context;
         this.mOnListItemClickListener = onListItemClickListener;
 
         if (data == null)
@@ -67,7 +52,6 @@ public class CaseEditTaskListAdapter extends DataBoundAdapter<RowEditTaskListIte
         indicatePriority(holder.binding.imgPriorityStatusIcon, record);
         indicateStatus(holder.binding.imgTaskStatusIcon, record);
 
-
         //Sync Icon
         if (record.isModifiedOrChildModified()) {
             holder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
@@ -77,7 +61,6 @@ public class CaseEditTaskListAdapter extends DataBoundAdapter<RowEditTaskListIte
         }
 
         updateUnreadIndicator(holder, record);
-
     }
 
     @Override
@@ -97,8 +80,6 @@ public class CaseEditTaskListAdapter extends DataBoundAdapter<RowEditTaskListIte
             }
         }
     }
-
-
 
     public void indicatePriority(ImageView imgTaskPriorityIcon, Task task) {
         Resources resources = imgTaskPriorityIcon.getContext().getResources();
@@ -129,5 +110,4 @@ public class CaseEditTaskListAdapter extends DataBoundAdapter<RowEditTaskListIte
 
         imgTaskStatusIcon.setBackground(drw);
     }
-
 }

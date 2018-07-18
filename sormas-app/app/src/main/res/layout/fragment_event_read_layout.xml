@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription"
     android:descendantFocusability="beforeDescendants"
     android:id="@+id/base_layout">
 
     <data>
         <variable name="data" type="de.symeda.sormas.app.backend.event.Event"/>
     </data>
-
 
     <ScrollView
         android:layout_width="match_parent"
@@ -17,212 +18,147 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="@dimen/parentLayoutVerticalMargin"
-            android:paddingBottom="@dimen/parentLayoutVerticalMargin"
-            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-            >
+            android:padding="@dimen/fragment_padding"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:id="@+id/main_content">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
+                android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.TeboTextUuidRead
-                    android:id="@+id/txtAlertId"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_alert_id"
-                    app:labelCaption="@string/label_alert_id"
-                    app:uuidValue="@{data.uuid}"
-                    app:shortUuid="@{true}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_uuid"
+                    app:shortUuidValue="@{data.uuid}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtAlertType"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_alert_type"
-                    app:labelCaption="@string/label_alert_type"
-                    app:value="@{data.eventType}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
-
-
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_eventStatus"
+                    app:value="@{data.eventStatus}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtDateOfAlert"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_alert_date"
-                    app:labelCaption="@string/label_alert_date"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_eventDate"
                     app:value="@{data.eventDate}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtSurveillanceOfficer"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_alert_surveillance_officer"
-                    app:labelCaption="@string/label_alert_surveillance_officer"
-                    app:value="@{data.surveillanceOfficer}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_eventType"
+                    app:value="@{data.eventType}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
-
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/txtAlertDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:description="@string/desc_alert_description"
-                app:labelCaption="@string/label_alert_description"
-                app:value="@{data.eventDesc}"
-                app:defaultValue='@{@string/not_available}'
-                />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtReportDate"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_alert_report_date"
-                    app:labelCaption="@string/label_alert_report_date"
-                    app:value="@{data.reportDateTime}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtReportingUser"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_alert_reporting_user"
-                    app:labelCaption="@string/label_alert_reporting_user"
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_reportDateTime"
+                    app:value="@{data.reportDateTime}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_reportingUser"
                     app:value="@{data.reportingUser}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/txtPlaceType"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:description="@string/desc_alert_type_of_place"
-                app:labelCaption="@string/label_alert_type_of_place"
-                app:enumValueWithDesc="@{data.typeOfPlace}"
-                app:valueDesc="@{data.typeOfPlaceText}"
-                app:valueFormat="@{@string/enum_desc_format}"
-                app:defaultValue='@{@string/not_available}'
-                />
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
 
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/txtDisease"
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_eventDesc"
+                app:value="@{data.eventDesc}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:description="@string/desc_alert_disease"
-                app:labelCaption="@string/label_alert_disease"
-                app:value="@{data.disease.toString()}"
-                app:defaultValue='@{@string/not_available}'
-                />
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_disease"
+                    app:value="@{data.disease}"
+                    app:appendValue="@{data.diseaseDetails}"
+                    app:valueFormat="@string/two_strings_with_hyphen_format"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_surveillanceOfficer"
+                    app:value="@{data.surveillanceOfficer}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_eventLocation"
+                app:maxLines="5"
+                app:value="@{data.eventLocation}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_typeOfPlace"
+                app:value="@{data.typeOfPlace}"
+                app:appendValue="@{data.typeOfPlaceText}"
+                app:valueFormat="@{@string/two_strings_with_hyphen_format}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/heading_sub_alert_source_of_information"
-                style="@style/ReadActivitySubHeadingStyle"
-                />
-
+                style="@style/SubHeadingStyle" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
+                android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtSourceLastName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_alert_source_lastname"
-                    app:labelCaption="@string/label_alert_source_lastname"
-                    app:value="@{data.srcLastName}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
-
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtSourceFirstName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_alert_source_firstname"
-                    app:labelCaption="@string/label_alert_source_firstname"
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_srcFirstName"
                     app:value="@{data.srcFirstName}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_srcLastName"
+                    app:value="@{data.srcLastName}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/txtSourceTelNumber"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:description="@string/desc_alert_source_tel"
-                app:labelCaption="@string/label_alert_source_tel"
-                app:value="@{data.srcTelNo}"
-                app:defaultValue='@{@string/not_available}'
-                />
+                android:orientation="horizontal">
 
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/txtSourceEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:description="@string/desc_alert_source_email"
-                app:labelCaption="@string/label_alert_source_email"
-                app:value="@{data.srcEmail}"
-                app:defaultValue='@{@string/not_available}'
-                />
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_srcTelNo"
+                    app:value="@{data.srcTelNo}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_srcEmail"
+                    app:value="@{data.srcEmail}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
     </ScrollView>
-</layout>
 
+</layout>

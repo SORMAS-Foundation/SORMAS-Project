@@ -5,18 +5,10 @@
     android:id="@+id/base_layout">
 
     <data>
-        <variable name="data" type="de.symeda.sormas.app.backend.task.Task"/>
-        <variable
-            name="caseLinkCallback"
-            type="de.symeda.sormas.app.component.OnLinkClickListener" />
-        <variable
-            name="contactLinkCallback"
-            type="de.symeda.sormas.app.component.OnLinkClickListener" />
-        <variable
-            name="eventLinkCallback"
-            type="de.symeda.sormas.app.component.OnLinkClickListener" />
-    </data>
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
 
+        <variable name="data" type="de.symeda.sormas.app.backend.task.Task" />
+    </data>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -26,155 +18,88 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="@dimen/parentLayoutVerticalMargin"
-            android:paddingBottom="@dimen/parentLayoutVerticalMargin"
-            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-            >
+            android:padding="@dimen/fragment_padding"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:id="@+id/main_content">
 
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/txtTaskType"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:maxLines="2"
-                app:singleLine="false"
-                app:description="@string/desc_task_type"
-                app:labelCaption="@string/label_task_type"
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/task_taskType"
                 app:value="@{data.taskType}"
-                app:defaultValue='@{@string/not_available}'
-                />
+                style="@style/ControlSingleColumnStyle" />
 
-            <de.symeda.sormas.app.component.TeboTextLinkRead
-                android:id="@+id/txtAssocCaze"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
-                app:maxLines="2"
-                app:description="@string/desc_task_assoc_caze"
-                app:labelCaption="@string/label_task_assoc_caze"
-                app:cazeAndLocation="@{data.caze}"
-                app:defaultValue='@{@string/not_available}'
-                app:goneIfNull='@{data.caze}'
-                app:onLinkClick="@{(view) -> caseLinkCallback.onClick(view, data)}"
-                />
+            <de.symeda.sormas.app.component.controls.ControlLinkField
+                android:id="@+id/task_caze"
+                app:goneIfEmpty="@{data.caze}"
+                app:value="@{data.caze.toString()}"
+                style="@style/ControlSingleColumnStyle" />
 
-            <de.symeda.sormas.app.component.TeboTextLinkRead
-                android:id="@+id/txtAssocContact"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
-                app:maxLines="2"
-                app:description="@string/desc_task_assoc_contact"
-                app:labelCaption="@string/label_task_assoc_contact"
-                app:contactAndLocation="@{data.contact}"
-                app:defaultValue='@{@string/not_available}'
-                app:goneIfNull='@{data.contact}'
-                app:onLinkClick="@{(view) -> contactLinkCallback.onClick(view, data)}"
-                />
+            <de.symeda.sormas.app.component.controls.ControlLinkField
+                android:id="@+id/task_contact"
+                app:goneIfEmpty="@{data.contact}"
+                app:value="@{data.contact.toString()}"
+                style="@style/ControlSingleColumnStyle" />
 
-            <de.symeda.sormas.app.component.TeboTextLinkRead
-                android:id="@+id/txtAssocEvent"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
-                app:maxLines="2"
-                app:description="@string/desc_task_assoc_event"
-                app:labelCaption="@string/label_task_assoc_event"
-                app:eventAndLocation="@{data.event}"
-                app:defaultValue='@{@string/not_available}'
-                app:goneIfNull='@{data.event}'
-                app:onLinkClick="@{(view) -> eventLinkCallback.onClick(view, data)}"
-                />
+            <de.symeda.sormas.app.component.controls.ControlLinkField
+                android:id="@+id/task_event"
+                app:goneIfEmpty="@{data.event}"
+                app:value="@{data.event.toString()}"
+                style="@style/ControlSingleColumnStyle" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
+                android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.TeboTextImageRead
-                    android:id="@+id/txtTaskPriority"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_task_priority"
-                    app:labelCaption="@string/label_task_priority"
-                    app:imageColor="@color/green"
+                <de.symeda.sormas.app.component.controls.ControlTextImageField
+                    android:id="@+id/task_priority"
                     app:image="@drawable/indicator_status_circle"
                     app:imageWidth="@dimen/readControlSmallIconWidth"
                     app:imageHeight="@dimen/readControlSmallIconHeight"
-                    app:setValueAndIndicator="@{data.priority}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:taskPriorityValue="@{data.priority}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                <de.symeda.sormas.app.component.TeboTextImageRead
-                    android:id="@+id/txtTaskStatus"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_task_status"
-                    app:labelCaption="@string/label_task_status"
+                <de.symeda.sormas.app.component.controls.ControlTextImageField
+                    android:id="@+id/task_taskStatus"
                     app:image="@drawable/indicator_status_circle"
                     app:imageWidth="@dimen/readControlSmallIconWidth"
                     app:imageHeight="@dimen/readControlSmallIconHeight"
-                    app:setValueAndIndicator="@{data.taskStatus}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:taskStatusValue="@{data.taskStatus}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
+                android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtSuggestedStart"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_task_suggested_start"
-                    app:labelCaption="@string/label_task_suggested_start"
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/task_suggestedStart"
                     app:value="@{data.suggestedStart}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtDueDate"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_task_due_date_time"
-                    app:labelCaption="@string/label_task_due_date_time"
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/task_dueDate"
                     app:value="@{data.dueDate}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
             </LinearLayout>
 
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/task_assigneeUser"
+                app:value="@{data.assigneeUser}"
+                style="@style/ControlSingleColumnStyle" />
 
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/txtCommentOnExec"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:description="@string/desc_task_comment_on_exc"
-                app:labelCaption="@string/label_task_comment_on_exc"
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/task_creatorComment"
                 app:value="@{data.creatorComment}"
-                app:defaultValue='@{@string/not_available}'
-                />
+                app:goneIfEmpty="@{taskCreatorComment}"
+                style="@style/ControlSingleColumnStyle" />
 
         </LinearLayout>
 
     </ScrollView>
+
 </layout>
 

@@ -163,10 +163,13 @@ public class ContactFacadeEjb implements ContactFacade {
 	public ContactDto saveContact(ContactDto dto) {
 		
 		Contact entity = fromDto(dto);
-		
-		if (!DiseaseHelper.hasContactFollowUp(entity.getCaze().getDisease(), entity.getCaze().getPlagueType())) {
-			throw new UnsupportedOperationException("Contact creation is not allowed for diseases that don't have contact follow-up.");
-		}
+
+		// taking this out because it may lead to server problems
+		// case disease can change over time and there is currently no mechanism that would delete all related contacts
+		// in this case the best solution is to only keep this hidden from the UI and still allow it in the backend
+//		if (!DiseaseHelper.hasContactFollowUp(entity.getCaze().getDisease(), entity.getCaze().getPlagueType())) {
+//			throw new UnsupportedOperationException("Contact creation is not allowed for diseases that don't have contact follow-up.");
+//		}
 		
 		contactService.ensurePersisted(entity);
 

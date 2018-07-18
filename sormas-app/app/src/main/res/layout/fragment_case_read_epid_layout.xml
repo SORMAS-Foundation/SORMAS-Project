@@ -1,40 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:descendantFocusability="beforeDescendants"
-    android:id="@+id/base_layout">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/base_layout"
+        android:descendantFocusability="beforeDescendants">
 
     <data>
-        <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiData"/>
-        <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
-        <variable name="burials"
-            type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataBurial&gt;" />
-        <variable name="socialEvents"
-            type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataGathering&gt;" />
-        <variable name="travels"
-            type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataTravel&gt;" />
+
+        <import type="de.symeda.sormas.api.utils.YesNoUnknown"/>
+
+        <import type="de.symeda.sormas.api.epidata.WaterSource"/>
+
         <variable
-            name="animalContactYes"
-            type="java.util.List&lt;de.symeda.sormas.app.component.tagview.Tag&gt;" />
+            name="data"
+            type="de.symeda.sormas.app.backend.epidata.EpiData"/>
+
         <variable
-            name="animalContactUnknown"
-            type="java.util.List&lt;de.symeda.sormas.app.component.tagview.Tag&gt;" />
+            name="burials"
+            type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataBurial&gt;"/>
+
         <variable
-            name="animalContactNo"
-            type="java.util.List&lt;de.symeda.sormas.app.component.tagview.Tag&gt;" />
+            name="gatherings"
+            type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataGathering&gt;"/>
+
+        <variable
+            name="travels"
+            type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataTravel&gt;"/>
 
         <variable
             name="burialItemClickCallback"
-            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener"/>
 
         <variable
-            name="socialEventItemClickCallback"
-            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+            name="gatheringItemClickCallback"
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener"/>
 
         <variable
             name="travelItemClickCallback"
-            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
-
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener"/>
     </data>
 
 
@@ -46,256 +48,174 @@
             android:id="@+id/mainContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
+            android:orientation="vertical">
 
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/directContactConfirmedCase"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:labelCaption="@string/label_case_epid_directContactConfirmedCase"
-                app:value="@{data.directContactConfirmedCase}"
-                app:defaultValue='@{@string/not_available}'
-                />
-
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/directContactProbableCase"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:labelCaption="@string/label_case_epid_directContactProbableCase"
-                app:value="@{data.directContactProbableCase}"
-                app:defaultValue='@{@string/not_available}'
-                />
-
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/closeContactProbableCase"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:labelCaption="@string/label_case_epid_closeContactProbableCase"
-                app:value="@{data.closeContactProbableCase}"
-                app:defaultValue='@{@string/not_available}'
-                />
-
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/areaConfirmedCases"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:labelCaption="@string/label_case_epid_areaConfirmedCases"
-                app:value="@{data.areaConfirmedCases}"
-                app:defaultValue='@{@string/not_available}'
-                />
-
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/processingConfirmedCaseFluidUnsafe"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:labelCaption="@string/label_case_epid_processingConfirmedCaseFluidUnsafe"
-                app:value="@{data.processingConfirmedCaseFluidUnsafe}"
-                app:defaultValue='@{@string/not_available}'
-                />
-
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/percutaneousCaseBlood"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:labelCaption="@string/label_case_epid_percutaneousCaseBlood"
-                app:value="@{data.percutaneousCaseBlood}"
-                app:defaultValue='@{@string/not_available}'
-                />
-
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/directContactDeadUnsafe"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:labelCaption="@string/label_case_epid_directContactDeadUnsafe"
-                app:value="@{data.directContactDeadUnsafe}"
-                app:defaultValue='@{@string/not_available}'
-                />
-
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/processingSuspectedCaseSampleUnsafe"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:labelCaption="@string/label_case_epid_processingSuspectedCaseSampleUnsafe"
-                app:value="@{data.processingSuspectedCaseSampleUnsafe}"
-                app:defaultValue='@{@string/not_available}'
-                />
-
-            <!--android:paddingBottom="@dimen/parentLayoutVerticalMargin"-->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@color/formListSectionBackground"
-                android:layout_marginTop="@dimen/parentLayoutVerticalMargin"
-                android:paddingTop="@dimen/parentLayoutVerticalMargin"
+                android:paddingBottom="@dimen/parentLayoutVerticalMargin"
                 android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
                 android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                android:paddingTop="@dimen/parentLayoutVerticalMargin"
                 >
 
-                <!--app:removeBottomMarginIfEmpty="@{burials}"
-                app:bottomMargin="@{@dimen/parentLayoutVerticalMargin}"-->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/parentLayoutVerticalMargin"
-                    android:orientation="horizontal"
-                    >
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_directContactConfirmedCase"
+                    style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
+                    app:value="@{data.directContactConfirmedCase}"/>
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/heading_sub_case_epid_burial_visited"
-                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
-                        />
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_directContactProbableCase"
+                    style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
+                    app:value="@{data.directContactProbableCase}"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:hasValue="@{burials}"
-                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
-                        />
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_closeContactProbableCase"
+                    style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
+                    app:value="@{data.closeContactProbableCase}"/>
 
-                </LinearLayout>
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_areaConfirmedCases"
+                    style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
+                    app:value="@{data.areaConfirmedCases}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_processingConfirmedCaseFluidUnsafe"
+                    style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
+                    app:value="@{data.processingConfirmedCaseFluidUnsafe}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_percutaneousCaseBlood"
+                    style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
+                    app:value="@{data.percutaneousCaseBlood}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_directContactDeadUnsafe"
+                    style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
+                    app:value="@{data.directContactDeadUnsafe}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_processingSuspectedCaseSampleUnsafe"
+                    style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
+                    app:value="@{data.processingSuspectedCaseSampleUnsafe}"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ctrlBurials"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                android:background="@color/formListSectionBackground"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                android:paddingTop="@dimen/parentLayoutVerticalMargin"
+                >
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_burialAttended"
+                    style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
+                    app:visibilityChild="@{ctrlBurials}"
+                    app:value="@{data.burialAttended}"/>
 
                 <LinearLayout
                     android:id="@+id/listBurialVisits"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:clipToPadding="false"
-                    android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
+                    android:orientation="vertical"
                     android:paddingBottom="@dimen/rowListItemParentElevationVerticalPadding"
                     android:paddingLeft="@dimen/rowListItemParentElevationHorizontalPadding"
                     android:paddingRight="@dimen/rowListItemParentElevationHorizontalPadding"
-                    app:entries="@{burials}"
-                    app:layout="@{@layout/row_epid_read_burial_layout}"
+                    android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
                     app:callback="@{burialItemClickCallback}"
+                    app:entries="@{burials}"
+                    app:layout="@{@layout/row_case_epid_burial_layout}"
                     />
-
 
             </LinearLayout>
 
-
-            <!--android:paddingBottom="@dimen/parentLayoutVerticalMargin"-->
             <LinearLayout
+                android:id="@+id/ctrlGatherings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                 android:background="@color/formListSectionBackground"
-                android:paddingTop="@dimen/parentLayoutVerticalMargin"
+                android:orientation="vertical"
                 android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
                 android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                android:paddingTop="@dimen/parentLayoutVerticalMargin"
                 >
 
-                <!--app:removeBottomMarginIfEmpty="@{socialEvents}"
-                app:bottomMargin="@{@dimen/parentLayoutVerticalMargin}"-->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/parentLayoutVerticalMargin"
-                    android:orientation="horizontal"
-                    >
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/heading_sub_case_epid_social_events"
-                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
-                        />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:hasValue="@{socialEvents}"
-                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
-                        />
-
-                </LinearLayout>
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_gatheringAttended"
+                    style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
+                    app:visibilityChild="@{ctrlGatherings}"
+                    app:value="@{data.gatheringAttended}"/>
 
                 <LinearLayout
                     android:id="@+id/listSocialEvents"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:clipToPadding="false"
-                    android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
+                    android:orientation="vertical"
                     android:paddingBottom="@dimen/rowListItemParentElevationVerticalPadding"
                     android:paddingLeft="@dimen/rowListItemParentElevationHorizontalPadding"
                     android:paddingRight="@dimen/rowListItemParentElevationHorizontalPadding"
-                    app:entries="@{socialEvents}"
-                    app:layout="@{@layout/row_epid_read_social_events_layout}"
-                    app:callback="@{socialEventItemClickCallback}"
+                    android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
+                    app:callback="@{gatheringItemClickCallback}"
+                    app:entries="@{gatherings}"
+                    app:layout="@{@layout/row_case_epid_gathering_layout}"
                     />
-
 
             </LinearLayout>
 
 
-            <!--android:paddingBottom="@dimen/parentLayoutVerticalMargin"-->
             <LinearLayout
+                android:id="@+id/ctrlTravels"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:background="@color/formListSectionBackground"
-                android:paddingTop="@dimen/parentLayoutVerticalMargin"
+                android:orientation="vertical"
                 android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
                 android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                android:paddingTop="@dimen/parentLayoutVerticalMargin"
                 >
 
-                <!--app:removeBottomMarginIfEmpty="@{travels}"
-                app:bottomMargin="@{@dimen/parentLayoutVerticalMargin}"-->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/parentLayoutVerticalMargin"
-                    android:orientation="horizontal"
-                    >
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/heading_sub_case_epid_travels"
-                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
-                        />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:hasValue="@{travels}"
-                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
-                        />
-
-                </LinearLayout>
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_traveled"
+                    style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
+                    app:visibilityChild="@{ctrlTravels}"
+                    app:value="@{data.traveled}"/>
 
                 <LinearLayout
                     android:id="@+id/listTravels"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:clipToPadding="false"
-                    android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
+                    android:orientation="vertical"
                     android:paddingBottom="@dimen/rowListItemParentElevationVerticalPadding"
                     android:paddingLeft="@dimen/rowListItemParentElevationHorizontalPadding"
                     android:paddingRight="@dimen/rowListItemParentElevationHorizontalPadding"
-                    app:entries="@{travels}"
-                    app:layout="@{@layout/row_epid_read_travels_layout}"
+                    android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
                     app:callback="@{travelItemClickCallback}"
+                    app:entries="@{travels}"
+                    app:layout="@{@layout/row_case_epid_travel_layout}"
                     />
-
 
             </LinearLayout>
 
@@ -303,320 +223,171 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="@dimen/parentLayoutVerticalMargin"
                 android:paddingBottom="@dimen/parentLayoutVerticalMargin"
                 android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
                 android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                android:paddingTop="@dimen/parentLayoutVerticalMargin"
                 >
 
                 <TextView
+                    style="@style/SubHeadingStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/heading_sub_case_epid_animal_contact"
-                    style="@style/ReadActivitySubHeadingStyle"
                     />
 
-                <!--<de.symeda.sormas.app.component.TeboHint
-                    android:id="@+id/txtAnimalContactTitle"
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_areaInfectedAnimals"
+                    style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
+                    app:value="@{data.areaInfectedAnimals}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_rodents"
+                    style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
+                    app:value="@{data.rodents}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_bats"
+                    style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
+                    app:value="@{data.bats}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_primates"
+                    style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
+                    app:value="@{data.primates}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_swine"
+                    style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
+                    app:value="@{data.swine}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_birds"
+                    style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
+                    app:value="@{data.birds}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_cattle"
+                    style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
+                    app:value="@{data.cattle}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_sickDeadAnimals"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:singleLine="false"
-                    app:maxLines="5"
-                    app:inputType="textMultiLine"
-                    app:labelCaption="@string/heading_sub_case_epid_animal_contact"
-                    app:description="@string/heading_sub_case_epid_animal_contact"
-                    app:value="@{@string/epiData_infoText}"
-                    />-->
-
-                <de.symeda.sormas.app.component.tagview.TagView
-                    android:id="@+id/tvAnimalContactYes"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="@dimen/tagViewVerticalSeparator"
-                    app:description="@string/desc_epid_animal_contact_yes"
-                    app:labelCaption="@string/label_epid_animal_contact_yes"
-                    app:lineMargin="@dimen/tagViewLineMargin"
-                    app:tagMargin="@dimen/tagViewTagMargin"
-                    app:textPaddingLeft="@dimen/tagViewTextPaddingLeft"
-                    app:textPaddingRight="@dimen/tagViewTextPaddingRight"
-                    app:textPaddingTop="@dimen/tagViewTextPaddingTop"
-                    app:textPaddingBottom="@dimen/tagViewTextPaddingBottom"
-                    app:textSize="@{@dimen/tagViewTextSize}"
-                    app:textColor="@{@color/tagViewTextColor}"
-                    app:layoutColor="@{@color/tagViewLayoutColor}"
-                    app:layoutColorPress="@{@color/tagViewLayoutColorPress}"
-                    app:deletable="@{@bool/tagViewIsDeletable}"
-                    app:deleteIndicatorColor="@{@color/deleteIndicatorColor}"
-                    app:deleteIndicatorSize="@{@dimen/deleteIndicatorSize}"
-                    app:radius="@{@dimen/tagViewRadius}"
-                    app:deleteIcon="@string/tagViewDeleteIcon"
-                    app:layoutBorderSize="@dimen/tagViewLayoutBorderSize"
-                    app:layoutBorderColor="@{@color/tagViewLayoutBorderColor}"
-                    app:rowLayout="@{@layout/row_symptom_read_item_layout}"
-                    app:tags="@{animalContactYes}" />
-
-                <de.symeda.sormas.app.component.tagview.TagView
-                    android:id="@+id/tvAnimalContactUnknown"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="@dimen/tagViewVerticalSeparator"
-                    app:description="@string/desc_epid_animal_contact_unknown"
-                    app:labelCaption="@string/label_epid_animal_contact_unknown"
-                    app:lineMargin="@dimen/tagViewLineMargin"
-                    app:tagMargin="@dimen/tagViewTagMargin"
-                    app:textPaddingLeft="@dimen/tagViewTextPaddingLeft"
-                    app:textPaddingRight="@dimen/tagViewTextPaddingRight"
-                    app:textPaddingTop="@dimen/tagViewTextPaddingTop"
-                    app:textPaddingBottom="@dimen/tagViewTextPaddingBottom"
-                    app:textSize="@{@dimen/tagViewTextSize}"
-                    app:textColor="@{@color/tagViewTextColor}"
-                    app:layoutColor="@{@color/tagViewLayoutColor}"
-                    app:layoutColorPress="@{@color/tagViewLayoutColorPress}"
-                    app:deletable="@{@bool/tagViewIsDeletable}"
-                    app:deleteIndicatorColor="@{@color/deleteIndicatorColor}"
-                    app:deleteIndicatorSize="@{@dimen/deleteIndicatorSize}"
-                    app:radius="@{@dimen/tagViewRadius}"
-                    app:deleteIcon="@string/tagViewDeleteIcon"
-                    app:layoutBorderSize="@dimen/tagViewLayoutBorderSize"
-                    app:layoutBorderColor="@{@color/tagViewLayoutBorderColor}"
-                    app:rowLayout="@{@layout/row_symptom_read_item_layout}"
-                    app:tags="@{animalContactUnknown}" />
-
-                <de.symeda.sormas.app.component.tagview.TagView
-                    android:id="@+id/tvAnimalContactNo"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="@dimen/tagViewVerticalSeparator"
-                    app:description="@string/desc_epid_animal_contact_no"
-                    app:labelCaption="@string/label_epid_animal_contact_no"
-                    app:lineMargin="@dimen/tagViewLineMargin"
-                    app:tagMargin="@dimen/tagViewTagMargin"
-                    app:textPaddingLeft="@dimen/tagViewTextPaddingLeft"
-                    app:textPaddingRight="@dimen/tagViewTextPaddingRight"
-                    app:textPaddingTop="@dimen/tagViewTextPaddingTop"
-                    app:textPaddingBottom="@dimen/tagViewTextPaddingBottom"
-                    app:textSize="@{@dimen/tagViewTextSize}"
-                    app:textColor="@{@color/tagViewTextColor}"
-                    app:layoutColor="@{@color/tagViewLayoutColor}"
-                    app:layoutColorPress="@{@color/tagViewLayoutColorPress}"
-                    app:deletable="@{@bool/tagViewIsDeletable}"
-                    app:deleteIndicatorColor="@{@color/deleteIndicatorColor}"
-                    app:deleteIndicatorSize="@{@dimen/deleteIndicatorSize}"
-                    app:radius="@{@dimen/tagViewRadius}"
-                    app:deleteIcon="@string/tagViewDeleteIcon"
-                    app:layoutBorderSize="@dimen/tagViewLayoutBorderSize"
-                    app:layoutBorderColor="@{@color/tagViewLayoutBorderColor}"
-                    app:rowLayout="@{@layout/row_symptom_read_item_layout}"
-                    app:tags="@{animalContactNo}" />
-
-
-
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtUnderCookedPoultry"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_case_epid_eating_raw_poultry"
-                    app:labelCaption="@string/label_case_epid_eating_raw_poultry"
-                    app:value="@{data.birds}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
-
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtExposureToPoultry"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:singleLine="false"
-                    app:maxLines="2"
-                    app:description="@string/desc_case_epid_exposure_to_poultry"
-                    app:labelCaption="@string/label_case_epid_exposure_to_poultry"
-                    app:enumValueWithDesc="@{data.eatingRawAnimalsInInfectedArea}"
-                    app:valueDesc="@{data.eatingRawAnimalsDetails}"
-                    app:valueFormat="@{@string/enum_desc_format}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
-
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtSickDeadAnimals"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:singleLine="false"
-                    app:maxLines="2"
-                    app:description="@string/desc_case_epid_exposure_to_poultry"
-                    app:labelCaption="@string/label_case_epid_exposure_to_poultry"
-                    app:enumValueWithDesc="@{data.sickDeadAnimals}"
-                    app:valueDesc="@{data.sickDeadAnimalsDetails}"
-                    app:valueFormat="@{@string/enum_desc_format}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
-
-
+                    app:appendValue="@{data.sickDeadAnimalsDetails}"
+                    app:value="@{data.sickDeadAnimals}"
+                    app:valueFormat="@{@string/two_strings_with_hyphen_format}"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
+                    android:orientation="horizontal">
 
-                    <de.symeda.sormas.app.component.TeboTextRead
-                        android:id="@+id/txtLastExposureDate"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_case_epid_exposure_to_sick_birds_last_exposure_date"
-                        app:labelCaption="@string/label_case_epid_exposure_to_sick_birds_last_exposure_date"
-                        app:dateValue="@{data.sickDeadAnimalsDate}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/epiData_sickDeadAnimalsDate"
+                        style="@style/ControlFirstOfTwoColumnsStyle"
+                        app:dependencyParentField="@{epiDataSickDeadAnimals}"
+                        app:dependencyParentValue="@{YesNoUnknown.YES}"
+                        app:value="@{data.sickDeadAnimalsDate}"/>
 
-                    <de.symeda.sormas.app.component.TeboTextRead
-                        android:id="@+id/txtLastExposurePlace"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_case_epid_exposure_to_sick_birds_last_exposure_place"
-                        app:labelCaption="@string/label_case_epid_exposure_to_sick_birds_last_exposure_place"
-                        app:value="@{data.sickDeadAnimalsLocation}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/epiData_sickDeadAnimalsLocation"
+                        style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:dependencyParentField="@{epiDataSickDeadAnimals}"
+                        app:dependencyParentValue="@{YesNoUnknown.YES}"
+                        app:value="@{data.sickDeadAnimalsLocation}"/>
                 </LinearLayout>
 
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtCattleContact"
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_eatingRawAnimalsInInfectedArea"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@{data.eatingRawAnimalsInInfectedArea}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_eatingRawAnimals"
+                    style="@style/ControlSingleColumnStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_case_epid_contact_with_cattle"
-                    app:labelCaption="@string/label_case_epid_contact_with_cattle"
-                    app:value="@{data.cattle}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:appendValue="@{data.eatingRawAnimalsDetails}"
+                    app:value="@{data.eatingRawAnimals}"
+                    app:valueFormat="@{@string/two_strings_with_hyphen_format}"/>
 
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtContactWithOtherAnimals"
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_otherAnimals"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:singleLine="false"
-                    app:maxLines="2"
-                    app:description="@string/desc_case_epid_contact_with_other_animals"
-                    app:labelCaption="@string/label_case_epid_contact_with_other_animals"
-                    app:enumValueWithDesc="@{data.otherAnimals}"
-                    app:valueDesc="@{data.otherAnimalsDetails}"
-                    app:valueFormat="@{@string/enum_desc_format}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:appendValue="@{data.otherAnimalsDetails}"
+                    app:value="@{data.otherAnimals}"
+                    app:valueFormat="@{@string/two_strings_with_hyphen_format}"/>
 
-                <ImageView style="@style/FullHorizontalDividerStyle"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-                <!--<de.symeda.sormas.app.component.TeboTextRead-->
-                    <!--android:id="@+id/txtWildBirds"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_marginBottom="@dimen/controlReadTextMarginBottom"-->
-                    <!--app:singleLine="false"-->
-                    <!--app:maxLines="2"-->
-                    <!--app:description="@string/desc_case_epid_exposure_to_wild_birds"-->
-                    <!--app:labelCaption="@string/label_case_epid_exposure_to_wild_birds"-->
-                    <!--app:enumValueWithDesc="@{data.wildbirds}"-->
-                    <!--app:valueDesc="@{data.wildbirdsDetails}"-->
-                    <!--app:valueFormat="@{@string/enum_desc_format}"-->
-                    <!--app:defaultValue='@{@string/not_available}'-->
-                    <!--/>-->
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/epiData_dateOfLastExposure"
+                        style="@style/ControlFirstOfTwoColumnsStyle"
+                        app:value="@{data.dateOfLastExposure}"/>
 
-                <!--<LinearLayout-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:orientation="horizontal"-->
-                    <!--&gt;-->
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/epiData_placeOfLastExposure"
+                        style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:value="@{data.placeOfLastExposure}"/>
+                </LinearLayout>
 
-                    <!--<de.symeda.sormas.app.component.TeboTextRead-->
-                        <!--android:id="@+id/txtWildBirdsDate"-->
-                        <!--android:layout_width="0dp"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:layout_weight="1"-->
-                        <!--android:layout_marginBottom="@dimen/controlReadTextMarginBottom"-->
-                        <!--app:description="@string/desc_case_epid_wild_birds_last_exposure_date"-->
-                        <!--app:labelCaption="@string/label_case_epid_wild_birds_last_exposure_date"-->
-                        <!--app:dateValue="@{data.wildbirdsDate}"-->
-                        <!--app:defaultValue='@{@string/not_available}'-->
-                        <!--/>-->
-
-                    <!--<de.symeda.sormas.app.component.TeboTextRead-->
-                        <!--android:id="@+id/txtWildBirdsPlace"-->
-                        <!--android:layout_width="0dp"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:layout_weight="1"-->
-                        <!--android:paddingLeft="@dimen/formLayoutGutterSize"-->
-                        <!--android:layout_marginBottom="@dimen/controlReadTextMarginBottom"-->
-                        <!--app:description="@string/desc_case_epid_wild_birds_last_exposure_place"-->
-                        <!--app:labelCaption="@string/label_case_epid_wild_birds_last_exposure_place"-->
-                        <!--app:value="@{data.wildbirdsLocation}"-->
-                        <!--app:defaultValue='@{@string/not_available}'-->
-                        <!--/>-->
-                <!--</LinearLayout>-->
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_animalCondition"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@{data.animalCondition}"/>
 
                 <ImageView style="@style/FullHorizontalDividerStyle"/>
 
                 <TextView
+                    style="@style/SubHeadingStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/heading_sub_case_epid_environmental_exposure"
-                    style="@style/ReadActivitySubHeadingStyle"
                     />
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_waterSource"
+                    style="@style/ControlSingleColumnStyle"
+                    app:appendValue="@{data.waterSourceOther}"
+                    app:value="@{data.waterSource}"
+                    app:valueFormat="@{@string/two_strings_with_hyphen_format}"/>
 
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtDrinkingWaterSource"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:singleLine="false"
-                    app:maxLines="2"
-                    app:description="@string/desc_case_epid_source_of_drinking_water"
-                    app:labelCaption="@string/label_case_epid_source_of_drinking_water"
-                    app:enumValueWithDesc="@{data.waterSource}"
-                    app:valueDesc="@{data.waterSourceOther}"
-                    app:valueFormat="@{@string/enum_desc_format}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_waterBody"
+                    style="@style/ControlSingleColumnStyle"
+                    app:appendValue="@{data.waterBodyDetails}"
+                    app:value="@{data.waterBody}"
+                    app:valueFormat="@{@string/two_strings_with_hyphen_format}"/>
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_tickBite"
+                    style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
+                    app:value="@{data.tickBite}"/>
 
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtWaterBody"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:singleLine="false"
-                    app:maxLines="2"
-                    app:description="@string/desc_case_epid_contact_with_body_of_water"
-                    app:labelCaption="@string/label_case_epid_contact_with_body_of_water"
-                    app:enumValueWithDesc="@{data.waterBody}"
-                    app:valueDesc="@{data.waterBodyDetails}"
-                    app:valueFormat="@{@string/enum_desc_format}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
-
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtTickBite"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_case_epid_tick_bite"
-                    app:labelCaption="@string/label_case_epid_tick_bite"
-                    app:value="@{data.tickBite}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_fleaBite"
+                    style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
+                    app:value="@{data.fleaBite}"/>
 
             </LinearLayout>
-
-
 
         </LinearLayout>
 

@@ -1,34 +1,21 @@
 package de.symeda.sormas.app.core.enumeration;
 
-import android.content.res.Resources;
-
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.app.R;
 
-import de.symeda.sormas.api.caze.InvestigationStatus;
-
-/**
- * Created by Orson on 25/12/2017.
- */
 public class InvestigationStatusElaborator implements IStatusElaborator {
 
-    private Resources resources = null;
     private InvestigationStatus status = null;
 
-    public InvestigationStatusElaborator(InvestigationStatus status, Resources resources) {
+    public InvestigationStatusElaborator(InvestigationStatus status) {
         this.status = status;
-        this.resources = resources;
     }
 
     @Override
     public String getFriendlyName() {
-        if (status == InvestigationStatus.PENDING) {
-            return resources.getString(R.string.status_investigation_pending);
-        } else if (status == InvestigationStatus.DONE) {
-            return resources.getString(R.string.status_investigation_done);
-        } else if (status == InvestigationStatus.DISCARDED) {
-            return resources.getString(R.string.status_investigation_discarded);
+        if (status != null) {
+            return status.toShortString();
         }
-
         return "";
     }
 

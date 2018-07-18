@@ -19,5 +19,6 @@ public interface IStatusElaborator {
     String ARG_VISIT_STATUS = "argVisitStatus";
     String ARG_CASE_CLASSIFICATION_STATUS = "argCaseClassificationStatus";
     String ARG_CONTACT_CLASSIFICATION_STATUS = "argContactClassificationStatus";
+    String ARG_SAMPLE_TEST_RESULT_TYPE = "argSampleTestResultType";
 
 }

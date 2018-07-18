@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription"
     android:descendantFocusability="beforeDescendants"
     android:id="@+id/base_layout">
 
     <data>
-        <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
-    </data>
+        <import type="de.symeda.sormas.api.caze.CaseOutcome" />
+        <import type="de.symeda.sormas.api.caze.Vaccination" />
+        <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
+        <import type="de.symeda.sormas.api.Disease" />
 
+        <variable name="data" type="de.symeda.sormas.app.backend.caze.Case" />
+    </data>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -17,289 +23,222 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="@dimen/parentLayoutVerticalMargin"
-            android:paddingBottom="@dimen/parentLayoutVerticalMargin"
-            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-            >
-
-
+            android:padding="@dimen/fragment_padding"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:id="@+id/main_content">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-                <de.symeda.sormas.app.component.TeboTextUuidRead
-                    android:id="@+id/txtInvestigationStatus"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_case_investigation_status"
-                    app:labelCaption="@string/label_case_investigation_status"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_investigationStatus"
                     app:value="@{data.investigationStatus}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtCaseClassification"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_case_case_classification"
-                    app:labelCaption="@string/label_case_case_classification"
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_caseClassification"
                     app:value="@{data.caseClassification}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
-
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-                <de.symeda.sormas.app.component.TeboTextUuidRead
-                    android:id="@+id/txtCaseId"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/label_case_id"
-                    app:labelCaption="@string/desc_case_id"
-                    app:uuidValue="@{data.uuid}"
-                    app:shortUuid="@{true}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtEpidNumber"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_case_epid_number"
-                    app:labelCaption="@string/label_case_epid_number"
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_uuid"
+                    app:shortUuidValue="@{data.uuid}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_epidNumber"
                     app:value="@{data.epidNumber}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
-
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/txtDisease"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
-                app:maxLines="2"
-                app:description="@string/desc_case_disease"
-                app:labelCaption="@string/label_case_disease"
-                app:value="@{data.disease.toString()}"
-                app:appendValue="@{data.diseaseDetails}"
-                app:valueFormat="@{@string/two_text_hypenated_format}"
-                app:defaultValue='@{@string/not_available}'
-                />
-
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtReportingUser"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_case_reporting_user"
-                    app:labelCaption="@string/label_case_reporting_user"
-                    app:value="@{data.reportingUser}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtReportDate"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_case_reporting_date"
-                    app:labelCaption="@string/label_case_reporting_date"
-                    app:value="@{data.reportDate}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_disease"
+                    app:value="@{data.disease}"
+                    app:appendValue="@{data.diseaseDetails}"
+                    app:valueFormat="@string/two_strings_with_hyphen_format"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_plagueType"
+                    app:value="@{data.plagueType}"
+                    app:dependencyParentField="@{caseDataDisease}"
+                    app:dependencyParentValue="@{Disease.PLAGUE}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_dengueFeverType"
+                    app:value="@{data.dengueFeverType}"
+                    app:dependencyParentField="@{caseDataDisease}"
+                    app:dependencyParentValue="@{Disease.DENGUE}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
 
-
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/txtStateAndLga"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
-                app:maxLines="2"
-                app:description="@string/desc_case_state_and_lga"
-                app:labelCaption="@string/label_case_state_and_lga"
-                app:stateAndLgaValue="@{data}"
-                app:defaultValue='@{@string/not_available}'
-                />
+                android:orientation="horizontal">
 
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/txtWard"
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_outcome"
+                    app:value="@{data.outcome}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_outcomeDate"
+                    app:value="@{data.outcomeDate}"
+                    app:dependencyParentField="@{caseDataOutcome}"
+                    app:dependencyParentValue="@{CaseOutcome.NO_OUTCOME}"
+                    app:dependencyParentVisibility="@{false}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
-                app:maxLines="2"
-                app:description="@string/desc_case_ward"
-                app:labelCaption="@string/label_case_ward"
-                app:wardValue="@{data.community}"
-                app:defaultValue='@{@string/not_available}'
-                />
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_reportingUser"
+                    app:value="@{data.reportingUser}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_reportDate"
+                    app:value="@{data.reportDate}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/txtHealthFacility"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
-                app:maxLines="2"
-                app:description="@string/desc_case_health_facility"
-                app:labelCaption="@string/label_case_health_facility"
-                app:facilityValue="@{data.healthFacility}"
-                app:defaultValue='@{@string/not_available}'
-                />
+                android:orientation="horizontal">
 
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/txtHealthFacilityNameAndDesc"
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_region"
+                    app:value="@{data.region}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_district"
+                    app:value="@{data.district}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
-                app:maxLines="2"
-                app:description="@string/desc_case_health_facility_name_and_desc"
-                app:labelCaption="@string/label_case_health_facility_name_and_desc"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_community"
+                    app:value="@{data.community}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_healthFacility"
+                    app:value="@{data.healthFacility}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/caseData_healthFacilityDetails"
                 app:value="@{data.healthFacilityDetails}"
-                app:defaultValue='@{@string/not_available}'
-                />
+                style="@style/ControlSingleColumnStyle" />
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/heading_sub_case_addition_med_info"
-                style="@style/ReadActivitySubHeadingStyle"
-                />
+                android:text="@string/sub_heading_additional_medical_information"
+                style="@style/SubHeadingStyle" />
 
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/txtAdditionalMedInfo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
-                app:maxLines="2"
-                app:description="@string/desc_case_quest_pregnancy"
-                app:labelCaption="@string/label_case_quest_pregnancy"
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/caseData_pregnant"
                 app:value="@{data.pregnant}"
-                app:defaultValue='@{@string/not_available}'
-                />
+                style="@style/ControlSingleColumnStyle" />
 
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/txtMeaslesVaccination"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
-                app:maxLines="2"
-                app:description="@string/desc_case_measles_vaccination"
-                app:labelCaption="@string/label_case_measles_vaccination"
-                app:value="@{data.vaccination}"
-                app:defaultValue='@{@string/not_available}'
-                />
+                android:orientation="horizontal">
 
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/txtMeaslesDose"
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_vaccination"
+                    app:value="@{data.vaccination}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_vaccinationDoses"
+                    app:value="@{data.vaccinationDoses}"
+                    app:dependencyParentField="@{caseDataVaccination}"
+                    app:dependencyParentValue="@{Vaccination.VACCINATED}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/caseData_smallpoxVaccinationReceived"
+                app:value="@{data.smallpoxVaccinationReceived}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
-                app:maxLines="2"
-                app:description="@string/desc_case_measles_doses"
-                app:labelCaption="@string/label_case_measles_doses"
-                app:value="@{data.vaccinationDoses}"
-                app:defaultValue='@{@string/not_available}'
-                />
+                android:orientation="horizontal">
 
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/txtMeaslesVaccinationInfoSource"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
-                app:maxLines="2"
-                app:description="@string/desc_case_measles_vaccination_info_source"
-                app:labelCaption="@string/label_case_measles_vaccination_info_source"
-                app:value="@{data.vaccinationInfoSource}"
-                app:defaultValue='@{@string/not_available}'
-                />
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_vaccinationDate"
+                    app:value="@{data.vaccinationDate}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
 
-            <!--<de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/txtYellowFeverVaccination"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
-                app:maxLines="2"
-                app:description="@string/desc_case_yellow_fever_vaccination"
-                app:labelCaption="@string/label_case_yellow_fever_vaccination"
-                app:value="@{data.yellowFeverVaccination}"
-                app:defaultValue='@{@string/not_available}'
-                />
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_vaccinationInfoSource"
+                    app:value="@{data.vaccinationInfoSource}"
+                    app:dependencyParentField="@{caseDataVaccination}"
+                    app:dependencyParentValue="@{Vaccination.VACCINATED}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/txtYellowFeverVaccinationInfoSource"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
-                app:maxLines="2"
-                app:description="@string/desc_case_yellow_fever_vaccination_info_source"
-                app:labelCaption="@string/label_case_yellow_fever_vaccination_info_source"
-                app:value="@{data.yellowFeverVaccinationInfoSource}"
-                app:defaultValue='@{@string/not_available}'
-                />-->
+            </LinearLayout>
 
-            <de.symeda.sormas.app.component.TeboTextRead
-                android:id="@+id/txtResponsibleOfficer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
-                app:maxLines="2"
-                app:description="@string/desc_case_responsible_officer"
-                app:labelCaption="@string/label_case_responsible_officer"
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/caseData_smallpoxVaccinationScar"
+                app:value="@{data.smallpoxVaccinationScar}"
+                app:dependencyParentField="@{caseDataSmallpoxVaccinationReceived}"
+                app:dependencyParentValue="@{YesNoUnknown.YES}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/caseData_surveillanceOfficer"
                 app:value="@{data.surveillanceOfficer}"
-                app:defaultValue='@{@string/not_available}'
-                />
-
-
-
-
+                style="@style/ControlSingleColumnStyle" />
 
         </LinearLayout>
 
     </ScrollView>
+
 </layout>
 

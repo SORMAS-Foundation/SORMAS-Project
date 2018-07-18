@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.contact.read;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -9,42 +8,30 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
-import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
-import de.symeda.sormas.app.databinding.RowReadContactTaskListItemLayoutBinding;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.task.Task;
-
-/**
- * Created by Orson on 02/01/2018.
- */
+import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
+import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
+import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.databinding.RowReadContactTaskListItemLayoutBinding;
 
 public class ContactReadTaskListAdapter extends DataBoundAdapter<RowReadContactTaskListItemLayoutBinding> {
 
     private static final String TAG = ContactReadTaskListAdapter.class.getSimpleName();
 
-    private final Context context;
-    private List<Task> data = new ArrayList<>();
+    private List<Task> data;
     private OnListItemClickListener mOnListItemClickListener;
-    //private ActionCallback mActionCallback;
 
     private LayerDrawable backgroundRowItem;
     private Drawable unreadListItemIndicator;
 
-    public ContactReadTaskListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener) {
-        this(context, rowLayout, onListItemClickListener, new ArrayList<Task>());
-    }
-
-    public ContactReadTaskListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<Task> data) {
+    public ContactReadTaskListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Task> data) {
         super(rowLayout);
-        this.context = context;
         this.mOnListItemClickListener = onListItemClickListener;
 
         if (data == null)
@@ -96,10 +83,9 @@ public class ContactReadTaskListAdapter extends DataBoundAdapter<RowReadContactT
     }
 
 
-
     public void indicatePriority(ImageView imgTaskPriorityIcon, Task task) {
         Resources resources = imgTaskPriorityIcon.getContext().getResources();
-        Drawable drw = (Drawable)ContextCompat.getDrawable(imgTaskPriorityIcon.getContext(), R.drawable.indicator_status_circle);
+        Drawable drw = (Drawable) ContextCompat.getDrawable(imgTaskPriorityIcon.getContext(), R.drawable.indicator_status_circle);
         if (task.getPriority() == TaskPriority.HIGH) {
             drw.setColorFilter(resources.getColor(R.color.indicatorTaskPriorityHigh), PorterDuff.Mode.SRC_OVER);
         } else if (task.getPriority() == TaskPriority.LOW) {
@@ -113,7 +99,7 @@ public class ContactReadTaskListAdapter extends DataBoundAdapter<RowReadContactT
 
     public void indicateStatus(ImageView imgTaskStatusIcon, Task task) {
         Resources resources = imgTaskStatusIcon.getContext().getResources();
-        Drawable drw = (Drawable)ContextCompat.getDrawable(imgTaskStatusIcon.getContext(), R.drawable.indicator_status_circle);
+        Drawable drw = (Drawable) ContextCompat.getDrawable(imgTaskStatusIcon.getContext(), R.drawable.indicator_status_circle);
         if (task.getTaskStatus() == TaskStatus.PENDING) {
             drw.setColorFilter(resources.getColor(R.color.indicatorTaskPending), PorterDuff.Mode.SRC_OVER);
         } else if (task.getTaskStatus() == TaskStatus.DONE) {

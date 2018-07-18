@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.location.Location;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.util.Log;
@@ -30,6 +31,7 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -99,6 +101,23 @@ public class CaseDao extends AbstractAdoDao<Case> {
         return date;
     }
 
+    public List<Case> queryBaseForEq(String fieldName, Object value, String orderBy, boolean ascending) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.eq(fieldName, value);
+            where.and().eq(AbstractDomainObject.SNAPSHOT, false).query();
+            builder.selectColumns(Case.UUID, Case.LAST_OPENED_DATE, Case.LOCAL_CHANGE_DATE, Case.MODIFIED, Case.REPORT_DATE,
+                    Case.REPORTING_USER, Case.DISEASE, Case.DISEASE_DETAILS, Case.PERSON,
+                    Case.CASE_CLASSIFICATION, Case.INVESTIGATION_STATUS, Case.OUTCOME,
+                    Case.HEALTH_FACILITY);
+            return builder.orderBy(orderBy, ascending).query();
+        } catch (SQLException | IllegalArgumentException e) {
+            Log.e(getTableName(), "Could not perform queryForEq");
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public Case build() {
         throw new UnsupportedOperationException("Use build(Person) instead");
@@ -109,7 +128,14 @@ public class CaseDao extends AbstractAdoDao<Case> {
         caze.setPerson(person);
 
         caze.setReportDate(new Date());
-        caze.setReportingUser(ConfigProvider.getUser());
+        User user = ConfigProvider.getUser();
+        caze.setReportingUser(user);
+
+        if (user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+            caze.setSurveillanceOfficer(user);
+        } else if (user.hasUserRole(UserRole.INFORMANT)) {
+            caze.setSurveillanceOfficer(user.getAssociatedOfficer());
+        }
 
         caze.setInvestigationStatus(InvestigationStatus.PENDING);
         caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
@@ -232,7 +258,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
-                    where.eq(Case.REPORTING_USER + "_id", informant),
+                    where.eq(Case.REPORTING_USER, informant),
                     where.ge(Case.REPORT_DATE, reportStartAndEnd[0]),
                     where.le(Case.REPORT_DATE, reportStartAndEnd[1])
             );
@@ -281,15 +307,12 @@ public class CaseDao extends AbstractAdoDao<Case> {
         if (currentCase != null && mergedCase != null && currentCase.getDisease() != mergedCase.getDisease()) {
             Context context = DatabaseHelper.getContext();
 
-
-
-            //TODO: Talk to Martin about this
             Intent notificationIntent = new Intent(context, CaseReadActivity.class);
-            notificationIntent.putExtra(ConstantHelper.KEY_DATA_UUID, mergedCase.getUuid());
-            notificationIntent.putExtra(ConstantHelper.ARG_PAGE_STATUS, mergedCase.getCaseClassification());
+            Bundle bundle = new Bundle();
+            bundle.putString(ConstantHelper.KEY_DATA_UUID, mergedCase.getUuid());
+            bundle.putSerializable(ConstantHelper.ARG_PAGE_STATUS, mergedCase.getCaseClassification());
 
-
-
+            notificationIntent.putExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA, bundle);
 
             StringBuilder content = new StringBuilder();
             content.append("<b>").append(mergedCase.toString()).append("</b><br/>");
@@ -325,8 +348,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
             }
         }
 
-
         return super.saveAndSnapshot(caze);
     }
-
 }

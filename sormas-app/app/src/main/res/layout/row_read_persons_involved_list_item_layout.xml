@@ -19,7 +19,7 @@
 
         <!---->
         <LinearLayout
-            android:id="@+id/rowListItem"
+            android:id="@+id/row_item"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -76,14 +76,14 @@
                         />
 
                     <TextView
-                        android:id="@+id/txtInvolvementDesc"
+                        android:id="@+id/event_involvementDescription"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="top"
                         android:layout_marginBottom="@dimen/listActivityRowSecondaryTextMarginBottom"
-                        android:textSize="@dimen/listActivityRowSecondaryTextSize"
-                        android:textColor="@color/listActivityRowSecondaryText"
+                        android:textSize="@dimen/row_entry_secondary_text_size"
+                        android:textColor="@color/row_entry_secondary_text"
                         app:value="@{data.involvementDescription}"
                         app:defaultValue='@{@string/contact_proximity_unknown}'
                         />
@@ -94,7 +94,7 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/txtAge"
+                            android:id="@+id/person_approximateAge"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="@dimen/listActivityRowTertiaryTextSize"
@@ -115,7 +115,7 @@
                             android:layout_marginRight="8dp" />
 
                         <TextView
-                            android:id="@+id/txtGender"
+                            android:id="@+id/person_sex"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="@dimen/listActivityRowTertiaryTextSize"

@@ -13,13 +13,12 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import de.symeda.sormas.api.task.TaskStatus;
-import de.symeda.sormas.app.BaseListActivityFragment;
+import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
@@ -32,42 +31,30 @@ import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.task.read.TaskReadActivity;
 import de.symeda.sormas.app.util.SubheadingHelper;
 
-/**
- * Created by Orson on 02/12/2017.
- */
-
-public class TaskListFragment extends BaseListActivityFragment<TaskListAdapter> implements OnListItemClickListener {
-
-
-    private boolean dataLoaded = false;
-    public static final String KEY_CASE_UUID = "caseUuid";
-    public static final String KEY_CONTACT_UUID = "contactUuid";
-    public static final String KEY_EVENT_UUID = "eventUuid";
+public class TaskListFragment extends BaseListFragment<TaskListAdapter> implements OnListItemClickListener {
 
     private AsyncTask searchTask;
     private TaskStatus filterStatus = null;
     private SearchBy searchBy = null;
-    String recordUuid = null;
-
+    private String recordUuid = null;
     private List<Task> tasks;
     private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerViewForList;
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, filterStatus);
-        SaveSearchStrategyState(outState, searchBy);
-        SaveRecordUuidState(outState, recordUuid);
+        saveFilterStatusState(outState, filterStatus);
+        saveSearchStrategyState(outState, searchBy);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
+        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
 
         filterStatus = (TaskStatus) getFilterStatusArg(arguments);
         searchBy = (SearchBy) getSearchStrategyArg(arguments);
@@ -78,20 +65,19 @@ public class TaskListFragment extends BaseListActivityFragment<TaskListAdapter> 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        recyclerViewForList = (RecyclerView)view.findViewById(R.id.recyclerViewForList);
+        recyclerViewForList = (RecyclerView) view.findViewById(R.id.recyclerViewForList);
 
         return view;
     }
 
     @Override
     public TaskListAdapter getNewListAdapter() {
-        return new TaskListAdapter(this.getActivity(), R.layout.row_task_list_item_layout, this,
-                this.tasks);
+        return new TaskListAdapter(this.getActivity(), R.layout.row_task_list_item_layout, this, this.tasks);
     }
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
-        Task t = (Task)item;
+        Task t = (Task) item;
         TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(getContext(),
                 t.getUuid(), t.getTaskStatus());
         TaskReadActivity.goToActivity(getActivity(), dataCapsule);
@@ -112,61 +98,33 @@ public class TaskListFragment extends BaseListActivityFragment<TaskListAdapter> 
     public void onResume() {
         super.onResume();
 
-        //TODO: Orson - reverse this relationship
         getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Task"));
 
-        try {
-            dataLoaded = false;
-            if (!dataLoaded) {
-                ISearchExecutor<Task> executor = SearchStrategyFor.TASK.selector(searchBy, filterStatus, recordUuid);
-                searchTask = executor.search(new ISearchResultCallback<Task>() {
-                    @Override
-                    public void preExecute() {
-                        getActivityCommunicator().showPreloader();
-                        getActivityCommunicator().hideFragmentView();
-                    }
-
-                    @Override
-                    public void searchResult(List<Task> result, BoolResult resultStatus) {
-                        if (!resultStatus.isSuccess()) {
-                            String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Tasks");
-                            NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, message);
-
-                            return;
-                        }
-
-                        tasks = result;
-
-                        TaskListFragment.this.getListAdapter().replaceAll(tasks);
-                        TaskListFragment.this.getListAdapter().notifyDataSetChanged();
-
-                        dataLoaded = true;
-
-                        getActivityCommunicator().hidePreloader();
-                        getActivityCommunicator().showFragmentView();
-                    }
-                    private ISearchResultCallback<Task> init() {
-                        getActivityCommunicator().showPreloader();
-
-                        return this;
-                    }
-                }.init());
+        ISearchExecutor<Task> executor = SearchStrategyFor.TASK.selector(searchBy, filterStatus, recordUuid);
+        searchTask = executor.search(new ISearchResultCallback<Task>() {
+            @Override
+            public void preExecute() {
+                getBaseActivity().showPreloader();
             }
-        } catch (Exception ex) {
-            getActivityCommunicator().hidePreloader();
-            getActivityCommunicator().showFragmentView();
-            dataLoaded = false;
-        }
 
-        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
-        if (swiperefresh != null) {
-            swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
+            @Override
+            public void searchResult(List<Task> result, BoolResult resultStatus) {
+                getBaseActivity().hidePreloader();
+
+                if (!resultStatus.isSuccess()) {
+                    String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Tasks");
+                    NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, message);
+                    return;
                 }
-            });
-        }
+
+                tasks = result;
+
+                if (TaskListFragment.this.isResumed()) {
+                    TaskListFragment.this.getListAdapter().replaceAll(tasks);
+                    TaskListFragment.this.getListAdapter().notifyDataSetChanged();
+                }
+            }
+        });
     }
 
     @Override
@@ -177,8 +135,8 @@ public class TaskListFragment extends BaseListActivityFragment<TaskListAdapter> 
         recyclerViewForList.setAdapter(getListAdapter());
     }
 
-    public static TaskListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule) {
-        return newInstance(communicator, TaskListFragment.class, capsule);
+    public static TaskListFragment newInstance(IListNavigationCapsule capsule) {
+        return newInstance(TaskListFragment.class, capsule);
     }
 
     @Override

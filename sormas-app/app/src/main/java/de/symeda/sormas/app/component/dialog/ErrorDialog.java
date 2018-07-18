@@ -11,9 +11,8 @@ import com.google.android.gms.analytics.Tracker;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
-import de.symeda.sormas.app.component.TeboButtonType;
+import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.DialogErrorLayoutBinding;
 
 /**
@@ -94,7 +93,7 @@ public class ErrorDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void initializeData(TaskResultHolder resultHolder, boolean executionComplete) {
+    protected void prepareDialogData() {
 
     }
 
@@ -124,7 +123,7 @@ public class ErrorDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    public TeboButtonType dismissButtonType() {
-        return TeboButtonType.BTN_LINE_DANGER;
+    public ControlButtonType dismissButtonType() {
+        return ControlButtonType.LINE_DANGER;
     }
 }

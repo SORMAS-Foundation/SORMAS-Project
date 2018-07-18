@@ -108,10 +108,10 @@ public class TaskPriorityLegendAdapter extends BaseAdapter {
             this.layout = layout;
 
 
-            txtLegendShape = (TextView) this.layout.findViewById(R.id.txtLegendShape);
-            txtLegendLabel = (TextView) this.layout.findViewById(R.id.txtLegendLabel);
-            txtLengendValue = (TextView) this.layout.findViewById(R.id.txtLengendValue);
-            txtLengendPercentage = (TextView) this.layout.findViewById(R.id.txtLengendPercentage);
+            txtLegendShape = (TextView) this.layout.findViewById(R.id.legend_entry_color_indicator);
+            txtLegendLabel = (TextView) this.layout.findViewById(R.id.legend_entry_label);
+            txtLengendValue = (TextView) this.layout.findViewById(R.id.legend_entry_value);
+            txtLengendPercentage = (TextView) this.layout.findViewById(R.id.legend_entry_percentage);
         }
     }
 }

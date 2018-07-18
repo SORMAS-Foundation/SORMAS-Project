@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiDataTravel"/>
+
+        <variable
+            name="callback"
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/parentLayoutVerticalPadding"
+            android:paddingBottom="@dimen/parentLayoutVerticalPadding"
+            android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+            android:paddingRight="@dimen/rowListItemHorizontalMargin">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/heading_sub_case_epid_travels"
+                style="@style/SubHeadingStyle"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiDataTravel_travelDateFrom"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@{data.travelDateFrom}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiDataTravel_travelDateTo"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:value="@{data.travelDateTo}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/epiDataTravel_travelType"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.travelType}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/epiDataTravel_travelDestination"
+                style="@style/ControlSingleColumnStyle"
+                app:maxLines="2"
+                app:value="@{data.travelDestination}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <Button
+                android:id="@+id/btnDismiss"
+                android:layout_width="wrap_content"
+                android:layout_gravity="right"
+                android:paddingLeft="@dimen/contentHorizontalSpacing"
+                android:paddingRight="@dimen/contentHorizontalSpacing"
+                android:layout_marginTop="@dimen/primaryButtonMarginTop"
+                android:text="@string/action_dismiss"
+                android:drawableLeft="@drawable/ic_clear_black_24dp"
+                android:drawablePadding="@dimen/contentHorizontalSpacing"
+                android:drawableTint="@color/whiteOpaque"
+                android:onClickListener="@{(view) -> callback.onClick(view, data)}"
+                style="@style/PrimaryButtonStyle"
+                />
+
+        </LinearLayout>
+    </ScrollView>
+</layout>
+

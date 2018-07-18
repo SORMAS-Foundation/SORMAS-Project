@@ -2,14 +2,6 @@ package de.symeda.sormas.app.core.async;
 
 import de.symeda.sormas.app.core.BoolResult;
 
-/**
- * Created by Orson on 03/03/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class AsyncTaskResult<T> {
     private T result;
     private Exception error;
@@ -33,9 +25,9 @@ public class AsyncTaskResult<T> {
         this.resultStatus = resultStatus;
     }
 
-    public AsyncTaskResult(BoolResult resultStatus, Exception error) {
+    public AsyncTaskResult(Exception error) {
         super();
         this.error = error;
-        this.resultStatus = resultStatus;
+        this.resultStatus = new BoolResult(false, error.getMessage());
     }
 }

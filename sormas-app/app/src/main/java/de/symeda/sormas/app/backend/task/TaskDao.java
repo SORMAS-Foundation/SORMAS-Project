@@ -15,6 +15,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
@@ -26,12 +27,9 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.util.LocationService;
 
-/**
- * Created by Stefan Szczesny on 24.10.2016.
- */
 public class TaskDao extends AbstractAdoDao<Task> {
 
-    public TaskDao(Dao<Task,Long> innerDao) throws SQLException {
+    public TaskDao(Dao<Task,Long> innerDao) {
         super(innerDao);
     }
 
@@ -45,26 +43,20 @@ public class TaskDao extends AbstractAdoDao<Task> {
         return Task.TABLE_NAME;
     }
 
-    public void changeTaskStatus(Task task, TaskStatus targetStatus) throws DaoException, ValidationException {
-        task = queryForId(task.getId());
+    @Override
+    public Task saveAndSnapshot(Task task) throws DaoException {
 
-        if (targetStatus == TaskStatus.DONE && task.getTaskType() == TaskType.CASE_INVESTIGATION) {
-            CaseDataDto caseData = new CaseDataDto();
-            new CaseDtoHelper().fillInnerFromAdo(caseData, task.getCaze());
-            CaseLogic.validateInvestigationDoneAllowed(caseData);
+        if ((task.getTaskStatus() == TaskStatus.NOT_EXECUTABLE || task.getTaskStatus() == TaskStatus.DONE)
+            && task.getClosedLat() == null) {
+            Location location = LocationService.instance().getLocation();
+            if (location != null) {
+                task.setClosedLat(location.getLatitude());
+                task.setClosedLon(location.getLongitude());
+                task.setClosedLatLonAccuracy(location.getAccuracy());
+            }
         }
 
-        task.setTaskStatus(targetStatus);
-        task.setStatusChangeDate(new Date());
-
-        Location location = LocationService.instance().getLocation();
-        if (location != null) {
-            task.setClosedLat(location.getLatitude());
-            task.setClosedLon(location.getLongitude());
-            task.setClosedLatLonAccuracy(location.getAccuracy());
-        }
-
-        saveAndSnapshot(task);
+        return super.saveAndSnapshot(task);
     }
 
     /**

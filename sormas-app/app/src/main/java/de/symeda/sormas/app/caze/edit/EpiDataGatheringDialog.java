@@ -7,33 +7,23 @@ import android.util.Log;
 import android.view.View;
 
 import de.symeda.sormas.app.BR;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.app.backend.location.Location;
-import de.symeda.sormas.app.component.TeboButtonType;
+import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.databinding.DialogEpidSocialEventsLayoutBinding;
-
-/**
- * Created by Orson on 19/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
+import de.symeda.sormas.app.databinding.DialogCaseEpidGatheringEditLayoutBinding;
 
 public class EpiDataGatheringDialog extends BaseTeboAlertDialog {
 
     public static final String TAG = EpiDataGatheringDialog.class.getSimpleName();
 
     private EpiDataGathering data;
-    private IEntryItemOnClickListener onAddressLinkClickedCallback;
-    private DialogEpidSocialEventsLayoutBinding mContentBinding;
+    private DialogCaseEpidGatheringEditLayoutBinding mContentBinding;
 
 
     public EpiDataGatheringDialog(final FragmentActivity activity, EpiDataGathering epiDataGathering) {
@@ -41,19 +31,14 @@ public class EpiDataGatheringDialog extends BaseTeboAlertDialog {
     }
 
     public EpiDataGatheringDialog(final FragmentActivity activity, int headingResId, int subHeadingResId, EpiDataGathering epiDataGathering) {
-        super(activity, R.layout.dialog_root_layout, R.layout.dialog_epid_social_events_layout,
+        super(activity, R.layout.dialog_root_layout, R.layout.dialog_case_epid_gathering_edit_layout,
                 R.layout.dialog_root_three_button_panel_layout, headingResId, subHeadingResId);
 
         this.data = epiDataGathering;
-
-        setupCallback();
     }
 
     @Override
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        /*DialogEpiDataGatheringLayoutBinding _contentBinding = (DialogEpiDataGatheringLayoutBinding)contentBinding;
-
-        _contentBinding.spnState.enableErrorState("Hello");*/
         if (callback != null)
             callback.call(null);
     }
@@ -72,7 +57,7 @@ public class EpiDataGatheringDialog extends BaseTeboAlertDialog {
 
     @Override
     protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
-        this.mContentBinding = (DialogEpidSocialEventsLayoutBinding)binding;
+        this.mContentBinding = (DialogCaseEpidGatheringEditLayoutBinding) binding;
     }
 
     @Override
@@ -80,22 +65,18 @@ public class EpiDataGatheringDialog extends BaseTeboAlertDialog {
         if (!binding.setVariable(BR.data, data)) {
             Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
-
-        if (!binding.setVariable(BR.addressLinkCallback, onAddressLinkClickedCallback)) {
-            Log.e(TAG, "There is no variable 'addressLinkCallback' in layout " + layoutName);
-        }
     }
 
     @Override
-    protected void initializeData(TaskResultHolder resultHolder, boolean executionComplete) {
+    protected void prepareDialogData() {
 
     }
 
     @Override
     protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-        //DialogEpidSocialEventsLayoutBinding _contentBinding = (DialogEpidSocialEventsLayoutBinding)contentBinding;
+        mContentBinding.epiDataGatheringGatheringDate.initializeDateField(getFragmentManager());
 
-        mContentBinding.dtpDateOfEvent.initialize(getFragmentManager());
+        setUpControlListeners();
     }
 
     @Override
@@ -119,37 +100,41 @@ public class EpiDataGatheringDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    public TeboButtonType dismissButtonType() {
-        return TeboButtonType.BTN_LINE_SECONDARY;
+    public ControlButtonType dismissButtonType() {
+        return ControlButtonType.LINE_SECONDARY;
     }
 
     @Override
-    public TeboButtonType okButtonType() {
-        return TeboButtonType.BTN_LINE_PRIMARY;
+    public ControlButtonType okButtonType() {
+        return ControlButtonType.LINE_PRIMARY;
     }
 
     @Override
-    public TeboButtonType deleteButtonType() {
-        return TeboButtonType.BTN_LINE_DANGER;
+    public ControlButtonType deleteButtonType() {
+        return ControlButtonType.LINE_DANGER;
     }
 
-    private void setupCallback() {
-        onAddressLinkClickedCallback = new IEntryItemOnClickListener() {
+    private void setUpControlListeners() {
+        mContentBinding.epiDataGatheringGatheringAddress.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v, Object item) {
-                final Location location = data.getGatheringAddress();
-                final LocationDialog locationDialog = new LocationDialog(getActivity(), location);
-                locationDialog.show(null);
-                locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
-                    @Override
-                    public void onOkClick(View v, Object item, View viewRoot) {
-                        mContentBinding.txtAddress.setValue(location.toString());
-                        data.setGatheringAddress(location);
-                        locationDialog.dismiss();
-                    }
-                });
+            public void onClick(View v) {
+                openAddressPopup();
             }
-        };
+        });
+    }
+
+    private void openAddressPopup() {
+        final Location location = (Location)mContentBinding.epiDataGatheringGatheringAddress.getValue();
+        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), location);
+        locationDialog.show(null);
+
+        locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+            @Override
+            public void onOkClick(View v, Object item, View viewRoot) {
+                mContentBinding.epiDataGatheringGatheringAddress.setValue(location);
+                locationDialog.dismiss();
+            }
+        });
     }
 
 }

@@ -62,6 +62,7 @@ public final class LocationService {
                 return;
             }
 
+            // every 20 minutes
             LocationListener gpsBaseLocationListener = new BestKnownLocationListener();
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000*60*20, 1000, gpsBaseLocationListener, Looper.getMainLooper());
 

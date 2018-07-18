@@ -5,8 +5,6 @@ import javax.ejb.Remote;
 @Remote
 public interface ConfigFacade {
 	
-	String getProperty(String name);
-	
 	String getCountryName();
 	
 	String getAppUrl();
@@ -24,5 +22,11 @@ public interface ConfigFacade {
 	String getTempFilesPath();
 	
 	String getGeneratedFilesPath();
+
+	char getCsvSeparator();
+
+	String getAppLegacyUrl();
+
+	void validateAppUrls();
 	
 }

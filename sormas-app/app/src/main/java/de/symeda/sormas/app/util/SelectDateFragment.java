@@ -11,7 +11,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.component.DateTimeField;
 
 /**
  * Created by Stefan Szczesny on 01.08.2016.

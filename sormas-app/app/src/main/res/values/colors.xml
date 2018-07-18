@@ -35,6 +35,7 @@
     <!-- Remove when done -->
     <color name="red">#FFe10002</color>
     <color name="red10">#1Ae10002</color>
+    <color name="red40">#63e10002</color>
     <color name="red50">#80e10002</color>
     <color name="lightRed">#99e10002</color>
     <color name="purple">#c600ff</color>
@@ -193,7 +194,7 @@
     <color name="colorControlError">@color/watchOut</color>
     <color name="textSelectionHandle">@color/blue</color>
     <color name="controlTextColor">@color/normalText</color>
-    <color name="controlLabelColor">@color/normalText</color>
+    <color name="controlLabelColor">@color/lightBlue</color>
     <color name="controlTextViewStroke">@color/lighterBlue</color>
     <color name="controlTextViewAlternateBackground">#FFFFFFFF</color>
     <color name="controlTextViewBackground">#00FFFFFF</color>
@@ -214,7 +215,7 @@
     <color name="labelFocus">#005a9c</color>
 
 
-    <color name="fab">@color/blue</color>
+    <color name="sub_menu_button">@color/blue</color>
     <color name="fabIcon">@color/whiteOpaque</color>
 
     <!-- Read Text Control -->
@@ -267,9 +268,8 @@
     <color name="drawerTaskNotificationCounterText">@color/whiteOpaque</color>
 
 
-    <!-- Login Activity -->
-    <color name="text_70">#B3374b5a</color>
-    <color name="text_30">#4D374b5a</color>
+    <color name="gray_70">#B3374b5a</color>
+    <color name="gray_30">#4D374b5a</color>
 
     <color name="pressedState">@color/lighterBlue40</color>
     <color name="activeState">@color/blue</color>
@@ -281,7 +281,7 @@
     <color name="pinButtonFocused">@color/lighterBlue40</color>
     <color name="pinButtonPressed">@color/lighterBlue40</color>
     <color name="textPinButton">@color/normalText</color>
-    <color name="textPinButtonDisabled">@color/text_30</color>
+    <color name="textPinButtonDisabled">@color/gray_30</color>
     <color name="textPinButtonFocused">@color/blue</color>
     <color name="textPinButtonPressed">@color/blue</color>
 
@@ -295,15 +295,15 @@
 
 
     <!-- Landing Page -->
-    <color name="landingMenuCellBackground">@color/whiteOpaque</color>
-    <color name="landingMenuCellPressedBackground">@color/listItemPressed</color>
-    <color name="landingMenuCellFocusedBackground">@color/listItemPressed</color>
-    <color name="landingMenuCellSelectedBackground">@color/listItemPressed</color>
-    <color name="landingMenuTitleBackground">@color/whiteOpaque</color>
-    <color name="landingMenuTitleBorder">@color/lighterBlue</color>
-    <color name="landingPageMenuText">@color/normalText</color>
-    <color name="landingPageMenuCounterText">@color/whiteOpaque</color>
-    <color name="landingPageMenuCounterBackground">@color/lightBlue</color>
+    <color name="subMenuItemBackground">@color/whiteOpaque</color>
+    <color name="subMenuItemPressedBackground">@color/listItemPressed</color>
+    <color name="subMenuItemFocusedBackground">@color/listItemPressed</color>
+    <color name="subMenuItemSelectedBackground">@color/listItemPressed</color>
+    <color name="subMenuTitleBackground">@color/whiteOpaque</color>
+    <color name="subMenuTitleBorder">@color/lighterBlue</color>
+    <color name="subMenuItemTitleText">@color/normalText</color>
+    <color name="subMenuCounterText">@color/whiteOpaque</color>
+    <color name="subMenuCounterBackground">@color/lightBlue</color>
     <color name="landingPageMenuCounterBackgroundActive">@color/blue</color>
     <color name="landingPageSummaryDivider">#ffcad8e7</color>
 
@@ -314,10 +314,10 @@
 
 
     <!-- Page Menu -->
-    <color name="pageMenuPositionColor">@color/normalText30</color>
-    <color name="pageMenuPositionActiveColor">@color/blue</color>
-    <color name="pageMenuTitleColor">@color/normalText</color>
-    <color name="pageMenuTitleActiveColor">@color/blue</color>
+    <color name="navigationNumber">@color/normalText30</color>
+    <color name="navigationNumberActive">@color/blue</color>
+    <color name="navigationTitle">@color/normalText</color>
+    <color name="navigationTitleActive">@color/blue</color>
 
 
 
@@ -354,7 +354,7 @@
 
 
     <!-- Task Priority -->
-    <color name="legendValuePercentageSpacer">#ffa7c3e4</color>
+    <color name="legendEntrySpacer">#ffa7c3e4</color>
 
 
 
@@ -444,9 +444,9 @@
     <color name="listActivityRowFocusedBackground">@color/listItemPressed</color>
     <color name="listActivityRowSelectedBackground">@color/listItemPressed</color>
     <color name="listActivityRowPrimaryText">@color/normalText</color>
-    <color name="listActivityRowSecondaryText">@color/normalText</color>
+    <color name="row_entry_secondary_text">@color/normalText</color>
     <color name="listActivityRowTertiaryText">@color/blue</color>
-    <color name="listActivityRowStatusText">@color/normalText</color>
+    <color name="row_entry_status_text">@color/normalText</color>
     <color name="listActivityRowDateText">@color/normalText80</color>
     <color name="listActivityRowLeastText">@color/normalText80</color>
 
@@ -477,14 +477,14 @@
     <!-- Link Button -->
     <color name="linkButtonFocused">@color/blue</color>
     <color name="linkButtonPressed">@color/blue</color>
-    <color name="linkButtonDisabled">@color/text_30</color>
+    <color name="linkButtonDisabled">@color/gray_30</color>
     <color name="linkButtonNormal">@color/lightBlue</color>
 
 
     <!-- Read Activity Link -->
     <color name="formActivityLinkFocused">@color/lightBlue</color>
     <color name="formActivityLinkPressed">@color/lightBlue</color>
-    <color name="formActivityLinkDisabled">@color/text_30</color>
+    <color name="formActivityLinkDisabled">@color/gray_30</color>
     <color name="formActivityLinkNormal">@color/blue</color>
     <color name="symptomListRowBackground">@color/normalText</color>
 

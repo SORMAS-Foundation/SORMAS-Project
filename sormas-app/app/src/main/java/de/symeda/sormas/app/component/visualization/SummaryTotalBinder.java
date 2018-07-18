@@ -38,7 +38,7 @@ public class SummaryTotalBinder extends DataBinder<SummaryTotalBinder.ViewHolder
     @Override
     public ViewHolder createViewHolder(ViewGroup parent) {
         View view = LayoutInflater.from(parent.getContext()).inflate(
-                R.layout.control_lps_cell_total_layout, parent, false);
+                R.layout.summary_total_layout, parent, false);
         return new ViewHolder(view);
     }
 
@@ -71,9 +71,9 @@ public class SummaryTotalBinder extends DataBinder<SummaryTotalBinder.ViewHolder
 
         public ViewHolder(View view) {
             super(view);
-            layout = (View)itemView.findViewById(R.id.cellRootLayout);
-            txtTitle = (TextView) view.findViewById(R.id.txtTitle);
-            txtValue = (TextView) view.findViewById(R.id.txtValue);
+            layout = (View)itemView.findViewById(R.id.cell_root_layout);
+            txtTitle = (TextView) view.findViewById(R.id.title);
+            txtValue = (TextView) view.findViewById(R.id.value);
         }
     }
 

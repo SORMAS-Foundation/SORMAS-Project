@@ -2,10 +2,6 @@ package de.symeda.sormas.app.shared;
 
 import de.symeda.sormas.api.I18nProperties;
 
-/**
- * Created by Mate Strysewske on 10.08.2017.
- */
-
 public enum ShipmentStatus {
 
     NOT_SHIPPED,
@@ -17,4 +13,7 @@ public enum ShipmentStatus {
         return I18nProperties.getEnumCaption(this);
     }
 
+    public String toShortString() {
+        return I18nProperties.getEnumCaption(this, "Short");
+    }
 }

@@ -1,10 +1,14 @@
 package de.symeda.sormas.api.symptoms;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public final class SymptomsHelper {
+	
+	// TODO thread safety, etc.?!
+	private static List<String> symptomPropertyIds;
 
     public static List<Float> getTemperatureValues() {
 		List<Float> x = new ArrayList<Float>();
@@ -18,7 +22,24 @@ public final class SymptomsHelper {
     	return String.format("%.1f °C", value);
     }
     
-    public static void updateIsSymptomatic(SymptomsDto dto) {
+    public static List<String> getSymptomPropertyIds() {
+    	if (symptomPropertyIds == null) {
+    		buildSymptomPropertyIds();
+    	}
+    	return symptomPropertyIds;
+    }
+    
+    private static void buildSymptomPropertyIds() {
+		symptomPropertyIds = new ArrayList<String>();
+		
+		for (Field field : SymptomsDto.class.getDeclaredFields()) {
+			if (SymptomState.class.equals(field.getType())) {
+				symptomPropertyIds.add(field.getName());
+			}
+        }
+	}
+
+	public static void updateIsSymptomatic(SymptomsDto dto) {
     	if (dto == null) {
     		return;
     	}
@@ -49,5 +70,4 @@ public final class SymptomsHelper {
     	
     	dto.setSymptomatic(false);
     }
-    
 }

@@ -19,7 +19,7 @@
 
         <!---->
         <LinearLayout
-            android:id="@+id/rowListItem"
+            android:id="@+id/row_item"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -42,7 +42,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="top|right"
-                    android:textSize="@dimen/listActivityRowDateTextSize"
+                    android:textSize="@dimen/row_entry_date_text_size"
                     android:textColor="@color/listActivityRowDateText"
                     android:fontFamily="sans-serif"
                     app:dueTimeAgoValue="@{data}"
@@ -101,14 +101,14 @@
                         />
 
                     <TextView
-                        android:id="@+id/txtTaskPriority"
+                        android:id="@+id/task_priority"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/contentHorizontalSpacing"
                         android:gravity="center_vertical"
-                        android:textSize="@dimen/listActivityRowStatusTextSize"
+                        android:textSize="@dimen/row_entry_status_text_size"
                         android:textAllCaps="true"
-                        android:textColor="@color/listActivityRowStatusText"
+                        android:textColor="@color/row_entry_status_text"
                         android:fontFamily="sans-serif-medium"
                         app:value="@{data.priority}"
                         app:defaultValue='@{@string/task_priority_unknown}'
@@ -125,14 +125,14 @@
                         />
 
                     <TextView
-                        android:id="@+id/txtTaskStatus"
+                        android:id="@+id/task_taskStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/contentHorizontalSpacing"
                         android:gravity="center_vertical"
-                        android:textSize="@dimen/listActivityRowStatusTextSize"
+                        android:textSize="@dimen/row_entry_status_text_size"
                         android:textAllCaps="true"
-                        android:textColor="@color/listActivityRowStatusText"
+                        android:textColor="@color/row_entry_status_text"
                         android:fontFamily="sans-serif-medium"
                         app:value="@{data.taskStatus}"
                         app:defaultValue='@{@string/task_status_unknown}'/>
@@ -156,7 +156,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/txtTaskType"
+                        android:id="@+id/task_taskType"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/listActivityRowPrimaryTextSize"
@@ -170,17 +170,16 @@
                         />
 
                     <TextView
-                        android:id="@+id/txtCreatorComment"
+                        android:id="@+id/task_creatorComment"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="top|left"
-                        android:layout_marginRight="@dimen/formLayoutGutterSize"
+                        android:layout_marginRight="@dimen/control_spacing"
                         android:textSize="@dimen/listActivityRowTertiaryTextSize"
                         android:textColor="@color/listActivityRowLeastText"
                         android:fontFamily="sans-serif-medium"
                         android:scrollHorizontally="true"
-                        app:singleLine="false"
                         app:maxLines="2"
                         android:ellipsize="end"
                         app:value="@{data.creatorComment}"

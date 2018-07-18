@@ -1,7 +1,5 @@
 package de.symeda.sormas.app.dashboard;
 
-import android.os.AsyncTask;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,46 +11,26 @@ import de.symeda.sormas.app.BaseDashboardActivity;
 import de.symeda.sormas.app.BaseSummaryFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.dialog.UserReportDialog;
-import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.DashboardNavigationCapsule;
 import de.symeda.sormas.app.dashboard.caze.CaseSummaryFragment;
 import de.symeda.sormas.app.dashboard.contact.ContactSummaryFragment;
 import de.symeda.sormas.app.dashboard.event.EventSummaryFragment;
 import de.symeda.sormas.app.dashboard.sample.SampleSummaryFragment;
 import de.symeda.sormas.app.dashboard.task.TaskSummaryFragment;
-import de.symeda.sormas.app.util.MarkAllAsReadHelper;
-
-/**
- * Created by Orson on 20/11/2017.
- */
 
 public class DashboardActivity extends BaseDashboardActivity {
 
     private List<BaseSummaryFragment> activeFragments = null;
 
-
-
-
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        //SavePageStatusState(outState, pageStatus);
-    }
-
-    @Override
-    protected void initializeActivity(Bundle arguments) {
-        //pageStatus = (InvestigationStatus) getPageStatusArg(arguments);
-    }
-
-    @Override
-    protected List<BaseSummaryFragment> getSummaryFragments() {
+    protected List<BaseSummaryFragment> buildSummaryFragments() {
         if (activeFragments == null) {
             activeFragments = new ArrayList<BaseSummaryFragment>() {{
-                add(TaskSummaryFragment.newInstance(DashboardActivity.this, new DashboardNavigationCapsule(DashboardActivity.this)));
-                add(CaseSummaryFragment.newInstance(DashboardActivity.this, new DashboardNavigationCapsule(DashboardActivity.this)));
-                add(ContactSummaryFragment.newInstance(DashboardActivity.this, new DashboardNavigationCapsule(DashboardActivity.this)));
-                add(EventSummaryFragment.newInstance(DashboardActivity.this, new DashboardNavigationCapsule(DashboardActivity.this)));
-                add(SampleSummaryFragment.newInstance(DashboardActivity.this, new DashboardNavigationCapsule(DashboardActivity.this)));
+                add(TaskSummaryFragment.newInstance(new DashboardNavigationCapsule(DashboardActivity.this)));
+                add(CaseSummaryFragment.newInstance(new DashboardNavigationCapsule(DashboardActivity.this)));
+                add(ContactSummaryFragment.newInstance(new DashboardNavigationCapsule(DashboardActivity.this)));
+                add(EventSummaryFragment.newInstance(new DashboardNavigationCapsule(DashboardActivity.this)));
+                add(SampleSummaryFragment.newInstance(new DashboardNavigationCapsule(DashboardActivity.this)));
             }};
         }
 
@@ -81,16 +59,6 @@ public class DashboardActivity extends BaseDashboardActivity {
 
             case R.id.option_menu_action_sync:
                 synchronizeChangedData();
-                return true;
-
-            case R.id.option_menu_action_markAllAsRead:
-                MarkAllAsReadHelper.markCases(this, new Callback.IAction<AsyncTask>() {
-                    @Override
-                    public void call(AsyncTask asyncTask) {
-                        /*if (asyncTask != null && !asyncTask.isCancelled())
-                            asyncTask.cancel(true);*/
-                    }
-                });
                 return true;
 
             // Report problem button

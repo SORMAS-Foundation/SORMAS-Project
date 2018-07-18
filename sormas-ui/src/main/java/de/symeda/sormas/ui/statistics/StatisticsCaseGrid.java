@@ -8,6 +8,7 @@ import org.apache.commons.collections.CollectionUtils;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Grid;
 
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
@@ -19,17 +20,17 @@ import de.symeda.sormas.ui.utils.CssStyles;
 @SuppressWarnings("serial")
 public class StatisticsCaseGrid extends Grid {
 
-	private static final String COLUMN_CAPTION = "Column_Caption";
-	private static final String CAPTION_NUMBER_OF_CASES = "Caption_NumberOfCases";
-	private static final String CAPTION_UNKNOWN = "Column_Unknown";
-	private static final String CAPTION_TOTAL = "Column_Total";
+	private static final String ROW_CAPTION_COLUMN = "RowCaptionColumn";
+	private static final String CASE_COUNT_COLUMN = "CaseCountColumn";
+	private static final String UNKNOWN_COLUMN = "UnknownColumn";
+	private static final String TOTAL_COLUMN = "TotalColumn";
 
 	private final class StatisticsCaseGridCellStyleGenerator implements CellStyleGenerator {
 		private static final long serialVersionUID = 1L;
 
 		@Override
 		public String getStyle(CellReference cell) {
-			if (cell.getPropertyId().equals(COLUMN_CAPTION)) {
+			if (cell.getPropertyId().equals(ROW_CAPTION_COLUMN)) {
 				return CssStyles.GRID_ROW_TITLE;
 			}
 
@@ -55,14 +56,14 @@ public class StatisticsCaseGrid extends Grid {
 
 		// If no displayed attributes are selected, simply show the total number of cases
 		if (rowsAttribute == null && columnsAttribute == null) {
-			addColumn(CAPTION_NUMBER_OF_CASES);
-			getColumn(CAPTION_NUMBER_OF_CASES).setHeaderCaption("Number of cases");
+			addColumn(CASE_COUNT_COLUMN);
+			getColumn(CASE_COUNT_COLUMN).setHeaderCaption(I18nProperties.getFragment(StatisticsHelper.CASE_COUNT));
 			addRow(new Object[]{String.valueOf(content.get(0)[0])});
 			return;
 		}
 
 		// Extract columns from content and add them to the grid
-		Column captionColumn = addColumn(COLUMN_CAPTION);
+		Column captionColumn = addColumn(ROW_CAPTION_COLUMN);
 		captionColumn.setHeaderCaption("");
 		captionColumn.setSortable(false);
 		captionColumn.setMaximumWidth(150);
@@ -70,8 +71,8 @@ public class StatisticsCaseGrid extends Grid {
 		TreeMap<StatisticsGroupingKey, String> columns = new TreeMap<>(new StatisticsKeyComparator());
 		if (columnsAttribute == null && columnsSubAttribute == null) {
 			// When no column grouping has been selected, simply display the number of cases for the respective row
-			addColumn(CAPTION_NUMBER_OF_CASES);
-			getColumn(CAPTION_NUMBER_OF_CASES).setHeaderCaption("Number of cases");
+			addColumn(CASE_COUNT_COLUMN);
+			getColumn(CASE_COUNT_COLUMN).setHeaderCaption(I18nProperties.getFragment(StatisticsHelper.CASE_COUNT));
 		} else {
 			boolean addColumnUnknown = false;
 			// Iterate over content and add new columns to the list
@@ -89,7 +90,7 @@ public class StatisticsCaseGrid extends Grid {
 				List<Object> values = StatisticsHelper.getAllAttributeValues(columnsAttribute, columnsSubAttribute);
 				List<StatisticsGroupingKey> filterValues = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(columnsAttribute, columnsSubAttribute);
 				for (Object value : values) {
-					Object formattedValue = StatisticsHelper.formatAttributeValue(value, columnsAttribute, columnsSubAttribute);
+					Object formattedValue = StatisticsHelper.buildGroupingKey(value, columnsAttribute, columnsSubAttribute);
 					if (formattedValue != null && (CollectionUtils.isEmpty(filterValues) || filterValues.contains(formattedValue))) {
 						columns.putIfAbsent((StatisticsGroupingKey) formattedValue, formattedValue.toString()); 
 					}
@@ -106,15 +107,15 @@ public class StatisticsCaseGrid extends Grid {
 
 			// Add the column to display unknown numbers if required
 			if (addColumnUnknown) {
-				Column column = addColumn(CAPTION_UNKNOWN);
-				column.setHeaderCaption("Unknown");
+				Column column = addColumn(UNKNOWN_COLUMN);
+				column.setHeaderCaption(I18nProperties.getFragment(StatisticsHelper.UNKNOWN));
 				column.setSortable(false);
 				column.setMaximumWidth(120);
 			}
 
 			// Add total column
-			Column totalColumn = addColumn(CAPTION_TOTAL);
-			totalColumn.setHeaderCaption("Total");
+			Column totalColumn = addColumn(TOTAL_COLUMN);
+			totalColumn.setHeaderCaption(I18nProperties.getFragment(StatisticsHelper.TOTAL));
 			totalColumn.setSortable(false);
 		}
 
@@ -122,7 +123,7 @@ public class StatisticsCaseGrid extends Grid {
 		if (rowsAttribute == null && rowsSubAttribute == null) {
 			// When no row grouping has been selected, simply display the number of cases for the respective column
 			Object[] row = new Object[getColumns().size()];
-			row[0] = "Number of cases";
+			row[0] = I18nProperties.getFragment(StatisticsHelper.CASE_COUNT);
 			long totalAmountOfCases = 0;
 			for (int i = 0; i < content.size(); i++) {
 				Object[] entry = content.get(i);
@@ -158,7 +159,7 @@ public class StatisticsCaseGrid extends Grid {
 						columnTotals[columnTotals.length - 1] += (long) entry[0];
 					} else {
 						unknownRow = new Object[getColumns().size()];
-						unknownRow[0] = "Unknown";
+						unknownRow[0] = I18nProperties.getFragment(StatisticsHelper.UNKNOWN);
 						unknownRow[1] = entry[0].toString();
 						columnTotals[columnTotals.length - 1] += (long) entry[0];
 					}
@@ -178,7 +179,7 @@ public class StatisticsCaseGrid extends Grid {
 						if (StatisticsHelper.isNullOrUnknown(entry[1])) {
 							if (unknownRow == null) {
 								unknownRow = new Object[getColumns().size()];
-								unknownRow[0] = "Unknown";
+								unknownRow[0] = I18nProperties.getFragment(StatisticsHelper.UNKNOWN);
 							}
 						} else {
 							currentRow = new Object[getColumns().size()];
@@ -227,7 +228,7 @@ public class StatisticsCaseGrid extends Grid {
 				List<Object> values = StatisticsHelper.getAllAttributeValues(rowsAttribute, rowsSubAttribute);
 				List<StatisticsGroupingKey> filterValues = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(rowsAttribute, rowsSubAttribute);
 				for (Object value : values) {
-					Object formattedValue = StatisticsHelper.formatAttributeValue(value, rowsAttribute, rowsSubAttribute);
+					Object formattedValue = StatisticsHelper.buildGroupingKey(value, rowsAttribute, rowsSubAttribute);
 					if (formattedValue != null && (CollectionUtils.isEmpty(filterValues) || filterValues.contains(formattedValue))) {
 						Object[] zeroRow = new Object[getColumns().size()];
 						zeroRow[0] = formattedValue.toString();
@@ -249,7 +250,7 @@ public class StatisticsCaseGrid extends Grid {
 
 			// Add total row
 			Object[] totalRow = new Object[getColumns().size()];
-			totalRow[0] = "Total";
+			totalRow[0] = I18nProperties.getFragment(StatisticsHelper.TOTAL);
 			for (int i = 1; i < columnTotals.length; i++) {
 				if (columnTotals[i] > 0) {
 					totalRow[i] = String.valueOf(columnTotals[i]);

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable name="data" type="de.symeda.sormas.app.backend.event.EventParticipant"/>
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/fragment_padding"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:id="@+id/main_content">
+
+            <requestFocus/>
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/eventParticipant_involvementDescription"
+                android:nextFocusForward="@id/eventParticipant_firstName"
+                app:required="true"
+                app:value="@={data.involvementDescription}"
+                app:imeOptions="actionNext"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/eventParticipant_firstName"
+                android:nextFocusForward="@id/eventParticipant_lastName"
+                app:required="true"
+                app:value="@={data.person.firstName}"
+                app:imeOptions="actionNext"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/eventParticipant_lastName"
+                app:required="true"
+                app:value="@={data.person.lastName}"
+                style="@style/ControlSingleColumnStyle" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</layout>
+

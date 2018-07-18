@@ -8,14 +8,7 @@ import de.symeda.sormas.app.core.BaseFormNavigationCapsule;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 
-/**
- * Created by Orson on 09/01/2018.
- */
-
 public class ContactFormNavigationCapsule extends BaseFormNavigationCapsule<Contact, ContactFormNavigationCapsule> {
-
-    private IStatusElaborator filterStatus;
-    private SearchBy searchBy;
 
     public ContactFormNavigationCapsule(Context context, ContactClassification pageStatus) {
         super(context, null, pageStatus);

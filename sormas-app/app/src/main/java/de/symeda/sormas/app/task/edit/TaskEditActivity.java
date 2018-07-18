@@ -1,132 +1,99 @@
 package de.symeda.sormas.app.task.edit;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.os.AsyncTask;
 import android.view.Menu;
-import android.view.MenuItem;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditActivity;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.core.async.AsyncTaskResult;
+import de.symeda.sormas.app.core.async.SavingAsyncTask;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
-import de.symeda.sormas.app.util.ConstantHelper;
-import de.symeda.sormas.app.util.MenuOptionsHelper;
-
-/**
- * Created by Orson on 22/01/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
 
 public class TaskEditActivity extends BaseEditActivity<Task> {
 
-    private boolean showStatusFrame = false;
-    private boolean showTitleBar = true;
-    private boolean showPageMenu = false;
-    private final int DATA_XML_PAGE_MENU = -1;
+    private AsyncTask saveTask;
 
-    private TaskStatus pageStatus = null;
-    private String recordUuid = null;
-    private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
-    private BaseEditActivityFragment activeFragment = null;
-
-    private MenuItem saveMenu = null;
-    private MenuItem addMenu = null;
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        savePageStatusState(outState, pageStatus);
-        saveRecordUuidState(outState, recordUuid);
+    public TaskStatus getPageStatus() {
+        return (TaskStatus)super.getPageStatus();
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void initializeActivity(Bundle arguments) {
-        pageStatus = (TaskStatus) getPageStatusArg(arguments);
-        recordUuid = getRecordUuidArg(arguments);
-
-        this.showStatusFrame = false;
-        this.showTitleBar = true;
-        this.showPageMenu = false;
-    }
-
-    @Override
-    protected Task getActivityRootData(String recordUuid) {
+    protected Task queryRootEntity(String recordUuid) {
         return DatabaseHelper.getTaskDao().queryUuid(recordUuid);
     }
 
     @Override
-    protected Task getActivityRootDataIfRecordUuidNull() {
-        return null;
+    protected Task buildRootEntity() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment(Task activityRootData) {
-        if (activeFragment == null) {
-            TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(TaskEditActivity.this,
-                    recordUuid, pageStatus);
-            activeFragment = TaskEditFragment.newInstance(this, dataCapsule, activityRootData);
+    public void saveData() {
+        final Task taskToSave = getStoredRootEntity();
+
+        saveTask = new SavingAsyncTask(getRootView(), taskToSave) {
+
+            @Override
+            public void doInBackground(TaskResultHolder resultHolder) throws DaoException, ValidationException {
+                validateData(taskToSave);
+                DatabaseHelper.getTaskDao().saveAndSnapshot(taskToSave);
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                super.onPostExecute(taskResult);
+
+                if (taskResult.getResultStatus().isSuccess()) {
+                    finish();
+                }
+            }
+        }.executeOnThreadPool();
+    }
+
+    private void validateData(Task data) throws ValidationException {
+        if (data.getTaskStatus() == TaskStatus.NOT_EXECUTABLE
+                && DataHelper.isNullOrEmpty(data.getAssigneeReply())) {
+            // TODO I18n: Replace with text from I18nProperties?
+            throw new ValidationException(getContext().getResources().getString(R.string.snackbar_task_reply));
         }
 
-        return activeFragment;
-    }
-
-    @Override
-    public boolean showStatusFrame() {
-        return showStatusFrame;
-    }
-
-    @Override
-    public boolean showTitleBar() {
-        return showTitleBar;
-    }
-
-    @Override
-    public boolean showPageMenu() {
-        return showPageMenu;
-    }
-
-    @Override
-    public Enum getPageStatus() {
-        return pageStatus;
-    }
-
-    @Override
-    public int getPageMenuData() {
-        return DATA_XML_PAGE_MENU;
+        if (data.getTaskStatus() == TaskStatus.DONE
+                && data.getTaskType() == TaskType.CASE_INVESTIGATION) {
+            Case caze = DatabaseHelper.getCaseDao().queryUuidBasic(data.getCaze().getUuid());
+            CaseDataDto cazeDto = new CaseDataDto();
+            CaseDtoHelper.fillDto(cazeDto, caze);
+            CaseLogic.validateInvestigationDoneAllowed(cazeDto);
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
+        boolean result = super.onCreateOptionsMenu(menu);
         getSaveMenu().setTitle(R.string.action_save_task);
-
-        return true;
+        return result;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (!MenuOptionsHelper.handleEditModuleOptionsItemSelected(this, item))
-            return super.onOptionsItemSelected(item);
-
-        return true;
+    protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Task activityRootData) {
+        TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
+        return TaskEditFragment.newInstance(dataCapsule, activityRootData);
     }
 
     @Override
@@ -138,4 +105,11 @@ public class TaskEditActivity extends BaseEditActivity<Task> {
         BaseEditActivity.goToActivity(fromActivity, TaskEditActivity.class, dataCapsule);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (saveTask != null && !saveTask.isCancelled())
+            saveTask.cancel(true);
+    }
 }

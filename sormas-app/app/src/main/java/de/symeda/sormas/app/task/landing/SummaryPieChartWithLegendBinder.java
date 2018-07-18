@@ -41,7 +41,7 @@ public class SummaryPieChartWithLegendBinder extends DataBinder<SummaryPieChartW
     @Override
     public SummaryPieChartWithLegendBinder.ViewHolder createViewHolder(ViewGroup parent) {
         View view = LayoutInflater.from(parent.getContext()).inflate(
-                R.layout.control_lps_cell_pie_layout, parent, false);
+                R.layout.summary_pie_chart_layout, parent, false);
         return new SummaryPieChartWithLegendBinder.ViewHolder(view);
     }
 
@@ -93,7 +93,7 @@ public class SummaryPieChartWithLegendBinder extends DataBinder<SummaryPieChartW
 
 
         TaskPriorityLegendAdapter adapter = new TaskPriorityLegendAdapter(getContext(), data.get(position).getLegendEntries(),
-                R.layout.control_lps_task_priority_legend_row_layout);
+                R.layout.summary_pie_chart_legend_entry_layout);
         holder.legendListView.setAdapter(adapter);
     }
 
@@ -121,12 +121,12 @@ public class SummaryPieChartWithLegendBinder extends DataBinder<SummaryPieChartW
 
         public ViewHolder(View view) {
             super(view);
-            layout = (View)itemView.findViewById(R.id.cellRootLayout);
+            layout = (View)itemView.findViewById(R.id.cell_root_layout);
 
 
-            legendListView = (ListView) view.findViewById(R.id.lvLegend);
-            pieChart = (PieChart) view.findViewById(R.id.pieChart);
-            txtTitle = (TextView) view.findViewById(R.id.txtTitle);
+            legendListView = (ListView) view.findViewById(R.id.legend);
+            pieChart = (PieChart) view.findViewById(R.id.pie_chart);
+            txtTitle = (TextView) view.findViewById(R.id.title);
 
             legendListView.setDividerHeight(0);
             legendListView.setClickable(false);

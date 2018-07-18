@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription">
+
+    <data>
+        <import type="android.view.View" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.sample.SampleTest" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/row_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/rowListItemPadding"
+        android:orientation="horizontal"
+        android:background="@drawable/selector_list_section_row_background"
+        android:visibility="@{data != null ? View.VISIBLE : View.GONE}">
+
+        <TextView
+            android:id="@+id/test_type"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:gravity="start|center_vertical"
+            android:textSize="@dimen/row_entry_secondary_text_size"
+            android:textColor="@color/row_entry_secondary_text"
+            android:scrollHorizontally="true"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:value="@{data.testType.toString()}" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center_vertical"
+                android:gravity="end|center_vertical">
+
+                <ImageView
+                    android:id="@+id/test_result_icon"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center_vertical"
+                    app:resultStatusIcon="@{data.testResult}" />
+
+                <TextView
+                    android:id="@+id/test_result"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:gravity="center_vertical"
+                    android:textSize="@dimen/row_entry_status_text_size"
+                    android:textAllCaps="true"
+                    android:textColor="@color/row_entry_status_text"
+                    android:fontFamily="sans-serif-medium"
+                    app:resultType="@{data.testResult}" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:maxLines="1"
+                android:textSize="@dimen/row_entry_date_text_size"
+                android:textColor="@color/row_entry_secondary_text"
+                android:textStyle="italic|bold"
+                android:text="@{data.testDateTime}"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>
+
+
+
+
