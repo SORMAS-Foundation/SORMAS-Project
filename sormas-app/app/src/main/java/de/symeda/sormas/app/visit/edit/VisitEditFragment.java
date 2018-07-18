@@ -7,10 +7,10 @@ import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.databinding.FragmentContactEditVisitInfoLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentVisitEditLayoutBinding;
 import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 
-public class VisitEditFragment extends BaseEditFragment<FragmentContactEditVisitInfoLayoutBinding, Visit, Visit> {
+public class VisitEditFragment extends BaseEditFragment<FragmentVisitEditLayoutBinding, Visit, Visit> {
 
     private Visit record;
 
@@ -31,19 +31,19 @@ public class VisitEditFragment extends BaseEditFragment<FragmentContactEditVisit
     }
 
     @Override
-    public void onLayoutBinding(FragmentContactEditVisitInfoLayoutBinding contentBinding) {
+    public void onLayoutBinding(FragmentVisitEditLayoutBinding contentBinding) {
         contentBinding.setData(record);
         contentBinding.setVisitStatusClass(VisitStatus.class);
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentContactEditVisitInfoLayoutBinding contentBinding) {
+    public void onAfterLayoutBinding(FragmentVisitEditLayoutBinding contentBinding) {
         contentBinding.visitVisitDateTime.initializeDateTimeField(getFragmentManager());
     }
 
     @Override
     public int getEditLayout() {
-        return R.layout.fragment_contact_edit_visit_info_layout;
+        return R.layout.fragment_visit_edit_layout;
     }
 
     public static VisitEditFragment newInstance(VisitFormNavigationCapsule capsule, Visit activityRootData) {
