@@ -7,6 +7,7 @@ import android.view.Menu;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -17,9 +18,12 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.caze.CaseSection;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.contact.edit.ContactNewActivity;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentSymptomsEditLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
@@ -30,7 +34,10 @@ import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.symptoms.SymptomsEditFragment;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.validation.CaseValidator;
 import de.symeda.sormas.app.validation.PersonValidator;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public class CaseEditActivity extends BaseEditActivity<Case> {
 
@@ -121,17 +128,24 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     }
 
     public void saveData(final Consumer<Case> successCallback) {
-
         final Case cazeToSave = getStoredRootEntity();
 
         CaseSection activeSection = CaseSection.fromMenuKey(getActivePage().getKey());
-        if (activeSection == CaseSection.PERSON_INFO) {
-            FragmentPersonEditLayoutBinding personBinding = (FragmentPersonEditLayoutBinding) getActiveFragment().getContentBinding();
-            PersonValidator.clearErrors(personBinding);
-            if (!PersonValidator.validatePersonData(this, cazeToSave.getPerson(), personBinding)) {
-                return;
+
+        try {
+            if (activeSection == CaseSection.CASE_INFO) {
+                CaseValidator.validateCase((CaseEditFragment) getActiveFragment());
+            } else if (activeSection == CaseSection.PERSON_INFO) {
+                PersonValidator.validatePerson((PersonEditFragment) getActiveFragment());
             }
+        } catch (ValidationException e) {
+            NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
+            return;
         }
+
+
+
+
 
         if (activeSection == CaseSection.SYMPTOMS) {
             FragmentSymptomsEditLayoutBinding symptomsBinding = (FragmentSymptomsEditLayoutBinding) getActiveFragment().getContentBinding();

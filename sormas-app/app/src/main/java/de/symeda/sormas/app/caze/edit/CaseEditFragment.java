@@ -120,8 +120,8 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     protected void prepareFragmentData(Bundle savedInstanceState) {
         record = getActivityRootData();
 
-        caseClassificationList = DataUtils.getEnumItems(CaseClassification.class, true);
-        caseOutcomeList = DataUtils.getEnumItems(CaseOutcome.class, true);
+        caseClassificationList = DataUtils.getEnumItems(CaseClassification.class, false);
+        caseOutcomeList = DataUtils.getEnumItems(CaseOutcome.class, false);
         vaccinationInfoSourceList = DataUtils.getEnumItems(VaccinationInfoSource.class, true);
         plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);
         dengueFeverTypeList = DataUtils.getEnumItems(DengueFeverType.class, true);

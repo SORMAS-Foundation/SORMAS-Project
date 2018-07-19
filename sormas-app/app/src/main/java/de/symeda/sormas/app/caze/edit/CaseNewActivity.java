@@ -16,12 +16,20 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.core.NotificationContext;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
+import de.symeda.sormas.app.databinding.FragmentCaseNewLayoutBinding;
 import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.validation.CaseValidator;
+import de.symeda.sormas.app.validation.ValidationErrorInfo;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public class CaseNewActivity extends BaseEditActivity<Case> {
 
@@ -65,9 +73,26 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
     }
 
     @Override
-    public void saveData() {
+    public void replaceFragment(BaseEditFragment f) {
+        super.replaceFragment(f);
+        getActiveFragment().setLiveValidationDisabled(true);
+    }
 
+    @Override
+    public void saveData() {
         final Case caze = getStoredRootEntity();
+        CaseNewFragment fragment = (CaseNewFragment) getActiveFragment();
+
+        if (fragment.isLiveValidationDisabled()) {
+            fragment.disableLiveValidation(false);
+        }
+
+        try {
+            CaseValidator.validateNewCase(fragment);
+        } catch (ValidationException e) {
+            NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
+            return;
+        }
 
         SelectOrCreatePersonDialog.selectOrCreatePerson(caze.getPerson(), new Consumer<Person>() {
             @Override
@@ -81,8 +106,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                     }
 
                     @Override
-                    protected void doInBackground(TaskResultHolder resultHolder) throws Exception, ValidationException {
-                        validateData(caze);
+                    protected void doInBackground(TaskResultHolder resultHolder) throws Exception {
                         DatabaseHelper.getPersonDao().saveAndSnapshot(caze.getPerson());
 
                         // epid number
@@ -107,14 +131,6 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                 }.executeOnThreadPool();
             }
         });
-    }
-
-    private void validateData(Case data) throws ValidationException {
-        //TODO: Validation
-        /*CaseValidator.clearErrorsForNewCase(binding);
-        if (!CaseValidator.validateNewCase(caze, binding)) {
-            return true;
-        }*/
     }
 
     private void showCaseEditView(Case caze) {

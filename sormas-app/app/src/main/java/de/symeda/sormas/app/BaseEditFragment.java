@@ -18,6 +18,7 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
@@ -28,7 +29,9 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
+import de.symeda.sormas.app.validation.ValidationErrorInfo;
 
+import static android.view.View.VISIBLE;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
@@ -48,6 +51,7 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
     private boolean skipAfterLayoutBinding = false;
     private TActivityRootData activityRootData;
     private View rootView;
+    private boolean liveValidationDisabled;
 
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -351,12 +355,37 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
         }
     }
 
+    public void disableLiveValidation(boolean disableLiveValidation) {
+        ViewGroup root = (ViewGroup) getContentBinding().getRoot();
+        disableLiveValidationForAllChildren(root, disableLiveValidation);
+        liveValidationDisabled = disableLiveValidation;
+    }
+
+    private static void disableLiveValidationForAllChildren(ViewGroup parent, boolean disableLiveValidation) {
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            View child = parent.getChildAt(i);
+            if (child instanceof ControlPropertyEditField) {
+                ((ControlPropertyEditField) child).setLiveValidationDisabled(disableLiveValidation);
+            } else if (child instanceof ViewGroup) {
+                disableLiveValidationForAllChildren((ViewGroup) child, disableLiveValidation);
+            }
+        }
+    }
+
     public boolean isShowSaveAction() {
         return true;
     }
 
     public boolean isShowAddAction() {
         return false;
+    }
+
+    public void setLiveValidationDisabled(boolean liveValidationDisabled) {
+        this.liveValidationDisabled = liveValidationDisabled;
+    }
+
+    public boolean isLiveValidationDisabled() {
+        return liveValidationDisabled;
     }
 
     @Override

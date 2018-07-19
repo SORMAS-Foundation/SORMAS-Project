@@ -20,6 +20,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
     private TextView labelRequired;
     private TextView labelSoftRequired;
+    private TextView labelError;
     private TextView labelWarning;
 
     // Attributes
@@ -37,6 +38,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
     protected boolean hasWarning;
     private String errorMessage;
     private String warningMessage;
+    private boolean liveValidationDisabled;
 
     // Constructors
 
@@ -180,9 +182,37 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
                 if (labelSoftRequired != null) {
                     labelSoftRequired.setVisibility(GONE);
                 }
+
+                this.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        addValueChangedListener(new ValueChangeListener() {
+                            @Override
+                            public void onChange(ControlPropertyField field) {
+                                if (!liveValidationDisabled) {
+                                    ((ControlPropertyEditField) field).setErrorIfEmpty();
+                                }
+                            }
+                        });
+                    }
+                });
             } else {
                 labelRequired.setVisibility(GONE);
             }
+        }
+    }
+
+    public void setErrorIfEmpty() {
+        if (!required) {
+            return;
+        }
+
+        if (getValue() == null
+                || (this instanceof ControlTextEditField
+                && ((String) getValue()).isEmpty())) {
+            enableErrorState((NotificationContext) getContext(), (R.string.validation_error_required));
+        } else {
+            disableErrorState();
         }
     }
 
@@ -194,7 +224,6 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
                 labelSoftRequired.setVisibility(GONE);
             }
         }
-
     }
 
     public void setWarning(boolean warning) {
@@ -214,11 +243,17 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
         if (hasError) {
             changeVisualState(VisualState.ERROR);
+            labelError.setVisibility(VISIBLE);
+            labelRequired.setVisibility(GONE);
         } else if (this.isFocused()) {
             changeVisualState(VisualState.FOCUSED);
+            labelError.setVisibility(GONE);
+            labelRequired.setVisibility(VISIBLE);
             hideNotification();
         } else {
             changeVisualState(VisualState.NORMAL);
+            labelError.setVisibility(GONE);
+            labelRequired.setVisibility(VISIBLE);
             hideNotification();
         }
     }
@@ -244,12 +279,23 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
         labelRequired = (TextView) this.findViewById(R.id.required_indicator);
         labelSoftRequired = (TextView) this.findViewById(R.id.soft_required_indicator);
+        labelError = (TextView) this.findViewById(R.id.error_indicator);
+        labelError.setVisibility(GONE);
         labelWarning = (TextView) this.findViewById(R.id.warning_indicator);
         setRequired(required);
         setSoftRequired(softRequired);
         setWarning(hasWarning);
 
         labelRequired.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (notificationContext != null && errorMessage != null) {
+                    showErrorNotification();
+                }
+            }
+        });
+
+        labelError.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (notificationContext != null && errorMessage != null) {
@@ -309,6 +355,14 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
     public VisualState getVisualState() {
         return visualState;
+    }
+
+    public boolean isHasError() {
+        return hasError;
+    }
+
+    public void setLiveValidationDisabled(boolean liveValidationDisabled) {
+        this.liveValidationDisabled = liveValidationDisabled;
     }
 
 }

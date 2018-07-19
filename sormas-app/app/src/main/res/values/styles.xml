@@ -146,11 +146,10 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:layout_marginEnd">@dimen/control_spacing</item>
     </style>
 
     <style name="ControlSecondOfTwoColumnsStyle" parent="ControlFirstOfTwoColumnsStyle">
-        <item name="android:layout_marginEnd">0dp</item>
+        <item name="android:layout_marginStart">@dimen/control_spacing</item>
     </style>
 
     <style name="ControlTextFieldStyle">
@@ -341,6 +340,11 @@
         <item name="android:maxLines">1</item>
         <item name="android:minWidth">30dp</item>
         <item name="android:padding">2dp</item>
+    </style>
+
+    <style name="ErrorIndicatorStyle" parent="WarningIndicatorStyle">
+        <item name="android:text">@string/indicator_error</item>
+        <item name="android:background">@drawable/background_rounded_edges_error</item>
     </style>
 
     <style name="DarkColorStyle">
