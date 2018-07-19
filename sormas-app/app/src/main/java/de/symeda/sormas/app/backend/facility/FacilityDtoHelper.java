@@ -2,6 +2,8 @@ package de.symeda.sormas.app.backend.facility;
 
 import android.util.Log;
 
+import com.j256.ormlite.dao.Dao;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
@@ -116,7 +118,7 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
      * Overriden for performance reasons. No merge needed when database was empty.
      */
     @Override
-    protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<Facility> dao, Response<List<FacilityDto>> response) {
+    protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<Facility> dao, Response<List<FacilityDto>> response) throws DaoException {
         if (!response.isSuccessful()) {
             String responseErrorBodyString;
             try {

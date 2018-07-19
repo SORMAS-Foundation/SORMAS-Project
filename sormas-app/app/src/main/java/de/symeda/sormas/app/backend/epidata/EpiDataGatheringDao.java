@@ -31,13 +31,9 @@ public class EpiDataGatheringDao extends AbstractAdoDao<EpiDataGathering> {
     }
 
     @Override
-    public int delete(EpiDataGathering data) {
-
-        // TODO we need to make sure the other delete methods don't work
-
+    public void delete(EpiDataGathering data) throws SQLException {
         DatabaseHelper.getLocationDao().delete(data.getGatheringAddress());
-
-        return super.delete(data);
+        super.delete(data);
     }
 
     public List<EpiDataGathering> getByEpiData(EpiData epiData) {

@@ -79,7 +79,7 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
      * Overriden for performance reasons. No merge needed when database was empty.
      */
     @Override
-    protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<Community> dao, Response<List<CommunityDto>> response) throws ServerConnectionException {
+    protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<Community> dao, Response<List<CommunityDto>> response) throws ServerConnectionException, DaoException {
         if (!response.isSuccessful()) {
             String responseErrorBodyString;
             try {

@@ -242,7 +242,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
     }
 
-    private void pullMissingAndDeleteInvalidData() throws ServerConnectionException {
+    private void pullMissingAndDeleteInvalidData() throws ServerConnectionException, DaoException {
         // ATTENTION: Since we are working with UUID lists we have no type safety. Look for typos!
 
         Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullMissingAndDeleteInvalidData");

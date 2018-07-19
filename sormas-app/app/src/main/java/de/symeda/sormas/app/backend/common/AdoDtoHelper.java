@@ -109,7 +109,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
     /**
      * @return Number or pulled entities
      */
-    protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<ADO> dao, Response<List<DTO>> response) throws ServerConnectionException {
+    protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<ADO> dao, Response<List<DTO>> response) throws ServerConnectionException, DaoException {
         if (!response.isSuccessful()) {
             throw ServerConnectionException.fromResponse(response);
         }
@@ -123,9 +123,10 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                     for (DTO dto : result) {
                         ADO source = fillOrCreateFromDto(null, dto);
                         source = dao.mergeOrCreate(source);
-                        if (markAsRead) {
-                            dao.markAsRead(source);
-                        }
+                        // TODO #704
+//                        if (markAsRead) {
+//                            dao.markAsRead(source);
+//                        }
                     }
                     return null;
                 }
@@ -197,14 +198,14 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         }
     }
 
-    public boolean isAnyMissing(List<String> uuids) throws ServerConnectionException {
+    public boolean isAnyMissing(List<String> uuids) {
 
         final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
         uuids = dao.filterMissing(uuids);
         return !uuids.isEmpty();
     }
 
-    public void pullMissing(List<String> uuids) throws ServerConnectionException {
+    public void pullMissing(List<String> uuids) throws ServerConnectionException, DaoException {
 
         final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
         uuids = dao.filterMissing(uuids);

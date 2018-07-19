@@ -42,12 +42,4 @@ public class CommunityDao extends AbstractAdoDao<Community> {
     public Community mergeOrCreate(Community source) throws DaoException {
         throw new UnsupportedOperationException();
     }
-
-    public int updateOrCreate(Community data) {
-        if (data.getId() == null) {
-            return create(data);
-        } else {
-            return update(data);
-        }
-    }
 }
