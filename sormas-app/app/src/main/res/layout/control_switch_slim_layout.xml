@@ -10,7 +10,7 @@
         android:paddingBottom="8dp"
         android:paddingTop="8dp">
 
-        <include layout="@layout/control_label_layout" />
+        <include layout="@layout/control_label_row_layout"/>
 
         <RadioGroup
             android:id="@+id/input"
