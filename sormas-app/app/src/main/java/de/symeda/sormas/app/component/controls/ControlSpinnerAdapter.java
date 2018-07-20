@@ -115,10 +115,10 @@ public class ControlSpinnerAdapter extends ArrayAdapter<Item> {
         if (textView != null) {
             if (StringUtils.isEmpty(textView.getText())) {
                 textView.setText(getContext().getResources().getString(R.string.hint_select_entry_leave_blank));
+            }
 
-                if (position == 0) {
-                    textView.setTypeface(null, Typeface.BOLD_ITALIC);
-                }
+            if (position == 0) {
+                textView.setTypeface(null, Typeface.BOLD_ITALIC);
             } else {
                 textView.setTypeface(null, Typeface.NORMAL);
             }

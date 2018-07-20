@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.view.Menu;
 
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -13,11 +14,16 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.event.EventSection;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
+import de.symeda.sormas.app.validation.EventValidator;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public class EventNewActivity extends BaseEditActivity<Event> {
 
@@ -56,14 +62,31 @@ public class EventNewActivity extends BaseEditActivity<Event> {
     }
 
     @Override
+    public void replaceFragment(BaseEditFragment f) {
+        super.replaceFragment(f);
+        getActiveFragment().setLiveValidationDisabled(true);
+    }
+
+    @Override
     protected int getActivityTitle() {
         return R.string.heading_event_new;
     }
 
     @Override
     public void saveData() {
-
         final Event eventToSave = (Event) getActiveFragment().getPrimaryData();
+        EventEditFragment fragment = (EventEditFragment) getActiveFragment();
+
+        if (fragment.isLiveValidationDisabled()) {
+            fragment.disableLiveValidation(false);
+        }
+
+        try {
+            EventValidator.validateNewEvent(getContext(), fragment.getContentBinding());
+        } catch (ValidationException e) {
+            NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
+            return;
+        }
 
         saveTask = new SavingAsyncTask(getRootView(), eventToSave) {
 

@@ -88,7 +88,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
         }
 
         try {
-            CaseValidator.validateNewCase(fragment);
+            CaseValidator.validateNewCase(getContext(), fragment.getContentBinding());
         } catch (ValidationException e) {
             NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
             return;

@@ -36,6 +36,7 @@ import de.symeda.sormas.app.symptoms.SymptomsEditFragment;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.validation.CaseValidator;
 import de.symeda.sormas.app.validation.PersonValidator;
+import de.symeda.sormas.app.validation.SymptomsValidator;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -134,9 +135,15 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
         try {
             if (activeSection == CaseSection.CASE_INFO) {
-                CaseValidator.validateCase((CaseEditFragment) getActiveFragment());
+                CaseValidator.validateCase(getContext(), ((CaseEditFragment) getActiveFragment()).getContentBinding());
             } else if (activeSection == CaseSection.PERSON_INFO) {
-                PersonValidator.validatePerson((PersonEditFragment) getActiveFragment());
+                PersonValidator.validatePerson(getContext(), ((PersonEditFragment) getActiveFragment()).getContentBinding());
+            } else if (activeSection == CaseSection.HOSPITALIZATION) {
+                CaseValidator.validateHospitalization(getContext(), ((CaseEditHospitalizationFragment) getActiveFragment()).getContentBinding());
+            } else if (activeSection == CaseSection.EPIDEMIOLOGICAL_DATA) {
+                CaseValidator.validateEpiData(getContext(), ((CaseEditEpidemiologicalDataFragment) getActiveFragment()).getContentBinding());
+            } else if (activeSection == CaseSection.SYMPTOMS) {
+                SymptomsValidator.validateSymptoms(getContext(), ((SymptomsEditFragment) getActiveFragment()).getContentBinding());
             }
         } catch (ValidationException e) {
             NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());

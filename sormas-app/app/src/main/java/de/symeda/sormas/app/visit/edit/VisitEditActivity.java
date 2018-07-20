@@ -13,12 +13,18 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 import de.symeda.sormas.app.symptoms.SymptomsEditFragment;
+import de.symeda.sormas.app.validation.SymptomsValidator;
+import de.symeda.sormas.app.validation.VisitValidator;
 import de.symeda.sormas.app.visit.VisitSection;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public class VisitEditActivity extends BaseEditActivity<Visit> {
 
@@ -76,8 +82,20 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
 
     @Override
     public void saveData() {
-
         final Visit visit = getStoredRootEntity();
+
+        VisitSection visitSection = VisitSection.fromMenuKey(getActivePage().getKey());
+
+        try {
+            if (visitSection == VisitSection.VISIT_INFO) {
+                VisitValidator.validateVisit(getContext(), ((VisitEditFragment) getActiveFragment()).getContentBinding());
+            } else if (visitSection == VisitSection.SYMPTOMS) {
+                SymptomsValidator.validateSymptoms(getContext(), ((SymptomsEditFragment) getActiveFragment()).getContentBinding());
+            }
+        } catch (ValidationException e) {
+            NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
+            return;
+        }
 
         saveTask = new SavingAsyncTask(getRootView(), visit) {
 

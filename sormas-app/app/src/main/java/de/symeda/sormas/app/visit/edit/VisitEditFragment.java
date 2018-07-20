@@ -39,6 +39,10 @@ public class VisitEditFragment extends BaseEditFragment<FragmentVisitEditLayoutB
     @Override
     public void onAfterLayoutBinding(FragmentVisitEditLayoutBinding contentBinding) {
         contentBinding.visitVisitDateTime.initializeDateTimeField(getFragmentManager());
+
+        if (isLiveValidationDisabled()) {
+            disableLiveValidation(true);
+        }
     }
 
     @Override

@@ -1,9 +1,22 @@
 package de.symeda.sormas.app.validation;
 
+import android.content.Context;
+
+import de.symeda.sormas.api.utils.ValidationException;
+import de.symeda.sormas.app.databinding.FragmentSymptomsEditLayoutBinding;
+
 /**
  * Created by Mate Strysewske on 21.07.2017.
  */
 public final class SymptomsValidator {
+
+    public static void validateSymptoms(Context context, FragmentSymptomsEditLayoutBinding contentBinding) throws ValidationException {
+        ValidationErrorInfo errorInfo = FragmentValidator.validateFragmentRequirements(context, contentBinding);
+
+        if (errorInfo.hasError()) {
+            throw new ValidationException(errorInfo.toString());
+        }
+    }
 
 //    public static boolean validateCaseSymptoms(Symptoms symptoms, CaseSymptomsFragmentLayoutBinding binding) {
 //        Resources resources = DatabaseHelper.getContext().getResources();

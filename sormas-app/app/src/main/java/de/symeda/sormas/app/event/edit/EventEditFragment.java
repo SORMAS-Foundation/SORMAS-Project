@@ -100,6 +100,10 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
         // Initialize ControlDateFields
         contentBinding.eventEventDate.initializeDateField(getFragmentManager());
+
+        if (isLiveValidationDisabled()) {
+            disableLiveValidation(true);
+        }
     }
 
     @Override

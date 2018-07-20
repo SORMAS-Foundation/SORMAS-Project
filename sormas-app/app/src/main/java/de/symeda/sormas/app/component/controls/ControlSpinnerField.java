@@ -102,10 +102,6 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
     }
 
     private void removeSelection() {
-        if (input.getSelectedItem() == null || input.getSelectedItem().toString().isEmpty()) {
-            return;
-        }
-
         SpinnerAdapter adapter = input.getAdapter();
         input.setAdapter(null);
         input.setSelection(Spinner.INVALID_POSITION);
