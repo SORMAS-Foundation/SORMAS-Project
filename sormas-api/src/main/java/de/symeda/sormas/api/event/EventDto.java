@@ -6,6 +6,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.Required;
 
 public class EventDto extends EntityDto {
 
@@ -33,11 +34,16 @@ public class EventDto extends EntityDto {
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
 	
+	@Required
 	private EventType eventType;
+	@Required
 	private EventStatus eventStatus;
+	@Required
 	private String eventDesc;
 	private Date eventDate;
+	@Required
 	private Date reportDateTime;
+	@Required
 	private UserReferenceDto reportingUser;
 	private LocationDto eventLocation;
 	private TypeOfPlace typeOfPlace;

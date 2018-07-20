@@ -24,7 +24,6 @@ public class EpiDataGatheringDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.OTHER})
 	private LocationDto gatheringAddress;
 	
-	
 	public String getDescription() {
 		return description;
 	}

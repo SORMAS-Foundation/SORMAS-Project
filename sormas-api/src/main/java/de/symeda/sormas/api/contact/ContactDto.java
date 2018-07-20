@@ -8,6 +8,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.Required;
 
 public class ContactDto extends EntityDto {
 
@@ -35,13 +36,17 @@ public class ContactDto extends EntityDto {
 	public static final String RESULTING_CASE = "resultingCase";
 	public static final String RESULTING_CASE_USER = "resultingCaseUser";
 	
+	@Required
 	private Date reportDateTime;
+	@Required
 	private UserReferenceDto reportingUser;
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
 
+	@Required
 	private PersonReferenceDto person;
+	@Required
 	private CaseReferenceDto caze;
 	private Disease caseDisease;
 	private Date lastContactDate;

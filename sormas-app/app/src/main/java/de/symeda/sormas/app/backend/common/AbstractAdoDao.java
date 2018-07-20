@@ -29,7 +29,6 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.region.Community;
 
 /**
  * Some methods are copied from {@link com.j256.ormlite.dao.RuntimeExceptionDao}.
@@ -523,9 +522,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 // ignore some types and specific properties
                 if (!AdoPropertyHelper.isModifiableProperty(property)
                         || parentProperty.equals(property.getName()))
-                    continue;
-
-                if (AdoPropertyHelper.isReadOnlyProperty(property))
                     continue;
 
                 // we now have to write the value from source into target and base

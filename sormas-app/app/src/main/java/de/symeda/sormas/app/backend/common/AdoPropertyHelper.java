@@ -15,11 +15,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.persistence.Transient;
 
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.app.core.ReadOnly;
 
 /**
  * Contains methods that help to iterate through properties of ADO.
- *
+ * <p>
  * Created by Martin Wahnschaffe on 18.05.2017.
  */
 public final class AdoPropertyHelper {
@@ -63,6 +62,7 @@ public final class AdoPropertyHelper {
     /**
      * Check if any property of the two objects is different.
      * a and b need to have the same type
+     *
      * @param includeEmbedded also check children (recursively)
      */
     public static boolean hasModifiedProperty(AbstractDomainObject a, AbstractDomainObject b, boolean includeEmbedded) {
@@ -105,8 +105,8 @@ public final class AdoPropertyHelper {
                 // -> basic equals check for the list (does not check for changes of the single elements)
                 else if (Collection.class.isAssignableFrom(property.getPropertyType())) {
 
-                    Collection<AbstractDomainObject> collectionA = (Collection<AbstractDomainObject>)property.getReadMethod().invoke(a);
-                    Collection<AbstractDomainObject> collectionB = (Collection<AbstractDomainObject>)property.getReadMethod().invoke(b);
+                    Collection<AbstractDomainObject> collectionA = (Collection<AbstractDomainObject>) property.getReadMethod().invoke(a);
+                    Collection<AbstractDomainObject> collectionB = (Collection<AbstractDomainObject>) property.getReadMethod().invoke(b);
 
                     if (!DataHelper.equal(collectionA, collectionB)) {
                         return true;
@@ -132,8 +132,8 @@ public final class AdoPropertyHelper {
                     // -> recursion
                     if (AdoPropertyHelper.hasEmbeddedAnnotation(property)) {
 
-                        AbstractDomainObject embeddedA = (AbstractDomainObject)property.getReadMethod().invoke(a);
-                        AbstractDomainObject embeddedB = (AbstractDomainObject)property.getReadMethod().invoke(b);
+                        AbstractDomainObject embeddedA = (AbstractDomainObject) property.getReadMethod().invoke(a);
+                        AbstractDomainObject embeddedB = (AbstractDomainObject) property.getReadMethod().invoke(b);
 
                         if (hasModifiedProperty(embeddedA, embeddedB, true)) {
                             return true;
@@ -144,8 +144,8 @@ public final class AdoPropertyHelper {
                     else if (Collection.class.isAssignableFrom(property.getPropertyType())) {
 
                         // order and size of collections is equal - otherwise we would already have returned
-                        Collection<AbstractDomainObject> collectionA = (Collection<AbstractDomainObject>)property.getReadMethod().invoke(a);
-                        Collection<AbstractDomainObject> collectionB = (Collection<AbstractDomainObject>)property.getReadMethod().invoke(b);
+                        Collection<AbstractDomainObject> collectionA = (Collection<AbstractDomainObject>) property.getReadMethod().invoke(a);
+                        Collection<AbstractDomainObject> collectionB = (Collection<AbstractDomainObject>) property.getReadMethod().invoke(b);
 
                         Iterator<AbstractDomainObject> iteratorA = collectionA.iterator();
                         Iterator<AbstractDomainObject> iteratorB = collectionB.iterator();
@@ -187,18 +187,7 @@ public final class AdoPropertyHelper {
         return true;
     }
 
-    public static boolean isReadOnlyProperty(PropertyDescriptor property) {
-        ReadOnly annotation = property.getPropertyType().getAnnotation(ReadOnly.class);
-
-        if (annotation == null)
-            return false;
-
-        return annotation.value();
-    }
-
-
     /**
-     * TODO move to proper class
      * @param type
      * @return
      */
@@ -213,7 +202,6 @@ public final class AdoPropertyHelper {
 
 
     /**
-     * TODO move to proper class
      * @param type
      * @return
      */

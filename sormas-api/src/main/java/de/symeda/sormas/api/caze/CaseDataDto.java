@@ -16,14 +16,15 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
+import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class CaseDataDto extends EntityDto {
 
 	private static final long serialVersionUID = 5007131477733638086L;
-	
+
 	public static final String I18N_PREFIX = "CaseData";
-	
+
 	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String CLASSIFICATION_USER = "classificationUser";
 	public static final String CLASSIFICATION_DATE = "classificationDate";
@@ -59,14 +60,18 @@ public class CaseDataDto extends EntityDto {
 	public static final String REPORT_LON = "reportLon";
 	public static final String OUTCOME = "outcome";
 	public static final String OUTCOME_DATE = "outcomeDate";
-	
+
 	@Outbreaks
+	@Required
 	private UserReferenceDto reportingUser;
 	@Outbreaks
+	@Required
 	private Date reportDate;
 
+	@Required
 	private PersonReferenceDto person;
 	@Outbreaks
+	@Required
 	private CaseClassification caseClassification;
 	@Outbreaks
 	private UserReferenceDto classificationUser;
@@ -75,56 +80,61 @@ public class CaseDataDto extends EntityDto {
 	@Outbreaks
 	private String classificationComment;
 	@Outbreaks
+	@Required
 	private Disease disease;
 	@Outbreaks
 	private String diseaseDetails;
-	@Diseases({Disease.PLAGUE})
+	@Diseases({ Disease.PLAGUE })
 	@Outbreaks
 	private PlagueType plagueType;
-	@Diseases({Disease.DENGUE})
+	@Diseases({ Disease.DENGUE })
 	@Outbreaks
 	private DengueFeverType dengueFeverType;
 	@Outbreaks
+	@Required
 	private InvestigationStatus investigationStatus;
 	@Outbreaks
 	private Date investigatedDate;
 	@Outbreaks
 	private Date receptionDate;
-	
+
 	private HospitalizationDto hospitalization;
 	private EpiDataDto epiData;
-	
+
 	@Outbreaks
+	@Required
 	private RegionReferenceDto region;
 	@Outbreaks
+	@Required
 	private DistrictReferenceDto district;
 	@Outbreaks
 	private CommunityReferenceDto community;
 	@Outbreaks
+	@Required
 	private FacilityReferenceDto healthFacility;
 	@Outbreaks
 	private String healthFacilityDetails;
 
 	private SymptomsDto symptoms;
-		
+
 	private YesNoUnknown pregnant;
 
-	@Diseases({Disease.MEASLES,Disease.YELLOW_FEVER,Disease.CSM,Disease.OTHER})
+	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.OTHER })
 	@Outbreaks
 	private Vaccination vaccination;
-	@Diseases({Disease.MEASLES,Disease.CSM,Disease.OTHER})
+	@Diseases({ Disease.MEASLES, Disease.CSM, Disease.OTHER })
 	@Outbreaks
 	private String vaccinationDoses;
-	@Diseases({Disease.MEASLES,Disease.YELLOW_FEVER,Disease.CSM,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.MONKEYPOX, Disease.OTHER })
 	@Outbreaks
 	private Date vaccinationDate;
-	@Diseases({Disease.MEASLES,Disease.YELLOW_FEVER,Disease.CSM,Disease.OTHER})
+	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.OTHER })
 	private VaccinationInfoSource vaccinationInfoSource;
-	@Diseases({Disease.MONKEYPOX})
+	@Diseases({ Disease.MONKEYPOX })
 	private YesNoUnknown smallpoxVaccinationScar;
-	@Diseases({Disease.MONKEYPOX})
+	@Diseases({ Disease.MONKEYPOX })
 	private YesNoUnknown smallpoxVaccinationReceived;
-	
+
 	@Outbreaks
 	private String epidNumber;
 
@@ -132,7 +142,7 @@ public class CaseDataDto extends EntityDto {
 	private UserReferenceDto surveillanceOfficer;
 	@Deprecated
 	private UserReferenceDto caseOfficer;
-	
+
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
@@ -153,7 +163,7 @@ public class CaseDataDto extends EntityDto {
 		caze.setReportDate(new Date());
 		return caze;
 	}
-	
+
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
 	}
@@ -185,7 +195,7 @@ public class CaseDataDto extends EntityDto {
 	public void setCaseClassification(CaseClassification caseClassification) {
 		this.caseClassification = caseClassification;
 	}
-	
+
 	public UserReferenceDto getClassificationUser() {
 		return classificationUser;
 	}
@@ -217,7 +227,7 @@ public class CaseDataDto extends EntityDto {
 	public void setDisease(Disease disease) {
 		this.disease = disease;
 	}
-	
+
 	public String getDiseaseDetails() {
 		return diseaseDetails;
 	}
@@ -249,7 +259,7 @@ public class CaseDataDto extends EntityDto {
 	public void setHealthFacility(FacilityReferenceDto healthFacility) {
 		this.healthFacility = healthFacility;
 	}
-	
+
 	public String getHealthFacilityDetails() {
 		return healthFacilityDetails;
 	}
@@ -257,7 +267,7 @@ public class CaseDataDto extends EntityDto {
 	public void setHealthFacilityDetails(String healthFacilityDetails) {
 		this.healthFacilityDetails = healthFacilityDetails;
 	}
-	
+
 	public Date getInvestigatedDate() {
 		return investigatedDate;
 	}
@@ -339,11 +349,11 @@ public class CaseDataDto extends EntityDto {
 	public void setHospitalization(HospitalizationDto hospitalization) {
 		this.hospitalization = hospitalization;
 	}
-	
+
 	public EpiDataDto getEpiData() {
 		return epiData;
 	}
-	
+
 	public void setEpiData(EpiDataDto epiData) {
 		this.epiData = epiData;
 	}
@@ -355,7 +365,7 @@ public class CaseDataDto extends EntityDto {
 	public void setPregnant(YesNoUnknown pregnant) {
 		this.pregnant = pregnant;
 	}
-	
+
 	public Vaccination getVaccination() {
 		return vaccination;
 	}
@@ -407,7 +417,7 @@ public class CaseDataDto extends EntityDto {
 	public String getEpidNumber() {
 		return epidNumber;
 	}
-	
+
 	public void setEpidNumber(String epidNumber) {
 		this.epidNumber = epidNumber;
 	}
@@ -435,11 +445,11 @@ public class CaseDataDto extends EntityDto {
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
-	
+
 	public CaseOutcome getOutcome() {
 		return outcome;
 	}
-	
+
 	public void setOutcome(CaseOutcome outcome) {
 		this.outcome = outcome;
 	}
@@ -451,7 +461,7 @@ public class CaseDataDto extends EntityDto {
 	public void setOutcomeDate(Date outcomeDate) {
 		this.outcomeDate = outcomeDate;
 	}
-	
+
 	public CaseReferenceDto toReference() {
 		return new CaseReferenceDto(getUuid(), CaseReferenceDto.buildCaption(getUuid(), getPerson().getCaption()));
 	}

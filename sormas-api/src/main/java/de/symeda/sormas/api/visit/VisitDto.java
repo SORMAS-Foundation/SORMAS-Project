@@ -7,6 +7,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.Required;
 
 public class VisitDto extends EntityDto {
 
@@ -25,10 +26,14 @@ public class VisitDto extends EntityDto {
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
 	
+	@Required
 	private PersonReferenceDto person;
 	private Disease disease;
+	@Required
 	private Date visitDateTime;
+	@Required
 	private UserReferenceDto visitUser;
+	@Required
 	private VisitStatus visitStatus;
 	private String visitRemarks;
 	private SymptomsDto symptoms;
