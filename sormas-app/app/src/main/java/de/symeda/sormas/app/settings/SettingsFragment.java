@@ -23,6 +23,7 @@ import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
 import de.symeda.sormas.app.databinding.FragmentSettingsLayoutBinding;
 import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
+import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.LocationService;
@@ -181,7 +182,6 @@ public class SettingsFragment extends BaseLandingFragment {
     private void processLogout() {
         ConfigProvider.clearUsernameAndPassword();
         ConfigProvider.clearPin();
-        ConfigProvider.setAccessGranted(false);
         Intent intent = new Intent(getActivity(), LoginActivity.class);
         startActivity(intent);
     }
