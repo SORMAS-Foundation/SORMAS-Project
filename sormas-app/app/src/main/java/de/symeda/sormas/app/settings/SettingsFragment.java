@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.BaseLandingFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.dialog.SyncLogDialog;
@@ -23,6 +24,7 @@ import de.symeda.sormas.app.databinding.FragmentSettingsLayoutBinding;
 import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
 
@@ -125,7 +127,14 @@ public class SettingsFragment extends BaseLandingFragment {
             public void onOkClick(View v, Object confirmationItem, View viewRoot) {
                 confirmationDialog.dismiss();
 
-                getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.CompleteAndRepull, true, true, null, null);
+                getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.CompleteAndRepull,
+                        true, true, null, null,
+                        new Callback() {
+                            @Override
+                            public void call() {
+                                DatabaseHelper.clearTables(false);
+                            }
+                        });
             }
         });
 

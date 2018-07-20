@@ -455,11 +455,11 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
     public void synchronizeChangedData() {
         SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-        synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, true, refreshLayout, null);
+        synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, true, refreshLayout, null, null);
     }
 
 
-    public void synchronizeData(final SynchronizeDataAsync.SyncMode syncMode, final boolean showUpgradePrompt, final boolean showProgressDialog, final SwipeRefreshLayout swipeRefreshLayout, final Callback callback) {
+    public void synchronizeData(final SynchronizeDataAsync.SyncMode syncMode, final boolean showUpgradePrompt, final boolean showProgressDialog, final SwipeRefreshLayout swipeRefreshLayout, final Callback resultCallback, final Callback beforeSyncCallback) {
 
         if (ConfigProvider.getUser() == null) {
             Intent intent = new Intent(this, LoginActivity.class);
@@ -486,7 +486,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                         public void accept(Boolean result) {
                             if (Boolean.TRUE.equals(result)) {
                                 // try again
-                                synchronizeData(syncMode, showUpgradePrompt, showProgressDialog, swipeRefreshLayout, callback);
+                                synchronizeData(syncMode, showUpgradePrompt, showProgressDialog, swipeRefreshLayout, resultCallback, beforeSyncCallback);
                             } else {
                                 if (swipeRefreshLayout != null) {
                                     swipeRefreshLayout.setRefreshing(false);
@@ -505,6 +505,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         final long syncLogCountBefore = syncLogDao.countOf();
 
         if (RetroProvider.isConnected()) {
+
+            if (beforeSyncCallback != null) beforeSyncCallback.call();
 
             SynchronizeDataAsync.call(syncMode, getApplicationContext(), new SyncCallback() {
                 @Override
@@ -538,9 +540,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                         NotificationHelper.showNotification(BaseActivity.this, NotificationType.ERROR, syncFailedMessage);
                     }
 
-                    if (callback != null) {
-                        callback.call();
-                    }
+                    if (resultCallback != null) resultCallback.call();
                 }
             });
         } else {
