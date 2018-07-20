@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Menu;
 
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -15,6 +16,8 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.core.NotificationContext;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
@@ -22,6 +25,9 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.validation.EventValidator;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public class EventParticipantNewActivity extends BaseEditActivity<EventParticipant> {
 
@@ -81,9 +87,26 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
     }
 
     @Override
-    public void saveData() {
+    public void replaceFragment(BaseEditFragment f) {
+        super.replaceFragment(f);
+        getActiveFragment().setLiveValidationDisabled(true);
+    }
 
+    @Override
+    public void saveData() {
         final EventParticipant eventParticipantToSave = (EventParticipant) getActiveFragment().getPrimaryData();
+        EventParticipantNewFragment fragment = (EventParticipantNewFragment) getActiveFragment();
+
+        if (fragment.isLiveValidationDisabled()) {
+            fragment.disableLiveValidation(false);
+        }
+
+        try {
+            EventValidator.validateNewEventParticipant(getContext(), fragment.getContentBinding());
+        } catch (ValidationException e) {
+            NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
+            return;
+        }
 
         SelectOrCreatePersonDialog.selectOrCreatePerson(eventParticipantToSave.getPerson(), new Consumer<Person>() {
             @Override

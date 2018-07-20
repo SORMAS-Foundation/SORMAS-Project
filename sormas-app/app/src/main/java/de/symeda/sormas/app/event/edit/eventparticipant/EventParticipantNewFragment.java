@@ -43,6 +43,13 @@ public class EventParticipantNewFragment extends BaseEditFragment<FragmentEventP
     }
 
     @Override
+    public void onAfterLayoutBinding(FragmentEventParticipantNewLayoutBinding contentBinding) {
+        if (isLiveValidationDisabled()) {
+            disableLiveValidation(true);
+        }
+    }
+
+    @Override
     public int getEditLayout() {
         return R.layout.fragment_event_participant_new_layout;
     }
