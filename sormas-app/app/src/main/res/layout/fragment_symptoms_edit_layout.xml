@@ -759,11 +759,13 @@
             <de.symeda.sormas.app.component.controls.ControlDateField
                 android:id="@+id/symptoms_onsetDate"
                 app:value="@={data.onsetDate}"
+                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/symptoms_onsetSymptom"
                 app:value="@={data.onsetSymptom}"
+                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField

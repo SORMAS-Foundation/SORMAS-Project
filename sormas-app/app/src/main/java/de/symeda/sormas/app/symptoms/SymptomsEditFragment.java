@@ -168,7 +168,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
                             onsetSymptomField.getAdapter().remove(onsetSymptomField.getAdapter().getItem(position));
                         }
                     }
-                    onsetSymptomField.setEnabled(!onsetSymptomField.getAdapter().isEmpty());
+                    onsetSymptomField.setEnabled(onsetSymptomField.getAdapter().getCount() > 1); // first is "empty item"
                 }
             });
 
@@ -178,7 +178,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
         }
 
         onsetSymptomField.initializeSpinner(DataUtils.addEmptyItem(initialSpinnerItems));
-        onsetSymptomField.setEnabled(!onsetSymptomField.getAdapter().isEmpty());
+        onsetSymptomField.setEnabled(onsetSymptomField.getAdapter().getCount() > 1); // first is "empty item"
     }
 
     @Override
