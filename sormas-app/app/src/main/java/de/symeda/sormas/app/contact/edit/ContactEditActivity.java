@@ -23,8 +23,7 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
-import de.symeda.sormas.app.validation.ContactValidator;
-import de.symeda.sormas.app.validation.PersonValidator;
+import de.symeda.sormas.app.validation.FragmentValidator;
 import de.symeda.sormas.app.visit.edit.VisitNewActivity;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
@@ -93,14 +92,8 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
     public void saveData() {
         final Contact contactToSave = getStoredRootEntity();
 
-        ContactSection activeSection = ContactSection.fromMenuKey(getActivePage().getKey());
-
         try {
-            if (activeSection == ContactSection.CONTACT_INFO) {
-                ContactValidator.validateContact(getContext(), ((ContactEditFragment) getActiveFragment()).getContentBinding());
-            } else if (activeSection == ContactSection.PERSON_INFO) {
-                PersonValidator.validatePerson(getContext(), ((PersonEditFragment) getActiveFragment()).getContentBinding());
-            }
+            FragmentValidator.validate(getContext(), getActiveFragment().getContentBinding());
         } catch (ValidationException e) {
             NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
             return;

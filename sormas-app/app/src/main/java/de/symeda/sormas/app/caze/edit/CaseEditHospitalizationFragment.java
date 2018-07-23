@@ -48,7 +48,6 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
 
     @Override
     public void onLayoutBinding(final FragmentCaseEditHospitalizationLayoutBinding contentBinding) {
-
         setupCallback();
 
         contentBinding.caseHospitalizationHospitalizedPreviously.addValueChangedListener(new ValueChangeListener() {
@@ -75,7 +74,6 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
 
     @Override
     protected void onAfterLayoutBinding(FragmentCaseEditHospitalizationLayoutBinding contentBinding) {
-
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(
                 contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
 

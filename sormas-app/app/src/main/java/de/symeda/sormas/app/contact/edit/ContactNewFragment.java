@@ -42,6 +42,11 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
     @Override
     public void onLayoutBinding(FragmentContactNewLayoutBinding contentBinding) {
         contentBinding.setData(record);
+
+        if (isLiveValidationDisabled()) {
+            disableLiveValidation(true);
+        }
+
         contentBinding.setContactProximityClass(ContactProximity.class);
     }
 
@@ -49,10 +54,6 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
     public void onAfterLayoutBinding(FragmentContactNewLayoutBinding contentBinding) {
         contentBinding.contactRelationToCase.initializeSpinner(relationshipList);
         contentBinding.contactLastContactDate.initializeDateField(getFragmentManager());
-
-        if (isLiveValidationDisabled()) {
-            disableLiveValidation(true);
-        }
     }
 
     @Override

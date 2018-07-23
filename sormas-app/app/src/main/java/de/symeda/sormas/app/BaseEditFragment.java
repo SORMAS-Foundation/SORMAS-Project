@@ -321,6 +321,17 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
         return result;
     }
 
+    protected String getContactUuidArg(Bundle arguments) {
+        String result = null;
+        if (arguments != null && !arguments.isEmpty()) {
+            if (arguments.containsKey(ConstantHelper.KEY_CONTACT_UUID)) {
+                result = (String) arguments.getString(ConstantHelper.KEY_CONTACT_UUID);
+            }
+        }
+
+        return result;
+    }
+
     protected UserRight getUserRightArg(Bundle arguments) {
         UserRight e = null;
         if (arguments != null && !arguments.isEmpty()) {

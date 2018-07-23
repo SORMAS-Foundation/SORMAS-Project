@@ -65,6 +65,10 @@ SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutBinding, Sampl
     @Override
     public void onLayoutBinding(FragmentSampleNewLayoutBinding contentBinding) {
         contentBinding.setData(record);
+
+        if (isLiveValidationDisabled()) {
+            disableLiveValidation(true);
+        }
     }
 
     @Override
@@ -88,10 +92,6 @@ SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutBinding, Sampl
         // Initialize ControlDateFields and ControlDateTimeFields
         contentBinding.sampleSampleDateTime.initializeDateTimeField(getFragmentManager());
         contentBinding.sampleShipmentDate.initializeDateField(getFragmentManager());
-
-        if (isLiveValidationDisabled()) {
-            disableLiveValidation(true);
-        }
     }
 
     @Override

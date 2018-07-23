@@ -23,9 +23,6 @@ import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
-import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
-import de.symeda.sormas.app.databinding.FragmentSymptomsEditLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.sample.edit.SampleNewActivity;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
@@ -34,9 +31,7 @@ import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.symptoms.SymptomsEditFragment;
 import de.symeda.sormas.app.util.Consumer;
-import de.symeda.sormas.app.validation.CaseValidator;
-import de.symeda.sormas.app.validation.PersonValidator;
-import de.symeda.sormas.app.validation.SymptomsValidator;
+import de.symeda.sormas.app.validation.FragmentValidator;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -131,47 +126,11 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     public void saveData(final Consumer<Case> successCallback) {
         final Case cazeToSave = getStoredRootEntity();
 
-        CaseSection activeSection = CaseSection.fromMenuKey(getActivePage().getKey());
-
         try {
-            if (activeSection == CaseSection.CASE_INFO) {
-                CaseValidator.validateCase(getContext(), ((CaseEditFragment) getActiveFragment()).getContentBinding());
-            } else if (activeSection == CaseSection.PERSON_INFO) {
-                PersonValidator.validatePerson(getContext(), ((PersonEditFragment) getActiveFragment()).getContentBinding());
-            } else if (activeSection == CaseSection.HOSPITALIZATION) {
-                CaseValidator.validateHospitalization(getContext(), ((CaseEditHospitalizationFragment) getActiveFragment()).getContentBinding());
-            } else if (activeSection == CaseSection.EPIDEMIOLOGICAL_DATA) {
-                CaseValidator.validateEpiData(getContext(), ((CaseEditEpidemiologicalDataFragment) getActiveFragment()).getContentBinding());
-            } else if (activeSection == CaseSection.SYMPTOMS) {
-                SymptomsValidator.validateSymptoms(getContext(), ((SymptomsEditFragment) getActiveFragment()).getContentBinding());
-            }
+            FragmentValidator.validate(getContext(), getActiveFragment().getContentBinding());
         } catch (ValidationException e) {
             NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
             return;
-        }
-
-
-
-
-
-        if (activeSection == CaseSection.SYMPTOMS) {
-            FragmentSymptomsEditLayoutBinding symptomsBinding = (FragmentSymptomsEditLayoutBinding) getActiveFragment().getContentBinding();
-
-//            // Necessary because the entry could've been automatically set, in which case the setFieldValue method of the
-//            // custom field has not been called
-//            Symptom s = (Symptom) symptoms.getFirstSymptom();
-//
-//            if (s != null)
-//                symptoms.setOnsetSymptom(s.getName());
-
-            // TODO validation
-//            NewSymptomValidator.validateCaseSymptoms(symptomsFragment.getSymptomList());
-//            NewSymptomValidator.init(symptomsFragment.getSymptomList());
-//
-//            SymptomsValidator.clearErrorsForSymptoms(symptomsBinding);
-//            if (!SymptomsValidator.validateCaseSymptoms(symptoms, symptomsBinding)) {
-//                return;
-//            }
         }
 
         saveTask = new SavingAsyncTask(getRootView(), cazeToSave) {

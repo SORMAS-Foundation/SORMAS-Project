@@ -21,7 +21,7 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.event.EventSection;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
-import de.symeda.sormas.app.validation.EventValidator;
+import de.symeda.sormas.app.validation.FragmentValidator;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -82,7 +82,7 @@ public class EventNewActivity extends BaseEditActivity<Event> {
         }
 
         try {
-            EventValidator.validateNewEvent(getContext(), fragment.getContentBinding());
+            FragmentValidator.validate(getContext(), fragment.getContentBinding());
         } catch (ValidationException e) {
             NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
             return;

@@ -19,7 +19,7 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
-import de.symeda.sormas.app.validation.SampleValidator;
+import de.symeda.sormas.app.validation.FragmentValidator;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -68,7 +68,7 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
         SampleEditFragment fragment = (SampleEditFragment) getActiveFragment();
 
         try {
-            SampleValidator.validateSample(getContext(), fragment.getContentBinding());
+            FragmentValidator.validate(getContext(), fragment.getContentBinding());
         } catch (ValidationException e) {
             NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
             return;

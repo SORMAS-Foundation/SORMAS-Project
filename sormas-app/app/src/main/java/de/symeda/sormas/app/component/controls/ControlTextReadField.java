@@ -301,7 +301,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
             String year = person.getBirthdateYYYY() != null ? person.getBirthdateYYYY().toString() : null;
 
             StringBuilder ageWithDateBuilder = new StringBuilder();
-            ageWithDateBuilder.append(age).append(" ").append(ageType.toString());
+            ageWithDateBuilder.append(age).append(" ").append(ageType != null ? ageType.toString() : "");
 
             String dateOfBirth = null;
             if (year != null) {

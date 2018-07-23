@@ -3,6 +3,7 @@ package de.symeda.sormas.app.symptoms;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,15 +32,17 @@ import de.symeda.sormas.app.databinding.FragmentSymptomsEditLayoutBinding;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.validation.SymptomsValidator;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditLayoutBinding, Symptoms, Case> {
+public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditLayoutBinding, Symptoms, AbstractDomainObject> {
 
     private Symptoms record;
     private Disease disease;
     private boolean isInfant;
+    private AbstractDomainObject ado;
 
     private List<Item> bodyTempList;
     private List<Item> tempSourceList;
@@ -62,7 +65,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
-        AbstractDomainObject ado = getActivityRootData();
+        ado = getActivityRootData();
         Person person;
         if (ado instanceof Case) {
             record = ((Case) ado).getSymptoms();
@@ -79,19 +82,24 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
         isInfant = person.getApproximateAge() != null
                 && ((person.getApproximateAge() <= 12 && person.getApproximateAgeType() == ApproximateAgeType.MONTHS)
                 || person.getApproximateAge() <= 1);
-        bodyTempList = getTemperatures(false);
-        tempSourceList = DataUtils.getEnumItems(TemperatureSource.class, false);
+        bodyTempList = getTemperatures(true);
+        tempSourceList = DataUtils.getEnumItems(TemperatureSource.class, true);
     }
 
     @Override
     public void onLayoutBinding(FragmentSymptomsEditLayoutBinding contentBinding) {
-
         setupCallback();
 
         contentBinding.setData(record);
         contentBinding.setSymptomStateClass(SymptomState.class);
         contentBinding.setClearAllCallback(clearAllCallback);
         contentBinding.setSetClearedToNoCallback(setClearedToNoCallback);
+
+        SymptomsValidator.initializeSymptomsValidation(contentBinding);
+
+        if (ado instanceof Visit) {
+            makeAllSymptomsRequired();
+        }
     }
 
     @Override
@@ -169,7 +177,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
             }
         }
 
-        onsetSymptomField.initializeSpinner(initialSpinnerItems);
+        onsetSymptomField.initializeSpinner(DataUtils.addEmptyItem(initialSpinnerItems));
         onsetSymptomField.setEnabled(!onsetSymptomField.getAdapter().isEmpty());
     }
 
@@ -233,4 +241,21 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
     public static SymptomsEditFragment newInstance(VisitFormNavigationCapsule capsule, Visit activityRootData) {
         return newInstance(SymptomsEditFragment.class, capsule, activityRootData);
     }
+
+    private void makeAllSymptomsRequired() {
+        ViewGroup root = (ViewGroup) getContentBinding().getRoot();
+        makeAllChildrenRequired(root);
+    }
+
+    private static void makeAllChildrenRequired(ViewGroup parent) {
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            View child = parent.getChildAt(i);
+            if (child instanceof ControlSwitchField) {
+                ((ControlSwitchField) child).setRequired(true);
+            } else if (child instanceof ViewGroup) {
+                makeAllChildrenRequired((ViewGroup) child);
+            }
+        }
+    }
+
 }

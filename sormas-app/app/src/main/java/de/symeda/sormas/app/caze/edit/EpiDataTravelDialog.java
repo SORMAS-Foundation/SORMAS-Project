@@ -11,14 +11,20 @@ import com.android.databinding.library.baseAdapters.BR;
 import java.util.List;
 
 import de.symeda.sormas.api.epidata.TravelType;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
 import de.symeda.sormas.app.core.Callback;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogCaseEpidTravelEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.validation.CaseValidator;
+import de.symeda.sormas.app.validation.FragmentValidator;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public class EpiDataTravelDialog extends BaseTeboAlertDialog {
 
@@ -45,6 +51,18 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
 
     @Override
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
+        if (isLiveValidationDisabled()) {
+            setLiveValidationDisabled(false);
+            disableLiveValidation(false);
+        }
+
+        try {
+            FragmentValidator.validate(getContext(), contentBinding);
+        } catch (ValidationException e) {
+            NotificationHelper.showDialogNotification(this, ERROR, e.getMessage());
+            return;
+        }
+
         if (callback != null)
             callback.call(null);
     }
@@ -64,6 +82,11 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
     @Override
     protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
         this.mContentBinding = (DialogCaseEpidTravelEditLayoutBinding) binding;
+
+        if (data.getId() == null) {
+            setLiveValidationDisabled(true);
+            disableLiveValidation(true);
+        }
     }
 
     @Override
@@ -82,8 +105,9 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
     protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
         mContentBinding.epiDataTravelTravelDateFrom.initializeDateField(getFragmentManager());
         mContentBinding.epiDataTravelTravelDateTo.initializeDateField(getFragmentManager());
-
         mContentBinding.epiDataTravelTravelType.initializeSpinner(travelTypeList);
+
+        CaseValidator.initializeEpiDataTravelValidation(getContext(), (DialogCaseEpidTravelEditLayoutBinding) contentBinding);
     }
 
     @Override

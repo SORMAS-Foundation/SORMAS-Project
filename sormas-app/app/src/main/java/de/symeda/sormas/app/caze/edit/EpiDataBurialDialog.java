@@ -8,6 +8,7 @@ import android.view.View;
 
 import com.android.databinding.library.baseAdapters.BR;
 
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
@@ -17,7 +18,12 @@ import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.Callback;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogCaseEpidBurialEditLayoutBinding;
+import de.symeda.sormas.app.validation.CaseValidator;
+import de.symeda.sormas.app.validation.FragmentValidator;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public class EpiDataBurialDialog extends BaseTeboAlertDialog {
 
@@ -40,6 +46,18 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
 
     @Override
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
+        if (isLiveValidationDisabled()) {
+            setLiveValidationDisabled(false);
+            disableLiveValidation(false);
+        }
+
+        try {
+            FragmentValidator.validate(getContext(), contentBinding);
+        } catch (ValidationException e) {
+            NotificationHelper.showDialogNotification(this, ERROR, e.getMessage());
+            return;
+        }
+
         if (callback != null)
             callback.call(null);
     }
@@ -59,6 +77,11 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
     @Override
     protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
         this.mContentBinding = (DialogCaseEpidBurialEditLayoutBinding) binding;
+
+        if (data.getId() == null) {
+            setLiveValidationDisabled(true);
+            disableLiveValidation(true);
+        }
     }
 
     @Override
@@ -75,9 +98,10 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
 
     @Override
     protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-
         mContentBinding.epiDataBurialBurialDateFrom.initializeDateField(getFragmentManager());
         mContentBinding.epiDataBurialBurialDateTo.initializeDateField(getFragmentManager());
+
+        CaseValidator.initializeEpiDataBurialValidation(getContext(), (DialogCaseEpidBurialEditLayoutBinding) contentBinding);
 
         setUpControlListeners();
     }

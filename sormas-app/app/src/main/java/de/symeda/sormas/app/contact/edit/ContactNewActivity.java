@@ -30,7 +30,7 @@ import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.util.Consumer;
-import de.symeda.sormas.app.validation.ContactValidator;
+import de.symeda.sormas.app.validation.FragmentValidator;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -120,7 +120,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
         }
 
         try {
-            ContactValidator.validateNewContact(getContext(), fragment.getContentBinding());
+            FragmentValidator.validate(getContext(), fragment.getContentBinding());
         } catch (ValidationException e) {
             NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
             return;

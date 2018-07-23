@@ -14,7 +14,7 @@ public class FragmentValidator {
 
     private FragmentValidator() { }
 
-    protected static void performBasicValidation(Context context, ViewDataBinding contentBinding) throws ValidationException {
+    public static void validate(Context context, ViewDataBinding contentBinding) throws ValidationException {
         ValidationErrorInfo errorInfo = FragmentValidator.validateFragmentRequirements(context, contentBinding);
 
         if (errorInfo.hasError()) {
@@ -22,7 +22,7 @@ public class FragmentValidator {
         }
     }
 
-    protected static ValidationErrorInfo validateFragmentRequirements(Context context, ViewDataBinding fragmentBinding) {
+    private static ValidationErrorInfo validateFragmentRequirements(Context context, ViewDataBinding fragmentBinding) {
         ValidationErrorInfo errorInfo = new ValidationErrorInfo(context);
 
         ViewGroup root = (ViewGroup) fragmentBinding.getRoot();
@@ -35,9 +35,15 @@ public class FragmentValidator {
         for (int i = 0; i < parent.getChildCount(); i++) {
             View child = parent.getChildAt(i);
             if (child instanceof ControlPropertyEditField) {
-                ((ControlPropertyEditField) child).setErrorIfEmpty();
-                if (((ControlPropertyEditField) child).isHasError() && child.getVisibility() == VISIBLE) {
-                    errorInfo.addFieldWithError((ControlPropertyEditField) child);
+                ControlPropertyEditField field = (ControlPropertyEditField) child;
+                field.setErrorIfEmpty();
+
+                if (!field.isHasError() && field.getValidationCallback() != null) {
+                    field.getValidationCallback().call();
+                }
+
+                if (field.isHasError() && field.getVisibility() == VISIBLE) {
+                    errorInfo.addFieldWithError(field);
                 }
             } else if (child instanceof ViewGroup) {
                 validateRequiredPropertyEditFields((ViewGroup) child, errorInfo);

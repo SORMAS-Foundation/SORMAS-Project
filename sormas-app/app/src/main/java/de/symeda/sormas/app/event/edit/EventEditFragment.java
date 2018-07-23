@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.event.edit;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.View;
 
@@ -15,16 +14,11 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
-import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentEventEditLayoutBinding;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.validation.EventValidator;
 
 public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutBinding, Event, Event> {
 
@@ -88,6 +82,10 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
     public void onLayoutBinding(FragmentEventEditLayoutBinding contentBinding) {
         setUpControlListeners(contentBinding);
 
+        if (isLiveValidationDisabled()) {
+            disableLiveValidation(true);
+        }
+
         contentBinding.setData(record);
         contentBinding.setEventTypeClass(EventType.class);
     }
@@ -100,10 +98,6 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
         // Initialize ControlDateFields
         contentBinding.eventEventDate.initializeDateField(getFragmentManager());
-
-        if (isLiveValidationDisabled()) {
-            disableLiveValidation(true);
-        }
     }
 
     @Override

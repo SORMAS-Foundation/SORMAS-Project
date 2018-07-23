@@ -13,6 +13,7 @@ import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
+import de.symeda.sormas.app.util.Callback;
 
 public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T> {
 
@@ -39,6 +40,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
     private String errorMessage;
     private String warningMessage;
     private boolean liveValidationDisabled;
+    private Callback validationCallback;
 
     // Constructors
 
@@ -82,6 +84,19 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
         }
     }
 
+    public void enableErrorState(NotificationContext notificationContext, String errorMessage) {
+        if (notificationContext == null) {
+            notificationContext = (NotificationContext) getContext();
+        }
+
+        this.notificationContext = notificationContext;
+        this.hasError = true;
+        this.errorMessage = errorMessage;
+
+        changeErrorState();
+
+    }
+
     public void enableErrorState(NotificationContext notificationContext, int messageResourceId) {
         String message = "";
 
@@ -89,11 +104,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
             message = getResources().getString(messageResourceId);
         }
 
-        this.notificationContext = notificationContext;
-        this.hasError = true;
-        this.errorMessage = message;
-
-        changeErrorState();
+        enableErrorState(notificationContext, message);
     }
 
     public void disableErrorState() {
@@ -112,6 +123,10 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
         // Error has priority over warning
         if (hasError) {
             return;
+        }
+
+        if (notificationContext == null) {
+            notificationContext = (NotificationContext) getContext();
         }
 
         String message = "";
@@ -175,6 +190,8 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
     }
 
     public void setRequired(boolean required) {
+        this.required = required;
+
         if (labelRequired != null) {
             if (required) {
                 labelRequired.setVisibility(VISIBLE);
@@ -182,20 +199,6 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
                 if (labelSoftRequired != null) {
                     labelSoftRequired.setVisibility(GONE);
                 }
-
-                this.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        addValueChangedListener(new ValueChangeListener() {
-                            @Override
-                            public void onChange(ControlPropertyField field) {
-                                if (!liveValidationDisabled) {
-                                    ((ControlPropertyEditField) field).setErrorIfEmpty();
-                                }
-                            }
-                        });
-                    }
-                });
             } else {
                 labelRequired.setVisibility(GONE);
             }
@@ -244,16 +247,25 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
         if (hasError) {
             changeVisualState(VisualState.ERROR);
             labelError.setVisibility(VISIBLE);
+            labelSoftRequired.setVisibility(GONE);
             labelRequired.setVisibility(GONE);
         } else if (this.isFocused()) {
             changeVisualState(VisualState.FOCUSED);
             labelError.setVisibility(GONE);
-            labelRequired.setVisibility(VISIBLE);
+            if (required) {
+                labelRequired.setVisibility(VISIBLE);
+            } else if (softRequired) {
+                labelSoftRequired.setVisibility(VISIBLE);
+            }
             hideNotification();
         } else {
             changeVisualState(VisualState.NORMAL);
             labelError.setVisibility(GONE);
-            labelRequired.setVisibility(VISIBLE);
+            if (required) {
+                labelRequired.setVisibility(VISIBLE);
+            } else if (softRequired) {
+                labelSoftRequired.setVisibility(VISIBLE);
+            }
             hideNotification();
         }
     }
@@ -312,6 +324,20 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
                 }
             }
         });
+
+        // Validation
+        addValueChangedListener(new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                if (!liveValidationDisabled) {
+                    ((ControlPropertyEditField) field).setErrorIfEmpty();
+
+                    if (validationCallback != null) {
+                        validationCallback.call();
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -363,6 +389,14 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
     public void setLiveValidationDisabled(boolean liveValidationDisabled) {
         this.liveValidationDisabled = liveValidationDisabled;
+    }
+
+    public Callback getValidationCallback() {
+        return validationCallback;
+    }
+
+    public void setValidationCallback(Callback validationCallback) {
+        this.validationCallback = validationCallback;
     }
 
 }

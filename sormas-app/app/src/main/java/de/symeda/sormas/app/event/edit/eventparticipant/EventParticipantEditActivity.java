@@ -18,7 +18,7 @@ import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
-import de.symeda.sormas.app.validation.EventValidator;
+import de.symeda.sormas.app.validation.FragmentValidator;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -67,7 +67,7 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
         EventParticipantEditFragment fragment = (EventParticipantEditFragment) getActiveFragment();
 
         try {
-            EventValidator.validateEventParticipant(getContext(), fragment.getContentBinding());
+            FragmentValidator.validate(getContext(), fragment.getContentBinding());
         } catch (ValidationException e) {
             NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
             return;

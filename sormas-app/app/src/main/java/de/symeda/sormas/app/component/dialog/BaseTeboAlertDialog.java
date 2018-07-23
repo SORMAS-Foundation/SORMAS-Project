@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -22,6 +23,7 @@ import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.controls.ControlButton;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
+import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.NotificationContext;
@@ -50,6 +52,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
     private int contentLayoutResourceId;
     private int btnPanelLayoutResourceId;
     private de.symeda.sormas.app.component.dialog.DialogViewConfig config;
+    private boolean liveValidationDisabled;
 
     private de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface.NegativeOnClickListener onNegativeClickListener;
     private de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface.PositiveOnClickListener onPositiveClickListener;
@@ -837,6 +840,31 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
         rootBinding.notificationFrame.setBackground(drawable);
         rootBinding.notificationFrame.setVisibility(View.VISIBLE);
 
+    }
+
+    public boolean isLiveValidationDisabled() {
+        return liveValidationDisabled;
+    }
+
+    public void setLiveValidationDisabled(boolean liveValidationDisabled) {
+        this.liveValidationDisabled = liveValidationDisabled;
+    }
+
+    public void disableLiveValidation(boolean disableLiveValidation) {
+        ViewGroup root = (ViewGroup) contentViewStubBinding.getRoot();
+        disableLiveValidationForAllChildren(root, disableLiveValidation);
+        liveValidationDisabled = disableLiveValidation;
+    }
+
+    private static void disableLiveValidationForAllChildren(ViewGroup parent, boolean disableLiveValidation) {
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            View child = parent.getChildAt(i);
+            if (child instanceof ControlPropertyEditField) {
+                ((ControlPropertyEditField) child).setLiveValidationDisabled(disableLiveValidation);
+            } else if (child instanceof ViewGroup) {
+                disableLiveValidationForAllChildren((ViewGroup) child, disableLiveValidation);
+            }
+        }
     }
 
     // </editor-fold>

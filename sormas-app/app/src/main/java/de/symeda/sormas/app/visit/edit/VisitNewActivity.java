@@ -19,6 +19,7 @@ import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
+import de.symeda.sormas.app.validation.FragmentValidator;
 import de.symeda.sormas.app.validation.VisitValidator;
 import de.symeda.sormas.app.visit.VisitSection;
 
@@ -64,6 +65,7 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Visit activityRootData) {
         VisitFormNavigationCapsule dataCapsule = new VisitFormNavigationCapsule(
                 VisitNewActivity.this, getRootEntityUuid(), getPageStatus());
+        dataCapsule.setContactUuid(contactUuid);
         return VisitEditFragment.newInstance(dataCapsule, activityRootData);
     }
 
@@ -90,7 +92,7 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
         }
 
         try {
-            VisitValidator.validateNewVisit(getContext(), fragment.getContentBinding());
+            FragmentValidator.validate(getContext(), fragment.getContentBinding());
         } catch (ValidationException e) {
             NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
             return;
