@@ -197,7 +197,7 @@ Here are some things that you should do to configure the apache server as proxy:
 * Provide the android apk
 
         Options -Indexes
-        Alias "/download/sormas-release.apk" "/var/www/sormas/downloads/sormas-release.apk"
+		AliasMatch "/downloads/sormas-(.*)" "/var/www/sormas/downloads/sormas-$1"
 
 * In case you need to update the site config while the server is running, use the following command to publish the changes without the need for a reload:
 

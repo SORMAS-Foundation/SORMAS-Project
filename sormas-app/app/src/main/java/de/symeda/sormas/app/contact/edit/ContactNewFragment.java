@@ -36,20 +36,23 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
         record = getActivityRootData();
-        relationshipList = DataUtils.getEnumItems(ContactRelation.class, false);
+        relationshipList = DataUtils.getEnumItems(ContactRelation.class, true);
     }
 
     @Override
     public void onLayoutBinding(FragmentContactNewLayoutBinding contentBinding) {
-
         contentBinding.setData(record);
+
+        if (isLiveValidationDisabled()) {
+            disableLiveValidation(true);
+        }
+
         contentBinding.setContactProximityClass(ContactProximity.class);
     }
 
     @Override
     public void onAfterLayoutBinding(FragmentContactNewLayoutBinding contentBinding) {
         contentBinding.contactRelationToCase.initializeSpinner(relationshipList);
-
         contentBinding.contactLastContactDate.initializeDateField(getFragmentManager());
     }
 
@@ -61,4 +64,5 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
     public static ContactNewFragment newInstance(ContactFormNavigationCapsule capsule, Contact activityRootData) {
         return newInstance(ContactNewFragment.class, capsule, activityRootData);
     }
+
 }

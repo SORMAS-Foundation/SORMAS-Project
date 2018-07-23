@@ -30,13 +30,9 @@ public class EpiDataBurialDao extends AbstractAdoDao<EpiDataBurial> {
     }
 
     @Override
-    public int delete(EpiDataBurial data) {
-
-        // TODO we need to make sure the other delete methods don't work
-
+    public void delete(EpiDataBurial data) throws SQLException{
         DatabaseHelper.getLocationDao().delete(data.getBurialAddress());
-
-        return super.delete(data);
+        super.delete(data);
     }
 
     public List<EpiDataBurial> getByEpiData(EpiData epiData) {

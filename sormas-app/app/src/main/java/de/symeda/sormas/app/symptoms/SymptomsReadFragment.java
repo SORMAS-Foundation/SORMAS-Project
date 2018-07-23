@@ -37,9 +37,6 @@ public class SymptomsReadFragment extends BaseReadFragment<FragmentSymptomsReadL
     private List<String> yesResult;
     private List<String> unknownResult;
 
-    // TODO can probably be removed
-    private OnLinkClickListener onLinkClickListener;
-
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
         AbstractDomainObject ado = getActivityRootData();
@@ -60,7 +57,6 @@ public class SymptomsReadFragment extends BaseReadFragment<FragmentSymptomsReadL
         contentBinding.setData(record);
         contentBinding.symptomsSymptomsOccurred.setTags(yesResult);
         contentBinding.symptomsSymptomsUnknownOccurred.setTags(unknownResult);
-        contentBinding.setLocationClickCallback(onLinkClickListener);
     }
 
     @Override

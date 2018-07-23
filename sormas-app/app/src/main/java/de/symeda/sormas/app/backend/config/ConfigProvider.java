@@ -36,6 +36,7 @@ import javax.security.auth.x500.X500Principal;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.rest.RetroProvider;
 
 /**
  * Created by Martin Wahnschaffe on 10.08.2016.
@@ -179,6 +180,9 @@ public final class ConfigProvider {
             instance.username = null;
             instance.password = null;
             instance.user = null;
+
+            // old credentials are no longer valid...
+            RetroProvider.disconnect();
         }
     }
 
@@ -191,6 +195,8 @@ public final class ConfigProvider {
         }
 
         configDao.delete(new Config(KEY_PIN, ""));
+
+        setAccessGranted(false);
     }
 
     public static void setUsernameAndPassword(String username, String password) {

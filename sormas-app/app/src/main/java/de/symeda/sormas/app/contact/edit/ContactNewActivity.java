@@ -11,6 +11,7 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -21,12 +22,17 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.core.NotificationContext;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.validation.FragmentValidator;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public class ContactNewActivity extends BaseEditActivity<Contact> {
 
@@ -98,9 +104,27 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
     }
 
     @Override
-    public void saveData() {
+    public void replaceFragment(BaseEditFragment f) {
+        super.replaceFragment(f);
+        getActiveFragment().setLiveValidationDisabled(true);
+    }
 
+    @Override
+    public void saveData() {
         final Contact contactToSave = getStoredRootEntity();
+
+        ContactNewFragment fragment = (ContactNewFragment) getActiveFragment();
+
+        if (fragment.isLiveValidationDisabled()) {
+            fragment.disableLiveValidation(false);
+        }
+
+        try {
+            FragmentValidator.validate(getContext(), fragment.getContentBinding());
+        } catch (ValidationException e) {
+            NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
+            return;
+        }
 
         SelectOrCreatePersonDialog.selectOrCreatePerson(contactToSave.getPerson(), new Consumer<Person>() {
             @Override

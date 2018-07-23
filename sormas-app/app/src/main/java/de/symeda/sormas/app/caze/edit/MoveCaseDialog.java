@@ -11,6 +11,7 @@ import com.android.databinding.library.baseAdapters.BR;
 
 import java.util.List;
 
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -21,8 +22,13 @@ import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogMoveCaseLayoutBinding;
 import de.symeda.sormas.app.util.InfrastructureHelper;
+import de.symeda.sormas.app.validation.CaseValidator;
+import de.symeda.sormas.app.validation.FragmentValidator;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public class MoveCaseDialog extends BaseTeboAlertDialog {
 
@@ -51,6 +57,12 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
 
     @Override
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, final Callback.IAction callback) {
+        try {
+            FragmentValidator.validate(getContext(), contentBinding, this);
+        } catch (ValidationException e) {
+            NotificationHelper.showDialogNotification(this, ERROR, e.getMessage());
+            return;
+        }
 
         moveCaseTask = new SavingAsyncTask(getActivity().findViewById(android.R.id.content), data) {
 

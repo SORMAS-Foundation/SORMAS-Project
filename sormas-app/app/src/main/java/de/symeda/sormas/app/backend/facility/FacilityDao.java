@@ -140,12 +140,4 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
     public Facility mergeOrCreate(Facility source) throws DaoException {
         throw new UnsupportedOperationException();
     }
-
-    public int updateOrCreate(Facility data) {
-        if (data.getId() == null) {
-            return create(data);
-        } else {
-            return update(data);
-        }
-    }
 }

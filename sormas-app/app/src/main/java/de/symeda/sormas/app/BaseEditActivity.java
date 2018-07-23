@@ -15,7 +15,6 @@ import android.widget.TextView;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
@@ -135,7 +134,8 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
                     if (storedRootEntity != null
                             && !storedRootEntity.isNew()
                             && storedRootEntity.isUnreadOrChildUnread()) {
-                        DatabaseHelper.getAdoDao(storedRootEntity.getClass()).markAsReadWithCast(storedRootEntity);
+                        // TODO #704 do in background and retrieve entity again
+//                        DatabaseHelper.getAdoDao(storedRootEntity.getClass()).markAsReadWithCast(storedRootEntity);
                         if (hadRootEntity) {
                             NotificationHelper.showNotification(BaseEditActivity.this, NotificationType.WARNING,
                                     String.format(getResources().getString(R.string.snackbar_entity_overridden), storedRootEntity.getEntityName()));

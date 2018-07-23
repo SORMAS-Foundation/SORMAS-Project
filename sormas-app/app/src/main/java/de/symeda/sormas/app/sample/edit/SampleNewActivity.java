@@ -18,11 +18,16 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
+import de.symeda.sormas.app.validation.FragmentValidator;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public class SampleNewActivity extends BaseEditActivity<Sample> {
 
@@ -80,16 +85,34 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
         return R.string.heading_sample_new;
     }
 
+
+    @Override
+    public void replaceFragment(BaseEditFragment f) {
+        super.replaceFragment(f);
+        getActiveFragment().setLiveValidationDisabled(true);
+    }
+
     @Override
     public void saveData() {
-
         final Sample sampleToSave = getStoredRootEntity();
+        SampleNewFragment fragment = (SampleNewFragment) getActiveFragment();
 
         if (sampleToSave.getReportingUser() == null) {
             sampleToSave.setReportingUser(ConfigProvider.getUser());
         }
         if (sampleToSave.getReportDateTime() == null) {
             sampleToSave.setReportDateTime(new Date());
+        }
+
+        if (fragment.isLiveValidationDisabled()) {
+            fragment.disableLiveValidation(false);
+        }
+
+        try {
+            FragmentValidator.validate(getContext(), fragment.getContentBinding());
+        } catch (ValidationException e) {
+            NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
+            return;
         }
 
         saveTask = new SavingAsyncTask(getRootView(), sampleToSave) {

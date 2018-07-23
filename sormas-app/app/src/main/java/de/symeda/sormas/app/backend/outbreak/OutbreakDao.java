@@ -61,12 +61,4 @@ public class OutbreakDao extends AbstractAdoDao<Outbreak> {
     public Outbreak mergeOrCreate(Outbreak source) throws DaoException {
         throw new UnsupportedOperationException();
     }
-
-    public int updateOrCreate(Outbreak data) {
-        if (data.getId() == null) {
-            return create(data);
-        } else {
-            return update(data);
-        }
-    }
 }

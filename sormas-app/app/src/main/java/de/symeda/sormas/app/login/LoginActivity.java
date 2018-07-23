@@ -45,6 +45,9 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         loginViewModel = new LoginViewModel();
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login_layout);
         binding.setData(loginViewModel);
+
+        binding.username.setLiveValidationDisabled(true);
+        binding.password.setLiveValidationDisabled(true);
     }
 
     public void showSettingsView(View view) {

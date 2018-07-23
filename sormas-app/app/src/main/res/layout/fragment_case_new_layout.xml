@@ -68,6 +68,7 @@
                 style="@style/ControlSingleColumnStyle"
                 app:dependencyParentField="@{caseDataDisease}"
                 app:dependencyParentValue="@{Disease.DENGUE}"
+                app:softRequired="true"
                 app:value="@={data.dengueFeverType}"/>
 
             <LinearLayout
@@ -97,6 +98,7 @@
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/caseData_community"
                     app:value="@={data.community}"
+                    app:softRequired="true"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField

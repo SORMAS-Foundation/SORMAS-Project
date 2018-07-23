@@ -66,11 +66,12 @@ public class ContactDao extends AbstractAdoDao<Contact> {
         return contact;
     }
 
-    @Override
-    public void markAsRead(Contact contact) {
-        super.markAsRead(contact);
-        DatabaseHelper.getPersonDao().markAsRead(contact.getPerson());
-    }
+    // TODO #704
+//    @Override
+//    public void markAsRead(Contact contact) {
+//        super.markAsRead(contact);
+//        DatabaseHelper.getPersonDao().markAsRead(contact.getPerson());
+//    }
 
     @Override
     public Contact saveAndSnapshot(final Contact contact) throws DaoException {

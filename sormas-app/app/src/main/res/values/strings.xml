@@ -390,6 +390,7 @@
     <string name="indicator_required">*</string>
     <string name="indicator_soft_required">*</string>
     <string name="indicator_warning">WARN</string>
+    <string name="indicator_error">ERROR</string>
     <string name="infoText_move_case_discard_changes">Moving the case will discard any unsaved changes. Do you want to continue?</string>
     <string name="infoText_resetPIN">To reset your PIN you will <b>need your SORMAS user password.</b></string>
     <string name="invalid">Invalid</string>
@@ -607,8 +608,8 @@
     <string name="validation_contact_last_date">Please enter a valid last contact date.</string>
     <string name="validation_contact_proximity">Please select the contact proximity.</string>
     <string name="validation_contact_relation">Please select the relation to the case.</string>
-    <string name="validation_date_earlier">The %1$s can not be later than the %2$s.</string>
-    <string name="validation_date_later">The %1$s can not be later than the %2$s.</string>
+    <string name="validation_date_before">%1$s must be before or at the same date as %2$s.</string>
+    <string name="validation_date_after">%1$s must be after or at the same date as %2$s.</string>
     <string name="validation_district">Please select an LGA.</string>
     <string name="validation_event_date">Please enter the event date.</string>
     <string name="validation_event_description">Please enter a description for the event.</string>
@@ -650,10 +651,16 @@
     <string name="validation_symptoms_symptom">Please select a state for this symptom.</string>
     <string name="validation_symptoms_temperature">Please select the person\'s temperature.</string>
     <string name="validation_symptoms_temperature_source">Please select the temperature source.</string>
-    <string name="validation_visit_30_days_after">The visit cannot be more than 30 days after the end of the follow-up duration.</string>
-    <string name="validation_visit_30_days_before">The visit cannot be more than 30 days before the last contact date.</string>
+    <string name="validation_visit_date_time_after_followup">The visit cannot be more than 30 days after the end of the follow-up duration.</string>
+    <string name="validation_visit_date_time_before_contact_date">The visit cannot be more than 30 days before the last contact date.</string>
+    <string name="validation_visit_date_time_before_report_date">The visit cannot be more than 30 days before the contact report date.</string>
     <string name="validation_visit_date_time">Please enter the date and time of the visit.</string>
     <string name="validation_visit_status">Please select the visit status.</string>
+    <string name="validation_error_required">A value is required for this field. Please make sure to type in or select a value before continuing.</string>
+
+    <!-- Validation Error Info -->
+    <string name="validation_error_info_pre_text">Please enter a valid value for</string>
+    <string name="validation_error_info_post_text">To learn more about the error on a specific field and how to solve it, click on the ERROR indicator next to its caption.</string>
 
     <string name="visit_date_unknown">Visit Date N/A</string>
     <string name="visit_remarks_unknown">Remarks N/A</string>
@@ -661,5 +668,6 @@
     <string name="visit_time_unknown">Visit Time N/A</string>
 
     <string name="yes">Yes</string>
+    <string name="and_not_capitalized">and</string>
 
 </resources>

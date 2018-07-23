@@ -1,32 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:descendantFocusability="beforeDescendants"
-    android:id="@+id/base_layout">
+        android:id="@+id/base_layout"
+        android:descendantFocusability="beforeDescendants">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <!-- no refresh within read/edit forms
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/swiperefresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
-            <ViewStub android:id="@+id/vsChildFragmentFrame"
-                android:inflatedId="@+id/childFragmentFrame"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
+        -->
+        <ViewStub
+            android:id="@+id/vsChildFragmentFrame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inflatedId="@+id/childFragmentFrame"
+            />
+        <!--
         </android.support.v4.widget.SwipeRefreshLayout>
+        -->
 
         <TextView
             android:id="@+id/emptyListHint"
+            style="@style/EmptyListHintStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
             android:textAlignment="center"
-            style="@style/EmptyListHintStyle"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:visibility="gone"/>
 
     </FrameLayout>

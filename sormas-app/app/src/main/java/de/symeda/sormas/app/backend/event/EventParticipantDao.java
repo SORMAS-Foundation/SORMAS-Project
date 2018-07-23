@@ -47,9 +47,10 @@ public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
         }
     }
 
-    @Override
-    public void markAsRead(EventParticipant eventParticipant) {
-        super.markAsRead(eventParticipant);
-        DatabaseHelper.getPersonDao().markAsRead(eventParticipant.getPerson());
-    }
+    // TODO #704
+//    @Override
+//    public void markAsRead(EventParticipant eventParticipant) {
+//        super.markAsRead(eventParticipant);
+//        DatabaseHelper.getPersonDao().markAsRead(eventParticipant.getPerson());
+//    }
 }

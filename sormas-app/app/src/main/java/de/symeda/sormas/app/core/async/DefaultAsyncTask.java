@@ -9,6 +9,7 @@ import java.lang.ref.WeakReference;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 
 public abstract class DefaultAsyncTask extends AsyncTask<Void, Void, AsyncTaskResult<TaskResultHolder>> {
@@ -45,8 +46,8 @@ public abstract class DefaultAsyncTask extends AsyncTask<Void, Void, AsyncTaskRe
         try {
             doInBackground(resultHolder);
             return new AsyncTaskResult<>(resultHolder.getResultStatus(), resultHolder);
-        } catch (ValidationException val) {
-            return new AsyncTaskResult<>(val);
+        } catch (ValidationException e) {
+            return new AsyncTaskResult<>(e);
         } catch (Exception e) {
             return handleException(e);
         }

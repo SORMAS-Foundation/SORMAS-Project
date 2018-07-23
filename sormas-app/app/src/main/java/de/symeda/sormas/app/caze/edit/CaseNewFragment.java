@@ -62,6 +62,10 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     public void onLayoutBinding(FragmentCaseNewLayoutBinding contentBinding) {
         contentBinding.setData(record);
 
+        if (isLiveValidationDisabled()) {
+            disableLiveValidation(true);
+        }
+
         InfrastructureHelper.initializeFacilityFields(contentBinding.caseDataRegion, initialRegions,
                 contentBinding.caseDataDistrict, initialDistricts,
                 contentBinding.caseDataCommunity, initialCommunities,
@@ -74,17 +78,20 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 
     @Override
     public void onAfterLayoutBinding(final FragmentCaseNewLayoutBinding contentBinding) {
-
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
 
         contentBinding.caseDataRegion.setEnabled(false);
+        contentBinding.caseDataRegion.setRequired(false);
         contentBinding.caseDataDistrict.setEnabled(false);
+        contentBinding.caseDataDistrict.setRequired(false);
 
         User user = ConfigProvider.getUser();
         if (user.hasUserRole(UserRole.INFORMANT) && user.getHealthFacility() != null) {
-            // this is ok, because informants are required to have a community and health facility
+            // Informants are not allowed to create cases in another health facility
             contentBinding.caseDataCommunity.setEnabled(false);
+            contentBinding.caseDataCommunity.setRequired(false);
             contentBinding.caseDataHealthFacility.setEnabled(false);
+            contentBinding.caseDataHealthFacility.setRequired(false);
         }
     }
 

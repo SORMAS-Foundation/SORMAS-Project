@@ -84,12 +84,12 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 
     public void setSpinnerData(List<Item> items, Object selectedValue) {
         input.setAdapter(new ControlSpinnerAdapter(
-            getContext(),
-            this,
-            items != null ? items : DataUtils.addEmptyItem(new ArrayList<Item>()),
-            R.layout.control_spinner_item_layout,
-            R.layout.control_spinner_dropdown_item_layout,
-            R.id.text));
+                getContext(),
+                this,
+                items != null ? items : DataUtils.addEmptyItem(new ArrayList<Item>()),
+                R.layout.control_spinner_item_layout,
+                R.layout.control_spinner_dropdown_item_layout,
+                R.id.text));
         setFieldValue(selectedValue);
     }
 
@@ -281,8 +281,8 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
     }
 
     public void setSelectionOnOpen(Object object) {
-        for(int i = 0; i < getAdapter().getCount(); i++) {
-            if(object.equals(((Item)getAdapter().getItem(i)).getValue())) {
+        for (int i = 0; i < getAdapter().getCount(); i++) {
+            if (object.equals(((Item) getAdapter().getItem(i)).getValue())) {
                 indexOnOpen = i;
                 break;
             }

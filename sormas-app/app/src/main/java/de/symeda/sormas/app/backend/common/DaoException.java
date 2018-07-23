@@ -10,8 +10,8 @@ public class DaoException extends Exception {
         super(message);
     }
 
-    public DaoException(Exception e) {
-        super(e);
+    public DaoException(Exception cause) {
+        super(cause.getLocalizedMessage(), cause);
     }
 
 }

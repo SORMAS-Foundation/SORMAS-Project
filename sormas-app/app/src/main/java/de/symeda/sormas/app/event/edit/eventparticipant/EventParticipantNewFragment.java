@@ -40,6 +40,10 @@ public class EventParticipantNewFragment extends BaseEditFragment<FragmentEventP
     @Override
     public void onLayoutBinding(FragmentEventParticipantNewLayoutBinding contentBinding) {
         contentBinding.setData(record);
+
+        if (isLiveValidationDisabled()) {
+            disableLiveValidation(true);
+        }
     }
 
     @Override

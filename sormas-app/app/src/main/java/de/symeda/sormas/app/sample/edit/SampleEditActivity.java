@@ -12,11 +12,16 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
+import de.symeda.sormas.app.validation.FragmentValidator;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public class SampleEditActivity extends BaseEditActivity<Sample> {
 
@@ -59,8 +64,15 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
 
     @Override
     public void saveData() {
-
         final Sample sampleToSave = getStoredRootEntity();
+        SampleEditFragment fragment = (SampleEditFragment) getActiveFragment();
+
+        try {
+            FragmentValidator.validate(getContext(), fragment.getContentBinding());
+        } catch (ValidationException e) {
+            NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
+            return;
+        }
 
         saveTask = new SavingAsyncTask(getRootView(), sampleToSave) {
 
@@ -79,9 +91,6 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
             protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
                 hidePreloader();
                 super.onPostExecute(taskResult);
-                if (taskResult.getResultStatus().isSuccess()) {
-                    goToNextPage();
-                }
             }
         }.executeOnThreadPool();
     }

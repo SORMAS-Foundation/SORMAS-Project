@@ -78,7 +78,7 @@ public class OutbreakDtoHelper extends AdoDtoHelper<Outbreak, OutbreakDto> {
      * Overriden for performance reasons. No merge needed when database was empty.
      */
     @Override
-    protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<Outbreak> dao, Response<List<OutbreakDto>> response) throws ServerConnectionException {
+    protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<Outbreak> dao, Response<List<OutbreakDto>> response) throws ServerConnectionException, DaoException {
         if (!response.isSuccessful()) {
             String responseErrorBodyString;
             try {

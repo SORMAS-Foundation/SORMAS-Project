@@ -16,12 +16,17 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.contact.ContactSection;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
+import de.symeda.sormas.app.validation.FragmentValidator;
 import de.symeda.sormas.app.visit.edit.VisitNewActivity;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public class ContactEditActivity extends BaseEditActivity<Contact> {
 
@@ -85,13 +90,15 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 
     @Override
     public void saveData() {
-
-        ContactSection activeSection = ContactSection.fromMenuKey(getActivePage().getKey());
-
-        if (activeSection == ContactSection.VISITS || activeSection == ContactSection.TASKS)
-            return;
-
         final Contact contactToSave = getStoredRootEntity();
+
+        try {
+            FragmentValidator.validate(getContext(), getActiveFragment().getContentBinding());
+        } catch (ValidationException e) {
+            NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
+            return;
+        }
+
 
         saveTask = new SavingAsyncTask(getRootView(), contactToSave) {
 

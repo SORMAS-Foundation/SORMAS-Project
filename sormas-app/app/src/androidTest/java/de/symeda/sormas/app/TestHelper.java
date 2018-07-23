@@ -2,7 +2,9 @@ package de.symeda.sormas.app;
 
 import android.support.test.InstrumentationRegistry;
 import android.test.RenamingDelegatingContext;
+import android.util.Log;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -51,11 +53,15 @@ public class TestHelper {
 
         ConfigProvider.setServerRestUrl("http://this-is-a-test-url-that-hopefully-doesnt-exist.com");
 
-        insertInfrastructureData();
-        insertUsers(setInformantAsActiveUser);
+        try {
+            insertInfrastructureData();
+            insertUsers(setInformantAsActiveUser);
+        } catch (SQLException e) {
+            Log.e(TestHelper.class.getSimpleName(), "Could not init test environment: " + e.getMessage());
+        }
     }
 
-    private static void insertUsers(boolean setInformantAsActiveUser) {
+    private static void insertUsers(boolean setInformantAsActiveUser) throws SQLException {
         // Create user and set username and password
         User user = new User();
         user.setUserName("SanaObas");
@@ -106,7 +112,7 @@ public class TestHelper {
         }
     }
 
-    private static void insertInfrastructureData() {
+    private static void insertInfrastructureData() throws SQLException {
         // Create example region, district, community and health facility
         Region region = new Region();
         region.setCreationDate(new Date());

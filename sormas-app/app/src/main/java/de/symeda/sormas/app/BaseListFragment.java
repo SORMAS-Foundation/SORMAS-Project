@@ -2,6 +2,7 @@ package de.symeda.sormas.app;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,6 +67,16 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
     @Override
     public void onResume() {
         super.onResume();
+
+        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout) this.getView().findViewById(R.id.swiperefresh);
+        if (swiperefresh != null) {
+            swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    getBaseActivity().synchronizeChangedData();
+                }
+            });
+        }
     }
 
     @Override

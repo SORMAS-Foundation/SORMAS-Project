@@ -50,16 +50,6 @@ public class BaseFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout) this.getView().findViewById(R.id.swiperefresh);
-        if (swiperefresh != null) {
-            swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    getBaseActivity().synchronizeChangedData();
-                }
-            });
-        }
     }
 
     @Override

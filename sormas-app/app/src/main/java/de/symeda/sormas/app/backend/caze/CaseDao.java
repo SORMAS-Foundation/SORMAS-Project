@@ -274,14 +274,15 @@ public class CaseDao extends AbstractAdoDao<Case> {
         }
     }
 
-    @Override
-    /**
-     * @param caze person has to be initialized
-     */
-    public void markAsRead(Case caze) {
-        super.markAsRead(caze);
-        DatabaseHelper.getPersonDao().markAsRead(caze.getPerson());
-    }
+    // TODO #704
+//    @Override
+//    /**
+//     * @param caze person has to be initialized
+//     */
+//    public void markAsRead(Case caze) {
+//        super.markAsRead(caze);
+//        DatabaseHelper.getPersonDao().markAsRead(caze.getPerson());
+//    }
 
     @Override
     public Case mergeOrCreate(Case source) throws DaoException {

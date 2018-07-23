@@ -12,6 +12,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
+import de.symeda.sormas.api.utils.Required;
 
 public class PersonDto extends EntityDto {
 
@@ -27,10 +28,10 @@ public class PersonDto extends EntityDto {
 	public static final String BIRTH_DATE_DD = "birthdateDD";
 	public static final String BIRTH_DATE_MM = "birthdateMM";
 	public static final String BIRTH_DATE_YYYY = "birthdateYYYY";
-	
+
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String APPROXIMATE_AGE_TYPE = "approximateAgeType";
-	
+
 	public static final String CAUSE_OF_DEATH = "causeOfDeath";
 	public static final String CAUSE_OF_DEATH_DISEASE = "causeOfDeathDisease";
 	public static final String CAUSE_OF_DEATH_DETAILS = "causeOfDeathDetails";
@@ -41,14 +42,14 @@ public class PersonDto extends EntityDto {
 	public static final String BURIAL_DATE = "burialDate";
 	public static final String BURIAL_PLACE_DESCRIPTION = "burialPlaceDescription";
 	public static final String BURIAL_CONDUCTOR = "burialConductor";
-	
+
 	public static final String NICKNAME = "nickname";
 	public static final String MOTHERS_MAIDEN_NAME = "mothersMaidenName";
-	
+
 	public static final String PHONE = "phone";
 	public static final String PHONE_OWNER = "phoneOwner";
 	public static final String ADDRESS = "address";
-	
+
 	public static final String OCCUPATION_TYPE = "occupationType";
 	public static final String OCCUPATION_DETAILS = "occupationDetails";
 	public static final String OCCUPATION_REGION = "occupationRegion";
@@ -56,12 +57,14 @@ public class PersonDto extends EntityDto {
 	public static final String OCCUPATION_COMMUNITY = "occupationCommunity";
 	public static final String OCCUPATION_FACILITY = "occupationFacility";
 	public static final String OCCUPATION_FACILITY_DETAILS = "occupationFacilityDetails";
-	
+
 	@Outbreaks
 	private Sex sex;
 	@Outbreaks
+	@Required
 	private String firstName;
 	@Outbreaks
+	@Required
 	private String lastName;
 
 	@Outbreaks
@@ -80,24 +83,24 @@ public class PersonDto extends EntityDto {
 	private CauseOfDeath causeOfDeath;
 	private Disease causeOfDeathDisease;
 	private String causeOfDeathDetails;
-	@Diseases({Disease.EVD,Disease.OTHER})
+	@Diseases({ Disease.EVD, Disease.OTHER })
 	private DeathPlaceType deathPlaceType;
-	@Diseases({Disease.EVD,Disease.OTHER})
+	@Diseases({ Disease.EVD, Disease.OTHER })
 	private String deathPlaceDescription;
-	@Diseases({Disease.EVD,Disease.OTHER})
+	@Diseases({ Disease.EVD, Disease.OTHER })
 	private Date burialDate;
-	@Diseases({Disease.EVD,Disease.OTHER})
+	@Diseases({ Disease.EVD, Disease.OTHER })
 	private String burialPlaceDescription;
-	@Diseases({Disease.EVD,Disease.OTHER})
+	@Diseases({ Disease.EVD, Disease.OTHER })
 	private BurialConductor burialConductor;
-		
+
 	private String nickname;
 	private String mothersMaidenName;
-	
+
 	private String phone;
 	private String phoneOwner;
 	private LocationDto address;
-	
+
 	private OccupationType occupationType;
 	private String occupationDetails;
 	private RegionReferenceDto occupationRegion;
@@ -113,19 +116,19 @@ public class PersonDto extends EntityDto {
 	public void setBirthdateDD(Integer birthdateDD) {
 		this.birthdateDD = birthdateDD;
 	}
-	
+
 	public Integer getBirthdateMM() {
 		return birthdateMM;
 	}
-	
+
 	public void setBirthdateMM(Integer birthdateMM) {
 		this.birthdateMM = birthdateMM;
 	}
-	
+
 	public Integer getBirthdateYYYY() {
 		return birthdateYYYY;
 	}
-	
+
 	public void setBirthdateYYYY(Integer birthdateYYYY) {
 		this.birthdateYYYY = birthdateYYYY;
 	}
@@ -137,7 +140,7 @@ public class PersonDto extends EntityDto {
 	public void setApproximateAge(Integer approximateAge) {
 		this.approximateAge = approximateAge;
 	}
-	
+
 	public ApproximateAgeType getApproximateAgeType() {
 		return approximateAgeType;
 	}
@@ -165,6 +168,7 @@ public class PersonDto extends EntityDto {
 	public Date getBurialDate() {
 		return burialDate;
 	}
+
 	public void setBurialDate(Date burialDate) {
 		this.burialDate = burialDate;
 	}
@@ -192,10 +196,11 @@ public class PersonDto extends EntityDto {
 	public void setSex(Sex sex) {
 		this.sex = sex;
 	}
-	
+
 	public PresentCondition getPresentCondition() {
 		return presentCondition;
 	}
+
 	public void setPresentCondition(PresentCondition presentCondition) {
 		this.presentCondition = presentCondition;
 	}
@@ -227,6 +232,7 @@ public class PersonDto extends EntityDto {
 	public Date getDeathDate() {
 		return deathDate;
 	}
+
 	public void setDeathDate(Date deathDate) {
 		this.deathDate = deathDate;
 	}
@@ -278,35 +284,35 @@ public class PersonDto extends EntityDto {
 	public void setOccupationFacility(FacilityReferenceDto occupationFacility) {
 		this.occupationFacility = occupationFacility;
 	}
-	
+
 	public String getNickname() {
 		return nickname;
 	}
-	
+
 	public void setNickname(String nickname) {
 		this.nickname = nickname;
 	}
-	
+
 	public String getMothersMaidenName() {
 		return mothersMaidenName;
 	}
-	
+
 	public void setMothersMaidenName(String mothersMaidenName) {
 		this.mothersMaidenName = mothersMaidenName;
 	}
-	
+
 	public String getFirstName() {
 		return firstName;
 	}
-	
+
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
-	
+
 	public String getLastName() {
 		return lastName;
 	}
-	
+
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
@@ -342,16 +348,16 @@ public class PersonDto extends EntityDto {
 	public void setOccupationFacilityDetails(String occupationFacilityDetails) {
 		this.occupationFacilityDetails = occupationFacilityDetails;
 	}
-	
+
 	@Override
 	public String toString() {
 		return buildCaption(firstName, lastName);
 	}
-	
+
 	public PersonReferenceDto toReference() {
 		return new PersonReferenceDto(getUuid(), firstName, lastName);
 	}
-	
+
 	public static String buildCaption(String firstName, String lastName) {
 		return DataHelper.toStringNullable(firstName) + " " + DataHelper.toStringNullable(lastName).toUpperCase();
 	}

@@ -79,7 +79,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                             AbstractDomainObject.MODIFIED,
                             AbstractDomainObject.SNAPSHOT)
                     .where().eq(AbstractDomainObject.UUID, uuid)
-                        .and().eq(AbstractDomainObject.SNAPSHOT, false)
+                    .and().eq(AbstractDomainObject.SNAPSHOT, false)
                     .query();
             if (results.size() == 0) {
                 return null;
@@ -245,7 +245,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         return null;
     }
 
-    private AbstractDomainObject saveAndSnapshotWithCast(AbstractDomainObject ado) throws DaoException {
+    public AbstractDomainObject saveAndSnapshotWithCast(AbstractDomainObject ado) throws DaoException {
         return saveAndSnapshot((ADO) ado);
     }
 
@@ -335,7 +335,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
             return snapshot;
 
-        } catch (RuntimeException e) {
+        } catch (SQLException e) {
             throw new DaoException(e);
         } catch (InvocationTargetException e) {
             throw new RuntimeException(e);
@@ -445,7 +445,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
             return snapshot;
 
-        } catch (RuntimeException e) {
+        } catch (SQLException e) {
             throw new DaoException(e);
         } catch (InvocationTargetException e) {
             throw new RuntimeException(e);
@@ -524,9 +524,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                         || parentProperty.equals(property.getName()))
                     continue;
 
-                if (AdoPropertyHelper.isReadOnlyProperty(property))
-                    continue;
-
                 // we now have to write the value from source into target and base
                 // there are four types of properties:
 
@@ -565,7 +562,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                         // - two persons may have set the exact same data
                         Object currentFieldValue = property.getReadMethod().invoke(current);
                         if (!DataHelper.equal(snapshotFieldValue, currentFieldValue)
-                            && !DataHelper.equal(currentFieldValue, sourceFieldValue)) {
+                                && !DataHelper.equal(currentFieldValue, sourceFieldValue)) {
                             // we have a conflict
                             Log.i(source.getClass().getName(), "Overriding " + property.getName() +
                                     "; Snapshot '" + DataHelper.toStringNullable(snapshotFieldValue) +
@@ -639,7 +636,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
             return current;
 
-        } catch (RuntimeException e) {
+        } catch (SQLException e) {
             throw new DaoException(e);
         } catch (InvocationTargetException e) {
             throw new RuntimeException(e);
@@ -652,34 +649,35 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
     private void mergeCollection(Collection<AbstractDomainObject> existingCollection, Collection<AbstractDomainObject> sourceCollection, ADO parent) throws DaoException {
 
-        StringBuilder conflictStringBuilder = new StringBuilder();
-
-        // delete no longer existing elements
-        existingCollection.removeAll(sourceCollection); // ignore kept
-        for (AbstractDomainObject existingEntry : existingCollection) {
-            if (existingEntry.isModified()) {
-                AbstractDomainObject existingSnapshot = DatabaseHelper.getAdoDao(existingEntry.getClass()).querySnapshotByUuid(existingEntry.getUuid());
-                if (existingSnapshot == null) {
-                    // entry is new (not yet sent to the server) -> keep it
-                    continue;
-                } else if (AdoPropertyHelper.hasModifiedProperty(existingEntry, existingSnapshot, true)) {
-                    // entry exists and is modified -> inform the user that the changes are deleted
-                    conflictStringBuilder.append("A list entry you modified was deleted:");
-                    conflictStringBuilder.append("<br/><i>");
-                    conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_yours));
-                    conflictStringBuilder.append("</i>");
-                    conflictStringBuilder.append(DataHelper.toStringNullable(existingEntry));
-                }
-            }
-            DatabaseHelper.getAdoDao(existingEntry.getClass()).deleteCascadeWithCast(existingEntry);
-        }
-
-        String conflictString = conflictStringBuilder.toString();
-        if (!conflictString.isEmpty()) {
-            DatabaseHelper.getSyncLogDao().createWithParentStack(parent.toString(), conflictString);
-        }
-
         try {
+
+            StringBuilder conflictStringBuilder = new StringBuilder();
+
+            // delete no longer existing elements
+            existingCollection.removeAll(sourceCollection); // ignore kept
+            for (AbstractDomainObject existingEntry : existingCollection) {
+                if (existingEntry.isModified()) {
+                    AbstractDomainObject existingSnapshot = DatabaseHelper.getAdoDao(existingEntry.getClass()).querySnapshotByUuid(existingEntry.getUuid());
+                    if (existingSnapshot == null) {
+                        // entry is new (not yet sent to the server) -> keep it
+                        continue;
+                    } else if (AdoPropertyHelper.hasModifiedProperty(existingEntry, existingSnapshot, true)) {
+                        // entry exists and is modified -> inform the user that the changes are deleted
+                        conflictStringBuilder.append("A list entry you modified was deleted:");
+                        conflictStringBuilder.append("<br/><i>");
+                        conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_yours));
+                        conflictStringBuilder.append("</i>");
+                        conflictStringBuilder.append(DataHelper.toStringNullable(existingEntry));
+                    }
+                }
+                DatabaseHelper.getAdoDao(existingEntry.getClass()).deleteCascadeWithCast(existingEntry);
+            }
+
+            String conflictString = conflictStringBuilder.toString();
+            if (!conflictString.isEmpty()) {
+                DatabaseHelper.getSyncLogDao().createWithParentStack(parent.toString(), conflictString);
+            }
+
             Method parentSetter = null;
 
             for (AbstractDomainObject sourceElement : sourceCollection) {
@@ -708,6 +706,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                     }
                 }
             }
+        } catch (SQLException e) {
+            throw new DaoException(e);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         } catch (InvocationTargetException e) {
@@ -792,7 +792,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             ado.setModified(false);
             update(ado);
 
-        } catch (RuntimeException e) {
+        } catch (SQLException e) {
             throw new DaoException(e);
         } catch (InvocationTargetException e) {
             throw new RuntimeException(e);
@@ -801,15 +801,15 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         }
     }
 
-    public void deleteCascadeWithCast(AbstractDomainObject ado) {
+    public void deleteCascadeWithCast(AbstractDomainObject ado) throws SQLException {
         deleteCascade((ADO) ado);
     }
 
-    public void deleteCascade(ADO ado) {
-
-        delete(ado);
+    public void deleteCascade(ADO ado) throws SQLException {
 
         try {
+            delete(ado);
+
             // ignore parent property
             EmbeddedAdo annotation = ado.getClass().getAnnotation(EmbeddedAdo.class);
             String parentProperty = annotation != null ? annotation.parentAccessor() : "";
@@ -842,7 +842,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
      *
      * @param validUuids
      */
-    public void deleteInvalid(List<String> validUuids) {
+    public void deleteInvalid(List<String> validUuids) throws DaoException {
         try {
             QueryBuilder<ADO, Long> builder = queryBuilder();
             builder.where().notIn(AbstractDomainObject.UUID, validUuids);
@@ -853,8 +853,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 if (invalidEntity.isNew()) {
                     // don't delete new entities
                     continue;
-                }
-                else {
+                } else {
                     if (invalidEntity.isModified()) {
                         // let user know if changes are lost
                         DatabaseHelper.getSyncLogDao().createWithParentStack(invalidEntity.toString(), "Changes dropped because you have no longer access to this entity.");
@@ -870,7 +869,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 Log.d(getTableName(), "Deleted invalid entities: " + deletionCounter + " of " + invalidEntities.size());
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DaoException(e);
         }
     }
 
@@ -885,10 +884,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public int updateWithCast(AbstractDomainObject ado) {
-        return update((ADO) ado);
     }
 
     public ADO build() {
@@ -933,37 +928,38 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         }
     }
 
-    /**
-     * Sets the last opened date OF THE ORIGINAL OBJECT in the database and its embedded objects to the current date.
-     * This does NOT manipulate the entity given as the parameter to avoid the unintended saving of other fields.
-     * @param ado It's ok if the ADO object only contains the id of the entity
-     */
-    public void markAsRead(ADO ado) {
-        ADO originalAdo = queryForId(ado.getId());
-        originalAdo.setLastOpenedDate(DateHelper.addSeconds(new Date(), 5));
-        update(originalAdo);
-
-        Iterator<PropertyDescriptor> propertyIterator = AdoPropertyHelper.getEmbeddedAdoProperties(originalAdo.getClass());
-        while (propertyIterator.hasNext()) {
-            try {
-                PropertyDescriptor property = propertyIterator.next();
-                AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(originalAdo);
-                if (embeddedAdo == null) {
-                    throw new IllegalArgumentException("No embedded entity was created for " + property.getName());
-                }
-
-                DatabaseHelper.getAdoDao(embeddedAdo.getClass()).markAsReadWithCast(embeddedAdo);
-            } catch (InvocationTargetException e) {
-                throw new RuntimeException("Error while trying to invoke read method to set last opened dates", e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Error while trying to invoke read method to set last opened dates", e);
-            }
-        }
-    }
-
-    public void markAsReadWithCast(AbstractDomainObject ado) {
-        markAsRead((ADO) ado);
-    }
+    // TODO #704
+//    /**
+//     * Sets the last opened date OF THE ORIGINAL OBJECT in the database and its embedded objects to the current date.
+//     * This does NOT manipulate the entity given as the parameter to avoid the unintended saving of other fields.
+//     * @param ado It's ok if the ADO object only contains the id of the entity
+//     */
+//    public void markAsRead(ADO ado) {
+//        ADO originalAdo = queryForId(ado.getId());
+//        originalAdo.setLastOpenedDate(DateHelper.addSeconds(new Date(), 5));
+//        update(originalAdo);
+//
+//        Iterator<PropertyDescriptor> propertyIterator = AdoPropertyHelper.getEmbeddedAdoProperties(originalAdo.getClass());
+//        while (propertyIterator.hasNext()) {
+//            try {
+//                PropertyDescriptor property = propertyIterator.next();
+//                AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(originalAdo);
+//                if (embeddedAdo == null) {
+//                    throw new IllegalArgumentException("No embedded entity was created for " + property.getName());
+//                }
+//
+//                DatabaseHelper.getAdoDao(embeddedAdo.getClass()).markAsReadWithCast(embeddedAdo);
+//            } catch (InvocationTargetException e) {
+//                throw new RuntimeException("Error while trying to invoke read method to set last opened dates", e);
+//            } catch (IllegalAccessException e) {
+//                throw new RuntimeException("Error while trying to invoke read method to set last opened dates", e);
+//            }
+//        }
+//    }
+//
+//    public void markAsReadWithCast(AbstractDomainObject ado) {
+//        markAsRead((ADO) ado);
+//    }
 
     public boolean isAnyModified() {
 
@@ -1039,34 +1035,58 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
     /**
      * @see Dao#create(Object)
      */
-    public int create(ADO data) {
-        try {
-            return dao.create(data);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    public void create(ADO data) throws SQLException {
+        if (data == null)
+            return;
+//        try {
+        int resultRowCount = dao.create(data);
+        if (resultRowCount < 1)
+            throw new SQLException("No database entry was created for: " + data.toString());
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     /**
      * @see Dao#update(Object)
      */
-    protected int update(ADO data) {
-        try {
-            return dao.update(data);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+    protected void update(ADO data) throws SQLException {
+        if (data == null)
+            return;
+//        try {
+        int resultRowCount = dao.update(data);
+        if (resultRowCount < 1)
+            throw new SQLException("Database entry was not updated - likely it was changed in between: " + data.toString());
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+    }
+
+    public void updateWithCast(AbstractDomainObject ado) throws SQLException {
+        update((ADO) ado);
+    }
+
+    public void updateOrCreate(ADO data) throws SQLException {
+        if (data.getId() == null) {
+            create(data);
+        } else {
+            update(data);
         }
     }
 
     /**
      * @see Dao#delete(Object)
      */
-    public int delete(ADO data) {
-        try {
-            return dao.delete(data);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    public void delete(ADO data) throws SQLException {
+        if (data == null)
+            return;
+//        try {
+        int resultRowCount = dao.delete(data);
+        if (resultRowCount < 1)
+            throw new SQLException("Database entry was not deleted - likely it was changed in between: " + data.toString());
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     /**
@@ -1083,9 +1103,13 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
     /**
      * @see Dao#callBatchTasks(Callable)
      */
-    public <CT> CT callBatchTasks(Callable<CT> callable) {
+    public <CT> CT callBatchTasks(Callable<CT> callable) throws DaoException {
         try {
             return dao.callBatchTasks(callable);
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        } catch (DaoException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
