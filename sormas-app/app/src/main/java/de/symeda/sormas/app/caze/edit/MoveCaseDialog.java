@@ -58,7 +58,7 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
     @Override
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, final Callback.IAction callback) {
         try {
-            FragmentValidator.validate(getContext(), contentBinding);
+            FragmentValidator.validate(getContext(), contentBinding, this);
         } catch (ValidationException e) {
             NotificationHelper.showDialogNotification(this, ERROR, e.getMessage());
             return;

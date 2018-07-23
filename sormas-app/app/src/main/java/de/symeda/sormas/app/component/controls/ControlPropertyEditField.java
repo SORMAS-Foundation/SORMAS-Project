@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.component.controls;
 
+import android.app.Notification;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -10,10 +11,11 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
-import de.symeda.sormas.app.util.Callback;
 
 public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T> {
 
@@ -40,7 +42,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
     private String errorMessage;
     private String warningMessage;
     private boolean liveValidationDisabled;
-    private Callback validationCallback;
+    private Callback.IAction<NotificationContext> validationCallback;
 
     // Constructors
 
@@ -173,13 +175,21 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
     protected void showErrorNotification() {
         if (hasError && notificationContext != null && errorMessage != null) {
-            NotificationHelper.showNotification(notificationContext, NotificationType.ERROR, errorMessage);
+            if (notificationContext instanceof BaseTeboAlertDialog) {
+                NotificationHelper.showDialogNotification(notificationContext, NotificationType.ERROR, errorMessage);
+            } else {
+                NotificationHelper.showNotification(notificationContext, NotificationType.ERROR, errorMessage);
+            }
         }
     }
 
     protected void showWarningNotification() {
         if (hasWarning && notificationContext != null && warningMessage != null) {
-            NotificationHelper.showNotification(notificationContext, NotificationType.WARNING, warningMessage);
+            if (notificationContext instanceof BaseTeboAlertDialog) {
+                NotificationHelper.showDialogNotification(notificationContext, NotificationType.ERROR, errorMessage);
+            } else {
+                NotificationHelper.showNotification(notificationContext, NotificationType.ERROR, errorMessage);
+            }
         }
     }
 
@@ -205,7 +215,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
         }
     }
 
-    public void setErrorIfEmpty() {
+    public void setErrorIfEmpty(NotificationContext notificationContext) {
         if (!required) {
             return;
         }
@@ -213,7 +223,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
         if (getValue() == null
                 || (this instanceof ControlTextEditField
                 && ((String) getValue()).isEmpty())) {
-            enableErrorState((NotificationContext) getContext(), (R.string.validation_error_required));
+            enableErrorState(notificationContext, (R.string.validation_error_required));
         } else {
             disableErrorState();
         }
@@ -330,10 +340,10 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
             @Override
             public void onChange(ControlPropertyField field) {
                 if (!liveValidationDisabled) {
-                    ((ControlPropertyEditField) field).setErrorIfEmpty();
+                    ((ControlPropertyEditField) field).setErrorIfEmpty(notificationContext);
 
                     if (validationCallback != null) {
-                        validationCallback.call();
+                        validationCallback.call(notificationContext);
                     }
                 }
             }
@@ -391,11 +401,11 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
         this.liveValidationDisabled = liveValidationDisabled;
     }
 
-    public Callback getValidationCallback() {
+    public Callback.IAction<NotificationContext> getValidationCallback() {
         return validationCallback;
     }
 
-    public void setValidationCallback(Callback validationCallback) {
+    public void setValidationCallback(Callback.IAction<NotificationContext> validationCallback) {
         this.validationCallback = validationCallback;
     }
 

@@ -52,7 +52,7 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
         }
 
         try {
-            FragmentValidator.validate(getContext(), contentBinding);
+            FragmentValidator.validate(getContext(), contentBinding, this);
         } catch (ValidationException e) {
             NotificationHelper.showDialogNotification(this, ERROR, e.getMessage());
             return;
