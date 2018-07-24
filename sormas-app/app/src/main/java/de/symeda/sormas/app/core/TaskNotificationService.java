@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.core;
 
-import android.accounts.AuthenticatorException;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -17,7 +16,6 @@ import android.text.TextUtils;
 
 import org.joda.time.DateTime;
 
-import java.net.ConnectException;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +24,9 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.rest.ApiVersionException;
+import de.symeda.sormas.app.rest.ServerConnectionException;
+import de.symeda.sormas.app.rest.ServerCommunicationException;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
@@ -72,11 +73,7 @@ public class TaskNotificationService extends Service {
                 if (!RetroProvider.isConnected()) {
                     try {
                         RetroProvider.connect(getApplicationContext());
-                    } catch (AuthenticatorException e) {
-                        // do nothing
-                    } catch (RetroProvider.ApiVersionException e) {
-                        // do nothing
-                    } catch (ConnectException e) {
+                    } catch (ServerConnectionException | ServerCommunicationException | ApiVersionException e) {
                         // do nothing
                     }
                 }

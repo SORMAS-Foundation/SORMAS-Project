@@ -2,8 +2,6 @@ package de.symeda.sormas.app.backend.facility;
 
 import android.util.Log;
 
-import com.j256.ormlite.dao.Dao;
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
@@ -17,7 +15,8 @@ import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.common.ServerConnectionException;
+import de.symeda.sormas.app.rest.ServerConnectionException;
+import de.symeda.sormas.app.rest.ServerCommunicationException;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
@@ -65,13 +64,14 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
 
     /**
      * Pulls the data chunkwise per region
+     *
      * @param markAsRead
      * @throws DaoException
      * @throws SQLException
      * @throws IOException
      */
     @Override
-    public void pullEntities(final boolean markAsRead) throws DaoException, ServerConnectionException {
+    public void pullEntities(final boolean markAsRead) throws DaoException, ServerCommunicationException, ServerConnectionException {
         try {
             final FacilityDao facilityDao = DatabaseHelper.getFacilityDao();
 
@@ -101,11 +101,8 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
                 handlePullResponse(markAsRead, facilityDao, dtoCall.execute());
             }
 
-        } catch (RuntimeException e) {
-            Log.e(getClass().getName(), "Exception thrown when trying to pull entities");
-            throw new DaoException(e);
         } catch (IOException e) {
-            throw new ServerConnectionException(e);
+            throw new ServerCommunicationException(e);
         } finally {
             databaseWasEmpty = false;
         }
@@ -118,15 +115,9 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
      * Overriden for performance reasons. No merge needed when database was empty.
      */
     @Override
-    protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<Facility> dao, Response<List<FacilityDto>> response) throws DaoException {
+    protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<Facility> dao, Response<List<FacilityDto>> response) throws ServerCommunicationException, DaoException, ServerConnectionException {
         if (!response.isSuccessful()) {
-            String responseErrorBodyString;
-            try {
-                responseErrorBodyString = response.errorBody().string();
-            } catch (IOException e) {
-                responseErrorBodyString = "Exception accessing error body: " + e.getMessage();
-            }
-            Log.e(getClass().getName(), "Pulling changes from server did not work: " + responseErrorBodyString);
+            RetroProvider.throwException(response);
         }
 
         final FacilityDao facilityDao = (FacilityDao) dao;

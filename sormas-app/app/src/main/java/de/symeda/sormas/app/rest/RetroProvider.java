@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.rest;
 
-import android.accounts.AuthenticatorException;
 import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -23,7 +22,6 @@ import com.google.gson.JsonSerializer;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
-import java.net.ConnectException;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -81,7 +79,7 @@ public final class RetroProvider {
     private WeeklyReportEntryFacadeRetro weeklyReportEntryFacadeRetro;
     private OutbreakFacadeRetro outbreakFacadeRetro;
 
-    private RetroProvider(Context context, Interceptor... additionalInterceptors) throws ApiVersionException, ConnectException, AuthenticatorException {
+    private RetroProvider(Context context, Interceptor... additionalInterceptors) throws ServerConnectionException, ServerCommunicationException, ApiVersionException {
 
         this.context = context;
 
@@ -147,40 +145,21 @@ public final class RetroProvider {
             };
             compatibilityResponse = asyncTask.execute().get();
 
-        } catch (IllegalArgumentException e) {
-            throw new ConnectException(e.getMessage());
-        } catch (InterruptedException e) {
-            throw new ConnectException(e.getMessage());
-        } catch (ExecutionException e) {
-            throw new ConnectException(e.getMessage());
+        } catch (InterruptedException | ExecutionException e) {
+            throw new ServerCommunicationException(e);
         }
 
         if (compatibilityResponse.isSuccessful()) {
             // success - now check compatibility
             CompatibilityCheckResponse compatibilityCheckResponse = compatibilityResponse.body();
             if (compatibilityCheckResponse == CompatibilityCheckResponse.TOO_NEW) {
-                throw new ConnectException("Could not synchronize because the app version is newer than the server version.");
+                throw new ServerConnectionException(601);
             } else if (compatibilityCheckResponse == CompatibilityCheckResponse.TOO_OLD) {
                 // get the current server version, throw an exception including the app url that is then processed in the UI
                 matchAppAndApiVersions(infoFacadeRetro);
             }
         } else {
-            switch (compatibilityResponse.code()) {
-                case 401:
-                    throw new AuthenticatorException(context.getResources().getString(R.string.snackbar_http_401));
-                case 403:
-                    throw new AuthenticatorException(context.getResources().getString(R.string.snackbar_http_403));
-                case 404:
-                    throw new ConnectException(String.format(context.getResources().getString(R.string.snackbar_http_404), ConfigProvider.getServerRestUrl()));
-                default:
-                    String error;
-                    try {
-                        error = compatibilityResponse.errorBody().string();
-                    } catch (IOException e) {
-                        error = compatibilityResponse.raw().toString();
-                    }
-                    throw new ConnectException(error);
-            }
+            throwException(compatibilityResponse);
         }
     }
 
@@ -194,10 +173,10 @@ public final class RetroProvider {
         return instance != null && isConnectedToNetwork(instance.context);
     }
 
-    public static void connect(Context context) throws ApiVersionException, ConnectException, AuthenticatorException {
+    public static void connect(Context context) throws ApiVersionException, ServerConnectionException, ServerCommunicationException {
 
         if (!isConnectedToNetwork(context)) {
-            throw new ConnectException(context.getResources().getString(R.string.snackbar_no_connection));
+            throw new ServerConnectionException(600);
         }
 
         try {
@@ -221,7 +200,7 @@ public final class RetroProvider {
                 boolean versionCompatible = false;
 
                 @Override
-                protected void doInBackground(TaskResultHolder resultHolder) throws ConnectException, AuthenticatorException, RetroProvider.ApiVersionException {
+                protected void doInBackground(TaskResultHolder resultHolder) throws ServerConnectionException, ServerCommunicationException, ApiVersionException {
                     RetroProvider.connect(getApplicationReference().get());
                     versionCompatible = true;
                     if (matchExactVersion) {
@@ -231,9 +210,8 @@ public final class RetroProvider {
 
                 @Override
                 protected AsyncTaskResult handleException(Exception e) {
-                    if (e instanceof ConnectException
-                            || e instanceof AuthenticatorException
-                            || e instanceof RetroProvider.ApiVersionException)
+                    if (e instanceof ServerConnectionException
+                            || e instanceof ApiVersionException)
                         return new AsyncTaskResult<>(e); // expected exceptions
                     return super.handleException(e);
                 }
@@ -243,8 +221,8 @@ public final class RetroProvider {
                     if (taskResult.getResultStatus().isSuccess()) {
                         callback.accept(true);
                     } else {
-                        if (taskResult.getError() instanceof RetroProvider.ApiVersionException) {
-                            RetroProvider.ApiVersionException e = (RetroProvider.ApiVersionException) taskResult.getError();
+                        if (taskResult.getError() instanceof ApiVersionException) {
+                            ApiVersionException e = (ApiVersionException) taskResult.getError();
                             if (showUpgradePrompt
                                     && !DataHelper.isNullOrEmpty(e.getAppUrl())
                                     && activityReference.get() != null) {
@@ -262,9 +240,17 @@ public final class RetroProvider {
                                 }
                                 callback.accept(false);
                             }
+                        } else if (taskResult.getError() instanceof ServerConnectionException) {
+                            if (activityReference.get() != null) {
+                                ServerConnectionException exception = (ServerConnectionException)taskResult.getError();
+                                NotificationHelper.showNotification((NotificationContext) activityReference.get(), NotificationType.ERROR,
+                                        exception.getMessage(activityReference.get().getApplicationContext()));
+                            }
+                            callback.accept(false);
                         } else {
                             if (activityReference.get() != null) {
-                                NotificationHelper.showNotification((NotificationContext) activityReference.get(), NotificationType.ERROR, taskResult.getError().getMessage());
+                                NotificationHelper.showNotification((NotificationContext) activityReference.get(), NotificationType.ERROR,
+                                        activityReference.get().getResources().getString(R.string.server_connection_error));
                             }
                             callback.accept(false);
                         }
@@ -286,11 +272,11 @@ public final class RetroProvider {
         instance = null;
     }
 
-    public static void matchAppAndApiVersions() throws ConnectException, ApiVersionException {
+    public static void matchAppAndApiVersions() throws ServerCommunicationException, ServerConnectionException, ApiVersionException {
         matchAppAndApiVersions(null);
     }
 
-    private static void matchAppAndApiVersions(final InfoFacadeRetro localInfoFacadeRetro) throws ConnectException, ApiVersionException {
+    private static void matchAppAndApiVersions(final InfoFacadeRetro localInfoFacadeRetro) throws ServerCommunicationException, ServerConnectionException, ApiVersionException {
         // Retrieve the version
         Response<String> versionResponse;
         try {
@@ -308,12 +294,8 @@ public final class RetroProvider {
                 }
             };
             versionResponse = asyncTask.execute().get();
-        } catch (IllegalArgumentException e) {
-            throw new ConnectException(e.getMessage());
-        } catch (InterruptedException e) {
-            throw new ConnectException(e.getMessage());
-        } catch (ExecutionException e) {
-            throw new ConnectException(e.getMessage());
+        } catch (InterruptedException | ExecutionException e) {
+            throw new ServerCommunicationException(e);
         }
 
         if (versionResponse.isSuccessful()) {
@@ -339,20 +321,18 @@ public final class RetroProvider {
                     };
                     appUrlResponse = asyncTask.execute().get();
 
-                } catch (IllegalArgumentException e) {
-                    throw new ConnectException(e.getMessage());
-                } catch (InterruptedException e) {
-                    throw new ConnectException(e.getMessage());
-                } catch (ExecutionException e) {
-                    throw new ConnectException(e.getMessage());
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new ServerCommunicationException(e);
                 }
 
                 if (appUrlResponse.isSuccessful()) {
                     throw new ApiVersionException("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'", appUrlResponse.body(), serverApiVersion);
                 } else {
-                    throw new ApiVersionException("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'");
+                    throwException(appUrlResponse);
                 }
             }
+        } else {
+            throwException(versionResponse);
         }
     }
 
@@ -547,38 +527,19 @@ public final class RetroProvider {
         return instance.outbreakFacadeRetro;
     }
 
-    public static class ApiVersionException extends Exception {
-        private String appUrl;
-        private String version;
+    public static void throwException(Response<?> response) throws ServerConnectionException, ServerCommunicationException {
 
-        public ApiVersionException() {
-            super();
-        }
+        if (ServerConnectionException.RelatedErrorCodes.contains(response.code())) {
+            throw new ServerConnectionException(response.code());
+        } else {
+            String responseErrorBodyString;
+            try {
+                responseErrorBodyString = response.errorBody().string();
+            } catch (IOException e) {
+                throw new RuntimeException("Exception accessing error body", e);
+            }
 
-        public ApiVersionException(String message) {
-            super(message);
-        }
-
-        public ApiVersionException(String message, String appUrl, String version) {
-            super(message);
-            this.appUrl = appUrl;
-            this.version = version;
-        }
-
-        public ApiVersionException(String message, Throwable cause) {
-            super(message, cause);
-        }
-
-        public ApiVersionException(Throwable cause) {
-            super(cause);
-        }
-
-        public String getAppUrl() {
-            return appUrl;
-        }
-
-        public String getVersion() {
-            return version;
+            throw new ServerCommunicationException(responseErrorBodyString);
         }
     }
 }

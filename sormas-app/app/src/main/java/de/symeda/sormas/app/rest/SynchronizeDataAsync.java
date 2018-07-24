@@ -15,8 +15,6 @@ import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.common.ServerConnectionException;
-import de.symeda.sormas.app.backend.common.SynchronizationException;
 import de.symeda.sormas.app.backend.contact.ContactDtoHelper;
 import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.event.EventParticipantDtoHelper;
@@ -89,7 +87,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
         } catch (ServerConnectionException e) {
             syncFailed = true;
-            syncFailedMessage = DatabaseHelper.getContext().getString(R.string.server_connection_error);
+            syncFailedMessage = e.getMessage(context);
             RetroProvider.disconnect();
 
         } catch (Exception e) {
@@ -146,7 +144,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                 DatabaseHelper.getWeeklyReportEntryDao().isAnyModified();
     }
 
-    private void synchronizeChangedData() throws DaoException, ServerConnectionException, SynchronizationException {
+    private void synchronizeChangedData() throws DaoException, ServerConnectionException, ServerCommunicationException {
 
         PersonDtoHelper personDtoHelper = new PersonDtoHelper();
         EventDtoHelper eventDtoHelper = new EventDtoHelper();
@@ -200,7 +198,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             weeklyReportEntryDtoHelper.pullEntities(true);
     }
 
-    private void repullData() throws DaoException, ServerConnectionException, SynchronizationException {
+    private void repullData() throws DaoException, ServerConnectionException, ServerCommunicationException {
 
         PersonDtoHelper personDtoHelper = new PersonDtoHelper();
         EventDtoHelper eventDtoHelper = new EventDtoHelper();
@@ -231,7 +229,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         weeklyReportEntryDtoHelper.repullEntities();
     }
 
-    private void pullInfrastructure() throws DaoException, ServerConnectionException, SynchronizationException {
+    private void pullInfrastructure() throws DaoException, ServerConnectionException, ServerCommunicationException {
 
         new RegionDtoHelper().pullEntities(false);
         new DistrictDtoHelper().pullEntities(false);
@@ -242,7 +240,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
     }
 
-    private void pullMissingAndDeleteInvalidData() throws ServerConnectionException, DaoException {
+    private void pullMissingAndDeleteInvalidData() throws ServerConnectionException, ServerCommunicationException, DaoException {
         // ATTENTION: Since we are working with UUID lists we have no type safety. Look for typos!
 
         Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullMissingAndDeleteInvalidData");
@@ -300,7 +298,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new WeeklyReportEntryDtoHelper().pullMissing(weeklyReportEntryUuids);
     }
 
-    private void pullMissingAndDeleteInvalidInfrastructure() throws ServerConnectionException, DaoException {
+    private void pullMissingAndDeleteInvalidInfrastructure() throws ServerConnectionException, ServerCommunicationException, DaoException {
         // ATTENTION: Since we are working with UUID lists we have no type safety. Look for typos!
 
         Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullMissingAndDeleteInvalidInfrastructure");
@@ -334,15 +332,15 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new UserDtoHelper().pullMissing(userUuids);
     }
 
-    private List<String> executeUuidCall(Call<List<String>> call) throws ServerConnectionException {
+    private List<String> executeUuidCall(Call<List<String>> call) throws ServerConnectionException, ServerCommunicationException {
         Response<List<String>> response;
         try {
             response = call.execute();
         } catch (IOException e) {
-            throw new ServerConnectionException(e);
+            throw new ServerCommunicationException(e);
         }
         if (!response.isSuccessful()) {
-            throw ServerConnectionException.fromResponse(response);
+            RetroProvider.throwException(response);
         }
         return response.body();
     }

@@ -8,7 +8,6 @@ import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
-import de.symeda.sormas.app.backend.common.ServerConnectionException;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 
@@ -39,8 +38,6 @@ public abstract class SavingAsyncTask extends DefaultAsyncTask {
                 if (taskResult.getError() instanceof ValidationException) {
                     NotificationHelper.showNotification(notificationView, NotificationType.ERROR, taskResult.getResultStatus().getMessage());
                 } else if (taskResult.getError() instanceof DaoException) {
-                    NotificationHelper.showNotification(notificationView, NotificationType.ERROR, taskResult.getResultStatus().getMessage());
-                } else if (taskResult.getError() instanceof ServerConnectionException) {
                     NotificationHelper.showNotification(notificationView, NotificationType.ERROR, taskResult.getResultStatus().getMessage());
                 } else {
                     NotificationHelper.showNotification(notificationView, NotificationType.ERROR,
