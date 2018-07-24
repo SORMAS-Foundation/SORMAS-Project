@@ -16,10 +16,15 @@ import android.widget.TextView;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.I18nConstants;
@@ -27,6 +32,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.util.ResourceUtils;
 
 @BindingMethods({@BindingMethod(type = ControlTextReadField.class, attribute = "valueFormat", method = "setValueFormat")})
@@ -266,6 +272,31 @@ public class ControlTextReadField extends ControlPropertyField<String> {
     }
 
     /* Value types that need a different variable and method name */
+
+    @BindingAdapter(value = {"lesionsLocations", "valueFormat", "defaultValue"}, requireAll = false)
+    public static void setLesionsLocations(ControlTextReadField textField, Symptoms symptoms, String valueFormat, String defaultValue) {
+        StringBuilder lesionsLocationsString = new StringBuilder();
+        for (String lesionsLocationId : SymptomsHelper.getLesionsLocationsPropertyIds()) {
+            try {
+                Method getter = Symptoms.class.getDeclaredMethod("get" + DataHelper.capitalize(lesionsLocationId));
+                Boolean lesionsLocation = (Boolean) getter.invoke(symptoms);
+                if (lesionsLocation != null) {
+                    if (lesionsLocation) {
+                        lesionsLocationsString.append(I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, lesionsLocationId))
+                                .append(", ");
+                    }
+                }
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        if (lesionsLocationsString.length() > 0) {
+            lesionsLocationsString.delete(lesionsLocationsString.lastIndexOf(", "), lesionsLocationsString.length());
+        }
+
+        setValue(textField, lesionsLocationsString.toString(), valueFormat, defaultValue);
+    }
 
     @BindingAdapter(value = {"value", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setValue(ControlTextReadField textField, Boolean booleanValue, String valueFormat, String defaultValue) {

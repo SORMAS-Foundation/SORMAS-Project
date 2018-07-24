@@ -11,11 +11,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -28,11 +31,14 @@ import de.symeda.sormas.app.databinding.FragmentSymptomsReadLayoutBinding;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 
+import static android.view.View.GONE;
+
 public class SymptomsReadFragment extends BaseReadFragment<FragmentSymptomsReadLayoutBinding, Symptoms, Case> {
 
     public static final String TAG = SymptomsReadFragment.class.getSimpleName();
 
     private Symptoms record;
+    private Disease disease;
 
     private List<String> yesResult;
     private List<String> unknownResult;
@@ -42,8 +48,10 @@ public class SymptomsReadFragment extends BaseReadFragment<FragmentSymptomsReadL
         AbstractDomainObject ado = getActivityRootData();
         if (ado instanceof Case) {
             record = ((Case) ado).getSymptoms();
+            disease = ((Case) ado).getDisease();
         } else if (ado instanceof Visit) {
             record = ((Visit) ado).getSymptoms();
+            disease = ((Visit) ado).getDisease();
         } else {
             throw new UnsupportedOperationException("ActivityRootData of class " + ado.getClass().getSimpleName()
                     + " does not support PersonReadFragment");
@@ -57,6 +65,15 @@ public class SymptomsReadFragment extends BaseReadFragment<FragmentSymptomsReadL
         contentBinding.setData(record);
         contentBinding.symptomsSymptomsOccurred.setTags(yesResult);
         contentBinding.symptomsSymptomsUnknownOccurred.setTags(unknownResult);
+
+        if (!Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, SymptomsDto.LESIONS, disease)) {
+            contentBinding.symptomsLesionsLayout.setVisibility(GONE);
+        }
+    }
+
+    @Override
+    public void onAfterLayoutBinding(FragmentSymptomsReadLayoutBinding contentBinding) {
+        setVisibilityByDisease(SymptomsDto.class, disease, contentBinding.mainContent);
     }
 
     @Override
@@ -84,11 +101,15 @@ public class SymptomsReadFragment extends BaseReadFragment<FragmentSymptomsReadL
     }
 
     private void extractSymptoms() {
-
         yesResult = new ArrayList<>();
         unknownResult = new ArrayList<>();
 
         for (String symptomPropertyId : SymptomsHelper.getSymptomPropertyIds()) {
+            // Skip fields that don't belong in this list
+            if (SymptomsHelper.isSpecialSymptom(symptomPropertyId)) {
+                continue;
+            }
+
             try {
                 Method getter = Symptoms.class.getDeclaredMethod("get" + DataHelper.capitalize(symptomPropertyId));
                 SymptomState symptomState = (SymptomState) getter.invoke(record);
@@ -101,7 +122,7 @@ public class SymptomsReadFragment extends BaseReadFragment<FragmentSymptomsReadL
                             // ignore this
                             break;
                         case UNKNOWN:
-                            yesResult.add(I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, symptomPropertyId));
+                            unknownResult.add(I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, symptomPropertyId));
                             break;
                         default:
                             throw new IllegalArgumentException(symptomState.toString());

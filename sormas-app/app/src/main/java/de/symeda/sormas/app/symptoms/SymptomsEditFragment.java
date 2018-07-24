@@ -103,7 +103,6 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 
     @Override
     public void onAfterLayoutBinding(FragmentSymptomsEditLayoutBinding contentBinding) {
-
         setVisibilityByDisease(SymptomsDto.class, disease, contentBinding.mainContent);
 
         if (contentBinding.symptomsBulgingFontanelle.getVisibility() == VISIBLE

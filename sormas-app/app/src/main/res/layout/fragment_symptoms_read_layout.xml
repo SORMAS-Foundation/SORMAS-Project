@@ -52,6 +52,8 @@
                 app:value="@{data.patientIllLocation}"
                 style="@style/ControlSingleColumnStyle" />
 
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
+
             <de.symeda.sormas.app.component.controls.ControlTagViewField
                 android:id="@+id/symptoms_symptomsOccurred"
                 style="@style/ControlSingleColumnStyle" />
@@ -60,20 +62,117 @@
                 android:id="@+id/symptoms_symptomsUnknownOccurred"
                 style="@style/ControlSingleColumnStyle" />
 
-            <TextView
-                android:id="@+id/lesions_locations_label"
-                android:text="@string/label_lesions_locations"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/ControlLabelStyle" />
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
 
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/symptoms_lesionsFace"
-                style="@style/ControlSingleColumnStyle"
-                app:goneIfEmpty="@{data.lesions}"
-                app:slim="true"
-                app:value="@{data.lesionsFace}"
-                app:visibilityChild="@{lesionsLocationsLabel}"/>
+            <LinearLayout
+                android:id="@+id/symptoms_lesionsLayout"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/symptoms_lesionsThatItch"
+                        app:value="@{data.lesionsThatItch}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/symptoms_lesionsSameState"
+                        app:value="@{data.lesionsSameState}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/symptoms_lesionsSameSize"
+                        app:value="@{data.lesionsSameSize}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/symptoms_lesionsDeepProfound"
+                        app:value="@{data.lesionsDeepProfound}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/symptoms_lesionsLocation"
+                    style="@style/ControlSingleColumnStyle"
+                    app:lesionsLocations="@{data}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/symptoms_lesionsOnsetDate"
+                    app:value="@{data.lesionsOnsetDate}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/symptoms_lesionsResembleImg1"
+                    app:value="@{data.lesionsResembleImg1}"
+                    app:slim="true"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <ImageView
+                    android:id="@+id/lesionsImg1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    android:src="@drawable/monkeypox_lesions_1"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/symptoms_lesionsResembleImg2"
+                    app:value="@{data.lesionsResembleImg2}"
+                    app:slim="true"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <ImageView
+                    android:id="@+id/lesionsImg2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    android:src="@drawable/monkeypox_lesions_2"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/symptoms_lesionsResembleImg3"
+                    app:value="@{data.lesionsResembleImg3}"
+                    app:slim="true"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <ImageView
+                    android:id="@+id/lesionsImg3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    android:src="@drawable/monkeypox_lesions_3"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/symptoms_lesionsResembleImg4"
+                    app:value="@{data.lesionsResembleImg4}"
+                    app:slim="true"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <ImageView
+                    android:id="@+id/lesionsImg4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    android:src="@drawable/monkeypox_lesions_4"/>
+
+                <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+            </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/symptoms_otherHemorrhagicSymptoms"
@@ -91,10 +190,9 @@
                 app:value="@{data.otherNonHemorrhagicSymptoms}"
                 app:valueFormat="@{@string/two_strings_with_hyphen_format}"/>
 
-            <ImageView style="@style/FullHorizontalDividerStyle"/>
-
         </LinearLayout>
 
     </ScrollView>
+
 </layout>
 
