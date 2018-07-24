@@ -1,4 +1,4 @@
-package de.symeda.sormas.app.validation;
+package de.symeda.sormas.app.component.validation;
 
 import android.content.Context;
 import android.content.res.Resources;

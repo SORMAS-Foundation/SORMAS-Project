@@ -120,9 +120,9 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         String password = binding.password.getValue();
 
         if (userName.isEmpty()) {
-            binding.username.enableErrorState(this, R.string.notification_empty_username);
+            binding.username.enableErrorState(R.string.notification_empty_username);
         } else if (password.isEmpty()) {
-            binding.password.enableErrorState(this, R.string.notification_empty_password);
+            binding.password.enableErrorState(R.string.notification_empty_password);
         } else {
             ConfigProvider.setUsernameAndPassword(userName, password);
             processLogin(true);

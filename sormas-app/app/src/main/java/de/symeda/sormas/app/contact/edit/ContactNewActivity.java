@@ -22,7 +22,6 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
@@ -30,7 +29,7 @@ import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.util.Consumer;
-import de.symeda.sormas.app.validation.FragmentValidator;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -122,7 +121,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
         try {
             FragmentValidator.validate(getContext(), fragment.getContentBinding());
         } catch (ValidationException e) {
-            NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
+            NotificationHelper.showNotification(this, ERROR, e.getMessage());
             return;
         }
 

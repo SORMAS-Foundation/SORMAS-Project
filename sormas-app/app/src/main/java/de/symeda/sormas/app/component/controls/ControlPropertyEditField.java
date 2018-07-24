@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.component.controls;
 
-import android.app.Notification;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -12,10 +11,10 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
-import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
+import de.symeda.sormas.app.util.Callback;
 
 public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T> {
 
@@ -42,7 +41,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
     private String errorMessage;
     private String warningMessage;
     private boolean liveValidationDisabled;
-    private Callback.IAction<NotificationContext> validationCallback;
+    private Callback validationCallback;
 
     // Constructors
 
@@ -86,12 +85,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
         }
     }
 
-    public void enableErrorState(NotificationContext notificationContext, String errorMessage) {
-        if (notificationContext == null) {
-            notificationContext = (NotificationContext) getContext();
-        }
-
-        this.notificationContext = notificationContext;
+    public void enableErrorState(String errorMessage) {
         this.hasError = true;
         this.errorMessage = errorMessage;
 
@@ -99,14 +93,14 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
     }
 
-    public void enableErrorState(NotificationContext notificationContext, int messageResourceId) {
+    public void enableErrorState(int messageResourceId) {
         String message = "";
 
         if (messageResourceId != -1) {
             message = getResources().getString(messageResourceId);
         }
 
-        enableErrorState(notificationContext, message);
+        enableErrorState(message);
     }
 
     public void disableErrorState() {
@@ -121,14 +115,10 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
         changeErrorState();
     }
 
-    public void enableWarningState(NotificationContext notificationContext, int messageResourceId) {
+    public void enableWarningState(int messageResourceId) {
         // Error has priority over warning
         if (hasError) {
             return;
-        }
-
-        if (notificationContext == null) {
-            notificationContext = (NotificationContext) getContext();
         }
 
         String message = "";
@@ -137,7 +127,6 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
             message = getResources().getString(messageResourceId);
         }
 
-        this.notificationContext = notificationContext;
         this.hasWarning = true;
         this.warningMessage = message;
 
@@ -215,7 +204,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
         }
     }
 
-    public void setErrorIfEmpty(NotificationContext notificationContext) {
+    public void setErrorIfEmpty() {
         if (!required) {
             return;
         }
@@ -223,7 +212,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
         if (getValue() == null
                 || (this instanceof ControlTextEditField
                 && ((String) getValue()).isEmpty())) {
-            enableErrorState(notificationContext, (R.string.validation_error_required));
+            enableErrorState(R.string.validation_error_required);
         } else {
             disableErrorState();
         }
@@ -340,10 +329,10 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
             @Override
             public void onChange(ControlPropertyField field) {
                 if (!liveValidationDisabled) {
-                    ((ControlPropertyEditField) field).setErrorIfEmpty(notificationContext);
+                    ((ControlPropertyEditField) field).setErrorIfEmpty();
 
                     if (validationCallback != null) {
-                        validationCallback.call(notificationContext);
+                        validationCallback.call();
                     }
                 }
             }
@@ -401,12 +390,16 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
         this.liveValidationDisabled = liveValidationDisabled;
     }
 
-    public Callback.IAction<NotificationContext> getValidationCallback() {
+    public Callback getValidationCallback() {
         return validationCallback;
     }
 
-    public void setValidationCallback(Callback.IAction<NotificationContext> validationCallback) {
+    public void setValidationCallback(Callback validationCallback) {
         this.validationCallback = validationCallback;
+    }
+
+    public void setNotificationContext(NotificationContext notificationContext) {
+        this.notificationContext = notificationContext;
     }
 
 }

@@ -138,12 +138,12 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
                 public void onChange(ControlPropertyField field) {
                     String value = (String) field.getValue();
                     if (value.trim().isEmpty()) {
-                        getContentBinding().caseDataEpidNumber.enableWarningState((NotificationContext) getActivity(),
+                        getContentBinding().caseDataEpidNumber.enableWarningState(
                                 R.string.validation_soft_case_epid_number_empty);
                     } else if (value.matches(DataHelper.getEpidNumberRegexp())) {
                         getContentBinding().caseDataEpidNumber.disableWarningState();
                     } else {
-                        getContentBinding().caseDataEpidNumber.enableWarningState((NotificationContext) getActivity(),
+                        getContentBinding().caseDataEpidNumber.enableWarningState(
                                 R.string.validation_soft_case_epid_number);
                     }
                 }
@@ -157,7 +157,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
                 public void onChange(ControlPropertyField field) {
                     CaseClassification caseClassification = (CaseClassification) field.getValue();
                     if (caseClassification == CaseClassification.NOT_CLASSIFIED) {
-                        getContentBinding().caseDataCaseClassification.enableWarningState((NotificationContext) getActivity(),
+                        getContentBinding().caseDataCaseClassification.enableWarningState(
                                 R.string.validation_soft_case_classification);
                     } else {
                         getContentBinding().caseDataCaseClassification.disableWarningState();

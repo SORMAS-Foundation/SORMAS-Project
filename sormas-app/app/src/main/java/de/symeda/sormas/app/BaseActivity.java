@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
@@ -41,6 +42,7 @@ import de.symeda.sormas.app.component.menu.PageMenuAdapter;
 import de.symeda.sormas.app.component.menu.PageMenuControl;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.menu.PageMenuParser;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
@@ -59,6 +61,8 @@ import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.NavigationHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.UserHelper;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public abstract class BaseActivity extends AppCompatActivity implements NotificationContext {
 
@@ -398,6 +402,16 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     }
 
     protected boolean setActivePage(PageMenuItem menuItem) {
+        // Validate edit activities and don't allow page change when there are errors
+        if (this instanceof BaseEditActivity) {
+            try {
+                FragmentValidator.validate(getContext(), ((BaseEditActivity) this).getActiveFragment().getContentBinding());
+            } catch (ValidationException e) {
+                NotificationHelper.showNotification(this, ERROR, e.getMessage());
+                return false;
+            }
+        }
+
         activePageItem = menuItem;
         activePageKey = activePageItem.getKey();
         return openPage(activePageItem);

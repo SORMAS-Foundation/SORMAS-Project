@@ -186,7 +186,7 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
     private void verifyPrevHospitalizationStatus() {
         YesNoUnknown hospitalizedPreviously = record.getHospitalizedPreviously();
         if (hospitalizedPreviously == YesNoUnknown.YES && getPreviousHospitalizations().size() <= 0) {
-            getContentBinding().caseHospitalizationHospitalizedPreviously.enableWarningState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().caseHospitalizationHospitalizedPreviously.enableWarningState(R.string.validation_soft_add_list_entry);
         } else {
             getContentBinding().caseHospitalizationHospitalizedPreviously.disableWarningState();
         }

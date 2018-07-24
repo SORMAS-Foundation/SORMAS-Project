@@ -1,24 +1,24 @@
-package de.symeda.sormas.app.validation;
+package de.symeda.sormas.app.caze.edit;
 
 import android.content.Context;
 import android.content.res.Resources;
 
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.databinding.DialogCaseEpidBurialEditLayoutBinding;
 import de.symeda.sormas.app.databinding.DialogCaseEpidTravelEditLayoutBinding;
+import de.symeda.sormas.app.util.Callback;
 
 public final class CaseValidator {
 
     public static void initializeEpiDataBurialValidation(Context context, final DialogCaseEpidBurialEditLayoutBinding contentBinding) {
         final Resources resources = context.getResources();
 
-        Callback.IAction<NotificationContext> burialDateFromCallback = new Callback.IAction<NotificationContext>() {
-            public void call(NotificationContext notificationContext) {
+        Callback burialDateFromCallback = new Callback() {
+            public void call() {
                 if (contentBinding.epiDataBurialBurialDateTo.getValue() != null) {
                     if (contentBinding.epiDataBurialBurialDateFrom.getValue().after(contentBinding.epiDataBurialBurialDateTo.getValue())) {
-                        contentBinding.epiDataBurialBurialDateFrom.enableErrorState(notificationContext,
+                        contentBinding.epiDataBurialBurialDateFrom.enableErrorState(
                                 String.format(resources.getString(R.string.validation_date_before),
                                         contentBinding.epiDataBurialBurialDateFrom.getCaption(),
                                         contentBinding.epiDataBurialBurialDateTo.getCaption()));
@@ -31,11 +31,11 @@ public final class CaseValidator {
             }
         };
 
-        Callback.IAction<NotificationContext> burialDateToCallback = new Callback.IAction<NotificationContext>() {
-            public void call(NotificationContext notificationContext) {
+        Callback burialDateToCallback = new Callback() {
+            public void call() {
                 if (contentBinding.epiDataBurialBurialDateFrom.getValue() != null) {
                     if (contentBinding.epiDataBurialBurialDateTo.getValue().before(contentBinding.epiDataBurialBurialDateFrom.getValue())) {
-                        contentBinding.epiDataBurialBurialDateTo.enableErrorState(notificationContext,
+                        contentBinding.epiDataBurialBurialDateTo.enableErrorState(
                                 String.format(resources.getString(R.string.validation_date_after),
                                         contentBinding.epiDataBurialBurialDateTo.getCaption(),
                                         contentBinding.epiDataBurialBurialDateFrom.getCaption()));
@@ -55,12 +55,12 @@ public final class CaseValidator {
     public static void initializeEpiDataTravelValidation(Context context, final DialogCaseEpidTravelEditLayoutBinding contentBinding) {
         final Resources resources = context.getResources();
 
-        Callback.IAction<NotificationContext> travelDateFromCallback = new Callback.IAction<NotificationContext>() {
+        Callback travelDateFromCallback = new Callback() {
             @Override
-            public void call(NotificationContext notificationContext) {
+            public void call() {
                 if (contentBinding.epiDataTravelTravelDateTo.getValue() != null) {
                     if (contentBinding.epiDataTravelTravelDateFrom.getValue().after(contentBinding.epiDataTravelTravelDateTo.getValue())) {
-                        contentBinding.epiDataTravelTravelDateFrom.enableErrorState(notificationContext,
+                        contentBinding.epiDataTravelTravelDateFrom.enableErrorState(
                                 String.format(resources.getString(R.string.validation_date_before),
                                         contentBinding.epiDataTravelTravelDateFrom.getCaption(),
                                         contentBinding.epiDataTravelTravelDateTo.getCaption()));
@@ -73,12 +73,12 @@ public final class CaseValidator {
             }
         };
 
-        Callback.IAction<NotificationContext> burialDateToCallback = new Callback.IAction<NotificationContext>() {
+        Callback burialDateToCallback = new Callback() {
             @Override
-            public void call(NotificationContext notificationContext) {
+            public void call() {
                 if (contentBinding.epiDataTravelTravelDateFrom.getValue() != null) {
                     if (contentBinding.epiDataTravelTravelDateTo.getValue().before(contentBinding.epiDataTravelTravelDateFrom.getValue())) {
-                        contentBinding.epiDataTravelTravelDateTo.enableErrorState(notificationContext,
+                        contentBinding.epiDataTravelTravelDateTo.enableErrorState(
                                 String.format(resources.getString(R.string.validation_date_after),
                                         contentBinding.epiDataTravelTravelDateTo.getCaption(),
                                         contentBinding.epiDataTravelTravelDateFrom.getCaption()));

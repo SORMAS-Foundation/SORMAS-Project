@@ -350,8 +350,8 @@ public class PageMenuControl extends LinearLayout {
             result = pageMenuClickListener.onPageMenuClick(parent, view, menuItem, position, id); //IMPORTANT
             if (result) {
                 markActiveMenuItem(menuItem);
-                hide();
             }
+            hide();
         }
         return result;
     }

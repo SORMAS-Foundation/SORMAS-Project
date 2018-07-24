@@ -14,14 +14,13 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.event.EventSection;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
-import de.symeda.sormas.app.validation.FragmentValidator;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -84,7 +83,7 @@ public class EventNewActivity extends BaseEditActivity<Event> {
         try {
             FragmentValidator.validate(getContext(), fragment.getContentBinding());
         } catch (ValidationException e) {
-            NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
+            NotificationHelper.showNotification(this, ERROR, e.getMessage());
             return;
         }
 

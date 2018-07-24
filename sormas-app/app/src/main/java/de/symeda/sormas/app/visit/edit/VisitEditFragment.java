@@ -3,8 +3,6 @@ package de.symeda.sormas.app.visit.edit;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.View;
-import android.view.ViewGroup;
 
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -14,7 +12,6 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.databinding.FragmentVisitEditLayoutBinding;
 import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
-import de.symeda.sormas.app.validation.VisitValidator;
 
 public class VisitEditFragment extends BaseEditFragment<FragmentVisitEditLayoutBinding, Visit, Visit> {
 

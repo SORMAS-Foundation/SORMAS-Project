@@ -18,14 +18,13 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
-import de.symeda.sormas.app.validation.FragmentValidator;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -111,7 +110,7 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
         try {
             FragmentValidator.validate(getContext(), fragment.getContentBinding());
         } catch (ValidationException e) {
-            NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
+            NotificationHelper.showNotification(this, ERROR, e.getMessage());
             return;
         }
 

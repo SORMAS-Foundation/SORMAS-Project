@@ -32,7 +32,6 @@ import de.symeda.sormas.app.databinding.FragmentSymptomsEditLayoutBinding;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.validation.SymptomsValidator;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;

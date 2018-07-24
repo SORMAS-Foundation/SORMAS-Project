@@ -20,8 +20,7 @@ import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogCaseEpidBurialEditLayoutBinding;
-import de.symeda.sormas.app.validation.CaseValidator;
-import de.symeda.sormas.app.validation.FragmentValidator;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -52,7 +51,7 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
         }
 
         try {
-            FragmentValidator.validate(getContext(), contentBinding, this);
+            FragmentValidator.validate(getContext(), contentBinding);
         } catch (ValidationException e) {
             NotificationHelper.showDialogNotification(this, ERROR, e.getMessage());
             return;

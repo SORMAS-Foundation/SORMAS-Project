@@ -29,9 +29,7 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
-import de.symeda.sormas.app.validation.ValidationErrorInfo;
 
-import static android.view.View.VISIBLE;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
@@ -136,11 +134,13 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
                 } else {
                     contentViewStubRoot.getLayoutParams().height = WRAP_CONTENT;
                 }
+
+                ViewGroup root = (ViewGroup) getContentBinding().getRoot();
+                setNotificationContextForPropertyFields(root);
             }
         });
 
         vsChildFragmentFrame.setLayoutResource(getEditLayout());
-
 
         jobTask = new DefaultAsyncTask(getContext()) {
             @Override
@@ -307,6 +307,7 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
 
         fragment.setArguments(bundle);
         fragment.setActivityRootData(activityRootData);
+
         return fragment;
     }
 
@@ -379,6 +380,17 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
                 ((ControlPropertyEditField) child).setLiveValidationDisabled(disableLiveValidation);
             } else if (child instanceof ViewGroup) {
                 disableLiveValidationForAllChildren((ViewGroup) child, disableLiveValidation);
+            }
+        }
+    }
+
+    public void setNotificationContextForPropertyFields(ViewGroup parent) {
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            View child = parent.getChildAt(i);
+            if (child instanceof ControlPropertyEditField) {
+                ((ControlPropertyEditField) child).setNotificationContext(notificationCommunicator);
+            } else if (child instanceof ViewGroup) {
+                setNotificationContextForPropertyFields((ViewGroup) child);
             }
         }
     }

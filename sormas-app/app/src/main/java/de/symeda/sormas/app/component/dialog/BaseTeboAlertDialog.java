@@ -368,6 +368,10 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
                 bindConfig(context, contentViewStubBinding, layoutName);
 //                bindNotificationCallbacks(context, contentViewStubBinding, layoutName);
                 setBindingVariable(context, contentViewStubBinding, layoutName);
+
+                ViewGroup root = (ViewGroup) contentViewStubBinding.getRoot();
+                setNotificationContextForPropertyFields(root);
+
             }
         });
 
@@ -863,6 +867,17 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
                 ((ControlPropertyEditField) child).setLiveValidationDisabled(disableLiveValidation);
             } else if (child instanceof ViewGroup) {
                 disableLiveValidationForAllChildren((ViewGroup) child, disableLiveValidation);
+            }
+        }
+    }
+
+    private void setNotificationContextForPropertyFields(ViewGroup parent) {
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            View child = parent.getChildAt(i);
+            if (child instanceof ControlPropertyEditField) {
+                ((ControlPropertyEditField) child).setNotificationContext(this);
+            } else if (child instanceof ViewGroup) {
+                setNotificationContextForPropertyFields((ViewGroup) child);
             }
         }
     }

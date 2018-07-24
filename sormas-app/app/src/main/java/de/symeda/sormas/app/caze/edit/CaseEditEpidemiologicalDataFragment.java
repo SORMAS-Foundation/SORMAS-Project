@@ -360,7 +360,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     private void verifyGatheringStatus() {
         YesNoUnknown hospitalizedPreviously = record.getGatheringAttended();
         if (hospitalizedPreviously == YesNoUnknown.YES && getGatherings().size() <= 0) {
-            getContentBinding().epiDataGatheringAttended.enableWarningState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().epiDataGatheringAttended.enableWarningState(R.string.validation_soft_add_list_entry);
         } else {
             getContentBinding().epiDataGatheringAttended.disableWarningState();
         }
@@ -408,7 +408,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     private void verifyBurialStatus() {
         YesNoUnknown hospitalizedPreviously = record.getBurialAttended();
         if (hospitalizedPreviously == YesNoUnknown.YES && getBurials().size() <= 0) {
-            getContentBinding().epiDataBurialAttended.enableWarningState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().epiDataBurialAttended.enableWarningState(R.string.validation_soft_add_list_entry);
         } else {
             getContentBinding().epiDataBurialAttended.disableWarningState();
         }
@@ -465,7 +465,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     private void verifyTravelStatus() {
         YesNoUnknown hospitalizedPreviously = record.getTraveled();
         if (hospitalizedPreviously == YesNoUnknown.YES && getTravels().size() <= 0) {
-            getContentBinding().epiDataTraveled.enableWarningState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().epiDataTraveled.enableWarningState(R.string.validation_soft_add_list_entry);
         } else {
             getContentBinding().epiDataTraveled.disableWarningState();
         }
