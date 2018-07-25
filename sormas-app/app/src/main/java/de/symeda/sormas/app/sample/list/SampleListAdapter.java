@@ -27,9 +27,6 @@ public class SampleListAdapter extends DataBoundAdapter<RowSampleListItemLayoutB
     private List<Sample> data;
     private OnListItemClickListener mOnListItemClickListener;
 
-    private LayerDrawable backgroundRowItem;
-    private Drawable unreadListItemIndicator;
-
     public SampleListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Sample> data) {
         super(rowLayout);
         this.mOnListItemClickListener = onListItemClickListener;
@@ -59,7 +56,8 @@ public class SampleListAdapter extends DataBoundAdapter<RowSampleListItemLayoutB
             holder.binding.imgSyncIcon.setVisibility(View.GONE);
         }
 
-        updateUnreadIndicator(holder, record);
+        // TODO #704
+//        updateUnreadIndicator(holder, record);
     }
 
     @Override
@@ -67,18 +65,18 @@ public class SampleListAdapter extends DataBoundAdapter<RowSampleListItemLayoutB
         return data.size();
     }
 
-    public void updateUnreadIndicator(DataBoundViewHolder<RowSampleListItemLayoutBinding> holder, Sample item) {
-        backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
-        unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
-
-        if (item != null) {
-            if (item.isUnreadOrChildUnread()) {
-                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
-            } else {
-                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
-            }
-        }
-    }
+//    public void updateUnreadIndicator(DataBoundViewHolder<RowSampleListItemLayoutBinding> holder, Sample item) {
+//        backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
+//        unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
+//
+//        if (item != null) {
+//            if (item.isUnreadOrChildUnread()) {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
+//            } else {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
+//            }
+//        }
+//    }
 
     private String getSampleTestResultMessage(Context context, Sample record) {
         SampleTest mostRecentTest = null;

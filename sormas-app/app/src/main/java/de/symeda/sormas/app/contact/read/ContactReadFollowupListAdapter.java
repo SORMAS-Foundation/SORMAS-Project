@@ -20,11 +20,8 @@ public class ContactReadFollowupListAdapter extends DataBoundAdapter<RowReadFoll
 
     private static final String TAG = ContactReadFollowupListAdapter.class.getSimpleName();
 
-    private List<Visit> data = new ArrayList<>();
+    private List<Visit> data;
     private OnListItemClickListener mOnListItemClickListener;
-
-    private LayerDrawable backgroundRowItem;
-    private Drawable unreadListItemIndicator;
 
     public ContactReadFollowupListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Visit> data) {
         super(rowLayout);
@@ -52,8 +49,8 @@ public class ContactReadFollowupListAdapter extends DataBoundAdapter<RowReadFoll
             holder.binding.imgSyncIcon.setVisibility(View.GONE);
         }
 
-        updateUnreadIndicator(holder, record);
-
+        // TODO #704
+//        updateUnreadIndicator(holder, record);
     }
 
     @Override
@@ -61,16 +58,16 @@ public class ContactReadFollowupListAdapter extends DataBoundAdapter<RowReadFoll
         return data.size();
     }
 
-    public void updateUnreadIndicator(DataBoundViewHolder<RowReadFollowupListItemLayoutBinding> holder, Visit item) {
-        backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
-        unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
-
-        if (item != null) {
-            if (item.isUnreadOrChildUnread()) {
-                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
-            } else {
-                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
-            }
-        }
-    }
+//    public void updateUnreadIndicator(DataBoundViewHolder<RowReadFollowupListItemLayoutBinding> holder, Visit item) {
+//        LayerDrawable backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
+//        Drawable unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
+//
+//        if (item != null) {
+//            if (item.isUnreadOrChildUnread()) {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
+//            } else {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
+//            }
+//        }
+//    }
 }

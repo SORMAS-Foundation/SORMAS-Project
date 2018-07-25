@@ -13,23 +13,12 @@ import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.RowPendingReportListItemLayoutBinding;
 import de.symeda.sormas.app.report.viewmodel.PendingReportViewModel;
 
-/**
- * Created by Orson on 25/04/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
 public class PendingReportAdapter extends DataBoundAdapter<RowPendingReportListItemLayoutBinding> {
 
     private static final String TAG = WeeklyReportAdapter.class.getSimpleName();
 
     private final Context context;
     private List<PendingReportViewModel> data = new ArrayList<>();
-    private OnListItemClickListener mOnListItemClickListener;
-
-    private LayerDrawable backgroundRowItem;
-    private Drawable unreadListItemIndicator;
 
     public PendingReportAdapter(Context context, int rowLayout) {
         this(context, rowLayout, new ArrayList<PendingReportViewModel>());

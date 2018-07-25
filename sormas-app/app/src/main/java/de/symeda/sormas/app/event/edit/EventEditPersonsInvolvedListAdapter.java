@@ -23,9 +23,6 @@ public class EventEditPersonsInvolvedListAdapter extends DataBoundAdapter<RowRea
     private List<EventParticipant> data = new ArrayList<>();
     private OnListItemClickListener mOnListItemClickListener;
 
-    private LayerDrawable backgroundRowItem;
-    private Drawable unreadListItemIndicator;
-
     public EventEditPersonsInvolvedListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<EventParticipant> data) {
         super(rowLayout);
         this.mOnListItemClickListener = onListItemClickListener;
@@ -52,7 +49,8 @@ public class EventEditPersonsInvolvedListAdapter extends DataBoundAdapter<RowRea
             holder.binding.imgSyncIcon.setVisibility(View.GONE);
         }
 
-        updateUnreadIndicator(holder, record);
+        // TODO #704
+//        updateUnreadIndicator(holder, record);
     }
 
     @Override
@@ -60,17 +58,16 @@ public class EventEditPersonsInvolvedListAdapter extends DataBoundAdapter<RowRea
         return data.size();
     }
 
-    public void updateUnreadIndicator(DataBoundViewHolder<RowReadPersonsInvolvedListItemLayoutBinding> holder, EventParticipant item) {
-        backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
-        unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
-
-        if (item != null) {
-            if (item.isUnreadOrChildUnread()) {
-                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
-            } else {
-                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
-            }
-        }
-    }
-
+//    public void updateUnreadIndicator(DataBoundViewHolder<RowReadPersonsInvolvedListItemLayoutBinding> holder, EventParticipant item) {
+//        backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
+//        unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
+//
+//        if (item != null) {
+//            if (item.isUnreadOrChildUnread()) {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
+//            } else {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
+//            }
+//        }
+//    }
 }

@@ -4,28 +4,22 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
-
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
-import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
-import de.symeda.sormas.app.core.adapter.databinding.ISetOnListItemClickListener;
-import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.databinding.RowTaskListItemLayoutBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.task.Task;
-
-/**
- * Created by Orson on 03/12/2017.
- */
+import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
+import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
+import de.symeda.sormas.app.core.adapter.databinding.ISetOnListItemClickListener;
+import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.databinding.RowTaskListItemLayoutBinding;
 
 public class TaskListAdapter extends DataBoundAdapter<RowTaskListItemLayoutBinding> implements ISetOnListItemClickListener {
 
@@ -34,9 +28,6 @@ public class TaskListAdapter extends DataBoundAdapter<RowTaskListItemLayoutBindi
     private final Context context;
     private List<Task> data = new ArrayList<>();
     private OnListItemClickListener mOnListItemClickListener;
-
-    private LayerDrawable backgroundRowItem;
-    private Drawable unreadListItemIndicator;
 
     public TaskListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener) {
         this(context, rowLayout, onListItemClickListener, new ArrayList<Task>());
@@ -73,33 +64,31 @@ public class TaskListAdapter extends DataBoundAdapter<RowTaskListItemLayoutBindi
             holder.binding.imgSyncIcon.setVisibility(View.GONE);
         }
 
-        updateUnreadIndicator(holder, record);
-
+        // TODO #704
+//        updateUnreadIndicator(holder, record);
     }
 
     @Override
     public int getItemCount() {
         return data.size();
     }
-
-    public void updateUnreadIndicator(DataBoundViewHolder<RowTaskListItemLayoutBinding> holder, Task item) {
-        backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
-        unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
-
-        if (item != null) {
-            if (item.isUnreadOrChildUnread()) {
-                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
-            } else {
-                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
-            }
-        }
-    }
-
-
+//
+//    public void updateUnreadIndicator(DataBoundViewHolder<RowTaskListItemLayoutBinding> holder, Task item) {
+//        backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
+//        unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
+//
+//        if (item != null) {
+//            if (item.isUnreadOrChildUnread()) {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
+//            } else {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
+//            }
+//        }
+//    }
 
     public void indicatePriority(ImageView imgTaskPriorityIcon, Task task) {
         Resources resources = imgTaskPriorityIcon.getContext().getResources();
-        Drawable drw = (Drawable)ContextCompat.getDrawable(imgTaskPriorityIcon.getContext(), R.drawable.indicator_status_circle);
+        Drawable drw = (Drawable) ContextCompat.getDrawable(imgTaskPriorityIcon.getContext(), R.drawable.indicator_status_circle);
         if (task.getPriority() == TaskPriority.HIGH) {
             drw.setColorFilter(resources.getColor(R.color.indicatorTaskPriorityHigh), PorterDuff.Mode.SRC_OVER);
         } else if (task.getPriority() == TaskPriority.LOW) {
@@ -113,7 +102,7 @@ public class TaskListAdapter extends DataBoundAdapter<RowTaskListItemLayoutBindi
 
     public void indicateStatus(ImageView imgTaskStatusIcon, Task task) {
         Resources resources = imgTaskStatusIcon.getContext().getResources();
-        Drawable drw = (Drawable)ContextCompat.getDrawable(imgTaskStatusIcon.getContext(), R.drawable.indicator_status_circle);
+        Drawable drw = (Drawable) ContextCompat.getDrawable(imgTaskStatusIcon.getContext(), R.drawable.indicator_status_circle);
         if (task.getTaskStatus() == TaskStatus.PENDING) {
             drw.setColorFilter(resources.getColor(R.color.indicatorTaskPending), PorterDuff.Mode.SRC_OVER);
         } else if (task.getTaskStatus() == TaskStatus.DONE) {
@@ -134,7 +123,7 @@ public class TaskListAdapter extends DataBoundAdapter<RowTaskListItemLayoutBindi
         if (position >= this.data.size())
             return null;
 
-        return (Task)this.data.get(position);
+        return (Task) this.data.get(position);
     }
 
     public void addAll(List<Task> data) {

@@ -25,11 +25,8 @@ public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemL
 
     private static final String TAG = ContactListAdapter.class.getSimpleName();
 
-    private List<Contact> data = new ArrayList<>();
+    private List<Contact> data;
     private OnListItemClickListener mOnListItemClickListener;
-
-    private LayerDrawable backgroundRowItem;
-    private Drawable unreadListItemIndicator;
 
     public ContactListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Contact> data) {
         super(rowLayout);
@@ -60,8 +57,8 @@ public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemL
             holder.binding.imgSyncIcon.setVisibility(View.GONE);
         }
 
-        updateUnreadIndicator(holder, record);
-
+        // TODO #704
+//        updateUnreadIndicator(holder, record);
     }
 
     @Override
@@ -69,18 +66,18 @@ public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemL
         return data.size();
     }
 
-    public void updateUnreadIndicator(DataBoundViewHolder<RowReadContactListItemLayoutBinding> holder, Contact item) {
-        backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
-        unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
-
-        if (item != null) {
-            if (item.isUnreadOrChildUnread()) {
-                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
-            } else {
-                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
-            }
-        }
-    }
+//    public void updateUnreadIndicator(DataBoundViewHolder<RowReadContactListItemLayoutBinding> holder, Contact item) {
+//        LayerDrawable backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
+//        Drawable unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
+//
+//        if (item != null) {
+//            if (item.isUnreadOrChildUnread()) {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
+//            } else {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
+//            }
+//        }
+//    }
 
     public void indicateContactClassification(ImageView img, Contact record) {
         Resources resources = img.getContext().getResources();
