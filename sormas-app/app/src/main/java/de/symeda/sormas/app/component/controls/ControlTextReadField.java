@@ -262,11 +262,11 @@ public class ControlTextReadField extends ControlPropertyField<String> {
     @BindingAdapter(value = {"value", "appendValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setValue(ControlTextReadField textField, Date dateValue, Date appendValue, String valueFormat, String defaultValue) {
         if (dateValue == null || appendValue == null) {
-            setValue(textField, dateValue != null ? DateHelper.formatDate(dateValue)
-                    : appendValue != null ? DateHelper.formatDate(appendValue)
+            setValue(textField, dateValue != null ? DateHelper.formatLocalShortDate(dateValue)
+                    : appendValue != null ? DateHelper.formatLocalShortDate(appendValue)
                     : null, null, valueFormat, defaultValue, dateValue);
         } else {
-            setValue(textField, DateHelper.formatDate(dateValue), DateHelper.formatDate(appendValue),
+            setValue(textField, DateHelper.formatLocalShortDate(dateValue), DateHelper.formatLocalShortDate(appendValue),
                     valueFormat, defaultValue, dateValue);
         }
     }

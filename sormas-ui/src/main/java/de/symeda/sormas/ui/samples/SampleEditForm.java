@@ -68,11 +68,9 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.SAMPLE_MATERIAL_TEXT, TextField.class);
 		ComboBox sampleSource = addField(SampleDto.SAMPLE_SOURCE, ComboBox.class);
 		DateField shipmentDate = addField(SampleDto.SHIPMENT_DATE, DateField.class);
-		shipmentDate.setDateFormat(DateHelper.getShortDateFormat().toPattern());
 		addField(SampleDto.SHIPMENT_DETAILS, TextField.class);		
 		addField(SampleDto.SUGGESTED_TYPE_OF_TEST, ComboBox.class);
 		DateField receivedDate = addField(SampleDto.RECEIVED_DATE, DateField.class);
-		receivedDate.setDateFormat(DateHelper.getShortDateFormat().toPattern());
 		ComboBox lab = addField(SampleDto.LAB, ComboBox.class);
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(true));
 		TextField labDetails = addField(SampleDto.LAB_DETAILS, TextField.class);
@@ -133,7 +131,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			// Initialize referral and report information
 			VerticalLayout reportInfoLayout = new VerticalLayout();
 			
-			String reportInfoText = "Reported on " + DateHelper.formatDateTime(getValue().getReportDateTime()) + " by " + getValue().getReportingUser().toString();
+			String reportInfoText = "Reported on " + DateHelper.formatLocalDateTime(getValue().getReportDateTime()) + " by " + getValue().getReportingUser().toString();
 			Label reportInfoLabel = new Label(reportInfoText);
 			reportInfoLabel.setEnabled(false);
 			reportInfoLayout.addComponent(reportInfoLabel);

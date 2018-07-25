@@ -34,7 +34,6 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -100,8 +99,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		
 		addFields(CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER,
 				CaseDataDto.CLASSIFICATION_DATE, CaseDataDto.CLASSIFICATION_USER);
-		DateField receptionDate = addField(CaseDataDto.RECEPTION_DATE, DateField.class);
-		receptionDate.setDateFormat(DateHelper.getDateFormat().toPattern());
+		addField(CaseDataDto.RECEPTION_DATE, DateField.class);
 		TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
 		epidField.addValidator(new RegexpValidator(DataHelper.getEpidNumberRegexp(), true, 
 				"The EPID number does not match the required pattern. You may still save the case and enter the correct number later."));
@@ -111,10 +109,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
 		addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
 		DateField investigatedDate = addField(CaseDataDto.INVESTIGATED_DATE, DateField.class);
-		investigatedDate.setDateFormat(DateHelper.getDateFormat().toPattern());
 		addField(CaseDataDto.OUTCOME, OptionGroup.class);
 		DateField outcomeDate = addField(CaseDataDto.OUTCOME_DATE, DateField.class);
-		outcomeDate.setDateFormat(DateHelper.getDateFormat().toPattern());
 		ComboBox diseaseField = addField(CaseDataDto.DISEASE, ComboBox.class);
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
 		OptionGroup plagueType = addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
@@ -132,8 +128,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.VACCINATION_INFO_SOURCE, ComboBox.class);
 		addField(CaseDataDto.SMALLPOX_VACCINATION_SCAR, OptionGroup.class);
 		addField(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, OptionGroup.class);
-		DateField vaccinationDate = addField(CaseDataDto.VACCINATION_DATE, DateField.class);
-		vaccinationDate.setDateFormat(DateHelper.getDateFormat().toPattern());
+		addField(CaseDataDto.VACCINATION_DATE, DateField.class);
 
 		// Set initial visibilities
 		

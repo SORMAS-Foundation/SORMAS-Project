@@ -75,7 +75,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
         fragment.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int yy, int mm, int dd) {
-                input.setText(DateHelper.formatDate(DateHelper.getDateZero(yy, mm, dd)));
+                input.setText(DateHelper.formatLocalShortDate(DateHelper.getDateZero(yy, mm, dd)));
             }
         });
         fragment.setOnClearListener(new DialogInterface.OnClickListener() {
@@ -158,7 +158,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
         if (value == null) {
             input.setText(null);
         } else {
-            input.setText(DateHelper.formatDate(value));
+            input.setText(DateHelper.formatLocalShortDate(value));
         }
     }
 

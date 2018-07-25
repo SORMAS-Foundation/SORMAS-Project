@@ -745,7 +745,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				if (sampleDates.length() > 0) {
 					sampleDates += ", "; 
 				}
-				sampleDates += DateHelper.formatShortDate(sourceSample.getSampleDateTime());
+				sampleDates += DateHelper.formatLocalShortDate(sourceSample.getSampleDateTime());
 			}
 
 			for (SampleTest sourceSampleTest : sourceSample.getSampleTests()) {

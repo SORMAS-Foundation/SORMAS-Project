@@ -145,8 +145,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.LYMPHADENOPATHY_AXILLARY, SymptomsDto.LYMPHADENOPATHY_CERVICAL, SymptomsDto.LYMPHADENOPATHY_INGUINAL, SymptomsDto.MENINGEAL_SIGNS, 
 				SymptomsDto.CHILLS_SWEATS, SymptomsDto.BEDRIDDEN, SymptomsDto.ORAL_ULCERS, SymptomsDto.PAINFUL_LYMPHADENITIS, SymptomsDto.BLACKENING_DEATH_OF_TISSUE, SymptomsDto.BUBOES_GROIN_ARMPIT_NECK, 
 				SymptomsDto.BULGING_FONTANELLE, SymptomsDto.PATIENT_ILL_LOCATION);
-		DateField lesionsOnsetDate = addField(SymptomsDto.LESIONS_ONSET_DATE, DateField.class);
-		lesionsOnsetDate.setDateFormat(DateHelper.getDateFormat().toPattern());
+		addField(SymptomsDto.LESIONS_ONSET_DATE, DateField.class);
 
 		ComboBox onsetSymptom = addField(SymptomsDto.ONSET_SYMPTOM, ComboBox.class);
 		

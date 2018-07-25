@@ -92,8 +92,8 @@ public class EventGrid extends Grid {
 				EventIndexDto.EVENT_DATE, EventIndexDto.EVENT_DESC, EventIndexDto.EVENT_LOCATION, INFORMATION_SOURCE, EventIndexDto.REPORT_DATE_TIME, PENDING_EVENT_TASKS);
 		
 		getColumn(EventIndexDto.UUID).setRenderer(new UuidRenderer());
-		getColumn(EventIndexDto.EVENT_DATE).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
-		getColumn(EventIndexDto.REPORT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
+		getColumn(EventIndexDto.EVENT_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateFormat()));
+		getColumn(EventIndexDto.REPORT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
 		
 		for(Column column : getColumns()) {
 			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(

@@ -25,7 +25,7 @@ public class EpiDataTravelHelper {
 			if (resultString.length() > 0) {
 				resultString.append(" ");
 			}
-			resultString.append(DateHelper.formatShortDate(travelDateFrom));
+			resultString.append(DateHelper.formatLocalShortDate(travelDateFrom));
 		}
 
 		if (travelDateTo != null) {
@@ -34,7 +34,7 @@ public class EpiDataTravelHelper {
 			} else if (resultString.length() > 0) {
 				resultString.append(" ");
 			}
-			resultString.append(DateHelper.formatShortDate(travelDateTo));
+			resultString.append(DateHelper.formatLocalShortDate(travelDateTo));
 		}
 		
 		return resultString.toString();

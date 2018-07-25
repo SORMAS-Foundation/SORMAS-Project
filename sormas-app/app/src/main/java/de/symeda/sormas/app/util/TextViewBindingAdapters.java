@@ -219,13 +219,13 @@ public class TextViewBindingAdapters {
         if (fromValue == null) {
             from = " ? ";
         } else {
-            from = DateHelper.formatDate(fromValue);
+            from = DateHelper.formatLocalShortDate(fromValue);
         }
 
         if (appendValue == null) {
             to = " ? ";
         } else {
-            to = DateHelper.formatDate(appendValue);
+            to = DateHelper.formatLocalShortDate(appendValue);
         }
 
         if (valueFormat != null && valueFormat.trim() != "") {
@@ -395,7 +395,7 @@ public class TextViewBindingAdapters {
             textField.setText(val);
         } else {
             val = enumValue.toString();
-            String _dateValue = DateHelper.formatDate(dateValue);
+            String _dateValue = DateHelper.formatLocalShortDate(dateValue);
 
             if (valueFormat != null && valueFormat.trim() != "") {
                 textField.setText(String.format(valueFormat, val));
@@ -488,7 +488,7 @@ public class TextViewBindingAdapters {
         if (task == null || task.getDueDate() == null) {
             textField.setText(val);
         } else {
-            val = DateHelper.formatDate(task.getDueDate());
+            val = DateHelper.formatLocalShortDate(task.getDueDate());
 
             if (valueFormat != null && valueFormat.trim() != "") {
                 textField.setText(String.format(valueFormat, val));
@@ -513,7 +513,7 @@ public class TextViewBindingAdapters {
         if (task == null || task.getDueDate() == null) {
             textField.setText(val);
         } else {
-            //val = DateHelper.formatDate(task.getDueDate());
+            //val = DateHelper.formatLocalShortDate(task.getDueDate());
             val = TimeAgo.using(textField.getContext()).with(task.getDueDate());
 
             if (valueFormat != null && valueFormat.trim() != "") {
@@ -620,7 +620,7 @@ public class TextViewBindingAdapters {
         if (dateValue == null) {
             textField.setText(val);
         } else {
-            val = DateHelper.formatDate(dateValue);
+            val = DateHelper.formatLocalShortDate(dateValue);
 
             if (valueFormat != null && valueFormat.trim() != "") {
                 textField.setText(String.format(valueFormat, val));
@@ -886,7 +886,7 @@ public class TextViewBindingAdapters {
         } else if (record.getEvent() != null) {
             StringBuilder sb = new StringBuilder();
             sb.append(record.getEvent().getEventType());
-            sb.append(", " + DateHelper.formatDate(record.getEvent().getEventDate()));
+            sb.append(", " + DateHelper.formatLocalShortDate(record.getEvent().getEventDate()));
             if (record.getEvent().getEventLocation().getCity() != null && !record.getEvent().getEventLocation().getCity().isEmpty()) {
                 sb.append(", " + record.getEvent().getEventLocation().getCity());
             }

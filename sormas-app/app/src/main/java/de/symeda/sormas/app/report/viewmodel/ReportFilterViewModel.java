@@ -59,11 +59,11 @@ public class ReportFilterViewModel {
     }
 
     public String getStartDate() {
-        return DateHelper.formatShortDate(DateHelper.getEpiWeekStart(mEpiWeek));
+        return DateHelper.formatLocalShortDate(DateHelper.getEpiWeekStart(mEpiWeek));
     }
 
     public String getEndDate() {
-        return DateHelper.formatShortDate(DateHelper.getEpiWeekEnd(mEpiWeek));
+        return DateHelper.formatLocalShortDate(DateHelper.getEpiWeekEnd(mEpiWeek));
     }
 }
 

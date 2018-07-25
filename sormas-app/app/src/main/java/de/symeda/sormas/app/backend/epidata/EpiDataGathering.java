@@ -77,7 +77,7 @@ public class EpiDataGathering extends AbstractDomainObject {
 
     @Override
     public String toString() {
-        return super.toString() + " " + DateHelper.formatShortDate(getGatheringDate());
+        return super.toString() + " " + DateHelper.formatLocalShortDate(getGatheringDate());
     }
 
     @Override

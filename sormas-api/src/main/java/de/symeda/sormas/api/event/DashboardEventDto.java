@@ -127,7 +127,7 @@ public class DashboardEventDto implements Serializable {
 				? DataHelper.toStringNullable(getDisease())
 				: DataHelper.toStringNullable(getDiseaseDetails());
 		String eventTypeString = diseaseString.isEmpty() ? eventType.toString() : eventType.toString().toLowerCase();
-		return diseaseString + " " + eventTypeString + " on " + DateHelper.formatDate(eventDate);
+		return diseaseString + " " + eventTypeString + " on " + DateHelper.formatLocalDate(eventDate);
 	}
 	
 }

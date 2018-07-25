@@ -114,7 +114,6 @@ public class EpiWeekAndDateFilterComponent extends HorizontalLayout {
 		addComponent(weekToFilter);
 
 		// Date filter
-		dateFromFilter.setDateFormat(DateHelper.getShortDateFormat().toPattern());
 		dateFromFilter.setWidth(200, Unit.PIXELS);
 		if (showCaption) {
 			dateFromFilter.setCaption("From");
@@ -125,7 +124,6 @@ public class EpiWeekAndDateFilterComponent extends HorizontalLayout {
 			});
 		}
 
-		dateToFilter.setDateFormat(DateHelper.getShortDateFormat().toPattern());
 		dateToFilter.setWidth(200, Unit.PIXELS);
 		if (showCaption) {
 			dateToFilter.setCaption("To");

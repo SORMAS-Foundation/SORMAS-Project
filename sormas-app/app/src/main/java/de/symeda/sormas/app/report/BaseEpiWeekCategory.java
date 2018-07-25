@@ -30,7 +30,7 @@ public abstract class BaseEpiWeekCategory implements IReportDate {
     @Override
     public String getReportDate() {
         if (mReport != null)
-            return DateHelper.formatShortDate(mReport.getReportDateTime());
+            return DateHelper.formatLocalShortDate(mReport.getReportDateTime());
 
         return null;
     }

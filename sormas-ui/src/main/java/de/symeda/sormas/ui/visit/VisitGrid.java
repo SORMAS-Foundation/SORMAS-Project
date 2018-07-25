@@ -57,7 +57,7 @@ public class VisitGrid extends Grid {
 		getColumn(EDIT_BTN_ID).setWidth(60);
 		getColumn(SYMPTOMS_SYMPTOMATIC).setRenderer(new BooleanRenderer());
 
-		getColumn(VisitDto.VISIT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
+		getColumn(VisitDto.VISIT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
 
 		for (Column column : getColumns()) {
 			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(

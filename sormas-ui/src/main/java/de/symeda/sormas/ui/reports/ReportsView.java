@@ -102,7 +102,7 @@ public class ReportsView extends AbstractView {
 		List<EpiWeek> epiWeekList = DateHelper.createEpiWeekList(year);
 		for (EpiWeek epiWeek : epiWeekList) {
 			epiWeekFilter.addItem(epiWeek.getWeek());
-			epiWeekFilter.setItemCaption(epiWeek.getWeek(), epiWeek.getWeek() + " (" + DateHelper.formatShortDate(DateHelper.getEpiWeekStart(epiWeek)) + " - " + DateHelper.formatShortDate(DateHelper.getEpiWeekEnd(epiWeek)) + ")");
+			epiWeekFilter.setItemCaption(epiWeek.getWeek(), epiWeek.toString());
 		}
 		epiWeekFilter.select(week);
 	}

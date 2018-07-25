@@ -151,6 +151,6 @@ public class PreviousHospitalization extends AbstractDomainObject {
 
     @Override
     public String toString() {
-        return super.toString() + " " + DateHelper.formatShortDate(getDischargeDate());
+        return super.toString() + " " + DateHelper.formatLocalShortDate(getDischargeDate());
     }
 }

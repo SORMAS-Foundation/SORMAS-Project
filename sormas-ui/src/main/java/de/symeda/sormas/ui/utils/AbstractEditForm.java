@@ -119,6 +119,11 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 				else if (DateTimeField.class.isAssignableFrom(fieldType)) {
 					return (T) new DateTimeField();
 				} 
+				else if (DateField.class.isAssignableFrom(fieldType)) {
+					DateField field = super.createField(type, DateField.class);
+					field.setDateFormat(DateHelper.getLocalDatePattern());
+					return (T) field;
+				}
 				else if (PreviousHospitalizationsField.class.isAssignableFrom(fieldType)) {
 					return (T) new PreviousHospitalizationsField();
 				} 
@@ -133,10 +138,9 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 				}
 				else if (fieldType.equals(Field.class)) {
 					// no specific field type defined -> fallbacks
-
 					if (Date.class.isAssignableFrom(type)) {
 						DateField field = super.createField(type, DateField.class);
-						field.setDateFormat(DateHelper.getDateFormat().toPattern());
+						field.setDateFormat(DateHelper.getLocalDatePattern());
 						return (T) field;
 					}
 					else if (ReferenceDto.class.isAssignableFrom(type)) {
@@ -164,7 +168,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			getFieldGroup().setReadOnly(true);
 		}
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	public static CommitDiscardWrapperComponent<? extends AbstractEditForm> buildCommitDiscardWrapper(AbstractEditForm wrappedForm) {
 		return new CommitDiscardWrapperComponent<>(wrappedForm, wrappedForm.getFieldGroup());
@@ -238,7 +242,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 
 	@Override
 	public void preCommit(CommitEvent commitEvent) throws CommitException {
-		
+
 		if (hideValidationUntilNextCommit) {
 			hideValidationUntilNextCommit = false;
 			for (Field<?> field : getFieldGroup().getFields()) {
@@ -303,6 +307,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	protected <T extends Field> void addFields(Class<T> fieldType, String ...properties) {
 		for (String property: properties) {
 			addField(property, fieldType);
@@ -447,19 +452,19 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			Field<?> field = getFieldGroup().getField(propertyId);
 			boolean diseaseVisibility = true;
 			boolean outbreakVisibility = true;
-			
+
 			if (disease != null) {
 				if (!Diseases.DiseasesConfiguration.isDefinedOrMissing(getType(), (String) propertyId, disease)) {
 					diseaseVisibility = false;
 				}
 			}
-			
+
 			if (viewMode != null && viewMode == ViewMode.SIMPLE) {
 				if (!Outbreaks.OutbreaksConfiguration.isDefined(getType(), (String) propertyId)) {
 					outbreakVisibility = false;
 				}
 			}
-			
+
 			if (diseaseVisibility && outbreakVisibility) {
 				visibleAllowedFields.add(field);
 			} else {
@@ -467,7 +472,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns true if the visibleAllowedFields list is either empty (because all fields are allowed to be visible) or contains
 	 * the given field. This needs to be called before EVERY setVisible or setVisibleWhen call.
@@ -475,9 +480,9 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	protected boolean isVisibleAllowed(Field<?> field) {
 		return visibleAllowedFields.isEmpty() || visibleAllowedFields.contains(field);
 	}
-	
+
 	protected boolean isVisibleAllowed(String propertyId) {
 		return isVisibleAllowed(getFieldGroup().getField(propertyId));
 	}
-	
+
 }

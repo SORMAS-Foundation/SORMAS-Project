@@ -49,7 +49,7 @@ public class PersonGrid extends Grid {
 				if (person.getLastDisease() != null) {
 					return "<a href='" + Page.getCurrent().getLocation() + "/data/" + 
 							person.getLastCaseUuid() + "' target='_blank'>" + person.getLastDisease().toShortString() + 
-							" (" + DateHelper.formatShortDate(person.getLastDiseaseStartDate()) + ")</a>";
+							" (" + DateHelper.formatLocalShortDate(person.getLastDiseaseStartDate()) + ")</a>";
 				} else {
 					return "";
 				}

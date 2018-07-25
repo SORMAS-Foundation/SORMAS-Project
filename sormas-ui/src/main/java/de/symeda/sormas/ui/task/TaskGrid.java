@@ -114,8 +114,8 @@ public class TaskGrid extends Grid implements ItemClickListener {
         getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
         getColumn(EDIT_BTN_ID).setWidth(60);
         
-        getColumn(TaskIndexDto.DUE_DATE).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
-        getColumn(TaskIndexDto.SUGGESTED_START).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
+        getColumn(TaskIndexDto.DUE_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+        getColumn(TaskIndexDto.SUGGESTED_START).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
         getColumn(TaskIndexDto.CREATOR_COMMENT).setRenderer(new ShortStringRenderer(50));
         
         getColumn(TaskIndexDto.CONTEXT_REFERENCE).setRenderer(new HtmlRenderer(), new HtmlReferenceDtoConverter());

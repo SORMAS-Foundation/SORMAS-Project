@@ -137,7 +137,7 @@ public class DownloadUtil {
 								if (value == null) {
 									fieldValues[i] = "";
 								} else if (value instanceof Date) {
-									fieldValues[i] = DateHelper.formatShortDate((Date)value);
+									fieldValues[i] = DateHelper.formatLocalShortDate((Date)value);
 								} else {
 									fieldValues[i] = value.toString();
 								}

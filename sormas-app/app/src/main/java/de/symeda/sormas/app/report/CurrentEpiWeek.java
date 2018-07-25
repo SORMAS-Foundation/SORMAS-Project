@@ -45,6 +45,6 @@ public class CurrentEpiWeek extends BaseEpiWeekCategory {
             mShowConfirmButton = false; 
         }
 
-        callback.call(mReport != null? DateHelper.formatShortDate(mReport.getReportDateTime()) : null, this);
+        callback.call(mReport != null? DateHelper.formatLocalShortDate(mReport.getReportDateTime()) : null, this);
     }
 }

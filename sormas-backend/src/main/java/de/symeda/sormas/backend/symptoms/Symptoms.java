@@ -1013,7 +1013,7 @@ public class Symptoms extends AbstractDomainObject {
 			stringBuilder.append(I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, dtoPropertyId, null))
 				.append(": ");
 			if (value instanceof Date) {
-				stringBuilder.append(DateHelper.formatShortDate((Date)value));
+				stringBuilder.append(DateHelper.formatLocalShortDate((Date)value));
 			} else {
 				stringBuilder.append(value);
 			}

@@ -38,6 +38,6 @@ public class EventReferenceDto extends ReferenceDto {
 		if (!diseaseString.isEmpty()) {
 			eventTypeString = eventTypeString.toLowerCase();
 		}
-		return diseaseString + " " + eventTypeString + " on " + DateHelper.formatDate(eventDate);
+		return diseaseString + " " + eventTypeString + " on " + DateHelper.formatLocalDate(eventDate);
 	}
 }

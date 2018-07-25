@@ -284,7 +284,7 @@ public class DashboardView extends AbstractView {
 						changeDateFilterButtonsStyles(customButton);
 						refreshDashboard();
 						if (dateFilterOption == DateFilterOption.DATE) {
-							customButton.setCaption(DateHelper.formatShortDate(fromDate) + " - " + DateHelper.formatShortDate(toDate));
+							customButton.setCaption(DateHelper.formatLocalShortDate(fromDate) + " - " + DateHelper.formatLocalShortDate(toDate));
 						} else {
 							customButton.setCaption(fromWeek.toShortString() + " - " + toWeek.toShortString());
 						}

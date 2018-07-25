@@ -99,8 +99,8 @@ public class SampleGrid extends Grid {
 		
 		getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
         getColumn(EDIT_BTN_ID).setWidth(60);
-		getColumn(SampleIndexDto.SHIPMENT_DATE).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
-		getColumn(SampleIndexDto.RECEIVED_DATE).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
+		getColumn(SampleIndexDto.SHIPMENT_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateFormat()));
+		getColumn(SampleIndexDto.RECEIVED_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateFormat()));
 		getColumn(SampleIndexDto.SHIPPED).setRenderer(new BooleanRenderer());
 		getColumn(SampleIndexDto.RECEIVED).setRenderer(new BooleanRenderer());
 		getColumn(SampleIndexDto.LAB).setMaximumWidth(200);

@@ -13,7 +13,6 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -57,10 +56,8 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 		facilityField.setReadOnly(true);
 		
 		addField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, OptionGroup.class);
-		DateField admissionDate = addField(HospitalizationDto.ADMISSION_DATE, DateField.class);
-		admissionDate.setDateFormat(DateHelper.getShortDateFormat().toPattern());
-		DateField dischargeDate = addField(HospitalizationDto.DISCHARGE_DATE, DateField.class);
-		dischargeDate.setDateFormat(DateHelper.getShortDateFormat().toPattern());
+		addField(HospitalizationDto.ADMISSION_DATE, DateField.class);
+		addField(HospitalizationDto.DISCHARGE_DATE, DateField.class);
 		addField(HospitalizationDto.ISOLATED, OptionGroup.class);
 		addField(HospitalizationDto.ISOLATION_DATE, DateField.class);
 		OptionGroup hospitalizedPreviouslyField = addField(HospitalizationDto.HOSPITALIZED_PREVIOUSLY, OptionGroup.class);
