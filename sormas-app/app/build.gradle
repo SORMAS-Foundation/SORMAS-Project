@@ -6,7 +6,7 @@ ext.keystoreProperties = loadKeystoreProperties()
 android {
     // https://medium.com/google-developers/picking-your-compilesdkversion-minsdkversion-targetsdkversion-a098a0341ebd
     // ideally: minSdkVersion (lowest possible) <= targetSdkVersion == compileSdkVersion (latest SDK)
-    compileSdkVersion 24
+    compileSdkVersion 27
     // always use the latest
     buildToolsVersion '27.0.3'
 
@@ -67,10 +67,9 @@ configurations.all {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    // https://mvnrepository.com/artifact/com.googlecode/openbeans
-    implementation 'com.android.support:appcompat-v7:24.2.1'
-    implementation 'com.android.support:design:24.2.1'
-    implementation 'com.android.support:percent:24.2.1'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.android.support:percent:27.1.1'
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
     implementation 'com.j256.ormlite:ormlite-core:4.48'

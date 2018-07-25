@@ -84,7 +84,6 @@
 
 
     <attr name="textColorHint" format="reference|color" />
-    <attr name="iconTint" format="reference|color" />
     <attr name="iconPadding" format="dimension" />
 
     <attr name="textSize" format="dimension" />
@@ -231,7 +230,6 @@
         <attr name="inputType" />
 
         <attr name="textColorHint" />
-        <attr name="iconTint" />
         <attr name="iconPadding" />
         <attr name="iconStart" />
         <attr name="iconEnd" />
