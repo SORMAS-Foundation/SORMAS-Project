@@ -314,18 +314,13 @@ public class TextViewBindingAdapters {
 
     @BindingAdapter(value={"diseaseValue", "valueFormat", "defaultValue"}, requireAll=false)
     public static void setDiseaseValue(TextView textField, Case caseRecord, String valueFormat, String defaultValue) {
-        String val = defaultValue;
-        String diseaseString = getDisease(caseRecord);
-
-        if (caseRecord == null || diseaseString == null || diseaseString.isEmpty()) {
-            textField.setText(val);
+        if (caseRecord == null || caseRecord.getDisease() == null) {
+            textField.setText(defaultValue);
         } else {
-            val = diseaseString;
-
-            if (valueFormat != null && valueFormat.trim() != "") {
-                textField.setText(String.format(valueFormat, val));
+            if (caseRecord.getDisease() == Disease.OTHER) {
+                textField.setText(caseRecord.getDiseaseDetails());
             } else {
-                textField.setText(val);
+                textField.setText(caseRecord.getDisease().toShortString());
             }
         }
     }

@@ -40,9 +40,7 @@
                     android:textSize="@dimen/listActivityRowTertiaryTextSize"
                     android:textColor="@color/listActivityRowTertiaryText"
                     android:fontFamily="sans-serif-medium"
-                    app:diseaseValue="@{data}"
-                    app:defaultValue='@{@string/disease_unknown}'
-                    />
+                    app:diseaseValue="@{data}" />
 
                 <ImageView
                     android:layout_width="@dimen/separatorThickness"
@@ -65,14 +63,13 @@
                     app:defaultValue='@{@string/uuid_unknown}'
                     />
 
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="right"
-                    android:layout_marginRight="@dimen/listItemConentIndentRight"
-                    >
+                    android:layout_marginRight="@dimen/listItemConentIndentRight">
+
                     <ImageView
                         android:id="@+id/imgCaseStatusIcon"
                         android:layout_width="wrap_content"
