@@ -14,6 +14,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
@@ -79,7 +80,7 @@ public class SampleListAdapter extends DataBoundAdapter<RowSampleListItemLayoutB
 //    }
 
     private String getSampleTestResultMessage(Context context, Sample record) {
-        SampleTest mostRecentTest = null;
+        SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(record);
         if (record.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
             return context.getResources().getString(R.string.inadequate_specimen_cond);
         } else {
