@@ -189,14 +189,11 @@
 
                 </LinearLayout>
 
-
-                <!-- TODO: Re-enable and test after issue #699 has been done -->
-                <!--<de.symeda.sormas.app.component.controls.ControlLinkField-->
-                <!--android:id="@+id/sample_referredTo"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginBottom="@dimen/textControlMarginBottom"-->
-                <!--app:defaultValue="@string/no_referral" />-->
+                <de.symeda.sormas.app.component.controls.ControlLinkField
+                    android:id="@+id/sample_referredToUuid"
+                    app:shortUuidValue="@{data.referredToUuid}"
+                    app:goneIfEmpty="@{data.referredToUuid}"
+                    style="@style/ControlSingleColumnStyle" />
 
             </LinearLayout>
 

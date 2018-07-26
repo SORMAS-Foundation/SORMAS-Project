@@ -130,6 +130,14 @@ public final class DateHelper {
 			return "";
 		}
 	}
+	
+	public static String formatLocalShortDateTime(Date date) {
+		if (date != null) {
+			return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(date);
+		} else {
+			return "";
+		}
+	}
 
 	public static String formatLocalDateTime(Date date) {
 		if (date != null) {

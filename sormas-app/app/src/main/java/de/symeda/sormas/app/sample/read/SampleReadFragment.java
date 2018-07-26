@@ -4,6 +4,8 @@ import android.databinding.ObservableArrayList;
 import android.os.Bundle;
 import android.view.View;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -15,7 +17,9 @@ import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentSampleReadLayoutBinding;
+import de.symeda.sormas.app.sample.edit.SampleNewActivity;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
+import de.symeda.sormas.app.shared.ShipmentStatus;
 
 import static android.view.View.GONE;
 
@@ -28,6 +32,30 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
 
     public static SampleReadFragment newInstance(SampleFormNavigationCapsule capsule, Sample activityRootData) {
         return newInstance(SampleReadFragment.class, capsule, activityRootData);
+    }
+
+    private void setUpControlListeners(FragmentSampleReadLayoutBinding contentBinding) {
+        if (!StringUtils.isEmpty(record.getReferredToUuid())) {
+            contentBinding.sampleReferredToUuid.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String referredToUuid = record.getReferredToUuid();
+                    Sample sample = DatabaseHelper.getSampleDao().queryUuid(referredToUuid);
+                    if (sample != null) {
+                        ShipmentStatus shipmentStatus = sample.getReferredToUuid() != null ?
+                                ShipmentStatus.REFERRED_OTHER_LAB : sample.isReceived() ?
+                                ShipmentStatus.RECEIVED : sample.isShipped() ? ShipmentStatus.SHIPPED :
+                                ShipmentStatus.NOT_SHIPPED;
+                        SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(getContext(),
+                                sample.getUuid(), shipmentStatus).setSampleUuid(record.getUuid());
+                        if (getActivity( )!= null) {
+                            getActivity().finish();
+                        }
+                        SampleReadActivity.goToActivity(getActivity(), dataCapsule);
+                    }
+                }
+            });
+        }
     }
 
     private void setUpFieldVisibilities(FragmentSampleReadLayoutBinding contentBinding) {
@@ -56,6 +84,8 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
 
     @Override
     public void onLayoutBinding(FragmentSampleReadLayoutBinding contentBinding) {
+        setUpControlListeners(contentBinding);
+
         contentBinding.setData(record);
         contentBinding.setSampleTest(mostRecentTest);
     }

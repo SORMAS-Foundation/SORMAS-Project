@@ -72,6 +72,9 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         target.setSampleSource(source.getSampleSource());
         target.setSuggestedTypeOfTest(source.getSuggestedTypeOfTest());
         target.setReferredTo(DatabaseHelper.getSampleDao().getByReferenceDto(source.getReferredTo()));
+        if (source.getReferredTo() != null) {
+            target.setReferredToUuid(source.getReferredTo().getUuid());
+        }
         target.setShipped(source.isShipped());
         target.setReceived(source.isReceived());
 
@@ -106,6 +109,8 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         if (source.getReferredTo() != null) {
             Sample referredSample = DatabaseHelper.getSampleDao().queryForId(source.getReferredTo().getId());
             target.setReferredTo(SampleDtoHelper.toReferenceDto(referredSample));
+        } else if (source.getReferredToUuid() != null) {
+            target.setReferredTo(new SampleReferenceDto(source.getReferredToUuid()));
         } else {
             target.setReferredTo(null);
         }

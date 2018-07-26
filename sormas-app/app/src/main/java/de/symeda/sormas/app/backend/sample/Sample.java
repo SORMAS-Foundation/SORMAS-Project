@@ -37,6 +37,7 @@ public class Sample extends AbstractDomainObject {
     public static final String SAMPLE_DATE_TIME = "sampleDateTime";
     public static final String ASSOCIATED_CASE = "associatedCase";
     public static final String REFERRED_TO = "referredTo";
+    public static final String REFERRED_TO_UUID = "referredToUuid";
     public static final String SHIPPED = "shipped";
     public static final String RECEIVED = "received";
 
@@ -102,8 +103,15 @@ public class Sample extends AbstractDomainObject {
     @Enumerated(EnumType.STRING)
     private SampleTestType suggestedTypeOfTest;
 
+    /**
+     * referredToUuid should be used to avoid referred samples not being linked due to
+     * synchronization prioritization
+     */
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private Sample referredTo;
+
+    @DatabaseField
+    private String referredToUuid;
 
     @DatabaseField
     private boolean shipped;
@@ -267,6 +275,14 @@ public class Sample extends AbstractDomainObject {
 
     public void setReferredTo(Sample referredTo) {
         this.referredTo = referredTo;
+    }
+
+    public String getReferredToUuid() {
+        return referredToUuid;
+    }
+
+    public void setReferredToUuid(String referredToUuid) {
+        this.referredToUuid = referredToUuid;
     }
 
     public boolean isShipped() {

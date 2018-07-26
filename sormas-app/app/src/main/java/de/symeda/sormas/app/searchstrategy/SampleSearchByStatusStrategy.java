@@ -47,7 +47,7 @@ public class SampleSearchByStatusStrategy implements ISearchStrategy<Sample> {
             }
             result.removeAll(samplesToRemove);
         } else {
-            result = DatabaseHelper.getSampleDao().queryForNotNull(Sample.REFERRED_TO + "_id");
+            result = DatabaseHelper.getSampleDao().queryForNotNull(Sample.REFERRED_TO_UUID);
         }
 
         return result;

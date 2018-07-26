@@ -309,6 +309,12 @@ public class ControlTextReadField extends ControlPropertyField<String> {
         setValue(textField, dateValue != null ? DateHelper.formatTime(dateValue) : null, null, valueFormat, defaultValue, dateValue);
     }
 
+    // Date & time
+    @BindingAdapter(value = {"dateTimeValue", "valueFormat", "defaultValue"}, requireAll = false)
+    public static void setDateTimeValue(ControlTextReadField textField, Date dateValue, String valueFormat, String defaultValue) {
+        setValue(textField, dateValue != null ? DateHelper.formatLocalShortDateTime(dateValue) : null, null, valueFormat, defaultValue, dateValue);
+    }
+
     // Short uuid
     @BindingAdapter(value = {"shortUuidValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setShortUuidValue(ControlTextReadField textField, String uuid, String valueFormat, String defaultValue) {
