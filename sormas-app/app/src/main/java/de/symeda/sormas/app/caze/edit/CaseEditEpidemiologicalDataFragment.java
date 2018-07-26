@@ -94,6 +94,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
                 if (value != YesNoUnknown.YES) {
                     clearBurials();
                 }
+
+                verifyBurialStatus();
             }
         });
 
@@ -105,6 +107,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
                 if (value != YesNoUnknown.YES) {
                     clearGatherings();
                 }
+
+                verifyGatheringStatus();
             }
         });
 
@@ -116,6 +120,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
                 if (value != YesNoUnknown.YES) {
                     clearTravels();
                 }
+
+                verifyTravelStatus();
             }
         });
 

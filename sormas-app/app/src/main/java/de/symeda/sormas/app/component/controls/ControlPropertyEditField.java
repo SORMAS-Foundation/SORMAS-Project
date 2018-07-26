@@ -175,9 +175,9 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
     protected void showWarningNotification() {
         if (hasWarning && notificationContext != null && warningMessage != null) {
             if (notificationContext instanceof BaseTeboAlertDialog) {
-                NotificationHelper.showDialogNotification(notificationContext, NotificationType.ERROR, errorMessage);
+                NotificationHelper.showDialogNotification(notificationContext, NotificationType.WARNING, warningMessage);
             } else {
-                NotificationHelper.showNotification(notificationContext, NotificationType.ERROR, errorMessage);
+                NotificationHelper.showNotification(notificationContext, NotificationType.WARNING, warningMessage);
             }
         }
     }
@@ -288,11 +288,11 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        labelRequired = (TextView) this.findViewById(R.id.required_indicator);
-        labelSoftRequired = (TextView) this.findViewById(R.id.soft_required_indicator);
-        labelError = (TextView) this.findViewById(R.id.error_indicator);
+        labelRequired = this.findViewById(R.id.required_indicator);
+        labelSoftRequired = this.findViewById(R.id.soft_required_indicator);
+        labelError = this.findViewById(R.id.error_indicator);
         labelError.setVisibility(GONE);
-        labelWarning = (TextView) this.findViewById(R.id.warning_indicator);
+        labelWarning = this.findViewById(R.id.warning_indicator);
         setRequired(required);
         setSoftRequired(softRequired);
         setWarning(hasWarning);

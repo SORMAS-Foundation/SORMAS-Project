@@ -58,6 +58,8 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
                 if (value != YesNoUnknown.YES) {
                     clearPreviousHospitalizations();
                 }
+
+                verifyPrevHospitalizationStatus();
             }
         });
 

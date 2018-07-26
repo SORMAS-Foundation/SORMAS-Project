@@ -370,8 +370,6 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
                 setBindingVariable(context, contentViewStubBinding, layoutName);
 
                 ViewGroup root = (ViewGroup) contentViewStubBinding.getRoot();
-                setNotificationContextForPropertyFields(root);
-
             }
         });
 
@@ -577,6 +575,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
     //AlertDialog
     public void show(final Callback.IAction<AlertDialog> callback) {
         this.rootBinding = bindRootLayout(activity);
+        setNotificationContextForPropertyFields((ViewGroup) rootBinding.getRoot());
 
         dialogTask = new DefaultAsyncTask(getContext()) {
             @Override

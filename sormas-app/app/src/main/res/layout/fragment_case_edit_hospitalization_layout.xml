@@ -192,9 +192,7 @@
                     android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
                     app:callback="@{prevHosItemClickCallback}"
                     app:entries="@{previousHospitalizationList}"
-                    app:layout="@{@layout/row_case_previous_hospitalization_layout}"
-                    />
-
+                    app:layout="@{@layout/row_case_previous_hospitalization_layout}" />
 
             </LinearLayout>
 
