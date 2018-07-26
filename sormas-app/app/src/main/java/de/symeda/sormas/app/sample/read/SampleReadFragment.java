@@ -48,6 +48,8 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
                                 ShipmentStatus.NOT_SHIPPED;
                         SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(getContext(),
                                 sample.getUuid(), shipmentStatus).setSampleUuid(record.getUuid());
+                        // Activity needs to be destroyed because it is only resumed, not created otherwise
+                        // and therefore the record uuid is not changed
                         if (getActivity( )!= null) {
                             getActivity().finish();
                         }

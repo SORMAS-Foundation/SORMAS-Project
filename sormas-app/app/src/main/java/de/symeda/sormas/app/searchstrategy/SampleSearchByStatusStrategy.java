@@ -23,7 +23,7 @@ public class SampleSearchByStatusStrategy implements ISearchStrategy<Sample> {
             result = DatabaseHelper.getSampleDao().queryForEq(Sample.SHIPPED, false);
             List<Sample> samplesToRemove = new ArrayList<>();
             for (Sample sample : result) {
-                if (sample.isReceived() || sample.getReferredTo() != null) {
+                if (sample.isReceived() || sample.getReferredToUuid() != null) {
                     samplesToRemove.add(sample);
                 }
             }
@@ -32,7 +32,7 @@ public class SampleSearchByStatusStrategy implements ISearchStrategy<Sample> {
             result = DatabaseHelper.getSampleDao().queryForEq(Sample.SHIPPED, true);
             List<Sample> samplesToRemove = new ArrayList<>();
             for (Sample sample : result) {
-                if (sample.isReceived() || sample.getReferredTo() != null) {
+                if (sample.isReceived() || sample.getReferredToUuid() != null) {
                     samplesToRemove.add(sample);
                 }
             }
@@ -41,7 +41,7 @@ public class SampleSearchByStatusStrategy implements ISearchStrategy<Sample> {
             result = DatabaseHelper.getSampleDao().queryForEq(Sample.RECEIVED, true);
             List<Sample> samplesToRemove = new ArrayList<>();
             for (Sample sample : result) {
-                if (sample.getReferredTo() != null) {
+                if (sample.getReferredToUuid() != null) {
                     samplesToRemove.add(sample);
                 }
             }

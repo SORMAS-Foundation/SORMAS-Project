@@ -10,7 +10,7 @@ import de.symeda.sormas.app.shared.ShipmentStatus;
 public class SampleHelper {
 
     public static ShipmentStatus getShipmentStatus(Sample record) {
-        if (record.getReferredTo() != null) {
+        if (record.getReferredToUuid() != null) {
             return ShipmentStatus.REFERRED_OTHER_LAB;
         } else if (record.isReceived()) {
             return ShipmentStatus.RECEIVED;

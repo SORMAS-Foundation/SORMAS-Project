@@ -85,7 +85,7 @@ public class CaseEditSampleListAdapter extends DataBoundAdapter<RowEditSampleLis
         Resources resources = img.getContext().getResources();
         Drawable drw = (Drawable) ContextCompat.getDrawable(img.getContext(), R.drawable.indicator_status_circle);
 
-        if (record.getReferredTo() != null) {
+        if (record.getReferredToUuid() != null) {
             drw.setColorFilter(resources.getColor(R.color.indicatorShipmentReferred), PorterDuff.Mode.SRC_OVER);
         } else if (record.isReceived()) {
             drw.setColorFilter(resources.getColor(R.color.indicatorShipmentReceived), PorterDuff.Mode.SRC_OVER);

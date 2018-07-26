@@ -700,7 +700,7 @@ public class MemoryDatabaseHelper {
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Sample> list = SampleGenerator.get(min);
             for (Sample item : list) {
-                if (!item.isShipped() && !item.isReceived() && item.getReferredTo() == null) {
+                if (!item.isShipped() && !item.isReceived() && item.getReferredToUuid() == null) {
                     sampleList.add(item);
                 }
             }
@@ -713,7 +713,7 @@ public class MemoryDatabaseHelper {
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Sample> list = SampleGenerator.get(min);
             for (Sample item : list) {
-                if (item.isShipped() && !item.isReceived() && item.getReferredTo() == null) {
+                if (item.isShipped() && !item.isReceived() && item.getReferredToUuid() == null) {
                     sampleList.add(item);
                 }
             }
@@ -726,7 +726,7 @@ public class MemoryDatabaseHelper {
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Sample> list = SampleGenerator.get(min);
             for (Sample item : list) {
-                if (item.isReceived() && item.getReferredTo() == null) {
+                if (item.isReceived() && item.getReferredToUuid() == null) {
                     sampleList.add(item);
                 }
             }
@@ -739,7 +739,7 @@ public class MemoryDatabaseHelper {
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
             List<Sample> list = SampleGenerator.get(min);
             for (Sample item : list) {
-                if (item.getReferredTo() != null) {
+                if (item.getReferredToUuid() != null) {
                     sampleList.add(item);
                 }
             }
@@ -1052,13 +1052,13 @@ class SampleGenerator extends BaseDataGenerator {
             data1.setShipped(getRandomBoolean());
             data1.setReceived(getRandomBoolean());
 
-            data1.setReferredTo(null);
+            data1.setReferredToUuid(null);
 
             pool.add(data1);
         }
 
         for (int i = 0; i < Math.round(pool.size() / 20); i++) {
-            pool.get(i).setReferredTo(randomItem(pool));
+            pool.get(i).setReferredToUuid(randomItem(pool).getUuid());
         }
     }
 
