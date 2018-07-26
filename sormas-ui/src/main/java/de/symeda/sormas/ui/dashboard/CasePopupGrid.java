@@ -86,7 +86,7 @@ public class CasePopupGrid extends Grid {
         		LAST_NAME, CaseDataDto.REPORT_DATE, CaseDataDto.HEALTH_FACILITY_DETAILS);
         
         getColumn(CaseDataDto.UUID).setRenderer(new UuidRenderer());
-        getColumn(CaseDataDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
+        getColumn(CaseDataDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
         
         if (facility == null || !FacilityHelper.isOtherOrNoneHealthFacility(facility.getUuid())) {
         	getColumn(CaseDataDto.HEALTH_FACILITY_DETAILS).setHidden(true);

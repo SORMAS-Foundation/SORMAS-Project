@@ -43,7 +43,7 @@ public final class DateHelper {
 		try {
 			return (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT);
 		} catch (Exception e) {
-			return getShortDateFormat();
+			return clone(SHORT_DATE_FORMAT);
 		}
 	}
 
@@ -51,7 +51,7 @@ public final class DateHelper {
 		try {
 			return (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.MEDIUM);
 		} catch (Exception e) {
-			return getDateFormat();
+			return clone(DATE_FORMAT);
 		}
 	}
 
@@ -59,7 +59,7 @@ public final class DateHelper {
 		try {
 			return (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.LONG);
 		} catch (Exception e) {
-			return getDateFormat();
+			return clone(DATE_FORMAT);
 		}
 	}
 
@@ -79,7 +79,7 @@ public final class DateHelper {
 		try {
 			return (SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
 		} catch (Exception e) {
-			return getShortDateTimeFormat();
+			return clone(SHORT_DATE_TIME_FORMAT);
 		}
 	}
 
@@ -87,7 +87,7 @@ public final class DateHelper {
 		try {
 			return (SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT);
 		} catch (Exception e) {
-			return getDateTimeFormat();
+			return clone(DATE_TIME_FORMAT);
 		}
 	}
 
@@ -95,7 +95,7 @@ public final class DateHelper {
 		try {
 			return (SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT);
 		} catch (Exception e) {
-			return getDateTimeFormat();
+			return clone(DATE_TIME_FORMAT);
 		}
 	}
 
@@ -122,7 +122,7 @@ public final class DateHelper {
 			return "";
 		}
 	}
-	
+
 	public static String formatLocalDate(Date date) {
 		if (date != null) {
 			return DateFormat.getDateInstance(DateFormat.MEDIUM).format(date);
@@ -130,7 +130,7 @@ public final class DateHelper {
 			return "";
 		}
 	}
-	
+
 	public static String formatLocalShortDateTime(Date date) {
 		if (date != null) {
 			return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(date);
@@ -146,7 +146,7 @@ public final class DateHelper {
 			return "";
 		}
 	}
-	
+
 	public static String formatTime(Date date) {
 		if (date != null) {
 			return clone(TIME_FORMAT).format(date);
@@ -156,7 +156,7 @@ public final class DateHelper {
 	}
 
 	// Date and time parsing
-	
+
 	public static Date parseTime(String date) {
 		if (date != null) {
 			try {
@@ -313,22 +313,6 @@ public final class DateHelper {
 			x.add(i);
 		}
 		return x;
-	}
-
-	public static SimpleDateFormat getDateFormat() {
-		return clone(DATE_FORMAT);
-	}
-
-	private static SimpleDateFormat getShortDateFormat() {
-		return clone(SHORT_DATE_FORMAT);
-	}
-
-	public static SimpleDateFormat getShortDateTimeFormat() {
-		return clone(SHORT_DATE_TIME_FORMAT);
-	}
-
-	public static SimpleDateFormat getDateTimeFormat() {
-		return clone(DATE_TIME_FORMAT);
 	}
 
 	/**
