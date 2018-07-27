@@ -188,7 +188,7 @@ public final class DateHelper {
 			return null;
 		}
 	}
-	
+
 	public static Date parseDate(String date) {
 		return parseDate(date, clone(DATE_FORMAT));
 	}
@@ -471,7 +471,13 @@ public final class DateHelper {
 	public static EpiWeek getEpiWeek(Date date) {
 		Calendar calendar = getEpiCalendar();
 		calendar.setTime(date);
-		return new EpiWeek(calendar.get(Calendar.YEAR), calendar.get(Calendar.WEEK_OF_YEAR));
+		// Year has to be manually increased for week 1 of the next year because Calendar chooses the year
+		// of the actual date
+		if (calendar.get(Calendar.WEEK_OF_YEAR) == 1 && calendar.get(Calendar.MONTH) == 11) {
+			return new EpiWeek(calendar.get(Calendar.YEAR) + 1, calendar.get(Calendar.WEEK_OF_YEAR));
+		} else {
+			return new EpiWeek(calendar.get(Calendar.YEAR), calendar.get(Calendar.WEEK_OF_YEAR));
+		}
 	}
 
 	/**
