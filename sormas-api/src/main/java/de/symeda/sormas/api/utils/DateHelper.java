@@ -115,6 +115,14 @@ public final class DateHelper {
 
 	// Date and time formatting
 
+	public static String formatLocalDate(Date date, SimpleDateFormat dateFormat) {
+		if (date != null && dateFormat != null) {
+			return dateFormat.format(date);
+		} else {
+			return "";
+		}
+	}
+
 	public static String formatLocalShortDate(Date date) {
 		if (date != null) {
 			return DateFormat.getDateInstance(DateFormat.SHORT).format(date);
@@ -169,16 +177,24 @@ public final class DateHelper {
 		}
 	}
 
-	public static Date parseDate(String date) {
-		if (date != null) {
+	public static Date parseDate(String date, SimpleDateFormat dateFormat) {
+		if (date != null && dateFormat != null) {
 			try {
-				return clone(DATE_FORMAT).parse(date);
+				return dateFormat.parse(date);
 			} catch (ParseException e) {
 				return null;
 			}
 		} else {
 			return null;
 		}
+	}
+	
+	public static Date parseDate(String date) {
+		return parseDate(date, clone(DATE_FORMAT));
+	}
+
+	public static Date parseLocalShortDate(String date) {
+		return parseDate(date, getLocalShortDateFormat());
 	}
 
 	public static Date parseDateWithException(String date) throws ParseException {
