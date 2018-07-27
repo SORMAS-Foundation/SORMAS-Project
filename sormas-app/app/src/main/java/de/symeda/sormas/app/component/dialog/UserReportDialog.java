@@ -24,14 +24,6 @@ import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogUserReportLayoutBinding;
 import de.symeda.sormas.app.util.TimeoutHelper;
 
-/**
- * Created by Orson on 01/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class UserReportDialog extends BaseTeboAlertDialog {
 
     public static final String TAG = UserReportDialog.class.getSimpleName();
@@ -60,63 +52,52 @@ public class UserReportDialog extends BaseTeboAlertDialog {
 
     @Override
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, final Callback.IAction callback) {
-        try {
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                @Override
-                public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+        DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
+            @Override
+            public void onPreExecute() {
+                //getActivityCommunicator().showPreloader();
+                //getActivityCommunicator().hideFragmentView();
+            }
+
+            @Override
+            public void doInBackground(TaskResultHolder resultHolder) {
+                try {
+                    String description = UserReportDialog.this.data.getMessage();
+                    Tracker tracker = ((SormasApplication) getActivity().getApplication()).getDefaultTracker();
+                    tracker.send(new HitBuilders.EventBuilder()
+                            .setCategory("User Report")
+                            .setAction("Error Report")
+                            .setLabel("Location: " + viewName + (uuid!=null?" - UUID: " + uuid:"") + (ConfigProvider.getUser()!=null?" - User: " + ConfigProvider.getUser().getUuid():"") + " - Description: " + description)
+                            .build());
+
+                    resultHolder.setResultStatus(new BoolResult(true, getActivity().getResources().getString(R.string.snackbar_report_sent)));
+                } catch (Exception ex) {
+                    resultHolder.setResultStatus(new BoolResult(true, getActivity().getResources().getString(R.string.snackbar_report_not_sent)));
+                }
+            }
+        };
+        dialogTask = executor.execute(new ITaskResultCallback() {
+            @Override
+            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //getActivityCommunicator().hidePreloader();
+                //getActivityCommunicator().showFragmentView();
+
+                if (resultHolder == null){
+                    if (callback != null)
+                        callback.call(null);
+                    return;
                 }
 
-                @Override
-                public void doInBackground(TaskResultHolder resultHolder) {
-                    try {
-                        String description = UserReportDialog.this.data.getMessage();
-                        Tracker tracker = ((SormasApplication) getActivity().getApplication()).getDefaultTracker();
-                        tracker.send(new HitBuilders.EventBuilder()
-                                .setCategory("User Report")
-                                .setAction("Error Report")
-                                .setLabel("Location: " + viewName + (uuid!=null?" - UUID: " + uuid:"") + (ConfigProvider.getUser()!=null?" - User: " + ConfigProvider.getUser().getUuid():"") + " - Description: " + description)
-                                .build());
-
-                        resultHolder.setResultStatus(new BoolResult(true, getActivity().getResources().getString(R.string.snackbar_report_sent)));
-                    } catch (Exception ex) {
-                        resultHolder.setResultStatus(new BoolResult(true, getActivity().getResources().getString(R.string.snackbar_report_not_sent)));
-                    }
+                if (resultStatus.isSuccess()) {
+                    NotificationHelper.showDialogNotification(UserReportDialog.this, NotificationType.SUCCESS, resultStatus.getMessage());
+                } else {
+                    NotificationHelper.showDialogNotification(UserReportDialog.this, NotificationType.ERROR, resultStatus.getMessage());
                 }
-            };
-            dialogTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
 
-                    if (resultHolder == null){if (callback != null)
-                        if (callback != null)
-                            callback.call(null);
-
-                        return;
-                    }
-
-                    if (resultStatus.isSuccess()) {
-                        NotificationHelper.showDialogNotification(UserReportDialog.this, NotificationType.SUCCESS, resultStatus.getMessage());
-                    } else {
-                        NotificationHelper.showDialogNotification(UserReportDialog.this, NotificationType.ERROR, resultStatus.getMessage());
-                    }
-
-                    TimeoutHelper.executeIn5Seconds(new Callback.IAction<AsyncTask>() {
-                        @Override
-                        public void call(AsyncTask result) {
-                            if (callback != null)
-                                callback.call(null);
-                        }
-                    });
-                }
-            });
-        } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
-        }
+                if (callback != null)
+                    callback.call(null);
+            }
+        });
     }
 
     @Override
