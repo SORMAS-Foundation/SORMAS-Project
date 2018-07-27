@@ -45,7 +45,7 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
 
         this.data = epiDataTravel;
 
-        travelTypeList = DataUtils.getEnumItems(TravelType.class, false);
+        travelTypeList = DataUtils.getEnumItems(TravelType.class, true);
     }
 
     @Override

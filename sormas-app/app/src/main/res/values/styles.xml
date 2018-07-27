@@ -81,61 +81,8 @@
     <!-- /Toolbar styles -->
 
 
-    <style name="CheckBoxLabelStyle">
-        <item name="android:textColor">@color/controlLabelColor</item>
-        <item name="android:textSize">@dimen/controlLabelSize</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:focusable">true</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusableInTouchMode">true</item>
-    </style>
 
-    <style name="SpinnerStyle" parent="Widget.AppCompat.Spinner.Underlined">
-        <!--<item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>-->
-        <item name="android:background">@drawable/selector_spinner</item>
-        <!--<item name="android:layout_margin">10dp</item>-->
-        <!--<item name="android:paddingLeft">@dimen/spinnerHorizontalSpacing</item>
-        <item name="android:paddingRight">@dimen/spinnerIconWidth</item>-->
-        <!--<item name="android:paddingTop">@dimen/contentVerticalSpacing</item>
-        <item name="android:paddingBottom">@dimen/contentVerticalSpacing</item>-->
-        <!--<item name="android:popupBackground">#DFFFFFFF</item>-->
-    </style>
-
-    <!--<style name="App.Style.Spinner" parent="android:style/Widget.ListView.DropDown">
-        <item name="android:dividerHeight">1dp</item>
-        <item name="android:divider">@color/lighterBlue</item>
-    </style>-->
-
-    <style name="DatePickerEditTextViewSingleRowStyle">
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingTop">@dimen/textViewTopPadding</item>
-        <item name="android:paddingBottom">@dimen/textViewBottomPadding</item>
-        <item name="android:background">@drawable/selector_text_control_edit</item>
-        <item name="android:cursorVisible">false</item>
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:textColor">@color/controlTextColor</item>
-        <item name="android:textColorHint">@color/controlTextViewHint</item>
-        <item name="android:textCursorDrawable">@drawable/cursor</item>
-        <item name="android:textIsSelectable">false</item>
-        <item name="android:textSize">@dimen/defaultControlTextSize</item>
-    </style>
-
-    <style name="EmptyListHintStyle">
-        <item name="android:paddingTop">@dimen/parentLayoutVerticalPadding</item>
-        <item name="android:paddingBottom">@dimen/parentLayoutVerticalPadding</item>
-        <item name="android:paddingLeft">@dimen/parentLayoutHorizontalPadding</item>
-        <item name="android:paddingRight">@dimen/parentLayoutHorizontalPadding</item>
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:textColor">@color/controlTextColor</item>
-        <item name="android:textSize">@dimen/defaultControlTextSize</item>
-        <item name="android:textStyle">italic</item>
-    </style>
+    <!-- CONTROL STYLES -->
 
     <style name="ControlSingleColumnStyle">
         <item name="android:layout_width">match_parent</item>
@@ -150,131 +97,6 @@
 
     <style name="ControlSecondOfTwoColumnsStyle" parent="ControlFirstOfTwoColumnsStyle">
         <item name="android:layout_marginStart">@dimen/control_spacing</item>
-    </style>
-
-    <style name="ControlTextFieldStyle">
-        <item name="android:layout_height">@dimen/maxControlHeight</item>
-        <item name="android:minHeight">@dimen/maxControlHeight</item>
-        <item name="android:maxHeight">@dimen/maxControlHeight</item>
-        <item name="android:layout_marginBottom">@dimen/controlMarginBottom</item>
-        <item name="android:background">@drawable/selector_text_control_edit</item>
-        <item name="android:cursorVisible">true</item>
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:textColor">@color/controlTextColor</item>
-        <item name="android:textColorHint">@color/controlTextViewHint</item>
-        <item name="android:textCursorDrawable">@drawable/cursor</item>
-        <item name="android:textIsSelectable">true</item>
-        <item name="android:textSize">@dimen/defaultControlTextSize</item>
-    </style>
-
-    <style name="ControlTextFieldMultiRowStyle" parent="ControlTextFieldStyle">
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingTop">@dimen/textViewTopPadding</item>
-        <item name="android:paddingBottom">@dimen/textViewBottomPadding</item>
-
-    </style>
-
-    <style name="ControlTextFieldSlimStyle" parent="ControlTextFieldStyle">
-        <item name="android:textSize">@dimen/slimControlTextSize</item>
-        <item name="android:paddingTop">@dimen/slimTextViewTopPadding</item>
-        <item name="android:paddingBottom">@dimen/slimTextViewBottomPadding</item>
-        <item name="android:layout_height">@dimen/slimControlHeight</item>
-        <item name="android:minHeight">@dimen/slimControlHeight</item>
-        <item name="android:maxHeight">@dimen/slimControlHeight</item>
-    </style>
-
-    <style name="ControlTextFieldReadStyle">
-        <item name="android:background">@color/controlReadTextViewBackground</item>
-        <item name="android:cursorVisible">true</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:focusable">false</item>
-        <item name="android:textColor">@color/controlReadTextColor</item>
-        <item name="android:textColorHint">@color/controlReadTextViewHint</item>
-        <item name="android:textSize">@dimen/controlReadTextSize</item>
-        <item name="android:layout_marginBottom">@dimen/controlMarginBottom</item>
-    </style>
-
-    <style name="ControlTextFieldReadDistinctStyle" parent="ControlTextFieldReadStyle">
-        <item name="android:background">@drawable/background_control_text_read_form_style</item>
-        <item name="android:paddingTop">@dimen/teboTextReadVerticalPadding</item>
-        <item name="android:paddingBottom">@dimen/teboTextReadVerticalPadding</item>
-        <item name="android:paddingStart">@dimen/textViewRightPadding</item>
-        <item name="android:paddingEnd">@dimen/textViewRightPadding</item>
-
-    </style>
-
-    <style name="ControlTextFieldReadDistinctSlimStyle" parent="ControlTextFieldReadDistinctStyle">
-        <item name="android:layout_height">@dimen/slimControlHeight</item>
-        <item name="android:minHeight">@dimen/slimControlHeight</item>
-        <item name="android:maxHeight">@dimen/slimControlHeight</item>
-    </style>
-
-    <style name="ControlPopupTextViewEditStyle">
-        <item name="android:paddingLeft">@dimen/textViewLeftPadding</item>
-        <item name="android:paddingRight">@dimen/textViewRightPadding</item>
-        <item name="android:paddingTop">@dimen/textViewTopPadding</item>
-        <item name="android:paddingBottom">@dimen/textViewBottomPadding</item>
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:maxLines">5</item>
-        <item name="android:ellipsize">end</item>
-        <item name="android:background">@drawable/control_link_edittextview_background_selector
-        </item>
-        <item name="android:textColor">@color/control_link_edittextview_color_selector</item>
-        <item name="android:textColorHint">@color/control_link_edittextview_hint_color_selector
-        </item>
-        <item name="android:drawablePadding">@dimen/contentHorizontalSpacing</item>
-        <item name="android:layout_marginBottom">@dimen/controlMarginBottom</item>
-    </style>
-
-    <style name="ControlPopupTextViewEditSlimStyle" parent="ControlPopupTextViewEditStyle">
-        <item name="android:textSize">@dimen/slimControlTextSize</item>
-        <item name="android:layout_height">@dimen/slimControlHeight</item>
-        <item name="android:paddingTop">@dimen/slimTextViewTopPadding</item>
-        <item name="android:paddingBottom">@dimen/slimTextViewBottomPadding</item>
-    </style>
-
-    <style name="ControlDateOrTimePickerInputStyle" parent="@style/ControlTextFieldStyle">
-        <item name="android:cursorVisible">false</item>
-        <item name="android:textIsSelectable">false</item>
-    </style>
-
-    <style name="ControlDateOrTimePickerSlimInputStyle" parent="@style/ControlTextFieldSlimStyle">
-        <item name="android:cursorVisible">false</item>
-        <item name="android:textIsSelectable">false</item>
-    </style>
-
-    <style name="ControlSpinnerStyle">
-        <item name="android:layout_height">@dimen/maxSpinnerHeight</item>
-        <item name="android:minHeight">@dimen/maxSpinnerHeight</item>
-        <item name="android:maxHeight">@dimen/maxSpinnerHeight</item>
-        <item name="android:layout_marginBottom">@dimen/controlMarginBottom</item>
-    </style>
-
-    <style name="ControlSpinnerSlimStyle">
-        <item name="android:layout_height">@dimen/dropdownListSlimItemHeight</item>
-        <item name="android:minHeight">@dimen/dropdownListSlimItemHeight</item>
-        <item name="android:maxHeight">@dimen/dropdownListSlimItemHeight</item>
-        <item name="android:paddingTop">@dimen/slimTextViewTopPadding</item>
-        <item name="android:paddingBottom">@dimen/slimTextViewBottomPadding</item>
-        <item name="android:textSize">@dimen/slimControlTextSize</item>
-    </style>
-
-    <style name="ControlLinkStyle">
-        <item name="android:height">@dimen/linkButtonHeight</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textSize">@dimen/formActivityLinkButtonTextSize</item>
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Button</item>
-        <item name="android:textColor">@color/selector_color_form_activity_link_button</item>
-        <item name="android:includeFontPadding">false</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusable">false</item>
-        <item name="android:focusableInTouchMode">false</item>
     </style>
 
     <style name="ControlLabelStyle">
@@ -299,11 +121,14 @@
         <item name="android:fontFamily">sans-serif</item>
     </style>
 
-    <style name="ImageCaptionStyle">
+    <style name="CheckBoxLabelStyle">
         <item name="android:textColor">@color/controlLabelColor</item>
         <item name="android:textSize">@dimen/controlLabelSize</item>
-        <item name="android:layout_marginBottom">@dimen/field_padding_8</item>
         <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
     </style>
 
     <style name="RadioGroupLabelStyle" parent="ControlLabelStyle">
@@ -345,6 +170,174 @@
     <style name="ErrorIndicatorStyle" parent="WarningIndicatorStyle">
         <item name="android:text">@string/indicator_error</item>
         <item name="android:background">@drawable/background_rounded_edges_error</item>
+    </style>
+
+    <style name="ControlTextFieldStyle">
+        <item name="android:layout_height">@dimen/maxControlHeight</item>
+        <item name="android:minHeight">@dimen/maxControlHeight</item>
+        <item name="android:maxHeight">@dimen/maxControlHeight</item>
+        <item name="android:layout_marginBottom">@dimen/controlMarginBottom</item>
+        <item name="android:background">@drawable/selector_text_control_edit</item>
+        <item name="android:cursorVisible">true</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">@color/controlTextColor</item>
+        <item name="android:textColorHint">@color/controlTextViewHint</item>
+        <item name="android:textCursorDrawable">@drawable/cursor</item>
+        <item name="android:textIsSelectable">true</item>
+        <item name="android:textSize">@dimen/defaultControlTextSize</item>
+    </style>
+
+    <style name="ControlTextFieldMultiRowStyle" parent="ControlTextFieldStyle">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/textViewTopPadding</item>
+        <item name="android:paddingBottom">@dimen/textViewBottomPadding</item>
+    </style>
+
+    <style name="ControlTextFieldSlimStyle" parent="ControlTextFieldStyle">
+        <item name="android:textSize">@dimen/slimControlTextSize</item>
+        <item name="android:paddingTop">@dimen/slimTextViewTopPadding</item>
+        <item name="android:paddingBottom">@dimen/slimTextViewBottomPadding</item>
+        <item name="android:layout_height">@dimen/slimControlHeight</item>
+        <item name="android:minHeight">@dimen/slimControlHeight</item>
+        <item name="android:maxHeight">@dimen/slimControlHeight</item>
+    </style>
+
+    <style name="ControlTextFieldReadStyle">
+        <item name="android:background">@color/controlReadTextViewBackground</item>
+        <item name="android:cursorVisible">true</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:focusable">false</item>
+        <item name="android:textColor">@color/controlReadTextColor</item>
+        <item name="android:textColorHint">@color/controlReadTextViewHint</item>
+        <item name="android:textSize">@dimen/controlReadTextSize</item>
+        <item name="android:layout_marginBottom">@dimen/controlMarginBottom</item>
+    </style>
+
+    <style name="ControlTextFieldReadDistinctStyle" parent="ControlTextFieldReadStyle">
+        <item name="android:background">@drawable/background_control_text_read_form_style</item>
+        <item name="android:paddingTop">@dimen/teboTextReadVerticalPadding</item>
+        <item name="android:paddingBottom">@dimen/teboTextReadVerticalPadding</item>
+        <item name="android:paddingStart">@dimen/textViewRightPadding</item>
+        <item name="android:paddingEnd">@dimen/textViewRightPadding</item>
+    </style>
+
+    <style name="ControlTextFieldReadDistinctSlimStyle" parent="ControlTextFieldReadDistinctStyle">
+        <item name="android:layout_height">@dimen/slimControlHeight</item>
+        <item name="android:minHeight">@dimen/slimControlHeight</item>
+        <item name="android:maxHeight">@dimen/slimControlHeight</item>
+    </style>
+
+    <style name="ControlPopupTextViewEditStyle">
+        <item name="android:paddingLeft">@dimen/textViewLeftPadding</item>
+        <item name="android:paddingRight">@dimen/textViewRightPadding</item>
+        <item name="android:paddingTop">@dimen/textViewTopPadding</item>
+        <item name="android:paddingBottom">@dimen/textViewBottomPadding</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:maxLines">5</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:background">@drawable/control_link_edittextview_background_selector</item>
+        <item name="android:textColor">@color/control_link_edittextview_color_selector</item>
+        <item name="android:textColorHint">@color/control_link_edittextview_hint_color_selector</item>
+        <item name="android:drawablePadding">@dimen/contentHorizontalSpacing</item>
+        <item name="android:layout_marginBottom">@dimen/controlMarginBottom</item>
+    </style>
+
+    <style name="ControlPopupTextViewEditSlimStyle" parent="ControlPopupTextViewEditStyle">
+        <item name="android:textSize">@dimen/slimControlTextSize</item>
+        <item name="android:layout_height">@dimen/slimControlHeight</item>
+        <item name="android:paddingTop">@dimen/slimTextViewTopPadding</item>
+        <item name="android:paddingBottom">@dimen/slimTextViewBottomPadding</item>
+    </style>
+
+    <style name="SpinnerStyle" parent="Widget.AppCompat.Spinner.Underlined">
+        <item name="android:background">@drawable/selector_spinner</item>
+    </style>
+
+    <style name="DatePickerEditTextViewSingleRowStyle">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/textViewTopPadding</item>
+        <item name="android:paddingBottom">@dimen/textViewBottomPadding</item>
+        <item name="android:background">@drawable/selector_text_control_edit</item>
+        <item name="android:cursorVisible">false</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">@color/controlTextColor</item>
+        <item name="android:textColorHint">@color/controlTextViewHint</item>
+        <item name="android:textCursorDrawable">@drawable/cursor</item>
+        <item name="android:textIsSelectable">false</item>
+        <item name="android:textSize">@dimen/defaultControlTextSize</item>
+    </style>
+
+    <style name="ControlDateOrTimePickerInputStyle" parent="@style/ControlTextFieldStyle">
+        <item name="android:cursorVisible">false</item>
+        <item name="android:textIsSelectable">false</item>
+    </style>
+
+    <style name="ControlDateOrTimePickerSlimInputStyle" parent="@style/ControlTextFieldSlimStyle">
+        <item name="android:cursorVisible">false</item>
+        <item name="android:textIsSelectable">false</item>
+    </style>
+
+    <style name="ControlSpinnerStyle">
+        <item name="android:layout_height">@dimen/maxSpinnerHeight</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:minHeight">@dimen/maxSpinnerHeight</item>
+        <item name="android:maxHeight">@dimen/maxSpinnerHeight</item>
+        <item name="android:layout_marginBottom">@dimen/controlMarginBottom</item>
+        <item name="android:background">@drawable/selector_spinner</item>
+        <item name="android:spinnerMode">dialog</item>
+        <item name="android:paddingStart">@dimen/spinnerHorizontalSpacing</item>
+        <item name="android:paddingEnd">@dimen/spinnerIconWidth</item>
+    </style>
+
+    <style name="ControlSpinnerSlimStyle" parent="ControlSpinnerStyle">
+        <item name="android:layout_height">@dimen/dropdownListSlimItemHeight</item>
+        <item name="android:minHeight">@dimen/dropdownListSlimItemHeight</item>
+        <item name="android:maxHeight">@dimen/dropdownListSlimItemHeight</item>
+        <item name="android:paddingTop">@dimen/slimTextViewTopPadding</item>
+        <item name="android:paddingBottom">@dimen/slimTextViewBottomPadding</item>
+        <item name="android:textSize">@dimen/slimControlTextSize</item>
+        <item name="android:layout_marginBottom">0dp</item>
+    </style>
+
+    <style name="ControlLinkStyle">
+        <item name="android:height">@dimen/linkButtonHeight</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">@dimen/formActivityLinkButtonTextSize</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Button</item>
+        <item name="android:textColor">@color/selector_color_form_activity_link_button</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+    </style>
+
+    <style name="ControlCheckboxStyle">
+        <item name="android:layout_width">@dimen/checkBoxWidth</item>
+        <item name="android:layout_height">@dimen/checkBoxHeight</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:textSize">@dimen/defaultControlTextSize</item>
+        <item name="android:scaleX">1.2</item>
+        <item name="android:scaleY">1.2</item>
+        <item name="android:background">?android:attr/listChoiceIndicatorMultiple</item>
+    </style>
+
+    <!-- /CONTROL STYLES -->
+
+    <style name="ImageCaptionStyle">
+        <item name="android:textColor">@color/controlLabelColor</item>
+        <item name="android:textSize">@dimen/controlLabelSize</item>
+        <item name="android:layout_marginBottom">@dimen/field_padding_8</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
     <style name="DarkColorStyle">
@@ -432,6 +425,19 @@
         <item name="android:background">@drawable/selector_button_inverse_danger</item>
         <item name="android:elevation">@dimen/inverseButtonElevation</item>
     </style>
+
+    <style name="EmptyListHintStyle">
+        <item name="android:paddingTop">@dimen/parentLayoutVerticalPadding</item>
+        <item name="android:paddingBottom">@dimen/parentLayoutVerticalPadding</item>
+        <item name="android:paddingLeft">@dimen/parentLayoutHorizontalPadding</item>
+        <item name="android:paddingRight">@dimen/parentLayoutHorizontalPadding</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@color/controlTextColor</item>
+        <item name="android:textSize">@dimen/defaultControlTextSize</item>
+        <item name="android:textStyle">italic</item>
+    </style>
+
 
     <style name="LoginHeading1">
         <item name="android:textColor">@color/normalText</item>

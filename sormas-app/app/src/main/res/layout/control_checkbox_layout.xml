@@ -10,15 +10,8 @@
 
             <CheckBox
                 android:id="@+id/checkbox"
-                android:layout_width="@dimen/checkBoxWidth"
-                android:layout_height="@dimen/checkBoxHeight"
-                android:gravity="center_vertical"
-                android:layout_gravity="center_vertical"
-                android:textSize="@dimen/defaultControlTextSize"
-                android:scaleX="1.2"
-                android:scaleY="1.2"
                 android:button="@null"
-                android:background="?android:attr/listChoiceIndicatorMultiple" />
+                style="@style/ControlCheckboxStyle" />
 
             <include layout="@layout/control_label_layout" />
 

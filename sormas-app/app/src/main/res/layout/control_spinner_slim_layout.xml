@@ -10,11 +10,6 @@
 
         <Spinner
             android:id="@+id/input"
-            android:layout_width="match_parent"
-            android:paddingStart="@dimen/spinnerHorizontalSpacing"
-            android:paddingEnd="@dimen/spinnerIconWidth"
-            android:background="@drawable/selector_spinner"
-            android:spinnerMode="dialog"
             style="@style/ControlSpinnerSlimStyle" />
 
     </LinearLayout>

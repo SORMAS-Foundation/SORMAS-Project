@@ -24,12 +24,10 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.controls.ControlButton;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
-import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogRootLayoutBinding;
@@ -653,7 +651,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
         if (btnPanelRootView == null)
             return null;
 
-        ControlButton btn = (ControlButton) btnPanelRootView.findViewById(R.id.btnDismiss);
+        ControlButton btn = (ControlButton) btnPanelRootView.findViewById(R.id.dismiss);
 
         return btn;
     }

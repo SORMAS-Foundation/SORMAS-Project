@@ -28,7 +28,7 @@
         >
 
         <de.symeda.sormas.app.component.controls.ControlButton
-            android:id="@+id/btnDismiss"
+            android:id="@+id/dismiss"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"

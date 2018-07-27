@@ -15,6 +15,7 @@
             android:layout_marginEnd="60dp"
             android:labelFor="@+id/input"/>
             <!-- 60dp margin makes sure indicators are always visible -->
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
