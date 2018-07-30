@@ -67,7 +67,7 @@ public class VisitGrid extends Grid {
 		addItemClickListener(e -> {
 			if (e.getPropertyId() != null && (e.getPropertyId().equals(EDIT_BTN_ID) || e.isDoubleClick())) {
 				VisitDto indexDto = (VisitDto)e.getItemId();
-				ControllerProvider.getVisitController().editVisit(indexDto.toReference(), r -> reload());
+				ControllerProvider.getVisitController().editVisit(indexDto.toReference(), filterContact, r -> reload());
 			}
 		});
 	}
