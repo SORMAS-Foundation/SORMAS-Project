@@ -143,24 +143,6 @@ public abstract class BaseReportFragment<TBinding extends ViewDataBinding, TData
         return contentViewStubBinding;
     }
 
-    protected static <TFragment extends BaseReportFragment> TFragment newInstance(Class<TFragment> f) {
-
-        TFragment fragment;
-        try {
-            fragment = f.newInstance();
-        } catch (java.lang.InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-
-        Bundle bundle = fragment.getArguments();
-        if (bundle == null) {
-            bundle = new Bundle();
-        }
-
-        fragment.setArguments(bundle);
-        return fragment;
-    }
-
     protected abstract void prepareFragmentData(Bundle savedInstanceState);
 
     protected abstract void onLayoutBinding(TBinding contentBinding);

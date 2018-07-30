@@ -12,11 +12,10 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.visit.read.VisitReadActivity;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
-import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
-import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
+import de.symeda.sormas.app.visit.VisitSection;
+import de.symeda.sormas.app.visit.read.VisitReadActivity;
 
 public class ContactReadFollowUpVisitListFragment extends BaseReadFragment<FragmentFormListLayoutBinding, List<Visit>, Contact> implements OnListItemClickListener {
 
@@ -24,6 +23,10 @@ public class ContactReadFollowUpVisitListFragment extends BaseReadFragment<Fragm
 
     private ContactReadFollowupListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
+
+    public static ContactReadFollowUpVisitListFragment newInstance(Contact activityRootData) {
+        return newInstance(ContactReadFollowUpVisitListFragment.class, null, activityRootData);
+    }
 
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
@@ -67,12 +70,8 @@ public class ContactReadFollowUpVisitListFragment extends BaseReadFragment<Fragm
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
-        Visit record = (Visit) item;
-        VisitFormNavigationCapsule dataCapsule = new VisitFormNavigationCapsule(getContext(), record.getUuid(), record.getVisitStatus());
-        VisitReadActivity.goToActivity(getActivity(), dataCapsule);
+        Visit vist = (Visit) item;
+        VisitReadActivity.startActivity(getActivity(), vist.getUuid(), getActivityRootData().getUuid(), VisitSection.VISIT_INFO);
     }
 
-    public static ContactReadFollowUpVisitListFragment newInstance(ContactFormNavigationCapsule capsule, Contact activityRootData) {
-        return newInstance(ContactReadFollowUpVisitListFragment.class, capsule, activityRootData);
-    }
 }

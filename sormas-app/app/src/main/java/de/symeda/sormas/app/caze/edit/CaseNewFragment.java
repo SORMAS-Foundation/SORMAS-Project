@@ -1,7 +1,5 @@
 package de.symeda.sormas.app.caze.edit;
 
-import android.os.Bundle;
-
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
@@ -15,7 +13,6 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentCaseNewLayoutBinding;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
@@ -34,6 +31,10 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     private List<Item> initialCommunities;
     private List<Item> initialFacilities;
 
+    public static CaseNewFragment newInstance(Case activityRootData) {
+        return newInstance(CaseNewFragment.class, null, activityRootData);
+    }
+
     @Override
     protected String getSubHeadingTitle() {
         return getResources().getString(R.string.caption_new_case);
@@ -45,7 +46,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     }
 
     @Override
-    protected void prepareFragmentData(Bundle savedInstanceState) {
+    protected void prepareFragmentData() {
         record = getActivityRootData();
 
         diseaseList = DataUtils.getEnumItems(Disease.class, true);
@@ -98,9 +99,5 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     @Override
     public int getEditLayout() {
         return R.layout.fragment_case_new_layout;
-    }
-
-    public static CaseNewFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(CaseNewFragment.class, capsule, activityRootData);
     }
 }

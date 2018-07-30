@@ -2,28 +2,32 @@ package de.symeda.sormas.app.caze.edit;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.view.Menu;
 
 import java.util.Calendar;
 
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
-import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.caze.CaseSection;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
+import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
-import de.symeda.sormas.app.component.validation.FragmentValidator;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -33,9 +37,39 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
     private AsyncTask saveTask;
 
+    private String contactUuid;
+
+    public static void startActivity(Context fromActivity) {
+        BaseEditActivity.startActivity(fromActivity, CaseNewActivity.class, buildBundle());
+    }
+
+    public static void startActivity(Context fromActivity, String contactUuid) {
+        BaseEditActivity.startActivity(fromActivity, CaseNewActivity.class, buildBundle(contactUuid));
+    }
+
+    public static Bundler buildBundle() {
+        return BaseEditActivity.buildBundle(null);
+    }
+
+    public static Bundler buildBundle(String contactUuid) {
+        return BaseEditActivity.buildBundle(null).setContactUuid(contactUuid);
+    }
+
+    @Override
+    protected void onCreateInner(Bundle savedInstanceState) {
+        super.onCreateInner(savedInstanceState);
+        contactUuid = new Bundler(savedInstanceState).getContactUuid();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        new Bundler(outState).setContactUuid(contactUuid);
+    }
+
     @Override
     public CaseClassification getPageStatus() {
-        return (CaseClassification) super.getPageStatus();
+        return null;
     }
 
     @Override
@@ -45,8 +79,16 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
     @Override
     protected Case buildRootEntity() {
-        Person _person = DatabaseHelper.getPersonDao().build();
+        Person _person;
+        if (!DataHelper.isNullOrEmpty(contactUuid)) {
+            Contact sourceContact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
+            _person = sourceContact.getPerson();
+        } else {
+            _person = DatabaseHelper.getPersonDao().build();
+        }
+
         Case _case = DatabaseHelper.getCaseDao().build(_person);
+
         return _case;
     }
 
@@ -59,8 +101,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Case activityRootData) {
-        CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
-        return CaseNewFragment.newInstance(dataCapsule, activityRootData);
+        return CaseNewFragment.newInstance(activityRootData);
     }
 
     @Override
@@ -90,53 +131,57 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
             return;
         }
 
-        SelectOrCreatePersonDialog.selectOrCreatePerson(caze.getPerson(), new Consumer<Person>() {
+        if (caze.getPerson().isNew()) {
+            SelectOrCreatePersonDialog.selectOrCreatePerson(caze.getPerson(), new Consumer<Person>() {
+                @Override
+                public void accept(Person person) {
+                    caze.setPerson(person);
+                    saveDataInner(caze);
+                }
+            });
+        } else {
+            saveDataInner(caze);
+        }
+    }
+
+    private void saveDataInner(final Case caze) {
+
+        saveTask = new SavingAsyncTask(getRootView(), caze) {
             @Override
-            public void accept(Person person) {
-                caze.setPerson(person);
-
-                saveTask = new SavingAsyncTask(getRootView(), caze) {
-                    @Override
-                    protected void onPreExecute() {
-                        showPreloader();
-                    }
-
-                    @Override
-                    protected void doInBackground(TaskResultHolder resultHolder) throws Exception {
-                        DatabaseHelper.getPersonDao().saveAndSnapshot(caze.getPerson());
-
-                        // epid number
-                        Calendar calendar = Calendar.getInstance();
-                        String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
-                        caze.setEpidNumber(caze.getRegion().getEpidCode() != null ? caze.getRegion().getEpidCode() : ""
-                                + "-" + caze.getDistrict().getEpidCode() != null ? caze.getDistrict().getEpidCode() : ""
-                                + "-" + year + "-");
-
-                        DatabaseHelper.getCaseDao().saveAndSnapshot(caze);
-                    }
-
-
-                    @Override
-                    protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-                        hidePreloader();
-                        super.onPostExecute(taskResult);
-                        if (taskResult.getResultStatus().isSuccess()) {
-                            showCaseEditView(caze);
-                        }
-                    }
-                }.executeOnThreadPool();
+            protected void onPreExecute() {
+                showPreloader();
             }
-        });
-    }
 
-    private void showCaseEditView(Case caze) {
-        CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(getContext(),
-                caze.getUuid(), caze.getCaseClassification());
-        CaseEditActivity.goToActivity(CaseNewActivity.this, dataCapsule);
-    }
+            @Override
+            protected void doInBackground(TaskResultHolder resultHolder) throws Exception {
+                DatabaseHelper.getPersonDao().saveAndSnapshot(caze.getPerson());
 
-    public static <TActivity extends BaseActivity> void goToActivity(Context fromActivity, CaseFormNavigationCapsule dataCapsule) {
-        BaseEditActivity.goToActivity(fromActivity, CaseNewActivity.class, dataCapsule);
+                // epid number
+                Calendar calendar = Calendar.getInstance();
+                String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
+                caze.setEpidNumber(caze.getRegion().getEpidCode() != null ? caze.getRegion().getEpidCode() : ""
+                        + "-" + caze.getDistrict().getEpidCode() != null ? caze.getDistrict().getEpidCode() : ""
+                        + "-" + year + "-");
+
+                DatabaseHelper.getCaseDao().saveAndSnapshot(caze);
+
+                if (!DataHelper.isNullOrEmpty(contactUuid)) {
+                    Contact sourceContact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
+                    sourceContact.setResultingCaseUuid(caze.getUuid());
+                    sourceContact.setResultingCaseUser(ConfigProvider.getUser());
+                    DatabaseHelper.getContactDao().saveAndSnapshot(sourceContact);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                hidePreloader();
+                super.onPostExecute(taskResult);
+                if (taskResult.getResultStatus().isSuccess()) {
+                    CaseEditActivity.startActivity(CaseNewActivity.this, caze.getUuid(), CaseSection.PERSON_INFO);
+                }
+            }
+        }.executeOnThreadPool();
     }
 
     @Override

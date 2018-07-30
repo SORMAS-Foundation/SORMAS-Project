@@ -6,16 +6,13 @@ import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.databinding.FragmentEventReadLayoutBinding;
-import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 
 public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutBinding, Event, Event> {
 
     private Event record;
 
-    // Instance methods
-
-    public static EventReadFragment newInstance(EventFormNavigationCapsule capsule, Event activityRootData) {
-        return newInstance(EventReadFragment.class, capsule, activityRootData);
+    public static EventReadFragment newInstance(Event activityRootData) {
+        return newInstance(EventReadFragment.class, null, activityRootData);
     }
 
     // Overrides

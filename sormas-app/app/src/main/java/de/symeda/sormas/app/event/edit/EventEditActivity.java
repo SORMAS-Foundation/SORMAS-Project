@@ -15,14 +15,13 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.event.EventSection;
 import de.symeda.sormas.app.event.edit.eventparticipant.EventParticipantNewActivity;
-import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
-import de.symeda.sormas.app.component.validation.FragmentValidator;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -31,6 +30,10 @@ public class EventEditActivity extends BaseEditActivity<Event> {
     public static final String TAG = EventEditActivity.class.getSimpleName();
 
     private AsyncTask saveTask;
+
+    public static void startActivity(Context context, String rootUuid, EventSection section) {
+        BaseEditActivity.startActivity(context, EventEditActivity.class, buildBundle(rootUuid, section));
+    }
 
     @Override
     protected Event queryRootEntity(String recordUuid) {
@@ -49,25 +52,22 @@ public class EventEditActivity extends BaseEditActivity<Event> {
 
     @Override
     public EventStatus getPageStatus() {
-        return (EventStatus) super.getPageStatus();
+        return getStoredRootEntity() == null ? null : getStoredRootEntity().getEventStatus();
     }
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Event activityRootData) {
-        EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventEditActivity.this,
-                getRootEntityUuid(), getPageStatus());
-
         EventSection section = EventSection.fromMenuKey(menuItem.getKey());
         BaseEditFragment fragment;
         switch (section) {
             case EVENT_INFO:
-                fragment = EventEditFragment.newInstance(dataCapsule, activityRootData);
+                fragment = EventEditFragment.newInstance(activityRootData);
                 break;
             case EVENT_PERSONS:
-                fragment = EventEditPersonsInvolvedListFragment.newInstance(dataCapsule, activityRootData);
+                fragment = EventEditPersonsInvolvedListFragment.newInstance(activityRootData);
                 break;
             case TASKS:
-                fragment = EventEditTaskListFragement.newInstance(dataCapsule, activityRootData);
+                fragment = EventEditTaskListFragement.newInstance(activityRootData);
                 break;
             default:
                 throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
@@ -89,14 +89,10 @@ public class EventEditActivity extends BaseEditActivity<Event> {
 
     @Override
     public void goToNewView() {
-
         EventSection section = EventSection.fromMenuKey(getActivePage().getKey());
         switch (section) {
             case EVENT_PERSONS:
-
-                EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(getContext(), getPageStatus())
-                        .setEventUuid(getRootEntityUuid());
-                EventParticipantNewActivity.goToActivity(this, dataCapsule);
+                EventParticipantNewActivity.startActivity(getContext(), getRootUuid());
                 break;
             default:
                 throw new IllegalArgumentException(DataHelper.toStringNullable(section));
@@ -137,18 +133,6 @@ public class EventEditActivity extends BaseEditActivity<Event> {
 
             }
         }.executeOnThreadPool();
-    }
-
-    private void validateData(Event data) throws ValidationException {
-        // TODO validation
-//        EventValidator.clearErrorsForEventData(getContentBinding());
-//        if (!EventValidator.validateEventData(nContext, eventToSave, getContentBinding())) {
-//            return;
-//        }
-    }
-
-    public static <TActivity extends BaseActivity> void goToActivity(Context fromActivity, EventFormNavigationCapsule dataCapsule) {
-        BaseEditActivity.goToActivity(fromActivity, EventEditActivity.class, dataCapsule);
     }
 
     @Override

@@ -2,7 +2,6 @@ package de.symeda.sormas.app.caze.edit;
 
 import android.content.res.Resources;
 import android.databinding.ObservableArrayList;
-import android.os.Bundle;
 import android.view.View;
 
 import java.util.List;
@@ -25,9 +24,7 @@ import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.databinding.FragmentCaseEditEpidLayoutBinding;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
 
 public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<FragmentCaseEditEpidLayoutBinding, EpiData, Case> {
@@ -48,6 +45,10 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     private List<Item> drinkingWaterSourceList;
     private List<Item> animalConditionList;
 
+    public static CaseEditEpidemiologicalDataFragment newInstance(Case activityRootData) {
+        return newInstance(CaseEditEpidemiologicalDataFragment.class, null, activityRootData);
+    }
+
     @Override
     protected String getSubHeadingTitle() {
         Resources r = getResources();
@@ -60,7 +61,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     }
 
     @Override
-    protected void prepareFragmentData(Bundle savedInstanceState) {
+    protected void prepareFragmentData() {
         Case caze = getActivityRootData();
         disease = caze.getDisease();
         record = caze.getEpiData();
@@ -475,10 +476,5 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         } else {
             getContentBinding().epiDataTraveled.disableWarningState();
         }
-    }
-
-
-    public static CaseEditEpidemiologicalDataFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(CaseEditEpidemiologicalDataFragment.class, capsule, activityRootData);
     }
 }

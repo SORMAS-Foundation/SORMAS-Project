@@ -22,16 +22,23 @@ import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
+import de.symeda.sormas.app.util.Bundler;
 
 public class TaskEditActivity extends BaseEditActivity<Task> {
 
     private AsyncTask saveTask;
 
+    public static void startActivity(Context context, String rootUuid) {
+        BaseEditActivity.startActivity(context, TaskEditActivity.class, buildBundle(rootUuid));
+    }
+
+    public static Bundler buildBundle(String rootUuid) {
+        return BaseEditActivity.buildBundle(rootUuid);
+    }
 
     @Override
     public TaskStatus getPageStatus() {
-        return (TaskStatus)super.getPageStatus();
+        return getStoredRootEntity() == null ? null : getStoredRootEntity().getTaskStatus();
     }
 
     @Override
@@ -92,17 +99,12 @@ public class TaskEditActivity extends BaseEditActivity<Task> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Task activityRootData) {
-        TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
-        return TaskEditFragment.newInstance(dataCapsule, activityRootData);
+        return TaskEditFragment.newInstance(activityRootData);
     }
 
     @Override
     protected int getActivityTitle() {
         return R.string.heading_level4_task_edit;
-    }
-
-    public static void goToActivity(Context fromActivity, TaskFormNavigationCapsule dataCapsule) {
-        BaseEditActivity.goToActivity(fromActivity, TaskEditActivity.class, dataCapsule);
     }
 
     @Override

@@ -15,14 +15,14 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.contact.ContactSection;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
-import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
-import de.symeda.sormas.app.component.validation.FragmentValidator;
+import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.visit.edit.VisitNewActivity;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
@@ -32,6 +32,14 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
     public static final String TAG = ContactEditActivity.class.getSimpleName();
 
     private AsyncTask saveTask;
+
+    public static void startActivity(Context context, String rootUuid, ContactSection section) {
+        BaseActivity.startActivity(context, ContactEditActivity.class, buildBundle(rootUuid, section));
+    }
+
+    public static Bundler buildBundle(String rootUuid, ContactSection section) {
+        return buildBundle(rootUuid, section.ordinal());
+    }
 
     @Override
     protected Contact queryRootEntity(String recordUuid) {
@@ -50,28 +58,25 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 
     @Override
     public ContactClassification getPageStatus() {
-        return (ContactClassification)super.getPageStatus();
+        return getStoredRootEntity() == null ? null : getStoredRootEntity().getContactClassification();
     }
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Contact activityRootData) {
-        ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(ContactEditActivity.this,
-                getRootEntityUuid(), getPageStatus());
-
         ContactSection section = ContactSection.fromMenuKey(menuItem.getKey());
         BaseEditFragment fragment;
         switch (section) {
             case CONTACT_INFO:
-                fragment = ContactEditFragment.newInstance(dataCapsule, activityRootData);
+                fragment = ContactEditFragment.newInstance(activityRootData);
                 break;
             case PERSON_INFO:
-                fragment = PersonEditFragment.newInstance(dataCapsule, activityRootData);
+                fragment = PersonEditFragment.newInstance(activityRootData);
                 break;
             case VISITS:
-                fragment = ContactEditVisitsListFragment.newInstance(dataCapsule, activityRootData);
+                fragment = ContactEditVisitsListFragment.newInstance(activityRootData);
                 break;
             case TASKS:
-                fragment = ContactEditTaskListFragment.newInstance(dataCapsule, activityRootData);
+                fragment = ContactEditTaskListFragment.newInstance(activityRootData);
                 break;
             default:
                 throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
@@ -102,8 +107,7 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
         saveTask = new SavingAsyncTask(getRootView(), contactToSave) {
 
             @Override
-            public void doInBackground(TaskResultHolder resultHolder) throws DaoException, ValidationException {
-                validateData(contactToSave);
+            public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
                 DatabaseHelper.getPersonDao().saveAndSnapshot(contactToSave.getPerson());
                 DatabaseHelper.getContactDao().saveAndSnapshot(contactToSave);
             }
@@ -119,29 +123,20 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
         }.executeOnThreadPool();
     }
 
-    private void validateData(Contact data) throws ValidationException {
-
-        // TODO validation
-//        PersonValidator.clearErrors(getContentBinding());
-//        if (!PersonValidator.validatePersonData(nContext, personToSave, getContentBinding())) {
-//            return;
-//        }
-    }
-
     @Override
     protected int getActivityTitle() {
         return R.string.heading_level4_contact_edit;
     }
 
-    public static <TActivity extends BaseActivity> void goToActivity(Context fromActivity, ContactFormNavigationCapsule dataCapsule) {
-        BaseEditActivity.goToActivity(fromActivity, ContactEditActivity.class, dataCapsule);
-    }
-
     @Override
     public void goToNewView() {
         ContactSection activeSection = ContactSection.fromMenuKey(getActivePage().getKey());
-        if (activeSection == ContactSection.VISITS) {
-            VisitNewActivity.goToActivity(this, getRootEntityUuid());
+        switch (activeSection) {
+            case VISITS:
+                VisitNewActivity.startActivity(this, getRootUuid());
+                break;
+            default:
+                throw new IllegalArgumentException(activeSection.toString());
         }
     }
 

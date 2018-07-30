@@ -1,7 +1,6 @@
 package de.symeda.sormas.app.symptoms;
 
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -29,8 +28,6 @@ import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentSymptomsEditLayoutBinding;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
 
 import static android.view.View.GONE;
@@ -51,6 +48,15 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 
     private List<ControlSwitchField> symptomFields;
 
+
+    public static SymptomsEditFragment newInstance(Case activityRootData) {
+        return newInstance(SymptomsEditFragment.class, null, activityRootData);
+    }
+
+    public static SymptomsEditFragment newInstance(Visit activityRootData) {
+        return newInstance(SymptomsEditFragment.class, null, activityRootData);
+    }
+
     @Override
     protected String getSubHeadingTitle() {
         Resources r = getResources();
@@ -63,7 +69,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
     }
 
     @Override
-    protected void prepareFragmentData(Bundle savedInstanceState) {
+    protected void prepareFragmentData() {
         ado = getActivityRootData();
         Person person;
         if (ado instanceof Case) {
@@ -230,14 +236,6 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
         }
 
         return temperature;
-    }
-
-    public static SymptomsEditFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(SymptomsEditFragment.class, capsule, activityRootData);
-    }
-
-    public static SymptomsEditFragment newInstance(VisitFormNavigationCapsule capsule, Visit activityRootData) {
-        return newInstance(SymptomsEditFragment.class, capsule, activityRootData);
     }
 
     private void makeAllSymptomsRequired() {

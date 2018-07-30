@@ -6,13 +6,10 @@ import android.os.Bundle;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -23,13 +20,9 @@ import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.component.OnLinkClickListener;
 import de.symeda.sormas.app.databinding.FragmentSymptomsReadLayoutBinding;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 
 import static android.view.View.GONE;
 
@@ -42,6 +35,14 @@ public class SymptomsReadFragment extends BaseReadFragment<FragmentSymptomsReadL
 
     private List<String> yesResult;
     private List<String> unknownResult;
+
+    public static SymptomsReadFragment newInstance(Case activityRootData) {
+        return newInstance(SymptomsReadFragment.class, null, activityRootData);
+    }
+
+    public static SymptomsReadFragment newInstance(Visit activityRootData) {
+        return newInstance(SymptomsReadFragment.class, null, activityRootData);
+    }
 
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
@@ -90,14 +91,6 @@ public class SymptomsReadFragment extends BaseReadFragment<FragmentSymptomsReadL
     @Override
     public int getReadLayout() {
         return R.layout.fragment_symptoms_read_layout;
-    }
-
-    public static SymptomsReadFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(SymptomsReadFragment.class, capsule, activityRootData);
-    }
-
-    public static SymptomsReadFragment newInstance(VisitFormNavigationCapsule capsule, Visit activityRootData) {
-        return newInstance(SymptomsReadFragment.class, capsule, activityRootData);
     }
 
     private void extractSymptoms() {

@@ -1,7 +1,5 @@
 package de.symeda.sormas.app;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
@@ -12,11 +10,8 @@ import android.widget.TextView;
 
 import de.symeda.sormas.app.component.menu.PageMenuControl;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
-import de.symeda.sormas.app.core.SearchBy;
-import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
-import de.symeda.sormas.app.util.ConstantHelper;
+import de.symeda.sormas.app.util.Bundler;
 
 public abstract class BaseListActivity extends BaseActivity implements IUpdateSubHeadingTitle, PageMenuControl.NotificationCountChangingListener {
 
@@ -24,9 +19,18 @@ public abstract class BaseListActivity extends BaseActivity implements IUpdateSu
     private MenuItem newMenu = null;
     private BaseListFragment activeFragment = null;
 
+    public static Bundler buildBundle(Enum listFilter) {
+        return BaseActivity.buildBundle(listFilter.ordinal());
+    }
+
     @Override
     protected boolean isSubActivitiy() {
         return false;
+    }
+
+    @Override
+    public Enum getPageStatus() {
+        return null;
     }
 
     protected void onCreateInner(Bundle savedInstanceState) {
@@ -49,9 +53,6 @@ public abstract class BaseListActivity extends BaseActivity implements IUpdateSu
 
         if (activeFragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            if (activeFragment.getArguments() == null)
-                activeFragment.setArguments(getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA));
-
             ft.setCustomAnimations(R.anim.fadein, R.anim.fadeout, R.anim.fadein, R.anim.fadeout);
             ft.replace(R.id.fragment_frame, activeFragment);
             if (previousFragment != null) {
@@ -59,6 +60,8 @@ public abstract class BaseListActivity extends BaseActivity implements IUpdateSu
             }
             ft.commit();
         }
+
+        updateStatusFrame();
     }
 
     @Override
@@ -128,66 +131,4 @@ public abstract class BaseListActivity extends BaseActivity implements IUpdateSu
     }
 
     protected abstract BaseListFragment buildListFragment(PageMenuItem menuItem);
-
-    protected String getRecordUuidArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.KEY_DATA_UUID)) {
-                result = (String) arguments.getString(ConstantHelper.KEY_DATA_UUID);
-            }
-        }
-
-        return result;
-    }
-
-    protected SearchBy getSearchStrategyArg(Bundle arguments) {
-        SearchBy e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.ARG_SEARCH_STRATEGY)) {
-                e = (SearchBy) arguments.getSerializable(ConstantHelper.ARG_SEARCH_STRATEGY);
-            }
-        }
-
-        return e;
-    }
-
-    protected void saveRecordUuidState(Bundle outState, String recordUuid) {
-        if (outState != null) {
-            outState.putString(ConstantHelper.KEY_DATA_UUID, recordUuid);
-        }
-    }
-
-    protected void saveSearchStrategyState(Bundle outState, SearchBy status) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_SEARCH_STRATEGY, status);
-        }
-    }
-
-    protected static <TActivity extends BaseActivity, TCapsule extends IListNavigationCapsule>
-    void goToActivity(Context fromActivity, Class<TActivity> toActivity, TCapsule dataCapsule) {
-
-        IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
-        IStatusElaborator pageStatus = dataCapsule.getPageStatus();
-        SearchBy searchBy = dataCapsule.getSearchStrategy();
-        int activeMenuKey = dataCapsule.getActiveMenuKey();
-
-        Intent intent = new Intent(fromActivity, toActivity);
-
-        Bundle bundle = new Bundle();
-
-        bundle.putInt(ConstantHelper.KEY_ACTIVE_MENU, activeMenuKey);
-
-        if (filterStatus != null)
-            bundle.putSerializable(ConstantHelper.ARG_FILTER_STATUS, filterStatus.getValue());
-
-        if (pageStatus != null)
-            bundle.putSerializable(ConstantHelper.ARG_PAGE_STATUS, pageStatus.getValue());
-
-        if (searchBy != null)
-            bundle.putSerializable(ConstantHelper.ARG_SEARCH_STRATEGY, searchBy);
-
-        intent.putExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA, bundle);
-
-        fromActivity.startActivity(intent);
-    }
 }

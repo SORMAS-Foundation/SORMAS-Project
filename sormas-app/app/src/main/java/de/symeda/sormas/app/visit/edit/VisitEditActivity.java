@@ -2,6 +2,7 @@ package de.symeda.sormas.app.visit.edit;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.view.Menu;
 
 import de.symeda.sormas.api.utils.DataHelper;
@@ -13,13 +14,13 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 import de.symeda.sormas.app.symptoms.SymptomsEditFragment;
-import de.symeda.sormas.app.component.validation.FragmentValidator;
+import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.visit.VisitSection;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
@@ -29,6 +30,28 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
     public static final String TAG = VisitEditActivity.class.getSimpleName();
 
     private AsyncTask saveTask;
+
+    private String contactUuid = null;
+
+    public static void startActivity(Context context, String rootUuid, String contactUuid, VisitSection section) {
+        BaseEditActivity.startActivity(context, VisitEditActivity.class, buildBundle(rootUuid, contactUuid, section));
+    }
+
+    public static Bundler buildBundle(String rootUuid, String contactUuid, VisitSection section) {
+        return buildBundle(rootUuid, section).setContactUuid(contactUuid);
+    }
+
+    @Override
+    protected void onCreateInner(Bundle savedInstanceState) {
+        super.onCreateInner(savedInstanceState);
+        contactUuid = new Bundler(savedInstanceState).getContactUuid();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        new Bundler(outState).setContactUuid(contactUuid);
+    }
 
     @Override
     protected Visit queryRootEntity(String recordUuid) {
@@ -42,7 +65,7 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
 
     @Override
     public VisitStatus getPageStatus() {
-        return (VisitStatus) super.getPageStatus();
+        return getStoredRootEntity() == null ? null : getStoredRootEntity().getVisitStatus();
     }
 
     @Override
@@ -52,17 +75,15 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Visit activityRootData) {
-        VisitFormNavigationCapsule dataCapsule = new VisitFormNavigationCapsule(
-                VisitEditActivity.this, getRootEntityUuid(), getPageStatus());
 
         VisitSection section = VisitSection.fromMenuKey(menuItem.getKey());
         BaseEditFragment fragment;
         switch (section) {
             case VISIT_INFO:
-                fragment = VisitEditFragment.newInstance(dataCapsule, activityRootData);
+                fragment = VisitEditFragment.newInstance(activityRootData, contactUuid);
                 break;
             case SYMPTOMS:
-                fragment = SymptomsEditFragment.newInstance(dataCapsule, activityRootData);
+                fragment = SymptomsEditFragment.newInstance(activityRootData);
                 break;
             default:
                 throw new IllegalArgumentException(DataHelper.toStringNullable(section));
@@ -98,7 +119,6 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
 
             @Override
             public void doInBackground(TaskResultHolder resultHolder) throws Exception {
-                validateData(visit);
                 DatabaseHelper.getVisitDao().saveAndSnapshot(visit);
             }
 
@@ -113,33 +133,9 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
         }.executeOnThreadPool();
     }
 
-    private void validateData(Visit data) throws ValidationException {
-        //TODO: Validation
-        /*VisitValidator.clearErrorsForVisitData(visitDataBinding);
-        SymptomsValidator.clearErrorsForSymptoms(symptomsBinding);
-
-        int validationErrorTab = -1;
-
-        if (!SymptomsValidator.validateVisitSymptoms(visit, symptoms, symptomsBinding)) {
-            validationErrorTab = VisitEditTabs.SYMPTOMS.ordinal();
-        }
-        if (!VisitValidator.validateVisitData(visit, contact, visitDataBinding)) {
-            validationErrorTab = VisitEditTabs.VISIT_DATA.ordinal();
-        }
-
-        if (validationErrorTab >= 0) {
-            pager.setCurrentItem(validationErrorTab);
-            return true;
-        }*/
-    }
-
     @Override
     protected int getActivityTitle() {
         return R.string.heading_level3_1_contact_visit_info;
-    }
-
-    public static void goToActivity(Context fromActivity, VisitFormNavigationCapsule dataCapsule) {
-        BaseEditActivity.goToActivity(fromActivity, VisitEditActivity.class, dataCapsule);
     }
 
     @Override

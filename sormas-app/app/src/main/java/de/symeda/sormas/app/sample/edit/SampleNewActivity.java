@@ -8,7 +8,6 @@ import android.view.Menu;
 import java.util.Date;
 
 import de.symeda.sormas.api.utils.ValidationException;
-import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -18,13 +17,13 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
-import de.symeda.sormas.app.shared.ShipmentStatus;
-import de.symeda.sormas.app.component.validation.FragmentValidator;
+import de.symeda.sormas.app.sample.ShipmentStatus;
+import de.symeda.sormas.app.util.Bundler;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -36,21 +35,30 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
 
     private AsyncTask saveTask;
 
+    public static void startActivity(Context context, String caseUuid) {
+        BaseEditActivity.startActivity(context, SampleNewActivity.class, buildBundle(caseUuid));
+    }
+
+    public static Bundler buildBundle(String caseUuid) {
+        return buildBundle(null, 0).setCaseUuid(caseUuid);
+    }
+
+
     @Override
     public ShipmentStatus getPageStatus() {
-        return (ShipmentStatus) super.getPageStatus();
+        return null;
     }
 
     @Override
     protected void onCreateInner(Bundle savedInstanceState) {
         super.onCreateInner(savedInstanceState);
-        caseUuid = getCaseUuidArg(savedInstanceState);
+        caseUuid = new Bundler(savedInstanceState).getCaseUuid();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        saveCaseUuidState(outState, caseUuid);
+        new Bundler(outState).setCaseUuid(caseUuid);
     }
 
     @Override
@@ -74,9 +82,7 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Sample activityRootData) {
-        SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(
-                SampleNewActivity.this, getRootEntityUuid(), getPageStatus()).setCaseUuid(caseUuid);
-        return SampleNewFragment.newInstance(dataCapsule, activityRootData);
+        return SampleNewFragment.newInstance(activityRootData);
     }
 
     @Override
@@ -123,7 +129,6 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
 
             @Override
             public void doInBackground(TaskResultHolder resultHolder) throws DaoException, ValidationException {
-                validateData(sampleToSave);
                 DatabaseHelper.getSampleDao().saveAndSnapshot(sampleToSave);
             }
 
@@ -138,23 +143,11 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
         }.executeOnThreadPool();
     }
 
-    private void validateData(Sample data) throws ValidationException {
-        // TODO validate
-//        SampleValidator.clearErrorsForSampleData(getContentBinding());
-////        if (!SampleValidator.validateSampleData(nContext, sampleToSave, getContentBinding())) {
-////            return;
-////        }
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
 
         if (saveTask != null && !saveTask.isCancelled())
             saveTask.cancel(true);
-    }
-
-    public static <TActivity extends BaseActivity> void goToActivity(Context fromActivity, SampleFormNavigationCapsule dataCapsule) {
-        BaseEditActivity.goToActivity(fromActivity, SampleNewActivity.class, dataCapsule);
     }
 }

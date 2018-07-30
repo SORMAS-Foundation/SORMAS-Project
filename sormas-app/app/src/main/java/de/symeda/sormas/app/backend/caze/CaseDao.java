@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.location.Location;
-import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.util.Log;
@@ -45,12 +44,11 @@ import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
-import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.LocationService;
 
 public class CaseDao extends AbstractAdoDao<Case> {
 
-    public CaseDao(Dao<Case,Long> innerDao) throws SQLException {
+    public CaseDao(Dao<Case, Long> innerDao) throws SQLException {
         super(innerDao);
     }
 
@@ -252,7 +250,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
         Date[] reportStartAndEnd = DateHelper.calculateEpiWeekReportStartAndEnd(new Date(), epiWeek,
                 epiWeekReport != null ? epiWeekReport.getReportDateTime() : null,
                 previousEpiWeekReport != null ? previousEpiWeekReport.getReportDateTime() : null,
-                nextEpiWeekReport != null? nextEpiWeekReport.getReportDateTime() : null);
+                nextEpiWeekReport != null ? nextEpiWeekReport.getReportDateTime() : null);
 
         try {
             QueryBuilder builder = queryBuilder();
@@ -308,16 +306,11 @@ public class CaseDao extends AbstractAdoDao<Case> {
         if (currentCase != null && mergedCase != null && currentCase.getDisease() != mergedCase.getDisease()) {
             Context context = DatabaseHelper.getContext();
 
-            Intent notificationIntent = new Intent(context, CaseReadActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putString(ConstantHelper.KEY_DATA_UUID, mergedCase.getUuid());
-            bundle.putSerializable(ConstantHelper.ARG_PAGE_STATUS, mergedCase.getCaseClassification());
-
-            notificationIntent.putExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA, bundle);
-
             StringBuilder content = new StringBuilder();
             content.append("<b>").append(mergedCase.toString()).append("</b><br/>");
 
+            Intent notificationIntent = new Intent(context, CaseReadActivity.class);
+            notificationIntent.putExtras(CaseReadActivity.buildBundle(mergedCase.getUuid()).get());
             PendingIntent pi = PendingIntent.getActivity(context, mergedCase.getId().intValue(), notificationIntent, 0);
             Resources r = context.getResources();
 

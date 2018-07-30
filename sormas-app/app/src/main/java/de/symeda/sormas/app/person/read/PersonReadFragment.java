@@ -8,7 +8,6 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.core.BaseFormNavigationCapsule;
 import de.symeda.sormas.app.databinding.FragmentPersonReadLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.util.InfrastructureHelper;
@@ -21,8 +20,12 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 
     // Instance methods
 
-    public static PersonReadFragment newInstance(BaseFormNavigationCapsule capsule, AbstractDomainObject activityRootData) {
-        return newInstance(PersonReadFragment.class, capsule, activityRootData);
+    public static PersonReadFragment newInstance(Case activityRootData) {
+        return newInstance(PersonReadFragment.class, null, activityRootData);
+    }
+
+    public static PersonReadFragment newInstance(Contact activityRootData) {
+        return newInstance(PersonReadFragment.class, null, activityRootData);
     }
 
     private void setUpFieldVisibilities(FragmentPersonReadLayoutBinding contentBinding) {

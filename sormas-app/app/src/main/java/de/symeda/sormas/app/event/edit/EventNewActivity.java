@@ -6,7 +6,6 @@ import android.view.Menu;
 
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.utils.ValidationException;
-import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -14,13 +13,13 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.event.EventSection;
-import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
-import de.symeda.sormas.app.component.validation.FragmentValidator;
+import de.symeda.sormas.app.util.Bundler;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -29,6 +28,10 @@ public class EventNewActivity extends BaseEditActivity<Event> {
     public static final String TAG = EventNewActivity.class.getSimpleName();
 
     private AsyncTask saveTask;
+
+    public static void startActivity(Context fromActivity) {
+        BaseEditActivity.startActivity(fromActivity, EventNewActivity.class, buildBundle(null));
+    }
 
     @Override
     protected Event queryRootEntity(String recordUuid) {
@@ -50,14 +53,12 @@ public class EventNewActivity extends BaseEditActivity<Event> {
 
     @Override
     public EventStatus getPageStatus() {
-        return (EventStatus) super.getPageStatus();
+        return null;
     }
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Event activityRootData) {
-        EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventNewActivity.this,
-                getRootEntityUuid(), getPageStatus());
-        return EventEditFragment.newInstance(dataCapsule, activityRootData);
+        return EventEditFragment.newInstance(activityRootData);
     }
 
     @Override
@@ -104,16 +105,10 @@ public class EventNewActivity extends BaseEditActivity<Event> {
                 hidePreloader();
                 super.onPostExecute(taskResult);
                 if (taskResult.getResultStatus().isSuccess()) {
-                    EventEditActivity.goToActivity(EventNewActivity.this,
-                            new EventFormNavigationCapsule(EventNewActivity.this, eventToSave.getUuid(), eventToSave.getEventStatus())
-                            .setActiveMenu(EventSection.EVENT_PERSONS.ordinal()));
+                    EventEditActivity.startActivity(getContext(), eventToSave.getUuid(), EventSection.EVENT_PERSONS);
                 }
             }
         }.executeOnThreadPool();
-    }
-
-    public static <TActivity extends BaseActivity> void goToActivity(Context fromActivity) {
-        BaseEditActivity.goToActivity(fromActivity, EventNewActivity.class, new EventFormNavigationCapsule(fromActivity, null));
     }
 
     @Override

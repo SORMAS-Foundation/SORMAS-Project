@@ -15,9 +15,6 @@ import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.sample.read.SampleReadActivity;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
-import de.symeda.sormas.app.util.SampleHelper;
 
 public class CaseReadSampleListFragment extends BaseReadFragment<FragmentFormListLayoutBinding, List<Sample>, Case> implements OnListItemClickListener {
 
@@ -25,6 +22,10 @@ public class CaseReadSampleListFragment extends BaseReadFragment<FragmentFormLis
 
     private CaseReadSampleListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
+
+    public static CaseReadSampleListFragment newInstance(Case activityRootData) {
+        return newInstance(CaseReadSampleListFragment.class, null, activityRootData);
+    }
 
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
@@ -66,12 +67,7 @@ public class CaseReadSampleListFragment extends BaseReadFragment<FragmentFormLis
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
-        Sample s = (Sample) item;
-        SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(getContext(), s.getUuid(), SampleHelper.getShipmentStatus(s));
-        SampleReadActivity.goToActivity(getActivity(), dataCapsule);
-    }
-
-    public static CaseReadSampleListFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(CaseReadSampleListFragment.class, capsule, activityRootData);
+        Sample sample = (Sample) item;
+        SampleReadActivity.startActivity(getActivity(), sample.getUuid());
     }
 }

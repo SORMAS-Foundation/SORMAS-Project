@@ -2,8 +2,6 @@ package de.symeda.sormas.app.sample.list;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,19 +14,16 @@ import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.sample.ShipmentStatus;
 import de.symeda.sormas.app.sample.read.SampleReadActivity;
 import de.symeda.sormas.app.searchstrategy.ISearchExecutor;
 import de.symeda.sormas.app.searchstrategy.ISearchResultCallback;
 import de.symeda.sormas.app.searchstrategy.SearchStrategyFor;
-import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
-import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.util.SubheadingHelper;
 
 public class SampleListFragment extends BaseListFragment<SampleListAdapter> implements OnListItemClickListener {
@@ -37,28 +32,9 @@ public class SampleListFragment extends BaseListFragment<SampleListAdapter> impl
     private List<Sample> samples;
     private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerViewForList;
-    private ShipmentStatus filterStatus = null;
-    private SearchBy searchBy = null;
-    private String recordUuid = null;
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        saveFilterStatusState(outState, filterStatus);
-        saveSearchStrategyState(outState, searchBy);
-        saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
-
-        filterStatus = (ShipmentStatus) getFilterStatusArg(arguments);
-        searchBy = (SearchBy) getSearchStrategyArg(arguments);
-        recordUuid = (String) getRecordUuidArg(arguments);
+    public static SampleListFragment newInstance(ShipmentStatus listFilter) {
+        return newInstance(SampleListFragment.class, null, listFilter);
     }
 
     @Override
@@ -77,15 +53,8 @@ public class SampleListFragment extends BaseListFragment<SampleListAdapter> impl
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
-        Sample s = (Sample) item;
-        SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(getContext(), s.getUuid(), filterStatus);
-        SampleReadActivity.goToActivity(getActivity(), dataCapsule);
-    }
-
-    @Override
-    public void cancelTaskExec() {
-        if (searchTask != null && !searchTask.isCancelled())
-            searchTask.cancel(true);
+        Sample sample = (Sample) item;
+        SampleReadActivity.startActivity(getContext(), sample.getUuid());
     }
 
     @Override
@@ -97,9 +66,9 @@ public class SampleListFragment extends BaseListFragment<SampleListAdapter> impl
     public void onResume() {
         super.onResume();
 
-        getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Sample"));
+        getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), SearchBy.BY_FILTER_STATUS, getListFilter(), "Sample"));
 
-        ISearchExecutor<Sample> executor = SearchStrategyFor.SAMPLE.selector(searchBy, filterStatus, recordUuid);
+        ISearchExecutor<Sample> executor = SearchStrategyFor.SAMPLE.selector(SearchBy.BY_FILTER_STATUS, getListFilter(), null);
         searchTask = executor.search(new ISearchResultCallback<Sample>() {
             @Override
             public void preExecute() {
@@ -133,10 +102,6 @@ public class SampleListFragment extends BaseListFragment<SampleListAdapter> impl
 
         recyclerViewForList.setLayoutManager(linearLayoutManager);
         recyclerViewForList.setAdapter(getListAdapter());
-    }
-
-    public static SampleListFragment newInstance(IListNavigationCapsule capsule) {
-        return newInstance(SampleListFragment.class, capsule);
     }
 
     @Override

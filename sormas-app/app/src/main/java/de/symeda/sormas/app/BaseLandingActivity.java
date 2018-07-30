@@ -47,11 +47,6 @@ public abstract class BaseLandingActivity extends BaseActivity {
 
         if (activeFragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-
-            if (activeFragment.getArguments() == null) {
-                activeFragment.setArguments(getIntent().getExtras());
-            }
-
             ft.setCustomAnimations(R.anim.fadein, R.anim.fadeout, R.anim.fadein, R.anim.fadeout);
             ft.replace(R.id.fragment_frame, activeFragment);
             if (previousFragment != null) {
@@ -59,6 +54,8 @@ public abstract class BaseLandingActivity extends BaseActivity {
             }
             ft.commit();
         }
+
+        updateStatusFrame();
     }
 
     @Override
@@ -79,10 +76,6 @@ public abstract class BaseLandingActivity extends BaseActivity {
 
         if (newMenu != null)
             newMenu.setVisible(activeFragment.showNewAction());
-    }
-
-    public MenuItem getNewMenu() {
-        return newMenu;
     }
 
     @Override

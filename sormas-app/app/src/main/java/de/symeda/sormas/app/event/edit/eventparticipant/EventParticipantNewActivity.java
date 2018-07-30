@@ -5,9 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 
-import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.utils.ValidationException;
-import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -16,15 +14,14 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
-import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
+import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
-import de.symeda.sormas.app.component.validation.FragmentValidator;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -36,16 +33,24 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
 
     private String eventUuid = null;
 
+    public static void startActivity(Context context, String eventUuid) {
+        BaseEditActivity.startActivity(context, EventParticipantNewActivity.class,buildBundle(eventUuid));
+    }
+
+    public static Bundler buildBundle(String eventUuid) {
+        return buildBundle(null, 0).setEventUuid(eventUuid);
+    }
+
     @Override
     protected void onCreateInner(Bundle savedInstanceState) {
         super.onCreateInner(savedInstanceState);
-        eventUuid = getEventUuidArg(savedInstanceState);
+        eventUuid = new Bundler(savedInstanceState).getEventUuid();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        saveEventUuidState(outState, eventUuid);
+        new Bundler(outState).setEventUuid(eventUuid);
     }
 
     @Override
@@ -70,9 +75,7 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, EventParticipant activityRootData) {
-        EventParticipantFormNavigationCapsule dataCapsule = new EventParticipantFormNavigationCapsule(EventParticipantNewActivity.this,
-                getRootEntityUuid()).setEventUuid(eventUuid);
-        return EventParticipantNewFragment.newInstance(dataCapsule, activityRootData);
+        return EventParticipantNewFragment.newInstance(activityRootData);
     }
 
     @Override
@@ -81,8 +84,8 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
     }
 
     @Override
-    public EventStatus getPageStatus() {
-        return (EventStatus) super.getPageStatus();
+    public Enum getPageStatus() {
+        return null;
     }
 
     @Override
@@ -131,21 +134,12 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
                         hidePreloader();
                         super.onPostExecute(taskResult);
                         if (taskResult.getResultStatus().isSuccess()) {
-                            goToEventParticipantEditActivity();
+                            EventParticipantEditActivity.startActivity(getContext(), getRootUuid(), eventUuid);
                         }
                     }
                 }.executeOnThreadPool();
             }
         });
-    }
-
-    private void goToEventParticipantEditActivity() {
-        EventParticipantFormNavigationCapsule dataCapsule = new EventParticipantFormNavigationCapsule(this, getRootEntityUuid());
-        EventParticipantEditActivity.goToActivity(this, dataCapsule);
-    }
-
-    public static <TActivity extends BaseActivity> void goToActivity(Context fromActivity, EventFormNavigationCapsule dataCapsule) {
-        BaseEditActivity.goToActivity(fromActivity, EventParticipantNewActivity.class, dataCapsule);
     }
 
     @Override

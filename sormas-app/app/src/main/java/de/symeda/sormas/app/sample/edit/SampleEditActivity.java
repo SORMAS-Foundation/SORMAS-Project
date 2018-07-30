@@ -5,26 +5,28 @@ import android.os.AsyncTask;
 import android.view.Menu;
 
 import de.symeda.sormas.api.utils.ValidationException;
-import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
-import de.symeda.sormas.app.shared.ShipmentStatus;
-import de.symeda.sormas.app.component.validation.FragmentValidator;
+import de.symeda.sormas.app.sample.ShipmentStatus;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public class SampleEditActivity extends BaseEditActivity<Sample> {
 
     private AsyncTask saveTask;
+
+    public static void startActivity(Context context, String rootUuid) {
+        BaseEditActivity.startActivity(context, SampleEditActivity.class, buildBundle(rootUuid));
+    }
 
     @Override
     protected Sample queryRootEntity(String recordUuid) {
@@ -45,15 +47,21 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
 
     @Override
     public ShipmentStatus getPageStatus() {
-        return (ShipmentStatus) super.getPageStatus();
+        Sample sample = getStoredRootEntity();
+        if (sample != null) {
+            ShipmentStatus shipmentStatus = sample.getReferredToUuid() != null ?
+                    ShipmentStatus.REFERRED_OTHER_LAB : sample.isReceived() ?
+                    ShipmentStatus.RECEIVED : sample.isShipped() ? ShipmentStatus.SHIPPED :
+                    ShipmentStatus.NOT_SHIPPED;
+            return shipmentStatus;
+        } else {
+            return null;
+        }
     }
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Sample activityRootData) {
-
-        SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(
-                SampleEditActivity.this, getRootEntityUuid(), getPageStatus());
-        return SampleEditFragment.newInstance(dataCapsule, activityRootData);
+        return SampleEditFragment.newInstance(activityRootData);
     }
 
     @Override
@@ -82,7 +90,6 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
 
             @Override
             public void doInBackground(TaskResultHolder resultHolder) throws Exception, ValidationException {
-                validateData(sampleToSave);
                 DatabaseHelper.getSampleDao().saveAndSnapshot(sampleToSave);
             }
 
@@ -92,18 +99,6 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
                 super.onPostExecute(taskResult);
             }
         }.executeOnThreadPool();
-    }
-
-    private void validateData(Sample data) throws ValidationException {
-        // TODO validate
-//        SampleValidator.clearErrorsForSampleData(getContentBinding());
-////        if (!SampleValidator.validateSampleData(nContext, sampleToSave, getContentBinding())) {
-////            return;
-////        }
-    }
-
-    public static <TActivity extends BaseActivity> void goToActivity(Context fromActivity, SampleFormNavigationCapsule dataCapsule) {
-        BaseEditActivity.goToActivity(fromActivity, SampleEditActivity.class, dataCapsule);
     }
 
     @Override

@@ -1,25 +1,19 @@
 package de.symeda.sormas.app.sample.read;
 
-import android.databinding.ObservableArrayList;
 import android.os.Bundle;
 import android.view.View;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleTest;
-import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentSampleReadLayoutBinding;
-import de.symeda.sormas.app.sample.edit.SampleNewActivity;
-import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
-import de.symeda.sormas.app.shared.ShipmentStatus;
+import de.symeda.sormas.app.sample.ShipmentStatus;
 
 import static android.view.View.GONE;
 
@@ -28,10 +22,8 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
     private Sample record;
     private SampleTest mostRecentTest;
 
-    // Instance methods
-
-    public static SampleReadFragment newInstance(SampleFormNavigationCapsule capsule, Sample activityRootData) {
-        return newInstance(SampleReadFragment.class, capsule, activityRootData);
+    public static SampleReadFragment newInstance(Sample activityRootData) {
+        return newInstance(SampleReadFragment.class, null, activityRootData);
     }
 
     private void setUpControlListeners(FragmentSampleReadLayoutBinding contentBinding) {
@@ -42,18 +34,12 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
                     String referredToUuid = record.getReferredToUuid();
                     Sample sample = DatabaseHelper.getSampleDao().queryUuid(referredToUuid);
                     if (sample != null) {
-                        ShipmentStatus shipmentStatus = sample.getReferredToUuid() != null ?
-                                ShipmentStatus.REFERRED_OTHER_LAB : sample.isReceived() ?
-                                ShipmentStatus.RECEIVED : sample.isShipped() ? ShipmentStatus.SHIPPED :
-                                ShipmentStatus.NOT_SHIPPED;
-                        SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(getContext(),
-                                sample.getUuid(), shipmentStatus).setSampleUuid(record.getUuid());
                         // Activity needs to be destroyed because it is only resumed, not created otherwise
                         // and therefore the record uuid is not changed
-                        if (getActivity( )!= null) {
+                        if (getActivity() != null) {
                             getActivity().finish();
                         }
-                        SampleReadActivity.goToActivity(getActivity(), dataCapsule);
+                        SampleReadActivity.startActivity(getActivity(), record.getUuid());
                     }
                 }
             });

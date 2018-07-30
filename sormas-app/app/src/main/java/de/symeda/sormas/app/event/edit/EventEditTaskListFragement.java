@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.event.edit;
 
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 
@@ -13,8 +12,6 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
-import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
-import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.task.edit.TaskEditActivity;
 
 public class EventEditTaskListFragement extends BaseEditFragment<FragmentFormListLayoutBinding, List<Task>, Event> implements OnListItemClickListener {
@@ -22,6 +19,10 @@ public class EventEditTaskListFragement extends BaseEditFragment<FragmentFormLis
     private List<Task> record;
     private EventEditTaskListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
+
+    public static EventEditTaskListFragement newInstance(Event activityRootData) {
+        return newInstance(EventEditTaskListFragement.class, null, activityRootData);
+    }
 
     @Override
     protected String getSubHeadingTitle() {
@@ -34,7 +35,7 @@ public class EventEditTaskListFragement extends BaseEditFragment<FragmentFormLis
     }
 
     @Override
-    protected void prepareFragmentData(Bundle savedInstanceState) {
+    protected void prepareFragmentData() {
         Event event = getActivityRootData();
         record = DatabaseHelper.getTaskDao().queryByEvent(event);
     }
@@ -75,12 +76,6 @@ public class EventEditTaskListFragement extends BaseEditFragment<FragmentFormLis
     @Override
     public void onListItemClick(View view, int position, Object item) {
         Task task = (Task) item;
-        TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(getContext(),
-                task.getUuid(), task.getTaskStatus());
-        TaskEditActivity.goToActivity(getActivity(), dataCapsule);
-    }
-
-    public static EventEditTaskListFragement newInstance(EventFormNavigationCapsule capsule, Event activityRootData) {
-        return newInstance(EventEditTaskListFragement.class, capsule, activityRootData);
+        TaskEditActivity.startActivity(getActivity(), task.getUuid());
     }
 }

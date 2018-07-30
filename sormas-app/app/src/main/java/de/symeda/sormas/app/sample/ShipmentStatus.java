@@ -1,4 +1,4 @@
-package de.symeda.sormas.app.shared;
+package de.symeda.sormas.app.sample;
 
 import de.symeda.sormas.api.I18nProperties;
 

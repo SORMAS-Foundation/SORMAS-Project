@@ -11,17 +11,14 @@ import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.databinding.FragmentCaseReadLayoutBinding;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBinding, Case, Case> {
 
     private Case record;
 
-    // Instance methods
-
-    public static CaseReadFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(CaseReadFragment.class, capsule, activityRootData);
+    public static CaseReadFragment newInstance(Case activityRootData) {
+        return newInstance(CaseReadFragment.class, null, activityRootData);
     }
 
     private void setUpFieldVisibilities(FragmentCaseReadLayoutBinding contentBinding) {
@@ -73,5 +70,4 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
     public int getReadLayout() {
         return R.layout.fragment_case_read_layout;
     }
-
 }

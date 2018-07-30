@@ -18,6 +18,11 @@ public class ReportLandingActivity extends BaseReportActivity {
     }
 
     @Override
+    public Enum getPageStatus() {
+        return null;
+    }
+
+    @Override
     protected int getActivityTitle() {
         return R.string.main_menu_reports;
     }

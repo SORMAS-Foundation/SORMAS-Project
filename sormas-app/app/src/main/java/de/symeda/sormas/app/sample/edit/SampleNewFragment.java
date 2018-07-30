@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.sample.edit;
 
-import android.os.Bundle;
 import android.view.View;
 
 import java.util.List;
@@ -17,9 +16,7 @@ import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
-import de.symeda.sormas.app.core.YesNo;
 import de.symeda.sormas.app.databinding.FragmentSampleNewLayoutBinding;
-import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
 
 public class
@@ -36,8 +33,8 @@ SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutBinding, Sampl
 
     // Instance methods
 
-    public static SampleNewFragment newInstance(SampleFormNavigationCapsule capsule, Sample activityRootData) {
-        return newInstance(SampleNewFragment.class, capsule, activityRootData);
+    public static SampleNewFragment newInstance(Sample activityRootData) {
+        return newInstance(SampleNewFragment.class, null, activityRootData);
     }
 
     // Overrides
@@ -53,7 +50,7 @@ SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutBinding, Sampl
     }
 
     @Override
-    protected void prepareFragmentData(Bundle savedInstanceState) {
+    protected void prepareFragmentData() {
         record = getActivityRootData();
 
         sampleMaterialList = DataUtils.getEnumItems(SampleMaterial.class, true);

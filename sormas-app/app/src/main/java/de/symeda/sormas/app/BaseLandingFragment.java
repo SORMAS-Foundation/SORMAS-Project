@@ -71,18 +71,6 @@ public abstract class BaseLandingFragment<E extends Enum<E>, TAdapter extends En
         this.recyclerView.setLayoutManager(this.layoutManager);
     }
 
-    protected static <TFragment extends BaseLandingFragment, TActivity extends BaseLandingActivity> TFragment newInstance(Class<TFragment> f) throws IllegalAccessException, java.lang.InstantiationException {
-        TFragment fragment = f.newInstance();
-        /*Bundle bundle = fragment.getArguments();
-        if (bundle == null) {
-            bundle = new Bundle();
-        }
-
-
-        fragment.setArguments(bundle);*/
-        return fragment;
-    }
-
     public boolean showNewAction() {
         return false;
     }

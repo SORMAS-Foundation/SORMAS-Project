@@ -59,6 +59,11 @@ public class SettingsActivity extends BaseLandingActivity {
     }
 
     @Override
+    public Enum getPageStatus() {
+        return null;
+    }
+
+    @Override
     public BaseLandingFragment buildLandingFragment() {
         return new SettingsFragment();
     }

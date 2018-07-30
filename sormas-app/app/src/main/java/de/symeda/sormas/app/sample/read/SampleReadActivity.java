@@ -9,11 +9,14 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.sample.ShipmentStatus;
 import de.symeda.sormas.app.sample.edit.SampleEditActivity;
-import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
-import de.symeda.sormas.app.shared.ShipmentStatus;
 
 public class SampleReadActivity extends BaseReadActivity<Sample> {
+
+    public static void startActivity(Context context, String rootUuid) {
+        BaseReadActivity.startActivity(context, SampleReadActivity.class, buildBundle(rootUuid));
+    }
 
     @Override
     protected Sample queryRootData(String recordUuid) {
@@ -22,13 +25,21 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
 
     @Override
     public ShipmentStatus getPageStatus() {
-        return (ShipmentStatus)super.getPageStatus();
+        Sample sample = getStoredRootEntity();
+        if (sample != null) {
+            ShipmentStatus shipmentStatus = sample.getReferredToUuid() != null ?
+                    ShipmentStatus.REFERRED_OTHER_LAB : sample.isReceived() ?
+                    ShipmentStatus.RECEIVED : sample.isShipped() ? ShipmentStatus.SHIPPED :
+                    ShipmentStatus.NOT_SHIPPED;
+            return shipmentStatus;
+        } else {
+            return null;
+        }
     }
 
     @Override
     protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Sample activityRootData) {
-        SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
-        return SampleReadFragment.newInstance(dataCapsule, activityRootData);
+        return SampleReadFragment.newInstance(activityRootData);
     }
 
     @Override
@@ -49,13 +60,7 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
     }
 
     @Override
-    public void goToEditView(PageMenuItem menuItem) {
-        SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
-        if (menuItem != null) dataCapsule.setActiveMenu(menuItem.getKey());
-        SampleEditActivity.goToActivity(this, dataCapsule);
-    }
-
-    public static void goToActivity(Context fromActivity, SampleFormNavigationCapsule dataCapsule) {
-        BaseReadActivity.goToActivity(fromActivity, SampleReadActivity.class, dataCapsule);
+    public void goToEditView() {
+        SampleEditActivity.startActivity(getContext(), getRootUuid());
     }
 }

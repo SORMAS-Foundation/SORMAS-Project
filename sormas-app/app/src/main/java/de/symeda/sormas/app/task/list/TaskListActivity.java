@@ -1,7 +1,6 @@
 package de.symeda.sormas.app.task.list;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.view.Menu;
 import android.widget.AdapterView;
 
@@ -14,30 +13,14 @@ import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.core.IListNavigationCapsule;
-import de.symeda.sormas.app.core.ListNavigationCapsule;
-import de.symeda.sormas.app.core.SearchBy;
+import de.symeda.sormas.app.sample.list.SampleListActivity;
 
 public class TaskListActivity extends BaseListActivity {
 
     private TaskStatus statusFilters[] = new TaskStatus[]{TaskStatus.PENDING, TaskStatus.DONE, TaskStatus.NOT_EXECUTABLE};
 
-    private SearchBy searchBy = null;
-    private String recordUuid = null;
-
-    @Override
-    protected void onCreateInner(Bundle savedInstanceState) {
-        super.onCreateInner(savedInstanceState);
-        searchBy = (SearchBy) getSearchStrategyArg(savedInstanceState);
-        recordUuid = getRecordUuidArg(savedInstanceState);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        saveSearchStrategyState(outState, searchBy);
-        saveRecordUuidState(outState, recordUuid);
+    public static void startActivity(Context context, TaskStatus listFilter) {
+        BaseListActivity.startActivity(context, TaskListActivity.class, buildBundle(listFilter));
     }
 
     @Override
@@ -53,9 +36,8 @@ public class TaskListActivity extends BaseListActivity {
 
     @Override
     protected BaseListFragment buildListFragment(PageMenuItem menuItem) {
-        TaskStatus status = statusFilters[menuItem.getKey()];
-        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(TaskListActivity.this, status, searchBy);
-        return TaskListFragment.newInstance(dataCapsule);
+        TaskStatus listFilter = statusFilters[menuItem.getKey()];
+        return TaskListFragment.newInstance(listFilter);
     }
 
     @Override
@@ -68,9 +50,5 @@ public class TaskListActivity extends BaseListActivity {
     @Override
     protected int getActivityTitle() {
         return R.string.heading_level2_tasks_list;
-    }
-
-    public static void goToActivity(Context fromActivity, IListNavigationCapsule dataCapsule) {
-        BaseListActivity.goToActivity(fromActivity, TaskListActivity.class, dataCapsule);
     }
 }

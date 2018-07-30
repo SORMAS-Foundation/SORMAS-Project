@@ -11,8 +11,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.databinding.FragmentContactReadLayoutBinding;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 
 import static android.view.View.GONE;
 
@@ -22,28 +20,22 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
     private Case sourceCase;
     private Case resultingCase = null;
 
-    // Instance methods
-
-    public static ContactReadFragment newInstance(ContactFormNavigationCapsule capsule, Contact activityRootData) {
-        return newInstance(ContactReadFragment.class, capsule, activityRootData);
+    public static ContactReadFragment newInstance(Contact activityRootData) {
+        return newInstance(ContactReadFragment.class, null, activityRootData);
     }
 
     private void setUpControlListeners(FragmentContactReadLayoutBinding contentBinding) {
         contentBinding.openSourceCase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(getContext(),
-                        sourceCase.getUuid(), sourceCase.getCaseClassification());
-                CaseReadActivity.goToActivity(getActivity(), dataCapsule);
+                CaseReadActivity.startActivity(getContext(), sourceCase.getUuid());
             }
         });
 
         contentBinding.openResultingCase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(getContext(),
-                        resultingCase.getUuid(), resultingCase.getCaseClassification());
-                CaseReadActivity.goToActivity(getActivity(), dataCapsule);
+                CaseReadActivity.startActivity(getContext(), resultingCase.getUuid());
             }
         });
     }
@@ -95,5 +87,4 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
     public int getReadLayout() {
         return R.layout.fragment_contact_read_layout;
     }
-
 }

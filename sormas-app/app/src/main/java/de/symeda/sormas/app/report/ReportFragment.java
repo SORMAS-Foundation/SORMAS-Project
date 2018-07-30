@@ -475,7 +475,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
     }
 
     public static ReportFragment newInstance() {
-        return newInstance(ReportFragment.class);
+        return newInstance(ReportFragment.class, null);
     }
 
     @Override

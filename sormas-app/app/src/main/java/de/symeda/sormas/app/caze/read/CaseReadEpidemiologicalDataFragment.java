@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 
 import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -14,7 +13,6 @@ import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.component.dialog.SimpleDialog;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentCaseReadEpidLayoutBinding;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 
 public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<FragmentCaseReadEpidLayoutBinding, EpiData, Case> {
 
@@ -28,6 +26,10 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
     private IEntryItemOnClickListener onBurialItemClickListener;
     private IEntryItemOnClickListener onGatheringItemClickListener;
     private IEntryItemOnClickListener onTravelItemClickListener;
+
+    public static CaseReadEpidemiologicalDataFragment newInstance(Case activityRootData) {
+        return newInstance(CaseReadEpidemiologicalDataFragment.class, null, activityRootData);
+    }
 
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
@@ -65,10 +67,6 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
     @Override
     public int getReadLayout() {
         return R.layout.fragment_case_read_epid_layout;
-    }
-
-    public static CaseReadEpidemiologicalDataFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(CaseReadEpidemiologicalDataFragment.class, capsule, activityRootData);
     }
 
     private ObservableArrayList getBurialVisits() {

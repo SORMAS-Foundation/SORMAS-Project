@@ -11,7 +11,7 @@ import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.app.shared.ShipmentStatus;
+import de.symeda.sormas.app.sample.ShipmentStatus;
 
 public class StatusElaboratorFactory {
 

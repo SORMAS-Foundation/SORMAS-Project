@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.sample.edit;
 
-import android.os.Bundle;
 import android.view.View;
 
 import org.apache.commons.lang3.StringUtils;
@@ -23,9 +22,8 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.databinding.FragmentSampleEditLayoutBinding;
+import de.symeda.sormas.app.sample.ShipmentStatus;
 import de.symeda.sormas.app.sample.read.SampleReadActivity;
-import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
-import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.util.DataUtils;
 
 import static android.view.View.GONE;
@@ -42,10 +40,8 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
     private List<Item> sampleSourceList;
     private List<Facility> labList;
 
-    // Instance methods
-
-    public static SampleEditFragment newInstance(SampleFormNavigationCapsule capsule, Sample activityRootData) {
-        return newInstance(SampleEditFragment.class, capsule, activityRootData);
+    public static SampleEditFragment newInstance(Sample activityRootData) {
+        return newInstance(SampleEditFragment.class, null, activityRootData);
     }
 
     private void setUpControlListeners(FragmentSampleEditLayoutBinding contentBinding) {
@@ -56,18 +52,12 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
                     String referredToUuid = record.getReferredToUuid();
                     Sample sample = DatabaseHelper.getSampleDao().queryUuid(referredToUuid);
                     if (sample != null) {
-                        ShipmentStatus shipmentStatus = sample.getReferredToUuid() != null ?
-                                ShipmentStatus.REFERRED_OTHER_LAB : sample.isReceived() ?
-                                ShipmentStatus.RECEIVED : sample.isShipped() ? ShipmentStatus.SHIPPED :
-                                ShipmentStatus.NOT_SHIPPED;
-                        SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(getContext(),
-                                sample.getUuid(), shipmentStatus).setSampleUuid(record.getUuid());
                         // Activity needs to be destroyed because it is only resumed, not created otherwise
                         // and therefore the record uuid is not changed
-                        if (getActivity( )!= null) {
+                        if (getActivity() != null) {
                             getActivity().finish();
                         }
-                        SampleReadActivity.goToActivity(getActivity(), dataCapsule);
+                        SampleReadActivity.startActivity(getActivity(), record.getUuid());
                     }
                 }
             });
@@ -98,7 +88,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
     }
 
     @Override
-    protected void prepareFragmentData(Bundle savedInstanceState) {
+    protected void prepareFragmentData() {
         record = getActivityRootData();
         mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(record);
 

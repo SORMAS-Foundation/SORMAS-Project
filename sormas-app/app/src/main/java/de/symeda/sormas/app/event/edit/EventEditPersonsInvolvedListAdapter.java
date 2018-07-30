@@ -20,7 +20,7 @@ public class EventEditPersonsInvolvedListAdapter extends DataBoundAdapter<RowRea
 
     private static final String TAG = EventEditPersonsInvolvedListAdapter.class.getSimpleName();
 
-    private List<EventParticipant> data = new ArrayList<>();
+    private List<EventParticipant> data;
     private OnListItemClickListener mOnListItemClickListener;
 
     public EventEditPersonsInvolvedListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<EventParticipant> data) {

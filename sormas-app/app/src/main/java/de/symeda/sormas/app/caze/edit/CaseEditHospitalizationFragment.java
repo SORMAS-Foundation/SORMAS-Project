@@ -2,7 +2,6 @@ package de.symeda.sormas.app.caze.edit;
 
 import android.content.res.Resources;
 import android.databinding.ObservableArrayList;
-import android.os.Bundle;
 import android.view.View;
 
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -16,9 +15,7 @@ import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.databinding.FragmentCaseEditHospitalizationLayoutBinding;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCaseEditHospitalizationLayoutBinding, Hospitalization, Case> {
@@ -28,6 +25,10 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
 
     private IEntryItemOnClickListener onAddEntryClickListener;
     private IEntryItemOnClickListener onPrevHosItemClickListener;
+
+    public static CaseEditHospitalizationFragment newInstance(Case activityRootData) {
+        return newInstance(CaseEditHospitalizationFragment.class, null, activityRootData);
+    }
 
     @Override
     protected String getSubHeadingTitle() {
@@ -41,7 +42,7 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
     }
 
     @Override
-    protected void prepareFragmentData(Bundle savedInstanceState) {
+    protected void prepareFragmentData() {
         caze = getActivityRootData();
         record = caze.getHospitalization();
     }
@@ -192,9 +193,5 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
         } else {
             getContentBinding().caseHospitalizationHospitalizedPreviously.disableWarningState();
         }
-    }
-
-    public static CaseEditHospitalizationFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(CaseEditHospitalizationFragment.class, capsule, activityRootData);
     }
 }

@@ -14,8 +14,6 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
-import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
-import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.task.read.TaskReadActivity;
 
 public class ContactReadTaskListFragment extends BaseReadFragment<FragmentFormListLayoutBinding, List<Task>, Contact> implements OnListItemClickListener {
@@ -24,6 +22,10 @@ public class ContactReadTaskListFragment extends BaseReadFragment<FragmentFormLi
 
     private ContactReadTaskListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
+
+    public static ContactReadTaskListFragment newInstance(Contact activityRootData) {
+        return newInstance(ContactReadTaskListFragment.class, null, activityRootData);
+    }
 
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
@@ -68,11 +70,6 @@ public class ContactReadTaskListFragment extends BaseReadFragment<FragmentFormLi
     @Override
     public void onListItemClick(View view, int position, Object item) {
         Task task = (Task) item;
-        TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(getContext(), task.getUuid(), task.getTaskStatus());
-        TaskReadActivity.goToActivity(getActivity(), dataCapsule);
-    }
-
-    public static ContactReadTaskListFragment newInstance(ContactFormNavigationCapsule capsule, Contact activityRootData) {
-        return newInstance(ContactReadTaskListFragment.class, capsule, activityRootData);
+        TaskReadActivity.startActivity(getActivity(), task.getUuid());
     }
 }

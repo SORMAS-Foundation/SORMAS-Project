@@ -1,7 +1,5 @@
 package de.symeda.sormas.app;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
@@ -11,7 +9,6 @@ import android.widget.TextView;
 
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
-import de.symeda.sormas.app.util.ConstantHelper;
 
 public abstract class BaseReportActivity extends BaseActivity implements IUpdateSubHeadingTitle {
 
@@ -95,20 +92,12 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
         return true;
     }
 
-    protected static <TActivity extends BaseActivity> void goToActivity(Context fromActivity, Class<TActivity> toActivity) {
-        Intent intent = new Intent(fromActivity, toActivity);
-        fromActivity.startActivity(intent);
-    }
-
     private void replaceFragment(BaseReportFragment f) {
         BaseFragment previousFragment = activeFragment;
         activeFragment = f;
 
         if (activeFragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            if (activeFragment.getArguments() == null)
-                activeFragment.setArguments(getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA));
-
             ft.setCustomAnimations(R.anim.fadein, R.anim.fadeout, R.anim.fadein, R.anim.fadeout);
             ft.replace(R.id.fragment_frame, activeFragment);
             if (previousFragment != null) {
@@ -116,6 +105,8 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
             }
             ft.commit();
         }
+
+        updateStatusFrame();
     }
 
     private void processActionbarMenu() {

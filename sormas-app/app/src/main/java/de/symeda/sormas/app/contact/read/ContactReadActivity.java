@@ -14,11 +14,14 @@ import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.contact.ContactSection;
 import de.symeda.sormas.app.contact.edit.ContactEditActivity;
 import de.symeda.sormas.app.person.read.PersonReadFragment;
-import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 
 public class ContactReadActivity extends BaseReadActivity<Contact> {
 
     public static final String TAG = ContactReadActivity.class.getSimpleName();
+
+    public static void startActivity(Context context, String rootUuid) {
+        BaseReadActivity.startActivity(context, ContactReadActivity.class, buildBundle(rootUuid));
+    }
 
     @Override
     protected Contact queryRootData(String recordUuid) {
@@ -33,28 +36,25 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
 
     @Override
     public ContactClassification getPageStatus() {
-        return (ContactClassification)super.getPageStatus();
+        return getStoredRootEntity() == null ? null : getStoredRootEntity().getContactClassification();
     }
 
     @Override
     protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Contact activityRootData) {
-        ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(
-                ContactReadActivity.this, getRootEntityUuid(), getPageStatus());
-
         ContactSection section = ContactSection.fromMenuKey(menuItem.getKey());
         BaseReadFragment fragment;
         switch (section) {
             case CONTACT_INFO:
-                fragment = ContactReadFragment.newInstance(dataCapsule, activityRootData);
+                fragment = ContactReadFragment.newInstance(activityRootData);
                 break;
             case PERSON_INFO:
-                fragment = PersonReadFragment.newInstance(dataCapsule, activityRootData);
+                fragment = PersonReadFragment.newInstance(activityRootData);
                 break;
             case VISITS:
-                fragment = ContactReadFollowUpVisitListFragment.newInstance(dataCapsule, activityRootData);
+                fragment = ContactReadFollowUpVisitListFragment.newInstance(activityRootData);
                 break;
             case TASKS:
-                fragment = ContactReadTaskListFragment.newInstance(dataCapsule, activityRootData);
+                fragment = ContactReadTaskListFragment.newInstance(activityRootData);
                 break;
             default:
                 throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
@@ -76,15 +76,9 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
     }
 
     @Override
-    public void goToEditView(PageMenuItem menuItem) {
-        ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
-        if (menuItem != null) dataCapsule.setActiveMenu(menuItem.getKey());
-        ContactEditActivity.goToActivity(ContactReadActivity.this, dataCapsule);
+    public void goToEditView() {
+        ContactSection section = ContactSection.fromMenuKey(getActivePage().getKey());
+        ContactEditActivity.startActivity(ContactReadActivity.this, getRootUuid(), section);
     }
-
-    public static void goToActivity(Context fromActivity, ContactFormNavigationCapsule dataCapsule) {
-        BaseReadActivity.goToActivity(fromActivity, ContactReadActivity.class, dataCapsule);
-    }
-
 }
 

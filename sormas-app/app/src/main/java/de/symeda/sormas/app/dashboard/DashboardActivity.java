@@ -11,7 +11,6 @@ import de.symeda.sormas.app.BaseDashboardActivity;
 import de.symeda.sormas.app.BaseSummaryFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.dialog.UserReportDialog;
-import de.symeda.sormas.app.core.DashboardNavigationCapsule;
 import de.symeda.sormas.app.dashboard.caze.CaseSummaryFragment;
 import de.symeda.sormas.app.dashboard.contact.ContactSummaryFragment;
 import de.symeda.sormas.app.dashboard.event.EventSummaryFragment;
@@ -26,11 +25,11 @@ public class DashboardActivity extends BaseDashboardActivity {
     protected List<BaseSummaryFragment> buildSummaryFragments() {
         if (activeFragments == null) {
             activeFragments = new ArrayList<BaseSummaryFragment>() {{
-                add(TaskSummaryFragment.newInstance(new DashboardNavigationCapsule(DashboardActivity.this)));
-                add(CaseSummaryFragment.newInstance(new DashboardNavigationCapsule(DashboardActivity.this)));
-                add(ContactSummaryFragment.newInstance(new DashboardNavigationCapsule(DashboardActivity.this)));
-                add(EventSummaryFragment.newInstance(new DashboardNavigationCapsule(DashboardActivity.this)));
-                add(SampleSummaryFragment.newInstance(new DashboardNavigationCapsule(DashboardActivity.this)));
+                add(TaskSummaryFragment.newInstance());
+                add(CaseSummaryFragment.newInstance());
+                add(ContactSummaryFragment.newInstance());
+                add(EventSummaryFragment.newInstance());
+                add(SampleSummaryFragment.newInstance());
             }};
         }
 
@@ -53,7 +52,7 @@ public class DashboardActivity extends BaseDashboardActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.action_new:
                 return true;
 
@@ -73,5 +72,10 @@ public class DashboardActivity extends BaseDashboardActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public Enum getPageStatus() {
+        return null;
     }
 }

@@ -1,7 +1,6 @@
 package de.symeda.sormas.app.contact.edit;
 
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 
@@ -14,11 +13,10 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.visit.edit.VisitEditActivity;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
-import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
-import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
+import de.symeda.sormas.app.visit.VisitSection;
+import de.symeda.sormas.app.visit.edit.VisitEditActivity;
 
 
 public class ContactEditVisitsListFragment extends BaseEditFragment<FragmentFormListLayoutBinding, List<Visit>, Contact> implements OnListItemClickListener {
@@ -27,6 +25,10 @@ public class ContactEditVisitsListFragment extends BaseEditFragment<FragmentForm
 
     private ContactEditVisitsListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
+
+    public static ContactEditVisitsListFragment newInstance(Contact activityRootData) {
+        return newInstance(ContactEditVisitsListFragment.class, null, activityRootData);
+    }
 
     @Override
     protected String getSubHeadingTitle() {
@@ -40,7 +42,7 @@ public class ContactEditVisitsListFragment extends BaseEditFragment<FragmentForm
     }
 
     @Override
-    protected void prepareFragmentData(Bundle savedInstanceState) {
+    protected void prepareFragmentData() {
         Contact contact = getActivityRootData();
         record = DatabaseHelper.getVisitDao().getByContact(contact);
     }
@@ -79,12 +81,7 @@ public class ContactEditVisitsListFragment extends BaseEditFragment<FragmentForm
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
-        Visit record = (Visit) item;
-        VisitFormNavigationCapsule dataCapsule = new VisitFormNavigationCapsule(getContext(), record.getUuid(), record.getVisitStatus());
-        VisitEditActivity.goToActivity(getActivity(), dataCapsule);
-    }
-
-    public static ContactEditVisitsListFragment newInstance(ContactFormNavigationCapsule capsule, Contact activityRootData) {
-        return newInstance(ContactEditVisitsListFragment.class, capsule, activityRootData);
+        Visit visit = (Visit) item;
+        VisitEditActivity.startActivity(getContext(), visit.getUuid(), getActivityRootData().getUuid(), VisitSection.VISIT_INFO);
     }
 }

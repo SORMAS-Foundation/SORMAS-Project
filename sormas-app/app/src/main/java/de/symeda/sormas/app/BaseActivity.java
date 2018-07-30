@@ -55,8 +55,8 @@ import de.symeda.sormas.app.menu.MainMenuItemSelectedListener;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
+import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Callback;
-import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.NavigationHelper;
 import de.symeda.sormas.app.util.SyncCallback;
@@ -77,7 +77,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     // title & status
     private View applicationTitleBar = null;
     private View statusFrame = null;
-    private Enum pageStatus;
 
     // footer menu
     private PageMenuControl pageMenu = null;
@@ -109,11 +108,20 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         return null;
     }
 
+    protected static Bundler buildBundle(int activePageKey) {
+        return new Bundler().setActivePageKey(activePageKey);
+    }
+
+    public static <TActivity extends BaseActivity> void startActivity(Context context, Class<TActivity> toActivity, Bundler bundler) {
+        Intent intent = new Intent(context, toActivity);
+        intent.putExtras(bundler.get());
+        context.startActivity(intent);
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        setPageStatusState(outState, pageStatus);
-        saveActiveMenuState(outState, activePageKey);
+        new Bundler(outState).setActivePageKey(activePageKey);
     }
 
     @Override
@@ -132,11 +140,11 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         }
 
         if (savedInstanceState == null) {
-            savedInstanceState = getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
+            savedInstanceState = getIntent().getExtras();
         }
 
-        pageStatus = getPageStatusArg(savedInstanceState);
-        activePageKey = getActiveMenuArg(savedInstanceState);
+        Bundler bundler = new Bundler(savedInstanceState);
+        activePageKey = bundler.getActivePageKey();
 
         setContentView(getRootActivityLayout());
 
@@ -211,22 +219,27 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
         if (applicationTitleBar != null && isShowTitleBar()) {
             applicationTitleBar.setVisibility(View.VISIBLE);
+            updateStatusFrame();
+        }
+    }
 
-            if (statusFrame != null && getPageStatus() != null) {
-                Context statusFrameContext = statusFrame.getContext();
+    protected void updateStatusFrame() {
+        if (statusFrame != null && getPageStatus() != null) {
+            Context statusFrameContext = statusFrame.getContext();
 
-                Drawable drw = (Drawable) ContextCompat.getDrawable(statusFrameContext, R.drawable.indicator_status_circle);
-                drw.setColorFilter(statusFrameContext.getResources().getColor(getStatusColorResource(statusFrameContext)), PorterDuff.Mode.SRC);
+            Drawable drw = (Drawable) ContextCompat.getDrawable(statusFrameContext, R.drawable.indicator_status_circle);
+            drw.setColorFilter(statusFrameContext.getResources().getColor(getStatusColorResource(statusFrameContext)), PorterDuff.Mode.SRC);
 
-                TextView txtStatusName = (TextView) statusFrame.findViewById(R.id.txtStatusName);
-                ImageView imgStatus = (ImageView) statusFrame.findViewById(R.id.statusIcon);
+            TextView txtStatusName = (TextView) statusFrame.findViewById(R.id.txtStatusName);
+            ImageView imgStatus = (ImageView) statusFrame.findViewById(R.id.statusIcon);
 
 
-                txtStatusName.setText(getStatusName(statusFrameContext));
-                imgStatus.setBackground(drw);
+            txtStatusName.setText(getStatusName(statusFrameContext));
+            imgStatus.setBackground(drw);
 
-                statusFrame.setVisibility(View.VISIBLE);
-            }
+            statusFrame.setVisibility(View.VISIBLE);
+        } else {
+            statusFrame.setVisibility(View.GONE);
         }
     }
 
@@ -439,9 +452,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         return true;
     }
 
-    public Enum getPageStatus() {
-        return pageStatus;
-    }
+    public abstract Enum getPageStatus();
 
     public String getStatusName(Context context) {
         Enum pageStatus = getPageStatus();
@@ -601,38 +612,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     }
 
     protected abstract int getActivityTitle();
-
-    protected <E extends Enum<E>> void setPageStatusState(Bundle outState, E status) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_PAGE_STATUS, status);
-        }
-    }
-
-    protected <E extends Enum<E>> E getPageStatusArg(Bundle arguments) {
-        E e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.ARG_PAGE_STATUS)) {
-                e = (E) arguments.getSerializable(ConstantHelper.ARG_PAGE_STATUS);
-            }
-        }
-
-        return e;
-    }
-
-    protected void saveActiveMenuState(Bundle outState, int activeMenuKey) {
-        if (outState != null) {
-            outState.putInt(ConstantHelper.KEY_ACTIVE_MENU, activeMenuKey);
-        }
-    }
-
-    protected int getActiveMenuArg(Bundle arguments) {
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.KEY_ACTIVE_MENU)) {
-                return arguments.getInt(ConstantHelper.KEY_ACTIVE_MENU);
-            }
-        }
-        return 0;
-    }
 
     protected abstract boolean openPage(PageMenuItem menuItem);
 

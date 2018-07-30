@@ -2,8 +2,6 @@ package de.symeda.sormas.app.caze.list;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,17 +16,14 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.searchstrategy.ISearchExecutor;
 import de.symeda.sormas.app.searchstrategy.ISearchResultCallback;
 import de.symeda.sormas.app.searchstrategy.SearchStrategyFor;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.SubheadingHelper;
 
 public class CaseListFragment extends BaseListFragment<CaseListAdapter> implements OnListItemClickListener {
@@ -37,24 +32,9 @@ public class CaseListFragment extends BaseListFragment<CaseListAdapter> implemen
     private List<Case> cases;
     private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerViewForList;
-    private InvestigationStatus filterStatus = null;
-    private SearchBy searchBy = null;
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        saveFilterStatusState(outState, filterStatus);
-        saveSearchStrategyState(outState, searchBy);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
-
-        filterStatus = (InvestigationStatus) getFilterStatusArg(arguments);
-        searchBy = (SearchBy) getSearchStrategyArg(arguments);
+    public static CaseListFragment newInstance(InvestigationStatus listFilter) {
+        return newInstance(CaseListFragment.class, null, listFilter);
     }
 
     @Override
@@ -73,15 +53,8 @@ public class CaseListFragment extends BaseListFragment<CaseListAdapter> implemen
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
-        Case c = (Case) item;
-        CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(getContext(), c.getUuid(), c.getCaseClassification());
-        CaseReadActivity.goToActivity(getActivity(), dataCapsule);
-    }
-
-    @Override
-    public void cancelTaskExec() {
-        if (searchTask != null && !searchTask.isCancelled())
-            searchTask.cancel(true);
+        Case caze = (Case) item;
+        CaseReadActivity.startActivity(getContext(), caze.getUuid());
     }
 
     @Override
@@ -98,9 +71,9 @@ public class CaseListFragment extends BaseListFragment<CaseListAdapter> implemen
     public void onResume() {
         super.onResume();
 
-        getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Case"));
+        getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), SearchBy.BY_FILTER_STATUS, getListFilter(), "Case"));
 
-        ISearchExecutor<Case> executor = SearchStrategyFor.CASE.selector(searchBy, filterStatus, null);
+        ISearchExecutor<Case> executor = SearchStrategyFor.CASE.selector(SearchBy.BY_FILTER_STATUS, getListFilter(), null);
         searchTask = executor.search(new ISearchResultCallback<Case>() {
             @Override
             public void preExecute() {
@@ -135,10 +108,6 @@ public class CaseListFragment extends BaseListFragment<CaseListAdapter> implemen
         //recyclerViewForList.setHasFixedSize(true);
         recyclerViewForList.setLayoutManager(linearLayoutManager);
         recyclerViewForList.setAdapter(getListAdapter());
-    }
-
-    public static CaseListFragment newInstance(IListNavigationCapsule capsule) {
-        return newInstance(CaseListFragment.class, capsule);
     }
 
     @Override

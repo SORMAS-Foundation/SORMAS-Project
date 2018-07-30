@@ -21,7 +21,7 @@ android {
         multiDexEnabled true
     }
     signingConfigs {
-        release  {
+        release {
             storeFile file(keystoreProperties['storeFile'])
             storePassword keystoreProperties['storePassword']
             keyAlias keystoreProperties['keyAlias']
@@ -79,11 +79,9 @@ dependencies {
     implementation 'com.google.android.gms:play-services-analytics:16.0.1'
     implementation 'com.googlecode:openbeans:1.0'
     implementation files('libs/MPAndroidChart-v3.0.2.jar')
-    implementation (name: 'CircleProgress-v1.2.1', ext: 'aar')
+    implementation(name: 'CircleProgress-v1.2.1', ext: 'aar')
     implementation 'io.reactivex:rxandroid:1.0.1'
     implementation 'io.reactivex:rxjava:1.0.14'
-    implementation 'com.github.yatatsu:autobundle:4.1.0'
-    annotationProcessor 'com.github.yatatsu:autobundle-processor:4.1.0'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.hamcrest:hamcrest-library:1.3'
     testImplementation 'org.robolectric:robolectric:3.0'

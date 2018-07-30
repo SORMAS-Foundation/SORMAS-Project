@@ -1,7 +1,7 @@
 package de.symeda.sormas.app.core.enumeration;
 
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.shared.ShipmentStatus;
+import de.symeda.sormas.app.sample.ShipmentStatus;
 
 public class ShipmentStatusElaborator implements IStatusElaborator {
 

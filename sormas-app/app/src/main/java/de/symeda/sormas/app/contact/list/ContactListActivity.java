@@ -1,7 +1,6 @@
 package de.symeda.sormas.app.contact.list;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.view.Menu;
 import android.widget.AdapterView;
 
@@ -9,38 +8,23 @@ import org.joda.time.DateTime;
 
 import java.util.Random;
 
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.caze.list.CaseListActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.core.IListNavigationCapsule;
-import de.symeda.sormas.app.core.ListNavigationCapsule;
-import de.symeda.sormas.app.core.SearchBy;
+import de.symeda.sormas.app.util.Bundler;
 
 public class ContactListActivity extends BaseListActivity {
 
     private FollowUpStatus statusFilters[] = new FollowUpStatus[]{FollowUpStatus.FOLLOW_UP, FollowUpStatus.COMPLETED,
             FollowUpStatus.CANCELED, FollowUpStatus.LOST, FollowUpStatus.NO_FOLLOW_UP};
 
-    private SearchBy searchBy = null;
-    private String recordUuid = null;
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        saveSearchStrategyState(outState, searchBy);
-        saveRecordUuidState(outState, recordUuid);
+    public static void startActivity(Context context, FollowUpStatus listFilter) {
+        BaseListActivity.startActivity(context, ContactListActivity.class, buildBundle(listFilter));
     }
-
-    @Override
-    protected void onCreateInner(Bundle savedInstanceState) {
-        super.onCreateInner(savedInstanceState);
-        searchBy = (SearchBy) getSearchStrategyArg(savedInstanceState);
-        recordUuid = getRecordUuidArg(savedInstanceState);
-    }
-
 
     @Override
     public int getPageMenuData() {
@@ -55,9 +39,8 @@ public class ContactListActivity extends BaseListActivity {
 
     @Override
     protected BaseListFragment buildListFragment(PageMenuItem menuItem) {
-        FollowUpStatus status = statusFilters[menuItem.getKey()];
-        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(ContactListActivity.this, status, searchBy);
-        return ContactListFragment.newInstance(dataCapsule);
+        FollowUpStatus listFilter = statusFilters[menuItem.getKey()];
+        return ContactListFragment.newInstance(listFilter);
     }
 
     @Override
@@ -70,9 +53,5 @@ public class ContactListActivity extends BaseListActivity {
     @Override
     protected int getActivityTitle() {
         return R.string.heading_level2_contacts_list;
-    }
-
-    public static void goToActivity(Context fromActivity, IListNavigationCapsule dataCapsule) {
-        BaseListActivity.goToActivity(fromActivity, ContactListActivity.class, dataCapsule);
     }
 }

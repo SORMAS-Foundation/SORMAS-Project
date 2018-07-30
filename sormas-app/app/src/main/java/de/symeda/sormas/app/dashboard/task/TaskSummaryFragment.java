@@ -23,7 +23,6 @@ import de.symeda.sormas.app.component.visualization.data.SummaryCircularData;
 import de.symeda.sormas.app.component.visualization.data.SummaryPieData;
 import de.symeda.sormas.app.component.visualization.data.SummaryPieEntry;
 import de.symeda.sormas.app.component.visualization.data.SummaryTotalData;
-import de.symeda.sormas.app.core.DashboardNavigationCapsule;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterDataModifier;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationContext;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationService;
@@ -51,7 +50,7 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
 
     public static final String TAG = TaskSummaryFragment.class.getSimpleName();
 
-    private TaskStatus statusFilters[] = new TaskStatus[] { TaskStatus.PENDING, null, TaskStatus.NOT_EXECUTABLE };
+    private TaskStatus statusFilters[] = new TaskStatus[]{TaskStatus.PENDING, null, TaskStatus.NOT_EXECUTABLE};
     private CompositeSubscription mSubscription = new CompositeSubscription();
 
     @Nullable
@@ -68,27 +67,27 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
 
         showPreloader();
         Subscription mTaskPrioritySubscription = getTaskPriorityObservable()
-        .subscribe(new Subscriber<List<TaskPrioritySummaryEntry>>() {
-            @Override
-            public void onCompleted() {
+                .subscribe(new Subscriber<List<TaskPrioritySummaryEntry>>() {
+                    @Override
+                    public void onCompleted() {
 
-            }
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                Log.e(TAG, e.getMessage(), e);
-                hidePreloader();
-                showEmptySummaryHint();
-            }
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, e.getMessage(), e);
+                        hidePreloader();
+                        showEmptySummaryHint();
+                    }
 
-            @Override
-            public void onNext(final List<TaskPrioritySummaryEntry> taskPriorityData) {
-                if (taskPriorityData == null)
-                    return;
+                    @Override
+                    public void onNext(final List<TaskPrioritySummaryEntry> taskPriorityData) {
+                        if (taskPriorityData == null)
+                            return;
 
-                for (TaskPrioritySummaryEntry entry: taskPriorityData) {
-                    valueList.add(entry.getValue());
-                }
+                        for (TaskPrioritySummaryEntry entry : taskPriorityData) {
+                            valueList.add(entry.getValue());
+                        }
 
 
                         /*.repeatWhen(new Func1<Observable<? extends Void>, Observable<?>>() {
@@ -98,84 +97,84 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
                     }
                 }, Schedulers.io())*/
 
-                Subscription mDataSubscription = Observable
-                        .zip(getTotalDataObservable(), getCircularDataObservable(), getPieDataObservable(), getMergeDataObservable())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<TaskObservableDataResult>() {
-                            @Override
-                            public void onCompleted() {
-                                Log.d(TAG, "Completed");
-                            }
+                        Subscription mDataSubscription = Observable
+                                .zip(getTotalDataObservable(), getCircularDataObservable(), getPieDataObservable(), getMergeDataObservable())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Subscriber<TaskObservableDataResult>() {
+                                    @Override
+                                    public void onCompleted() {
+                                        Log.d(TAG, "Completed");
+                                    }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.e(TAG, e.getMessage(), e);
-                                hidePreloader();
-                                showEmptySummaryHint();
-                            }
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        Log.e(TAG, e.getMessage(), e);
+                                        hidePreloader();
+                                        showEmptySummaryHint();
+                                    }
 
-                            @Override
-                            public void onNext(TaskObservableDataResult taskObservableDataResult) {
-                                final List<SummaryTotalData> totalData = taskObservableDataResult.getTotalData();
-                                final List<SummaryCircularData> circularData = taskObservableDataResult.getCircularData();
-                                final List<SummaryPieData> pieData = taskObservableDataResult.getPieData();
+                                    @Override
+                                    public void onNext(TaskObservableDataResult taskObservableDataResult) {
+                                        final List<SummaryTotalData> totalData = taskObservableDataResult.getTotalData();
+                                        final List<SummaryCircularData> circularData = taskObservableDataResult.getCircularData();
+                                        final List<SummaryPieData> pieData = taskObservableDataResult.getPieData();
 
 
-                                try {
-                                    getLandingAdapter().startConfig().forViewType(ViewTypeHelper.ViewTypeEnum.TOTAL, new IAdapterRegistrationService() {
-                                        @Override
-                                        public void register(final IAdapterRegistrationContext context) throws java.lang.InstantiationException, IllegalAccessException {
-                                            context.registerBinder(SummaryTotalBinder.class).registerData(totalData);
-                                        }
-                                    })
-                                            .forViewType(ViewTypeHelper.ViewTypeEnum.SINGLE_CIRCULAR_PROGRESS, new IAdapterRegistrationService() {
+                                        try {
+                                            getLandingAdapter().startConfig().forViewType(ViewTypeHelper.ViewTypeEnum.TOTAL, new IAdapterRegistrationService() {
                                                 @Override
                                                 public void register(final IAdapterRegistrationContext context) throws java.lang.InstantiationException, IllegalAccessException {
-                                                    context.registerBinder(SummaryCircularProgressBinder.class).registerData(circularData);
+                                                    context.registerBinder(SummaryTotalBinder.class).registerData(totalData);
                                                 }
                                             })
-                                            .forViewType(ViewTypeHelper.ViewTypeEnum.PIECHART_WITH_LEGEND, new IAdapterRegistrationService() {
-                                                @Override
-                                                public void register(final IAdapterRegistrationContext context) throws java.lang.InstantiationException, IllegalAccessException {
-                                                    context.registerBinder(SummaryPieChartWithLegendBinder.class).registerData(pieData).forEach(new IAdapterDataModifier<SummaryPieData>() {
+                                                    .forViewType(ViewTypeHelper.ViewTypeEnum.SINGLE_CIRCULAR_PROGRESS, new IAdapterRegistrationService() {
                                                         @Override
-                                                        public void modify(SummaryPieData item, int position) {
-                                                            int i = 0;
-                                                            for(TaskPrioritySummaryEntry entry: taskPriorityData) {
-                                                                //TODO: Set value from database
-                                                                //entry.setFieldValue(null);
+                                                        public void register(final IAdapterRegistrationContext context) throws java.lang.InstantiationException, IllegalAccessException {
+                                                            context.registerBinder(SummaryCircularProgressBinder.class).registerData(circularData);
+                                                        }
+                                                    })
+                                                    .forViewType(ViewTypeHelper.ViewTypeEnum.PIECHART_WITH_LEGEND, new IAdapterRegistrationService() {
+                                                        @Override
+                                                        public void register(final IAdapterRegistrationContext context) throws java.lang.InstantiationException, IllegalAccessException {
+                                                            context.registerBinder(SummaryPieChartWithLegendBinder.class).registerData(pieData).forEach(new IAdapterDataModifier<SummaryPieData>() {
+                                                                @Override
+                                                                public void modify(SummaryPieData item, int position) {
+                                                                    int i = 0;
+                                                                    for (TaskPrioritySummaryEntry entry : taskPriorityData) {
+                                                                        //TODO: Set value from database
+                                                                        //entry.setFieldValue(null);
 
-                                                                item.addEntry(new SummaryPieEntry(entry.getValue(), entry.getLabel(), entry.getKey()));
-                                                                item.addLegendEntry(TaskPriorityLegendEntry.findByKey(entry.getKey()).setValue(entry.getValue())
-                                                                        .setPercentage(PercentageUtils.percentageOf(entry.getValue(), valueList)));
+                                                                        item.addEntry(new SummaryPieEntry(entry.getValue(), entry.getLabel(), entry.getKey()));
+                                                                        item.addLegendEntry(TaskPriorityLegendEntry.findByKey(entry.getKey()).setValue(entry.getValue())
+                                                                                .setPercentage(PercentageUtils.percentageOf(entry.getValue(), valueList)));
 
-                                                                if (i == 0) {
-                                                                    item.addColor(getContext().getResources().getColor(R.color.normalPriority));
-                                                                } else if (i == 1) {
-                                                                    item.addColor(getContext().getResources().getColor(R.color.lowPriority));
-                                                                } else {
-                                                                    item.addColor(getContext().getResources().getColor(R.color.highPriority));
+                                                                        if (i == 0) {
+                                                                            item.addColor(getContext().getResources().getColor(R.color.normalPriority));
+                                                                        } else if (i == 1) {
+                                                                            item.addColor(getContext().getResources().getColor(R.color.lowPriority));
+                                                                        } else {
+                                                                            item.addColor(getContext().getResources().getColor(R.color.highPriority));
+                                                                        }
+
+                                                                        i = i + 1;
+                                                                    }
                                                                 }
-
-                                                                i = i + 1;
-                                                            }
+                                                            });
                                                         }
                                                     });
-                                                }
-                                            });
-                                } catch (IllegalAccessException e) {
-                                    Log.e(TAG, e.getMessage(), e);
-                                } catch (java.lang.InstantiationException e) {
-                                    Log.e(TAG, e.getMessage(), e);
-                                }
+                                        } catch (IllegalAccessException e) {
+                                            Log.e(TAG, e.getMessage(), e);
+                                        } catch (java.lang.InstantiationException e) {
+                                            Log.e(TAG, e.getMessage(), e);
+                                        }
 
-                                hidePreloader();
-                            }
-                        });
+                                        hidePreloader();
+                                    }
+                                });
 
-                mSubscription.add(mDataSubscription);
-            }
-        });
+                        mSubscription.add(mDataSubscription);
+                    }
+                });
 
 
         mSubscription.add(mTaskPrioritySubscription);
@@ -218,8 +217,8 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
                 }*/
             }
         })
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     private Observable<List<SummaryTotalData>> getTotalDataObservable() {
@@ -239,8 +238,8 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
                 });
             }
         })
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     private Observable<List<SummaryPieData>> getPieDataObservable() {
@@ -260,8 +259,8 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
                 });
             }
         })
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     private Observable<List<SummaryCircularData>> getCircularDataObservable() {
@@ -281,8 +280,8 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
                 });
             }
         })
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     private Func3<List<SummaryTotalData>, List<SummaryCircularData>, List<SummaryPieData>, TaskObservableDataResult> getMergeDataObservable() {
@@ -301,7 +300,8 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
         List<SummaryTotalData> dataSet = new ArrayList<>();
         for (int i = 1; i <= 1; i++) {
             SummaryTotalData data = new SummaryTotalData();
-            data.dataTitle = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_total_tasks);;
+            data.dataTitle = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_total_tasks);
+            ;
             data.dataValue = String.valueOf(new Random().nextInt(10000));
             dataSet.add(data);
         }
@@ -366,7 +366,7 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
 
     @Override
     protected RecyclerView.LayoutManager createLayoutManager() {
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(),3, GridLayoutManager.VERTICAL,false);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 3, GridLayoutManager.VERTICAL, false);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
@@ -409,15 +409,7 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
     //</editor-fold>
 
 
-    public static TaskSummaryFragment newInstance(DashboardNavigationCapsule capsule) {
-        try {
-            return newInstance(TaskSummaryFragment.class, capsule);
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, e.getMessage(), e);
-        } catch (java.lang.InstantiationException e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
-
-        return null;
+    public static TaskSummaryFragment newInstance() {
+        return newInstance(TaskSummaryFragment.class, null);
     }
 }
