@@ -39,7 +39,7 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
                         if (getActivity() != null) {
                             getActivity().finish();
                         }
-                        SampleReadActivity.startActivity(getActivity(), record.getUuid());
+                        SampleReadActivity.startActivity(getActivity(), sample.getUuid());
                     }
                 }
             });

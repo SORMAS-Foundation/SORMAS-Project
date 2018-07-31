@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.app.BaseListFragment;
@@ -40,43 +39,18 @@ public class SampleListFragment extends BaseListFragment<SampleListAdapter> impl
     @Override
     protected void prepareFragmentData() {
 
-        // TODO build direct querries for this
         switch ((ShipmentStatus) getListFilter()) {
-            case NOT_SHIPPED: {
-                samples = DatabaseHelper.getSampleDao().queryForEq(Sample.SHIPPED, false);
-                List<Sample> samplesToRemove = new ArrayList<>();
-                for (Sample sample : samples) {
-                    if (sample.isReceived() || sample.getReferredToUuid() != null) {
-                        samplesToRemove.add(sample);
-                    }
-                }
-                samples.removeAll(samplesToRemove);
-            }
-            break;
-            case SHIPPED: {
-                samples = DatabaseHelper.getSampleDao().queryForEq(Sample.SHIPPED, true);
-                List<Sample> samplesToRemove = new ArrayList<>();
-                for (Sample sample : samples) {
-                    if (sample.isReceived() || sample.getReferredToUuid() != null) {
-                        samplesToRemove.add(sample);
-                    }
-                }
-                samples.removeAll(samplesToRemove);
-            }
-            break;
-            case RECEIVED: {
-                samples = DatabaseHelper.getSampleDao().queryForEq(Sample.RECEIVED, true);
-                List<Sample> samplesToRemove = new ArrayList<>();
-                for (Sample sample : samples) {
-                    if (sample.getReferredToUuid() != null) {
-                        samplesToRemove.add(sample);
-                    }
-                }
-                samples.removeAll(samplesToRemove);
-            }
-            break;
+            case NOT_SHIPPED:
+                samples = DatabaseHelper.getSampleDao().queryNotShipped();
+                break;
+            case SHIPPED:
+                samples = DatabaseHelper.getSampleDao().queryShipped();
+                break;
+            case RECEIVED:
+                samples = DatabaseHelper.getSampleDao().queryReceived();
+                break;
             case REFERRED_OTHER_LAB:
-                samples = DatabaseHelper.getSampleDao().queryForNotNull(Sample.REFERRED_TO_UUID);
+                samples = DatabaseHelper.getSampleDao().queryReferred();
                 break;
             default:
                 throw new IllegalArgumentException(getListFilter().toString());

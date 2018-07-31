@@ -101,7 +101,12 @@ public abstract class BaseListActivity extends BaseActivity implements IUpdateSu
 
     @Override
     public void updateSubHeadingTitle() {
-        setSubHeadingTitle(getActiveFragment().getListFilter().toString());
+        Enum listFilter = getActiveFragment().getListFilter();
+        if (listFilter != null) {
+            setSubHeadingTitle(getActiveFragment().getListFilter().toString());
+        } else {
+            setSubHeadingTitle("");
+        }
     }
 
     @Override

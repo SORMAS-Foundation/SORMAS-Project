@@ -14,8 +14,8 @@
     </menu>
     <menu>
         <key>2</key>
-        <title>Recieved</title>
-        <description>Recieved</description>
+        <title>Received</title>
+        <description>Received</description>
         <icon def-viewType="drawable">ic_lp_received_192dp</icon>
     </menu>
     <menu>

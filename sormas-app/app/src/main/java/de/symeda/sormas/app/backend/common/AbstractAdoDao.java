@@ -1017,8 +1017,11 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
-            where.isNotNull(fieldName);
-            where.and().eq(AbstractDomainObject.SNAPSHOT, false).query();
+            where.and(
+                    where.isNotNull(fieldName),
+                    where.ne(fieldName, ""),
+                    where.eq(AbstractDomainObject.SNAPSHOT, false)
+            ).query();
             return builder.query();
         } catch (SQLException e) {
             throw new RuntimeException(e);

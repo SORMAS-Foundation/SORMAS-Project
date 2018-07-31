@@ -119,6 +119,7 @@ public class Sample extends AbstractDomainObject {
     @DatabaseField
     private boolean received;
 
+    @Deprecated
     @DatabaseField(defaultValue = "", canBeNull = false)
     private String shipmentStatus;
 
