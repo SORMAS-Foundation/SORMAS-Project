@@ -9,7 +9,6 @@
         app:showAsAction="always"/>
 
     <item
-        android:id="@+id/option_menu_action_options"
         android:icon="@drawable/ic_more_option_menu_24dp"
         android:title="@string/action_options"
         app:showAsAction="always">

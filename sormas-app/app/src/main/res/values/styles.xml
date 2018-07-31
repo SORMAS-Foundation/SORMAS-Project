@@ -131,11 +131,6 @@
         <item name="android:focusableInTouchMode">true</item>
     </style>
 
-    <style name="RadioGroupLabelStyle" parent="ControlLabelStyle">
-        <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingBottom">0dp</item>
-    </style>
-
     <style name="RequiredIndicatorStyle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
@@ -254,27 +249,6 @@
         <item name="android:paddingBottom">@dimen/slimTextViewBottomPadding</item>
     </style>
 
-    <style name="SpinnerStyle" parent="Widget.AppCompat.Spinner.Underlined">
-        <item name="android:background">@drawable/selector_spinner</item>
-    </style>
-
-    <style name="DatePickerEditTextViewSingleRowStyle">
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingTop">@dimen/textViewTopPadding</item>
-        <item name="android:paddingBottom">@dimen/textViewBottomPadding</item>
-        <item name="android:background">@drawable/selector_text_control_edit</item>
-        <item name="android:cursorVisible">false</item>
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:textColor">@color/controlTextColor</item>
-        <item name="android:textColorHint">@color/controlTextViewHint</item>
-        <item name="android:textCursorDrawable">@drawable/cursor</item>
-        <item name="android:textIsSelectable">false</item>
-        <item name="android:textSize">@dimen/defaultControlTextSize</item>
-    </style>
-
     <style name="ControlDateOrTimePickerInputStyle" parent="@style/ControlTextFieldStyle">
         <item name="android:cursorVisible">false</item>
         <item name="android:textIsSelectable">false</item>
@@ -354,76 +328,6 @@
         <item name="android:textColor">@color/primaryButtonText</item>
         <item name="android:background">@drawable/selector_button_primary</item>
         <item name="android:elevation">@dimen/primaryButtonElevation</item>
-    </style>
-
-    <style name="SecondaryButtonStyle">
-        <item name="android:layout_height">@dimen/secondaryButtonHeight</item>
-        <item name="android:gravity">center</item>
-        <item name="android:paddingLeft">@dimen/buttonHorizontalPadding</item>
-        <item name="android:paddingRight">@dimen/buttonHorizontalPadding</item>
-        <item name="android:textColor">@color/secondaryButtonText</item>
-        <item name="android:background">@drawable/selector_button_secondary</item>
-        <item name="android:elevation">@dimen/secondaryButtonElevation</item>
-    </style>
-
-    <style name="SuccessButtonStyle">
-        <item name="android:layout_height">@dimen/primaryButtonHeight</item>
-        <item name="android:gravity">center</item>
-        <item name="android:paddingLeft">@dimen/buttonHorizontalPadding</item>
-        <item name="android:paddingRight">@dimen/buttonHorizontalPadding</item>
-        <item name="android:textColor">@color/successButtonText</item>
-        <item name="android:background">@drawable/selector_button_success</item>
-        <item name="android:elevation">@dimen/primaryButtonElevation</item>
-    </style>
-
-    <style name="DangerButtonStyle">
-        <item name="android:layout_height">@dimen/primaryButtonHeight</item>
-        <item name="android:gravity">center</item>
-        <item name="android:paddingLeft">@dimen/buttonHorizontalPadding</item>
-        <item name="android:paddingRight">@dimen/buttonHorizontalPadding</item>
-        <item name="android:textColor">@color/dangerButtonText</item>
-        <item name="android:background">@drawable/selector_button_danger</item>
-        <item name="android:elevation">@dimen/primaryButtonElevation</item>
-    </style>
-
-    <style name="WarningButtonStyle">
-        <item name="android:layout_height">@dimen/primaryButtonHeight</item>
-        <item name="android:gravity">center</item>
-        <item name="android:paddingLeft">@dimen/buttonHorizontalPadding</item>
-        <item name="android:paddingRight">@dimen/buttonHorizontalPadding</item>
-        <item name="android:textColor">@color/warningButtonText</item>
-        <item name="android:background">@drawable/selector_button_warning</item>
-        <item name="android:elevation">@dimen/primaryButtonElevation</item>
-    </style>
-
-    <style name="PrimaryInverseButtonStyle">
-        <item name="android:layout_height">@dimen/primaryButtonHeight</item>
-        <item name="android:gravity">center</item>
-        <item name="android:paddingLeft">@dimen/buttonHorizontalPadding</item>
-        <item name="android:paddingRight">@dimen/buttonHorizontalPadding</item>
-        <item name="android:textColor">@color/primaryInverseButtonText</item>
-        <item name="android:background">@drawable/selector_button_inverse_primary</item>
-        <!--<item name="android:elevation">@dimen/inverseButtonElevation</item>-->
-    </style>
-
-    <style name="WarningInverseButtonStyle">
-        <item name="android:layout_height">@dimen/primaryButtonHeight</item>
-        <item name="android:gravity">center</item>
-        <item name="android:paddingLeft">@dimen/buttonHorizontalPadding</item>
-        <item name="android:paddingRight">@dimen/buttonHorizontalPadding</item>
-        <item name="android:textColor">@color/warningInverseButtonText</item>
-        <item name="android:background">@drawable/selector_button_inverse_warning</item>
-        <item name="android:elevation">@dimen/inverseButtonElevation</item>
-    </style>
-
-    <style name="DangerInverseButtonStyle">
-        <item name="android:layout_height">@dimen/primaryButtonHeight</item>
-        <item name="android:gravity">center</item>
-        <item name="android:paddingLeft">@dimen/buttonHorizontalPadding</item>
-        <item name="android:paddingRight">@dimen/buttonHorizontalPadding</item>
-        <item name="android:textColor">@color/dangerInverseButtonText</item>
-        <item name="android:background">@drawable/selector_button_inverse_danger</item>
-        <item name="android:elevation">@dimen/inverseButtonElevation</item>
     </style>
 
     <style name="EmptyListHintStyle">
@@ -648,22 +552,6 @@
         <item name="android:layout_marginBottom">@dimen/contentVerticalSpacing</item>
         <item name="android:layout_marginLeft">@dimen/control_spacing</item>
         <item name="android:layout_marginRight">@dimen/control_spacing</item>
-    </style>
-
-
-    <style name="MiniHorizontalDividerStyle">
-        <item name="android:layout_width">@dimen/miniHorizontalSeparatorWidth</item>
-        <item name="android:layout_height">@dimen/separatorThickness</item>
-        <item name="android:layout_gravity">center_horizontal</item>
-        <item name="android:background">@color/viewSeparator</item>
-        <item name="android:layout_marginBottom">@dimen/controlReadTextMarginBottom</item>
-    </style>
-
-    <style name="MiniHorizontalDividerStyleNoDefaultMargin">
-        <item name="android:layout_width">@dimen/miniHorizontalSeparatorWidth</item>
-        <item name="android:layout_height">@dimen/separatorThickness</item>
-        <item name="android:layout_gravity">center_horizontal</item>
-        <item name="android:background">@color/viewSeparator</item>
     </style>
 
 

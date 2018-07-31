@@ -8,12 +8,10 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.task.Task;
 
 /**
  * Created by Mate Strysewske on 06.02.2017.
@@ -63,6 +61,7 @@ public class SampleDao extends AbstractAdoDao<Sample> {
     /**
      * Gets all not shipped samples (ignore received and referred)
      * Ordered by sampling date
+     *
      * @return
      */
     public List<Sample> queryNotShipped() {
@@ -83,7 +82,7 @@ public class SampleDao extends AbstractAdoDao<Sample> {
                     .orderBy(Sample.SAMPLE_DATE_TIME, true)
                     .query();
         } catch (SQLException e) {
-            android.util.Log.e(getTableName(), "Could not perform queryMyPending on Task");
+            android.util.Log.e(getTableName(), "Could not perform queryNotShipped on Sample");
             throw new RuntimeException(e);
         }
     }
@@ -91,6 +90,7 @@ public class SampleDao extends AbstractAdoDao<Sample> {
     /**
      * Gets all shipped samples (ignore received and referred)
      * Ordered by sampling date
+     *
      * @return
      */
     public List<Sample> queryShipped() {
@@ -111,7 +111,7 @@ public class SampleDao extends AbstractAdoDao<Sample> {
                     .orderBy(Sample.SAMPLE_DATE_TIME, true)
                     .query();
         } catch (SQLException e) {
-            android.util.Log.e(getTableName(), "Could not perform queryMyPending on Task");
+            android.util.Log.e(getTableName(), "Could not perform queryShipped on Sample");
             throw new RuntimeException(e);
         }
     }
@@ -119,6 +119,7 @@ public class SampleDao extends AbstractAdoDao<Sample> {
     /**
      * Gets all received samples (ignore referred)
      * Ordered by sampling date
+     *
      * @return
      */
     public List<Sample> queryReceived() {
@@ -138,7 +139,7 @@ public class SampleDao extends AbstractAdoDao<Sample> {
                     .orderBy(Sample.SAMPLE_DATE_TIME, true)
                     .query();
         } catch (SQLException e) {
-            android.util.Log.e(getTableName(), "Could not perform queryMyPending on Task");
+            android.util.Log.e(getTableName(), "Could not perform queryReceived on Sample");
             throw new RuntimeException(e);
         }
     }

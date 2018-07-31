@@ -1,16 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="form_cp_approximate_age_type" type="id">approximateAgeType</item>
-    <item name="form_cp_address" type="id">personAddress</item>
-
-
 
 
     <!-- ***************************************************** -->
 
 
     <item type="id" name="entryListener"/>
-    <item type="id" name="tagViewEntryListener"/>
-    <item type="id" name="teboRadioGroupButton"/>
-    <item type="id" name="teboSpinnerItemSelectedListener" />
 </resources>

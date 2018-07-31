@@ -9,7 +9,7 @@
             <padding android:left="0dp" android:top="0dp" android:right="0dp" android:bottom="0dp" />-->
         </shape>
     </item>
-    <item android:right="-1dp" android:left="-1dp" android:id="@+id/borderLayer">
+    <item android:right="-1dp" android:left="-1dp">
         <shape>
             <stroke
                 android:width="1dp"
