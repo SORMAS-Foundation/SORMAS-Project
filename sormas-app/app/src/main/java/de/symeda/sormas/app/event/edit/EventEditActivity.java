@@ -129,8 +129,9 @@ public class EventEditActivity extends BaseEditActivity<Event> {
                 super.onPostExecute(taskResult);
                 if (taskResult.getResultStatus().isSuccess()) {
                     goToNextPage();
+                } else {
+                    onResume(); // reload data
                 }
-
             }
         }.executeOnThreadPool();
     }

@@ -110,8 +110,11 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
             protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
                 hidePreloader();
                 super.onPostExecute(taskResult);
+
                 if (taskResult.getResultStatus().isSuccess()) {
                     finish();
+                } else {
+                    onResume(); // reload data
                 }
             }
         }.executeOnThreadPool();

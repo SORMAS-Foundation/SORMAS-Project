@@ -42,6 +42,11 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         return true;
     }
 
+    @Override
+    public boolean isEditing() {
+        return true;
+    }
+
     protected static Bundler buildBundle(String rootUuid) {
         return buildBundle(rootUuid, 0);
     }

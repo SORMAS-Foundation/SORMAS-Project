@@ -118,6 +118,8 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 
                 if (taskResult.getResultStatus().isSuccess()) {
                     goToNextPage();
+                }  else {
+                    onResume(); // reload data
                 }
             }
         }.executeOnThreadPool();

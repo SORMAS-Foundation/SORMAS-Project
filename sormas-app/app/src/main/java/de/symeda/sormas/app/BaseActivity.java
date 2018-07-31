@@ -547,13 +547,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                         progressDialog = null;
                     }
 
-                    if (getSupportFragmentManager().getFragments() != null) {
-                        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-                            if (fragment != null && fragment.isVisible()) {
-                                fragment.onResume();
-                            }
-                        }
-                    }
+                    BaseActivity.this.onResume();
 
                     long syncLogCountAfter = syncLogDao.countOf();
 

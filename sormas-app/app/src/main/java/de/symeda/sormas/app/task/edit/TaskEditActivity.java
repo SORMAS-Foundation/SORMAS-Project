@@ -69,6 +69,8 @@ public class TaskEditActivity extends BaseEditActivity<Task> {
 
                 if (taskResult.getResultStatus().isSuccess()) {
                     finish();
+                } else {
+                    onResume(); // reload data
                 }
             }
         }.executeOnThreadPool();

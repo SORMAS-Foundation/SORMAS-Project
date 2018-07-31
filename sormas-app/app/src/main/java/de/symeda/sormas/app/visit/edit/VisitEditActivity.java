@@ -128,6 +128,8 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
                 super.onPostExecute(taskResult);
                 if (taskResult.getResultStatus().isSuccess()) {
                     goToNextPage();
+                } else {
+                    onResume(); // reload data
                 }
             }
         }.executeOnThreadPool();

@@ -1,7 +1,5 @@
 package de.symeda.sormas.app.backend.caze;
 
-import android.util.Log;
-
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -34,438 +32,455 @@ import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.user.User;
 
-@Entity(name=Case.TABLE_NAME)
+@Entity(name = Case.TABLE_NAME)
 @DatabaseTable(tableName = Case.TABLE_NAME)
 public class Case extends AbstractDomainObject {
-	
-	private static final long serialVersionUID = -2697795184163562129L;
 
-	public static final String TABLE_NAME = "cases";
-	public static final String I18N_PREFIX = "CaseData";
+    private static final long serialVersionUID = -2697795184163562129L;
 
-	public static final String CASE_CLASSIFICATION = "caseClassification";
-	public static final String INVESTIGATION_STATUS = "investigationStatus";
-	public static final String DISEASE = "disease";
-	public static final String DISEASE_DETAILS = "diseaseDetails";
-	public static final String PERSON = "person_id";
-	public static final String REPORT_DATE = "reportDate";
-	public static final String SYMPTOMS = "symptoms";
-	public static final String REPORTING_USER = "reportingUser_id";
-	public static final String HEALTH_FACILITY = "healthFacility_id";
-	public static final String OUTCOME = "outcome";
+    public static final String TABLE_NAME = "cases";
+    public static final String I18N_PREFIX = "CaseData";
 
-	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
-	private Person person;
+    public static final String CASE_CLASSIFICATION = "caseClassification";
+    public static final String INVESTIGATION_STATUS = "investigationStatus";
+    public static final String DISEASE = "disease";
+    public static final String DISEASE_DETAILS = "diseaseDetails";
+    public static final String PERSON = "person_id";
+    public static final String REPORT_DATE = "reportDate";
+    public static final String SYMPTOMS = "symptoms";
+    public static final String REPORTING_USER = "reportingUser_id";
+    public static final String HEALTH_FACILITY = "healthFacility_id";
+    public static final String OUTCOME = "outcome";
 
-	@Column(length=512)
-	private String description;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
+    private Person person;
 
-	@Enumerated(EnumType.STRING)
-	private Disease disease;
+    @Column(length = 512)
+    private String description;
 
-	@Column(length=512)
-	private String diseaseDetails;
+    @Enumerated(EnumType.STRING)
+    private Disease disease;
 
-	@Column(length=255)
-	private PlagueType plagueType;
+    @Column(length = 512)
+    private String diseaseDetails;
 
-	@Column(length=255)
-	private DengueFeverType dengueFeverType;
+    @Column(length = 255)
+    private PlagueType plagueType;
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	private CaseClassification caseClassification;
+    @Column(length = 255)
+    private DengueFeverType dengueFeverType;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CaseClassification caseClassification;
+
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private User classificationUser;
-	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
+    @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
     private Date classificationDate;
-	@Column(length=512)
+    @Column(length = 512)
     private String classificationComment;
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	private InvestigationStatus investigationStatus;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private InvestigationStatus investigationStatus;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private Region region;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private Region region;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private District district;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private District district;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private Community community;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private Community community;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
-	private Facility healthFacility;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+    private Facility healthFacility;
 
-    @Column(length=512)
+    @Column(length = 512)
     private String healthFacilityDetails;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private Symptoms symptoms;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private Symptoms symptoms;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private User reportingUser;
-	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
-	private Date reportDate;
-	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
-	private Date investigatedDate;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private User reportingUser;
+    @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
+    private Date reportDate;
+    @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
+    private Date investigatedDate;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
-	private User surveillanceOfficer;
-	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
-	private User caseOfficer;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
+    private User surveillanceOfficer;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
+    private User caseOfficer;
 
-	@Enumerated(EnumType.STRING)
-	private YesNoUnknown pregnant;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown pregnant;
 
-	@Enumerated(EnumType.STRING)
-	private Vaccination vaccination;
+    @Enumerated(EnumType.STRING)
+    private Vaccination vaccination;
 
-	@Column(length=512)
-	private String vaccinationDoses;
+    @Column(length = 512)
+    private String vaccinationDoses;
 
-	@Enumerated(EnumType.STRING)
-	private VaccinationInfoSource vaccinationInfoSource;
+    @Enumerated(EnumType.STRING)
+    private VaccinationInfoSource vaccinationInfoSource;
 
-	@Enumerated(EnumType.STRING)
-	private YesNoUnknown smallpoxVaccinationScar;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown smallpoxVaccinationScar;
 
-	@Enumerated(EnumType.STRING)
-	private YesNoUnknown smallpoxVaccinationReceived;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown smallpoxVaccinationReceived;
 
-	@DatabaseField(dataType = DataType.DATE_LONG)
-	private Date vaccinationDate;
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date vaccinationDate;
 
-	@Deprecated
-	@DatabaseField(dataType = DataType.DATE_LONG)
-	private Date smallpoxVaccinationDate;
+    @Deprecated
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date smallpoxVaccinationDate;
 
-	@Column(length=512)
-	private String epidNumber;
+    @Column(length = 512)
+    private String epidNumber;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private Hospitalization hospitalization;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private Hospitalization hospitalization;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private EpiData epiData;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private EpiData epiData;
 
-	@Deprecated
-	@Column
-	private Long contactOfficer_id;
+    @Deprecated
+    @Column
+    private Long contactOfficer_id;
 
-	@DatabaseField
-	private Double reportLat;
-	@DatabaseField
-	private Double reportLon;
-	@DatabaseField
-	private Float reportLatLonAccuracy;
+    @DatabaseField
+    private Double reportLat;
+    @DatabaseField
+    private Double reportLon;
+    @DatabaseField
+    private Float reportLatLonAccuracy;
 
-	@Enumerated(EnumType.STRING)
-	private CaseOutcome outcome;
-	@DatabaseField(dataType = DataType.DATE_LONG)
-	private Date outcomeDate;
+    @Enumerated(EnumType.STRING)
+    private CaseOutcome outcome;
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date outcomeDate;
 
-	public Person getPerson() {
-		return person;
-	}
-	public void setPerson(Person person) {
-		this.person = person;
-	}
-	
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
-	public Disease getDisease() {
-		return disease;
-	}
-	public void setDisease(Disease disease) {
-		this.disease = disease;
-	}
+    public Person getPerson() {
+        return person;
+    }
 
-	public String getDiseaseDetails() {
-		return diseaseDetails;
-	}
-	public void setDiseaseDetails(String diseaseDetails) {
-		this.diseaseDetails = diseaseDetails;
-	}
+    public void setPerson(Person person) {
+        this.person = person;
+    }
 
-	public PlagueType getPlagueType() {
-		return plagueType;
-	}
-	public void setPlagueType(PlagueType plagueType) {
-		this.plagueType = plagueType;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public CaseClassification getCaseClassification() {
-		return caseClassification;
-	}
-	public void setCaseClassification(CaseClassification caseClassification) {
-		this.caseClassification = caseClassification;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public Region getRegion() {
-		return region;
-	}
-	public void setRegion(Region region) {
-		this.region = region;
-	}
+    public Disease getDisease() {
+        return disease;
+    }
 
-	public District getDistrict() {
-		return district;
-	}
-	public void setDistrict(District district) {
-		this.district = district;
-	}
+    public void setDisease(Disease disease) {
+        this.disease = disease;
+    }
 
-	public Community getCommunity() {
-		return community;
-	}
-	public void setCommunity(Community community) {
-		this.community = community;
-	}
-	
-	public User getReportingUser() {
-		return reportingUser;
-	}
-	public void setReportingUser(User reportingUser) {
-		this.reportingUser = reportingUser;
-	}
-	
-	public Date getReportDate() {
-		return reportDate;
-	}
-	public void setReportDate(Date reportDate) {
-		this.reportDate = reportDate;
-	}
+    public String getDiseaseDetails() {
+        return diseaseDetails;
+    }
 
-	public Date getInvestigatedDate() {
-		return investigatedDate;
-	}
-	public void setInvestigatedDate(Date investigatedDate) {
-		this.investigatedDate = investigatedDate;
-	}
-	
-	public Facility getHealthFacility() {
-		return healthFacility;
-	}
-	public void setHealthFacility(Facility healthFacility) {
-		this.healthFacility = healthFacility;
-	}
+    public void setDiseaseDetails(String diseaseDetails) {
+        this.diseaseDetails = diseaseDetails;
+    }
+
+    public PlagueType getPlagueType() {
+        return plagueType;
+    }
+
+    public void setPlagueType(PlagueType plagueType) {
+        this.plagueType = plagueType;
+    }
+
+    public CaseClassification getCaseClassification() {
+        return caseClassification;
+    }
+
+    public void setCaseClassification(CaseClassification caseClassification) {
+        this.caseClassification = caseClassification;
+    }
+
+    public Region getRegion() {
+        return region;
+    }
+
+    public void setRegion(Region region) {
+        this.region = region;
+    }
+
+    public District getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(District district) {
+        this.district = district;
+    }
+
+    public Community getCommunity() {
+        return community;
+    }
+
+    public void setCommunity(Community community) {
+        this.community = community;
+    }
+
+    public User getReportingUser() {
+        return reportingUser;
+    }
+
+    public void setReportingUser(User reportingUser) {
+        this.reportingUser = reportingUser;
+    }
+
+    public Date getReportDate() {
+        return reportDate;
+    }
+
+    public void setReportDate(Date reportDate) {
+        this.reportDate = reportDate;
+    }
+
+    public Date getInvestigatedDate() {
+        return investigatedDate;
+    }
+
+    public void setInvestigatedDate(Date investigatedDate) {
+        this.investigatedDate = investigatedDate;
+    }
+
+    public Facility getHealthFacility() {
+        return healthFacility;
+    }
+
+    public void setHealthFacility(Facility healthFacility) {
+        this.healthFacility = healthFacility;
+    }
 
     public String getHealthFacilityDetails() {
         return healthFacilityDetails;
     }
+
     public void setHealthFacilityDetails(String healthFacilityDetails) {
         this.healthFacilityDetails = healthFacilityDetails;
     }
 
     public Symptoms getSymptoms() {
-		return symptoms;
-	}
-	public void setSymptoms(Symptoms symptoms) {
-		this.symptoms = symptoms;
-	}
+        return symptoms;
+    }
 
-	public User getSurveillanceOfficer() {
-		return surveillanceOfficer;
-	}
-	public void setSurveillanceOfficer(User surveillanceOfficer) {
-		this.surveillanceOfficer = surveillanceOfficer;
-	}
+    public void setSymptoms(Symptoms symptoms) {
+        this.symptoms = symptoms;
+    }
 
-	public User getCaseOfficer() {
-		return caseOfficer;
-	}
-	public void setCaseOfficer(User caseOfficer) {
-		this.caseOfficer = caseOfficer;
-	}
+    public User getSurveillanceOfficer() {
+        return surveillanceOfficer;
+    }
 
-	public InvestigationStatus getInvestigationStatus() {
-		return investigationStatus;
-	}
+    public void setSurveillanceOfficer(User surveillanceOfficer) {
+        this.surveillanceOfficer = surveillanceOfficer;
+    }
 
-	public void setInvestigationStatus(InvestigationStatus investigationStatus) {
-		this.investigationStatus = investigationStatus;
-	}
+    public User getCaseOfficer() {
+        return caseOfficer;
+    }
 
-	public YesNoUnknown getPregnant() {
-		return pregnant;
-	}
+    public void setCaseOfficer(User caseOfficer) {
+        this.caseOfficer = caseOfficer;
+    }
 
-	public void setPregnant(YesNoUnknown pregnant) {
-		this.pregnant = pregnant;
-	}
+    public InvestigationStatus getInvestigationStatus() {
+        return investigationStatus;
+    }
 
-	public Vaccination getVaccination() {
-		return vaccination;
-	}
+    public void setInvestigationStatus(InvestigationStatus investigationStatus) {
+        this.investigationStatus = investigationStatus;
+    }
 
-	public void setVaccination(Vaccination vaccination) {
-		this.vaccination = vaccination;
-	}
+    public YesNoUnknown getPregnant() {
+        return pregnant;
+    }
 
-	public String getVaccinationDoses() {
-		return vaccinationDoses;
-	}
+    public void setPregnant(YesNoUnknown pregnant) {
+        this.pregnant = pregnant;
+    }
 
-	public void setVaccinationDoses(String vaccinationDoses) {
-		this.vaccinationDoses = vaccinationDoses;
-	}
+    public Vaccination getVaccination() {
+        return vaccination;
+    }
 
-	public VaccinationInfoSource getVaccinationInfoSource() {
-		return vaccinationInfoSource;
-	}
+    public void setVaccination(Vaccination vaccination) {
+        this.vaccination = vaccination;
+    }
 
-	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
-		this.vaccinationInfoSource = vaccinationInfoSource;
-	}
+    public String getVaccinationDoses() {
+        return vaccinationDoses;
+    }
 
-	public YesNoUnknown getSmallpoxVaccinationScar() {
-		return smallpoxVaccinationScar;
-	}
+    public void setVaccinationDoses(String vaccinationDoses) {
+        this.vaccinationDoses = vaccinationDoses;
+    }
 
-	public void setSmallpoxVaccinationScar(YesNoUnknown smallpoxVaccinationScar) {
-		this.smallpoxVaccinationScar = smallpoxVaccinationScar;
-	}
+    public VaccinationInfoSource getVaccinationInfoSource() {
+        return vaccinationInfoSource;
+    }
 
-	public YesNoUnknown getSmallpoxVaccinationReceived() {
-		return smallpoxVaccinationReceived;
-	}
+    public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
+        this.vaccinationInfoSource = vaccinationInfoSource;
+    }
 
-	public void setSmallpoxVaccinationReceived(YesNoUnknown smallpoxVaccinationReceived) {
-		this.smallpoxVaccinationReceived = smallpoxVaccinationReceived;
-	}
+    public YesNoUnknown getSmallpoxVaccinationScar() {
+        return smallpoxVaccinationScar;
+    }
 
-	public Date getVaccinationDate() {
-		return vaccinationDate;
-	}
+    public void setSmallpoxVaccinationScar(YesNoUnknown smallpoxVaccinationScar) {
+        this.smallpoxVaccinationScar = smallpoxVaccinationScar;
+    }
 
-	public void setVaccinationDate(Date vaccinationDate) {
-		this.vaccinationDate = vaccinationDate;
-	}
+    public YesNoUnknown getSmallpoxVaccinationReceived() {
+        return smallpoxVaccinationReceived;
+    }
 
-	public String getEpidNumber() {
-		return epidNumber;
-	}
+    public void setSmallpoxVaccinationReceived(YesNoUnknown smallpoxVaccinationReceived) {
+        this.smallpoxVaccinationReceived = smallpoxVaccinationReceived;
+    }
 
-	public void setEpidNumber(String epidNumber) {
-		this.epidNumber = epidNumber;
-	}
+    public Date getVaccinationDate() {
+        return vaccinationDate;
+    }
 
-	public Hospitalization getHospitalization() {
-		return hospitalization;
-	}
+    public void setVaccinationDate(Date vaccinationDate) {
+        this.vaccinationDate = vaccinationDate;
+    }
 
-	public void setHospitalization(Hospitalization hospitalization) {
-		this.hospitalization = hospitalization;
-	}
+    public String getEpidNumber() {
+        return epidNumber;
+    }
 
-	public EpiData getEpiData() {
-		return epiData;
-	}
+    public void setEpidNumber(String epidNumber) {
+        this.epidNumber = epidNumber;
+    }
 
-	public void setEpiData(EpiData epiData) {
-		this.epiData = epiData;
-	}
+    public Hospitalization getHospitalization() {
+        return hospitalization;
+    }
 
-	public Double getReportLat() {
-		return reportLat;
-	}
+    public void setHospitalization(Hospitalization hospitalization) {
+        this.hospitalization = hospitalization;
+    }
 
-	public void setReportLat(Double reportLat) {
-		this.reportLat = reportLat;
-	}
+    public EpiData getEpiData() {
+        return epiData;
+    }
 
-	public Double getReportLon() {
-		return reportLon;
-	}
+    public void setEpiData(EpiData epiData) {
+        this.epiData = epiData;
+    }
 
-	public void setReportLon(Double reportLon) {
-		this.reportLon = reportLon;
-	}
+    public Double getReportLat() {
+        return reportLat;
+    }
 
-	public CaseOutcome getOutcome() {
-		return outcome;
-	}
+    public void setReportLat(Double reportLat) {
+        this.reportLat = reportLat;
+    }
 
-	public void setOutcome(CaseOutcome outcome) {
-		this.outcome = outcome;
-	}
+    public Double getReportLon() {
+        return reportLon;
+    }
 
-	public Date getOutcomeDate() {
-		return outcomeDate;
-	}
+    public void setReportLon(Double reportLon) {
+        this.reportLon = reportLon;
+    }
 
-	public void setOutcomeDate(Date outcomeDate) {
-		this.outcomeDate = outcomeDate;
-	}
+    public CaseOutcome getOutcome() {
+        return outcome;
+    }
 
-	public Float getReportLatLonAccuracy() {
-		return reportLatLonAccuracy;
-	}
+    public void setOutcome(CaseOutcome outcome) {
+        this.outcome = outcome;
+    }
 
-	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
-		this.reportLatLonAccuracy = reportLatLonAccuracy;
-	}
+    public Date getOutcomeDate() {
+        return outcomeDate;
+    }
 
-	public DengueFeverType getDengueFeverType() {
-		return dengueFeverType;
-	}
+    public void setOutcomeDate(Date outcomeDate) {
+        this.outcomeDate = outcomeDate;
+    }
 
-	public void setDengueFeverType(DengueFeverType dengueFeverType) {
-		this.dengueFeverType = dengueFeverType;
-	}
+    public Float getReportLatLonAccuracy() {
+        return reportLatLonAccuracy;
+    }
 
-	public User getClassificationUser() {
-		return classificationUser;
-	}
+    public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
+        this.reportLatLonAccuracy = reportLatLonAccuracy;
+    }
 
-	public void setClassificationUser(User classificationUser) {
-		this.classificationUser = classificationUser;
-	}
+    public DengueFeverType getDengueFeverType() {
+        return dengueFeverType;
+    }
 
-	public Date getClassificationDate() {
-		return classificationDate;
-	}
+    public void setDengueFeverType(DengueFeverType dengueFeverType) {
+        this.dengueFeverType = dengueFeverType;
+    }
 
-	public void setClassificationDate(Date classificationDate) {
-		this.classificationDate = classificationDate;
-	}
+    public User getClassificationUser() {
+        return classificationUser;
+    }
 
-	public String getClassificationComment() {
-		return classificationComment;
-	}
+    public void setClassificationUser(User classificationUser) {
+        this.classificationUser = classificationUser;
+    }
 
-	public void setClassificationComment(String classificationComment) {
-		this.classificationComment = classificationComment;
-	}
+    public Date getClassificationDate() {
+        return classificationDate;
+    }
 
-	@Override
-	public boolean isModifiedOrChildModified() {
-		if (person.isModifiedOrChildModified()) return true;
-		return super.isModifiedOrChildModified();
-	}
+    public void setClassificationDate(Date classificationDate) {
+        this.classificationDate = classificationDate;
+    }
 
-	@Override
-	public boolean isUnreadOrChildUnread() {
-		if (person.isUnreadOrChildUnread()) return true;
-		return super.isUnreadOrChildUnread();
-	}
+    public String getClassificationComment() {
+        return classificationComment;
+    }
 
-	@Override
-	public String toString() {
-		return super.toString() + " " + (getPerson() != null ? getPerson().toString() : "") + " (" + DataHelper.getShortUuid(getUuid()) + ")";
-	}
+    public void setClassificationComment(String classificationComment) {
+        this.classificationComment = classificationComment;
+    }
 
-	@Override
-	public String getI18nPrefix() {
-		return I18N_PREFIX;
-	}
+    @Override
+    public boolean isModifiedOrChildModified() {
+        if (person.isModifiedOrChildModified()) return true;
+        return super.isModifiedOrChildModified();
+    }
+
+    @Override
+    public boolean isUnreadOrChildUnread() {
+        if (person.isUnreadOrChildUnread()) return true;
+        return super.isUnreadOrChildUnread();
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " " + (getPerson() != null ? getPerson().toString() : "") + " (" + DataHelper.getShortUuid(getUuid()) + ")";
+    }
+
+    @Override
+    public String getI18nPrefix() {
+        return I18N_PREFIX;
+    }
 
 }

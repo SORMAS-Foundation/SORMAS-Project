@@ -153,6 +153,8 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                 super.onPostExecute(taskResult);
                 if (taskResult.getResultStatus().isSuccess()) {
                     successCallback.accept(cazeToSave);
+                } else {
+                    onResume(); // reload data
                 }
             }
         }.executeOnThreadPool();

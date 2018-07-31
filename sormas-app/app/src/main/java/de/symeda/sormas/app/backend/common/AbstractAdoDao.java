@@ -1044,7 +1044,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 //        try {
         int resultRowCount = dao.create(data);
         if (resultRowCount < 1)
-            throw new SQLException("No database entry was created for: " + data.toString());
+            throw new SQLException("Database entry was not created. Go back and try again.\n" + data.toString());
 //        } catch (SQLException e) {
 //            throw new RuntimeException(e);
 //        }
@@ -1056,13 +1056,10 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
     protected void update(ADO data) throws SQLException {
         if (data == null)
             return;
-//        try {
         int resultRowCount = dao.update(data);
-        if (resultRowCount < 1)
-            throw new SQLException("Database entry was not updated - likely it was changed in between: " + data.toString());
-//        } catch (SQLException e) {
-//            throw new RuntimeException(e);
-//        }
+        if (resultRowCount < 1) {
+            throw new SQLException("Database entry was not updated - update all entered fields and save again.\n" + data.toString());
+        }
     }
 
     public void updateWithCast(AbstractDomainObject ado) throws SQLException {
@@ -1086,7 +1083,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 //        try {
         int resultRowCount = dao.delete(data);
         if (resultRowCount < 1)
-            throw new SQLException("Database entry was not deleted - likely it was changed in between: " + data.toString());
+            throw new SQLException("Database entry was not deleted - go back and try again.\n" + data.toString());
 //        } catch (SQLException e) {
 //            throw new RuntimeException(e);
 //        }
