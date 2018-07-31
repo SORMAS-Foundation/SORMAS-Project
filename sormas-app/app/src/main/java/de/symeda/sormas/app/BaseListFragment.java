@@ -1,5 +1,6 @@
 package de.symeda.sormas.app;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,10 +17,14 @@ import de.symeda.sormas.app.core.ListAdapterDataObserver;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.adapter.databinding.ISetOnListItemClickListener;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.core.async.AsyncTaskResult;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.util.Bundler;
 
 public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter> extends BaseFragment implements IListActivityAdapterDataObserverCommunicator, OnListItemClickListener {
 
+    private AsyncTask jobTask;
     private BaseListActivity baseListActivity;
     private IUpdateSubHeadingTitle subHeadingHandler;
     private TListAdapter adapter;
@@ -74,8 +79,27 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
         String format = canAddToList() ? getResources().getString(R.string.hint_no_records_found_add_new) : getResources().getString(R.string.hint_no_records_found);
         getEmptyListView(view).setText(String.format(format, getResources().getString(getEmptyListEntityResId()).toLowerCase()));
 
+        jobTask = new DefaultAsyncTask(getContext()) {
+            @Override
+            public void onPreExecute() {
+                getBaseActivity().showPreloader();
+            }
+
+            @Override
+            public void doInBackground(final TaskResultHolder resultHolder) {
+                prepareFragmentData();
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                getBaseActivity().hidePreloader();
+            }
+        }.executeOnThreadPool();
+
         return view;
     }
+
+    protected abstract void prepareFragmentData();
 
     @Override
     public void onResume() {
@@ -90,6 +114,8 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
                 }
             });
         }
+
+        subHeadingHandler.updateSubHeadingTitle();
     }
 
     @Override
@@ -138,5 +164,13 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
 
     protected boolean canAddToList() {
         return false;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (jobTask != null && !jobTask.isCancelled())
+            jobTask.cancel(true);
     }
 }

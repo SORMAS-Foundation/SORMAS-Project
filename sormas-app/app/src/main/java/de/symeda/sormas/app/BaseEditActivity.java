@@ -193,11 +193,6 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
     }
 
     @Override
-    public void updateSubHeadingTitle(int titleResId) {
-        setSubHeadingTitle(getApplicationContext().getResources().getString(titleResId));
-    }
-
-    @Override
     public void updateSubHeadingTitle(String title) {
         setSubHeadingTitle(title);
     }

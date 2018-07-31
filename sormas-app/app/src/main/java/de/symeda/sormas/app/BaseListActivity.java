@@ -101,12 +101,7 @@ public abstract class BaseListActivity extends BaseActivity implements IUpdateSu
 
     @Override
     public void updateSubHeadingTitle() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void updateSubHeadingTitle(int titleResId) {
-        setSubHeadingTitle(getApplicationContext().getResources().getString(titleResId));
+        setSubHeadingTitle(getActiveFragment().getListFilter().toString());
     }
 
     @Override
