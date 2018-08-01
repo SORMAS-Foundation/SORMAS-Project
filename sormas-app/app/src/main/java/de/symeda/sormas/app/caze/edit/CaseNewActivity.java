@@ -110,8 +110,8 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
     }
 
     @Override
-    public void replaceFragment(BaseEditFragment f) {
-        super.replaceFragment(f);
+    public void replaceFragment(BaseEditFragment f, boolean allowBackNavigation) {
+        super.replaceFragment(f, allowBackNavigation);
         getActiveFragment().setLiveValidationDisabled(true);
     }
 
@@ -144,9 +144,9 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
         }
     }
 
-    private void saveDataInner(final Case caze) {
+    private void saveDataInner(final Case caseToSave) {
 
-        saveTask = new SavingAsyncTask(getRootView(), caze) {
+        saveTask = new SavingAsyncTask(getRootView(), caseToSave) {
             @Override
             protected void onPreExecute() {
                 showPreloader();
@@ -154,20 +154,20 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
             @Override
             protected void doInBackground(TaskResultHolder resultHolder) throws Exception {
-                DatabaseHelper.getPersonDao().saveAndSnapshot(caze.getPerson());
+                DatabaseHelper.getPersonDao().saveAndSnapshot(caseToSave.getPerson());
 
                 // epid number
                 Calendar calendar = Calendar.getInstance();
                 String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
-                caze.setEpidNumber(caze.getRegion().getEpidCode() != null ? caze.getRegion().getEpidCode() : ""
-                        + "-" + caze.getDistrict().getEpidCode() != null ? caze.getDistrict().getEpidCode() : ""
+                caseToSave.setEpidNumber(caseToSave.getRegion().getEpidCode() != null ? caseToSave.getRegion().getEpidCode() : ""
+                        + "-" + caseToSave.getDistrict().getEpidCode() != null ? caseToSave.getDistrict().getEpidCode() : ""
                         + "-" + year + "-");
 
-                DatabaseHelper.getCaseDao().saveAndSnapshot(caze);
+                DatabaseHelper.getCaseDao().saveAndSnapshot(caseToSave);
 
                 if (!DataHelper.isNullOrEmpty(contactUuid)) {
                     Contact sourceContact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
-                    sourceContact.setResultingCaseUuid(caze.getUuid());
+                    sourceContact.setResultingCaseUuid(caseToSave.getUuid());
                     sourceContact.setResultingCaseUser(ConfigProvider.getUser());
                     DatabaseHelper.getContactDao().saveAndSnapshot(sourceContact);
                 }
@@ -178,7 +178,8 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                 hidePreloader();
                 super.onPostExecute(taskResult);
                 if (taskResult.getResultStatus().isSuccess()) {
-                    CaseEditActivity.startActivity(CaseNewActivity.this, caze.getUuid(), CaseSection.PERSON_INFO);
+                    finish();
+                    CaseEditActivity.startActivity(getContext(), caseToSave.getUuid(), CaseSection.PERSON_INFO);
                 }
             }
         }.executeOnThreadPool();

@@ -111,7 +111,7 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         requestRootData(new Callback.IAction<ActivityRootEntity>() {
             @Override
             public void call(ActivityRootEntity result) {
-                replaceFragment(buildReadFragment(getActivePage(), result));
+                replaceFragment(buildReadFragment(getActivePage(), result), false);
             }
         });
     }
@@ -204,7 +204,7 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         return R.color.noColor;
     }
 
-    public void replaceFragment(BaseReadFragment f) {
+    public void replaceFragment(BaseReadFragment f, boolean allowBackNavigation) {
         BaseFragment previousFragment = activeFragment;
         activeFragment = f;
 
@@ -212,7 +212,7 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.setCustomAnimations(R.anim.fadein, R.anim.fadeout, R.anim.fadein, R.anim.fadeout);
             ft.replace(R.id.fragment_frame, activeFragment);
-            if (previousFragment != null) {
+            if (allowBackNavigation && previousFragment != null) {
                 ft.addToBackStack(null);
             }
             ft.commit();
@@ -236,7 +236,7 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         BaseReadFragment newActiveFragment = buildReadFragment(menuItem, storedRootEntity);
         if (newActiveFragment == null)
             return false;
-        replaceFragment(newActiveFragment);
+        replaceFragment(newActiveFragment, true);
         return true;
     }
 

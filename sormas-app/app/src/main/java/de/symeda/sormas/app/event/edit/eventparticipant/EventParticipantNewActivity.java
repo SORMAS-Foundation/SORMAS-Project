@@ -89,8 +89,8 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
     }
 
     @Override
-    public void replaceFragment(BaseEditFragment f) {
-        super.replaceFragment(f);
+    public void replaceFragment(BaseEditFragment f, boolean allowBackNavigation) {
+        super.replaceFragment(f, allowBackNavigation);
         getActiveFragment().setLiveValidationDisabled(true);
     }
 

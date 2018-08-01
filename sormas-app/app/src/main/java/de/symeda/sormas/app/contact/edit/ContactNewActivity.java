@@ -21,8 +21,12 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.caze.CaseSection;
+import de.symeda.sormas.app.caze.edit.CaseEditActivity;
+import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
+import de.symeda.sormas.app.contact.ContactSection;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
@@ -110,8 +114,8 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
     }
 
     @Override
-    public void replaceFragment(BaseEditFragment f) {
-        super.replaceFragment(f);
+    public void replaceFragment(BaseEditFragment f, boolean allowBackNavigation) {
+        super.replaceFragment(f, allowBackNavigation);
         getActiveFragment().setLiveValidationDisabled(true);
     }
 
@@ -164,6 +168,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
                         super.onPostExecute(taskResult);
                         if (taskResult.getResultStatus().isSuccess()) {
                             finish();
+                            ContactEditActivity.startActivity(getContext(), contactToSave.getUuid(), ContactSection.PERSON_INFO);
                         }
                     }
                 }.executeOnThreadPool();

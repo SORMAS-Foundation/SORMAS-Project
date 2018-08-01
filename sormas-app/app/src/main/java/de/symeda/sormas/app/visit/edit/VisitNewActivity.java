@@ -81,8 +81,8 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
     }
 
     @Override
-    public void replaceFragment(BaseEditFragment f) {
-        super.replaceFragment(f);
+    public void replaceFragment(BaseEditFragment f, boolean allowBackNavigation) {
+        super.replaceFragment(f, allowBackNavigation);
         getActiveFragment().setLiveValidationDisabled(true);
     }
 
@@ -121,6 +121,7 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
                 if (taskResult.getResultStatus().isSuccess()) {
                     if (visitToSave.getVisitStatus() == VisitStatus.COOPERATIVE) {
                         // enter symptoms
+                        finish();
                         VisitEditActivity.startActivity(getContext(), visitToSave.getUuid(), contactUuid, VisitSection.SYMPTOMS);
                     } else {
                         finish(); // back to contact

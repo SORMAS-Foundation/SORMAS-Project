@@ -61,8 +61,8 @@ public class EventNewActivity extends BaseEditActivity<Event> {
     }
 
     @Override
-    public void replaceFragment(BaseEditFragment f) {
-        super.replaceFragment(f);
+    public void replaceFragment(BaseEditFragment f, boolean allowBackNavigation) {
+        super.replaceFragment(f, allowBackNavigation);
         getActiveFragment().setLiveValidationDisabled(true);
     }
 
@@ -104,6 +104,7 @@ public class EventNewActivity extends BaseEditActivity<Event> {
                 hidePreloader();
                 super.onPostExecute(taskResult);
                 if (taskResult.getResultStatus().isSuccess()) {
+                    finish();
                     EventEditActivity.startActivity(getContext(), eventToSave.getUuid(), EventSection.EVENT_PARTICIPANTS);
                 }
             }

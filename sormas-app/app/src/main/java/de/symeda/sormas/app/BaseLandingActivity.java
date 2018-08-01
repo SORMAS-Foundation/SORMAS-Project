@@ -49,9 +49,6 @@ public abstract class BaseLandingActivity extends BaseActivity {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.setCustomAnimations(R.anim.fadein, R.anim.fadeout, R.anim.fadein, R.anim.fadeout);
             ft.replace(R.id.fragment_frame, activeFragment);
-            if (previousFragment != null) {
-                ft.addToBackStack(null);
-            }
             ft.commit();
         }
 

@@ -89,7 +89,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         requestRootData(new Consumer<ActivityRootEntity>() {
             @Override
             public void accept(ActivityRootEntity result) {
-                replaceFragment(buildEditFragment(getActivePage(), result));
+                replaceFragment(buildEditFragment(getActivePage(), result), false);
             }
         });
     }
@@ -239,7 +239,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         return addMenu;
     }
 
-    public void replaceFragment(BaseEditFragment f) {
+    public void replaceFragment(BaseEditFragment f, boolean allowBackNavigation) {
         BaseFragment previousFragment = activeFragment;
         activeFragment = f;
 
@@ -247,7 +247,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.setCustomAnimations(R.anim.fadein, R.anim.fadeout, R.anim.fadein, R.anim.fadeout);
             ft.replace(R.id.fragment_frame, activeFragment);
-            if (previousFragment != null) {
+            if (allowBackNavigation && previousFragment != null) {
                 ft.addToBackStack(null);
             }
             ft.commit();
@@ -266,7 +266,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         BaseEditFragment newActiveFragment = buildEditFragment(menuItem, storedRootEntity);
         if (newActiveFragment == null)
             return false;
-        replaceFragment(newActiveFragment);
+        replaceFragment(newActiveFragment, true);
         return true;
     }
 
