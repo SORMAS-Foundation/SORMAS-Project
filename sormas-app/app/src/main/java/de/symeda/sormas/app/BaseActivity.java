@@ -152,18 +152,20 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         statusFrame = findViewById(R.id.statusFrame);
 
         pageMenu = (PageMenuControl) findViewById(R.id.landingPageMenuControl);
-        pageMenu.setPageMenuClickListener(new PageMenuControl.PageMenuClickListener() {
-            @Override
-            public boolean onPageMenuClick(AdapterView<?> parent, View view, PageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
-                return setActivePage(menuItem);
-            }
-        });
-        pageMenu.setPageMenuInititalSelectionProvider(new PageMenuControl.PageMenuInitialSelectionProvider() {
-            @Override
-            public PageMenuItem getInititalSelectedPageMenuItem(List<PageMenuItem> menuList) {
-                return initPageMenuAndGetInitialSelection(menuList);
-            }
-        });
+        if (pageMenu != null) {
+            pageMenu.setPageMenuClickListener(new PageMenuControl.PageMenuClickListener() {
+                @Override
+                public boolean onPageMenuClick(AdapterView<?> parent, View view, PageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
+                    return setActivePage(menuItem);
+                }
+            });
+            pageMenu.setPageMenuInititalSelectionProvider(new PageMenuControl.PageMenuInitialSelectionProvider() {
+                @Override
+                public PageMenuItem getInititalSelectedPageMenuItem(List<PageMenuItem> menuList) {
+                    return initPageMenuAndGetInitialSelection(menuList);
+                }
+            });
+        }
 
         Drawable drawable = ContextCompat.getDrawable(this,
                 R.drawable.selector_actionbar_back_button);

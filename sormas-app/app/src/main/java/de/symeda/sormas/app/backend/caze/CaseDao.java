@@ -316,7 +316,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
             Notification notification = new NotificationCompat.Builder(context)
                     .setTicker(r.getString(R.string.headline_case_notification))
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.mipmap.ic_launcher_foreground)
                     .setContentTitle(r.getString(R.string.headline_case_notification))
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(content.toString())))
                     .setContentIntent(pi)
