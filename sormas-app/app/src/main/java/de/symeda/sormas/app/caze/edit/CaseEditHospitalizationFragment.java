@@ -33,7 +33,7 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
     @Override
     protected String getSubHeadingTitle() {
         Resources r = getResources();
-        return r.getString(R.string.caption_hospitalization_information);
+        return r.getString(R.string.caption_case_hospitalization);
     }
 
     @Override

@@ -35,6 +35,7 @@ public abstract class BaseListActivity extends BaseActivity implements IUpdateSu
 
     protected void onCreateInner(Bundle savedInstanceState) {
         subHeadingListActivityTitle = (TextView) findViewById(R.id.subHeadingActivityTitle);
+
     }
 
     @Override

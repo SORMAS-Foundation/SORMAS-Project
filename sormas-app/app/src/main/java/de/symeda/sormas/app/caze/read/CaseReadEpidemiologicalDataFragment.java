@@ -56,7 +56,7 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
 
     @Override
     protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.caption_epidemiological_information);
+        return getResources().getString(R.string.caption_case_epidomiological_data);
     }
 
     @Override

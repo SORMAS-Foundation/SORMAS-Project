@@ -40,7 +40,7 @@ public class VisitEditFragment extends BaseEditFragment<FragmentVisitEditLayoutB
     @Override
     protected String getSubHeadingTitle() {
         Resources r = getResources();
-        return r.getString(R.string.caption_followup_information);
+        return r.getString(R.string.caption_visit_information);
     }
 
     @Override

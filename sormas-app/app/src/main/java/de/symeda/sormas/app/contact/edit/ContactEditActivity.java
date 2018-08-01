@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.view.Menu;
 
+import java.util.List;
+
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -52,8 +54,8 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
     }
 
     @Override
-    public int getPageMenuData() {
-        return R.xml.data_form_page_contact_menu;
+    public List<PageMenuItem> getPageMenuData() {
+        return PageMenuItem.fromEnum(ContactSection.values(), getContext());
     }
 
     @Override
@@ -63,7 +65,7 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Contact activityRootData) {
-        ContactSection section = ContactSection.fromMenuKey(menuItem.getKey());
+        ContactSection section = ContactSection.fromOrdinal(menuItem.getKey());
         BaseEditFragment fragment;
         switch (section) {
             case CONTACT_INFO:
@@ -132,7 +134,7 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 
     @Override
     public void goToNewView() {
-        ContactSection activeSection = ContactSection.fromMenuKey(getActivePage().getKey());
+        ContactSection activeSection = ContactSection.fromOrdinal(getActivePage().getKey());
         switch (activeSection) {
             case VISITS:
                 VisitNewActivity.startActivity(this, getRootUuid());

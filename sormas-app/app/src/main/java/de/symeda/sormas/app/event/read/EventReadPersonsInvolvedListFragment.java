@@ -47,7 +47,7 @@ public class EventReadPersonsInvolvedListFragment extends BaseReadFragment<Fragm
 
     @Override
     protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.caption_persons_involved);
+        return getResources().getString(R.string.caption_event_participants);
     }
 
     @Override

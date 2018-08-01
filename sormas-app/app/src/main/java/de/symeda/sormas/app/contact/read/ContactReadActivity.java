@@ -3,6 +3,8 @@ package de.symeda.sormas.app.contact.read;
 import android.content.Context;
 import android.view.Menu;
 
+import java.util.List;
+
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
@@ -30,8 +32,8 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
     }
 
     @Override
-    public int getPageMenuData() {
-        return R.xml.data_form_page_contact_menu;
+    public List<PageMenuItem> getPageMenuData() {
+        return PageMenuItem.fromEnum(ContactSection.values(), getContext());
     }
 
     @Override
@@ -41,7 +43,7 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
 
     @Override
     protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Contact activityRootData) {
-        ContactSection section = ContactSection.fromMenuKey(menuItem.getKey());
+        ContactSection section = ContactSection.fromOrdinal(menuItem.getKey());
         BaseReadFragment fragment;
         switch (section) {
             case CONTACT_INFO:
@@ -77,7 +79,7 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
 
     @Override
     public void goToEditView() {
-        ContactSection section = ContactSection.fromMenuKey(getActivePage().getKey());
+        ContactSection section = ContactSection.fromOrdinal(getActivePage().getKey());
         ContactEditActivity.startActivity(ContactReadActivity.this, getRootUuid(), section);
     }
 }

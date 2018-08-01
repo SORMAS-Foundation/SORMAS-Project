@@ -1,6 +1,5 @@
 package de.symeda.sormas.app;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -17,7 +16,7 @@ import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
+import de.symeda.sormas.app.core.enumeration.StatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.util.Bundler;
 
@@ -181,23 +180,23 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         return editMenu;
     }
 
-    public String getStatusName(Context context) {
+    public String getStatusName() {
         Enum pageStatus = getPageStatus();
 
         if (pageStatus != null) {
-            IStatusElaborator elaborator = StatusElaboratorFactory.getElaborator(context, pageStatus);
+            StatusElaborator elaborator = StatusElaboratorFactory.getElaborator(pageStatus);
             if (elaborator != null)
-                return elaborator.getFriendlyName();
+                return elaborator.getFriendlyName(getContext());
         }
 
         return "";
     }
 
-    public int getStatusColorResource(Context context) {
+    public int getStatusColorResource() {
         Enum pageStatus = getPageStatus();
 
         if (pageStatus != null) {
-            IStatusElaborator elaborator = StatusElaboratorFactory.getElaborator(context, pageStatus);
+            StatusElaborator elaborator = StatusElaboratorFactory.getElaborator(pageStatus);
             if (elaborator != null)
                 return elaborator.getColorIndicatorResource();
         }
@@ -221,6 +220,7 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         }
 
         updateStatusFrame();
+        updatePageMenu();
     }
 
     protected String getRootUuid() {

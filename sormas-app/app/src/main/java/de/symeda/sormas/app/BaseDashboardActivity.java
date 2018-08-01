@@ -1,14 +1,9 @@
 package de.symeda.sormas.app;
 
-import android.content.Context;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.HashMap;
@@ -16,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
+import de.symeda.sormas.app.core.enumeration.StatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.dashboard.SummaryRegisterItem;
 
@@ -61,11 +56,11 @@ public abstract class BaseDashboardActivity extends BaseActivity {
         return false;
     }
 
-    public int getStatusColorResource(Context context) {
+    public int getStatusColorResource() {
         Enum pageStatus = getPageStatus();
 
         if (pageStatus != null) {
-            IStatusElaborator elaborator = StatusElaboratorFactory.getElaborator(context, pageStatus);
+            StatusElaborator elaborator = StatusElaboratorFactory.getElaborator(pageStatus);
             if (elaborator != null)
                 return elaborator.getColorIndicatorResource();
         }
@@ -73,13 +68,13 @@ public abstract class BaseDashboardActivity extends BaseActivity {
         return R.color.noColor;
     }
 
-    public String getStatusName(Context context) {
+    public String getStatusName() {
         Enum pageStatus = getPageStatus();
 
         if (pageStatus != null) {
-            IStatusElaborator elaborator = StatusElaboratorFactory.getElaborator(context, pageStatus);
+            StatusElaborator elaborator = StatusElaboratorFactory.getElaborator(pageStatus);
             if (elaborator != null)
-                return elaborator.getFriendlyName();
+                return elaborator.getFriendlyName(getContext());
         }
 
         return "";

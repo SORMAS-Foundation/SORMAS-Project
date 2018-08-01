@@ -3,6 +3,8 @@ package de.symeda.sormas.app.event.read;
 import android.content.Context;
 import android.view.Menu;
 
+import java.util.List;
+
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
@@ -33,19 +35,19 @@ public class EventReadActivity extends BaseReadActivity<Event> {
     }
 
     @Override
-    public int getPageMenuData() {
-        return R.xml.data_form_page_alert_menu;
+    public List<PageMenuItem> getPageMenuData() {
+        return PageMenuItem.fromEnum(EventSection.values(), getContext());
     }
 
     @Override
     protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Event activityRootData) {
-        EventSection section = EventSection.fromMenuKey(menuItem.getKey());
+        EventSection section = EventSection.fromOrdinal(menuItem.getKey());
         BaseReadFragment fragment;
         switch (section) {
             case EVENT_INFO:
                 fragment = EventReadFragment.newInstance(activityRootData);
                 break;
-            case EVENT_PERSONS:
+            case EVENT_PARTICIPANTS:
                 fragment = EventReadPersonsInvolvedListFragment.newInstance(activityRootData);
                 break;
             case TASKS:
@@ -72,7 +74,7 @@ public class EventReadActivity extends BaseReadActivity<Event> {
 
     @Override
     public void goToEditView() {
-        EventSection section = EventSection.fromMenuKey(getActivePage().getKey());
+        EventSection section = EventSection.fromOrdinal(getActivePage().getKey());
         EventEditActivity.startActivity(this, getRootUuid(), section);
     }
 }

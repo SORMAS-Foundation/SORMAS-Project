@@ -1,13 +1,11 @@
 package de.symeda.sormas.app.core.enumeration;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
 
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.app.R;
 
-public class SampleTestResultTypeElaborator implements IStatusElaborator {
+public class SampleTestResultTypeElaborator implements StatusElaborator {
 
     private SampleTestResultType resultType = null;
 
@@ -16,7 +14,7 @@ public class SampleTestResultTypeElaborator implements IStatusElaborator {
     }
 
     @Override
-    public String getFriendlyName() {
+    public String getFriendlyName(Context context) {
         return resultType.toString();
     }
 
@@ -36,29 +34,25 @@ public class SampleTestResultTypeElaborator implements IStatusElaborator {
         }
     }
 
-    public Drawable getDrawable(Context context) {
-        switch (resultType) {
-            case POSITIVE:
-                return ContextCompat.getDrawable(context, R.drawable.ic_add_24dp).mutate();
-            case NEGATIVE:
-                return ContextCompat.getDrawable(context, R.drawable.ic_remove_24dp).mutate();
-            case PENDING:
-                return ContextCompat.getDrawable(context, R.drawable.ic_pending_24dp).mutate();
-            case INDETERMINATE:
-                return ContextCompat.getDrawable(context, R.drawable.ic_do_not_disturb_on_24dp).mutate();
-            default:
-                throw new IllegalArgumentException(resultType.toString());
-        }
-    }
-
-    @Override
-    public String getStatekey() {
-        return ARG_SAMPLE_TEST_RESULT_TYPE;
-    }
-
     @Override
     public Enum getValue() {
         return this.resultType;
+    }
+
+    @Override
+    public int getIconResourceId() {
+        switch (resultType) {
+            case POSITIVE:
+                return R.drawable.ic_add_24dp;
+            case NEGATIVE:
+                return R.drawable.ic_remove_24dp;
+            case PENDING:
+                return R.drawable.ic_pending_24dp;
+            case INDETERMINATE:
+                return R.drawable.ic_do_not_disturb_on_24dp;
+            default:
+                throw new IllegalArgumentException(resultType.toString());
+        }
     }
 
 }

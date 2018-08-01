@@ -3,6 +3,8 @@ package de.symeda.sormas.app.visit.read;
 import android.content.Context;
 import android.os.Bundle;
 
+import java.util.List;
+
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.BaseReadActivity;
@@ -43,8 +45,8 @@ public class VisitReadActivity extends BaseReadActivity<Visit> {
     }
 
     @Override
-    public int getPageMenuData() {
-        return R.xml.data_form_page_followup_menu;
+    public List<PageMenuItem> getPageMenuData() {
+        return PageMenuItem.fromEnum(VisitSection.values(), getContext());
     }
 
     @Override
@@ -59,7 +61,7 @@ public class VisitReadActivity extends BaseReadActivity<Visit> {
 
     @Override
     protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Visit activityRootData) {
-        VisitSection section = VisitSection.fromMenuKey(menuItem.getKey());
+        VisitSection section = VisitSection.fromOrdinal(menuItem.getKey());
         BaseReadFragment fragment;
         switch (section) {
             case VISIT_INFO:
@@ -81,7 +83,7 @@ public class VisitReadActivity extends BaseReadActivity<Visit> {
 
     @Override
     public void goToEditView() {
-        VisitSection section = VisitSection.fromMenuKey(getActivePage().getKey());
+        VisitSection section = VisitSection.fromOrdinal(getActivePage().getKey());
         VisitEditActivity.startActivity(getContext(), getRootUuid(), contactUuid, section);
     }
 }

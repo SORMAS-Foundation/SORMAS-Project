@@ -3,7 +3,6 @@ package de.symeda.sormas.app.caze.read;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
@@ -16,7 +15,7 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
+import de.symeda.sormas.app.core.enumeration.StatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.databinding.RowReadContactListItemLayoutBinding;
 import de.symeda.sormas.app.event.read.EventReadTaskListAdapter;
@@ -82,7 +81,7 @@ public class CaseReadContactListAdapter extends DataBoundAdapter<RowReadContactL
     public void indicateContactClassification(ImageView img, Contact record) {
         Resources resources = img.getContext().getResources();
         Drawable drw = (Drawable)ContextCompat.getDrawable(img.getContext(), R.drawable.indicator_status_circle);
-        IStatusElaborator elaborator = StatusElaboratorFactory.getElaborator(img.getContext(), record.getContactClassification());
+        StatusElaborator elaborator = StatusElaboratorFactory.getElaborator(record.getContactClassification());
         drw.setColorFilter(resources.getColor(elaborator.getColorIndicatorResource()), PorterDuff.Mode.SRC_OVER);
         img.setBackground(drw);
     }

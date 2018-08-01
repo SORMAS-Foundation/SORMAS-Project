@@ -60,7 +60,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
     @Override
     protected String getSubHeadingTitle() {
         Resources r = getResources();
-        return r.getString(R.string.caption_symptom_information);
+        return r.getString(R.string.caption_symptoms);
     }
 
     @Override

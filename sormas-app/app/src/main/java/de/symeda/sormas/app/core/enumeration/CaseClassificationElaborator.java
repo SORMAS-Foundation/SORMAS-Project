@@ -1,9 +1,12 @@
 package de.symeda.sormas.app.core.enumeration;
 
+import android.content.Context;
+
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.core.NotImplementedException;
 
-public class CaseClassificationElaborator implements IStatusElaborator {
+public class CaseClassificationElaborator implements StatusElaborator {
 
     private CaseClassification status = null;
 
@@ -12,7 +15,7 @@ public class CaseClassificationElaborator implements IStatusElaborator {
     }
 
     @Override
-    public String getFriendlyName() {
+    public String getFriendlyName(Context context) {
         if (status != null) {
             return status.toShortString();
         }
@@ -37,12 +40,12 @@ public class CaseClassificationElaborator implements IStatusElaborator {
     }
 
     @Override
-    public String getStatekey() {
-        return ARG_CASE_CLASSIFICATION_STATUS;
+    public Enum getValue() {
+        return this.status;
     }
 
     @Override
-    public Enum getValue() {
-        return this.status;
+    public int getIconResourceId() {
+        throw new NotImplementedException("getIconResourceId");
     }
 }

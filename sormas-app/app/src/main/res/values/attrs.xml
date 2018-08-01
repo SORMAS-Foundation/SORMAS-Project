@@ -300,7 +300,6 @@
     </declare-styleable>
 
     <declare-styleable name="PageMenuControl">
-        <attr name="dataResource" />
         <attr name="cellLayout" />
         <attr name="counterBackgroundColor" />
         <attr name="counterBackgroundActiveColor" />

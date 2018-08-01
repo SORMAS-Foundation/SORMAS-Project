@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -23,7 +24,6 @@ import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.report.MissingWeeklyReportDialog;
-import de.symeda.sormas.app.util.Bundler;
 
 public class CaseListActivity extends BaseListActivity {
 
@@ -34,8 +34,8 @@ public class CaseListActivity extends BaseListActivity {
     }
 
     @Override
-    public int getPageMenuData() {
-        return R.xml.data_landing_page_case_menu;
+    public List<PageMenuItem> getPageMenuData() {
+        return PageMenuItem.fromEnum(statusFilters, getContext());
     }
 
     @Override

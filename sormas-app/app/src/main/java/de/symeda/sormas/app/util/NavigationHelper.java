@@ -13,7 +13,9 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.list.CaseListActivity;
 import de.symeda.sormas.app.contact.list.ContactListActivity;
+import de.symeda.sormas.app.dashboard.DashboardActivity;
 import de.symeda.sormas.app.event.list.EventListActivity;
+import de.symeda.sormas.app.report.ReportLandingActivity;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 import de.symeda.sormas.app.sample.list.SampleListActivity;
 import de.symeda.sormas.app.task.list.TaskListActivity;
@@ -29,6 +31,11 @@ public class NavigationHelper {
         } else {
             NavUtils.navigateUpTo(activity, upIntent);
         }
+    }
+
+    public static void goToDashboard(Context context) {
+        Intent intent = new Intent(context, DashboardActivity.class);
+        context.startActivity(intent);
     }
 
     public static void goToCases(Context context) {
@@ -49,6 +56,11 @@ public class NavigationHelper {
 
     public static void goToTasks(Context context) {
         TaskListActivity.startActivity(context, TaskStatus.PENDING);
+    }
+
+    public static void goToReports(Context context) {
+        Intent intent = new Intent(context, ReportLandingActivity.class);
+        context.startActivity(intent);
     }
 
     public static void goToNewCase(Context context) {

@@ -19,7 +19,6 @@ import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.event.EventSection;
-import de.symeda.sormas.app.util.Bundler;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -105,7 +104,7 @@ public class EventNewActivity extends BaseEditActivity<Event> {
                 hidePreloader();
                 super.onPostExecute(taskResult);
                 if (taskResult.getResultStatus().isSuccess()) {
-                    EventEditActivity.startActivity(getContext(), eventToSave.getUuid(), EventSection.EVENT_PERSONS);
+                    EventEditActivity.startActivity(getContext(), eventToSave.getUuid(), EventSection.EVENT_PARTICIPANTS);
                 }
             }
         }.executeOnThreadPool();

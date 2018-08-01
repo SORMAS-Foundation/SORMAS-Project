@@ -26,7 +26,7 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditFragment<Fragm
 
     @Override
     protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.caption_persons_involved);
+        return getResources().getString(R.string.caption_event_participants);
     }
 
     @Override

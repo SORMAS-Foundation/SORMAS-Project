@@ -5,6 +5,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 
+import java.util.List;
+
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -69,14 +71,14 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
     }
 
     @Override
-    public int getPageMenuData() {
-        return R.xml.data_form_page_followup_menu;
+    public List<PageMenuItem> getPageMenuData() {
+        return PageMenuItem.fromEnum(VisitSection.values(), getContext());
     }
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Visit activityRootData) {
 
-        VisitSection section = VisitSection.fromMenuKey(menuItem.getKey());
+        VisitSection section = VisitSection.fromOrdinal(menuItem.getKey());
         BaseEditFragment fragment;
         switch (section) {
             case VISIT_INFO:

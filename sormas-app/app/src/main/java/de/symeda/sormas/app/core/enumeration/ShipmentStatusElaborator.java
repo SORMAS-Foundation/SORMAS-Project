@@ -1,9 +1,11 @@
 package de.symeda.sormas.app.core.enumeration;
 
+import android.content.Context;
+
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 
-public class ShipmentStatusElaborator implements IStatusElaborator {
+public class ShipmentStatusElaborator implements StatusElaborator {
 
     private ShipmentStatus status = null;
 
@@ -12,7 +14,7 @@ public class ShipmentStatusElaborator implements IStatusElaborator {
     }
 
     @Override
-    public String getFriendlyName() {
+    public String getFriendlyName(Context context) {
         if (status != null) {
             return status.toShortString();
         }
@@ -35,12 +37,23 @@ public class ShipmentStatusElaborator implements IStatusElaborator {
     }
 
     @Override
-    public String getStatekey() {
-        return ARG_SHIPMENT_STATUS;
+    public Enum getValue() {
+        return this.status;
     }
 
     @Override
-    public Enum getValue() {
-        return this.status;
+    public int getIconResourceId() {
+        switch(status) {
+        case NOT_SHIPPED:
+                return R.drawable.ic_lp_not_shipped_192dp;
+            case SHIPPED:
+                return R.drawable.ic_lp_shipped_192dp;
+            case RECEIVED:
+                return R.drawable.ic_lp_received_192dp;
+            case REFERRED_OTHER_LAB:
+                return R.drawable.ic_lp_referred_to_other_lab_192dp;
+            default:
+                throw new IllegalArgumentException(status.toString());
+        }
     }
 }

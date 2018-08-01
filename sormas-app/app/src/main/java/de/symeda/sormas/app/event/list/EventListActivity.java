@@ -6,6 +6,7 @@ import android.widget.AdapterView;
 
 import org.joda.time.DateTime;
 
+import java.util.List;
 import java.util.Random;
 
 import de.symeda.sormas.api.event.EventStatus;
@@ -15,7 +16,6 @@ import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.caze.list.CaseListActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.event.edit.EventNewActivity;
 
@@ -28,8 +28,8 @@ public class EventListActivity extends BaseListActivity {
     }
 
     @Override
-    public int getPageMenuData() {
-        return R.xml.data_landing_page_alert_menu;
+    public List<PageMenuItem> getPageMenuData() {
+        return PageMenuItem.fromEnum(statusFilters, getContext());
     }
 
     @Override

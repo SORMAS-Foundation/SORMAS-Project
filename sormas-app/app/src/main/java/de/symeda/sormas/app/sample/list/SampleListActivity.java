@@ -6,13 +6,13 @@ import android.widget.AdapterView;
 
 import org.joda.time.DateTime;
 
+import java.util.List;
 import java.util.Random;
 
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.event.list.EventListActivity;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 
 public class SampleListActivity extends BaseListActivity {
@@ -27,8 +27,8 @@ public class SampleListActivity extends BaseListActivity {
     }
 
     @Override
-    public int getPageMenuData() {
-        return R.xml.data_landing_page_sample_menu;
+    public List<PageMenuItem> getPageMenuData(){
+        return PageMenuItem.fromEnum(statusFilters, getContext());
     }
 
     @Override

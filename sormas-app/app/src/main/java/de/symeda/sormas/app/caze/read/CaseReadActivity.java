@@ -3,6 +3,9 @@ package de.symeda.sormas.app.caze.read;
 import android.content.Context;
 import android.view.Menu;
 
+import java.util.List;
+
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseActivity;
@@ -41,14 +44,19 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
     }
 
     @Override
-    public int getPageMenuData() {
-        return R.xml.data_form_page_case_menu;
+    public List<PageMenuItem> getPageMenuData() {
+        List<PageMenuItem> menuItems = PageMenuItem.fromEnum(CaseSection.values(), getContext());
+        Case caze = getStoredRootEntity();
+        if (caze != null && !DiseaseHelper.hasContactFollowUp(caze.getDisease(), caze.getPlagueType())) {
+            menuItems.remove(CaseSection.CONTACTS.ordinal());
+        }
+        return menuItems;
     }
 
     @Override
     protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Case activityRootData) {
 
-        CaseSection section = CaseSection.fromMenuKey(menuItem.getKey());
+        CaseSection section = CaseSection.fromOrdinal(menuItem.getKey());
         BaseReadFragment fragment;
         switch (section) {
 
@@ -97,7 +105,7 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 
     @Override
     public void goToEditView() {
-        CaseSection section = CaseSection.fromMenuKey(getActivePage().getKey());
+        CaseSection section = CaseSection.fromOrdinal(getActivePage().getKey());
         CaseEditActivity.startActivity(CaseReadActivity.this, getRootUuid(), section);
     }
 }

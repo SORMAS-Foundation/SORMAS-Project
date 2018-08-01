@@ -83,17 +83,18 @@
     <string name="alert_unsynchronized_changes">There are unsynchronized changes on your device. If you log out now, they will be lost and you will not be able to restore them. Do you still want to log out of SORMAS?</string>
 
     <string name="caption_case_contacts">Case Contacts</string>
+    <string name="caption_case_epidomiological_data">Epidemilogical Info</string>
+    <string name="caption_case_hospitalization">Hospitalization Info</string>
     <string name="caption_case_information">Case Information</string>
     <string name="caption_case_samples">Case Samples</string>
     <string name="caption_case_tasks">Case Tasks</string>
     <string name="caption_confirmation_date">Confirmation Date: %1$s</string>
     <string name="caption_contact_information">Contact Information</string>
     <string name="caption_contact_tasks">Contact Tasks</string>
-    <string name="caption_epidemiological_information">Epidemilogical Info</string>
+    <string name="caption_contact_visits">Follow-Up Information</string>
     <string name="caption_event_information">Event Information</string>
+    <string name="caption_event_participants">Persons Involved</string>
     <string name="caption_event_tasks">Event Tasks</string>
-    <string name="caption_followup_information">Follow-Up Information</string>
-    <string name="caption_hospitalization_information">Hospitalization Info</string>
     <string name="caption_new_case">New Case</string>
     <string name="caption_new_contact">New Contact</string>
     <string name="caption_new_sample">New Sample</string>
@@ -101,12 +102,12 @@
     <string name="caption_patient_information">Patient Information</string>
     <string name="caption_person_information">Person Information</string>
     <string name="caption_person_involved">Person Involved</string>
-    <string name="caption_persons_involved">Persons Involved</string>
     <string name="caption_report_date">Report Date: %1$s</string>
     <string name="caption_sample_information">Sample Information</string>
-    <string name="caption_symptom_information">Symptom Information</string>
+    <string name="caption_symptoms">Symptom Information</string>
     <string name="caption_task_information">Task Information</string>
     <string name="caption_visit_information">Visit Information</string>
+    <string name="caption_visit_symptoms">Symptom Information</string>
     <string name="caption_smallpox_vaccination_scar_img">Smallpox Vaccination Scar</string>
 
     <string name="case_uuid_unknown">Case ID N/A</string>

@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -41,17 +40,15 @@ import de.symeda.sormas.app.component.dialog.UserReportDialog;
 import de.symeda.sormas.app.component.menu.PageMenuAdapter;
 import de.symeda.sormas.app.component.menu.PageMenuControl;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.component.menu.PageMenuParser;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.NotificationContext;
-import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
+import de.symeda.sormas.app.core.enumeration.StatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
-import de.symeda.sormas.app.menu.MainMenuItemSelectedListener;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
@@ -155,28 +152,18 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         statusFrame = findViewById(R.id.statusFrame);
 
         pageMenu = (PageMenuControl) findViewById(R.id.landingPageMenuControl);
-        if (pageMenu != null && getPageMenuData() > 0) {
-            ensureFabHiddenOnSoftKeyboardShown(pageMenu);
-            pageMenu.hide();
-            Context menuControlContext = this.pageMenu.getContext();
-
-            pageMenu.setPageMenuClickListener(new PageMenuControl.PageMenuClickListener() {
-                @Override
-                public boolean onPageMenuClick(AdapterView<?> parent, View view, PageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
-                    return setActivePage(menuItem);
-                }
-            });
-            pageMenu.setPageMenuInititalSelectionProvider(new PageMenuControl.PageMenuInitialSelectionProvider() {
-                @Override
-                public PageMenuItem getInititalSelectedPageMenuItem(List<PageMenuItem> menuList) {
-                    return initPageMenuAndGetInitialSelection(menuList);
-                }
-            });
-
-            pageMenu.setAdapter(new PageMenuAdapter(menuControlContext));
-            pageMenu.setMenuParser(new PageMenuParser(menuControlContext));
-            pageMenu.setMenuData(getPageMenuData());
-        }
+        pageMenu.setPageMenuClickListener(new PageMenuControl.PageMenuClickListener() {
+            @Override
+            public boolean onPageMenuClick(AdapterView<?> parent, View view, PageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
+                return setActivePage(menuItem);
+            }
+        });
+        pageMenu.setPageMenuInititalSelectionProvider(new PageMenuControl.PageMenuInitialSelectionProvider() {
+            @Override
+            public PageMenuItem getInititalSelectedPageMenuItem(List<PageMenuItem> menuList) {
+                return initPageMenuAndGetInitialSelection(menuList);
+            }
+        });
 
         Drawable drawable = ContextCompat.getDrawable(this,
                 R.drawable.selector_actionbar_back_button);
@@ -221,6 +208,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
             applicationTitleBar.setVisibility(View.VISIBLE);
             updateStatusFrame();
         }
+        updatePageMenu();
     }
 
     protected void updateStatusFrame() {
@@ -229,19 +217,28 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                 Context statusFrameContext = statusFrame.getContext();
 
                 Drawable drw = (Drawable) ContextCompat.getDrawable(statusFrameContext, R.drawable.indicator_status_circle);
-                drw.setColorFilter(statusFrameContext.getResources().getColor(getStatusColorResource(statusFrameContext)), PorterDuff.Mode.SRC);
+                drw.setColorFilter(statusFrameContext.getResources().getColor(getStatusColorResource()), PorterDuff.Mode.SRC);
 
                 TextView txtStatusName = (TextView) statusFrame.findViewById(R.id.txtStatusName);
                 ImageView imgStatus = (ImageView) statusFrame.findViewById(R.id.statusIcon);
 
 
-                txtStatusName.setText(getStatusName(statusFrameContext));
+                txtStatusName.setText(getStatusName());
                 imgStatus.setBackground(drw);
 
                 statusFrame.setVisibility(View.VISIBLE);
             } else {
                 statusFrame.setVisibility(View.GONE);
             }
+        }
+    }
+
+    protected void updatePageMenu() {
+        List<PageMenuItem> menuItems = getPageMenuData();
+        if (pageMenu != null && menuItems != null) {
+            ensureFabHiddenOnSoftKeyboardShown(pageMenu);
+            pageMenu.hide();
+            pageMenu.setMenuData(menuItems);
         }
     }
 
@@ -258,10 +255,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
             progressDialog.dismiss();
         }
 
-        if (pageMenu != null) {
-            pageMenu.onDestroy();
-        }
-
         super.onDestroy();
     }
 
@@ -269,7 +262,34 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
         menuDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.main_navigation_view);
-        navigationView.setNavigationItemSelectedListener(new MainMenuItemSelectedListener(this, menuDrawerLayout));
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                // Handle navigation view item clicks here.
+                int id = item.getItemId();
+
+                if (id == R.id.menu_item_dashboard) {
+                    NavigationHelper.goToDashboard(getContext());
+                } else if (id == R.id.menu_item_tasks) {
+                    NavigationHelper.goToTasks(getContext());
+                } else if (id == R.id.menu_item_cases) {
+                    NavigationHelper.goToCases(getContext());
+                } else if (id == R.id.menu_item_contacts) {
+                    NavigationHelper.goToContacts(getContext());
+                } else if (id == R.id.menu_item_events) {
+                    NavigationHelper.goToEvents(getContext());
+                } else if (id == R.id.menu_item_samples) {
+                    NavigationHelper.goToSamples(getContext());
+                } else if (id == R.id.menu_item_reports) {
+                    NavigationHelper.goToReports(getContext());
+                }
+
+                // necessary to prevent the drawer from staying open when the same entry is selected
+                menuDrawerLayout.closeDrawers();
+
+                return true;
+            }
+        });
 
         taskNotificationCounter = (TextView) navigationView.getMenu().findItem(R.id.menu_item_tasks).getActionView().findViewById(R.id.main_menu_notification_counter);
         caseNotificationCounter = (TextView) navigationView.getMenu().findItem(R.id.menu_item_cases).getActionView().findViewById(R.id.main_menu_notification_counter);
@@ -412,8 +432,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 //        sampleNotificationCounter.setText("50");
     }
 
-    public int getPageMenuData() {
-        return -1;
+    public List<PageMenuItem> getPageMenuData() {
+        return null;
     }
 
     protected boolean setActivePage(PageMenuItem menuItem) {
@@ -456,23 +476,23 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
     public abstract Enum getPageStatus();
 
-    public String getStatusName(Context context) {
+    public String getStatusName() {
         Enum pageStatus = getPageStatus();
 
         if (pageStatus != null) {
-            IStatusElaborator elaborator = StatusElaboratorFactory.getElaborator(context, pageStatus);
+            StatusElaborator elaborator = StatusElaboratorFactory.getElaborator(pageStatus);
             if (elaborator != null)
-                return elaborator.getFriendlyName();
+                return elaborator.getFriendlyName(getContext());
         }
 
         return "";
     }
 
-    public int getStatusColorResource(Context context) {
+    public int getStatusColorResource() {
         Enum pageStatus = getPageStatus();
 
         if (pageStatus != null) {
-            IStatusElaborator elaborator = StatusElaboratorFactory.getElaborator(context, pageStatus);
+            StatusElaborator elaborator = StatusElaboratorFactory.getElaborator(pageStatus);
             if (elaborator != null)
                 return elaborator.getColorIndicatorResource();
         }

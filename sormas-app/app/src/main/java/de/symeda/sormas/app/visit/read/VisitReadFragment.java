@@ -27,7 +27,7 @@ public class VisitReadFragment extends BaseReadFragment<FragmentVisitReadLayoutB
 
     @Override
     protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.caption_followup_information);
+        return getResources().getString(R.string.caption_visit_information);
     }
 
     @Override

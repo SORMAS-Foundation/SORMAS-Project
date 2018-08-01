@@ -6,16 +6,14 @@ import android.widget.AdapterView;
 
 import org.joda.time.DateTime;
 
+import java.util.List;
 import java.util.Random;
 
-import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.caze.list.CaseListActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.util.Bundler;
 
 public class ContactListActivity extends BaseListActivity {
 
@@ -27,8 +25,8 @@ public class ContactListActivity extends BaseListActivity {
     }
 
     @Override
-    public int getPageMenuData() {
-        return R.xml.data_landing_page_contact_menu;
+    public List<PageMenuItem> getPageMenuData() {
+        return PageMenuItem.fromEnum(statusFilters, getContext());
     }
 
     @Override

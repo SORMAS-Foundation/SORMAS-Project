@@ -52,7 +52,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     @Override
     protected String getSubHeadingTitle() {
         Resources r = getResources();
-        return r.getString(R.string.caption_epidemiological_information);
+        return r.getString(R.string.caption_case_epidomiological_data);
     }
 
     @Override

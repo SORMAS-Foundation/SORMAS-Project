@@ -7,8 +7,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.percent.PercentFrameLayout;
@@ -26,33 +24,23 @@ import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.OnSwipeTouchListener;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
-
 
 public class PageMenuControl extends LinearLayout {
 
     public static final String TAG = PageMenuControl.class.getSimpleName();
 
-    private AsyncTask updateNotificationCountTask;
     private NotificationCountChangingListener mOnNotificationCountChangingListener;
     private PageMenuClickListener pageMenuClickListener;
     private PageMenuInitialSelectionProvider pageMenuInitialSelectionProvider;
 
     private PageMenuAdapter adapter;
-    private List<PageMenuItem> menuList;
+    private List<PageMenuItem> menuItems;
 
-    private int dataResourceId;
     private int cellLayout;
     private int counterBackgroundColor;
     private int counterBackgroundActiveColor;
@@ -64,15 +52,10 @@ public class PageMenuControl extends LinearLayout {
     private int titleActiveColor;
     private FrameLayout fabFrame;
     private FloatingActionButton fab;
-    private TextView taskLandingMenuTitle;
     private GridView taskLandingMenuGridView;
 
-    private PageMenuParser parser;
     private boolean mVisible;
     private boolean mCollapsible;
-    private boolean mIsAnimatingIn;
-    private boolean mFirstAnimatingIn = true;
-    private boolean mConfigured = false;
     private int mMarginBottomOffsetResId = -1;
 
     private int mCapturedLayoutHeight = 0;
@@ -111,7 +94,6 @@ public class PageMenuControl extends LinearLayout {
                     0, 0);
 
             try {
-                dataResourceId = a.getResourceId(R.styleable.PageMenuControl_dataResource, -1);
                 cellLayout = a.getResourceId(R.styleable.PageMenuControl_cellLayout, 0);
 
                 counterBackgroundColor = a.getResourceId(R.styleable.PageMenuControl_counterBackgroundColor, 0);
@@ -127,7 +109,6 @@ public class PageMenuControl extends LinearLayout {
                 mCollapsible = a.getBoolean(R.styleable.PageMenuControl_collapsible, false);
                 mMarginBottomOffsetResId = a.getResourceId(R.styleable.PageMenuControl_marginBottomOffsetResId, -1);
 
-
             } finally {
                 a.recycle();
             }
@@ -136,148 +117,38 @@ public class PageMenuControl extends LinearLayout {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.sub_menu_layout, this);
+
+        adapter = new PageMenuAdapter(context);
+        adapter.initialize(cellLayout, counterBackgroundColor, counterBackgroundActiveColor,
+                iconColor, iconActiveColor, positionColor, positionActiveColor, titleColor, titleActiveColor);
     }
 
-    @Override
-    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
-        //super.onVisibilityChanged(changedView, visibility);
+    public <T extends Enum> void setMenuData(List<PageMenuItem> menuItems) {
+        this.menuItems = menuItems;
 
-        if (changedView == this) {
-            if (isVisible()) { //visibility == VISIBLE
-                //configureControl();
-            }
-        }
-    }
-
-    public void setMenuData(int dataResId) {
-        if (dataResId > 0) {
-            dataResourceId = dataResId;
-        } else {
+        if (!showPageMenu()) {
             setFabFrameVisibility(false);
             return;
-            //throw new IllegalArgumentException("The dataResourceId file argument is empty.");
         }
-
         setFabFrameVisibility(true);
 
-        extractAndLoadMenuData();
+        adapter.setData(this.menuItems);
 
-        if (adapter != null)
-            adapter.notifyDataSetChanged();
+        selectInitialActiveMenuItem();
+        updateNotificationCount();
 
         invalidate();
         requestLayout();
-
-        this.dataResourceId = dataResId;
     }
 
-    public void setMenuParser(PageMenuParser parser) {
-        this.parser = parser;
-    }
-
-    public void setAdapter(PageMenuAdapter adapter) {
-        this.adapter = adapter;
-    }
-
-    private void configureControl() {
-        if (adapter == null) {
-            Log.e(TAG, "This is no adapter configured for the menu textView.");
-            return;
+    private void updateNotificationCount() {
+        int position = 0;
+        for (final PageMenuItem menuItem : menuItems) {
+            int result = performNotificationCountChange(menuItem, position);
+            menuItem.setNotificationCount(result);
+            position = position + 1;
         }
-
-        adapter.initialize(menuList, cellLayout, counterBackgroundColor, counterBackgroundActiveColor,
-                iconColor, iconActiveColor, positionColor, positionActiveColor, titleColor, titleActiveColor);
-
-        taskLandingMenuGridView.setAdapter(adapter);
-        taskLandingMenuGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                try {
-                    performPageMenuItemClick(parent, view, menuList.get(position), position, id);
-                } catch (InstantiationException e) {
-                    Log.e(TAG, e.getMessage());
-                } catch (IllegalAccessException e) {
-                    Log.e(TAG, e.getMessage());
-                }
-            }
-        });
-
-        mConfigured = true;
-    }
-
-    private List<PageMenuItem> extractAndLoadMenuData() {
-        if (dataResourceId <= 0)
-            throw new IllegalArgumentException("The dataResourceId file argument is empty.");
-
-        if (menuList == null)
-            menuList = new ArrayList<>();
-
-        menuList.clear();
-
-        parser = new PageMenuParser(getContext());
-        PageMenu menu = parser.parse(getResources().getXml(dataResourceId));
-
-        //Set Title
-        setMenuTitle(menu.getTitle());
-
-        menuList.addAll(menu.getMenuItems());
-        updateNotificationCount(menuList, new Callback.IAction<BoolResult>() {
-            @Override
-            public void call(BoolResult result) {
-                if (result.isSuccess())
-                    adapter.notifyDataSetChanged();
-            }
-        });
-
-        if (menuList != null && menuList.size() > 0) {
-            selectInitialActiveMenuItem();
-            //performAllNotificationCountChange();
-        }
-
-        return menuList;
-    }
-
-    private void updateNotificationCount(final List<PageMenuItem> inputMenuList, final Callback.IAction<BoolResult> callback) {
-        try {
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                @Override
-                public void onPreExecute() {
-
-                }
-
-                @Override
-                public void doInBackground(TaskResultHolder resultHolder) {
-                    int position = 0;
-                    for (final PageMenuItem entry : inputMenuList) {
-                        int result = performNotificationCountChange(entry, position);
-                        entry.setNotificationCount(result);
-                        //resultHolder.<PageMenuItem>forEnumerable().add(entry);
-
-                        position = position + 1;
-                    }
-
-                    resultHolder.setResultStatus(BoolResult.TRUE);
-                }
-            };
-            updateNotificationCountTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    if (resultHolder == null) {
-                        return;
-                    }
-
-                    callback.call(resultStatus);
-
-                    /*ITaskResultHolderEnumerableIterator<PageMenuItem> enumerableIterator = resultHolder.forEnumerable().iterator();
-
-                    if (enumerableIterator.hasNext()) {
-                        callback.call(enumerableIterator.next());
-                    }*/
-                }
-            });
-        } catch (Exception ex) {
-
-        }
+        adapter.notifyDataSetChanged();
     }
 
     public void setOnNotificationCountChangingListener(@Nullable NotificationCountChangingListener listener) {
@@ -287,19 +158,6 @@ public class PageMenuControl extends LinearLayout {
     @Nullable
     public final NotificationCountChangingListener getOnNotificationCountChangingListener() {
         return mOnNotificationCountChangingListener;
-    }
-
-    private void performAllNotificationCountChange() {
-        if (menuList == null)
-            throw new NullPointerException("The menuList is null.");
-
-        updateNotificationCount(menuList, new Callback.IAction<BoolResult>() {
-            @Override
-            public void call(BoolResult result) {
-                if (result.isSuccess())
-                    adapter.notifyDataSetChanged();
-            }
-        });
     }
 
     public int performNotificationCountChange(PageMenuItem menuItem, int position) {
@@ -333,11 +191,12 @@ public class PageMenuControl extends LinearLayout {
         boolean returnVal = false;
         PageMenuItem result = null;
         if (pageMenuInitialSelectionProvider != null) {
-            result = pageMenuInitialSelectionProvider.getInititalSelectedPageMenuItem(menuList);
+            result = pageMenuInitialSelectionProvider.getInititalSelectedPageMenuItem(menuItems);
 
             if (result != null) {
                 result.setActive(true);
                 returnVal = true;
+                adapter.notifyDataSetChanged();
             }
         }
 
@@ -357,7 +216,7 @@ public class PageMenuControl extends LinearLayout {
     }
 
     public void markActiveMenuItem(PageMenuItem menuItem) {
-        for (PageMenuItem m : menuList) {
+        for (PageMenuItem m : menuItems) {
             m.setActive(false);
         }
 
@@ -369,48 +228,36 @@ public class PageMenuControl extends LinearLayout {
         requestLayout();
     }
 
-    public void setMenuTitle(String title) {
-        if (taskLandingMenuTitle != null) {
-            taskLandingMenuTitle.setText(title);
-        } else if ((taskLandingMenuTitle = (TextView) this.findViewById(R.id.sub_menu_title)) == null) {
-            throw new NullPointerException("The menu textView title object is null.");
-        }
-
-        taskLandingMenuTitle.setText(title);
-        invalidate();
-        requestLayout();
-    }
-
-    public String getMenuTitle() {
-        return taskLandingMenuTitle.getText().toString();
-    }
-
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        taskLandingMenuTitle = (TextView) findViewById(R.id.sub_menu_title);
         taskLandingMenuGridView = (GridView) findViewById(R.id.sub_menu_grid);
         fabFrame = (FrameLayout) findViewById(R.id.button_frame);
         fab = (FloatingActionButton) findViewById(R.id.sub_menu_button);
 
+        taskLandingMenuGridView.setAdapter(adapter);
+        taskLandingMenuGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                try {
+                    performPageMenuItemClick(parent, view, menuItems.get(position), position, id);
+                } catch (InstantiationException e) {
+                    Log.e(TAG, e.getMessage());
+                } catch (IllegalAccessException e) {
+                    Log.e(TAG, e.getMessage());
+                }
+            }
+        });
 
         setVisibility(View.VISIBLE);
-
-        if (dataResourceId > 0) {
-            extractAndLoadMenuData();
-        }
     }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-
         disableClipOnParents(this);
-
-        if (!mConfigured)
-            configureControl();
 
         setFabFrameVisibility(true);
 
@@ -463,21 +310,14 @@ public class PageMenuControl extends LinearLayout {
             }
         }
 
-
         if (!showPageMenu()) {
-            //hideAll();
-            //setY(this.getHeight());
             setVisibility(View.GONE);
         } else if (!isVisible() || mEarlyAction == ActionType.HIDE) {
             hide();
             mEarlyAction = null;
-            //setY(this.getHeight() - this.mFabHeight);
-            //setVisibility(View.VISIBLE);
         } else {
             show();
             mEarlyAction = null;
-            //setY(0);
-            //setVisibility(View.VISIBLE);
         }
 
         updateFabDrawable();
@@ -598,7 +438,7 @@ public class PageMenuControl extends LinearLayout {
     }
 
     private boolean showPageMenu() {
-        return this.dataResourceId > 0;
+        return this.menuItems != null;
     }
 
     private void configureFab() {
@@ -678,9 +518,6 @@ public class PageMenuControl extends LinearLayout {
         }
 
         return fabFrame.getHeight();
-
-        /*FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)fab.getLayoutParams();
-        this.mFabHeight = fab.getHeight() + params.topMargin + params.bottomMargin;*/
     }
 
     private void setFabFrameVisibility(boolean visibility) {
@@ -700,11 +537,6 @@ public class PageMenuControl extends LinearLayout {
         if (v.getParent() instanceof View) {
             disableClipOnParents((View) v.getParent());
         }
-    }
-
-    public void onDestroy() {
-        if (updateNotificationCountTask != null && !updateNotificationCountTask.isCancelled())
-            updateNotificationCountTask.cancel(true);
     }
 
     public interface PageMenuInitialSelectionProvider {

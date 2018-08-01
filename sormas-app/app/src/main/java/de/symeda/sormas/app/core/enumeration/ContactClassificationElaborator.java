@@ -1,9 +1,12 @@
 package de.symeda.sormas.app.core.enumeration;
 
+import android.content.Context;
+
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.core.NotImplementedException;
 
-public class ContactClassificationElaborator implements IStatusElaborator {
+public class ContactClassificationElaborator implements StatusElaborator {
 
     private ContactClassification status = null;
 
@@ -12,7 +15,7 @@ public class ContactClassificationElaborator implements IStatusElaborator {
     }
 
     @Override
-    public String getFriendlyName() {
+    public String getFriendlyName(Context context) {
         if (status != null) {
             return status.toShortString();
         }
@@ -32,12 +35,12 @@ public class ContactClassificationElaborator implements IStatusElaborator {
     }
 
     @Override
-    public String getStatekey() {
-        return ARG_CONTACT_CLASSIFICATION_STATUS;
+    public Enum getValue() {
+        return this.status;
     }
 
     @Override
-    public Enum getValue() {
-        return this.status;
+    public int getIconResourceId() {
+        throw new NotImplementedException("getIconResourceId");
     }
 }

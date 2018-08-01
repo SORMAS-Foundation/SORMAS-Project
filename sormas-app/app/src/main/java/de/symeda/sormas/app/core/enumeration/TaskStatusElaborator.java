@@ -1,9 +1,11 @@
 package de.symeda.sormas.app.core.enumeration;
 
+import android.content.Context;
+
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.R;
 
-public class TaskStatusElaborator implements IStatusElaborator {
+public class TaskStatusElaborator implements StatusElaborator {
 
     private TaskStatus status = null;
 
@@ -12,7 +14,7 @@ public class TaskStatusElaborator implements IStatusElaborator {
     }
 
     @Override
-    public String getFriendlyName() {
+    public String getFriendlyName(Context context) {
         if (status != null) {
             return status.toString();
         }
@@ -35,12 +37,23 @@ public class TaskStatusElaborator implements IStatusElaborator {
     }
 
     @Override
-    public String getStatekey() {
-        return ARG_TASK_STATUS;
+    public Enum getValue() {
+        return this.status;
     }
 
     @Override
-    public Enum getValue() {
-        return this.status;
+    public int getIconResourceId() {
+        switch (status) {
+
+            case PENDING:
+                return R.drawable.ic_lp_pending_task_192dp;
+            case DONE:
+                return R.drawable.ic_lp_done_task_192dp;
+            case REMOVED:
+            case NOT_EXECUTABLE:
+                return R.drawable.ic_lp_not_exec_task_192dp;
+            default:
+                throw new IllegalArgumentException(status.toString());
+        }
     }
 }

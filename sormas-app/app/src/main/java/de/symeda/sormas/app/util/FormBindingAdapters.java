@@ -1,7 +1,6 @@
 package de.symeda.sormas.app.util;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
@@ -9,7 +8,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import java.util.List;
 
@@ -17,18 +15,13 @@ import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.location.Location;
-import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.controls.ControlLinkField;
-import de.symeda.sormas.app.component.controls.ControlTextImageField;
-import de.symeda.sormas.app.component.controls.ControlTextReadField;
 import de.symeda.sormas.app.core.enumeration.SampleTestResultTypeElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 
@@ -41,9 +34,10 @@ public class FormBindingAdapters {
         if (resultType != null) {
             Context context = imageView.getContext();
             SampleTestResultTypeElaborator elaborator = (SampleTestResultTypeElaborator)
-                    StatusElaboratorFactory.getElaborator(context, resultType);
+                    StatusElaboratorFactory.getElaborator(resultType);
 
-            Drawable drawable = elaborator.getDrawable(context);
+            int iconResource = elaborator.getIconResourceId();
+            Drawable drawable = ContextCompat.getDrawable(context, iconResource).mutate();
             drawable.setTint(context.getResources().getColor(elaborator.getColorIndicatorResource()));
             imageView.setBackground(drawable);
         }

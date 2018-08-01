@@ -34,19 +34,11 @@ import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-/**
- * Created by Orson on 08/04/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
 public class EventSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.ViewTypeEnum, EventSummaryAdapter> {
 
     public static final String TAG = EventSummaryFragment.class.getSimpleName();
 
     private EventStatus statusFilters[] = new EventStatus[]{EventStatus.POSSIBLE, EventStatus.CONFIRMED, EventStatus.NO_EVENT};
-    private final int DATA_XML_LANDING_MENU = R.xml.data_landing_page_alert_menu;
 
     private CompositeSubscription mSubscription = new CompositeSubscription();
 

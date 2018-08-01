@@ -15,7 +15,6 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.sample.SampleTestResultType;
-import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -791,7 +790,7 @@ public class TextViewBindingAdapters {
         if (resultType != null) {
             Context context = textView.getContext();
             SampleTestResultTypeElaborator elaborator =
-                    (SampleTestResultTypeElaborator) StatusElaboratorFactory.getElaborator(context, resultType);
+                    (SampleTestResultTypeElaborator) StatusElaboratorFactory.getElaborator(resultType);
             textView.setText(resultType.name());
             textView.setTextColor(context.getResources().getColor(elaborator.getColorIndicatorResource()));
         }

@@ -4,10 +4,11 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.view.Menu;
 
+import java.util.List;
+
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
-import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -46,8 +47,8 @@ public class EventEditActivity extends BaseEditActivity<Event> {
     }
 
     @Override
-    public int getPageMenuData() {
-        return R.xml.data_form_page_alert_menu;
+    public List<PageMenuItem> getPageMenuData() {
+        return PageMenuItem.fromEnum(EventSection.values(), getContext());
     }
 
     @Override
@@ -57,13 +58,13 @@ public class EventEditActivity extends BaseEditActivity<Event> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Event activityRootData) {
-        EventSection section = EventSection.fromMenuKey(menuItem.getKey());
+        EventSection section = EventSection.fromOrdinal(menuItem.getKey());
         BaseEditFragment fragment;
         switch (section) {
             case EVENT_INFO:
                 fragment = EventEditFragment.newInstance(activityRootData);
                 break;
-            case EVENT_PERSONS:
+            case EVENT_PARTICIPANTS:
                 fragment = EventEditPersonsInvolvedListFragment.newInstance(activityRootData);
                 break;
             case TASKS:
@@ -89,9 +90,9 @@ public class EventEditActivity extends BaseEditActivity<Event> {
 
     @Override
     public void goToNewView() {
-        EventSection section = EventSection.fromMenuKey(getActivePage().getKey());
+        EventSection section = EventSection.fromOrdinal(getActivePage().getKey());
         switch (section) {
-            case EVENT_PERSONS:
+            case EVENT_PARTICIPANTS:
                 EventParticipantNewActivity.startActivity(getContext(), getRootUuid());
                 break;
             default:

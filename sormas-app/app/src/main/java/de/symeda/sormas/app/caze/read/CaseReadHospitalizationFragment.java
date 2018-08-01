@@ -50,7 +50,7 @@ public class CaseReadHospitalizationFragment extends BaseReadFragment<FragmentCa
 
     @Override
     protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.caption_hospitalization_information);
+        return getResources().getString(R.string.caption_case_hospitalization);
     }
 
     @Override

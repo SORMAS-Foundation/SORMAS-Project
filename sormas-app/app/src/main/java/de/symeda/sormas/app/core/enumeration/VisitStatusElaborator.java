@@ -1,9 +1,12 @@
 package de.symeda.sormas.app.core.enumeration;
 
+import android.content.Context;
+
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.core.NotImplementedException;
 
-public class VisitStatusElaborator implements IStatusElaborator {
+public class VisitStatusElaborator implements StatusElaborator {
 
     private VisitStatus status = null;
 
@@ -12,7 +15,7 @@ public class VisitStatusElaborator implements IStatusElaborator {
     }
 
     @Override
-    public String getFriendlyName() {
+    public String getFriendlyName(Context context) {
         if (status != null) {
             return status.toShortString();
         }
@@ -33,12 +36,12 @@ public class VisitStatusElaborator implements IStatusElaborator {
     }
 
     @Override
-    public String getStatekey() {
-        return ARG_VISIT_STATUS;
+    public Enum getValue() {
+        return this.status;
     }
 
     @Override
-    public Enum getValue() {
-        return this.status;
+    public int getIconResourceId() {
+        throw new NotImplementedException("getIconResourceId");
     }
 }
