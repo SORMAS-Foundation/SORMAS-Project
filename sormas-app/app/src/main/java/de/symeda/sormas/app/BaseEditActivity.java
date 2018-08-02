@@ -35,7 +35,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
     private String rootUuid;
 
     private MenuItem saveMenu = null;
-    private MenuItem addMenu = null;
+    private MenuItem newMenu = null;
 
     @Override
     protected boolean isSubActivitiy() {
@@ -213,7 +213,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         inflater.inflate(R.menu.edit_action_menu, menu);
 
         saveMenu = menu.findItem(R.id.action_save);
-        addMenu = menu.findItem(R.id.action_new);
+        newMenu = menu.findItem(R.id.action_new);
 
         processActionbarMenu();
 
@@ -227,16 +227,16 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         if (saveMenu != null)
             saveMenu.setVisible(activeFragment.isShowSaveAction());
 
-        if (addMenu != null)
-            addMenu.setVisible(activeFragment.isShowAddAction());
+        if (newMenu != null)
+            newMenu.setVisible(activeFragment.isShowNewAction());
     }
 
     public MenuItem getSaveMenu() {
         return saveMenu;
     }
 
-    public MenuItem getAddMenu() {
-        return addMenu;
+    public MenuItem getNewMenu() {
+        return newMenu;
     }
 
     public void replaceFragment(BaseEditFragment f, boolean allowBackNavigation) {

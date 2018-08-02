@@ -72,7 +72,7 @@ public class CaseEditContactListFragment extends BaseEditFragment<FragmentFormLi
     }
 
     @Override
-    public boolean isShowAddAction() {
+    public boolean isShowNewAction() {
         return true;
     }
 

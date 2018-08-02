@@ -40,10 +40,10 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
     private TBinding contentViewStubBinding;
     private View contentViewStubRoot;
     private ViewDataBinding rootBinding;
+    private View rootView;
 
     private boolean skipAfterLayoutBinding = false;
     private TActivityRootData activityRootData;
-    private View rootView;
     private boolean liveValidationDisabled;
 
     protected static <TFragment extends BaseEditFragment> TFragment newInstance(Class<TFragment> fragmentClass, Bundle data, AbstractDomainObject activityRootData) {
@@ -278,7 +278,7 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
         return true;
     }
 
-    public boolean isShowAddAction() {
+    public boolean isShowNewAction() {
         return false;
     }
 

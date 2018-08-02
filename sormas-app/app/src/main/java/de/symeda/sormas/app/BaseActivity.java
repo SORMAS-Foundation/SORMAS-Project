@@ -303,6 +303,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     protected abstract boolean isSubActivitiy();
 
     public boolean onOptionsItemSelected(MenuItem item) {
+
         if (!isSubActivitiy()
                 && menuDrawerToggle.onOptionsItemSelected(item)) {
             return true;
@@ -313,7 +314,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                 NavigationHelper.navigateUpFrom(this);
                 return true;
 
-            case R.id.option_menu_action_sync:
+            case R.id.action_sync:
                 synchronizeChangedData();
                 return true;
 
@@ -321,7 +322,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                 goToNewView();
                 return true;
 
-            case R.id.option_menu_action_markAllAsRead:
+            case R.id.action_readAll:
                 // TODO
                 return true;
 

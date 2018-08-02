@@ -162,7 +162,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     }
 
     @Override
-    public boolean isShowAddAction() {
+    public boolean isShowNewAction() {
         return false;
     }
 

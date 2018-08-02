@@ -70,7 +70,7 @@ public class ContactEditVisitsListFragment extends BaseEditFragment<FragmentForm
     }
 
     @Override
-    public boolean isShowAddAction() {
+    public boolean isShowNewAction() {
         return ConfigProvider.getUser().hasUserRight(UserRight.VISIT_CREATE);
     }
 

@@ -196,7 +196,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
     }
 
     @Override
-    public boolean isShowAddAction() {
+    public boolean isShowNewAction() {
         return false;
     }
 

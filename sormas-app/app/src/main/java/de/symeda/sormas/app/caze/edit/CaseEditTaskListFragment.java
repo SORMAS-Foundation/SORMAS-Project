@@ -70,7 +70,7 @@ public class CaseEditTaskListFragment extends BaseEditFragment<FragmentFormListL
     }
 
     @Override
-    public boolean isShowAddAction() {
+    public boolean isShowNewAction() {
         return false;
     }
 

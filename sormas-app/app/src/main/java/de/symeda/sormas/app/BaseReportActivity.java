@@ -48,7 +48,7 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.list_action_bar, menu);
+        inflater.inflate(R.menu.list_action_menu, menu);
 
         processActionbarMenu();
 

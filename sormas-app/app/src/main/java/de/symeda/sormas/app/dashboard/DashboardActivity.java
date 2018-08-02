@@ -56,7 +56,7 @@ public class DashboardActivity extends BaseDashboardActivity {
             case R.id.action_new:
                 return true;
 
-            case R.id.option_menu_action_sync:
+            case R.id.action_sync:
                 synchronizeChangedData();
                 return true;
 

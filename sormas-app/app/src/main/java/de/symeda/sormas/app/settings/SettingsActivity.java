@@ -19,13 +19,12 @@ public class SettingsActivity extends BaseLandingActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.settings_action_menu, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        MenuItem syncMenuItem = menu.findItem(R.id.action_sync);
+        syncMenuItem.setVisible(false);
+
         return true;
     }
 
@@ -37,13 +36,12 @@ public class SettingsActivity extends BaseLandingActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            // Settings don't have a parent -> go back instead of up
             case android.R.id.home:
                 if (ConfigProvider.getUser() == null) {
+                    // Settings don't have a parent -> go back instead of up
                     onBackPressed();
                     return true;
                 }
-
                 return super.onOptionsItemSelected(item);
 
             case R.id.action_save:
@@ -68,9 +66,13 @@ public class SettingsActivity extends BaseLandingActivity {
         return new SettingsFragment();
     }
 
+    /**
+     * Is a sub-activity when the user needs to go back to the LoginActivity
+     * @see SettingsActivity#onOptionsItemSelected(MenuItem)
+     */
     @Override
     protected boolean isSubActivitiy() {
-        return false;
+        return ConfigProvider.getUser() == null;
     }
 
     protected int getActivityTitle() {

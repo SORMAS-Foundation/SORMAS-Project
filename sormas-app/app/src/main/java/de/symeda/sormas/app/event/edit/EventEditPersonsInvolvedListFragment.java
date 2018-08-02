@@ -69,7 +69,7 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditFragment<Fragm
     }
 
     @Override
-    public boolean isShowAddAction() {
+    public boolean isShowNewAction() {
         return true;
     }
 

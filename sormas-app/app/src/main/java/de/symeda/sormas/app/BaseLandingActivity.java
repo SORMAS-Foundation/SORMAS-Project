@@ -15,6 +15,7 @@ public abstract class BaseLandingActivity extends BaseActivity {
     private CharSequence mainViewTitle;
 
     private BaseLandingFragment activeFragment;
+    private MenuItem saveMenu = null;
     private MenuItem newMenu = null;
 
     protected void onCreateInner(Bundle savedInstanceState) {
@@ -52,14 +53,17 @@ public abstract class BaseLandingActivity extends BaseActivity {
             ft.commit();
         }
 
+        processActionbarMenu();
+
         updateStatusFrame();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.landing_action_bar, menu);
+        inflater.inflate(R.menu.landing_action_menu, menu);
 
+        saveMenu = menu.findItem(R.id.action_save);
         newMenu = menu.findItem(R.id.action_new);
 
         processActionbarMenu();
@@ -71,8 +75,11 @@ public abstract class BaseLandingActivity extends BaseActivity {
         if (activeFragment == null)
             return;
 
+        if (saveMenu != null)
+            saveMenu.setVisible(activeFragment.isShowSaveAction());
+
         if (newMenu != null)
-            newMenu.setVisible(activeFragment.showNewAction());
+            newMenu.setVisible(activeFragment.isShowNewAction());
     }
 
     @Override
@@ -93,5 +100,13 @@ public abstract class BaseLandingActivity extends BaseActivity {
     @Override
     public void onStop() {
         super.onStop();
+    }
+
+    public MenuItem getSaveMenu() {
+        return saveMenu;
+    }
+
+    public MenuItem getNewMenu() {
+        return newMenu;
     }
 }

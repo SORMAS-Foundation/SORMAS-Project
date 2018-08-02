@@ -194,7 +194,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     }
 
     @Override
-    public boolean isShowAddAction() {
+    public boolean isShowNewAction() {
         return false;
     }
 

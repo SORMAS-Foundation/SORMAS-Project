@@ -65,7 +65,7 @@ public abstract class BaseListActivity extends BaseActivity implements IUpdateSu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.list_action_bar, menu);
+        inflater.inflate(R.menu.list_action_menu, menu);
 
         newMenu = menu.findItem(R.id.action_new);
 
