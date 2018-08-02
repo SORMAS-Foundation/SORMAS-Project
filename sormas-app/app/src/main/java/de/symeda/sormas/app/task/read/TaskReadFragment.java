@@ -29,7 +29,7 @@ public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBin
                 public void onClick(View v) {
                     Case caze = record.getCaze();
                     if (caze != null) {
-                        CaseReadActivity.startActivity(getActivity(), caze.getUuid());
+                        CaseReadActivity.startActivity(getActivity(), caze.getUuid(), true);
                     }
                 }
             });
@@ -41,7 +41,7 @@ public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBin
                 public void onClick(View v) {
                     Contact contact = record.getContact();
                     if (contact != null) {
-                        ContactReadActivity.startActivity(getActivity(), contact.getUuid());
+                        ContactReadActivity.startActivity(getActivity(), contact.getUuid(), true);
                     }
                 }
             });
@@ -53,7 +53,7 @@ public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBin
                 public void onClick(View v) {
                     Event event = record.getEvent();
                     if (event != null) {
-                        EventReadActivity.startActivity(getActivity(), event.getUuid());
+                        EventReadActivity.startActivity(getActivity(), event.getUuid(), true);
                     }
                 }
             });

@@ -310,7 +310,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
             content.append("<b>").append(mergedCase.toString()).append("</b><br/>");
 
             Intent notificationIntent = new Intent(context, CaseReadActivity.class);
-            notificationIntent.putExtras(CaseReadActivity.buildBundle(mergedCase.getUuid()).get());
+            notificationIntent.putExtras(CaseReadActivity.buildBundle(mergedCase.getUuid(), false).get());
             PendingIntent pi = PendingIntent.getActivity(context, mergedCase.getId().intValue(), notificationIntent, 0);
             Resources r = context.getResources();
 

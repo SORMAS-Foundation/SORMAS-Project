@@ -44,7 +44,7 @@ public class CaseListFragment extends BaseListFragment<CaseListAdapter> implemen
     @Override
     public void onListItemClick(View view, int position, Object item) {
         Case caze = (Case) item;
-        CaseReadActivity.startActivity(getContext(), caze.getUuid());
+        CaseReadActivity.startActivity(getContext(), caze.getUuid(), false);
     }
 
     @Override

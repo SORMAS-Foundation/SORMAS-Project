@@ -20,8 +20,8 @@ public class EventReadActivity extends BaseReadActivity<Event> {
 
     public static final String TAG = EventReadActivity.class.getSimpleName();
 
-    public static void startActivity(Context context, String rootUuid) {
-        BaseReadActivity.startActivity(context, EventReadActivity.class, buildBundle(rootUuid));
+    public static void startActivity(Context context, String rootUuid, boolean finishInsteadOfUpNav) {
+        BaseReadActivity.startActivity(context, EventReadActivity.class, buildBundle(rootUuid, finishInsteadOfUpNav));
     }
 
     @Override

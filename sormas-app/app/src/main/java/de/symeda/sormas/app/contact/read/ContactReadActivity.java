@@ -21,8 +21,8 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
 
     public static final String TAG = ContactReadActivity.class.getSimpleName();
 
-    public static void startActivity(Context context, String rootUuid) {
-        BaseReadActivity.startActivity(context, ContactReadActivity.class, buildBundle(rootUuid));
+    public static void startActivity(Context context, String rootUuid, boolean finishInsteadOfUpNav) {
+        BaseReadActivity.startActivity(context, ContactReadActivity.class, buildBundle(rootUuid, finishInsteadOfUpNav));
     }
 
     @Override

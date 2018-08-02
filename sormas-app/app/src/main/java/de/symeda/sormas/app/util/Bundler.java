@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 public class Bundler {
 
+    private static final String FINISH_INSTEAD_OF_UP_NAV = "finishInsteadOfUpNav";
     private static final String ACTIVE_PAGE_KEY = "activePageKey";
     private static final String ROOT_UUID = "rootUuid";
     private static final String LIST_FILTER = "listFilter";
@@ -100,5 +101,17 @@ public class Bundler {
             return bundle.getString(EVENT_UUID);
         }
         return null;
+    }
+
+    public Bundler setFinishInsteadOfUpNav(boolean finishInsteadOfUpNav) {
+        bundle.putBoolean(FINISH_INSTEAD_OF_UP_NAV, finishInsteadOfUpNav);
+        return this;
+    }
+
+    public boolean isFinishInsteadOfUpNav() {
+        if (bundle.containsKey(FINISH_INSTEAD_OF_UP_NAV)) {
+            return bundle.getBoolean(FINISH_INSTEAD_OF_UP_NAV);
+        }
+        return false;
     }
 }

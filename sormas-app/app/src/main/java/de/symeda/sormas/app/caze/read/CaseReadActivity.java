@@ -25,12 +25,12 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 
     public static final String TAG = CaseReadActivity.class.getSimpleName();
 
-    public static void startActivity(Context context, String rootUuid) {
-        BaseActivity.startActivity(context, CaseReadActivity.class, buildBundle(rootUuid));
+    public static void startActivity(Context context, String rootUuid, boolean finishInsteadOfUpNav) {
+        BaseActivity.startActivity(context, CaseReadActivity.class, buildBundle(rootUuid, finishInsteadOfUpNav));
     }
 
-    public static Bundler buildBundle(String rootUuid) {
-        return BaseReadActivity.buildBundle(rootUuid);
+    public static Bundler buildBundle(String rootUuid, boolean finishInsteadOfUpNav) {
+        return BaseReadActivity.buildBundle(rootUuid, finishInsteadOfUpNav);
     }
 
     @Override

@@ -28,14 +28,14 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
         contentBinding.openSourceCase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CaseReadActivity.startActivity(getContext(), sourceCase.getUuid());
+                CaseReadActivity.startActivity(getContext(), sourceCase.getUuid(), true);
             }
         });
 
         contentBinding.openResultingCase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CaseReadActivity.startActivity(getContext(), resultingCase.getUuid());
+                CaseReadActivity.startActivity(getContext(), resultingCase.getUuid(), true);
             }
         });
     }

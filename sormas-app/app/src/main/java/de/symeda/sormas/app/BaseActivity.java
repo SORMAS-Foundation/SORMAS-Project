@@ -37,7 +37,6 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.dialog.UserReportDialog;
-import de.symeda.sormas.app.component.menu.PageMenuAdapter;
 import de.symeda.sormas.app.component.menu.PageMenuControl;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
@@ -80,6 +79,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     private List<PageMenuItem> pageItems = new ArrayList();
     private PageMenuItem activePageItem = null;
     private int activePageKey = 0;
+    private boolean finishInsteadOfUpNav;
 
     private ActionBarDrawerToggle menuDrawerToggle;
     private DrawerLayout menuDrawerLayout;
@@ -118,7 +118,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        new Bundler(outState).setActivePageKey(activePageKey);
+        new Bundler(outState).setActivePageKey(activePageKey).setFinishInsteadOfUpNav(finishInsteadOfUpNav);
     }
 
     @Override
@@ -142,6 +142,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
         Bundler bundler = new Bundler(savedInstanceState);
         activePageKey = bundler.getActivePageKey();
+        finishInsteadOfUpNav = bundler.isFinishInsteadOfUpNav();
 
         setContentView(getRootActivityLayout());
 
@@ -311,7 +312,11 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
         switch (item.getItemId()) {
             case android.R.id.home:
-                NavigationHelper.navigateUpFrom(this);
+                if (finishInsteadOfUpNav) {
+                    finish();
+                } else {
+                    NavigationHelper.navigateUpFrom(this);
+                }
                 return true;
 
             case R.id.action_sync:

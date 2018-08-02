@@ -50,7 +50,7 @@ public class EventListFragment extends BaseListFragment<EventListAdapter> implem
     @Override
     public void onListItemClick(View view, int position, Object item) {
         Event e = (Event) item;
-        EventReadActivity.startActivity(getContext(), e.getUuid());
+        EventReadActivity.startActivity(getContext(), e.getUuid(), false);
     }
 
     @Override

@@ -49,14 +49,14 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         contentBinding.openSourceCase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CaseReadActivity.startActivity(getActivity(), sourceCase.getUuid());
+                CaseReadActivity.startActivity(getActivity(), sourceCase.getUuid(), true);
             }
         });
 
         contentBinding.openResultingCase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CaseReadActivity.startActivity(getActivity(), resultingCase.getUuid());
+                CaseReadActivity.startActivity(getActivity(), resultingCase.getUuid(), true);
             }
         });
     }

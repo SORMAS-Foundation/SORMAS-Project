@@ -70,6 +70,6 @@ public class CaseReadContactListFragment extends BaseReadFragment<FragmentFormLi
     @Override
     public void onListItemClick(View view, int position, Object item) {
         Contact contact = (Contact) item;
-        ContactReadActivity.startActivity(getActivity(), contact.getUuid());
+        ContactReadActivity.startActivity(getActivity(), contact.getUuid(), true);
     }
 }

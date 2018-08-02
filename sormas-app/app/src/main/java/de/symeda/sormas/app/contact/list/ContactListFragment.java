@@ -49,7 +49,7 @@ public class ContactListFragment extends BaseListFragment<ContactListAdapter> im
     @Override
     public void onListItemClick(View view, int position, Object item) {
         Contact contact = (Contact) item;
-        ContactReadActivity.startActivity(getContext(), contact.getUuid());
+        ContactReadActivity.startActivity(getContext(), contact.getUuid(), false);
     }
 
     @Override
