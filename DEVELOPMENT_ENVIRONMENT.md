@@ -1,5 +1,8 @@
 # SORMAS Development Environment
 
+## Server
+- [Install your local server](SERVER_SETUP.md)
+
 ## Git
 - Install [Git for you OS](https://git-scm.com/downloads)
 - Optional: Install a Git client such as [TortoiseGit](https://tortoisegit.org/) if you don't want to handle version control from the command line or separately for the Eclipse and Android Studio projects

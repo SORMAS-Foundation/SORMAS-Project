@@ -25,6 +25,7 @@
     * ``CREATE DATABASE sormas_audit_db WITH OWNER = sormas_user ENCODING = 'UTF8';``
     * ``\q``
 * Setup the audit log database schema using the sormas_audit_schema.sql from the latest release: ``sudo -u postgres psql sormas_audit_db < sql/sormas_audit_schema.sql``
+* Setup the sormas database schema using the sormas_schema.sql from the latest release: ``sudo -u postgres psql sormas_audit_db < sql/sormas_schema.sql``
 	
 ## Payara Application Server
 * Download payara 4.1.2.172 (https://www.payara.fish/all_downloads) and extract it to the directory where your servers should be located (e.g. /opt/payara-172)
@@ -50,7 +51,7 @@ setfacl -m u:glassfish:rwx /opt/sormas-generated``
 * Copy the startup script to init.d: ``cp payara-sormas /etc/init.d``
 * Add the server startup sequence: ``update-rc.d payara-sormas defaults``
 * Start the server: ``service payara-sormas start``
-* Update the SORMAS domain (see above)
+* [Update the SORMAS domain](SERVER_UPDATE.md) (not necessary if you are setting up your local development environment)
 
 ## Apache Web Server
 **Note: This is not necessary for development systems.**
