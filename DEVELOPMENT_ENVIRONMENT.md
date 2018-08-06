@@ -1,0 +1,39 @@
+# SORMAS Development Environment
+
+## Git
+- Install [Git for you OS](https://git-scm.com/downloads)
+- Optional: Install a Git client such as [TortoiseGit](https://tortoisegit.org/) if you don't want to handle version control from the command line or separately for the Eclipse and Android Studio projects
+- Open the Git Bash and execute the command <code>git config --global branch.development.rebase true</code> (which ensures that rebase is used when pulling rather than merge)
+
+## Eclipse
+### Manual Installation
+- Install the latest Eclipse version
+- Clone the SORMAS-Open repository and import the projects to Eclipse
+	- If you're using Eclipse to clone, choose "File -> Import -> Git -> Projects from Git" and continue until you're asked to create a new project from the cloned repository; click cancel instead and use "File -> Import -> Maven -> Existing Maven Projects" to import the separate projects into your workspace
+	- If you've cloned the repository from the command line or a Git client, you obviously only need to perform the last step
+- Install [Payara Tools](https://marketplace.eclipse.org/content/payara-tools)
+- Install the [Vaadin Plugin for Eclipise](https://marketplace.eclipse.org/content/vaadin-plugin-eclipse) (no need to install the commercial UI designer)
+- Add a Payara server to Eclipse and enter the credentials you specified when setting up the server
+
+### Automatic Installtion (Yatta)
+- Download [Yatta Profiles for Eclipse](www.yatta.de/profiles/download)
+- Import the SORMAS Profile
+
+### Additional Steps
+- Make a copy of "build.properties.example" contained in "sormas-base", rename it to "build.properties" and set "glassfish.domain.root" to the location of the sormas domain located in the "glassfish/domains" folder inside your payara installation
+- Drag the "build.xml" file contained in "sormas-base" into the Ant view in Eclipse
+  - Either: Run "Maven install" on the sormas-base project
+  - Or: Execute the "install [default]" ant script (this needs a maven installation on your system with the M2_HOME variable set
+  - Then: Execute the "deploy-serverlibs" and "deploy-bundles" ant scripts
+- Highlight all Eclipse projects and choose "Maven -> Update Project" from the right click menu; perform the update for all projects
+- Start the Glassfish server and deploy "sormas-ear", "sormas-rest" and "sormas-ui" by dragging the respective projects onto it
+- Open your browser and type in "https://localhost:6081/sormas-ui" to test whether everything has been set up correctly (and to use the application)
+
+## Android Studio
+**Note: This is only needed for development of the SORMAS Android app
+- Install the latest Android Studio version (to avoid any errors, make sure to start the installation with admin rights and choose a path for the Android SDK that contains no whitespaces)
+- Open Android Studio and import the "sormas-app" project from Eclipse
+- Create a keystore.properties file in sormas-app (see keystore.properties.example for reference).
+- Build the Android Studio project by executing the gradle build (this may be done automatically)
+
+
