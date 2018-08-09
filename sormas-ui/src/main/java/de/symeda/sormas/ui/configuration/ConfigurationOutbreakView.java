@@ -39,6 +39,6 @@ public class ConfigurationOutbreakView extends AbstractConfigurationView {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		grid.reload();
-	}	
-
+		super.enter(event);
+	}
 }
