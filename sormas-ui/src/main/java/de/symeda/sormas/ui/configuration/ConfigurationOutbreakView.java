@@ -4,19 +4,18 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class ConfigurationView extends AbstractView {
+public class ConfigurationOutbreakView extends AbstractConfigurationView {
 
 	private static final long serialVersionUID = -6589135368637794263L;
 	
-	public static final String VIEW_NAME = "configuration";
+	public static final String VIEW_NAME = "configuration/outbreaks";
 
 	private OutbreakOverviewGrid grid;
 	private VerticalLayout contentLayout;
 	
-	public ConfigurationView() {
+	public ConfigurationOutbreakView() {
 		super(VIEW_NAME);
 
 		Label infoTextLabel = new Label("Click on a button to define which LGAs of the state "

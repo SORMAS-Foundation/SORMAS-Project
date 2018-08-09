@@ -47,7 +47,7 @@ public class OutbreakController {
 				
 				popupWindow.close();
 				Notification.show("Outbreak information saved", Type.WARNING_MESSAGE);
-				SormasUI.get().getNavigator().navigateTo(ConfigurationView.VIEW_NAME);	
+				SormasUI.get().getNavigator().navigateTo(ConfigurationOutbreakView.VIEW_NAME);	
 			}
 		});
 
