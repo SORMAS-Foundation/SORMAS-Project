@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.events;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 

@@ -6,7 +6,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class ConfigurationOutbreakView extends AbstractConfigurationView {
+public class OutbreaksView extends AbstractConfigurationView {
 
 	private static final long serialVersionUID = -6589135368637794263L;
 	
@@ -15,7 +15,7 @@ public class ConfigurationOutbreakView extends AbstractConfigurationView {
 	private OutbreakOverviewGrid grid;
 	private VerticalLayout contentLayout;
 	
-	public ConfigurationOutbreakView() {
+	public OutbreaksView() {
 		super(VIEW_NAME);
 
 		Label infoTextLabel = new Label("Click on a button to define which LGAs of the state "

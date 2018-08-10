@@ -433,6 +433,15 @@ public enum UserRight {
 	),
 	PERFORM_BULK_OPERATIONS(
 			ADMIN
+	), 
+	FACILITIES_CREATE(
+			ADMIN
+			), 
+	FACILITIES_EDIT(
+			ADMIN
+			), 
+	FACILITIES_VIEW(
+			ADMIN
 	);
 	
 	private final Set<UserRole> userRoles;
