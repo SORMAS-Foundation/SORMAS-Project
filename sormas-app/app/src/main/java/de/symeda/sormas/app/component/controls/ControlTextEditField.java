@@ -192,7 +192,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
     }
 
     @Override
-    protected void setHint(String hint) {
+    public void setHint(String hint) {
         input.setHint(hint);
     }
 

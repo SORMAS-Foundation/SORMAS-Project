@@ -316,7 +316,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
     }
 
     @Override
-    protected void setHint(String hint) {
+    public void setHint(String hint) {
         // Switch does not have a hint
     }
 

@@ -64,7 +64,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
     protected abstract void changeVisualState(VisualState state);
 
-    protected abstract void setHint(String hint);
+    public abstract void setHint(String hint);
 
     // Instance methods
 

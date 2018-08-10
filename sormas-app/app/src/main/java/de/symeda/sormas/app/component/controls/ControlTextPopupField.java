@@ -132,7 +132,7 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
     }
 
     @Override
-    protected void setHint(String value) {
+    public void setHint(String value) {
         input.setHint(value);
     }
 

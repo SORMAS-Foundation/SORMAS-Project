@@ -212,7 +212,7 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
     }
 
     @Override
-    protected void setHint(String hint) {
+    public void setHint(String hint) {
         // Checkboxes don't have hints
     }
 

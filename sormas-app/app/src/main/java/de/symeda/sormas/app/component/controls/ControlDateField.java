@@ -172,7 +172,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
     }
 
     @Override
-    protected void setHint(String value) {
+    public void setHint(String value) {
         input.setHint(value);
     }
 

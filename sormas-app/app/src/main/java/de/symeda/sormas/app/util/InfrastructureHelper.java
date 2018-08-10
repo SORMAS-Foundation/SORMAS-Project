@@ -12,6 +12,7 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
@@ -40,9 +41,9 @@ public final class InfrastructureHelper {
 
     public static List<Item> loadFacilities(District district, Community community) {
         return toItems(community != null
-                ? DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(community, true, false)
+                ? DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(community, true, true)
                 : district != null
-                ? DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(district, true, false)
+                ? DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(district, true, true)
                 : new ArrayList<>(), true);
     }
 
@@ -86,7 +87,7 @@ public final class InfrastructureHelper {
             public void onChange(ControlPropertyField field) {
                 Region selectedRegion = (Region) field.getValue();
                 if (selectedRegion != null) {
-                    districtField.setSpinnerData(toItems(DatabaseHelper.getDistrictDao().getByRegion(selectedRegion)), districtField.getValue());
+                    districtField.setSpinnerData(loadDistricts(selectedRegion), districtField.getValue());
                 } else {
                     districtField.setSpinnerData(null);
                 }
@@ -98,8 +99,8 @@ public final class InfrastructureHelper {
             public void onChange(ControlPropertyField field) {
                 District selectedDistrict = (District) field.getValue();
                 if (selectedDistrict != null) {
-                    communityField.setSpinnerData(toItems(DatabaseHelper.getCommunityDao().getByDistrict(selectedDistrict)), communityField.getValue());
-                    facilityField.setSpinnerData(toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(selectedDistrict, true, false)), facilityField.getValue());
+                    communityField.setSpinnerData(loadCommunities(selectedDistrict), communityField.getValue());
+                    facilityField.setSpinnerData(loadFacilities(selectedDistrict, null), facilityField.getValue());
                 } else {
                     communityField.setSpinnerData(null);
                     facilityField.setSpinnerData(null);
@@ -112,15 +113,14 @@ public final class InfrastructureHelper {
             public void onChange(ControlPropertyField field) {
                 Community selectedCommunity = (Community) field.getValue();
                 if (selectedCommunity != null) {
-                    facilityField.setSpinnerData(toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(selectedCommunity, true, false)));
+                    facilityField.setSpinnerData(loadFacilities(null, selectedCommunity));
                 } else if (districtField.getValue() != null) {
-                    facilityField.setSpinnerData(toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) districtField.getValue(), true, false)));
+                    facilityField.setSpinnerData(loadFacilities((District) districtField.getValue(), null));
                 } else {
                     facilityField.setSpinnerData(null);
                 }
             }
         });
-
         facilityField.initializeSpinner(facilities);
     }
 
@@ -147,10 +147,18 @@ public final class InfrastructureHelper {
 
             if (otherHealthFacility) {
                 healthFacilityDetailsField.setVisibility(VISIBLE);
-                healthFacilityDetailsField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
+                String caption = I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS);
+                healthFacilityDetailsField.setCaption(caption);
+                if (healthFacilityDetailsField instanceof ControlPropertyEditField) {
+                    ((ControlPropertyEditField) healthFacilityDetailsField).setHint(caption);
+                }
             } else if (noneHealthFacility) {
                 healthFacilityDetailsField.setVisibility(VISIBLE);
-                healthFacilityDetailsField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
+                String caption = I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS);
+                healthFacilityDetailsField.setCaption(caption);
+                if (healthFacilityDetailsField instanceof ControlPropertyEditField) {
+                    ((ControlPropertyEditField) healthFacilityDetailsField).setHint(caption);
+                }
             } else {
                 healthFacilityDetailsField.setVisibility(GONE);
             }
