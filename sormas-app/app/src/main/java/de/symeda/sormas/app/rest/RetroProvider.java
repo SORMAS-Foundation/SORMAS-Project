@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.ViewStructure;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -241,8 +242,14 @@ public final class RetroProvider {
                                 callback.accept(false);
                             }
                         } else if (taskResult.getError() instanceof ServerConnectionException) {
+                            ServerConnectionException exception = (ServerConnectionException)taskResult.getError();
+
+                            if (exception.getCustomHtmlErrorCode() == 401) {
+                                // could not authenticate
+                                ConfigProvider.clearUsernameAndPassword();
+                            }
+
                             if (activityReference.get() != null) {
-                                ServerConnectionException exception = (ServerConnectionException)taskResult.getError();
                                 NotificationHelper.showNotification((NotificationContext) activityReference.get(), NotificationType.ERROR,
                                         exception.getMessage(activityReference.get().getApplicationContext()));
                             }

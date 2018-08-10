@@ -513,14 +513,19 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, true, refreshLayout, null, null);
     }
 
+    private boolean checkActiveUser() {
+        if (ConfigProvider.getUser() == null) {
+            Intent intent = new Intent(getContext(), LoginActivity.class);
+            getContext().startActivity(intent);
+            finish();
+            return false;
+        }
+        return true;
+    }
 
     public void synchronizeData(final SynchronizeDataAsync.SyncMode syncMode, final boolean showUpgradePrompt, final boolean showProgressDialog, final SwipeRefreshLayout swipeRefreshLayout, final Callback resultCallback, final Callback beforeSyncCallback) {
 
-        if (ConfigProvider.getUser() == null) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-            return;
-        }
+        if (!checkActiveUser()) return;
 
         if (showProgressDialog) {
             if (progressDialog == null || !progressDialog.isShowing()) {
@@ -550,6 +555,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                                     progressDialog.dismiss();
                                     progressDialog = null;
                                 }
+                                checkActiveUser();
                             }
                         }
                     });
@@ -587,6 +593,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                         }
                     } else {
                         NotificationHelper.showNotification(BaseActivity.this, NotificationType.ERROR, syncFailedMessage);
+                        checkActiveUser();
                     }
 
                     if (resultCallback != null) resultCallback.call();
