@@ -62,6 +62,12 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         if (LocationService.instance().validateGpsAccessAndEnabled(this)) {
             processLogin(true);
         }
+
+        if (ConfigProvider.getUser() != null) {
+            binding.signInLayout.setVisibility(View.GONE);
+        } else {
+            binding.signInLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -183,29 +189,11 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
 
     private void openLandingActivity() {
 
-        Intent intent;
         if (ConfigProvider.getUser().hasUserRole(UserRole.CONTACT_OFFICER)) {
             NavigationHelper.goToContacts(LoginActivity.this);
         } else {
             NavigationHelper.goToCases(LoginActivity.this);
         }
-
-
-        /*Intent intent;
-        if (ConfigProvider.getUser().hasUserRole(UserRole.CONTACT_OFFICER)) {
-            intent = new Intent(LoginActivity.this, ContactsLandingActivity.class);
-        } else {
-            intent = new Intent(LoginActivity.this, CasesLandingActivity.class);
-        }
-        startActivity(intent);*/
-    }
-
-    private void closeApp() {
-        Activity finishActivity = this;
-        do {
-            finishActivity.finish();
-            finishActivity = finishActivity.getParent();
-        } while (finishActivity != null);
     }
 
     @Override

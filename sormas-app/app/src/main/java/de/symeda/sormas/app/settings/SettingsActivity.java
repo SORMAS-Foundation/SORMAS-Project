@@ -62,6 +62,11 @@ public class SettingsActivity extends BaseLandingActivity {
     }
 
     @Override
+    public boolean isAccessNeeded() {
+        return false;
+    }
+
+    @Override
     public BaseLandingFragment buildLandingFragment() {
         return new SettingsFragment();
     }

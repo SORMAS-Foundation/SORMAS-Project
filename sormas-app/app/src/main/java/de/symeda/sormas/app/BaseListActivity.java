@@ -41,7 +41,9 @@ public abstract class BaseListActivity extends BaseActivity implements IUpdateSu
     @Override
     protected void onResume() {
         super.onResume();
-        replaceFragment(buildListFragment(getActivePage()));
+        if (getActivePage() != null) {
+            replaceFragment(buildListFragment(getActivePage()));
+        }
     }
 
     public BaseListFragment getActiveFragment() {

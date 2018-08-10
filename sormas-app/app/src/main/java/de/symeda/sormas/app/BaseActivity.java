@@ -96,6 +96,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         return false;
     }
 
+    public boolean isAccessNeeded() { return true; }
+
     private static WeakReference<BaseActivity> activeActivity;
 
     public static BaseActivity getActiveActivity() {
@@ -129,11 +131,10 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         tracker = application.getDefaultTracker();
 
         // Show the Enter Pin Activity if the user doesn't have access to the app
-        if (!ConfigProvider.isAccessGranted()) {
+        if (isAccessNeeded() && !ConfigProvider.isAccessGranted()) {
             Intent intent = new Intent(this, EnterPinActivity.class);
             startActivity(intent);
             finish();
-            return;
         }
 
         if (savedInstanceState == null) {
@@ -200,11 +201,10 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         super.onResume();
 
         // Show the Enter Pin Activity if the user doesn't have access to the app
-        if (!ConfigProvider.isAccessGranted()) {
+        if (isAccessNeeded() && !ConfigProvider.isAccessGranted()) {
             Intent intent = new Intent(this, EnterPinActivity.class);
             startActivity(intent);
             finish();
-            return;
         }
 
         if (applicationTitleBar != null && isShowTitleBar()) {

@@ -112,12 +112,14 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
     protected void onResume() {
         super.onResume();
 
-        requestRootData(new Callback.IAction<ActivityRootEntity>() {
-            @Override
-            public void call(ActivityRootEntity result) {
-                replaceFragment(buildReadFragment(getActivePage(), result), false);
-            }
-        });
+        if (getActivePage() != null) {
+            requestRootData(new Callback.IAction<ActivityRootEntity>() {
+                @Override
+                public void call(ActivityRootEntity result) {
+                    replaceFragment(buildReadFragment(getActivePage(), result), false);
+                }
+            });
+        }
     }
 
     public void setSubHeadingTitle(String title) {
