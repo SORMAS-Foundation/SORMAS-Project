@@ -35,7 +35,7 @@ public class CaseReadSampleListFragment extends BaseReadFragment<FragmentFormLis
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        showEmptyListHint(record, R.string.entity_sample);
+        updateEmptyListHint(record);
 
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         adapter = new CaseReadSampleListAdapter(R.layout.row_read_case_sample_list_item_layout, this, record);

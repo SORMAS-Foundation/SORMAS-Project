@@ -157,39 +157,19 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
         return rootView;
     }
 
-    public void showEmptyListHintWithAdd(List list, int entityNameResId) {
-        showEmptyListHint(list, R.string.hint_no_records_found_add_new, entityNameResId);
-    }
-
-    public void showEmptyListHint(List list, int entityNameResId) {
-        showEmptyListHint(list, R.string.hint_no_records_found, entityNameResId);
-    }
-
-    private void showEmptyListHint(List list, int stringFormatResId, int entityNameResId) {
-        boolean isListEmpty = false;
-
+    protected void updateEmptyListHint(List list) {
         if (rootView == null)
             return;
-
         TextView emptyListHintView = (TextView) rootView.findViewById(R.id.emptyListHint);
-
         if (emptyListHintView == null)
             return;
 
-        emptyListHintView.setVisibility(View.GONE);
-
-        if (list == null || list.size() <= 0)
-            isListEmpty = true;
-
-        if (!isListEmpty)
-            return;
-
-        Resources r = getResources();
-
-        String format = r.getString(stringFormatResId);
-
-        emptyListHintView.setText(String.format(format, r.getString(entityNameResId)));
-        emptyListHintView.setVisibility(View.VISIBLE);
+        if (list == null || list.isEmpty()) {
+            emptyListHintView.setText(getResources().getString(isShowNewAction() ? R.string.hint_no_records_found_add_new : R.string.hint_no_records_found));
+            emptyListHintView.setVisibility(View.VISIBLE);
+        } else {
+            emptyListHintView.setVisibility(View.GONE);
+        }
     }
 
     public void requestLayoutRebind() {

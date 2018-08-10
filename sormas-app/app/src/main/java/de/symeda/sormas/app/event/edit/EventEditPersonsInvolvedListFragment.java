@@ -42,11 +42,8 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditFragment<Fragm
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        showEmptyListHintWithAdd(record, R.string.entity_event_participant);
-
-        //Create adapter and set data
+        updateEmptyListHint(record);
         adapter = new EventEditPersonsInvolvedListAdapter(R.layout.row_read_persons_involved_list_item_layout, this, record);
-
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);

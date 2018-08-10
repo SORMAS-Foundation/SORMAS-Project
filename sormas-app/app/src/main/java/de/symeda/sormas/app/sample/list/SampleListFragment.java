@@ -70,11 +70,6 @@ public class SampleListFragment extends BaseListFragment<SampleListAdapter> impl
     }
 
     @Override
-    protected int getEmptyListEntityResId() {
-        return R.string.entity_sample;
-    }
-
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 

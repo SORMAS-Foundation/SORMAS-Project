@@ -45,8 +45,7 @@ public class CaseEditTaskListFragment extends BaseEditFragment<FragmentFormListL
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        showEmptyListHint(record, R.string.entity_task);
-
+        updateEmptyListHint(record);
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         adapter = new CaseEditTaskListAdapter(R.layout.row_edit_task_list_item_layout, this, record);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);

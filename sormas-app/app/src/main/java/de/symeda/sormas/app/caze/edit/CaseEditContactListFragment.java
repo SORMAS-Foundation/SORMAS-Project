@@ -47,8 +47,7 @@ public class CaseEditContactListFragment extends BaseEditFragment<FragmentFormLi
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        showEmptyListHintWithAdd(record, R.string.entity_contact);
-
+        updateEmptyListHint(record);
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         adapter = new CaseEditContactListAdapter(R.layout.row_read_contact_list_item_layout, this, record);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);

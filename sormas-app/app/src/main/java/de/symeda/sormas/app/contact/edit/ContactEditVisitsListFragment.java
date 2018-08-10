@@ -49,10 +49,8 @@ public class ContactEditVisitsListFragment extends BaseEditFragment<FragmentForm
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        showEmptyListHint(record, R.string.entity_visit);
-
+        updateEmptyListHint(record);
         adapter = new ContactEditVisitsListAdapter(R.layout.row_read_followup_list_item_layout, this, record);
-
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);

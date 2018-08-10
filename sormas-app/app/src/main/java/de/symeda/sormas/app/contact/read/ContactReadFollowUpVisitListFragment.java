@@ -36,7 +36,7 @@ public class ContactReadFollowUpVisitListFragment extends BaseReadFragment<Fragm
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        showEmptyListHint(record, R.string.entity_visit);
+        updateEmptyListHint(record);
 
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         adapter = new ContactReadFollowupListAdapter(

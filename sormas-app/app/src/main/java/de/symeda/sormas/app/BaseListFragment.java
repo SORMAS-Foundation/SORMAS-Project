@@ -11,9 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import de.symeda.sormas.app.core.IListActivityAdapterDataObserverCommunicator;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
-import de.symeda.sormas.app.core.ListAdapterDataObserver;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.adapter.databinding.ISetOnListItemClickListener;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
@@ -22,7 +20,7 @@ import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.util.Bundler;
 
-public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter> extends BaseFragment implements IListActivityAdapterDataObserverCommunicator, OnListItemClickListener {
+public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter> extends BaseFragment implements OnListItemClickListener {
 
     private AsyncTask jobTask;
     private BaseListActivity baseListActivity;
@@ -67,17 +65,19 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
         }
 
         this.adapter = getNewListAdapter();
-        this.adapter.registerAdapterDataObserver(new ListAdapterDataObserver(this));
+        this.adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                updateEmptyListHint();
+            }
+        });
 
         if (this.adapter instanceof ISetOnListItemClickListener) {
-            ((ISetOnListItemClickListener)this.adapter).setOnListItemClickListener(this);
+            ((ISetOnListItemClickListener) this.adapter).setOnListItemClickListener(this);
         } else {
             throw new NotImplementedException("setOnListItemClickListener is not supported by the adapter; " +
-                "implement ISetOnListItemClickListener");
+                    "implement ISetOnListItemClickListener");
         }
-
-        String format = canAddToList() ? getResources().getString(R.string.hint_no_records_found_add_new) : getResources().getString(R.string.hint_no_records_found);
-        getEmptyListView(view).setText(String.format(format, getResources().getString(getEmptyListEntityResId()).toLowerCase()));
 
         jobTask = new DefaultAsyncTask(getContext()) {
             @Override
@@ -135,32 +135,26 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
         return this.adapter;
     }
 
-    public Enum getListFilter() { return listFilter; }
-
-    @Override
-    public int getListAdapterSize() {
-        return this.adapter.getItemCount();
+    public Enum getListFilter() {
+        return listFilter;
     }
 
-    @Override
-    public TextView getEmptyListView() {
-        return getEmptyListView(getView());
-    }
+    protected void updateEmptyListHint() {
+        TextView emptyListHintView = (TextView) getView().findViewById(R.id.emptyListHint);
+        if (emptyListHintView == null)
+            return;
 
-    private TextView getEmptyListView(View rootView) {
-        return (TextView)rootView.findViewById(R.id.empty_list_hint);
-    }
-
-    @Override
-    public View getListView() {
-        return this.getView().findViewById(R.id.swiperefresh);
+        if (adapter.getItemCount() == 0) {
+            emptyListHintView.setText(getResources().getString(canAddToList() ? R.string.hint_no_records_found_add_new : R.string.hint_no_records_found));
+            emptyListHintView.setVisibility(View.VISIBLE);
+        } else {
+            emptyListHintView.setVisibility(View.GONE);
+        }
     }
 
     public IUpdateSubHeadingTitle getSubHeadingHandler() {
         return this.subHeadingHandler;
     }
-
-    protected abstract int getEmptyListEntityResId();
 
     protected boolean canAddToList() {
         return false;

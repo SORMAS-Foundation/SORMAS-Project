@@ -34,7 +34,7 @@ public class EventReadPersonsInvolvedListFragment extends BaseReadFragment<Fragm
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        showEmptyListHint(record, R.string.entity_event_participant);
+        updateEmptyListHint(record);
 
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         adapter = new EventReadPersonsInvolvedAdapter(

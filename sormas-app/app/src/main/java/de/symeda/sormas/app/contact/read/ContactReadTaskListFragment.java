@@ -35,7 +35,7 @@ public class ContactReadTaskListFragment extends BaseReadFragment<FragmentFormLi
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        showEmptyListHint(record, R.string.entity_task);
+        updateEmptyListHint(record);
 
         adapter = new ContactReadTaskListAdapter(
                 R.layout.row_read_contact_task_list_item_layout, ContactReadTaskListFragment.this, record);

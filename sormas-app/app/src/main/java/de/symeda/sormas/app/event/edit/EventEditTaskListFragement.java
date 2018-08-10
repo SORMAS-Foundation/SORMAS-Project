@@ -42,11 +42,8 @@ public class EventEditTaskListFragement extends BaseEditFragment<FragmentFormLis
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        showEmptyListHint(record, R.string.entity_task);
-
-        //Create adapter and set data
+        updateEmptyListHint(record);
         adapter = new EventEditTaskListAdapter(R.layout.row_read_task_list_item_layout, this, record);
-
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);

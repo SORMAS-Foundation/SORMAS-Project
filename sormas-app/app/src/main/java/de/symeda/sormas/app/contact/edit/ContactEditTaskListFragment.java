@@ -45,10 +45,8 @@ public class ContactEditTaskListFragment extends BaseEditFragment<FragmentFormLi
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        showEmptyListHint(record, R.string.entity_task);
-
+        updateEmptyListHint(record);
         adapter = new ContactEditTaskListAdapter(R.layout.row_edit_task_list_item_layout, this, record);
-
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);

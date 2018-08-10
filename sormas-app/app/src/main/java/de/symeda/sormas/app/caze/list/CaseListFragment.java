@@ -48,11 +48,6 @@ public class CaseListFragment extends BaseListFragment<CaseListAdapter> implemen
     }
 
     @Override
-    protected int getEmptyListEntityResId() {
-        return R.string.entity_case;
-    }
-
-    @Override
     protected boolean canAddToList() {
         return true;
     }

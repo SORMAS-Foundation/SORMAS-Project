@@ -54,11 +54,6 @@ public class EventListFragment extends BaseListFragment<EventListAdapter> implem
     }
 
     @Override
-    protected int getEmptyListEntityResId() {
-        return R.string.entity_event;
-    }
-
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         recyclerViewForList.setLayoutManager(linearLayoutManager);

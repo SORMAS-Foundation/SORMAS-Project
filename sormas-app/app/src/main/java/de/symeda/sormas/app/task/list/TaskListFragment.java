@@ -67,11 +67,6 @@ public class TaskListFragment extends BaseListFragment<TaskListAdapter> implemen
     }
 
     @Override
-    protected int getEmptyListEntityResId() {
-        return R.string.entity_task;
-    }
-
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
