@@ -82,7 +82,9 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Sample activityRootData) {
-        return SampleNewFragment.newInstance(activityRootData);
+        BaseEditFragment fragment = SampleNewFragment.newInstance(activityRootData);
+        fragment.setLiveValidationDisabled(true);
+        return fragment;
     }
 
     @Override
@@ -94,7 +96,6 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
     @Override
     public void replaceFragment(BaseEditFragment f, boolean allowBackNavigation) {
         super.replaceFragment(f, allowBackNavigation);
-        getActiveFragment().setLiveValidationDisabled(true);
     }
 
     @Override
@@ -109,9 +110,7 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
             sampleToSave.setReportDateTime(new Date());
         }
 
-        if (fragment.isLiveValidationDisabled()) {
-            fragment.disableLiveValidation(false);
-        }
+        fragment.setLiveValidationDisabled(false);
 
         try {
             FragmentValidator.validate(getContext(), fragment.getContentBinding());

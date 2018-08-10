@@ -70,7 +70,9 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Visit activityRootData) {
-        return VisitEditFragment.newInstance(activityRootData, contactUuid);
+        BaseEditFragment fragment = VisitEditFragment.newInstance(activityRootData, contactUuid);
+        fragment.setLiveValidationDisabled(true);
+        return fragment;
     }
 
     @Override
@@ -83,7 +85,6 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
     @Override
     public void replaceFragment(BaseEditFragment f, boolean allowBackNavigation) {
         super.replaceFragment(f, allowBackNavigation);
-        getActiveFragment().setLiveValidationDisabled(true);
     }
 
     @Override
@@ -91,9 +92,7 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
         final Visit visitToSave = getStoredRootEntity();
         VisitEditFragment fragment = (VisitEditFragment) getActiveFragment();
 
-        if (fragment.isLiveValidationDisabled()) {
-            fragment.disableLiveValidation(false);
-        }
+        fragment.setLiveValidationDisabled(false);
 
         try {
             FragmentValidator.validate(getContext(), fragment.getContentBinding());

@@ -79,10 +79,6 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
     public void onLayoutBinding(FragmentEventEditLayoutBinding contentBinding) {
         setUpControlListeners(contentBinding);
 
-        if (isLiveValidationDisabled()) {
-            disableLiveValidation(true);
-        }
-
         contentBinding.setData(record);
         contentBinding.setEventTypeClass(EventType.class);
     }

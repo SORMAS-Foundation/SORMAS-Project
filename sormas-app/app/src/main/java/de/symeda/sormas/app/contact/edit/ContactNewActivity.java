@@ -21,9 +21,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.caze.CaseSection;
-import de.symeda.sormas.app.caze.edit.CaseEditActivity;
-import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.contact.ContactSection;
@@ -105,7 +102,9 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Contact activityRootData) {
-        return ContactNewFragment.newInstance(activityRootData);
+        BaseEditFragment fragment = ContactNewFragment.newInstance(activityRootData);
+        fragment.setLiveValidationDisabled(true);
+        return fragment;
     }
 
     @Override
@@ -124,10 +123,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
         final Contact contactToSave = getStoredRootEntity();
 
         ContactNewFragment fragment = (ContactNewFragment) getActiveFragment();
-
-        if (fragment.isLiveValidationDisabled()) {
-            fragment.disableLiveValidation(false);
-        }
+        fragment.setLiveValidationDisabled(false);
 
         try {
             FragmentValidator.validate(getContext(), fragment.getContentBinding());

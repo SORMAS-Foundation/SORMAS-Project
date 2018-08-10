@@ -57,7 +57,9 @@ public class EventNewActivity extends BaseEditActivity<Event> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Event activityRootData) {
-        return EventEditFragment.newInstance(activityRootData);
+        BaseEditFragment fragment = EventEditFragment.newInstance(activityRootData);
+        fragment.setLiveValidationDisabled(true);
+        return fragment;
     }
 
     @Override
@@ -76,9 +78,7 @@ public class EventNewActivity extends BaseEditActivity<Event> {
         final Event eventToSave = (Event) getActiveFragment().getPrimaryData();
         EventEditFragment fragment = (EventEditFragment) getActiveFragment();
 
-        if (fragment.isLiveValidationDisabled()) {
-            fragment.disableLiveValidation(false);
-        }
+        fragment.setLiveValidationDisabled(false);
 
         try {
             FragmentValidator.validate(getContext(), fragment.getContentBinding());

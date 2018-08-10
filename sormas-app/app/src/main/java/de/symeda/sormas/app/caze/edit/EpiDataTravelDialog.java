@@ -50,10 +50,8 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
 
     @Override
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        if (isLiveValidationDisabled()) {
-            setLiveValidationDisabled(false);
-            disableLiveValidation(false);
-        }
+
+        setLiveValidationDisabled(false);
 
         try {
             FragmentValidator.validate(getContext(), contentBinding);
@@ -84,7 +82,6 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
 
         if (data.getId() == null) {
             setLiveValidationDisabled(true);
-            disableLiveValidation(true);
         }
     }
 

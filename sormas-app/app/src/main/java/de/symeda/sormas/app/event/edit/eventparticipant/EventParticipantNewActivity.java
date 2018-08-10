@@ -34,7 +34,7 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
     private String eventUuid = null;
 
     public static void startActivity(Context context, String eventUuid) {
-        BaseEditActivity.startActivity(context, EventParticipantNewActivity.class,buildBundle(eventUuid));
+        BaseEditActivity.startActivity(context, EventParticipantNewActivity.class, buildBundle(eventUuid));
     }
 
     public static Bundler buildBundle(String eventUuid) {
@@ -75,7 +75,9 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, EventParticipant activityRootData) {
-        return EventParticipantNewFragment.newInstance(activityRootData);
+        BaseEditFragment fragment = EventParticipantNewFragment.newInstance(activityRootData);
+        fragment.setLiveValidationDisabled(true);
+        return fragment;
     }
 
     @Override
@@ -89,19 +91,11 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
     }
 
     @Override
-    public void replaceFragment(BaseEditFragment f, boolean allowBackNavigation) {
-        super.replaceFragment(f, allowBackNavigation);
-        getActiveFragment().setLiveValidationDisabled(true);
-    }
-
-    @Override
     public void saveData() {
         final EventParticipant eventParticipantToSave = (EventParticipant) getActiveFragment().getPrimaryData();
         EventParticipantNewFragment fragment = (EventParticipantNewFragment) getActiveFragment();
 
-        if (fragment.isLiveValidationDisabled()) {
-            fragment.disableLiveValidation(false);
-        }
+        fragment.setLiveValidationDisabled(false);
 
         try {
             FragmentValidator.validate(getContext(), fragment.getContentBinding());

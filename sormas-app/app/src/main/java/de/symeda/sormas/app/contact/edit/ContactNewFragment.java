@@ -43,11 +43,6 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
     @Override
     public void onLayoutBinding(FragmentContactNewLayoutBinding contentBinding) {
         contentBinding.setData(record);
-
-        if (isLiveValidationDisabled()) {
-            disableLiveValidation(true);
-        }
-
         contentBinding.setContactProximityClass(ContactProximity.class);
     }
 

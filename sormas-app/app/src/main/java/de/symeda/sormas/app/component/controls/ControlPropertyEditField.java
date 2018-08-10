@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import de.symeda.sormas.api.user.UserRight;
@@ -388,6 +389,18 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
     public void setLiveValidationDisabled(boolean liveValidationDisabled) {
         this.liveValidationDisabled = liveValidationDisabled;
+    }
+
+    public static void applyLiveValidationDisabledToChildren(ViewGroup parent, boolean liveValidationDisabled) {
+        if (parent == null) return;
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            View child = parent.getChildAt(i);
+            if (child instanceof ControlPropertyEditField) {
+                ((ControlPropertyEditField) child).setLiveValidationDisabled(liveValidationDisabled);
+            } else if (child instanceof ViewGroup) {
+                applyLiveValidationDisabledToChildren((ViewGroup) child, liveValidationDisabled);
+            }
+        }
     }
 
     public Callback getValidationCallback() {

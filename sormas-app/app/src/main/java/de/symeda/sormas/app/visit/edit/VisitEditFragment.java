@@ -58,10 +58,6 @@ public class VisitEditFragment extends BaseEditFragment<FragmentVisitEditLayoutB
     public void onLayoutBinding(FragmentVisitEditLayoutBinding contentBinding) {
         contentBinding.setData(record);
 
-        if (isLiveValidationDisabled()) {
-            disableLiveValidation(true);
-        }
-
         VisitValidator.initializeVisitValidation(contact, contentBinding);
 
         contentBinding.setVisitStatusClass(VisitStatus.class);

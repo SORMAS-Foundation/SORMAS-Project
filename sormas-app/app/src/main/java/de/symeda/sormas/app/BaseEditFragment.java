@@ -1,6 +1,5 @@
 package de.symeda.sormas.app;
 
-import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.databinding.OnRebindCallback;
 import android.databinding.ViewDataBinding;
@@ -117,6 +116,7 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
                     }
                 });
                 onLayoutBinding(contentViewStubBinding);
+                applyLiveValidationDisabledToChildren();
                 contentViewStubRoot = contentViewStubBinding.getRoot();
 
                 if (makeHeightMatchParent()) {
@@ -175,6 +175,7 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
     public void requestLayoutRebind() {
         if (contentViewStubBinding != null) {
             onLayoutBinding(contentViewStubBinding);
+            applyLiveValidationDisabledToChildren();
         }
     }
 
@@ -226,21 +227,21 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
     protected void onAfterLayoutBinding(TBinding contentBinding) {
     }
 
-    public void disableLiveValidation(boolean disableLiveValidation) {
-        ViewGroup root = (ViewGroup) getContentBinding().getRoot();
-        disableLiveValidationForAllChildren(root, disableLiveValidation);
-        liveValidationDisabled = disableLiveValidation;
+    public void setLiveValidationDisabled(boolean liveValidationDisabled) {
+        if (this.liveValidationDisabled != liveValidationDisabled) {
+            this.liveValidationDisabled = liveValidationDisabled;
+            applyLiveValidationDisabledToChildren();
+        }
     }
 
-    private static void disableLiveValidationForAllChildren(ViewGroup parent, boolean disableLiveValidation) {
-        for (int i = 0; i < parent.getChildCount(); i++) {
-            View child = parent.getChildAt(i);
-            if (child instanceof ControlPropertyEditField) {
-                ((ControlPropertyEditField) child).setLiveValidationDisabled(disableLiveValidation);
-            } else if (child instanceof ViewGroup) {
-                disableLiveValidationForAllChildren((ViewGroup) child, disableLiveValidation);
-            }
-        }
+    public boolean isLiveValidationDisabled() {
+        return liveValidationDisabled;
+    }
+
+    public void applyLiveValidationDisabledToChildren() {
+        if (getContentBinding() == null) return;
+        ViewGroup root = (ViewGroup) getContentBinding().getRoot();
+        ControlPropertyEditField.applyLiveValidationDisabledToChildren(root, isLiveValidationDisabled());
     }
 
     public void setNotificationContextForPropertyFields(ViewGroup parent) {
@@ -260,14 +261,6 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
 
     public boolean isShowNewAction() {
         return false;
-    }
-
-    public void setLiveValidationDisabled(boolean liveValidationDisabled) {
-        this.liveValidationDisabled = liveValidationDisabled;
-    }
-
-    public boolean isLiveValidationDisabled() {
-        return liveValidationDisabled;
     }
 
     @Override

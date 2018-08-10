@@ -101,7 +101,9 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Case activityRootData) {
-        return CaseNewFragment.newInstance(activityRootData);
+        BaseEditFragment fragment = CaseNewFragment.newInstance(activityRootData);
+        fragment.setLiveValidationDisabled(true);
+        return fragment;
     }
 
     @Override
@@ -120,9 +122,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
         final Case caze = getStoredRootEntity();
         CaseNewFragment fragment = (CaseNewFragment) getActiveFragment();
 
-        if (fragment.isLiveValidationDisabled()) {
-            fragment.disableLiveValidation(false);
-        }
+        fragment.setLiveValidationDisabled(false);
 
         try {
             FragmentValidator.validate(getContext(), fragment.getContentBinding());

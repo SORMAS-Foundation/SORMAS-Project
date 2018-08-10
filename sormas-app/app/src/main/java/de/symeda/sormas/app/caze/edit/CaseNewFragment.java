@@ -63,10 +63,6 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     public void onLayoutBinding(FragmentCaseNewLayoutBinding contentBinding) {
         contentBinding.setData(record);
 
-        if (isLiveValidationDisabled()) {
-            disableLiveValidation(true);
-        }
-
         InfrastructureHelper.initializeFacilityFields(contentBinding.caseDataRegion, initialRegions,
                 contentBinding.caseDataDistrict, initialDistricts,
                 contentBinding.caseDataCommunity, initialCommunities,

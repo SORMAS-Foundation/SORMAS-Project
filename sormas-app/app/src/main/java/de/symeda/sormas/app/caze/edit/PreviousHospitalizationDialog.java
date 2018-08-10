@@ -5,19 +5,26 @@ import android.databinding.ViewDataBinding;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.android.databinding.library.baseAdapters.BR;
 
 import java.util.List;
 
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
+import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.Callback;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogPreviousHospitalizationLayoutBinding;
 import de.symeda.sormas.app.util.InfrastructureHelper;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
 
@@ -45,6 +52,15 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
 
     @Override
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
+        setLiveValidationDisabled(false);
+
+        try {
+            FragmentValidator.validate(getContext(), contentBinding);
+        } catch (ValidationException e) {
+            NotificationHelper.showDialogNotification(this, ERROR, e.getMessage());
+            return;
+        }
+
         if (callback != null)
             callback.call(null);
     }
@@ -64,6 +80,10 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
     @Override
     protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
         this.contentBinding = (DialogPreviousHospitalizationLayoutBinding) binding;
+
+        if (data.getId() == null) {
+            setLiveValidationDisabled(true);
+        }
     }
 
     @Override

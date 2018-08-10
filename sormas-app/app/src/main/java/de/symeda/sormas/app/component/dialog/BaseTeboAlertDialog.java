@@ -843,29 +843,21 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
 
     }
 
+    public void setLiveValidationDisabled(boolean liveValidationDisabled) {
+        if (this.liveValidationDisabled != liveValidationDisabled) {
+            this.liveValidationDisabled = liveValidationDisabled;
+            applyLiveValidationDisabledToChildren();
+        }
+    }
+
     public boolean isLiveValidationDisabled() {
         return liveValidationDisabled;
     }
 
-    public void setLiveValidationDisabled(boolean liveValidationDisabled) {
-        this.liveValidationDisabled = liveValidationDisabled;
-    }
-
-    public void disableLiveValidation(boolean disableLiveValidation) {
+    public void applyLiveValidationDisabledToChildren() {
+        if (contentViewStubBinding == null) return;
         ViewGroup root = (ViewGroup) contentViewStubBinding.getRoot();
-        disableLiveValidationForAllChildren(root, disableLiveValidation);
-        liveValidationDisabled = disableLiveValidation;
-    }
-
-    private static void disableLiveValidationForAllChildren(ViewGroup parent, boolean disableLiveValidation) {
-        for (int i = 0; i < parent.getChildCount(); i++) {
-            View child = parent.getChildAt(i);
-            if (child instanceof ControlPropertyEditField) {
-                ((ControlPropertyEditField) child).setLiveValidationDisabled(disableLiveValidation);
-            } else if (child instanceof ViewGroup) {
-                disableLiveValidationForAllChildren((ViewGroup) child, disableLiveValidation);
-            }
-        }
+        ControlPropertyEditField.applyLiveValidationDisabledToChildren(root, isLiveValidationDisabled());
     }
 
     private void setNotificationContextForPropertyFields(ViewGroup parent) {
