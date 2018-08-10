@@ -66,8 +66,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         disease = caze.getDisease();
         record = caze.getEpiData();
 
-        drinkingWaterSourceList = DataUtils.getEnumItems(WaterSource.class, false);
-        animalConditionList = DataUtils.getEnumItems(AnimalCondition.class, false);
+        drinkingWaterSourceList = DataUtils.getEnumItems(WaterSource.class, true);
+        animalConditionList = DataUtils.getEnumItems(AnimalCondition.class, true);
     }
 
     @Override
@@ -125,6 +125,10 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
                 verifyTravelStatus();
             }
         });
+
+
+        contentBinding.epiDataDateOfLastExposure.initializeDateField(getFragmentManager());
+        contentBinding.epiDataSickDeadAnimalsDate.initializeDateField(getFragmentManager());
 
         setVisibilityByDisease(EpiDataDto.class, disease, contentBinding.mainContent);
     }

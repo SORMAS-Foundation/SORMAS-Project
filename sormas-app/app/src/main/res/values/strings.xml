@@ -202,7 +202,7 @@
     <string name="hint_select_a_date">Pick a Date</string>
     <string name="hint_select_a_time">Pick a Time</string>
     <string name="hint_select_entry">Select Option</string>
-    <string name="hint_select_entry_leave_blank">Leave Option Blank</string>
+    <string name="hint_select_entry_blank">Clear</string>
     <string name="hint_select_year">Select Year</string>
     <string name="hint_select_month">Select Month</string>
     <string name="hint_select_day">Select Day</string>
