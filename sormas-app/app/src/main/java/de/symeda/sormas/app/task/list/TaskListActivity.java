@@ -36,8 +36,11 @@ public class TaskListActivity extends BaseListActivity {
 
     @Override
     protected BaseListFragment buildListFragment(PageMenuItem menuItem) {
-        TaskStatus listFilter = statusFilters[menuItem.getKey()];
-        return TaskListFragment.newInstance(listFilter);
+        if (menuItem != null) {
+            TaskStatus listFilter = statusFilters[menuItem.getKey()];
+            return TaskListFragment.newInstance(listFilter);
+        }
+        return null;
     }
 
     @Override

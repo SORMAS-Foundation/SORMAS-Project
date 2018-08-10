@@ -37,8 +37,11 @@ public class ContactListActivity extends BaseListActivity {
 
     @Override
     protected BaseListFragment buildListFragment(PageMenuItem menuItem) {
-        FollowUpStatus listFilter = statusFilters[menuItem.getKey()];
-        return ContactListFragment.newInstance(listFilter);
+        if (menuItem != null) {
+            FollowUpStatus listFilter = statusFilters[menuItem.getKey()];
+            return ContactListFragment.newInstance(listFilter);
+        }
+        return null;
     }
 
     @Override

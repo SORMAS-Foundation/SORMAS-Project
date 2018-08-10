@@ -40,8 +40,11 @@ public class EventListActivity extends BaseListActivity {
 
     @Override
     protected BaseListFragment buildListFragment(PageMenuItem menuItem) {
-        EventStatus listFilter = statusFilters[menuItem.getKey()];
-        return EventListFragment.newInstance(listFilter);
+        if (menuItem != null) {
+            EventStatus listFilter = statusFilters[menuItem.getKey()];
+            return EventListFragment.newInstance(listFilter);
+        }
+        return null;
     }
 
     @Override

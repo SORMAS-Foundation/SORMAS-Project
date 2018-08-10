@@ -86,14 +86,12 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
     protected void onResume() {
         super.onResume();
 
-        if (getActivePage() != null) {
-            requestRootData(new Consumer<ActivityRootEntity>() {
-                @Override
-                public void accept(ActivityRootEntity result) {
-                    replaceFragment(buildEditFragment(getActivePage(), result), false);
-                }
-            });
-        }
+        requestRootData(new Consumer<ActivityRootEntity>() {
+            @Override
+            public void accept(ActivityRootEntity result) {
+                replaceFragment(buildEditFragment(getActivePage(), result), false);
+            }
+        });
     }
 
     @Override

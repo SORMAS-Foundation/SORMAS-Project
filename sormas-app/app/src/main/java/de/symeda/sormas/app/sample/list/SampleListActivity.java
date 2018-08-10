@@ -39,8 +39,11 @@ public class SampleListActivity extends BaseListActivity {
 
     @Override
     protected BaseListFragment buildListFragment(PageMenuItem menuItem) {
-        ShipmentStatus listFilter = statusFilters[menuItem.getKey()];
-        return SampleListFragment.newInstance(listFilter);
+        if (menuItem != null) {
+            ShipmentStatus listFilter = statusFilters[menuItem.getKey()];
+            return SampleListFragment.newInstance(listFilter);
+        }
+        return null;
     }
 
     @Override

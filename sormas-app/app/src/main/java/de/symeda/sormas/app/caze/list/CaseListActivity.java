@@ -48,8 +48,11 @@ public class CaseListActivity extends BaseListActivity {
 
     @Override
     protected BaseListFragment buildListFragment(PageMenuItem menuItem) {
-        InvestigationStatus listFilter = statusFilters[menuItem.getKey()];
-        return CaseListFragment.newInstance(listFilter);
+        if (menuItem != null) {
+            InvestigationStatus listFilter = statusFilters[menuItem.getKey()];
+            return CaseListFragment.newInstance(listFilter);
+        }
+        return null;
     }
 
     @Override
