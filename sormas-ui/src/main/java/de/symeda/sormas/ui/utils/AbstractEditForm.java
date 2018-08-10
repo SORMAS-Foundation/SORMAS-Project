@@ -122,6 +122,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 				else if (DateField.class.isAssignableFrom(fieldType)) {
 					DateField field = super.createField(type, DateField.class);
 					field.setDateFormat(DateHelper.getLocalDatePattern());
+					field.setLenient(true);
 					return (T) field;
 				}
 				else if (PreviousHospitalizationsField.class.isAssignableFrom(fieldType)) {

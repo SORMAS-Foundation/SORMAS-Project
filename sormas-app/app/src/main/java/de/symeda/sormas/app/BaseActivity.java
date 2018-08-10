@@ -691,7 +691,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         });
     }
 
-
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(newBase);

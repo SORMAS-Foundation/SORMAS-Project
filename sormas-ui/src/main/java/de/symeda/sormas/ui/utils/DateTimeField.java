@@ -34,6 +34,7 @@ public class DateTimeField extends CustomField<Date> {
 		dateField = new DateField();
 		dateField.setWidth(100, Unit.PERCENTAGE);
 		dateField.setDateFormat(DateHelper.getLocalDatePattern());
+		dateField.setLenient(true);
 		layout.addComponent(dateField);
 		layout.setExpandRatio(dateField, 0.5f);
 		
