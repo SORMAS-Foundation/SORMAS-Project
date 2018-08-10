@@ -41,7 +41,8 @@
 * Open ``glassfish-config.sh`` (or glassfish-config.bat on windows) in a text editor and change GLASSFISH_HOME, DOMAINS_HOME, PORT_BASE, PORT_ADMIN, DB_PW, DB_PW_AUDIT, MAIL_FROM to appropriate values for your server.
 * Make the file executable: ``chmod +x glassfish-config.sh``
 * Set up a payara domain called "sormas" by executing it: ``./glassfish-config.sh`` Press enter whenever asked for it.
-* Adjust the logging configuration in opt/domains/sormas/config/logback.xml based on your needs 
+* Adjust the logging configuration in opt/domains/sormas/config/logback.xml based on your needs (e.g. configure and activate email appender)
+* in opt/domains/sormas/config/logging.properties replace ``org.wamblee.glassfish.auth.HexEncoder.level.level=SEVERE`` with ``  org.wamblee.glassfish.auth.HexEncoder.level=SEVERE``
 * Make sure the domain folder is owned by the glassfish user: ``chown -R glassfish:glassfish opt/domains/sormas/``
 * Create two folders called "/opt/sormas-temp" and "/opt/sormas-generated" (if you choose another path, you have to adjust the sormas.properties file accordingly)
 * Set user rights for postgres and glassfish users: ``setfacl -m u:postgres:rwx /opt/sormas-temp
