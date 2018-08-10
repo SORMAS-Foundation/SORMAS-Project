@@ -22,7 +22,6 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.databinding.FragmentSampleEditLayoutBinding;
-import de.symeda.sormas.app.sample.ShipmentStatus;
 import de.symeda.sormas.app.sample.read.SampleReadActivity;
 import de.symeda.sormas.app.util.DataUtils;
 
@@ -31,6 +30,7 @@ import static android.view.View.GONE;
 public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayoutBinding, Sample, Sample> {
 
     private Sample record;
+    private Sample referredSample;
     private SampleTest mostRecentTest;
 
     // Enum lists
@@ -49,9 +49,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
             contentBinding.sampleReferredToUuid.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String referredToUuid = record.getReferredToUuid();
-                    Sample sample = DatabaseHelper.getSampleDao().queryUuid(referredToUuid);
-                    if (sample != null) {
+                    if (referredSample != null) {
                         // Activity needs to be destroyed because it is only resumed, not created otherwise
                         // and therefore the record uuid is not changed
                         if (getActivity() != null) {
@@ -91,6 +89,11 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
     protected void prepareFragmentData() {
         record = getActivityRootData();
         mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(record);
+        if (!StringUtils.isEmpty(record.getReferredToUuid())) {
+            referredSample = DatabaseHelper.getSampleDao().queryUuid(record.getReferredToUuid());
+        } else {
+            referredSample = null;
+        }
 
         sampleMaterialList = DataUtils.getEnumItems(SampleMaterial.class, true);
         sampleTestTypeList = DataUtils.getEnumItems(SampleTestType.class, true);
@@ -104,6 +107,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 
         contentBinding.setData(record);
         contentBinding.setSampleTest(mostRecentTest);
+        contentBinding.setReferredSample(referredSample);
     }
 
     @Override

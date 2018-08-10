@@ -13,13 +13,13 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.databinding.FragmentSampleReadLayoutBinding;
-import de.symeda.sormas.app.sample.ShipmentStatus;
 
 import static android.view.View.GONE;
 
 public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayoutBinding, Sample, Sample> {
 
     private Sample record;
+    private Sample referredSample;
     private SampleTest mostRecentTest;
 
     public static SampleReadFragment newInstance(Sample activityRootData) {
@@ -31,15 +31,13 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
             contentBinding.sampleReferredToUuid.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String referredToUuid = record.getReferredToUuid();
-                    Sample sample = DatabaseHelper.getSampleDao().queryUuid(referredToUuid);
-                    if (sample != null) {
+                    if (referredSample != null) {
                         // Activity needs to be destroyed because it is only resumed, not created otherwise
                         // and therefore the record uuid is not changed
                         if (getActivity() != null) {
                             getActivity().finish();
                         }
-                        SampleReadActivity.startActivity(getActivity(), sample.getUuid());
+                        SampleReadActivity.startActivity(getActivity(), referredSample.getUuid());
                     }
                 }
             });
@@ -68,6 +66,11 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
     protected void prepareFragmentData(Bundle savedInstanceState) {
         record = getActivityRootData();
         mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(record);
+        if (!StringUtils.isEmpty(record.getReferredToUuid())) {
+            referredSample = DatabaseHelper.getSampleDao().queryUuid(record.getReferredToUuid());
+        } else {
+            referredSample = null;
+        }
     }
 
     @Override
@@ -76,6 +79,7 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
 
         contentBinding.setData(record);
         contentBinding.setSampleTest(mostRecentTest);
+        contentBinding.setReferredSample(referredSample);
     }
 
     @Override

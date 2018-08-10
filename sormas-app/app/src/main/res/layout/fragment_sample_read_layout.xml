@@ -11,6 +11,7 @@
         <import type="de.symeda.sormas.api.Disease" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.sample.Sample"/>
+        <variable name="referredSample" type="de.symeda.sormas.app.backend.sample.Sample"/>
         <variable name="sampleTest" type="de.symeda.sormas.app.backend.sample.SampleTest" />
     </data>
 
@@ -181,7 +182,7 @@
 
                 <de.symeda.sormas.app.component.controls.ControlLinkField
                     android:id="@+id/sample_referredToUuid"
-                    app:shortUuidValue="@{data.referredToUuid}"
+                    app:value="@{referredSample.lab}"
                     app:goneIfEmpty="@{data.referredToUuid}"
                     style="@style/ControlSingleColumnStyle" />
 
