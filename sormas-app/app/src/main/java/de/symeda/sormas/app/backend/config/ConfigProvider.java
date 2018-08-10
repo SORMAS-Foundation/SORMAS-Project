@@ -453,13 +453,14 @@ public final class ConfigProvider {
     }
 
     public static Boolean isAccessGranted() {
-        if (instance.accessGranted == null) {
-            Config config = DatabaseHelper.getConfigDao().queryForId(KEY_ACCESS_GRANTED);
-            if (config != null) {
-                instance.accessGranted = Boolean.parseBoolean(config.getValue());
-            }
-        }
-        return instance.accessGranted;
+        return true;
+//        if (instance.accessGranted == null) {
+//            Config config = DatabaseHelper.getConfigDao().queryForId(KEY_ACCESS_GRANTED);
+//            if (config != null) {
+//                instance.accessGranted = Boolean.parseBoolean(config.getValue());
+//            }
+//        }
+//        return instance.accessGranted;
     }
 
     public static void setAccessGranted(Boolean accessGranted) {

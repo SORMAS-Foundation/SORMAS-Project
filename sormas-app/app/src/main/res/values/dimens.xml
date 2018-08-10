@@ -207,6 +207,7 @@
     <dimen name="rowListItemPadding">24dp</dimen>
     <dimen name="rowListItemHorizontalMargin">24dp</dimen>
     <dimen name="rowListItemVerticalPadding">24dp</dimen>
+    <dimen name="rowListItemVerticalPaddingSmall">8dp</dimen>
     <dimen name="rowListItemParentElevationVerticalPadding">4dp</dimen>
     <dimen name="rowListItemParentElevationHorizontalPadding">4dp</dimen>
     <dimen name="rowListItemParentPadding">4dp</dimen>

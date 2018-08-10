@@ -24,6 +24,7 @@ import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.report.MissingWeeklyReportDialog;
+import de.symeda.sormas.app.report.ReportActivity;
 
 public class CaseListActivity extends BaseListActivity {
 
@@ -70,13 +71,11 @@ public class CaseListActivity extends BaseListActivity {
         if (user.hasUserRole(UserRole.INFORMANT)
                 && DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(lastEpiWeek, ConfigProvider.getUser()) == null) {
 
-            // TODO reactivate reports
             MissingWeeklyReportDialog confirmationDialog = new MissingWeeklyReportDialog(this);
             confirmationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                 @Override
                 public void onOkClick(View v, Object item, View viewRoot) {
-                    /*Intent intent = new Intent(CaseListActivity.this, ReportsActivity.class);
-                    startActivity(intent);*/
+                    ReportActivity.startActivity(getContext());
                 }
             });
 

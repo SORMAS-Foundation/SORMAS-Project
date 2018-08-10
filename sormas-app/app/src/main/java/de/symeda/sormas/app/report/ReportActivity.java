@@ -1,16 +1,20 @@
 package de.symeda.sormas.app.report;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.view.Menu;
+import android.content.Context;
 
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseReportActivity;
 import de.symeda.sormas.app.BaseReportFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.caze.read.CaseReadActivity;
 
-public class ReportLandingActivity extends BaseReportActivity {
+public class ReportActivity extends BaseReportActivity {
 
-    private final static String TAG = ReportLandingActivity.class.getSimpleName();
+    private final static String TAG = ReportActivity.class.getSimpleName();
+
+    public static void startActivity(Context context) {
+        BaseActivity.startActivity(context, ReportActivity.class, buildBundle(0));
+    }
 
     @Override
     public BaseReportFragment buildReportFragment() {

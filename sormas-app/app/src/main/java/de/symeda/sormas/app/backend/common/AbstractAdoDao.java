@@ -1031,7 +1031,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
     /**
      * @see Dao#queryBuilder()
      */
-    protected QueryBuilder<ADO, Long> queryBuilder() {
+    public QueryBuilder<ADO, Long> queryBuilder() {
         return dao.queryBuilder();
     }
 

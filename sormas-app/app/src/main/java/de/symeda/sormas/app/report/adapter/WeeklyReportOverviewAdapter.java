@@ -5,6 +5,7 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
 import de.symeda.sormas.app.databinding.RowWeeklyReportOverviewListItemLayoutBinding;
@@ -15,14 +16,10 @@ public class WeeklyReportOverviewAdapter extends DataBoundAdapter<RowWeeklyRepor
     private static final String TAG = WeeklyReportAdapter.class.getSimpleName();
 
     private final Context context;
-    private List<WeeklyReportOverviewViewModel> data = new ArrayList<>();
+    private List<WeeklyReportOverviewViewModel> data;
 
-    public WeeklyReportOverviewAdapter(Context context, int rowLayout) {
-        this(context, rowLayout, new ArrayList<WeeklyReportOverviewViewModel>());
-    }
-
-    public WeeklyReportOverviewAdapter(Context context, int rowLayout, List<WeeklyReportOverviewViewModel> data) {
-        super(rowLayout);
+    public WeeklyReportOverviewAdapter(Context context, List<WeeklyReportOverviewViewModel> data) {
+        super(R.layout.row_weekly_report_overview_list_item_layout);
         this.context = context;
 
         if (data == null)

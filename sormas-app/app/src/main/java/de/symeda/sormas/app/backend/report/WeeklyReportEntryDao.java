@@ -20,7 +20,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 /**
  * Created by Mate Strysewske on 07.09.2017.
  */
-
 public class WeeklyReportEntryDao extends AbstractAdoDao<WeeklyReportEntry> {
 
     public WeeklyReportEntryDao(Dao<WeeklyReportEntry, Long> innerDao) throws SQLException {

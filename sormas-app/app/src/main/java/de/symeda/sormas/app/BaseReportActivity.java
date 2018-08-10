@@ -7,6 +7,8 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 
@@ -26,8 +28,14 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
     public void setSubHeadingTitle(String title) {
         String t = (title == null) ? "" : title;
 
-        if (subHeadingActivityTitle != null)
-            subHeadingActivityTitle.setText(t);
+        if (subHeadingActivityTitle != null) {
+            if (!DataHelper.isNullOrEmpty(title)) {
+                subHeadingActivityTitle.setText(title);
+                subHeadingActivityTitle.setVisibility(View.VISIBLE);
+            } else {
+                subHeadingActivityTitle.setVisibility(View.GONE);
+            }
+        }
     }
 
     @Override
@@ -48,7 +56,7 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.list_action_menu, menu);
+        inflater.inflate(R.menu.dashboard_action_menu, menu);
 
         processActionbarMenu();
 

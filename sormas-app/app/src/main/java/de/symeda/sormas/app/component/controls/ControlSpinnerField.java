@@ -153,6 +153,7 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 
         SpinnerAdapter adapter = input.getAdapter();
 
+        valueOnBind = value;
         if (adapter != null) {
             for (int i = 0; i < adapter.getCount(); i++) {
                 Object itemValue = ((Item) adapter.getItem(i)).getValue();
@@ -162,7 +163,6 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
                 }
             }
         } else {
-            valueOnBind = value;
             removeSelection();
         }
     }

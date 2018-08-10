@@ -7,6 +7,7 @@ import android.graphics.drawable.LayerDrawable;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
@@ -18,14 +19,10 @@ public class PendingReportAdapter extends DataBoundAdapter<RowPendingReportListI
     private static final String TAG = WeeklyReportAdapter.class.getSimpleName();
 
     private final Context context;
-    private List<PendingReportViewModel> data = new ArrayList<>();
+    private List<PendingReportViewModel> data;
 
-    public PendingReportAdapter(Context context, int rowLayout) {
-        this(context, rowLayout, new ArrayList<PendingReportViewModel>());
-    }
-
-    public PendingReportAdapter(Context context, int rowLayout, List<PendingReportViewModel> data) {
-        super(rowLayout);
+    public PendingReportAdapter(Context context, List<PendingReportViewModel> data) {
+        super( R.layout.row_pending_report_list_item_layout);
         this.context = context;
 
         if (data == null)

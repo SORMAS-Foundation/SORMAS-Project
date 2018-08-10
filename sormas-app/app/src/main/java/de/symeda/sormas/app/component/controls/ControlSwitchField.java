@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -52,8 +53,8 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 
     // Other fields
 
+    private Class<? extends Enum> enumClass = null;
     private List<Object> radioGroupElements = new ArrayList<>();
-    private boolean enumClassSet = false;
 
     // Constructors
 
@@ -84,17 +85,19 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
     }
 
     @SuppressWarnings("unchecked")
-    public void setEnumClass(Class c) {
-        removeAllItems();
+    public void setEnumClass(Class<? extends Enum> c) {
+        if (!DataHelper.equal(c, enumClass)) {
+            removeAllItems();
 
-        List<Item> items = DataUtils.getEnumItems(c, false);
+            List<Item> items = DataUtils.getEnumItems(c, false);
 
-        int itemTotal = items.size();
-        for (int i = 0; i < items.size(); i++) {
-            addItem(i, itemTotal - 1, items.get(i));
+            int itemTotal = items.size();
+            for (int i = 0; i < items.size(); i++) {
+                addItem(i, itemTotal - 1, items.get(i));
+            }
+
+            enumClass = c;
         }
-
-        enumClassSet = true;
     }
 
     private void addItem(int index, int lastIndex, Item item) {
@@ -105,6 +108,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
     }
 
     private void removeAllItems() {
+        input.clearCheck();
         input.removeAllViews();
         radioGroupElements.clear();
     }
@@ -241,7 +245,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
         textColor = getResources().getColorStateList(R.color.control_switch_color_selector);
         input.setBackground(background.mutate());
 
-        if (!enumClassSet) {
+        if (enumClass == null) {
             setEnumClass(YesNoUnknown.class);
         }
 
@@ -251,7 +255,12 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
                 if (inverseBindingListener != null) {
                     inverseBindingListener.onChange();
                 }
-                onValueChanged();
+
+                // on checked changed is also called when other button is deselected before new button is selected
+                RadioButton radioButton = (RadioButton)radioGroup.getChildAt(i);
+                if (radioButton == null || radioButton.isChecked()) {
+                    onValueChanged();
+                }
 
                 if (onCheckedChangeListener != null) {
                     onCheckedChangeListener.onCheckedChanged(radioGroup, i);
@@ -285,7 +294,9 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
             int selectedValueIndex = radioGroupElements.indexOf(value);
             if (selectedValueIndex >= 0) {
                 RadioButton button = (RadioButton) input.getChildAt(selectedValueIndex);
-                input.check(button.getId());
+                if (!button.isChecked()) {
+                    input.check(button.getId());
+                }
             }
         }
     }
@@ -365,7 +376,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
     @BindingAdapter(value = {"value", "enumClass", "defaultValue"}, requireAll = false)
     public static void setValue(ControlSwitchField view, Object value, Class enumClass, Object defaultValue) {
         if (enumClass != null) {
-            view.setEnumClass(enumClass);
+            view.setEnumClass((Class<? extends Enum>) enumClass);
         }
 
         if (value == null) {

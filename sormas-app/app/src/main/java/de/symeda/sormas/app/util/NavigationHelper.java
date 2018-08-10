@@ -15,7 +15,7 @@ import de.symeda.sormas.app.caze.list.CaseListActivity;
 import de.symeda.sormas.app.contact.list.ContactListActivity;
 import de.symeda.sormas.app.dashboard.DashboardActivity;
 import de.symeda.sormas.app.event.list.EventListActivity;
-import de.symeda.sormas.app.report.ReportLandingActivity;
+import de.symeda.sormas.app.report.ReportActivity;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 import de.symeda.sormas.app.sample.list.SampleListActivity;
 import de.symeda.sormas.app.task.list.TaskListActivity;
@@ -59,7 +59,7 @@ public class NavigationHelper {
     }
 
     public static void goToReports(Context context) {
-        Intent intent = new Intent(context, ReportLandingActivity.class);
+        Intent intent = new Intent(context, ReportActivity.class);
         context.startActivity(intent);
     }
 

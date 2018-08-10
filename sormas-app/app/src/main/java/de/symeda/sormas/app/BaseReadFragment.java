@@ -162,9 +162,9 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
 
     protected abstract void prepareFragmentData(Bundle savedInstanceState);
 
-    public abstract void onLayoutBinding(TBinding contentBinding);
+    protected abstract void onLayoutBinding(TBinding contentBinding);
 
-    public void onAfterLayoutBinding(TBinding contentBinding) {
+    protected void onAfterLayoutBinding(TBinding contentBinding) {
     }
 
     public boolean makeHeightMatchParent() {
