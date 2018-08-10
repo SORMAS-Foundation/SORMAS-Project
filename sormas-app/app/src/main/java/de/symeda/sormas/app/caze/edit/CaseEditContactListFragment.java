@@ -1,7 +1,6 @@
 package de.symeda.sormas.app.caze.edit;
 
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 
@@ -12,11 +11,10 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.contact.ContactSection;
 import de.symeda.sormas.app.contact.edit.ContactEditActivity;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 
 public class CaseEditContactListFragment extends BaseEditFragment<FragmentFormListLayoutBinding, List<Contact>, Case> implements OnListItemClickListener {
 
@@ -25,6 +23,10 @@ public class CaseEditContactListFragment extends BaseEditFragment<FragmentFormLi
     private List<Contact> record;
     private CaseEditContactListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
+
+    public static CaseEditContactListFragment newInstance(Case activityRootData) {
+        return newInstance(CaseEditContactListFragment.class, null, activityRootData);
+    }
 
     @Override
     protected String getSubHeadingTitle() {
@@ -38,15 +40,14 @@ public class CaseEditContactListFragment extends BaseEditFragment<FragmentFormLi
     }
 
     @Override
-    protected void prepareFragmentData(Bundle savedInstanceState) {
+    protected void prepareFragmentData() {
         Case caze = getActivityRootData();
         record = DatabaseHelper.getContactDao().getByCase(caze);
     }
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        showEmptyListHintWithAdd(record, R.string.entity_contact);
-
+        updateEmptyListHint(record);
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         adapter = new CaseEditContactListAdapter(R.layout.row_read_contact_list_item_layout, this, record);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
@@ -70,18 +71,13 @@ public class CaseEditContactListFragment extends BaseEditFragment<FragmentFormLi
     }
 
     @Override
-    public boolean isShowAddAction() {
+    public boolean isShowNewAction() {
         return true;
     }
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
-        Contact c = (Contact) item;
-        ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(getContext(), c.getUuid(), c.getContactClassification());
-        ContactEditActivity.goToActivity(getActivity(), dataCapsule);
-    }
-
-    public static CaseEditContactListFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(CaseEditContactListFragment.class, capsule, activityRootData);
+        Contact contact = (Contact) item;
+        ContactEditActivity.startActivity(getContext(), contact.getUuid(), ContactSection.CONTACT_INFO);
     }
 }

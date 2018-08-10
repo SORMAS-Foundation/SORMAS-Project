@@ -1,9 +1,12 @@
 package de.symeda.sormas.app.core.enumeration;
 
+import android.content.Context;
+
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.core.NotImplementedException;
 
-public class EventTypeElaborator implements IStatusElaborator {
+public class EventTypeElaborator implements StatusElaborator {
 
     private EventType status = null;
 
@@ -12,7 +15,7 @@ public class EventTypeElaborator implements IStatusElaborator {
     }
 
     @Override
-    public String getFriendlyName() {
+    public String getFriendlyName(Context context) {
         if (status != null) {
             return status.toString();
         }
@@ -31,12 +34,12 @@ public class EventTypeElaborator implements IStatusElaborator {
     }
 
     @Override
-    public String getStatekey() {
-        return ARG_EVENT_TYPE;
+    public Enum getValue() {
+        return this.status;
     }
 
     @Override
-    public Enum getValue() {
-        return this.status;
+    public int getIconResourceId() {
+        throw new NotImplementedException("getIconResourceId");
     }
 }

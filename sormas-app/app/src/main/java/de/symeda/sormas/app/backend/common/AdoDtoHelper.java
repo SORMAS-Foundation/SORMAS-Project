@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.ServerCommunicationException;
+import de.symeda.sormas.app.rest.ServerConnectionException;
 import de.symeda.sormas.app.util.DataUtils;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -50,14 +53,14 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
      * @return another pull needed?
      */
     public boolean pullAndPushEntities()
-            throws DaoException, ServerConnectionException, SynchronizationException {
+            throws DaoException, ServerConnectionException, ServerCommunicationException {
 
         pullEntities(false);
 
         return pushEntities();
     }
 
-    public void pullEntities(final boolean markAsRead) throws DaoException, ServerConnectionException {
+    public void pullEntities(final boolean markAsRead) throws DaoException, ServerCommunicationException, ServerConnectionException {
         try {
             final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 
@@ -71,7 +74,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
             try {
                 response = dtoCall.execute();
             } catch (IOException e) {
-                throw new ServerConnectionException(e);
+                throw new ServerCommunicationException(e);
             }
 
             handlePullResponse(markAsRead, dao, response);
@@ -82,7 +85,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         }
     }
 
-    public void repullEntities() throws DaoException, ServerConnectionException {
+    public void repullEntities() throws DaoException, ServerCommunicationException, ServerConnectionException {
         try {
             final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 
@@ -95,7 +98,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
             try {
                 response = dtoCall.execute();
             } catch (IOException e) {
-                throw new ServerConnectionException(e);
+                throw new ServerCommunicationException(e);
             }
 
             handlePullResponse(false, dao, response);
@@ -109,9 +112,9 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
     /**
      * @return Number or pulled entities
      */
-    protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<ADO> dao, Response<List<DTO>> response) throws ServerConnectionException, DaoException {
+    protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<ADO> dao, Response<List<DTO>> response) throws ServerCommunicationException, DaoException, ServerConnectionException {
         if (!response.isSuccessful()) {
-            throw ServerConnectionException.fromResponse(response);
+            RetroProvider.throwException(response);
         }
 
         final List<DTO> result = response.body();
@@ -141,61 +144,50 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
     /**
      * @return true: another pull is needed, because data has been changed on the server
      */
-    public boolean pushEntities() throws DaoException, ServerConnectionException, SynchronizationException {
-        try {
-            final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
+    public boolean pushEntities() throws DaoException, ServerConnectionException, ServerCommunicationException {
+        final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 
-            final List<ADO> modifiedAdos = dao.queryForEq(ADO.MODIFIED, true);
+        final List<ADO> modifiedAdos = dao.queryForEq(ADO.MODIFIED, true);
 
-            List<DTO> modifiedDtos = new ArrayList<>(modifiedAdos.size());
-            for (ADO ado : modifiedAdos) {
-                DTO dto = adoToDto(ado);
-                modifiedDtos.add(dto);
-            }
-
-            if (modifiedDtos.isEmpty()) {
-                return false;
-            }
-
-            Call<Integer> call = pushAll(modifiedDtos);
-            Response<Integer> response;
-            try {
-                response = call.execute();
-            } catch (IOException e) {
-                throw new ServerConnectionException(e);
-            }
-
-            if (!response.isSuccessful()) {
-                String responseErrorBodyString;
-                try {
-                    responseErrorBodyString = response.errorBody().string();
-                } catch (IOException e) {
-                    responseErrorBodyString = "Exception accessing error body: " + e.getMessage();
-                }
-                throw new SynchronizationException("Pushing changes to server did not work: " + responseErrorBodyString);
-            } else if (response.body() != modifiedDtos.size()) {
-                throw new SynchronizationException("Server responded with wrong count of changed entities: " + response.body() + " - expected: " + modifiedDtos.size());
-            }
-
-            dao.callBatchTasks(new Callable<Void>() {
-                public Void call() throws Exception {
-                    for (ADO ado : modifiedAdos) {
-                        // data has been pushed, we no longer need the old unmodified version
-                        dao.accept(ado);
-                    }
-                    return null;
-                }
-            });
-
-            if (modifiedAdos.size() > 0) {
-                Log.d(dao.getTableName(), "Pushed: " + modifiedAdos.size());
-            }
-
-            return true;
-        } catch (RuntimeException e) {
-            Log.e(getClass().getName(), "Exception thrown when trying to push entities");
-            throw new DaoException(e);
+        List<DTO> modifiedDtos = new ArrayList<>(modifiedAdos.size());
+        for (ADO ado : modifiedAdos) {
+            DTO dto = adoToDto(ado);
+            modifiedDtos.add(dto);
         }
+
+        if (modifiedDtos.isEmpty()) {
+            return false;
+        }
+
+        Call<Integer> call = pushAll(modifiedDtos);
+        Response<Integer> response;
+        try {
+            response = call.execute();
+        } catch (IOException e) {
+            throw new ServerCommunicationException(e);
+        }
+
+        if (!response.isSuccessful()) {
+            RetroProvider.throwException(response);
+        } else if (response.body() != modifiedDtos.size()) {
+            throw new ServerCommunicationException("Server responded with wrong count of changed entities: " + response.body() + " - expected: " + modifiedDtos.size());
+        }
+
+        dao.callBatchTasks(new Callable<Void>() {
+            public Void call() throws Exception {
+                for (ADO ado : modifiedAdos) {
+                    // data has been pushed, we no longer need the old unmodified version
+                    dao.accept(ado);
+                }
+                return null;
+            }
+        });
+
+        if (modifiedAdos.size() > 0) {
+            Log.d(dao.getTableName(), "Pushed: " + modifiedAdos.size());
+        }
+
+        return true;
     }
 
     public boolean isAnyMissing(List<String> uuids) {
@@ -205,7 +197,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         return !uuids.isEmpty();
     }
 
-    public void pullMissing(List<String> uuids) throws ServerConnectionException, DaoException {
+    public void pullMissing(List<String> uuids) throws ServerCommunicationException, ServerConnectionException, DaoException {
 
         final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
         uuids = dao.filterMissing(uuids);
@@ -215,7 +207,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
             try {
                 response = pullByUuids(uuids).execute();
             } catch (IOException e) {
-                throw new ServerConnectionException(e);
+                throw new ServerCommunicationException(e);
             }
 
             handlePullResponse(false, dao, response);

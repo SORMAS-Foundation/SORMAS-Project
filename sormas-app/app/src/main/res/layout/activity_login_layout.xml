@@ -15,7 +15,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_gravity="center_vertical"
             android:gravity="center_horizontal"
@@ -89,19 +89,20 @@
             <!-- Sign In -->
 
             <LinearLayout
+                android:id="@+id/signInLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/sign_in"
+                    android:id="@+id/signInHeader"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/login_sign_in"
                     style="@style/LoginSignInText" />
 
                 <TextView
-                    android:id="@+id/sign_in_tag_line"
+                    android:id="@+id/signInSubHeader"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/login_sign_in_tag_line"
@@ -134,21 +135,6 @@
                     android:nextFocusForward="@+id/btn_change_settings"
                     style="@style/PrimaryButtonStyle"
                     android:onClick="login" />
-
-                <!--android:nextFocusUp="@id/txtPassword"-->
-                <!--android:nextFocusLeft="@id/txtPassword"-->
-                <!--android:nextFocusDown="@+id/btnChangeSettings"-->
-                <!--android:nextFocusRight="@+id/btnChangeSettings"-->
-
-                <!--<TextView-->
-                    <!--android:id="@+id/btn_change_settings"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="@string/login_change_settings"-->
-                    <!--android:nextFocusUp="@id/btnLogin"-->
-                    <!--android:nextFocusLeft="@id/btnLogin"-->
-                    <!--style="@style/ChangeSettingStyle"-->
-                    <!--android:onClick="showSettingsView" />-->
 
                 <Button
                     android:id="@+id/btn_change_settings"

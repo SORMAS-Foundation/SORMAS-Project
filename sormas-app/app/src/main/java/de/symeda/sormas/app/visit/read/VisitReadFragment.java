@@ -6,14 +6,13 @@ import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.databinding.FragmentVisitReadLayoutBinding;
-import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 
 public class VisitReadFragment extends BaseReadFragment<FragmentVisitReadLayoutBinding, Visit, Visit> {
 
     private Visit record;
 
-    public static VisitReadFragment newInstance(VisitFormNavigationCapsule capsule, Visit activityRootData) {
-        return newInstance(VisitReadFragment.class, capsule, activityRootData);
+    public static VisitReadFragment newInstance(Visit activityRootData) {
+        return newInstance(VisitReadFragment.class, null, activityRootData);
     }
 
     @Override
@@ -28,7 +27,7 @@ public class VisitReadFragment extends BaseReadFragment<FragmentVisitReadLayoutB
 
     @Override
     protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.caption_followup_information);
+        return getResources().getString(R.string.caption_visit_information);
     }
 
     @Override

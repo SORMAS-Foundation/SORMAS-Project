@@ -1,15 +1,14 @@
 package de.symeda.sormas.app.caze.list;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
-import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -24,36 +23,20 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.core.IListNavigationCapsule;
-import de.symeda.sormas.app.core.ListNavigationCapsule;
-import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.report.MissingWeeklyReportDialog;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.report.ReportActivity;
 
 public class CaseListActivity extends BaseListActivity {
 
     private InvestigationStatus statusFilters[] = new InvestigationStatus[]{InvestigationStatus.PENDING, InvestigationStatus.DONE, InvestigationStatus.DISCARDED};
 
-    private SearchBy searchBy = null;
-    private String recordUuid = null;
-
-    @Override
-    public int getPageMenuData() {
-        return R.xml.data_landing_page_case_menu;
+    public static void startActivity(Context context, InvestigationStatus listFilter) {
+        BaseListActivity.startActivity(context, CaseListActivity.class, buildBundle(listFilter));
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        saveSearchStrategyState(outState, searchBy);
-        saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    protected void onCreateInner(Bundle savedInstanceState) {
-        super.onCreateInner(savedInstanceState);
-        searchBy = (SearchBy) getSearchStrategyArg(savedInstanceState);
-        recordUuid = getRecordUuidArg(savedInstanceState);
+    public List<PageMenuItem> getPageMenuData() {
+        return PageMenuItem.fromEnum(statusFilters, getContext());
     }
 
     @Override
@@ -65,9 +48,11 @@ public class CaseListActivity extends BaseListActivity {
 
     @Override
     protected BaseListFragment buildListFragment(PageMenuItem menuItem) {
-        InvestigationStatus status = statusFilters[menuItem.getKey()];
-        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(CaseListActivity.this, status, searchBy);
-        return CaseListFragment.newInstance(dataCapsule);
+        if (menuItem != null) {
+            InvestigationStatus listFilter = statusFilters[menuItem.getKey()];
+            return CaseListFragment.newInstance(listFilter);
+        }
+        return null;
     }
 
     @Override
@@ -89,26 +74,18 @@ public class CaseListActivity extends BaseListActivity {
         if (user.hasUserRole(UserRole.INFORMANT)
                 && DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(lastEpiWeek, ConfigProvider.getUser()) == null) {
 
-            // TODO reactivate reports
             MissingWeeklyReportDialog confirmationDialog = new MissingWeeklyReportDialog(this);
             confirmationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                 @Override
                 public void onOkClick(View v, Object item, View viewRoot) {
-                    /*Intent intent = new Intent(CaseListActivity.this, ReportsActivity.class);
-                    startActivity(intent);*/
+                    ReportActivity.startActivity(getContext());
                 }
             });
 
             confirmationDialog.show(null);
         } else {
-            CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(this,
-                    null, CaseClassification.NOT_CLASSIFIED).setPersonUuid(null);
-            CaseNewActivity.goToActivity(this, dataCapsule);
+            CaseNewActivity.startActivity(getContext());
         }
-    }
-
-    public static void goToActivity(Context fromActivity, IListNavigationCapsule dataCapsule) {
-        BaseListActivity.goToActivity(fromActivity, CaseListActivity.class, dataCapsule);
     }
 
     @Override

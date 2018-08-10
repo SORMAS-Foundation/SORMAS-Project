@@ -7,36 +7,22 @@ import android.graphics.drawable.LayerDrawable;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.RowPendingReportListItemLayoutBinding;
 import de.symeda.sormas.app.report.viewmodel.PendingReportViewModel;
 
-/**
- * Created by Orson on 25/04/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
 public class PendingReportAdapter extends DataBoundAdapter<RowPendingReportListItemLayoutBinding> {
 
     private static final String TAG = WeeklyReportAdapter.class.getSimpleName();
 
     private final Context context;
-    private List<PendingReportViewModel> data = new ArrayList<>();
-    private OnListItemClickListener mOnListItemClickListener;
+    private List<PendingReportViewModel> data;
 
-    private LayerDrawable backgroundRowItem;
-    private Drawable unreadListItemIndicator;
-
-    public PendingReportAdapter(Context context, int rowLayout) {
-        this(context, rowLayout, new ArrayList<PendingReportViewModel>());
-    }
-
-    public PendingReportAdapter(Context context, int rowLayout, List<PendingReportViewModel> data) {
-        super(rowLayout);
+    public PendingReportAdapter(Context context, List<PendingReportViewModel> data) {
+        super( R.layout.row_pending_report_list_item_layout);
         this.context = context;
 
         if (data == null)

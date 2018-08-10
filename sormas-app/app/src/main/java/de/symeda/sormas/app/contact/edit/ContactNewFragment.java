@@ -1,7 +1,5 @@
 package de.symeda.sormas.app.contact.edit;
 
-import android.os.Bundle;
-
 import java.util.List;
 
 import de.symeda.sormas.api.contact.ContactProximity;
@@ -12,7 +10,6 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.caze.edit.CaseNewFragment;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentContactNewLayoutBinding;
-import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
 
 public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayoutBinding, Contact, Contact> {
@@ -22,6 +19,10 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
     private Contact record;
 
     private List<Item> relationshipList;
+
+    public static ContactNewFragment newInstance(Contact activityRootData) {
+        return newInstance(ContactNewFragment.class, null, activityRootData);
+    }
 
     @Override
     protected String getSubHeadingTitle() {
@@ -34,7 +35,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
     }
 
     @Override
-    protected void prepareFragmentData(Bundle savedInstanceState) {
+    protected void prepareFragmentData() {
         record = getActivityRootData();
         relationshipList = DataUtils.getEnumItems(ContactRelation.class, true);
     }
@@ -42,11 +43,6 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
     @Override
     public void onLayoutBinding(FragmentContactNewLayoutBinding contentBinding) {
         contentBinding.setData(record);
-
-        if (isLiveValidationDisabled()) {
-            disableLiveValidation(true);
-        }
-
         contentBinding.setContactProximityClass(ContactProximity.class);
     }
 
@@ -60,9 +56,4 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
     public int getEditLayout() {
         return R.layout.fragment_contact_new_layout;
     }
-
-    public static ContactNewFragment newInstance(ContactFormNavigationCapsule capsule, Contact activityRootData) {
-        return newInstance(ContactNewFragment.class, capsule, activityRootData);
-    }
-
 }

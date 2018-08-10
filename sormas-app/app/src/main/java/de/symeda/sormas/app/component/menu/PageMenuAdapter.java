@@ -29,17 +29,14 @@ public class PageMenuAdapter extends BaseAdapter {
     private int titleColor;
     private int titleActiveColor;
 
-    private boolean initialized = false;
-
     public PageMenuAdapter(Context context) {
         this.context = context;
     }
 
-    public void initialize(List<PageMenuItem> data, int cellLayout,
+    public void initialize(int cellLayout,
                            int counterBackgroundColor, int counterBackgroundActiveColor,
                            int iconColor, int iconActiveColor,
                            int positionColor, int positionActiveColor, int titleColor, int titleActiveColor) {
-        this.data = data;
         this.cellLayout = cellLayout;
         this.counterBackgroundColor = counterBackgroundColor;
         this.counterBackgroundActiveColor = counterBackgroundActiveColor;
@@ -49,8 +46,11 @@ public class PageMenuAdapter extends BaseAdapter {
         this.positionActiveColor = positionActiveColor;
         this.titleColor = titleColor;
         this.titleActiveColor = titleActiveColor;
+    }
 
-        initialized = true;
+    public void setData(List<PageMenuItem> data) {
+        this.data = data;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -80,9 +80,6 @@ public class PageMenuAdapter extends BaseAdapter {
         List<PageMenuItem> menuItems = this.data;
 
         Drawable icon;
-        String iconName;
-        String defType;
-
         View layout;
         ViewHolder viewHolder;
 
@@ -110,23 +107,16 @@ public class PageMenuAdapter extends BaseAdapter {
             }
         }
 
-        if (pageMenuItem.getIcon() != null) {
-            iconName = pageMenuItem.getIcon().getIconName();
-            defType = pageMenuItem.getIcon().getDefType();
-
-            if ((iconName != null && !iconName.isEmpty()) && (defType != null && !defType.isEmpty())) {
-                icon = context.getResources().getDrawable(context.getResources().getIdentifier(iconName, defType, context.getPackageName()));
-
-                if (pageMenuItem.isActive()) {
-                    icon.setTint(context.getResources().getColor(this.iconActiveColor));
-                    icon.setAlpha(255);
-                } else {
-                    icon.setTint(context.getResources().getColor(this.iconColor));
-                    icon.setAlpha(128);
-                }
-
-                viewHolder.imgMenuItemIcon.setImageDrawable(icon);
+        if (pageMenuItem.getIcon() > 0) {
+            icon = context.getResources().getDrawable(pageMenuItem.getIcon());
+            if (pageMenuItem.isActive()) {
+                icon.setTint(context.getResources().getColor(this.iconActiveColor));
+                icon.setAlpha(255);
+            } else {
+                icon.setTint(context.getResources().getColor(this.iconColor));
+                icon.setAlpha(128);
             }
+            viewHolder.imgMenuItemIcon.setImageDrawable(icon);
         }
 
         if (viewHolder.txtPosition != null) {

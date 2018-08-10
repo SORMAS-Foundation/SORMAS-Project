@@ -9,11 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import de.symeda.sormas.app.core.IDashboardNavigationCapsule;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
-import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.dashboard.ISummaryLoadingStatusCommunicator;
-import de.symeda.sormas.app.util.ConstantHelper;
 
 public abstract class BaseSummaryFragment<E extends Enum<E>, TAdapter extends EnumMapDataBinderAdapter<E>> extends BaseFragment { // implements ISummaryLoadingStatus
 
@@ -100,22 +97,4 @@ public abstract class BaseSummaryFragment<E extends Enum<E>, TAdapter extends En
     protected abstract int getContainerResId();
 
     public abstract String getIdentifier();
-
-
-    protected static <TFragment extends BaseSummaryFragment, TCapsule extends IDashboardNavigationCapsule> TFragment newInstance(Class<TFragment> f, TCapsule dataCapsule) throws IllegalAccessException, java.lang.InstantiationException {
-        TFragment fragment = f.newInstance();
-
-        Bundle bundle = fragment.getArguments();
-        if (bundle == null) {
-            bundle = new Bundle();
-        }
-
-        IStatusElaborator pageStatus = dataCapsule.getPageStatus();
-
-        if (pageStatus != null)
-            bundle.putSerializable(ConstantHelper.ARG_PAGE_STATUS, pageStatus.getValue());
-
-        fragment.setArguments(bundle);
-        return fragment;
-    }
 }

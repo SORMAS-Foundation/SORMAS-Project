@@ -85,6 +85,6 @@ public class SampleTest extends AbstractDomainObject {
 
     @Override
     public String toString() {
-        return super.toString() + DateHelper.formatShortDate(getTestDateTime());
+        return super.toString() + DateHelper.formatLocalShortDate(getTestDateTime());
     }
 }

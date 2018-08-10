@@ -4,7 +4,6 @@ import java.util.List;
 
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -71,7 +70,11 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         target.setComment(source.getComment());
         target.setSampleSource(source.getSampleSource());
         target.setSuggestedTypeOfTest(source.getSuggestedTypeOfTest());
-        target.setReferredTo(DatabaseHelper.getSampleDao().getByReferenceDto(source.getReferredTo()));
+        if (source.getReferredTo() != null) {
+            target.setReferredToUuid(source.getReferredTo().getUuid());
+        } else {
+            target.setReferredToUuid(null);
+        }
         target.setShipped(source.isShipped());
         target.setReceived(source.isReceived());
 
@@ -103,9 +106,8 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
             target.setLab(null);
         }
 
-        if (source.getReferredTo() != null) {
-            Sample referredSample = DatabaseHelper.getSampleDao().queryForId(source.getReferredTo().getId());
-            target.setReferredTo(SampleDtoHelper.toReferenceDto(referredSample));
+        if (source.getReferredToUuid() != null) {
+            target.setReferredTo(new SampleReferenceDto(source.getReferredToUuid()));
         } else {
             target.setReferredTo(null);
         }
@@ -137,9 +139,8 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         if (ado == null) {
             return null;
         }
-        SampleReferenceDto dto = new SampleReferenceDto(ado.getUuid());
 
-        return dto;
+        return new SampleReferenceDto(ado.getUuid());
     }
 
 }

@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.contact.edit;
 
-import android.os.Bundle;
 import android.view.View;
 
 import java.util.List;
@@ -14,13 +13,10 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.caze.edit.CaseEditActivity;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentContactEditLayoutBinding;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
 
 import static android.view.View.GONE;
@@ -38,35 +34,29 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 
     // Instance methods
 
-    public static ContactEditFragment newInstance(ContactFormNavigationCapsule capsule, Contact activityRootData) {
-        return newInstance(ContactEditFragment.class, capsule, activityRootData);
+    public static ContactEditFragment newInstance(Contact activityRootData) {
+        return newInstance(ContactEditFragment.class, null, activityRootData);
     }
 
     private void setUpControlListeners(FragmentContactEditLayoutBinding contentBinding) {
         contentBinding.createCase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(getContext())
-                        .setContactUuid(record.getUuid()).setPersonUuid(record.getPerson().getUuid());
-                CaseNewActivity.goToActivity(getContext(), dataCapsule);
+                CaseNewActivity.startActivity(getContext(), record.getUuid());
             }
         });
 
         contentBinding.openSourceCase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(getContext(),
-                        sourceCase.getUuid(), sourceCase.getCaseClassification());
-                CaseEditActivity.goToActivity(getActivity(), dataCapsule);
+                CaseReadActivity.startActivity(getActivity(), sourceCase.getUuid(), true);
             }
         });
 
         contentBinding.openResultingCase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(getContext(),
-                        resultingCase.getUuid(), resultingCase.getCaseClassification());
-                CaseReadActivity.goToActivity(getActivity(), dataCapsule);
+                CaseReadActivity.startActivity(getActivity(), resultingCase.getUuid(), true);
             }
         });
     }
@@ -94,7 +84,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
     }
 
     @Override
-    protected void prepareFragmentData(Bundle savedInstanceState) {
+    protected void prepareFragmentData() {
         record = getActivityRootData();
         sourceCase = DatabaseHelper.getCaseDao().queryUuidBasic(record.getCaseUuid());
 
@@ -131,5 +121,4 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
     public int getEditLayout() {
         return R.layout.fragment_contact_edit_layout;
     }
-
 }

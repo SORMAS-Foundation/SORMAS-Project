@@ -2,7 +2,6 @@ package de.symeda.sormas.app.backend.region;
 
 import android.util.Log;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -14,7 +13,8 @@ import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.common.ServerConnectionException;
+import de.symeda.sormas.app.rest.ServerConnectionException;
+import de.symeda.sormas.app.rest.ServerCommunicationException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -63,7 +63,7 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
     }
 
     @Override
-    public void pullEntities(final boolean markAsRead) throws DaoException, ServerConnectionException {
+    public void pullEntities(final boolean markAsRead) throws DaoException, ServerCommunicationException, ServerConnectionException {
         databaseWasEmpty = DatabaseHelper.getCommunityDao().countOf() == 0;
         try {
             super.pullEntities(markAsRead);
@@ -79,15 +79,9 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
      * Overriden for performance reasons. No merge needed when database was empty.
      */
     @Override
-    protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<Community> dao, Response<List<CommunityDto>> response) throws ServerConnectionException, DaoException {
+    protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<Community> dao, Response<List<CommunityDto>> response) throws ServerCommunicationException, DaoException, ServerConnectionException {
         if (!response.isSuccessful()) {
-            String responseErrorBodyString;
-            try {
-                responseErrorBodyString = response.errorBody().string();
-            } catch (IOException e) {
-                responseErrorBodyString = "Exception accessing error body: " + e.getMessage();
-            }
-            throw new ServerConnectionException(responseErrorBodyString);
+            RetroProvider.throwException(response);
         }
 
         final CommunityDao communityDao = (CommunityDao) dao;

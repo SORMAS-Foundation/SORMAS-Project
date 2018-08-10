@@ -44,9 +44,9 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 					return "Unknown";
 				} else {
 					StringBuilder periodBuilder = new StringBuilder();
-					periodBuilder.append(burial.getBurialDateFrom() != null ? DateHelper.formatDate(burial.getBurialDateFrom()) : "?");
+					periodBuilder.append(burial.getBurialDateFrom() != null ? DateHelper.formatLocalDate(burial.getBurialDateFrom()) : "?");
 					periodBuilder.append(" - ");
-					periodBuilder.append(burial.getBurialDateTo() != null ? DateHelper.formatDate(burial.getBurialDateTo()) : "?");
+					periodBuilder.append(burial.getBurialDateTo() != null ? DateHelper.formatLocalDate(burial.getBurialDateTo()) : "?");
 					return periodBuilder.toString();
 				}
 			}

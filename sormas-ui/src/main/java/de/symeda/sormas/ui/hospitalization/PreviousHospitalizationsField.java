@@ -40,9 +40,9 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 					return "Unknown";
 				} else {
 					StringBuilder periodBuilder = new StringBuilder();
-					periodBuilder.append(prevHospitalization.getAdmissionDate() != null ? DateHelper.formatDate(prevHospitalization.getAdmissionDate()) : "?");
+					periodBuilder.append(prevHospitalization.getAdmissionDate() != null ? DateHelper.formatLocalDate(prevHospitalization.getAdmissionDate()) : "?");
 					periodBuilder.append(" - ");
-					periodBuilder.append(prevHospitalization.getDischargeDate() != null ? DateHelper.formatDate(prevHospitalization.getDischargeDate()) : "?");
+					periodBuilder.append(prevHospitalization.getDischargeDate() != null ? DateHelper.formatLocalDate(prevHospitalization.getDischargeDate()) : "?");
 					return periodBuilder.toString();
 				}
 			}

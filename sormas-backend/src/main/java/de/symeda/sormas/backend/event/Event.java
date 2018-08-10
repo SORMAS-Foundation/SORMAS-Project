@@ -267,7 +267,7 @@ public class Event extends AbstractDomainObject {
 				? DataHelper.toStringNullable(getDisease())
 				: DataHelper.toStringNullable(getDiseaseDetails());
 		String eventTypeString = diseaseString.isEmpty() ? eventType.toString() : eventType.toString().toLowerCase();
-		return diseaseString + " " + eventTypeString + " on " + DateHelper.formatDate(eventDate);
+		return diseaseString + " " + eventTypeString + " on " + DateHelper.formatLocalDate(eventDate);
 	}
 
 	public Float getReportLatLonAccuracy() {

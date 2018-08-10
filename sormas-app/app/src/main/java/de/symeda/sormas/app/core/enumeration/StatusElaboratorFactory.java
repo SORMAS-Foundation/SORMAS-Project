@@ -1,7 +1,5 @@
 package de.symeda.sormas.app.core.enumeration;
 
-import android.content.Context;
-
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -11,17 +9,19 @@ import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.app.shared.ShipmentStatus;
+import de.symeda.sormas.app.sample.ShipmentStatus;
 
 public class StatusElaboratorFactory {
 
-    public static IStatusElaborator getElaborator(Context c, Enum e) {
+    public static StatusElaborator getElaborator(Enum e) {
         if (e == null)
             throw new NullPointerException("Enum arugment for StatusElaboratorFactory cannot be null");
 
-        IStatusElaborator result;
+        StatusElaborator result;
 
-        if (e instanceof EventStatus) {
+        if (e instanceof StatusElaborator) {
+            result = (StatusElaborator) e;
+        } else if (e instanceof EventStatus) {
             result = new EventStatusElaborator((EventStatus) e);
         } else if (e instanceof EventType) {
             result = new EventTypeElaborator((EventType) e);

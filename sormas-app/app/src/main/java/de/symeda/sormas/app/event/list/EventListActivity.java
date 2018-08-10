@@ -1,12 +1,12 @@
 package de.symeda.sormas.app.event.list;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.view.Menu;
 import android.widget.AdapterView;
 
 import org.joda.time.DateTime;
 
+import java.util.List;
 import java.util.Random;
 
 import de.symeda.sormas.api.event.EventStatus;
@@ -17,35 +17,19 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.core.IListNavigationCapsule;
-import de.symeda.sormas.app.core.ListNavigationCapsule;
-import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.event.edit.EventNewActivity;
 
 public class EventListActivity extends BaseListActivity {
 
     private EventStatus statusFilters[] = new EventStatus[]{EventStatus.POSSIBLE, EventStatus.CONFIRMED, EventStatus.NO_EVENT};
 
-    private SearchBy searchBy = null;
-    private String recordUuid = null;
-
-    @Override
-    protected void onCreateInner(Bundle savedInstanceState) {
-        super.onCreateInner(savedInstanceState);
-        searchBy = (SearchBy) getSearchStrategyArg(savedInstanceState);
-        recordUuid = getRecordUuidArg(savedInstanceState);
+    public static void startActivity(Context context, EventStatus listFilter) {
+        BaseListActivity.startActivity(context, EventListActivity.class, buildBundle(listFilter));
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        saveSearchStrategyState(outState, searchBy);
-        saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public int getPageMenuData() {
-        return R.xml.data_landing_page_alert_menu;
+    public List<PageMenuItem> getPageMenuData() {
+        return PageMenuItem.fromEnum(statusFilters, getContext());
     }
 
     @Override
@@ -56,9 +40,11 @@ public class EventListActivity extends BaseListActivity {
 
     @Override
     protected BaseListFragment buildListFragment(PageMenuItem menuItem) {
-        EventStatus status = statusFilters[menuItem.getKey()];
-        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(EventListActivity.this, status, searchBy);
-        return EventListFragment.newInstance(dataCapsule);
+        if (menuItem != null) {
+            EventStatus listFilter = statusFilters[menuItem.getKey()];
+            return EventListFragment.newInstance(listFilter);
+        }
+        return null;
     }
 
     @Override
@@ -81,10 +67,6 @@ public class EventListActivity extends BaseListActivity {
 
     @Override
     public void goToNewView() {
-        EventNewActivity.goToActivity(this);
-    }
-
-    public static void goToActivity(Context fromActivity, IListNavigationCapsule dataCapsule) {
-        BaseListActivity.goToActivity(fromActivity, EventListActivity.class, dataCapsule);
+        EventNewActivity.startActivity(this);
     }
 }

@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.event.edit;
 
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 
@@ -14,8 +13,6 @@ import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.event.edit.eventparticipant.EventParticipantEditActivity;
-import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
-import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
 
 public class EventEditPersonsInvolvedListFragment extends BaseEditFragment<FragmentFormListLayoutBinding, List<EventParticipant>, Event> implements OnListItemClickListener {
 
@@ -23,9 +20,13 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditFragment<Fragm
     private EventEditPersonsInvolvedListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
 
+    public static EventEditPersonsInvolvedListFragment newInstance(Event activityRootData) {
+        return newInstance(EventEditPersonsInvolvedListFragment.class, null, activityRootData);
+    }
+
     @Override
     protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.caption_persons_involved);
+        return getResources().getString(R.string.caption_event_participants);
     }
 
     @Override
@@ -34,18 +35,15 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditFragment<Fragm
     }
 
     @Override
-    protected void prepareFragmentData(Bundle savedInstanceState) {
+    protected void prepareFragmentData() {
         Event event = getActivityRootData();
         record = DatabaseHelper.getEventParticipantDao().getByEvent(event);
     }
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        showEmptyListHintWithAdd(record, R.string.entity_event_participant);
-
-        //Create adapter and set data
+        updateEmptyListHint(record);
         adapter = new EventEditPersonsInvolvedListAdapter(R.layout.row_read_persons_involved_list_item_layout, this, record);
-
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);
@@ -68,19 +66,14 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditFragment<Fragm
     }
 
     @Override
-    public boolean isShowAddAction() {
+    public boolean isShowNewAction() {
         return true;
     }
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
         EventParticipant o = (EventParticipant) item;
-        EventParticipantFormNavigationCapsule dataCapsule = new EventParticipantFormNavigationCapsule(getContext(), o.getUuid());
-        EventParticipantEditActivity.goToActivity(getActivity(), dataCapsule);
-    }
-
-    public static EventEditPersonsInvolvedListFragment newInstance(EventFormNavigationCapsule capsule, Event activityRootData) {
-        return newInstance(EventEditPersonsInvolvedListFragment.class, capsule, activityRootData);
+        EventParticipantEditActivity.startActivity(getContext(), o.getUuid(), getActivityRootData().getUuid());
     }
 }
 

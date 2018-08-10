@@ -4,7 +4,6 @@ import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -13,7 +12,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -153,6 +151,7 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 
         SpinnerAdapter adapter = input.getAdapter();
 
+        valueOnBind = value;
         if (adapter != null) {
             for (int i = 0; i < adapter.getCount(); i++) {
                 Object itemValue = ((Item) adapter.getItem(i)).getValue();
@@ -162,7 +161,6 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
                 }
             }
         } else {
-            valueOnBind = value;
             removeSelection();
         }
     }
@@ -250,7 +248,7 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
     }
 
     @Override
-    protected void setHint(String hint) {
+    public void setHint(String hint) {
         // Hint is handled in adapter
     }
 

@@ -153,8 +153,8 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
                 if (imm != null) {
                     if (v.hasFocus()) {
                         imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
-                        // Prevent the content from being automatically selected
-                        input.setSelection(input.getText().length(), input.getText().length());
+                        //// Prevent the content from being automatically selected
+                        //input.setSelection(input.getText().length(), input.getText().length());
                     } else {
                         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                     }
@@ -192,7 +192,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
     }
 
     @Override
-    protected void setHint(String hint) {
+    public void setHint(String hint) {
         input.setHint(hint);
     }
 

@@ -1,6 +1,8 @@
 package de.symeda.sormas.app;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
@@ -9,26 +11,40 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import de.symeda.sormas.app.core.IListActivityAdapterDataObserverCommunicator;
-import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
-import de.symeda.sormas.app.core.ListAdapterDataObserver;
 import de.symeda.sormas.app.core.NotImplementedException;
-import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.ISetOnListItemClickListener;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
-import de.symeda.sormas.app.util.ConstantHelper;
+import de.symeda.sormas.app.core.async.AsyncTaskResult;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.util.Bundler;
 
-public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter> extends BaseFragment implements IListActivityAdapterDataObserverCommunicator, OnListItemClickListener {
+public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter> extends BaseFragment implements OnListItemClickListener {
 
+    private AsyncTask jobTask;
     private BaseListActivity baseListActivity;
     private IUpdateSubHeadingTitle subHeadingHandler;
     private TListAdapter adapter;
+    private Enum listFilter;
+
+    protected static <TFragment extends BaseListFragment> TFragment newInstance(Class<TFragment> fragmentClass, Bundle data, Enum listFilter) {
+        data = new Bundler(data).setListFilter(listFilter).get();
+        TFragment fragment = newInstance(fragmentClass, data);
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState == null) savedInstanceState = getArguments();
+        listFilter = new Bundler(savedInstanceState).getListFilter();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        new Bundler(outState).setListFilter(listFilter);
     }
 
     @Override
@@ -49,20 +65,41 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
         }
 
         this.adapter = getNewListAdapter();
-        this.adapter.registerAdapterDataObserver(new ListAdapterDataObserver(this));
+        this.adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                updateEmptyListHint();
+            }
+        });
 
         if (this.adapter instanceof ISetOnListItemClickListener) {
-            ((ISetOnListItemClickListener)this.adapter).setOnListItemClickListener(this);
+            ((ISetOnListItemClickListener) this.adapter).setOnListItemClickListener(this);
         } else {
             throw new NotImplementedException("setOnListItemClickListener is not supported by the adapter; " +
-                "implement ISetOnListItemClickListener");
+                    "implement ISetOnListItemClickListener");
         }
 
-        String format = canAddToList() ? getResources().getString(R.string.hint_no_records_found_add_new) : getResources().getString(R.string.hint_no_records_found);
-        getEmptyListView(view).setText(String.format(format, getResources().getString(getEmptyListEntityResId()).toLowerCase()));
+        jobTask = new DefaultAsyncTask(getContext()) {
+            @Override
+            public void onPreExecute() {
+                getBaseActivity().showPreloader();
+            }
+
+            @Override
+            public void doInBackground(final TaskResultHolder resultHolder) {
+                prepareFragmentData();
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                getBaseActivity().hidePreloader();
+            }
+        }.executeOnThreadPool();
 
         return view;
     }
+
+    protected abstract void prepareFragmentData();
 
     @Override
     public void onResume() {
@@ -77,6 +114,8 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
                 }
             });
         }
+
+        subHeadingHandler.updateSubHeadingTitle();
     }
 
     @Override
@@ -96,134 +135,36 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
         return this.adapter;
     }
 
-    @Override
-    public int getListAdapterSize() {
-        return this.adapter.getItemCount();
+    public Enum getListFilter() {
+        return listFilter;
     }
 
-    @Override
-    public TextView getEmptyListView() {
-        return getEmptyListView(getView());
-    }
+    protected void updateEmptyListHint() {
+        TextView emptyListHintView = (TextView) getView().findViewById(R.id.emptyListHint);
+        if (emptyListHintView == null)
+            return;
 
-    private TextView getEmptyListView(View rootView) {
-        return (TextView)rootView.findViewById(R.id.empty_list_hint);
-    }
-
-    @Override
-    public View getListView() {
-        return this.getView().findViewById(R.id.swiperefresh);
+        if (adapter.getItemCount() == 0) {
+            emptyListHintView.setText(getResources().getString(canAddToList() ? R.string.hint_no_records_found_add_new : R.string.hint_no_records_found));
+            emptyListHintView.setVisibility(View.VISIBLE);
+        } else {
+            emptyListHintView.setVisibility(View.GONE);
+        }
     }
 
     public IUpdateSubHeadingTitle getSubHeadingHandler() {
         return this.subHeadingHandler;
     }
 
-    public abstract void cancelTaskExec();
-
-    protected abstract int getEmptyListEntityResId();
-
     protected boolean canAddToList() {
         return false;
     }
 
-    protected String getRecordUuidArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.KEY_DATA_UUID)) {
-                result = (String) arguments.getString(ConstantHelper.KEY_DATA_UUID);
-            }
-        }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
 
-        return result;
-    }
-
-    protected SearchBy getSearchStrategyArg(Bundle arguments) {
-        SearchBy e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_SEARCH_STRATEGY)) {
-                e = (SearchBy) arguments.getSerializable(ConstantHelper.ARG_SEARCH_STRATEGY);
-            }
-        }
-
-        return e;
-    }
-
-    protected <E extends Enum<E>> E getFilterStatusArg(Bundle arguments) {
-        E e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_FILTER_STATUS)) {
-                e = (E) arguments.getSerializable(ConstantHelper.ARG_FILTER_STATUS);
-            }
-        }
-
-        return e;
-    }
-
-    protected <E extends Enum<E>> E getPageStatusArg(Bundle arguments) {
-        E e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_PAGE_STATUS)) {
-                e = (E) arguments.getSerializable(ConstantHelper.ARG_PAGE_STATUS);
-            }
-        }
-
-        return e;
-    }
-
-    protected void saveSearchStrategyState(Bundle outState, SearchBy status) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_SEARCH_STRATEGY, status);
-        }
-    }
-
-    protected <E extends Enum<E>> void saveFilterStatusState(Bundle outState, E status) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_FILTER_STATUS, status);
-        }
-    }
-
-    protected <E extends Enum<E>> void savePageStatusState(Bundle outState, E status) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_PAGE_STATUS, status);
-        }
-    }
-
-    protected void saveRecordUuidState(Bundle outState, String recordUuid) {
-        if (outState != null) {
-            outState.putString(ConstantHelper.KEY_DATA_UUID, recordUuid);
-        }
-    }
-
-    protected static <TFragment extends BaseListFragment, TCapsule extends IListNavigationCapsule> TFragment newInstance(Class<TFragment> f, TCapsule dataCapsule) {
-        TFragment fragment;
-        try {
-            fragment = f.newInstance();
-        } catch (java.lang.InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-
-        Bundle bundle = fragment.getArguments();
-        if (bundle == null) {
-            bundle = new Bundle();
-        }
-
-        IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
-        IStatusElaborator pageStatus = dataCapsule.getPageStatus();
-        SearchBy searchBy = dataCapsule.getSearchStrategy();
-        int activeMenuKey = dataCapsule.getActiveMenuKey();
-
-        bundle.putInt(ConstantHelper.KEY_ACTIVE_MENU, activeMenuKey);
-
-        if (filterStatus != null)
-            bundle.putSerializable(ConstantHelper.ARG_FILTER_STATUS, dataCapsule.getFilterStatus().getValue());
-
-        if (pageStatus != null)
-            bundle.putSerializable(ConstantHelper.ARG_PAGE_STATUS, pageStatus.getValue());
-
-        bundle.putSerializable(ConstantHelper.ARG_SEARCH_STRATEGY, searchBy);
-
-        fragment.setArguments(bundle);
-        return fragment;
+        if (jobTask != null && !jobTask.isCancelled())
+            jobTask.cancel(true);
     }
 }

@@ -1,15 +1,9 @@
 package de.symeda.sormas.app;
 
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.HashMap;
@@ -17,11 +11,9 @@ import java.util.List;
 import java.util.Map;
 
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.core.IDashboardNavigationCapsule;
-import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
+import de.symeda.sormas.app.core.enumeration.StatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.dashboard.SummaryRegisterItem;
-import de.symeda.sormas.app.util.ConstantHelper;
 
 public abstract class BaseDashboardActivity extends BaseActivity {
 
@@ -57,26 +49,6 @@ public abstract class BaseDashboardActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
 
-        if (applicationTitleBar != null && showTitleBar()) {
-            applicationTitleBar.setVisibility(View.VISIBLE);
-
-            if (statusFrame != null && showStatusFrame()) {
-                Context statusFrameContext = statusFrame.getContext();
-
-                Drawable drw = (Drawable) ContextCompat.getDrawable(statusFrameContext, R.drawable.indicator_status_circle);
-                drw.setColorFilter(statusFrameContext.getResources().getColor(getStatusColorResource(statusFrameContext)), PorterDuff.Mode.SRC);
-
-                TextView txtStatusName = (TextView) statusFrame.findViewById(R.id.txtStatusName);
-                ImageView imgStatus = (ImageView) statusFrame.findViewById(R.id.statusIcon);
-
-
-                txtStatusName.setText(getStatusName(statusFrameContext));
-                imgStatus.setBackground(drw);
-
-                statusFrame.setVisibility(View.VISIBLE);
-            }
-        }
-
         replaceFragments(buildSummaryFragments());
     }
 
@@ -84,15 +56,11 @@ public abstract class BaseDashboardActivity extends BaseActivity {
         return false;
     }
 
-    public boolean showStatusFrame() {
-        return false;
-    }
-
-    public int getStatusColorResource(Context context) {
+    public int getStatusColorResource() {
         Enum pageStatus = getPageStatus();
 
         if (pageStatus != null) {
-            IStatusElaborator elaborator = StatusElaboratorFactory.getElaborator(context, pageStatus);
+            StatusElaborator elaborator = StatusElaboratorFactory.getElaborator(pageStatus);
             if (elaborator != null)
                 return elaborator.getColorIndicatorResource();
         }
@@ -100,13 +68,13 @@ public abstract class BaseDashboardActivity extends BaseActivity {
         return R.color.noColor;
     }
 
-    public String getStatusName(Context context) {
+    public String getStatusName() {
         Enum pageStatus = getPageStatus();
 
         if (pageStatus != null) {
-            IStatusElaborator elaborator = StatusElaboratorFactory.getElaborator(context, pageStatus);
+            StatusElaborator elaborator = StatusElaboratorFactory.getElaborator(pageStatus);
             if (elaborator != null)
-                return elaborator.getFriendlyName();
+                return elaborator.getFriendlyName(getContext());
         }
 
         return "";
@@ -126,9 +94,6 @@ public abstract class BaseDashboardActivity extends BaseActivity {
                 if (f == null)
                     continue;
 
-                if (f.getArguments() == null)
-                    f.setArguments(getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA));
-
                 FrameLayout frame = (FrameLayout) findViewById(f.getContainerResId());
 
                 if (frame == null)
@@ -146,25 +111,12 @@ public abstract class BaseDashboardActivity extends BaseActivity {
             }
             ft.commit();
         }
+
+        updateStatusFrame();
     }
 
     @Override
     protected int getRootActivityLayout() {
         return R.layout.activity_root_dashboard_layout;
-    }
-
-    protected static <TActivity extends BaseActivity, TCapsule extends IDashboardNavigationCapsule>
-    void goToActivity(Context fromActivity, Class<TActivity> toActivity, TCapsule dataCapsule) {
-
-        IStatusElaborator pageStatus = dataCapsule.getPageStatus();
-        Intent intent = new Intent(fromActivity, toActivity);
-        Bundle bundle = new Bundle();
-
-        if (pageStatus != null)
-            bundle.putSerializable(ConstantHelper.ARG_PAGE_STATUS, pageStatus.getValue());
-
-        intent.putExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA, bundle);
-
-        fromActivity.startActivity(intent);
     }
 }

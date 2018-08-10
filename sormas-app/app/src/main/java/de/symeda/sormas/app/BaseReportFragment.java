@@ -18,7 +18,7 @@ import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 
-public abstract class BaseReportFragment<TBinding extends ViewDataBinding, TData> extends BaseFragment {
+public abstract class BaseReportFragment<TBinding extends ViewDataBinding> extends BaseFragment {
 
     private final static String TAG = BaseReportFragment.class.getSimpleName();
 
@@ -58,20 +58,28 @@ public abstract class BaseReportFragment<TBinding extends ViewDataBinding, TData
         rootView = rootBinding.getRoot();
 
         final ViewStub vsChildFragmentFrame = (ViewStub) rootView.findViewById(R.id.vsChildFragmentFrame);
-
         vsChildFragmentFrame.setOnInflateListener(new ViewStub.OnInflateListener() {
             @Override
             public void onInflate(ViewStub stub, View inflated) {
-                //onLayoutBindingHelper(stub, inflated);
 
                 contentViewStubBinding = DataBindingUtil.bind(inflated);
-                String layoutName = getResources().getResourceEntryName(getLayoutResId());
-//                    setRootNotificationBindingVariable(contentViewStubBinding, layoutName);
+                contentViewStubBinding.addOnRebindCallback(new OnRebindCallback() {
+                    @Override
+                    public void onBound(ViewDataBinding binding) {
+                        super.onBound(binding);
+
+                        if (!skipAfterLayoutBinding)
+                            onAfterLayoutBinding(contentViewStubBinding);
+                        skipAfterLayoutBinding = true;
+
+                        getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
+                    }
+                });
                 onLayoutBinding(contentViewStubBinding);
             }
         });
 
-        vsChildFragmentFrame.setLayoutResource(getLayoutResId());
+        vsChildFragmentFrame.setLayoutResource(getReportLayout());
 
         jobTask = new DefaultAsyncTask(getContext()) {
             @Override
@@ -92,19 +100,6 @@ public abstract class BaseReportFragment<TBinding extends ViewDataBinding, TData
                     return;
 
                 vsChildFragmentFrame.inflate();
-
-                contentViewStubBinding.addOnRebindCallback(new OnRebindCallback() {
-                    @Override
-                    public void onBound(ViewDataBinding binding) {
-                        super.onBound(binding);
-
-                        if (!skipAfterLayoutBinding)
-                            onAfterLayoutBinding(contentViewStubBinding);
-                        skipAfterLayoutBinding = false;
-
-                        getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
-                    }
-                });
             }
         }.executeOnThreadPool();
 
@@ -143,33 +138,15 @@ public abstract class BaseReportFragment<TBinding extends ViewDataBinding, TData
         return contentViewStubBinding;
     }
 
-    protected static <TFragment extends BaseReportFragment> TFragment newInstance(Class<TFragment> f) {
-
-        TFragment fragment;
-        try {
-            fragment = f.newInstance();
-        } catch (java.lang.InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-
-        Bundle bundle = fragment.getArguments();
-        if (bundle == null) {
-            bundle = new Bundle();
-        }
-
-        fragment.setArguments(bundle);
-        return fragment;
-    }
-
     protected abstract void prepareFragmentData(Bundle savedInstanceState);
 
     protected abstract void onLayoutBinding(TBinding contentBinding);
 
-    protected abstract void onAfterLayoutBinding(TBinding contentBinding);
+    protected void onAfterLayoutBinding(TBinding contentBinding) {
 
-    protected abstract TData getPrimaryData();
+    }
 
-    protected abstract int getLayoutResId();
+    protected abstract int getReportLayout();
 
     @Override
     public void onDestroy() {

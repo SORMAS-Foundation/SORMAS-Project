@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.event.edit;
 
-import android.os.Bundle;
 import android.view.View;
 
 import java.util.List;
@@ -17,7 +16,6 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.databinding.FragmentEventEditLayoutBinding;
-import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
 
 public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutBinding, Event, Event> {
@@ -29,7 +27,9 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
     private List<Item> diseaseList;
     private List<Item> typeOfPlaceList;
 
-    // Instance methods
+    public static EventEditFragment newInstance(Event activityRootData) {
+        return newInstance(EventEditFragment.class, null, activityRootData);
+    }
 
     private void setUpControlListeners(final FragmentEventEditLayoutBinding contentBinding) {
         contentBinding.eventEventLocation.setOnClickListener(new View.OnClickListener() {
@@ -54,9 +54,6 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
         });
     }
 
-    public static EventEditFragment newInstance(EventFormNavigationCapsule capsule, Event activityRootData) {
-        return newInstance(EventEditFragment.class, capsule, activityRootData);
-    }
 
     // Overrides
 
@@ -71,7 +68,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
     }
 
     @Override
-    protected void prepareFragmentData(Bundle savedInstanceState) {
+    protected void prepareFragmentData() {
         record = getActivityRootData();
 
         diseaseList = DataUtils.getEnumItems(Disease.class, true);
@@ -81,10 +78,6 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
     @Override
     public void onLayoutBinding(FragmentEventEditLayoutBinding contentBinding) {
         setUpControlListeners(contentBinding);
-
-        if (isLiveValidationDisabled()) {
-            disableLiveValidation(true);
-        }
 
         contentBinding.setData(record);
         contentBinding.setEventTypeClass(EventType.class);

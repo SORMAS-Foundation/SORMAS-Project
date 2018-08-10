@@ -243,6 +243,9 @@ public class SampleService extends AbstractAdoService<Sample> {
 		}
 		if (sampleCriteria.getCaseClassification() != null) {
 			filter = and(cb, filter, cb.equal(caze.get(Case.CASE_CLASSIFICATION), sampleCriteria.getCaseClassification()));
+		}		
+		if (sampleCriteria.getDisease() != null) {
+			filter = and(cb, filter, cb.equal(caze.get(Case.DISEASE), sampleCriteria.getDisease()));
 		}
 		if (sampleCriteria.getCaze() != null) {
 			filter = and(cb, filter, cb.equal(caze.get(Case.UUID), sampleCriteria.getCaze().getUuid()));

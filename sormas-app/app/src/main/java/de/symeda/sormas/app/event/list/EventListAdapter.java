@@ -27,9 +27,6 @@ public class EventListAdapter extends DataBoundAdapter<RowEventListItemLayoutBin
     private List<Event> data;
     private OnListItemClickListener mOnListItemClickListener;
 
-    private LayerDrawable backgroundRowItem;
-    private Drawable unreadListItemIndicator;
-
     public EventListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Event> data) {
         super(rowLayout);
         this.mOnListItemClickListener = onListItemClickListener;
@@ -58,8 +55,8 @@ public class EventListAdapter extends DataBoundAdapter<RowEventListItemLayoutBin
             holder.binding.imgSyncIcon.setVisibility(View.GONE);
         }
 
-        updateUnreadIndicator(holder, record);
-
+        // TODO #704
+//        updateUnreadIndicator(holder, record);
     }
 
     @Override
@@ -67,18 +64,18 @@ public class EventListAdapter extends DataBoundAdapter<RowEventListItemLayoutBin
         return data.size();
     }
 
-    public void updateUnreadIndicator(DataBoundViewHolder<RowEventListItemLayoutBinding> holder, Event item) {
-        backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
-        unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
-
-        if (item != null) {
-            if (item.isUnreadOrChildUnread()) {
-                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
-            } else {
-                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
-            }
-        }
-    }
+//    public void updateUnreadIndicator(DataBoundViewHolder<RowEventListItemLayoutBinding> holder, Event item) {
+//        backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
+//        unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
+//
+//        if (item != null) {
+//            if (item.isUnreadOrChildUnread()) {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
+//            } else {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
+//            }
+//        }
+//    }
 
     public void indicateEventType(ImageView imgEventTypeIcon, Event eventRecord) {
         Resources resources = imgEventTypeIcon.getContext().getResources();

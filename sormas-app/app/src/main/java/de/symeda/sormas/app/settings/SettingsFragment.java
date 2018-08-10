@@ -18,34 +18,31 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.dialog.SyncLogDialog;
-import de.symeda.sormas.app.component.dialog.TeboProgressDialog;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
 import de.symeda.sormas.app.databinding.FragmentSettingsLayoutBinding;
 import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
-import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Callback;
-import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
 
 /**
- * Created by Orson on 03/11/2017.
+ * TODO SettingsFragment should probably not be a BaseLandingFragment, but a BaseFragment
  */
-
 public class SettingsFragment extends BaseLandingFragment {
 
     private final int SHOW_DEV_OPTIONS_CLICK_LIMIT = 5;
 
     private FragmentSettingsLayoutBinding binding;
-    private TeboProgressDialog progressDialog;
     private int versionClickedCount;
+
+    protected boolean isShowDevOptions() { return versionClickedCount >= SHOW_DEV_OPTIONS_CLICK_LIMIT; }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        progressDialog = new TeboProgressDialog(getActivity());
 
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings_layout, container, false);
+        super.onCreateView(inflater, container, savedInstanceState);
+        binding = (FragmentSettingsLayoutBinding)rootBinding;
 
         binding.settingsServerUrl.setValue(ConfigProvider.getServerRestUrl());
         binding.changePin.setOnClickListener(new View.OnClickListener() {
@@ -78,9 +75,10 @@ public class SettingsFragment extends BaseLandingFragment {
             @Override
             public void onClick(View v) {
                 versionClickedCount++;
-                if (versionClickedCount >= SHOW_DEV_OPTIONS_CLICK_LIMIT) {
+                if (isShowDevOptions()) {
                     binding.settingsServerUrl.setVisibility(View.VISIBLE);
                     binding.logout.setVisibility(View.VISIBLE);
+                    getBaseLandingActivity().getSaveMenu().setVisible(true);
                 }
             }
         });
@@ -89,15 +87,20 @@ public class SettingsFragment extends BaseLandingFragment {
     }
 
     @Override
+    public int getRootLandingLayout() {
+        return R.layout.fragment_settings_layout;
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
         boolean hasUser = ConfigProvider.getUser() != null;
-        binding.settingsServerUrl.setVisibility(versionClickedCount >= SHOW_DEV_OPTIONS_CLICK_LIMIT ? View.VISIBLE : View.GONE);
+        binding.settingsServerUrl.setVisibility(isShowDevOptions() ? View.VISIBLE : View.GONE);
         binding.changePin.setVisibility(hasUser ? View.VISIBLE : View.GONE);
         binding.resynchronizeData.setVisibility(hasUser ? View.VISIBLE : View.GONE);
         binding.showSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
-        binding.logout.setVisibility(hasUser && versionClickedCount >= SHOW_DEV_OPTIONS_CLICK_LIMIT ? View.VISIBLE : View.GONE);
+        binding.logout.setVisibility(hasUser && isShowDevOptions() ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -194,5 +197,10 @@ public class SettingsFragment extends BaseLandingFragment {
     @Override
     public RecyclerView.LayoutManager createLayoutManager() {
         return null;
+    }
+
+    @Override
+    public boolean isShowSaveAction() {
+        return isShowDevOptions();
     }
 }

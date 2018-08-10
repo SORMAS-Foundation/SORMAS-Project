@@ -1,22 +1,19 @@
 package de.symeda.sormas.app.sample.list;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.view.Menu;
 import android.widget.AdapterView;
 
 import org.joda.time.DateTime;
 
+import java.util.List;
 import java.util.Random;
 
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.core.IListNavigationCapsule;
-import de.symeda.sormas.app.core.ListNavigationCapsule;
-import de.symeda.sormas.app.core.SearchBy;
-import de.symeda.sormas.app.shared.ShipmentStatus;
+import de.symeda.sormas.app.sample.ShipmentStatus;
 
 public class SampleListActivity extends BaseListActivity {
 
@@ -25,27 +22,13 @@ public class SampleListActivity extends BaseListActivity {
             ShipmentStatus.RECEIVED, ShipmentStatus.REFERRED_OTHER_LAB
     };
 
-    private SearchBy searchBy = null;
-    private String recordUuid = null;
-
-    @Override
-    protected void onCreateInner(Bundle savedInstanceState) {
-        searchBy = (SearchBy) getSearchStrategyArg(savedInstanceState);
-        recordUuid = getRecordUuidArg(savedInstanceState);
-        super.onCreateInner(savedInstanceState);
+    public static void startActivity(Context context, ShipmentStatus listFilter) {
+        BaseListActivity.startActivity(context, SampleListActivity.class, buildBundle(listFilter));
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        saveSearchStrategyState(outState, searchBy);
-        saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public int getPageMenuData() {
-        return R.xml.data_landing_page_sample_menu;
+    public List<PageMenuItem> getPageMenuData(){
+        return PageMenuItem.fromEnum(statusFilters, getContext());
     }
 
     @Override
@@ -56,9 +39,11 @@ public class SampleListActivity extends BaseListActivity {
 
     @Override
     protected BaseListFragment buildListFragment(PageMenuItem menuItem) {
-        ShipmentStatus status = statusFilters[menuItem.getKey()];
-        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(SampleListActivity.this, status, searchBy);
-        return SampleListFragment.newInstance(dataCapsule);
+        if (menuItem != null) {
+            ShipmentStatus listFilter = statusFilters[menuItem.getKey()];
+            return SampleListFragment.newInstance(listFilter);
+        }
+        return null;
     }
 
     @Override
@@ -71,9 +56,5 @@ public class SampleListActivity extends BaseListActivity {
     @Override
     protected int getActivityTitle() {
         return R.string.heading_level2_samples_list;
-    }
-
-    public static void goToActivity(Context fromActivity, IListNavigationCapsule dataCapsule) {
-        BaseListActivity.goToActivity(fromActivity, SampleListActivity.class, dataCapsule);
     }
 }

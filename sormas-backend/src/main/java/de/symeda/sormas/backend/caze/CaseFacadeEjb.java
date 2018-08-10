@@ -745,7 +745,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				if (sampleDates.length() > 0) {
 					sampleDates += ", "; 
 				}
-				sampleDates += DateHelper.formatShortDate(sourceSample.getSampleDateTime());
+				sampleDates += DateHelper.formatLocalShortDate(sourceSample.getSampleDateTime());
 			}
 
 			for (SampleTest sourceSampleTest : sourceSample.getSampleTests()) {
@@ -776,15 +776,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				.collect(Collectors.joining(", ")));
 		target.setContactWithRodent(source.getEpiData().getRodents());
 		// contact with confirmed case
-		target.setContactWithConfirmedCase(YesNoUnknown.NO);
-		List<Contact> sourceContacts = contactService.getAllByResultingCase(source);
-		for (Contact sourceContact : sourceContacts) {
-			if (sourceContact.getCaze().getCaseClassification() == CaseClassification.CONFIRMED) {
-				target.setContactWithConfirmedCase(YesNoUnknown.YES);
-				break;
-			}
-		}
-
+		target.setContactWithConfirmedCase(contactService.hadContactWithConfirmedCase(source) ? YesNoUnknown.YES : YesNoUnknown.NO);
 		target.setOnsetDate(source.getSymptoms().getOnsetDate());
 		target.setSymptoms(source.getSymptoms().toHumanString(false));
 

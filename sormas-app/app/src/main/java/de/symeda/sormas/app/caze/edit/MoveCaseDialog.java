@@ -25,8 +25,7 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogMoveCaseLayoutBinding;
 import de.symeda.sormas.app.util.InfrastructureHelper;
-import de.symeda.sormas.app.validation.CaseValidator;
-import de.symeda.sormas.app.validation.FragmentValidator;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -58,7 +57,7 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
     @Override
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, final Callback.IAction callback) {
         try {
-            FragmentValidator.validate(getContext(), contentBinding, this);
+            FragmentValidator.validate(getContext(), contentBinding);
         } catch (ValidationException e) {
             NotificationHelper.showDialogNotification(this, ERROR, e.getMessage());
             return;

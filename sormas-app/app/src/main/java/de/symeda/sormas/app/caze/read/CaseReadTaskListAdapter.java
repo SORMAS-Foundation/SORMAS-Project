@@ -27,9 +27,6 @@ public class CaseReadTaskListAdapter extends DataBoundAdapter<RowReadCaseTaskLis
     private List<Task> data;
     private OnListItemClickListener mOnListItemClickListener;
 
-    private LayerDrawable backgroundRowItem;
-    private Drawable unreadListItemIndicator;
-
     public CaseReadTaskListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Task> data) {
         super(rowLayout);
         this.mOnListItemClickListener = onListItemClickListener;
@@ -60,8 +57,8 @@ public class CaseReadTaskListAdapter extends DataBoundAdapter<RowReadCaseTaskLis
             holder.binding.imgSyncIcon.setVisibility(View.GONE);
         }
 
-        updateUnreadIndicator(holder, record);
-
+        // TODO #704
+//        updateUnreadIndicator(holder, record);
     }
 
     @Override
@@ -69,18 +66,18 @@ public class CaseReadTaskListAdapter extends DataBoundAdapter<RowReadCaseTaskLis
         return data.size();
     }
 
-    public void updateUnreadIndicator(DataBoundViewHolder<RowReadCaseTaskListItemLayoutBinding> holder, Task item) {
-        backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
-        unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
-
-        if (item != null) {
-            if (item.isUnreadOrChildUnread()) {
-                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
-            } else {
-                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
-            }
-        }
-    }
+//    public void updateUnreadIndicator(DataBoundViewHolder<RowReadCaseTaskListItemLayoutBinding> holder, Task item) {
+//        backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
+//        unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
+//
+//        if (item != null) {
+//            if (item.isUnreadOrChildUnread()) {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
+//            } else {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
+//            }
+//        }
+//    }
 
 
     public void indicatePriority(ImageView imgTaskPriorityIcon, Task task) {

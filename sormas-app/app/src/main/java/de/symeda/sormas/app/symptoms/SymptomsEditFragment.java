@@ -1,7 +1,6 @@
 package de.symeda.sormas.app.symptoms;
 
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -29,10 +28,7 @@ import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentSymptomsEditLayoutBinding;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.validation.SymptomsValidator;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -52,10 +48,19 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 
     private List<ControlSwitchField> symptomFields;
 
+
+    public static SymptomsEditFragment newInstance(Case activityRootData) {
+        return newInstance(SymptomsEditFragment.class, null, activityRootData);
+    }
+
+    public static SymptomsEditFragment newInstance(Visit activityRootData) {
+        return newInstance(SymptomsEditFragment.class, null, activityRootData);
+    }
+
     @Override
     protected String getSubHeadingTitle() {
         Resources r = getResources();
-        return r.getString(R.string.caption_symptom_information);
+        return r.getString(R.string.caption_symptoms);
     }
 
     @Override
@@ -64,7 +69,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
     }
 
     @Override
-    protected void prepareFragmentData(Bundle savedInstanceState) {
+    protected void prepareFragmentData() {
         ado = getActivityRootData();
         Person person;
         if (ado instanceof Case) {
@@ -104,7 +109,6 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 
     @Override
     public void onAfterLayoutBinding(FragmentSymptomsEditLayoutBinding contentBinding) {
-
         setVisibilityByDisease(SymptomsDto.class, disease, contentBinding.mainContent);
 
         if (contentBinding.symptomsBulgingFontanelle.getVisibility() == VISIBLE
@@ -168,7 +172,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
                             onsetSymptomField.getAdapter().remove(onsetSymptomField.getAdapter().getItem(position));
                         }
                     }
-                    onsetSymptomField.setEnabled(!onsetSymptomField.getAdapter().isEmpty());
+                    onsetSymptomField.setEnabled(onsetSymptomField.getAdapter().getCount() > 1); // first is "empty item"
                 }
             });
 
@@ -178,7 +182,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
         }
 
         onsetSymptomField.initializeSpinner(DataUtils.addEmptyItem(initialSpinnerItems));
-        onsetSymptomField.setEnabled(!onsetSymptomField.getAdapter().isEmpty());
+        onsetSymptomField.setEnabled(onsetSymptomField.getAdapter().getCount() > 1); // first is "empty item"
     }
 
     @Override
@@ -192,7 +196,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
     }
 
     @Override
-    public boolean isShowAddAction() {
+    public boolean isShowNewAction() {
         return false;
     }
 
@@ -232,14 +236,6 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
         }
 
         return temperature;
-    }
-
-    public static SymptomsEditFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(SymptomsEditFragment.class, capsule, activityRootData);
-    }
-
-    public static SymptomsEditFragment newInstance(VisitFormNavigationCapsule capsule, Visit activityRootData) {
-        return newInstance(SymptomsEditFragment.class, capsule, activityRootData);
     }
 
     private void makeAllSymptomsRequired() {

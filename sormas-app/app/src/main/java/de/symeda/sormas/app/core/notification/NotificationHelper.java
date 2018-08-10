@@ -6,6 +6,7 @@ import android.databinding.ViewDataBinding;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.text.Html;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -104,7 +105,7 @@ public class NotificationHelper {
 
         notificationFrame.setBackgroundColor(backgroundColor);
         tvNotificationMessage.setTextColor(textColor);
-        tvNotificationMessage.setText(message);
+        tvNotificationMessage.setText(Html.fromHtml(message));
 
         notificationFrame.setVisibility(View.VISIBLE);
 
@@ -194,7 +195,7 @@ public class NotificationHelper {
         backgroundLayer.setColorFilter(backgroundColor, PorterDuff.Mode.SRC_OVER);
 
         tvNotificationMessage.setTextColor(textColor);
-        tvNotificationMessage.setText(message);
+        tvNotificationMessage.setText(Html.fromHtml(message));
 
         notificationFrame.setBackground(drawable);
         notificationFrame.setVisibility(View.VISIBLE);

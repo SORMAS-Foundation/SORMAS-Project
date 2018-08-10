@@ -56,7 +56,7 @@ public class GridExportStreamResource extends StreamResource {
 							Property<?> property = container.getItem(i).getItemProperty(c.getPropertyId());
 							if (property.getValue() != null) {
 								if (property.getType() == Date.class) {
-									row.add(DateHelper.formatDateTime((Date) property.getValue()));
+									row.add(DateHelper.formatLocalDateTime((Date) property.getValue()));
 								} else if (property.getType() == Boolean.class) {
 									if ((Boolean) property.getValue() == true) {
 										row.add(I18nProperties.getEnumCaption(YesNoUnknown.YES));

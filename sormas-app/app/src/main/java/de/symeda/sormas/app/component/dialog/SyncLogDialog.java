@@ -84,7 +84,7 @@ public class SyncLogDialog {
                     if (lastDate != null) {
                         content.append("<br/>");
                     }
-                    content.append("<p><b><u>" + DateHelper.formatDate(log.getCreationDate()) + "</u></b></p><p><b>" + log.getEntityName() + "</b><br/>" + log.getConflictText() + "</p>");
+                    content.append("<p><b><u>" + DateHelper.formatLocalShortDate(log.getCreationDate()) + "</u></b></p><p><b>" + log.getEntityName() + "</b><br/>" + log.getConflictText() + "</p>");
                 }
                 lastDate = log.getCreationDate();
             }

@@ -6,9 +6,7 @@ import android.databinding.OnRebindCallback;
 import android.databinding.ViewDataBinding;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -16,17 +14,12 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
-import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
@@ -47,18 +40,10 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
     private TActivityRootData activityRootData;
     private View rootView;
 
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        saveUserRightState(outState, editOrCreateUserRight);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
-        editOrCreateUserRight = (UserRight) getUserRightArg(arguments);
+    protected static <TFragment extends BaseReadFragment> TFragment newInstance(Class<TFragment> fragmentClass, Bundle data, AbstractDomainObject activityRootData) {
+        TFragment fragment = newInstance(fragmentClass, data);
+        fragment.setActivityRootData(activityRootData);
+        return fragment;
     }
 
     @Override
@@ -144,42 +129,27 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
         return rootView;
     }
 
-    public void showEmptyListHint(List list, int entityNameResId) {
-        showEmptyListHint(list, R.string.hint_no_records_found, entityNameResId);
-    }
-
-    private void showEmptyListHint(List list, int stringFormatResId, int entityNameResId) {
-        boolean isListEmpty = false;
-
+    protected void updateEmptyListHint(List list) {
         if (rootView == null)
             return;
-
         TextView emptyListHintView = (TextView) rootView.findViewById(R.id.emptyListHint);
-
         if (emptyListHintView == null)
             return;
 
-        emptyListHintView.setVisibility(View.GONE);
-
-        if (list == null || list.size() <= 0)
-            isListEmpty = true;
-
-        if (!isListEmpty)
-            return;
-
-        Resources r = getResources();
-
-        String format = r.getString(stringFormatResId);
-
-        emptyListHintView.setText(String.format(format, r.getString(entityNameResId)));
-        emptyListHintView.setVisibility(View.VISIBLE);
+        if (list == null || list.isEmpty()) {
+            emptyListHintView.setText(getResources().getString(R.string.hint_no_records_found));
+            emptyListHintView.setVisibility(View.VISIBLE);
+        } else {
+            emptyListHintView.setVisibility(View.GONE);
+        }
     }
 
     protected abstract void prepareFragmentData(Bundle savedInstanceState);
 
-    public abstract void onLayoutBinding(TBinding contentBinding);
+    protected abstract void onLayoutBinding(TBinding contentBinding);
 
-    public void onAfterLayoutBinding(TBinding contentBinding) { }
+    protected void onAfterLayoutBinding(TBinding contentBinding) {
+    }
 
     public boolean makeHeightMatchParent() {
         return false;
@@ -230,120 +200,6 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
 
     public TBinding getContentBinding() {
         return contentViewStubBinding;
-    }
-
-    protected static <TFragment extends BaseReadFragment, TCapsule extends INavigationCapsule> TFragment newInstance(Class<TFragment> f, TCapsule dataCapsule, AbstractDomainObject activityRootData) {
-        TFragment fragment;
-        try {
-            fragment = f.newInstance();
-        } catch (java.lang.InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-
-        Bundle bundle = fragment.getArguments();
-        if (bundle == null) {
-            bundle = new Bundle();
-        }
-
-        String dataUuid = dataCapsule.getRecordUuid();
-        IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
-        IStatusElaborator pageStatus = dataCapsule.getPageStatus();
-        int activeMenuKey = dataCapsule.getActiveMenuKey();
-        String personUuid = dataCapsule.getPersonUuid();
-        String caseUuid = dataCapsule.getCaseUuid();
-        String eventUuid = dataCapsule.getEventUuid();
-        String taskUuid = dataCapsule.getTaskUuid();
-        String contactUuid = dataCapsule.getContactUuid();
-        String sampleUuid = dataCapsule.getSampleUuid();
-        Disease disease = dataCapsule.getDisease();
-        boolean isForVisit = dataCapsule.isForVisit();
-        boolean isVisitCooperative = dataCapsule.isVisitCooperative();
-        UserRight userRight = dataCapsule.getUserRight();
-
-        bundle.putInt(ConstantHelper.KEY_ACTIVE_MENU, activeMenuKey);
-        bundle.putString(ConstantHelper.KEY_DATA_UUID, dataUuid);
-        bundle.putString(ConstantHelper.KEY_PERSON_UUID, personUuid);
-        bundle.putString(ConstantHelper.KEY_CASE_UUID, caseUuid);
-        bundle.putString(ConstantHelper.KEY_EVENT_UUID, eventUuid);
-        bundle.putString(ConstantHelper.KEY_TASK_UUID, taskUuid);
-        bundle.putString(ConstantHelper.KEY_CONTACT_UUID, contactUuid);
-        bundle.putString(ConstantHelper.KEY_SAMPLE_UUID, sampleUuid);
-        bundle.putSerializable(ConstantHelper.ARG_DISEASE, disease);
-        bundle.putBoolean(ConstantHelper.ARG_FOR_VISIT, isForVisit);
-        bundle.putBoolean(ConstantHelper.ARG_VISIT_COOPERATIVE, isVisitCooperative);
-        bundle.putSerializable(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT, userRight);
-
-        if (filterStatus != null)
-            bundle.putSerializable(ConstantHelper.ARG_FILTER_STATUS, dataCapsule.getFilterStatus().getValue());
-
-        if (pageStatus != null)
-            bundle.putSerializable(ConstantHelper.ARG_PAGE_STATUS, pageStatus.getValue());
-
-        fragment.setArguments(bundle);
-        fragment.setActivityRootData(activityRootData);
-        return fragment;
-    }
-
-    protected String getRecordUuidArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.KEY_DATA_UUID)) {
-                result = (String) arguments.getString(ConstantHelper.KEY_DATA_UUID);
-            }
-        }
-
-        return result;
-    }
-
-    protected <E extends Enum<E>> E getFilterStatusArg(Bundle arguments) {
-        E e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.ARG_FILTER_STATUS)) {
-                e = (E) arguments.getSerializable(ConstantHelper.ARG_FILTER_STATUS);
-            }
-        }
-
-        return e;
-    }
-
-    protected <E extends Enum<E>> E getPageStatusArg(Bundle arguments) {
-        E e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.ARG_PAGE_STATUS)) {
-                e = (E) arguments.getSerializable(ConstantHelper.ARG_PAGE_STATUS);
-            }
-        }
-
-        return e;
-    }
-
-    protected UserRight getUserRightArg(Bundle arguments) {
-        UserRight e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT)) {
-                e = (UserRight) arguments.getSerializable(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT);
-            }
-        }
-
-        return e;
-    }
-
-    protected <E extends Enum<E>> void saveFilterStatusState(Bundle outState, E status) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_FILTER_STATUS, status);
-        }
-    }
-
-    protected void saveRecordUuidState(Bundle outState, String recordUuid) {
-        if (outState != null) {
-            outState.putString(ConstantHelper.KEY_DATA_UUID, recordUuid);
-        }
-    }
-
-    protected void saveUserRightState(Bundle outState, UserRight userRight) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT, userRight);
-        }
     }
 
     public boolean showEditAction() {

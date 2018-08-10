@@ -11,11 +11,12 @@
                 </shape>
 
             </item>
-            <item android:gravity="right|center_vertical"
-                android:drawable="@drawable/ic_spinner_arrow_down_disabled_24dp"
-                android:width="@dimen/spinnerIconWidth" android:height="@dimen/spinnerIconHeight"
-                android:right="@dimen/contentHorizontalSpacing"
-                />
+            <item android:right="@dimen/contentHorizontalSpacing">
+                <bitmap android:width="@dimen/spinnerIconWidth"
+                        android:height="@dimen/spinnerIconHeight"
+                        android:gravity="right|center_vertical"
+                        android:src="@drawable/ic_spinner_arrow_down_disabled"/>
+            </item>
         </layer-list>
     </item>
     <item android:state_activated="true" >
@@ -29,11 +30,12 @@
                 </shape>
 
             </item>
-            <item android:gravity="right|center_vertical"
-                android:drawable="@drawable/ic_spinner_arrow_down_error_24dp"
-                android:width="@dimen/spinnerIconWidth" android:height="@dimen/spinnerIconHeight"
-                android:right="@dimen/contentHorizontalSpacing"
-                />
+            <item android:right="@dimen/contentHorizontalSpacing">
+                <bitmap android:width="@dimen/spinnerIconWidth"
+                        android:height="@dimen/spinnerIconHeight"
+                        android:gravity="right|center_vertical"
+                        android:src="@drawable/ic_spinner_arrow_down_error"/>
+            </item>
         </layer-list>
     </item>
     <item android:state_selected="true" >
@@ -47,11 +49,12 @@
                 </shape>
 
             </item>
-            <item android:gravity="right|center_vertical"
-                android:drawable="@drawable/ic_spinner_arrow_down_error_24dp"
-                android:width="@dimen/spinnerIconWidth" android:height="@dimen/spinnerIconHeight"
-                android:right="@dimen/contentHorizontalSpacing"
-                />
+            <item android:right="@dimen/contentHorizontalSpacing">
+                <bitmap android:width="@dimen/spinnerIconWidth"
+                        android:height="@dimen/spinnerIconHeight"
+                        android:gravity="right|center_vertical"
+                        android:src="@drawable/ic_spinner_arrow_down_error"/>
+            </item>
         </layer-list>
     </item>
     <item android:state_pressed="true" >
@@ -65,11 +68,12 @@
                 </shape>
 
             </item>
-            <item android:gravity="right|center_vertical"
-                android:drawable="@drawable/ic_spinner_arrow_down_error_24dp"
-                android:width="@dimen/spinnerIconWidth" android:height="@dimen/spinnerIconHeight"
-                android:right="@dimen/contentHorizontalSpacing"
-                />
+            <item android:right="@dimen/contentHorizontalSpacing">
+                <bitmap android:width="@dimen/spinnerIconWidth"
+                        android:height="@dimen/spinnerIconHeight"
+                        android:gravity="right|center_vertical"
+                        android:src="@drawable/ic_spinner_arrow_down_error"/>
+            </item>
         </layer-list>
     </item>
     <item android:state_focused="true">
@@ -83,11 +87,12 @@
                 </shape>
 
             </item>
-            <item android:gravity="right|center_vertical"
-                android:drawable="@drawable/ic_spinner_arrow_down_error_24dp"
-                android:width="@dimen/spinnerIconWidth" android:height="@dimen/spinnerIconHeight"
-                android:right="@dimen/contentHorizontalSpacing"
-                />
+            <item android:right="@dimen/contentHorizontalSpacing">
+                <bitmap android:width="@dimen/spinnerIconWidth"
+                        android:height="@dimen/spinnerIconHeight"
+                        android:gravity="right|center_vertical"
+                        android:src="@drawable/ic_spinner_arrow_down_error"/>
+            </item>
         </layer-list>
     </item>
     <item>
@@ -101,11 +106,12 @@
                 </shape>
 
             </item>
-            <item android:gravity="right|center_vertical"
-                android:drawable="@drawable/ic_spinner_arrow_down_error_24dp"
-                android:width="@dimen/spinnerIconWidth" android:height="@dimen/spinnerIconHeight"
-                android:right="@dimen/contentHorizontalSpacing"
-                />
+            <item android:right="@dimen/contentHorizontalSpacing">
+                <bitmap android:width="@dimen/spinnerIconWidth"
+                        android:height="@dimen/spinnerIconHeight"
+                        android:gravity="right|center_vertical"
+                        android:src="@drawable/ic_spinner_arrow_down_error"/>
+            </item>
         </layer-list>
     </item>
 </selector>

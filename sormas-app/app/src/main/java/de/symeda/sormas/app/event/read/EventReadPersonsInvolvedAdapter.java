@@ -1,8 +1,5 @@
 package de.symeda.sormas.app.event.read;
 
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -21,9 +18,6 @@ public class EventReadPersonsInvolvedAdapter extends DataBoundAdapter<RowReadPer
 
     private List<EventParticipant> data;
     private OnListItemClickListener mOnListItemClickListener;
-
-    private LayerDrawable backgroundRowItem;
-    private Drawable unreadListItemIndicator;
 
     public EventReadPersonsInvolvedAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<EventParticipant> data) {
         super(rowLayout);
@@ -52,8 +46,8 @@ public class EventReadPersonsInvolvedAdapter extends DataBoundAdapter<RowReadPer
             holder.binding.imgSyncIcon.setVisibility(View.GONE);
         }
 
-        updateUnreadIndicator(holder, record);
-
+        // TODO #704
+//        updateUnreadIndicator(holder, record);
     }
 
     @Override
@@ -61,16 +55,16 @@ public class EventReadPersonsInvolvedAdapter extends DataBoundAdapter<RowReadPer
         return data.size();
     }
 
-    public void updateUnreadIndicator(DataBoundViewHolder<RowReadPersonsInvolvedListItemLayoutBinding> holder, EventParticipant item) {
-        backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
-        unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
-
-        if (item != null) {
-            if (item.isUnreadOrChildUnread()) {
-                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
-            } else {
-                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
-            }
-        }
-    }
+//    public void updateUnreadIndicator(DataBoundViewHolder<RowReadPersonsInvolvedListItemLayoutBinding> holder, EventParticipant item) {
+//        backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
+//        unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
+//
+//        if (item != null) {
+//            if (item.isUnreadOrChildUnread()) {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
+//            } else {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
+//            }
+//        }
+//    }
 }

@@ -1,9 +1,6 @@
 package de.symeda.sormas.app.event.list;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,50 +12,19 @@ import java.util.List;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
-import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IListNavigationCapsule;
-import de.symeda.sormas.app.core.NotificationContext;
-import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.event.read.EventReadActivity;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.searchstrategy.ISearchExecutor;
-import de.symeda.sormas.app.searchstrategy.ISearchResultCallback;
-import de.symeda.sormas.app.searchstrategy.SearchStrategyFor;
-import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
-import de.symeda.sormas.app.util.SubheadingHelper;
 
 public class EventListFragment extends BaseListFragment<EventListAdapter> implements OnListItemClickListener {
 
-    private AsyncTask searchTask;
     private List<Event> events;
     private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerViewForList;
-    private EventStatus filterStatus = null;
-    private SearchBy searchBy = null;
-    String recordUuid = null;
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        saveFilterStatusState(outState, filterStatus);
-        saveSearchStrategyState(outState, searchBy);
-        saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
-
-        filterStatus = (EventStatus) getFilterStatusArg(arguments);
-        searchBy = (SearchBy) getSearchStrategyArg(arguments);
-        recordUuid = getRecordUuidArg(arguments);
+    public static EventListFragment newInstance(EventStatus listFilter) {
+        return newInstance(EventListFragment.class, null, listFilter);
     }
 
     @Override
@@ -71,6 +37,12 @@ public class EventListFragment extends BaseListFragment<EventListAdapter> implem
     }
 
     @Override
+    protected void prepareFragmentData() {
+        events = DatabaseHelper.getEventDao().queryForEq(Event.EVENT_STATUS, getListFilter(), Event.REPORT_DATE_TIME, false);
+        getListAdapter().replaceAll(events);
+    }
+
+    @Override
     public EventListAdapter getNewListAdapter() {
         return new EventListAdapter(R.layout.row_event_list_item_layout, this, this.events);
     }
@@ -78,75 +50,14 @@ public class EventListFragment extends BaseListFragment<EventListAdapter> implem
     @Override
     public void onListItemClick(View view, int position, Object item) {
         Event e = (Event) item;
-        EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(getContext(),
-                e.getUuid(), e.getEventStatus());//, e.getEventType());
-        EventReadActivity.goToActivity(getActivity(), dataCapsule);
-    }
-
-    @Override
-    public void cancelTaskExec() {
-        if (searchTask != null && !searchTask.isCancelled())
-            searchTask.cancel(true);
-    }
-
-    @Override
-    protected int getEmptyListEntityResId() {
-        return R.string.entity_event;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Event"));
-
-        ISearchExecutor<Event> executor = SearchStrategyFor.EVENT.selector(searchBy, filterStatus, recordUuid);
-        searchTask = executor.search(new ISearchResultCallback<Event>() {
-            @Override
-            public void preExecute() {
-                getBaseActivity().showPreloader();
-            }
-
-            @Override
-            public void searchResult(List<Event> result, BoolResult resultStatus) {
-                getBaseActivity().hidePreloader();
-
-                if (!resultStatus.isSuccess()) {
-                    String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Events");
-                    NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, message);
-                    return;
-                }
-
-                events = result;
-
-                if (EventListFragment.this.isResumed()) {
-                    EventListFragment.this.getListAdapter().replaceAll(events);
-                    EventListFragment.this.getListAdapter().notifyDataSetChanged();
-                }
-            }
-        });
+        EventReadActivity.startActivity(getContext(), e.getUuid(), false);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        //recyclerViewForList.setHasFixedSize(true);
         recyclerViewForList.setLayoutManager(linearLayoutManager);
         recyclerViewForList.setAdapter(getListAdapter());
     }
-
-    public static EventListFragment newInstance(IListNavigationCapsule capsule) {
-        return newInstance(EventListFragment.class, capsule);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (searchTask != null && !searchTask.isCancelled())
-            searchTask.cancel(true);
-    }
-
 }
 

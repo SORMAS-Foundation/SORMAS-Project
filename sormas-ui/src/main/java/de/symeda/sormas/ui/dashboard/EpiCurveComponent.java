@@ -80,7 +80,7 @@ public class EpiCurveComponent extends VerticalLayout {
 		Calendar calendar = Calendar.getInstance();
 		for (Date date : filteredDates) {
 			if (epiCurveGrouping == EpiCurveGrouping.DAY) {
-				String label = DateHelper.formatShortDate(date);
+				String label = DateHelper.formatLocalShortDate(date);
 				newLabels.add(label);
 			} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
 				calendar.setTime(date);

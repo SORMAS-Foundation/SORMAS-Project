@@ -21,8 +21,7 @@ import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogCaseEpidTravelEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.validation.CaseValidator;
-import de.symeda.sormas.app.validation.FragmentValidator;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -46,18 +45,16 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
 
         this.data = epiDataTravel;
 
-        travelTypeList = DataUtils.getEnumItems(TravelType.class, false);
+        travelTypeList = DataUtils.getEnumItems(TravelType.class, true);
     }
 
     @Override
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        if (isLiveValidationDisabled()) {
-            setLiveValidationDisabled(false);
-            disableLiveValidation(false);
-        }
+
+        setLiveValidationDisabled(false);
 
         try {
-            FragmentValidator.validate(getContext(), contentBinding, this);
+            FragmentValidator.validate(getContext(), contentBinding);
         } catch (ValidationException e) {
             NotificationHelper.showDialogNotification(this, ERROR, e.getMessage());
             return;
@@ -85,7 +82,6 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
 
         if (data.getId() == null) {
             setLiveValidationDisabled(true);
-            disableLiveValidation(true);
         }
     }
 

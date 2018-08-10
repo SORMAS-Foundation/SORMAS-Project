@@ -8,6 +8,7 @@ import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -16,6 +17,8 @@ import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.user.User;
 
 /**
@@ -90,4 +93,27 @@ public class WeeklyReportDao extends AbstractAdoDao<WeeklyReport> {
         }
     }
 
+    /**
+     * queries reports by facility (not user!)
+     */
+    public List<WeeklyReport> queryByDistrict(EpiWeek epiWeek, District district) {
+        try {
+
+            QueryBuilder builder = queryBuilder();
+            QueryBuilder facilityBuilder = DatabaseHelper.getFacilityDao().queryBuilder();
+            facilityBuilder.where().eq(Facility.DISTRICT, district);
+            builder.join(facilityBuilder);
+
+            Where where = builder.where();
+            where.and(
+                    where.eq(WeeklyReport.YEAR, epiWeek.getYear()),
+                    where.eq(WeeklyReport.EPI_WEEK, epiWeek.getWeek())
+            );
+
+            return builder.query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform queryByDistrict");
+            throw new RuntimeException(e);
+        }
+    }
 }

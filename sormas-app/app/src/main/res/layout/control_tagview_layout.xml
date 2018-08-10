@@ -12,7 +12,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
-            android:scrollHorizontally="true"
             android:maxLines="1"
             android:ellipsize="end"
             style="@style/ControlLabelStyle" />
@@ -20,9 +19,17 @@
         <RelativeLayout
             android:id="@+id/tags_frame"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/controlHalfMarginBottom">
 
         </RelativeLayout>
+
+        <TextView
+            android:id="@+id/empty_tag_view_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hint_no_entries"
+            style="@style/ControlTextFieldReadStyle" />
 
     </LinearLayout>
 

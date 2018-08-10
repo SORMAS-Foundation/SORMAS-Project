@@ -13,14 +13,12 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.core.NotificationContext;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
-import de.symeda.sormas.app.validation.FragmentValidator;
-import de.symeda.sormas.app.validation.VisitValidator;
+import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.visit.VisitSection;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
@@ -29,20 +27,29 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
 
     public static final String TAG = VisitNewActivity.class.getSimpleName();
 
-    private String contactUuid;
-
     private AsyncTask saveTask;
+
+    private String contactUuid = null;
+
+
+    public static void startActivity(Context context, String contactUuid) {
+        BaseEditActivity.startActivity(context, VisitEditActivity.class, buildBundle(contactUuid));
+    }
+
+    public static Bundler buildBundle(String contactUuid) {
+        return buildBundle(null, 0).setContactUuid(contactUuid);
+    }
 
     @Override
     protected void onCreateInner(Bundle savedInstanceState) {
         super.onCreateInner(savedInstanceState);
-        contactUuid = getContactUuidArg(savedInstanceState);
+        contactUuid = new Bundler(savedInstanceState).getContactUuid();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        saveContactUuidState(outState, contactUuid);
+        new Bundler(outState).setContactUuid(contactUuid);
     }
 
     @Override
@@ -58,15 +65,14 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
 
     @Override
     public VisitStatus getPageStatus() {
-        return (VisitStatus) super.getPageStatus();
+        return null;
     }
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Visit activityRootData) {
-        VisitFormNavigationCapsule dataCapsule = new VisitFormNavigationCapsule(
-                VisitNewActivity.this, getRootEntityUuid(), getPageStatus());
-        dataCapsule.setContactUuid(contactUuid);
-        return VisitEditFragment.newInstance(dataCapsule, activityRootData);
+        BaseEditFragment fragment = VisitEditFragment.newInstance(activityRootData, contactUuid);
+        fragment.setLiveValidationDisabled(true);
+        return fragment;
     }
 
     @Override
@@ -77,9 +83,8 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
     }
 
     @Override
-    public void replaceFragment(BaseEditFragment f) {
-        super.replaceFragment(f);
-        getActiveFragment().setLiveValidationDisabled(true);
+    public void replaceFragment(BaseEditFragment f, boolean allowBackNavigation) {
+        super.replaceFragment(f, allowBackNavigation);
     }
 
     @Override
@@ -87,14 +92,12 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
         final Visit visitToSave = getStoredRootEntity();
         VisitEditFragment fragment = (VisitEditFragment) getActiveFragment();
 
-        if (fragment.isLiveValidationDisabled()) {
-            fragment.disableLiveValidation(false);
-        }
+        fragment.setLiveValidationDisabled(false);
 
         try {
             FragmentValidator.validate(getContext(), fragment.getContentBinding());
         } catch (ValidationException e) {
-            NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
+            NotificationHelper.showNotification(this, ERROR, e.getMessage());
             return;
         }
 
@@ -107,7 +110,6 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
 
             @Override
             public void doInBackground(TaskResultHolder resultHolder) throws Exception {
-                validateData(visitToSave);
                 DatabaseHelper.getVisitDao().saveAndSnapshot(visitToSave);
             }
 
@@ -118,36 +120,14 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
                 if (taskResult.getResultStatus().isSuccess()) {
                     if (visitToSave.getVisitStatus() == VisitStatus.COOPERATIVE) {
                         // enter symptoms
-                        VisitEditActivity.goToActivity(VisitNewActivity.this,
-                                new VisitFormNavigationCapsule(VisitNewActivity.this, visitToSave.getUuid(), visitToSave.getVisitStatus())
-                                        .setActiveMenu(VisitSection.SYMPTOMS.ordinal()));
-                    } else {
-                        // back to contact
                         finish();
+                        VisitEditActivity.startActivity(getContext(), visitToSave.getUuid(), contactUuid, VisitSection.SYMPTOMS);
+                    } else {
+                        finish(); // back to contact
                     }
                 }
             }
         }.executeOnThreadPool();
-    }
-
-    private void validateData(Visit data) throws ValidationException {
-        //TODO: Validation
-        /*VisitValidator.clearErrorsForVisitData(visitDataBinding);
-        SymptomsValidator.clearErrorsForSymptoms(symptomsBinding);
-
-        int validationErrorTab = -1;
-
-        if (!SymptomsValidator.validateVisitSymptoms(visit, symptoms, symptomsBinding)) {
-            validationErrorTab = VisitEditTabs.SYMPTOMS.ordinal();
-        }
-        if (!VisitValidator.validateVisitData(visit, contact, visitDataBinding)) {
-            validationErrorTab = VisitEditTabs.VISIT_DATA.ordinal();
-        }
-
-        if (validationErrorTab >= 0) {
-            pager.setCurrentItem(validationErrorTab);
-            return true;
-        }*/
     }
 
     @Override
@@ -155,11 +135,6 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
         return R.string.heading_level3_1_contact_visit_info;
     }
 
-    public static void goToActivity(Context fromActivity, String contactUuid) {
-        BaseEditActivity.goToActivity(fromActivity, VisitNewActivity.class,
-                new VisitFormNavigationCapsule(fromActivity, null, null)
-                        .setContactUuid(contactUuid));
-    }
 
     @Override
     public void onDestroy() {

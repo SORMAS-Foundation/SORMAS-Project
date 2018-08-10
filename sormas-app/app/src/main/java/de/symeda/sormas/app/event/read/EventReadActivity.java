@@ -3,6 +3,8 @@ package de.symeda.sormas.app.event.read;
 import android.content.Context;
 import android.view.Menu;
 
+import java.util.List;
+
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
@@ -13,11 +15,14 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.event.EventSection;
 import de.symeda.sormas.app.event.edit.EventEditActivity;
-import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 
 public class EventReadActivity extends BaseReadActivity<Event> {
 
     public static final String TAG = EventReadActivity.class.getSimpleName();
+
+    public static void startActivity(Context context, String rootUuid, boolean finishInsteadOfUpNav) {
+        BaseReadActivity.startActivity(context, EventReadActivity.class, buildBundle(rootUuid, finishInsteadOfUpNav));
+    }
 
     @Override
     protected Event queryRootData(String recordUuid) {
@@ -26,29 +31,27 @@ public class EventReadActivity extends BaseReadActivity<Event> {
 
     @Override
     public EventStatus getPageStatus() {
-        return (EventStatus) super.getPageStatus();
+        return getStoredRootEntity() == null ? null : getStoredRootEntity().getEventStatus();
     }
 
     @Override
-    public int getPageMenuData() {
-        return R.xml.data_form_page_alert_menu;
+    public List<PageMenuItem> getPageMenuData() {
+        return PageMenuItem.fromEnum(EventSection.values(), getContext());
     }
 
     @Override
     protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Event activityRootData) {
-        EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
-
-        EventSection section = EventSection.fromMenuKey(menuItem.getKey());
+        EventSection section = EventSection.fromOrdinal(menuItem.getKey());
         BaseReadFragment fragment;
         switch (section) {
             case EVENT_INFO:
-                fragment = EventReadFragment.newInstance(dataCapsule, activityRootData);
+                fragment = EventReadFragment.newInstance(activityRootData);
                 break;
-            case EVENT_PERSONS:
-                fragment = EventReadPersonsInvolvedListFragment.newInstance(dataCapsule, activityRootData);
+            case EVENT_PARTICIPANTS:
+                fragment = EventReadPersonsInvolvedListFragment.newInstance(activityRootData);
                 break;
             case TASKS:
-                fragment = EventReadTaskListFragement.newInstance(dataCapsule, activityRootData);
+                fragment = EventReadTaskListFragement.newInstance(activityRootData);
                 break;
             default:
                 throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
@@ -70,14 +73,9 @@ public class EventReadActivity extends BaseReadActivity<Event> {
     }
 
     @Override
-    public void goToEditView(PageMenuItem menuItem) {
-        EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
-        if (menuItem != null) dataCapsule.setActiveMenu(menuItem.getKey());
-        EventEditActivity.goToActivity(this, dataCapsule);
-    }
-
-    public static void goToActivity(Context fromActivity, EventFormNavigationCapsule dataCapsule) {
-        BaseReadActivity.goToActivity(fromActivity, EventReadActivity.class, dataCapsule);
+    public void goToEditView() {
+        EventSection section = EventSection.fromOrdinal(getActivePage().getKey());
+        EventEditActivity.startActivity(this, getRootUuid(), section);
     }
 }
 

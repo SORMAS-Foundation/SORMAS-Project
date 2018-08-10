@@ -1,11 +1,11 @@
 package de.symeda.sormas.app.core.enumeration;
 
-import android.content.res.Resources;
+import android.content.Context;
 
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.app.R;
 
-public class EventStatusElaborator implements IStatusElaborator {
+public class EventStatusElaborator implements StatusElaborator {
 
     private EventStatus status = null;
 
@@ -14,7 +14,7 @@ public class EventStatusElaborator implements IStatusElaborator {
     }
 
     @Override
-    public String getFriendlyName() {
+    public String getFriendlyName(Context context) {
         if (status != null) {
             return status.toShortString();
         }
@@ -36,12 +36,21 @@ public class EventStatusElaborator implements IStatusElaborator {
     }
 
     @Override
-    public String getStatekey() {
-        return ARG_EVENT_STATUS;
+    public Enum getValue() {
+        return this.status;
     }
 
     @Override
-    public Enum getValue() {
-        return this.status;
+    public int getIconResourceId() {
+        switch (status) {
+            case POSSIBLE:
+                return R.drawable.ic_lp_possible_alerts_192dp;
+            case CONFIRMED:
+                return R.drawable.ic_lp_confirmed_alerts_192dp;
+            case NO_EVENT:
+                return R.drawable.ic_lp_not_an_alert_192dp;
+            default:
+                throw new IllegalArgumentException(status.toString());
+        }
     }
 }

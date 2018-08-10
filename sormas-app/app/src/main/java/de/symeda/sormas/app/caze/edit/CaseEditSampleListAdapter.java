@@ -28,9 +28,6 @@ public class CaseEditSampleListAdapter extends DataBoundAdapter<RowEditSampleLis
     private List<Sample> data;
     private OnListItemClickListener mOnListItemClickListener;
 
-    private LayerDrawable backgroundRowItem;
-    private Drawable unreadListItemIndicator;
-
     public CaseEditSampleListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Sample> data) {
         super(rowLayout);
         this.mOnListItemClickListener = onListItemClickListener;
@@ -62,8 +59,8 @@ public class CaseEditSampleListAdapter extends DataBoundAdapter<RowEditSampleLis
             holder.binding.imgSyncIcon.setVisibility(View.GONE);
         }
 
-        updateUnreadIndicator(holder, record);
-
+        // TODO #704
+//        updateUnreadIndicator(holder, record);
     }
 
     @Override
@@ -71,24 +68,24 @@ public class CaseEditSampleListAdapter extends DataBoundAdapter<RowEditSampleLis
         return data.size();
     }
 
-    public void updateUnreadIndicator(DataBoundViewHolder<RowEditSampleListItemLayoutBinding> holder, Sample item) {
-        backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
-        unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
-
-        if (item != null) {
-            if (item.isUnreadOrChildUnread()) {
-                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
-            } else {
-                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
-            }
-        }
-    }
+//    public void updateUnreadIndicator(DataBoundViewHolder<RowEditSampleListItemLayoutBinding> holder, Sample item) {
+//        LayerDrawable backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
+//        Drawable unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
+//
+//        if (item != null) {
+//            if (item.isUnreadOrChildUnread()) {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
+//            } else {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
+//            }
+//        }
+//    }
 
     private void indicateShipmentStatus(ImageView img, Sample record) {
         Resources resources = img.getContext().getResources();
         Drawable drw = (Drawable) ContextCompat.getDrawable(img.getContext(), R.drawable.indicator_status_circle);
 
-        if (record.getReferredTo() != null) {
+        if (record.getReferredToUuid() != null) {
             drw.setColorFilter(resources.getColor(R.color.indicatorShipmentReferred), PorterDuff.Mode.SRC_OVER);
         } else if (record.isReceived()) {
             drw.setColorFilter(resources.getColor(R.color.indicatorShipmentReceived), PorterDuff.Mode.SRC_OVER);

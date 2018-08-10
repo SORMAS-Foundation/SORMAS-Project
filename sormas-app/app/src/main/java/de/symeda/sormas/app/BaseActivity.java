@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -32,33 +31,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.dialog.UserReportDialog;
-import de.symeda.sormas.app.component.menu.PageMenuAdapter;
 import de.symeda.sormas.app.component.menu.PageMenuControl;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.component.menu.PageMenuParser;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.NotificationContext;
-import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
+import de.symeda.sormas.app.core.enumeration.StatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
-import de.symeda.sormas.app.menu.MainMenuItemSelectedListener;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
+import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Callback;
-import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.NavigationHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.UserHelper;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public abstract class BaseActivity extends AppCompatActivity implements NotificationContext {
 
@@ -73,13 +73,13 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     // title & status
     private View applicationTitleBar = null;
     private View statusFrame = null;
-    private Enum pageStatus;
 
     // footer menu
     private PageMenuControl pageMenu = null;
     private List<PageMenuItem> pageItems = new ArrayList();
     private PageMenuItem activePageItem = null;
     private int activePageKey = 0;
+    private boolean finishInsteadOfUpNav;
 
     private ActionBarDrawerToggle menuDrawerToggle;
     private DrawerLayout menuDrawerLayout;
@@ -96,6 +96,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         return false;
     }
 
+    public boolean isAccessNeeded() { return true; }
+
     private static WeakReference<BaseActivity> activeActivity;
 
     public static BaseActivity getActiveActivity() {
@@ -105,11 +107,20 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         return null;
     }
 
+    protected static Bundler buildBundle(int activePageKey) {
+        return new Bundler().setActivePageKey(activePageKey);
+    }
+
+    public static <TActivity extends BaseActivity> void startActivity(Context context, Class<TActivity> toActivity, Bundler bundler) {
+        Intent intent = new Intent(context, toActivity);
+        intent.putExtras(bundler.get());
+        context.startActivity(intent);
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        setPageStatusState(outState, pageStatus);
-        saveActiveMenuState(outState, activePageKey);
+        new Bundler(outState).setActivePageKey(activePageKey).setFinishInsteadOfUpNav(finishInsteadOfUpNav);
     }
 
     @Override
@@ -120,19 +131,19 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         tracker = application.getDefaultTracker();
 
         // Show the Enter Pin Activity if the user doesn't have access to the app
-        if (!ConfigProvider.isAccessGranted()) {
+        if (isAccessNeeded() && !ConfigProvider.isAccessGranted()) {
             Intent intent = new Intent(this, EnterPinActivity.class);
             startActivity(intent);
             finish();
-            return;
         }
 
         if (savedInstanceState == null) {
-            savedInstanceState = getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
+            savedInstanceState = getIntent().getExtras();
         }
 
-        pageStatus = getPageStatusArg(savedInstanceState);
-        activePageKey = getActiveMenuArg(savedInstanceState);
+        Bundler bundler = new Bundler(savedInstanceState);
+        activePageKey = bundler.getActivePageKey();
+        finishInsteadOfUpNav = bundler.isFinishInsteadOfUpNav();
 
         setContentView(getRootActivityLayout());
 
@@ -143,11 +154,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         statusFrame = findViewById(R.id.statusFrame);
 
         pageMenu = (PageMenuControl) findViewById(R.id.landingPageMenuControl);
-        if (pageMenu != null && getPageMenuData() > 0) {
-            ensureFabHiddenOnSoftKeyboardShown(pageMenu);
-            pageMenu.hide();
-            Context menuControlContext = this.pageMenu.getContext();
-
+        if (pageMenu != null) {
             pageMenu.setPageMenuClickListener(new PageMenuControl.PageMenuClickListener() {
                 @Override
                 public boolean onPageMenuClick(AdapterView<?> parent, View view, PageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
@@ -160,10 +167,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                     return initPageMenuAndGetInitialSelection(menuList);
                 }
             });
-
-            pageMenu.setAdapter(new PageMenuAdapter(menuControlContext));
-            pageMenu.setMenuParser(new PageMenuParser(menuControlContext));
-            pageMenu.setMenuData(getPageMenuData());
         }
 
         Drawable drawable = ContextCompat.getDrawable(this,
@@ -198,31 +201,47 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         super.onResume();
 
         // Show the Enter Pin Activity if the user doesn't have access to the app
-        if (!ConfigProvider.isAccessGranted()) {
+        if (isAccessNeeded() && !ConfigProvider.isAccessGranted()) {
             Intent intent = new Intent(this, EnterPinActivity.class);
             startActivity(intent);
             finish();
-            return;
         }
 
         if (applicationTitleBar != null && isShowTitleBar()) {
             applicationTitleBar.setVisibility(View.VISIBLE);
+            updateStatusFrame();
+        }
+        updatePageMenu();
+    }
 
-            if (statusFrame != null && getPageStatus() != null) {
+    protected void updateStatusFrame() {
+        if (statusFrame != null) {
+            if (getPageStatus() != null) {
                 Context statusFrameContext = statusFrame.getContext();
 
                 Drawable drw = (Drawable) ContextCompat.getDrawable(statusFrameContext, R.drawable.indicator_status_circle);
-                drw.setColorFilter(statusFrameContext.getResources().getColor(getStatusColorResource(statusFrameContext)), PorterDuff.Mode.SRC);
+                drw.setColorFilter(statusFrameContext.getResources().getColor(getStatusColorResource()), PorterDuff.Mode.SRC);
 
                 TextView txtStatusName = (TextView) statusFrame.findViewById(R.id.txtStatusName);
                 ImageView imgStatus = (ImageView) statusFrame.findViewById(R.id.statusIcon);
 
 
-                txtStatusName.setText(getStatusName(statusFrameContext));
+                txtStatusName.setText(getStatusName());
                 imgStatus.setBackground(drw);
 
                 statusFrame.setVisibility(View.VISIBLE);
+            } else {
+                statusFrame.setVisibility(View.GONE);
             }
+        }
+    }
+
+    protected void updatePageMenu() {
+        List<PageMenuItem> menuItems = getPageMenuData();
+        if (pageMenu != null && menuItems != null) {
+            ensureFabHiddenOnSoftKeyboardShown(pageMenu);
+            pageMenu.hide();
+            pageMenu.setMenuData(menuItems);
         }
     }
 
@@ -239,10 +258,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
             progressDialog.dismiss();
         }
 
-        if (pageMenu != null) {
-            pageMenu.onDestroy();
-        }
-
         super.onDestroy();
     }
 
@@ -250,7 +265,34 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
         menuDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.main_navigation_view);
-        navigationView.setNavigationItemSelectedListener(new MainMenuItemSelectedListener(this, menuDrawerLayout));
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                // Handle navigation view item clicks here.
+                int id = item.getItemId();
+
+                if (id == R.id.menu_item_dashboard) {
+                    NavigationHelper.goToDashboard(getContext());
+                } else if (id == R.id.menu_item_tasks) {
+                    NavigationHelper.goToTasks(getContext());
+                } else if (id == R.id.menu_item_cases) {
+                    NavigationHelper.goToCases(getContext());
+                } else if (id == R.id.menu_item_contacts) {
+                    NavigationHelper.goToContacts(getContext());
+                } else if (id == R.id.menu_item_events) {
+                    NavigationHelper.goToEvents(getContext());
+                } else if (id == R.id.menu_item_samples) {
+                    NavigationHelper.goToSamples(getContext());
+                } else if (id == R.id.menu_item_reports) {
+                    NavigationHelper.goToReports(getContext());
+                }
+
+                // necessary to prevent the drawer from staying open when the same entry is selected
+                menuDrawerLayout.closeDrawers();
+
+                return true;
+            }
+        });
 
         taskNotificationCounter = (TextView) navigationView.getMenu().findItem(R.id.menu_item_tasks).getActionView().findViewById(R.id.main_menu_notification_counter);
         caseNotificationCounter = (TextView) navigationView.getMenu().findItem(R.id.menu_item_cases).getActionView().findViewById(R.id.main_menu_notification_counter);
@@ -262,6 +304,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     protected abstract boolean isSubActivitiy();
 
     public boolean onOptionsItemSelected(MenuItem item) {
+
         if (!isSubActivitiy()
                 && menuDrawerToggle.onOptionsItemSelected(item)) {
             return true;
@@ -269,10 +312,14 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
         switch (item.getItemId()) {
             case android.R.id.home:
-                NavigationHelper.navigateUpFrom(this);
+                if (finishInsteadOfUpNav) {
+                    finish();
+                } else {
+                    NavigationHelper.navigateUpFrom(this);
+                }
                 return true;
 
-            case R.id.option_menu_action_sync:
+            case R.id.action_sync:
                 synchronizeChangedData();
                 return true;
 
@@ -280,7 +327,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                 goToNewView();
                 return true;
 
-            case R.id.option_menu_action_markAllAsRead:
+            case R.id.action_readAll:
                 // TODO
                 return true;
 
@@ -393,11 +440,21 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 //        sampleNotificationCounter.setText("50");
     }
 
-    public int getPageMenuData() {
-        return -1;
+    public List<PageMenuItem> getPageMenuData() {
+        return null;
     }
 
     protected boolean setActivePage(PageMenuItem menuItem) {
+        // Validate edit activities and don't allow page change when there are errors
+        if (this instanceof BaseEditActivity) {
+            try {
+                FragmentValidator.validate(getContext(), ((BaseEditActivity) this).getActiveFragment().getContentBinding());
+            } catch (ValidationException e) {
+                NotificationHelper.showNotification(this, ERROR, e.getMessage());
+                return false;
+            }
+        }
+
         activePageItem = menuItem;
         activePageKey = activePageItem.getKey();
         return openPage(activePageItem);
@@ -425,27 +482,25 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         return true;
     }
 
-    public Enum getPageStatus() {
-        return pageStatus;
-    }
+    public abstract Enum getPageStatus();
 
-    public String getStatusName(Context context) {
+    public String getStatusName() {
         Enum pageStatus = getPageStatus();
 
         if (pageStatus != null) {
-            IStatusElaborator elaborator = StatusElaboratorFactory.getElaborator(context, pageStatus);
+            StatusElaborator elaborator = StatusElaboratorFactory.getElaborator(pageStatus);
             if (elaborator != null)
-                return elaborator.getFriendlyName();
+                return elaborator.getFriendlyName(getContext());
         }
 
         return "";
     }
 
-    public int getStatusColorResource(Context context) {
+    public int getStatusColorResource() {
         Enum pageStatus = getPageStatus();
 
         if (pageStatus != null) {
-            IStatusElaborator elaborator = StatusElaboratorFactory.getElaborator(context, pageStatus);
+            StatusElaborator elaborator = StatusElaboratorFactory.getElaborator(pageStatus);
             if (elaborator != null)
                 return elaborator.getColorIndicatorResource();
         }
@@ -458,14 +513,19 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, true, refreshLayout, null, null);
     }
 
+    private boolean checkActiveUser() {
+        if (ConfigProvider.getUser() == null) {
+            Intent intent = new Intent(getContext(), LoginActivity.class);
+            getContext().startActivity(intent);
+            finish();
+            return false;
+        }
+        return true;
+    }
 
     public void synchronizeData(final SynchronizeDataAsync.SyncMode syncMode, final boolean showUpgradePrompt, final boolean showProgressDialog, final SwipeRefreshLayout swipeRefreshLayout, final Callback resultCallback, final Callback beforeSyncCallback) {
 
-        if (ConfigProvider.getUser() == null) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-            return;
-        }
+        if (!checkActiveUser()) return;
 
         if (showProgressDialog) {
             if (progressDialog == null || !progressDialog.isShowing()) {
@@ -495,6 +555,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                                     progressDialog.dismiss();
                                     progressDialog = null;
                                 }
+                                checkActiveUser();
                             }
                         }
                     });
@@ -520,13 +581,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                         progressDialog = null;
                     }
 
-                    if (getSupportFragmentManager().getFragments() != null) {
-                        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-                            if (fragment != null && fragment.isVisible()) {
-                                fragment.onResume();
-                            }
-                        }
-                    }
+                    BaseActivity.this.onResume();
 
                     long syncLogCountAfter = syncLogDao.countOf();
 
@@ -538,6 +593,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                         }
                     } else {
                         NotificationHelper.showNotification(BaseActivity.this, NotificationType.ERROR, syncFailedMessage);
+                        checkActiveUser();
                     }
 
                     if (resultCallback != null) resultCallback.call();
@@ -588,38 +644,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
     protected abstract int getActivityTitle();
 
-    protected <E extends Enum<E>> void setPageStatusState(Bundle outState, E status) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_PAGE_STATUS, status);
-        }
-    }
-
-    protected <E extends Enum<E>> E getPageStatusArg(Bundle arguments) {
-        E e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.ARG_PAGE_STATUS)) {
-                e = (E) arguments.getSerializable(ConstantHelper.ARG_PAGE_STATUS);
-            }
-        }
-
-        return e;
-    }
-
-    protected void saveActiveMenuState(Bundle outState, int activeMenuKey) {
-        if (outState != null) {
-            outState.putInt(ConstantHelper.KEY_ACTIVE_MENU, activeMenuKey);
-        }
-    }
-
-    protected int getActiveMenuArg(Bundle arguments) {
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.KEY_ACTIVE_MENU)) {
-                return arguments.getInt(ConstantHelper.KEY_ACTIVE_MENU);
-            }
-        }
-        return 0;
-    }
-
     protected abstract boolean openPage(PageMenuItem menuItem);
 
     public PageMenuItem initPageMenuAndGetInitialSelection(List<PageMenuItem> menuList) {
@@ -667,5 +691,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         });
     }
 
-
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(newBase);
+    }
 }

@@ -24,12 +24,10 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.controls.ControlButton;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
-import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogRootLayoutBinding;
@@ -368,6 +366,8 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
                 bindConfig(context, contentViewStubBinding, layoutName);
 //                bindNotificationCallbacks(context, contentViewStubBinding, layoutName);
                 setBindingVariable(context, contentViewStubBinding, layoutName);
+
+                ViewGroup root = (ViewGroup) contentViewStubBinding.getRoot();
             }
         });
 
@@ -573,6 +573,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
     //AlertDialog
     public void show(final Callback.IAction<AlertDialog> callback) {
         this.rootBinding = bindRootLayout(activity);
+        setNotificationContextForPropertyFields((ViewGroup) rootBinding.getRoot());
 
         dialogTask = new DefaultAsyncTask(getContext()) {
             @Override
@@ -650,7 +651,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
         if (btnPanelRootView == null)
             return null;
 
-        ControlButton btn = (ControlButton) btnPanelRootView.findViewById(R.id.btnDismiss);
+        ControlButton btn = (ControlButton) btnPanelRootView.findViewById(R.id.dismiss);
 
         return btn;
     }
@@ -842,27 +843,30 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
 
     }
 
+    public void setLiveValidationDisabled(boolean liveValidationDisabled) {
+        if (this.liveValidationDisabled != liveValidationDisabled) {
+            this.liveValidationDisabled = liveValidationDisabled;
+            applyLiveValidationDisabledToChildren();
+        }
+    }
+
     public boolean isLiveValidationDisabled() {
         return liveValidationDisabled;
     }
 
-    public void setLiveValidationDisabled(boolean liveValidationDisabled) {
-        this.liveValidationDisabled = liveValidationDisabled;
-    }
-
-    public void disableLiveValidation(boolean disableLiveValidation) {
+    public void applyLiveValidationDisabledToChildren() {
+        if (contentViewStubBinding == null) return;
         ViewGroup root = (ViewGroup) contentViewStubBinding.getRoot();
-        disableLiveValidationForAllChildren(root, disableLiveValidation);
-        liveValidationDisabled = disableLiveValidation;
+        ControlPropertyEditField.applyLiveValidationDisabledToChildren(root, isLiveValidationDisabled());
     }
 
-    private static void disableLiveValidationForAllChildren(ViewGroup parent, boolean disableLiveValidation) {
+    private void setNotificationContextForPropertyFields(ViewGroup parent) {
         for (int i = 0; i < parent.getChildCount(); i++) {
             View child = parent.getChildAt(i);
             if (child instanceof ControlPropertyEditField) {
-                ((ControlPropertyEditField) child).setLiveValidationDisabled(disableLiveValidation);
+                ((ControlPropertyEditField) child).setNotificationContext(this);
             } else if (child instanceof ViewGroup) {
-                disableLiveValidationForAllChildren((ViewGroup) child, disableLiveValidation);
+                setNotificationContextForPropertyFields((ViewGroup) child);
             }
         }
     }

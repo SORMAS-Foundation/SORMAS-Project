@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.caze.edit;
 
-import android.os.Bundle;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
@@ -26,9 +25,7 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
-import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureHelper;
@@ -47,7 +44,10 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     private List<Item> plagueTypeList;
     private List<Item> dengueFeverTypeList;
 
-    // Instance methods
+
+    public static CaseEditFragment newInstance(Case activityRootData) {
+        return newInstance(CaseEditFragment.class, null, activityRootData);
+    }
 
     private void setUpFieldVisibilities(final FragmentCaseEditLayoutBinding contentBinding) {
         setVisibilityByDisease(CaseDataDto.class, contentBinding.getData().getDisease(), contentBinding.mainContent);
@@ -100,10 +100,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         });
     }
 
-    public static CaseEditFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(CaseEditFragment.class, capsule, activityRootData);
-    }
-
     // Overrides
 
     @Override
@@ -117,7 +113,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     }
 
     @Override
-    protected void prepareFragmentData(Bundle savedInstanceState) {
+    protected void prepareFragmentData() {
         record = getActivityRootData();
 
         caseClassificationList = DataUtils.getEnumItems(CaseClassification.class, true);
@@ -138,12 +134,12 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
                 public void onChange(ControlPropertyField field) {
                     String value = (String) field.getValue();
                     if (value.trim().isEmpty()) {
-                        getContentBinding().caseDataEpidNumber.enableWarningState((NotificationContext) getActivity(),
+                        getContentBinding().caseDataEpidNumber.enableWarningState(
                                 R.string.validation_soft_case_epid_number_empty);
                     } else if (value.matches(DataHelper.getEpidNumberRegexp())) {
                         getContentBinding().caseDataEpidNumber.disableWarningState();
                     } else {
-                        getContentBinding().caseDataEpidNumber.enableWarningState((NotificationContext) getActivity(),
+                        getContentBinding().caseDataEpidNumber.enableWarningState(
                                 R.string.validation_soft_case_epid_number);
                     }
                 }
@@ -157,7 +153,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
                 public void onChange(ControlPropertyField field) {
                     CaseClassification caseClassification = (CaseClassification) field.getValue();
                     if (caseClassification == CaseClassification.NOT_CLASSIFIED) {
-                        getContentBinding().caseDataCaseClassification.enableWarningState((NotificationContext) getActivity(),
+                        getContentBinding().caseDataCaseClassification.enableWarningState(
                                 R.string.validation_soft_case_classification);
                     } else {
                         getContentBinding().caseDataCaseClassification.disableWarningState();
@@ -198,7 +194,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     }
 
     @Override
-    public boolean isShowAddAction() {
+    public boolean isShowNewAction() {
         return false;
     }
 

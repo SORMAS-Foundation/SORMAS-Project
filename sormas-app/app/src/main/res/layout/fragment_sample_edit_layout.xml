@@ -12,6 +12,7 @@
         <import type="de.symeda.sormas.api.Disease" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.sample.Sample"/>
+        <variable name="referredSample" type="de.symeda.sormas.app.backend.sample.Sample"/>
         <variable name="sampleTest" type="de.symeda.sormas.app.backend.sample.SampleTest" />
     </data>
 
@@ -189,14 +190,11 @@
 
                 </LinearLayout>
 
-
-                <!-- TODO: Re-enable and test after issue #699 has been done -->
-                <!--<de.symeda.sormas.app.component.controls.ControlLinkField-->
-                <!--android:id="@+id/sample_referredTo"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginBottom="@dimen/textControlMarginBottom"-->
-                <!--app:defaultValue="@string/no_referral" />-->
+                <de.symeda.sormas.app.component.controls.ControlLinkField
+                    android:id="@+id/sample_referredToUuid"
+                    app:value="@{referredSample.lab}"
+                    app:goneIfEmpty="@{referredSample}"
+                    style="@style/ControlSingleColumnStyle" />
 
             </LinearLayout>
 

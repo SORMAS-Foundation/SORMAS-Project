@@ -4,52 +4,32 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="activity_vertical_margin_inv">-16dp</dimen>
 
-    <dimen name="field_caption_size">17sp</dimen>
-    <dimen name="field_radio_font_size">11dp</dimen>
-    <dimen name="field_caption_margin_left">4dp</dimen>
-    <dimen name="field_caption_margin_bottom">0dp</dimen>
-    <dimen name="field_height">40dp</dimen>
-    <dimen name="field_spinner_height">39dp</dimen>
     <dimen name="field_padding">2dp</dimen>
-    <dimen name="field_padding_4">4dp</dimen>
-    <dimen name="field_padding_6">6dp</dimen>
     <dimen name="field_padding_8">8dp</dimen>
     <dimen name="field_yes_no_caption_margin_top">5dp</dimen>
-    <dimen name="list_item_margin_bottom">15dp</dimen>
     <dimen name="empty_list_hint_size">16sp</dimen>
 
     <!-- ***************************************************** -->
 
 
-    <dimen name="h0">24sp</dimen>
-    <dimen name="h1">20sp</dimen>
-    <dimen name="h2">18sp</dimen>
-    <dimen name="h3">16sp</dimen>
     <dimen name="h4">14sp</dimen>
     <dimen name="h5">12sp</dimen>
-    <dimen name="h6">10sp</dimen>
-    <dimen name="h7">9sp</dimen>
-
 
 
     <dimen name="margin_default">16dp</dimen>
 
 
-    <dimen name="fabTotalHeightOffset">-87dp</dimen>
     <dimen name="sub_menu_button_margin">@dimen/margin_default</dimen>
-    <dimen name="fabNonOverlapPaddingBottom">80dp</dimen>
     <dimen name="drawerWidth">324dp</dimen>
 
 
     <!-- Layout Dimensions -->
     <dimen name="layoutRootViewHorizontalPadding">24dp</dimen>
-    <dimen name="parentLayoutHorizontalMargin">24dp</dimen>
     <dimen name="parentLayoutVerticalMargin">24dp</dimen>
     <dimen name="parentLayoutHorizontalPadding">24dp</dimen>
     <dimen name="parentLayoutVerticalPadding">24dp</dimen>
     <dimen name="contentHorizontalSpacing">8dp</dimen>
     <dimen name="contentVerticalSpacing">8dp</dimen>
-    <dimen name="contentHorizontalSpacingDouble">16dp</dimen>
     <dimen name="contentVerticalSpacingDouble">16dp</dimen>
     <dimen name="buttonPanelHorizontalMargin">24dp</dimen>
     <dimen name="buttonPanelVerticalMargin">16dp</dimen>
@@ -78,11 +58,6 @@
     <dimen name="dialogSubHeadingTextSize">16sp</dimen>
 
 
-    <dimen name="teboSwitchMinWidth">180dp</dimen>
-
-
-
-
     <dimen name="serviceSeparatorWidth">5dp</dimen>
     <dimen name="serviceSeparatorHeight">5dp</dimen>
     <dimen name="serviceSeparatorMarginLeft">8dp</dimen>
@@ -99,7 +74,6 @@
 
     <!-- Login Heading 1 -->
     <dimen name="loginHeadingTextSize">16sp</dimen>
-    <dimen name="signinFormWidth">400dp</dimen>
     <dimen name="serviceMarginBottom">40dp</dimen>
     <dimen name="loginServiceTextSize">10sp</dimen>
 
@@ -108,9 +82,7 @@
 
     <!-- PIN -->
     <dimen name="pinLayoutMarginTop">56dp</dimen>
-    <dimen name="pinHeading1MarginTop">20dp</dimen>
     <dimen name="pinHeading1MarginBottom">10dp</dimen>
-    <dimen name="pinSubHeadingHeight">33dp</dimen>
     <dimen name="pinButtonWidth">80dp</dimen>
     <dimen name="pinButtonHeight">80dp</dimen>
     <dimen name="pinButtonTextSize">32sp</dimen>
@@ -125,8 +97,6 @@
     <!-- Controls -->
     <dimen name="switchControlTextSize">14sp</dimen>
     <dimen name="slimControlTextSize">14sp</dimen>
-    <dimen name="firstControlTopMargin">16dp</dimen>
-    <dimen name="loginActivityFirstControlTopMargin">16dp</dimen>
 
     <dimen name="roundButtonRadius">24dp</dimen>
     <dimen name="buttonHorizontalPadding">16dp</dimen>
@@ -140,19 +110,10 @@
     <dimen name="slimControlHeight">40dp</dimen>
     <dimen name="slimButtonHeight">@dimen/slimControlHeight</dimen>
     <dimen name="primaryButtonElevation">2dp</dimen>
-    <dimen name="primaryButtonWidth">100dp</dimen>
-    <dimen name="minPrimaryButtonWidth">48dp</dimen>
     <dimen name="primaryButtonHeight">48dp</dimen>
-    <dimen name="primaryButtonMarginBottom">24dp</dimen>
     <dimen name="primaryButtonMarginTop">24dp</dimen>
     <dimen name="buttonControlMarginBottom">32dp</dimen>
     <dimen name="loginButtonMarginTop">8dp</dimen>
-
-    <dimen name="inverseButtonElevation">0dp</dimen>
-
-    <dimen name="secondaryButtonHeight">48dp</dimen>
-    <dimen name="secondaryButtonMarginBottom">24dp</dimen>
-    <dimen name="secondaryButtonElevation">2dp</dimen>
 
 
     <!-- Spinner -->
@@ -162,8 +123,6 @@
     <!-- Link Button -->
     <dimen name="linkButtonHeight">48dp</dimen>
     <dimen name="linkButtonTextSize">12sp</dimen>
-    <dimen name="iconOnlyHorizontalTopPadding">14dp</dimen>
-    <dimen name="iconOnlyVerticalTopPadding">8dp</dimen>
 
     <dimen name="formActivityLinkButtonTextSize">16sp</dimen>
 
@@ -176,10 +135,6 @@
     <dimen name="controlReadTextSize">16sp</dimen>
 
     <!-- ReadLabel -->
-    <dimen name="controlReadLabelSize">14sp</dimen>
-    <dimen name="controlReadLabelPaddingBottom">8dp</dimen>
-    <dimen name="controlReadLabelPaddingTop">0dp</dimen>
-
 
 
     <!-- Text View Dimensions -->
@@ -187,7 +142,6 @@
     <dimen name="maxSwitchButtonHeight">42dp</dimen>
     <dimen name="maxSpinnerHeight">48dp</dimen>
     <dimen name="maxControlHeight">48dp</dimen>
-    <dimen name="textViewHeight">48dp</dimen>
     <dimen name="textViewRadius">@dimen/defaultControlRadius</dimen>
     <dimen name="textViewLeftPadding">@dimen/defaultControlHorizontalPadding</dimen>
     <dimen name="textViewRightPadding">@dimen/defaultControlHorizontalPadding</dimen>
@@ -199,12 +153,9 @@
     <dimen name="textViewBorder">@dimen/defaultControlStrokeWidth</dimen>
     <dimen name="textControlMarginBottom">32dp</dimen>
     <dimen name="closelyRelatedControlMarginBottom">16dp</dimen>
-    <dimen name="slimTextControlMarginBottom">24dp</dimen>
     <dimen name="controlReadTextMarginBottom">24dp</dimen>
     <dimen name="controlMarginBottom">24dp</dimen>
-    <dimen name="controlNegativeMarginTop">-24dp</dimen>
     <dimen name="controlHalfMarginBottom">12dp</dimen>
-    <dimen name="pageBottomControlPanel">70dp</dimen>
     <dimen name="subHeadlineMarginBottom">24dp</dimen>
 
     <!-- Tooltip -->
@@ -255,8 +206,8 @@
     <!-- List Layoutrs -->
     <dimen name="rowListItemPadding">24dp</dimen>
     <dimen name="rowListItemHorizontalMargin">24dp</dimen>
-    <dimen name="rowListItemHorizontalPadding">24dp</dimen>
     <dimen name="rowListItemVerticalPadding">24dp</dimen>
+    <dimen name="rowListItemVerticalPaddingSmall">8dp</dimen>
     <dimen name="rowListItemParentElevationVerticalPadding">4dp</dimen>
     <dimen name="rowListItemParentElevationHorizontalPadding">4dp</dimen>
     <dimen name="rowListItemParentPadding">4dp</dimen>
@@ -269,21 +220,10 @@
     <!-- ************************************************* -->
 
 
-    <dimen name="symptomRowListItemHorizontalPadding">8dp</dimen>
-    <dimen name="symptomRowListItemVerticalPadding">8dp</dimen>
-
-
     <!-- List Layout Indicators -->
     <dimen name="indicatorRadius">10dp</dimen>
     <dimen name="indicatorWidth">10dp</dimen>
     <dimen name="indicatorHeight">10dp</dimen>
-    <dimen name="smallIndicatorRadius">5dp</dimen>
-    <dimen name="smallIndicatorWidth">5dp</dimen>
-    <dimen name="smallIndicatorHeight">5dp</dimen>
-    <dimen name="unreadListItemIndicatorWidth">15dp</dimen>
-    <dimen name="unreadListItemIndicatorHeight">15dp</dimen>
-    <dimen name="unreadListItemIndicatorTop">10dp</dimen>
-    <dimen name="unreadListItemIndicatorRight">10dp</dimen>
 
 
     <!-- Enter Pin Layout -->
@@ -382,20 +322,13 @@
     <dimen name="row_entry_date_text_size">12sp</dimen>
 
 
-    <dimen name="sectionListRowStrokeWidth">1dp</dimen>
     <dimen name="sectionListRowRadius">@dimen/defaultControlRadius</dimen>
     <dimen name="sectionListRowSelectedStrokeSize">1.5dp</dimen>
 
 
 
     <dimen name="verySmallTextSize">10sp</dimen>
-    <dimen name="smallTextSize">12sp</dimen>
     <dimen name="textSizeNormal">14dp</dimen>
-    <dimen name="textSizeLarge">16dp</dimen>
-    <dimen name="textSizeXLarge">18dp</dimen>
-
-
-
 
 
     <dimen name="readActivitySubHeadingTextSize">18sp</dimen>
@@ -412,20 +345,12 @@
 
 
     <dimen name="separatorThickness">1.2dp</dimen>
-    <dimen name="miniHorizontalSeparatorWidth">144dp</dimen>
-
 
 
     <dimen name="readControlSmallIconWidth">10dp</dimen>
     <dimen name="readControlSmallIconHeight">10dp</dimen>
     <dimen name="listItemConentIndentRight">36dp</dimen>
     <dimen name="listItemBottomConentMarginTop">8dp</dimen>
-
-
-
-    <dimen name="symptomReadItemHeight">48dp</dimen>
-    <dimen name="symptomListRowRadius">24dp</dimen>
-
 
 
     <!-- Tag View -->
@@ -437,17 +362,7 @@
     <dimen name="tagViewTextPaddingTop">12dp</dimen>
     <dimen name="tagViewTextPaddingBottom">12dp</dimen>
     <dimen name="tagViewLayoutBorderSize">1dp</dimen>
-    <dimen name="deleteIndicatorSize">9sp</dimen>
     <dimen name="tagViewRadius">100dp</dimen>
-    <dimen name="tagViewVerticalSeparator">8dp</dimen>
-
-
-
-
-    <dimen name="readInlineListTertiaryTextSize">12sp</dimen>
-    <dimen name="readInlineListSecondaryTextSize">14sp</dimen>
-    <dimen name="readInlineListPrimaryTextSize">16sp</dimen>
-
 
 
     <!-- Tooltip -->
@@ -459,24 +374,11 @@
 
     <dimen name="checkBoxWidth">48dp</dimen>
     <dimen name="checkBoxHeight">48dp</dimen>
-    <dimen name="radioGroupWidth">48dp</dimen>
-    <dimen name="radioGroupHeight">48dp</dimen>
-    <dimen name="dropdownListPreferredItemHeight">56dp</dimen>
     <dimen name="dropdownListSlimItemHeight">@dimen/slimControlHeight</dimen>
-    <dimen name="radioButtonMarginStart">2dp</dimen>
-    <dimen name="radioButtonLabelMarginStart">8dp</dimen>
-
-
-
-
-
 
 
     <!-- Date Picker -->
     <!-- Specifies date picker mode to be 'calendar' -->
-    <integer name="date_picker_mode_material">2</integer>
-
-
 
 
     <!-- Dialog -->
@@ -489,8 +391,6 @@
 
 
     <dimen name="preloaderWidthPercent">100%</dimen>
-    <dimen name="preloaderHeightPercent">100%</dimen>
-    <dimen name="preloaderScaleY">2</dimen>
     <dimen name="preloaderMinHeight">150dp</dimen>
 
     <dimen name="dashboardPreloaderWidth">50dp</dimen>

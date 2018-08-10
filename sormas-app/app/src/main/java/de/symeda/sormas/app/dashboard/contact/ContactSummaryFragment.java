@@ -20,7 +20,6 @@ import de.symeda.sormas.app.component.visualization.SummaryTotalBinder;
 import de.symeda.sormas.app.component.visualization.ViewTypeHelper;
 import de.symeda.sormas.app.component.visualization.data.SummaryCircularData;
 import de.symeda.sormas.app.component.visualization.data.SummaryTotalData;
-import de.symeda.sormas.app.core.DashboardNavigationCapsule;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationContext;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationService;
 import de.symeda.sormas.app.dashboard.SummaryObservableDataResult;
@@ -262,15 +261,7 @@ public class ContactSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.V
     //</editor-fold>
 
 
-    public static ContactSummaryFragment newInstance(DashboardNavigationCapsule capsule) {
-        try {
-            return newInstance(ContactSummaryFragment.class, capsule);
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, e.getMessage(), e);
-        } catch (java.lang.InstantiationException e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
-
-        return null;
+    public static ContactSummaryFragment newInstance() {
+        return newInstance(ContactSummaryFragment.class, null);
     }
 }

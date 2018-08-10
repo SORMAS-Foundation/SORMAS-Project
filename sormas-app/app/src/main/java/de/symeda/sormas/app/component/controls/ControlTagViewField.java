@@ -41,6 +41,7 @@ public class ControlTagViewField extends ControlPropertyField<String> {
     private boolean initialized = false;
     private int tagLayoutId;
     private RelativeLayout tagsFrame;
+    private TextView emptyTagViewHint;
 
     // Constructors
 
@@ -59,9 +60,13 @@ public class ControlTagViewField extends ControlPropertyField<String> {
     // Instance methods
 
     public void setTags(List<String> tags) {
-        if (tags == null) {
+        if (tags == null || tags.isEmpty()) {
+            tagsFrame.setVisibility(GONE);
+            emptyTagViewHint.setVisibility(VISIBLE);
             removeAllTags();
         } else {
+            tagsFrame.setVisibility(VISIBLE);
+            emptyTagViewHint.setVisibility(GONE);
             this.tags = tags;
             drawTags();
         }
@@ -183,6 +188,7 @@ public class ControlTagViewField extends ControlPropertyField<String> {
         super.onFinishInflate();
 
         tagsFrame = (RelativeLayout) this.findViewById(R.id.tags_frame);
+        emptyTagViewHint = (TextView) this.findViewById(R.id.empty_tag_view_hint);
         tagLayoutId = R.layout.tagview_item;
     }
 

@@ -13,13 +13,11 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.list.CaseListActivity;
 import de.symeda.sormas.app.contact.list.ContactListActivity;
-import de.symeda.sormas.app.core.IListNavigationCapsule;
-import de.symeda.sormas.app.core.ListNavigationCapsule;
-import de.symeda.sormas.app.core.SearchBy;
+import de.symeda.sormas.app.dashboard.DashboardActivity;
 import de.symeda.sormas.app.event.list.EventListActivity;
+import de.symeda.sormas.app.report.ReportActivity;
+import de.symeda.sormas.app.sample.ShipmentStatus;
 import de.symeda.sormas.app.sample.list.SampleListActivity;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.task.list.TaskListActivity;
 
 public class NavigationHelper {
@@ -35,38 +33,37 @@ public class NavigationHelper {
         }
     }
 
+    public static void goToDashboard(Context context) {
+        Intent intent = new Intent(context, DashboardActivity.class);
+        context.startActivity(intent);
+    }
+
     public static void goToCases(Context context) {
-        InvestigationStatus status = InvestigationStatus.PENDING;
-        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(context, status, SearchBy.BY_FILTER_STATUS);
-        CaseListActivity.goToActivity(context, dataCapsule);
+        CaseListActivity.startActivity(context, InvestigationStatus.PENDING);
     }
 
     public static void goToContacts(Context context) {
-        FollowUpStatus status = FollowUpStatus.NO_FOLLOW_UP;
-        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(context, status, SearchBy.BY_FILTER_STATUS);
-        ContactListActivity.goToActivity(context, dataCapsule);
+        ContactListActivity.startActivity(context, FollowUpStatus.NO_FOLLOW_UP);
     }
 
     public static void goToEvents(Context context) {
-        EventStatus status = EventStatus.POSSIBLE;
-        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(context, status, SearchBy.BY_FILTER_STATUS);
-        EventListActivity.goToActivity(context, dataCapsule);
+        EventListActivity.startActivity(context, EventStatus.POSSIBLE);
     }
 
     public static void goToSamples(Context context) {
-        ShipmentStatus status = ShipmentStatus.NOT_SHIPPED;
-        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(context, status, SearchBy.BY_FILTER_STATUS);
-        SampleListActivity.goToActivity(context, dataCapsule);
+        SampleListActivity.startActivity(context, ShipmentStatus.NOT_SHIPPED);
     }
 
     public static void goToTasks(Context context) {
-        TaskStatus status = TaskStatus.PENDING;
-        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(context, status, SearchBy.BY_FILTER_STATUS);
-        TaskListActivity.goToActivity(context, dataCapsule);
+        TaskListActivity.startActivity(context, TaskStatus.PENDING);
+    }
+
+    public static void goToReports(Context context) {
+        Intent intent = new Intent(context, ReportActivity.class);
+        context.startActivity(intent);
     }
 
     public static void goToNewCase(Context context) {
-        CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(context).setPersonUuid(null);
-        CaseNewActivity.goToActivity(context, dataCapsule);
+        CaseNewActivity.startActivity(context);
     }
 }

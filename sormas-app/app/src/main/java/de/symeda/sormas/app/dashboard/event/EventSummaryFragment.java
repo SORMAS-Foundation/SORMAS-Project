@@ -21,7 +21,6 @@ import de.symeda.sormas.app.component.visualization.SummaryTotalBinder;
 import de.symeda.sormas.app.component.visualization.ViewTypeHelper;
 import de.symeda.sormas.app.component.visualization.data.SummaryCircularData;
 import de.symeda.sormas.app.component.visualization.data.SummaryTotalData;
-import de.symeda.sormas.app.core.DashboardNavigationCapsule;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationContext;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationService;
 import de.symeda.sormas.app.dashboard.SummaryObservableDataResult;
@@ -35,19 +34,11 @@ import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-/**
- * Created by Orson on 08/04/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
 public class EventSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.ViewTypeEnum, EventSummaryAdapter> {
 
     public static final String TAG = EventSummaryFragment.class.getSimpleName();
 
     private EventStatus statusFilters[] = new EventStatus[]{EventStatus.POSSIBLE, EventStatus.CONFIRMED, EventStatus.NO_EVENT};
-    private final int DATA_XML_LANDING_MENU = R.xml.data_landing_page_alert_menu;
 
     private CompositeSubscription mSubscription = new CompositeSubscription();
 
@@ -263,15 +254,7 @@ public class EventSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.Vie
     //</editor-fold>
 
 
-    public static EventSummaryFragment newInstance(DashboardNavigationCapsule capsule) {
-        try {
-            return newInstance(EventSummaryFragment.class, capsule);
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, e.getMessage(), e);
-        } catch (java.lang.InstantiationException e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
-
-        return null;
+    public static EventSummaryFragment newInstance() {
+        return newInstance(EventSummaryFragment.class, null);
     }
 }

@@ -435,7 +435,7 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.injectionSiteBleeding}"
-                app:required="true"
+                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -443,7 +443,7 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.eyesBleeding}"
-                app:required="true"
+                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -451,7 +451,7 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.stomachBleeding}"
-                app:required="true"
+                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -459,7 +459,7 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.bleedingVagina}"
-                app:required="true"
+                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <!-- Should be called symptoms_gumsBleeding, but this doesn't work with AS < 2.3 because of https://code.google.com/p/android/issues/detail?id=212492 -->
@@ -468,7 +468,7 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.gumsBleeding}"
-                app:required="true"
+                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -476,7 +476,7 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.bloodUrine}"
-                app:required="true"
+                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -484,7 +484,7 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.bloodyBlackStool}"
-                app:required="true"
+                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -492,7 +492,7 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.skinBruising}"
-                app:required="true"
+                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -500,7 +500,7 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.coughingBlood}"
-                app:required="true"
+                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -508,7 +508,7 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.digestedBloodVomit}"
-                app:required="true"
+                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -516,7 +516,7 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.redBloodVomit}"
-                app:required="true"
+                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -524,7 +524,7 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.noseBleeding}"
-                app:required="true"
+                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -532,13 +532,13 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.otherHemorrhagicSymptoms}"
-                app:required="true"
+                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/symptoms_otherHemorrhagicSymptomsText"
                 app:value="@={data.otherHemorrhagicSymptomsText}"
-                app:required="true"
+                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -561,14 +561,14 @@
                     app:enumClass="@{symptomStateClass}"
                     app:slim="true"
                     app:value="@={data.lesionsThatItch}"
-                    app:required="true"
+                    app:softRequired="true"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/symptoms_lesionsSameState"
                     app:enumClass="@{symptomStateClass}"
                     app:slim="true"
-                    app:required="true"
+                    app:softRequired="true"
                     app:value="@={data.lesionsSameState}"
                     style="@style/ControlSingleColumnStyle" />
 
@@ -577,7 +577,7 @@
                     app:enumClass="@{symptomStateClass}"
                     app:slim="true"
                     app:value="@={data.lesionsSameSize}"
-                    app:required="true"
+                    app:softRequired="true"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -585,7 +585,7 @@
                     app:enumClass="@{symptomStateClass}"
                     app:slim="true"
                     app:value="@={data.lesionsDeepProfound}"
-                    app:required="true"
+                    app:softRequired="true"
                     style="@style/ControlSingleColumnStyle" />
 
                 <TextView
@@ -652,7 +652,7 @@
                         app:enumClass="@{symptomStateClass}"
                         app:slim="true"
                         app:value="@={data.lesionsResembleImg1}"
-                        app:required="true"
+                        app:softRequired="true"
                         app:visibilityChild="@{lesionsImg1}"/>
 
                     <ImageView
@@ -671,7 +671,7 @@
                         app:enumClass="@{symptomStateClass}"
                         app:slim="true"
                         app:value="@={data.lesionsResembleImg2}"
-                        app:required="true"
+                        app:softRequired="true"
                         app:visibilityChild="@{lesionsImg2}"/>
 
                     <ImageView
@@ -690,7 +690,7 @@
                         app:enumClass="@{symptomStateClass}"
                         app:slim="true"
                         app:value="@={data.lesionsResembleImg3}"
-                        app:required="true"
+                        app:softRequired="true"
                         app:visibilityChild="@{lesionsImg3}"/>
 
                     <ImageView
@@ -709,7 +709,7 @@
                         app:enumClass="@{symptomStateClass}"
                         app:slim="true"
                         app:value="@={data.lesionsResembleImg4}"
-                        app:required="true"
+                        app:softRequired="true"
                         app:visibilityChild="@{lesionsImg4}"/>
 
                     <ImageView
@@ -748,7 +748,7 @@
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/symptoms_otherNonHemorrhagicSymptomsText"
                 app:value="@={data.otherNonHemorrhagicSymptomsText}"
-                app:required="true"
+                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
@@ -759,11 +759,13 @@
             <de.symeda.sormas.app.component.controls.ControlDateField
                 android:id="@+id/symptoms_onsetDate"
                 app:value="@={data.onsetDate}"
+                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/symptoms_onsetSymptom"
                 app:value="@={data.onsetSymptom}"
+                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField

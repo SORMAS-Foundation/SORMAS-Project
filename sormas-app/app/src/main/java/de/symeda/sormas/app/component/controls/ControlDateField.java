@@ -21,6 +21,7 @@ import android.widget.EditText;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import de.symeda.sormas.api.I18nProperties;
@@ -43,6 +44,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
     // Other fields
 
     private FragmentManager fragmentManager;
+    private SimpleDateFormat dateFormat;
 
     // Constructors
 
@@ -75,7 +77,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
         fragment.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int yy, int mm, int dd) {
-                input.setText(DateHelper.formatDate(DateHelper.getDateZero(yy, mm, dd)));
+                input.setText(DateHelper.formatLocalDate(DateHelper.getDateZero(yy, mm, dd), dateFormat));
             }
         });
         fragment.setOnClearListener(new DialogInterface.OnClickListener() {
@@ -141,7 +143,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 
     @Override
     public Date getValue() {
-        return (Date)super.getValue();
+        return (Date) super.getValue();
     }
 
     @Override
@@ -150,7 +152,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
             return null;
         }
 
-        return DateHelper.parseDate(input.getText().toString());
+        return DateHelper.parseDate(input.getText().toString(), dateFormat);
     }
 
     @Override
@@ -158,7 +160,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
         if (value == null) {
             input.setText(null);
         } else {
-            input.setText(DateHelper.formatDate(value));
+            input.setText(DateHelper.formatLocalDate(value, dateFormat));
         }
     }
 
@@ -170,13 +172,13 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
     }
 
     @Override
-    protected void setHint(String value) {
+    public void setHint(String value) {
         input.setHint(value);
     }
 
     @Override
     protected void initialize(Context context, AttributeSet attrs, int defStyle) {
-        // Nothing to initializeSpinner
+        dateFormat = DateHelper.getLocalShortDateFormat();
     }
 
     @Override
@@ -294,6 +296,11 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
     @BindingAdapter("valueAttrChanged")
     public static void setListener(ControlDateField view, InverseBindingListener listener) {
         view.inverseBindingListener = listener;
+    }
+
+    @BindingAdapter("dateFormat")
+    public static void setDateFormat(ControlDateField field, SimpleDateFormat dateFormat) {
+        field.dateFormat = dateFormat;
     }
 
 }

@@ -1,7 +1,5 @@
 package de.symeda.sormas.app;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
@@ -9,9 +7,10 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
-import de.symeda.sormas.app.util.ConstantHelper;
 
 public abstract class BaseReportActivity extends BaseActivity implements IUpdateSubHeadingTitle {
 
@@ -29,8 +28,14 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
     public void setSubHeadingTitle(String title) {
         String t = (title == null) ? "" : title;
 
-        if (subHeadingActivityTitle != null)
-            subHeadingActivityTitle.setText(t);
+        if (subHeadingActivityTitle != null) {
+            if (!DataHelper.isNullOrEmpty(title)) {
+                subHeadingActivityTitle.setText(title);
+                subHeadingActivityTitle.setVisibility(View.VISIBLE);
+            } else {
+                subHeadingActivityTitle.setVisibility(View.GONE);
+            }
+        }
     }
 
     @Override
@@ -44,11 +49,6 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
     }
 
     @Override
-    public void updateSubHeadingTitle(int titleResId) {
-        setSubHeadingTitle(getApplicationContext().getResources().getString(titleResId));
-    }
-
-    @Override
     public void updateSubHeadingTitle(String title) {
         setSubHeadingTitle(title);
     }
@@ -56,7 +56,7 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.list_action_bar, menu);
+        inflater.inflate(R.menu.dashboard_action_menu, menu);
 
         processActionbarMenu();
 
@@ -95,27 +95,18 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
         return true;
     }
 
-    protected static <TActivity extends BaseActivity> void goToActivity(Context fromActivity, Class<TActivity> toActivity) {
-        Intent intent = new Intent(fromActivity, toActivity);
-        fromActivity.startActivity(intent);
-    }
-
     private void replaceFragment(BaseReportFragment f) {
         BaseFragment previousFragment = activeFragment;
         activeFragment = f;
 
         if (activeFragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            if (activeFragment.getArguments() == null)
-                activeFragment.setArguments(getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA));
-
             ft.setCustomAnimations(R.anim.fadein, R.anim.fadeout, R.anim.fadein, R.anim.fadeout);
             ft.replace(R.id.fragment_frame, activeFragment);
-            if (previousFragment != null) {
-                ft.addToBackStack(null);
-            }
             ft.commit();
         }
+
+        updateStatusFrame();
     }
 
     private void processActionbarMenu() {

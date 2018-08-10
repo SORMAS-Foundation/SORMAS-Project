@@ -91,7 +91,7 @@ public class CaseGrid extends Grid {
         		CaseIndexDto.REPORT_DATE, NUMBER_OF_PENDING_TASKS);
 
         getColumn(CaseIndexDto.UUID).setRenderer(new UuidRenderer());
-        getColumn(CaseIndexDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
+        getColumn(CaseIndexDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
  
         for (Column column : getColumns()) {
         	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(

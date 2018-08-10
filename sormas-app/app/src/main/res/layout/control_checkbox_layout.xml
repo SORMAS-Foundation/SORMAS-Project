@@ -2,7 +2,6 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
         <LinearLayout
-            android:id="@+id/control_frame"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -10,15 +9,8 @@
 
             <CheckBox
                 android:id="@+id/checkbox"
-                android:layout_width="@dimen/checkBoxWidth"
-                android:layout_height="@dimen/checkBoxHeight"
-                android:gravity="center_vertical"
-                android:layout_gravity="center_vertical"
-                android:textSize="@dimen/defaultControlTextSize"
-                android:scaleX="1.2"
-                android:scaleY="1.2"
                 android:button="@null"
-                android:background="?android:attr/listChoiceIndicatorMultiple" />
+                style="@style/ControlCheckboxStyle" />
 
             <include layout="@layout/control_label_layout" />
 

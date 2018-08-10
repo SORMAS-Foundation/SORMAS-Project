@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-
-
     <item>
-        <shape android:shape="rectangle" >
-
-            <solid android:color="@color/listActivityRowBackground" />
-            <!---->
+        <shape android:shape="rectangle">
+            <solid android:color="@color/listActivityRowBackground"/>
         </shape>
     </item>
-    <item android:top="@dimen/listActivityRowItemBorderTop" android:right="@dimen/listActivityRowItemBorderRight" android:left="@dimen/listActivityRowItemBorderLeft">
+    <item
+        android:left="@dimen/listActivityRowItemBorderLeft"
+        android:right="@dimen/listActivityRowItemBorderRight"
+        android:top="@dimen/listActivityRowItemBorderTop">
         <shape>
-            <solid android:color="@android:color/transparent" />
+            <solid android:color="@android:color/transparent"/>
             <stroke
                 android:width="@dimen/listActivityRowItemBorderWidth"
-                android:color="@color/listActivityRowBorder" />
+                android:color="@color/listActivityRowBorder"/>
         </shape>
     </item>
-    <item android:id="@+id/unreadListItemIndicator" android:drawable="@drawable/ic_unread_24dp"
-        android:width="@dimen/unreadListItemIndicatorWidth" android:height="@dimen/unreadListItemIndicatorHeight"
-        android:top="@dimen/unreadListItemIndicatorTop" android:right="@dimen/unreadListItemIndicatorRight" android:gravity="top|right" />
+    <!-- TODO #704 - causes problems with pre 23 SDK versions
+    <item
+        android:id="@+id/unreadListItemIndicator"
+        android:width="@dimen/unreadListItemIndicatorWidth"
+        android:height="@dimen/unreadListItemIndicatorHeight"
+        android:drawable="@drawable/ic_unread_24dp"
+        android:gravity="top|right"
+        android:right="@dimen/unreadListItemIndicatorRight"
+        android:top="@dimen/unreadListItemIndicatorTop"/>
+        -->
 </layer-list>

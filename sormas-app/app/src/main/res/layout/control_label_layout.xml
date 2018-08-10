@@ -12,27 +12,30 @@
             style="@style/ControlLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:labelFor="@+id/input" />
+            android:layout_marginEnd="60dp"
+            android:labelFor="@+id/input"/>
+            <!-- 60dp margin makes sure indicators are always visible -->
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginStart="-60dp">
 
             <TextView
                 android:id="@+id/required_indicator"
-                style="@style/RequiredIndicatorStyle" />
+                style="@style/RequiredIndicatorStyle"/>
 
             <TextView
                 android:id="@+id/soft_required_indicator"
-                style="@style/SoftRequiredIndicatorStyle" />
+                style="@style/SoftRequiredIndicatorStyle"/>
 
             <TextView
                 android:id="@+id/error_indicator"
-                style="@style/ErrorIndicatorStyle" />
+                style="@style/ErrorIndicatorStyle"/>
 
             <TextView
                 android:id="@+id/warning_indicator"
-                style="@style/WarningIndicatorStyle" />
+                style="@style/WarningIndicatorStyle"/>
 
         </LinearLayout>
 

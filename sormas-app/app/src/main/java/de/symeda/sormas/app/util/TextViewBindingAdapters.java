@@ -15,7 +15,6 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.sample.SampleTestResultType;
-import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -219,13 +218,13 @@ public class TextViewBindingAdapters {
         if (fromValue == null) {
             from = " ? ";
         } else {
-            from = DateHelper.formatDate(fromValue);
+            from = DateHelper.formatLocalShortDate(fromValue);
         }
 
         if (appendValue == null) {
             to = " ? ";
         } else {
-            to = DateHelper.formatDate(appendValue);
+            to = DateHelper.formatLocalShortDate(appendValue);
         }
 
         if (valueFormat != null && valueFormat.trim() != "") {
@@ -314,18 +313,13 @@ public class TextViewBindingAdapters {
 
     @BindingAdapter(value={"diseaseValue", "valueFormat", "defaultValue"}, requireAll=false)
     public static void setDiseaseValue(TextView textField, Case caseRecord, String valueFormat, String defaultValue) {
-        String val = defaultValue;
-        String diseaseString = getDisease(caseRecord);
-
-        if (caseRecord == null || diseaseString == null || diseaseString.isEmpty()) {
-            textField.setText(val);
+        if (caseRecord == null || caseRecord.getDisease() == null) {
+            textField.setText(defaultValue);
         } else {
-            val = diseaseString;
-
-            if (valueFormat != null && valueFormat.trim() != "") {
-                textField.setText(String.format(valueFormat, val));
+            if (caseRecord.getDisease() == Disease.OTHER) {
+                textField.setText(caseRecord.getDiseaseDetails());
             } else {
-                textField.setText(val);
+                textField.setText(caseRecord.getDisease().toShortString());
             }
         }
     }
@@ -395,7 +389,7 @@ public class TextViewBindingAdapters {
             textField.setText(val);
         } else {
             val = enumValue.toString();
-            String _dateValue = DateHelper.formatDate(dateValue);
+            String _dateValue = DateHelper.formatLocalShortDate(dateValue);
 
             if (valueFormat != null && valueFormat.trim() != "") {
                 textField.setText(String.format(valueFormat, val));
@@ -488,7 +482,7 @@ public class TextViewBindingAdapters {
         if (task == null || task.getDueDate() == null) {
             textField.setText(val);
         } else {
-            val = DateHelper.formatDate(task.getDueDate());
+            val = DateHelper.formatLocalShortDate(task.getDueDate());
 
             if (valueFormat != null && valueFormat.trim() != "") {
                 textField.setText(String.format(valueFormat, val));
@@ -513,7 +507,7 @@ public class TextViewBindingAdapters {
         if (task == null || task.getDueDate() == null) {
             textField.setText(val);
         } else {
-            //val = DateHelper.formatDate(task.getDueDate());
+            //val = DateHelper.formatLocalShortDate(task.getDueDate());
             val = TimeAgo.using(textField.getContext()).with(task.getDueDate());
 
             if (valueFormat != null && valueFormat.trim() != "") {
@@ -620,7 +614,7 @@ public class TextViewBindingAdapters {
         if (dateValue == null) {
             textField.setText(val);
         } else {
-            val = DateHelper.formatDate(dateValue);
+            val = DateHelper.formatLocalShortDate(dateValue);
 
             if (valueFormat != null && valueFormat.trim() != "") {
                 textField.setText(String.format(valueFormat, val));
@@ -796,7 +790,7 @@ public class TextViewBindingAdapters {
         if (resultType != null) {
             Context context = textView.getContext();
             SampleTestResultTypeElaborator elaborator =
-                    (SampleTestResultTypeElaborator) StatusElaboratorFactory.getElaborator(context, resultType);
+                    (SampleTestResultTypeElaborator) StatusElaboratorFactory.getElaborator(resultType);
             textView.setText(resultType.name());
             textView.setTextColor(context.getResources().getColor(elaborator.getColorIndicatorResource()));
         }
@@ -886,7 +880,7 @@ public class TextViewBindingAdapters {
         } else if (record.getEvent() != null) {
             StringBuilder sb = new StringBuilder();
             sb.append(record.getEvent().getEventType());
-            sb.append(", " + DateHelper.formatDate(record.getEvent().getEventDate()));
+            sb.append(", " + DateHelper.formatLocalShortDate(record.getEvent().getEventDate()));
             if (record.getEvent().getEventLocation().getCity() != null && !record.getEvent().getEventLocation().getCity().isEmpty()) {
                 sb.append(", " + record.getEvent().getEventLocation().getCity());
             }

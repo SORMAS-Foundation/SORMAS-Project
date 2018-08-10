@@ -22,15 +22,15 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.core.NotificationContext;
-import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
+import de.symeda.sormas.app.contact.ContactSection;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
+import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
-import de.symeda.sormas.app.validation.FragmentValidator;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -41,16 +41,25 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
     private AsyncTask saveTask;
     private String caseUuid = null;
 
+
+    public static <TActivity extends BaseActivity> void startActivity(Context context, String caseUuid) {
+        BaseEditActivity.startActivity(context, ContactNewActivity.class, buildBundle(caseUuid));
+    }
+
+    public static Bundler buildBundle(String caseUuid) {
+        return buildBundle(null, 0).setCaseUuid(caseUuid);
+    }
+
     @Override
     protected void onCreateInner(Bundle savedInstanceState) {
         super.onCreateInner(savedInstanceState);
-        caseUuid = getCaseUuidArg(savedInstanceState);
+        caseUuid = new Bundler(savedInstanceState).getCaseUuid();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        saveCaseUuidState(outState, caseUuid);
+        new Bundler(outState).setCaseUuid(caseUuid);
     }
 
     @Override
@@ -88,14 +97,14 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 
     @Override
     public ContactClassification getPageStatus() {
-        return (ContactClassification) super.getPageStatus();
+        return null;
     }
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Contact activityRootData) {
-        ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(ContactNewActivity.this,
-                getRootEntityUuid(), getPageStatus());
-        return ContactNewFragment.newInstance(dataCapsule, activityRootData);
+        BaseEditFragment fragment = ContactNewFragment.newInstance(activityRootData);
+        fragment.setLiveValidationDisabled(true);
+        return fragment;
     }
 
     @Override
@@ -104,8 +113,8 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
     }
 
     @Override
-    public void replaceFragment(BaseEditFragment f) {
-        super.replaceFragment(f);
+    public void replaceFragment(BaseEditFragment f, boolean allowBackNavigation) {
+        super.replaceFragment(f, allowBackNavigation);
         getActiveFragment().setLiveValidationDisabled(true);
     }
 
@@ -114,15 +123,12 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
         final Contact contactToSave = getStoredRootEntity();
 
         ContactNewFragment fragment = (ContactNewFragment) getActiveFragment();
-
-        if (fragment.isLiveValidationDisabled()) {
-            fragment.disableLiveValidation(false);
-        }
+        fragment.setLiveValidationDisabled(false);
 
         try {
             FragmentValidator.validate(getContext(), fragment.getContentBinding());
         } catch (ValidationException e) {
-            NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
+            NotificationHelper.showNotification(this, ERROR, e.getMessage());
             return;
         }
 
@@ -158,15 +164,12 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
                         super.onPostExecute(taskResult);
                         if (taskResult.getResultStatus().isSuccess()) {
                             finish();
+                            ContactEditActivity.startActivity(getContext(), contactToSave.getUuid(), ContactSection.PERSON_INFO);
                         }
                     }
                 }.executeOnThreadPool();
             }
         });
-    }
-
-    public static <TActivity extends BaseActivity> void goToActivity(Context fromActivity, ContactFormNavigationCapsule dataCapsule) {
-        BaseEditActivity.goToActivity(fromActivity, ContactNewActivity.class, dataCapsule);
     }
 
     @Override

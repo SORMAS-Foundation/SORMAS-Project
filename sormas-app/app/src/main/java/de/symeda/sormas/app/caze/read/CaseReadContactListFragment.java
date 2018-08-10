@@ -2,7 +2,6 @@ package de.symeda.sormas.app.caze.read;
 
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 
@@ -16,9 +15,6 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.contact.read.ContactReadActivity;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 
 public class CaseReadContactListFragment extends BaseReadFragment<FragmentFormListLayoutBinding, List<Contact>, Case> implements OnListItemClickListener {
 
@@ -29,6 +25,10 @@ public class CaseReadContactListFragment extends BaseReadFragment<FragmentFormLi
     private CaseReadContactListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
 
+    public static CaseReadContactListFragment newInstance(Case activityRootData) {
+        return newInstance(CaseReadContactListFragment.class, null, activityRootData);
+    }
+
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
         Case caze = getActivityRootData();
@@ -37,7 +37,7 @@ public class CaseReadContactListFragment extends BaseReadFragment<FragmentFormLi
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        showEmptyListHint(record, R.string.entity_contact);
+        updateEmptyListHint(record);
 
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         adapter = new CaseReadContactListAdapter(R.layout.row_read_contact_list_item_layout, this, record);
@@ -69,12 +69,7 @@ public class CaseReadContactListFragment extends BaseReadFragment<FragmentFormLi
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
-        Contact c = (Contact) item;
-        ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(getContext(), c.getUuid(), c.getContactClassification());
-        ContactReadActivity.goToActivity(getActivity(), dataCapsule);
-    }
-
-    public static CaseReadContactListFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(CaseReadContactListFragment.class, capsule, activityRootData);
+        Contact contact = (Contact) item;
+        ContactReadActivity.startActivity(getActivity(), contact.getUuid(), true);
     }
 }

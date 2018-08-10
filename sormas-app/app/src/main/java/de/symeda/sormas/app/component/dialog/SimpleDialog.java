@@ -11,14 +11,6 @@ import android.view.View;
 import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 
-/**
- * Created by Orson on 13/01/2018.
- *
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class SimpleDialog extends AlertDialog.Builder implements IEntryItemOnClickListener {
 
     public static final String TAG = SimpleDialog.class.getSimpleName();
@@ -26,9 +18,7 @@ public class SimpleDialog extends AlertDialog.Builder implements IEntryItemOnCli
     private int layoutId;
     private Object data;
     private AlertDialog dialog;
-    private AlertDialog.Builder builder;
-    private IEntryItemOnClickListener onDialogDismissClickListener;
-
+    private IEntryItemOnClickListener onDismissClickListener;
 
     public SimpleDialog(Context context, int layoutId, Object data) {
         super(context);
@@ -36,10 +26,13 @@ public class SimpleDialog extends AlertDialog.Builder implements IEntryItemOnCli
         this.layoutId = layoutId;
         this.data = data;
 
-        setOnDialogDismissClickListener(this);
+        setOnDismissClickListener(this);
 
         ViewDataBinding binding = bindLayout(context);
-        setView(binding.getRoot());
+
+        if (binding != null) {
+            setView(binding.getRoot());
+        }
     }
 
     @Override
@@ -53,13 +46,18 @@ public class SimpleDialog extends AlertDialog.Builder implements IEntryItemOnCli
         return dialog;
     }
 
-    public void setOnDialogDismissClickListener(IEntryItemOnClickListener listener) {
-        if (listener != null)
-            this.onDialogDismissClickListener = listener;
+    private void setOnDismissClickListener(IEntryItemOnClickListener listener) {
+        if (listener != null) {
+            this.onDismissClickListener = listener;
+        }
     }
 
     private ViewDataBinding bindLayout(Context context) {
         LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        if (inflater == null) {
+            return null;
+        }
+
         ViewDataBinding binding = DataBindingUtil.inflate(inflater, layoutId, null, false);
         String layoutName = context.getResources().getResourceEntryName(layoutId);
 
@@ -67,10 +65,11 @@ public class SimpleDialog extends AlertDialog.Builder implements IEntryItemOnCli
             Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
 
-        if (!binding.setVariable(BR.callback, onDialogDismissClickListener)) {
+        if (!binding.setVariable(BR.dismissCallback, onDismissClickListener)) {
             Log.e(TAG, "There is no variable 'callback' in layout " + layoutName);
         }
 
         return binding;
     }
+
 }

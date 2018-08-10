@@ -1,6 +1,6 @@
 package de.symeda.sormas.app.core;
 
-import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
+import de.symeda.sormas.app.core.enumeration.StatusElaborator;
 
 /**
  * Created by Orson on 08/04/2018.
@@ -11,5 +11,5 @@ import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
  */
 public interface IDashboardNavigationCapsule {
 
-    IStatusElaborator getPageStatus();
+    StatusElaborator getPageStatus();
 }

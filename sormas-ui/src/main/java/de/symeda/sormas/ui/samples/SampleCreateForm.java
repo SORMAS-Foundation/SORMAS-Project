@@ -64,10 +64,8 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.SAMPLE_MATERIAL_TEXT, TextField.class);
 		ComboBox sampleSource = addField(SampleDto.SAMPLE_SOURCE, ComboBox.class);
 		DateField shipmentDate = addField(SampleDto.SHIPMENT_DATE, DateField.class);
-		shipmentDate.setDateFormat(DateHelper.getShortDateFormat().toPattern());
 		addField(SampleDto.SHIPMENT_DETAILS, TextField.class);
 		DateField receivedDate = addField(SampleDto.RECEIVED_DATE, DateField.class);
-		receivedDate.setDateFormat(DateHelper.getShortDateFormat().toPattern());
 		addField(SampleDto.SUGGESTED_TYPE_OF_TEST, ComboBox.class);
 		ComboBox lab = addField(SampleDto.LAB, ComboBox.class);
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(true));

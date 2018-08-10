@@ -47,8 +47,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private static final String OCCUPATION_HEADER = "occupationHeader";
 	private static final String ADDRESS_HEADER = "addressHeader";
 
-	private Label occupationHeader = new Label(LayoutUtil.h3("Occupation"), ContentMode.HTML);
-	private Label addressHeader = new Label(LayoutUtil.h3("Permanent residence of person"), ContentMode.HTML);
+	private Label occupationHeader = new Label(LayoutUtil.h3(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, "Occupation")), ContentMode.HTML);
+	private Label addressHeader = new Label(LayoutUtil.h3(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS)), ContentMode.HTML);
 
 	private boolean facilityFieldsInitialized = false;
 	private Disease disease;

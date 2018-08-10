@@ -5,12 +5,12 @@ import android.databinding.InverseMethod;
 import de.symeda.sormas.app.core.YesNo;
 
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.shared.ShipmentStatus;
+import de.symeda.sormas.app.sample.ShipmentStatus;
 
 public class SampleHelper {
 
     public static ShipmentStatus getShipmentStatus(Sample record) {
-        if (record.getReferredTo() != null) {
+        if (record.getReferredToUuid() != null) {
             return ShipmentStatus.REFERRED_OTHER_LAB;
         } else if (record.isReceived()) {
             return ShipmentStatus.RECEIVED;

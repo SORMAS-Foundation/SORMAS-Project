@@ -1,33 +1,47 @@
 package de.symeda.sormas.app.sample.read;
 
-import android.databinding.ObservableArrayList;
 import android.os.Bundle;
 import android.view.View;
 
-import de.symeda.sormas.api.Disease;
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleTest;
-import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentSampleReadLayoutBinding;
-import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 
 import static android.view.View.GONE;
 
 public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayoutBinding, Sample, Sample> {
 
     private Sample record;
+    private Sample referredSample;
     private SampleTest mostRecentTest;
 
-    // Instance methods
+    public static SampleReadFragment newInstance(Sample activityRootData) {
+        return newInstance(SampleReadFragment.class, null, activityRootData);
+    }
 
-    public static SampleReadFragment newInstance(SampleFormNavigationCapsule capsule, Sample activityRootData) {
-        return newInstance(SampleReadFragment.class, capsule, activityRootData);
+    private void setUpControlListeners(FragmentSampleReadLayoutBinding contentBinding) {
+        if (!StringUtils.isEmpty(record.getReferredToUuid())) {
+            contentBinding.sampleReferredToUuid.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (referredSample != null) {
+                        // Activity needs to be destroyed because it is only resumed, not created otherwise
+                        // and therefore the record uuid is not changed
+                        if (getActivity() != null) {
+                            getActivity().finish();
+                        }
+                        SampleReadActivity.startActivity(getActivity(), referredSample.getUuid());
+                    }
+                }
+            });
+        }
     }
 
     private void setUpFieldVisibilities(FragmentSampleReadLayoutBinding contentBinding) {
@@ -52,12 +66,20 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
     protected void prepareFragmentData(Bundle savedInstanceState) {
         record = getActivityRootData();
         mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(record);
+        if (!StringUtils.isEmpty(record.getReferredToUuid())) {
+            referredSample = DatabaseHelper.getSampleDao().queryUuid(record.getReferredToUuid());
+        } else {
+            referredSample = null;
+        }
     }
 
     @Override
     public void onLayoutBinding(FragmentSampleReadLayoutBinding contentBinding) {
+        setUpControlListeners(contentBinding);
+
         contentBinding.setData(record);
         contentBinding.setSampleTest(mostRecentTest);
+        contentBinding.setReferredSample(referredSample);
     }
 
     @Override

@@ -13,8 +13,6 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
-import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
-import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.task.read.TaskReadActivity;
 
 public class EventReadTaskListFragement extends BaseReadFragment<FragmentFormListLayoutBinding, List<Task>, Event> implements OnListItemClickListener {
@@ -24,6 +22,10 @@ public class EventReadTaskListFragement extends BaseReadFragment<FragmentFormLis
     private EventReadTaskListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
 
+    public static EventReadTaskListFragement newInstance(Event activityRootData) {
+        return newInstance(EventReadTaskListFragement.class, null, activityRootData);
+    }
+
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
         Event event = getActivityRootData();
@@ -32,7 +34,7 @@ public class EventReadTaskListFragement extends BaseReadFragment<FragmentFormLis
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        showEmptyListHint(record, R.string.entity_task);
+        updateEmptyListHint(record);
 
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         adapter = new EventReadTaskListAdapter(
@@ -66,12 +68,6 @@ public class EventReadTaskListFragement extends BaseReadFragment<FragmentFormLis
     @Override
     public void onListItemClick(View view, int position, Object item) {
         Task task = (Task) item;
-        TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(getContext(),
-                task.getUuid(), task.getTaskStatus());
-        TaskReadActivity.goToActivity(getActivity(), dataCapsule);
-    }
-
-    public static EventReadTaskListFragement newInstance(EventFormNavigationCapsule capsule, Event activityRootData) {
-        return newInstance(EventReadTaskListFragement.class, capsule, activityRootData);
+        TaskReadActivity.startActivity(getContext(), task.getUuid());
     }
 }

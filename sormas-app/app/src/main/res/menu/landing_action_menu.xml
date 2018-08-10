@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_save"
+        android:icon="@drawable/ic_check_option_menu_24dp"
+        android:title="@string/action_save"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_new"
+        android:icon="@drawable/ic_add_option_menu_24dp"
+        android:title="@string/action_new"
+        app:showAsAction="always"/>
+
+    <item
+        android:icon="@drawable/ic_more_option_menu_24dp"
+        android:title="@string/action_options"
+        app:showAsAction="always">
+
+        <menu>
+            <item
+                android:id="@+id/action_sync"
+                android:icon="@drawable/ic_sync_option_menu_24dp"
+                android:title="@string/action_sync"
+                app:showAsAction="always|withText"/>
+            <item
+                android:id="@+id/action_report"
+                android:icon="@drawable/ic_report_problem_option_menu_24dp"
+                android:title="@string/action_report"
+                app:showAsAction="always|withText"/>
+        </menu>
+
+    </item>
+</menu>

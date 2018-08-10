@@ -14,8 +14,6 @@ import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.event.read.eventparticipant.EventParticipantReadActivity;
-import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
-import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
 
 public class EventReadPersonsInvolvedListFragment extends BaseReadFragment<FragmentFormListLayoutBinding, List<EventParticipant>, Event> implements OnListItemClickListener {
 
@@ -23,6 +21,10 @@ public class EventReadPersonsInvolvedListFragment extends BaseReadFragment<Fragm
 
     private EventReadPersonsInvolvedAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
+
+    public static EventReadPersonsInvolvedListFragment newInstance(Event activityRootData) {
+        return newInstance(EventReadPersonsInvolvedListFragment.class, null, activityRootData);
+    }
 
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
@@ -32,7 +34,7 @@ public class EventReadPersonsInvolvedListFragment extends BaseReadFragment<Fragm
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        showEmptyListHint(record, R.string.entity_event_participant);
+        updateEmptyListHint(record);
 
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         adapter = new EventReadPersonsInvolvedAdapter(
@@ -45,7 +47,7 @@ public class EventReadPersonsInvolvedListFragment extends BaseReadFragment<Fragm
 
     @Override
     protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.caption_persons_involved);
+        return getResources().getString(R.string.caption_event_participants);
     }
 
     @Override
@@ -66,12 +68,7 @@ public class EventReadPersonsInvolvedListFragment extends BaseReadFragment<Fragm
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
-        EventParticipant o = (EventParticipant) item;
-        EventParticipantFormNavigationCapsule dataCapsule = new EventParticipantFormNavigationCapsule(getContext(), o.getUuid());
-        EventParticipantReadActivity.goToActivity(getActivity(), dataCapsule);
-    }
-
-    public static EventReadPersonsInvolvedListFragment newInstance(EventFormNavigationCapsule capsule, Event activityRootData) {
-        return newInstance(EventReadPersonsInvolvedListFragment.class, capsule, activityRootData);
+        EventParticipant participant = (EventParticipant) item;
+        EventParticipantReadActivity.startActivity(getContext(), participant.getUuid(), getActivityRootData().getUuid());
     }
 }

@@ -57,7 +57,7 @@ public class VisitGrid extends Grid {
 		getColumn(EDIT_BTN_ID).setWidth(60);
 		getColumn(SYMPTOMS_SYMPTOMATIC).setRenderer(new BooleanRenderer());
 
-		getColumn(VisitDto.VISIT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
+		getColumn(VisitDto.VISIT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
 
 		for (Column column : getColumns()) {
 			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
@@ -67,7 +67,7 @@ public class VisitGrid extends Grid {
 		addItemClickListener(e -> {
 			if (e.getPropertyId() != null && (e.getPropertyId().equals(EDIT_BTN_ID) || e.isDoubleClick())) {
 				VisitDto indexDto = (VisitDto)e.getItemId();
-				ControllerProvider.getVisitController().editVisit(indexDto.toReference(), r -> reload());
+				ControllerProvider.getVisitController().editVisit(indexDto.toReference(), filterContact, r -> reload());
 			}
 		});
 	}

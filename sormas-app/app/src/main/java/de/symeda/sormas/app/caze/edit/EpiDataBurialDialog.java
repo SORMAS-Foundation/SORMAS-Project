@@ -17,11 +17,10 @@ import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogCaseEpidBurialEditLayoutBinding;
-import de.symeda.sormas.app.validation.CaseValidator;
-import de.symeda.sormas.app.validation.FragmentValidator;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -46,13 +45,11 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
 
     @Override
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        if (isLiveValidationDisabled()) {
-            setLiveValidationDisabled(false);
-            disableLiveValidation(false);
-        }
+
+        setLiveValidationDisabled(false);
 
         try {
-            FragmentValidator.validate(getContext(), contentBinding, this);
+            FragmentValidator.validate(getContext(), contentBinding);
         } catch (ValidationException e) {
             NotificationHelper.showDialogNotification(this, ERROR, e.getMessage());
             return;
@@ -80,7 +77,6 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
 
         if (data.getId() == null) {
             setLiveValidationDisabled(true);
-            disableLiveValidation(true);
         }
     }
 
@@ -151,7 +147,7 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
     }
 
     private void openAddressPopup() {
-        final Location location = (Location)mContentBinding.epiDataBurialBurialAddress.getValue();
+        final Location location = (Location) mContentBinding.epiDataBurialBurialAddress.getValue();
         final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), location);
         locationDialog.show(null);
 

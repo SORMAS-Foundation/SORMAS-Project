@@ -1,6 +1,5 @@
 package de.symeda.sormas.app;
 
-import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.databinding.OnRebindCallback;
 import android.databinding.ViewDataBinding;
@@ -15,23 +14,16 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
-import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
-import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
-import de.symeda.sormas.app.validation.ValidationErrorInfo;
 
-import static android.view.View.VISIBLE;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
@@ -47,21 +39,16 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
     private TBinding contentViewStubBinding;
     private View contentViewStubRoot;
     private ViewDataBinding rootBinding;
+    private View rootView;
 
     private boolean skipAfterLayoutBinding = false;
     private TActivityRootData activityRootData;
-    private View rootView;
     private boolean liveValidationDisabled;
 
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        saveUserRightState(outState, editOrCreateUserRight);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        editOrCreateUserRight = getUserRightArg(savedInstanceState);
+    protected static <TFragment extends BaseEditFragment> TFragment newInstance(Class<TFragment> fragmentClass, Bundle data, AbstractDomainObject activityRootData) {
+        TFragment fragment = newInstance(fragmentClass, data);
+        fragment.setActivityRootData(activityRootData);
+        return fragment;
     }
 
     @Override
@@ -129,6 +116,7 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
                     }
                 });
                 onLayoutBinding(contentViewStubBinding);
+                applyLiveValidationDisabledToChildren();
                 contentViewStubRoot = contentViewStubBinding.getRoot();
 
                 if (makeHeightMatchParent()) {
@@ -136,11 +124,13 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
                 } else {
                     contentViewStubRoot.getLayoutParams().height = WRAP_CONTENT;
                 }
+
+                ViewGroup root = (ViewGroup) getContentBinding().getRoot();
+                setNotificationContextForPropertyFields(root);
             }
         });
 
         vsChildFragmentFrame.setLayoutResource(getEditLayout());
-
 
         jobTask = new DefaultAsyncTask(getContext()) {
             @Override
@@ -150,7 +140,7 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
 
             @Override
             public void doInBackground(final TaskResultHolder resultHolder) {
-                prepareFragmentData(savedInstanceState);
+                prepareFragmentData();
             }
 
             @Override
@@ -167,44 +157,25 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
         return rootView;
     }
 
-    public void showEmptyListHintWithAdd(List list, int entityNameResId) {
-        showEmptyListHint(list, R.string.hint_no_records_found_add_new, entityNameResId);
-    }
-
-    public void showEmptyListHint(List list, int entityNameResId) {
-        showEmptyListHint(list, R.string.hint_no_records_found, entityNameResId);
-    }
-
-    private void showEmptyListHint(List list, int stringFormatResId, int entityNameResId) {
-        boolean isListEmpty = false;
-
+    protected void updateEmptyListHint(List list) {
         if (rootView == null)
             return;
-
         TextView emptyListHintView = (TextView) rootView.findViewById(R.id.emptyListHint);
-
         if (emptyListHintView == null)
             return;
 
-        emptyListHintView.setVisibility(View.GONE);
-
-        if (list == null || list.size() <= 0)
-            isListEmpty = true;
-
-        if (!isListEmpty)
-            return;
-
-        Resources r = getResources();
-
-        String format = r.getString(stringFormatResId);
-
-        emptyListHintView.setText(String.format(format, r.getString(entityNameResId)));
-        emptyListHintView.setVisibility(View.VISIBLE);
+        if (list == null || list.isEmpty()) {
+            emptyListHintView.setText(getResources().getString(isShowNewAction() ? R.string.hint_no_records_found_add_new : R.string.hint_no_records_found));
+            emptyListHintView.setVisibility(View.VISIBLE);
+        } else {
+            emptyListHintView.setVisibility(View.GONE);
+        }
     }
 
     public void requestLayoutRebind() {
         if (contentViewStubBinding != null) {
             onLayoutBinding(contentViewStubBinding);
+            applyLiveValidationDisabledToChildren();
         }
     }
 
@@ -249,136 +220,37 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
         return contentViewStubBinding;
     }
 
-    protected abstract void prepareFragmentData(Bundle savedInstanceState);
+    protected abstract void prepareFragmentData();
 
     protected abstract void onLayoutBinding(TBinding contentBinding);
 
     protected void onAfterLayoutBinding(TBinding contentBinding) {
     }
 
-    protected static <TFragment extends BaseEditFragment, TCapsule extends INavigationCapsule> TFragment newInstance(Class<TFragment> f, TCapsule dataCapsule, AbstractDomainObject activityRootData) {
-
-        TFragment fragment;
-        try {
-            fragment = f.newInstance();
-        } catch (java.lang.InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-
-        Bundle bundle = fragment.getArguments();
-        if (bundle == null) {
-            bundle = new Bundle();
-        }
-
-        String dataUuid = dataCapsule.getRecordUuid();
-        IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
-        IStatusElaborator pageStatus = dataCapsule.getPageStatus();
-        int activeMenuKey = dataCapsule.getActiveMenuKey();
-        String caseUuid = dataCapsule.getCaseUuid();
-        String personUuid = dataCapsule.getPersonUuid();
-        String eventUuid = dataCapsule.getEventUuid();
-        String taskUuid = dataCapsule.getTaskUuid();
-        String contactUuid = dataCapsule.getContactUuid();
-        String sampleUuid = dataCapsule.getSampleUuid();
-        Disease disease = dataCapsule.getDisease();
-        boolean isForVisit = dataCapsule.isForVisit();
-        boolean isVisitCooperative = dataCapsule.isVisitCooperative();
-        UserRight userRight = dataCapsule.getUserRight();
-        //AbstractDomainObject record = dataCapsule.getRecord();
-
-        bundle.putInt(ConstantHelper.KEY_ACTIVE_MENU, activeMenuKey);
-        bundle.putString(ConstantHelper.KEY_DATA_UUID, dataUuid);
-        bundle.putString(ConstantHelper.KEY_PERSON_UUID, personUuid);
-        bundle.putString(ConstantHelper.KEY_CASE_UUID, caseUuid);
-        bundle.putString(ConstantHelper.KEY_EVENT_UUID, eventUuid);
-        bundle.putString(ConstantHelper.KEY_TASK_UUID, taskUuid);
-        bundle.putString(ConstantHelper.KEY_CONTACT_UUID, contactUuid);
-        bundle.putString(ConstantHelper.KEY_SAMPLE_UUID, sampleUuid);
-        bundle.putSerializable(ConstantHelper.ARG_DISEASE, disease);
-        bundle.putBoolean(ConstantHelper.ARG_FOR_VISIT, isForVisit);
-        bundle.putBoolean(ConstantHelper.ARG_VISIT_COOPERATIVE, isVisitCooperative);
-        bundle.putSerializable(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT, userRight);
-
-        if (filterStatus != null)
-            bundle.putSerializable(ConstantHelper.ARG_FILTER_STATUS, dataCapsule.getFilterStatus().getValue());
-
-        if (pageStatus != null)
-            bundle.putSerializable(ConstantHelper.ARG_PAGE_STATUS, pageStatus.getValue());
-
-        fragment.setArguments(bundle);
-        fragment.setActivityRootData(activityRootData);
-        return fragment;
-    }
-
-    protected String getRecordUuidArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.KEY_DATA_UUID)) {
-                result = (String) arguments.getString(ConstantHelper.KEY_DATA_UUID);
-            }
-        }
-
-        return result;
-    }
-
-    protected String getContactUuidArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.KEY_CONTACT_UUID)) {
-                result = (String) arguments.getString(ConstantHelper.KEY_CONTACT_UUID);
-            }
-        }
-
-        return result;
-    }
-
-    protected UserRight getUserRightArg(Bundle arguments) {
-        UserRight e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT)) {
-                e = (UserRight) arguments.getSerializable(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT);
-            }
-        }
-
-        return e;
-    }
-
-    protected <E extends Enum<E>> E getFilterStatusArg(Bundle arguments) {
-        E e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.ARG_FILTER_STATUS)) {
-                e = (E) arguments.getSerializable(ConstantHelper.ARG_FILTER_STATUS);
-            }
-        }
-
-        return e;
-    }
-
-    protected void saveRecordUuidState(Bundle outState, String recordUuid) {
-        if (outState != null) {
-            outState.putString(ConstantHelper.KEY_DATA_UUID, recordUuid);
+    public void setLiveValidationDisabled(boolean liveValidationDisabled) {
+        if (this.liveValidationDisabled != liveValidationDisabled) {
+            this.liveValidationDisabled = liveValidationDisabled;
+            applyLiveValidationDisabledToChildren();
         }
     }
 
-    protected void saveUserRightState(Bundle outState, UserRight userRight) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT, userRight);
-        }
+    public boolean isLiveValidationDisabled() {
+        return liveValidationDisabled;
     }
 
-    public void disableLiveValidation(boolean disableLiveValidation) {
+    public void applyLiveValidationDisabledToChildren() {
+        if (getContentBinding() == null) return;
         ViewGroup root = (ViewGroup) getContentBinding().getRoot();
-        disableLiveValidationForAllChildren(root, disableLiveValidation);
-        liveValidationDisabled = disableLiveValidation;
+        ControlPropertyEditField.applyLiveValidationDisabledToChildren(root, isLiveValidationDisabled());
     }
 
-    private static void disableLiveValidationForAllChildren(ViewGroup parent, boolean disableLiveValidation) {
+    public void setNotificationContextForPropertyFields(ViewGroup parent) {
         for (int i = 0; i < parent.getChildCount(); i++) {
             View child = parent.getChildAt(i);
             if (child instanceof ControlPropertyEditField) {
-                ((ControlPropertyEditField) child).setLiveValidationDisabled(disableLiveValidation);
+                ((ControlPropertyEditField) child).setNotificationContext(notificationCommunicator);
             } else if (child instanceof ViewGroup) {
-                disableLiveValidationForAllChildren((ViewGroup) child, disableLiveValidation);
+                setNotificationContextForPropertyFields((ViewGroup) child);
             }
         }
     }
@@ -387,16 +259,8 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
         return true;
     }
 
-    public boolean isShowAddAction() {
+    public boolean isShowNewAction() {
         return false;
-    }
-
-    public void setLiveValidationDisabled(boolean liveValidationDisabled) {
-        this.liveValidationDisabled = liveValidationDisabled;
-    }
-
-    public boolean isLiveValidationDisabled() {
-        return liveValidationDisabled;
     }
 
     @Override

@@ -1,7 +1,5 @@
 package de.symeda.sormas.app.person.edit;
 
-import android.content.res.Resources;
-import android.os.Bundle;
 import android.view.View;
 
 import java.util.Calendar;
@@ -34,7 +32,6 @@ import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
-import de.symeda.sormas.app.core.BaseFormNavigationCapsule;
 import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureHelper;
@@ -50,8 +47,12 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
     // Instance methods
 
-    public static PersonEditFragment newInstance(BaseFormNavigationCapsule capsule, AbstractDomainObject activityRootData) {
-        return newInstance(PersonEditFragment.class, capsule, activityRootData);
+    public static PersonEditFragment newInstance(Case activityRootData) {
+        return newInstance(PersonEditFragment.class, null, activityRootData);
+    }
+
+    public static PersonEditFragment newInstance(Contact activityRootData) {
+        return newInstance(PersonEditFragment.class, null, activityRootData);
     }
 
     public static void setUpLayoutBinding(final BaseEditFragment fragment, final Person record, final FragmentPersonEditLayoutBinding contentBinding) {
@@ -258,7 +259,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
     }
 
     @Override
-    protected void prepareFragmentData(Bundle savedInstanceState) {
+    protected void prepareFragmentData() {
         AbstractDomainObject ado = getActivityRootData();
 
         if (ado instanceof Case) {

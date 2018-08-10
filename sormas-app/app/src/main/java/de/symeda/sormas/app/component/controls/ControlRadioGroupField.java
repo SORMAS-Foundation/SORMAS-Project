@@ -330,7 +330,7 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
     }
 
     @Override
-    protected void setHint(String hint) {
+    public void setHint(String hint) {
         // Radio groups don't have hints
     }
 

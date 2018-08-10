@@ -1,6 +1,9 @@
 package de.symeda.sormas.app.visit.read;
 
 import android.content.Context;
+import android.os.Bundle;
+
+import java.util.List;
 
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -11,17 +14,39 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.symptoms.SymptomsReadFragment;
+import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.visit.VisitSection;
 import de.symeda.sormas.app.visit.edit.VisitEditActivity;
-import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 
 public class VisitReadActivity extends BaseReadActivity<Visit> {
 
     public static final String TAG = VisitReadActivity.class.getSimpleName();
 
+    private String contactUuid = null;
+
+    public static void startActivity(Context context, String rootUuid, String contactUuid, VisitSection section) {
+        BaseReadActivity.startActivity(context, VisitReadActivity.class, buildBundle(rootUuid, contactUuid, section));
+    }
+
+    public static Bundler buildBundle(String rootUuid, String contactUuid, VisitSection section) {
+        return buildBundle(rootUuid, section).setContactUuid(contactUuid);
+    }
+
     @Override
-    public int getPageMenuData() {
-        return R.xml.data_form_page_followup_menu;
+    protected void onCreateInner(Bundle savedInstanceState) {
+        super.onCreateInner(savedInstanceState);
+        contactUuid = new Bundler(savedInstanceState).getContactUuid();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        new Bundler(outState).setContactUuid(contactUuid);
+    }
+
+    @Override
+    public List<PageMenuItem> getPageMenuData() {
+        return PageMenuItem.fromEnum(VisitSection.values(), getContext());
     }
 
     @Override
@@ -31,21 +56,19 @@ public class VisitReadActivity extends BaseReadActivity<Visit> {
 
     @Override
     public VisitStatus getPageStatus() {
-        return (VisitStatus) super.getPageStatus();
+        return getStoredRootEntity() == null ? null : getStoredRootEntity().getVisitStatus();
     }
 
     @Override
     protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Visit activityRootData) {
-        VisitFormNavigationCapsule dataCapsule = new VisitFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
-
-        VisitSection section = VisitSection.fromMenuKey(menuItem.getKey());
+        VisitSection section = VisitSection.fromOrdinal(menuItem.getKey());
         BaseReadFragment fragment;
         switch (section) {
             case VISIT_INFO:
-                fragment = VisitReadFragment.newInstance(dataCapsule, activityRootData);
+                fragment = VisitReadFragment.newInstance(activityRootData);
                 break;
             case SYMPTOMS:
-                fragment = SymptomsReadFragment.newInstance(dataCapsule, activityRootData);
+                fragment = SymptomsReadFragment.newInstance(activityRootData);
                 break;
             default:
                 throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
@@ -58,14 +81,9 @@ public class VisitReadActivity extends BaseReadActivity<Visit> {
         return R.string.heading_level3_1_contact_visit_info;
     }
 
-    public static void goToActivity(Context fromActivity, VisitFormNavigationCapsule dataCapsule) {
-        BaseReadActivity.goToActivity(fromActivity, VisitReadActivity.class, dataCapsule);
-    }
-
     @Override
-    public void goToEditView(PageMenuItem menuItem) {
-        VisitFormNavigationCapsule dataCapsule = new VisitFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
-        if (menuItem != null) dataCapsule.setActiveMenu(menuItem.getKey());
-        VisitEditActivity.goToActivity(VisitReadActivity.this, dataCapsule);
+    public void goToEditView() {
+        VisitSection section = VisitSection.fromOrdinal(getActivePage().getKey());
+        VisitEditActivity.startActivity(getContext(), getRootUuid(), contactUuid, section);
     }
 }

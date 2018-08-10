@@ -36,7 +36,7 @@ public class Sample extends AbstractDomainObject {
 
     public static final String SAMPLE_DATE_TIME = "sampleDateTime";
     public static final String ASSOCIATED_CASE = "associatedCase";
-    public static final String REFERRED_TO = "referredTo";
+    public static final String REFERRED_TO_UUID = "referredToUuid";
     public static final String SHIPPED = "shipped";
     public static final String RECEIVED = "received";
 
@@ -102,8 +102,16 @@ public class Sample extends AbstractDomainObject {
     @Enumerated(EnumType.STRING)
     private SampleTestType suggestedTypeOfTest;
 
+    /**
+     * referredToUuid should be used to avoid referred samples not being linked due to
+     * synchronization prioritization
+     */
+    @Deprecated
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private Sample referredTo;
+
+    @DatabaseField
+    private String referredToUuid;
 
     @DatabaseField
     private boolean shipped;
@@ -111,6 +119,7 @@ public class Sample extends AbstractDomainObject {
     @DatabaseField
     private boolean received;
 
+    @Deprecated
     @DatabaseField(defaultValue = "", canBeNull = false)
     private String shipmentStatus;
 
@@ -261,12 +270,12 @@ public class Sample extends AbstractDomainObject {
         this.suggestedTypeOfTest = suggestedTypeOfTest;
     }
 
-    public Sample getReferredTo() {
-        return referredTo;
+    public String getReferredToUuid() {
+        return referredToUuid;
     }
 
-    public void setReferredTo(Sample referredTo) {
-        this.referredTo = referredTo;
+    public void setReferredToUuid(String referredToUuid) {
+        this.referredToUuid = referredToUuid;
     }
 
     public boolean isShipped() {
@@ -292,7 +301,7 @@ public class Sample extends AbstractDomainObject {
 
     @Override
     public String toString() {
-        return super.toString() + DateHelper.formatShortDate(getSampleDateTime());
+        return super.toString() + DateHelper.formatLocalShortDate(getSampleDateTime());
     }
 
     public Double getReportLat() {

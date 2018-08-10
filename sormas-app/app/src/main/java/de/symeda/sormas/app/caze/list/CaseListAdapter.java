@@ -22,21 +22,13 @@ import java.util.List;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.app.backend.caze.Case;
 
-/**
- * Created by Orson on 05/12/2017.
- */
-
 public class CaseListAdapter extends DataBoundAdapter<RowCaseListItemLayoutBinding> implements ISetOnListItemClickListener {
 
     private static final String TAG = CaseListAdapter.class.getSimpleName();
 
     private final Context context;
-    private List<Case> data = new ArrayList<>();
+    private List<Case> data;
     private OnListItemClickListener mOnListItemClickListener;
-
-    private LayerDrawable backgroundRowItem;
-    private Drawable unreadListItemIndicator;
-
 
     public CaseListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<Case> data) {
         super(rowLayout);
@@ -67,7 +59,8 @@ public class CaseListAdapter extends DataBoundAdapter<RowCaseListItemLayoutBindi
             holder.binding.imgSyncIcon.setVisibility(View.GONE);
         }
 
-        updateUnreadIndicator(holder, record);
+        // TODO #704
+//        updateUnreadIndicator(holder, record);
     }
 
     @Override
@@ -75,18 +68,18 @@ public class CaseListAdapter extends DataBoundAdapter<RowCaseListItemLayoutBindi
         return data.size();
     }
 
-    public void updateUnreadIndicator(DataBoundViewHolder<RowCaseListItemLayoutBinding> holder, Case item) {
-        backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
-        unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
-
-        if (item != null) {
-            if (item.isUnreadOrChildUnread()) {
-                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
-            } else {
-                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
-            }
-        }
-    }
+//    public void updateUnreadIndicator(DataBoundViewHolder<RowCaseListItemLayoutBinding> holder, Case item) {
+//        LayerDrawable backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
+//        Drawable unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
+//
+//        if (item != null) {
+//            if (item.isUnreadOrChildUnread()) {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
+//            } else {
+//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
+//            }
+//        }
+//    }
 
     public void indicateCaseClassification(ImageView imgCaseClassificationIcon, Case item) {
         Resources resources = imgCaseClassificationIcon.getContext().getResources();

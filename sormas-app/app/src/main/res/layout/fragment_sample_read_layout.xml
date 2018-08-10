@@ -11,6 +11,7 @@
         <import type="de.symeda.sormas.api.Disease" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.sample.Sample"/>
+        <variable name="referredSample" type="de.symeda.sormas.app.backend.sample.Sample"/>
         <variable name="sampleTest" type="de.symeda.sormas.app.backend.sample.SampleTest" />
     </data>
 
@@ -65,7 +66,7 @@
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/sample_sampleDateTime"
-                        app:value="@{data.sampleDateTime}"
+                        app:dateTimeValue="@{data.sampleDateTime}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
@@ -179,11 +180,11 @@
 
                 </LinearLayout>
 
-                <!-- TODO: Re-enable and test after issue #699 has been done -->
-                <!--<de.symeda.sormas.app.component.controls.ControlTextReadField-->
-                    <!--android:id="@+id/sample_referredTo"-->
-                    <!--app:value="@{data.referredTo}"-->
-                    <!--style="@style/ControlSingleColumnStyle" />-->
+                <de.symeda.sormas.app.component.controls.ControlLinkField
+                    android:id="@+id/sample_referredToUuid"
+                    app:value="@{referredSample.lab}"
+                    app:goneIfEmpty="@{data.referredToUuid}"
+                    style="@style/ControlSingleColumnStyle" />
 
             </LinearLayout>
 

@@ -1,5 +1,7 @@
 package de.symeda.sormas.app;
 
+import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,16 +18,24 @@ public abstract class BaseLandingFragment<E extends Enum<E>, TAdapter extends En
     private RecyclerView.LayoutManager layoutManager;
     private TAdapter adapter;
     private RecyclerView recyclerView;
+    protected ViewDataBinding rootBinding;
+    protected View rootView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(this.getRootListLayout(), container, false);
+        View view = inflater.inflate(this.getRootLandingLayout(), container, false);
 
         if (getActivity() instanceof BaseLandingActivity) {
             this.baseLandingActivity = (BaseLandingActivity) this.getActivity();
         } else {
             throw new NotImplementedException("The landing activity for fragment must implement BaseLandingActivity");
         }
+
+        super.onCreateView(inflater, container, savedInstanceState);
+
+        //Inflate Root
+        rootBinding = DataBindingUtil.inflate(inflater, getRootLandingLayout(), container, false);
+        rootView = rootBinding.getRoot();
 
         this.recyclerView = createRecyclerView(view);
         this.layoutManager = createLayoutManager();
@@ -34,7 +44,7 @@ public abstract class BaseLandingFragment<E extends Enum<E>, TAdapter extends En
         return view;
     }
 
-    public int getRootListLayout() {
+    public int getRootLandingLayout() {
         return R.layout.fragment_root_landing_layout;
     }
 
@@ -71,19 +81,11 @@ public abstract class BaseLandingFragment<E extends Enum<E>, TAdapter extends En
         this.recyclerView.setLayoutManager(this.layoutManager);
     }
 
-    protected static <TFragment extends BaseLandingFragment, TActivity extends BaseLandingActivity> TFragment newInstance(Class<TFragment> f) throws IllegalAccessException, java.lang.InstantiationException {
-        TFragment fragment = f.newInstance();
-        /*Bundle bundle = fragment.getArguments();
-        if (bundle == null) {
-            bundle = new Bundle();
-        }
-
-
-        fragment.setArguments(bundle);*/
-        return fragment;
+    public boolean isShowSaveAction() {
+        return true;
     }
 
-    public boolean showNewAction() {
+    public boolean isShowNewAction() {
         return false;
     }
 }

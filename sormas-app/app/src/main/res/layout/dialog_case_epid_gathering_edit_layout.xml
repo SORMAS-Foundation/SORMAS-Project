@@ -5,7 +5,7 @@
     android:id="@+id/base_layout">
 
     <data>
-        <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiDataGathering"/>
+        <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiDataGathering" />
     </data>
 
     <ScrollView
@@ -17,30 +17,28 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingLeft="@dimen/rowListItemHorizontalMargin"
-            android:paddingRight="@dimen/rowListItemHorizontalMargin"
-            >
+            android:paddingRight="@dimen/rowListItemHorizontalMargin">
 
             <de.symeda.sormas.app.component.controls.ControlDateField
                 android:id="@+id/epiDataGathering_gatheringDate"
-                style="@style/ControlSingleColumnStyle"
                 app:value="@={data.gatheringDate}"
-                />
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/epiDataGathering_description"
-                style="@style/ControlSingleColumnStyle"
                 app:value="@={data.description}"
-                />
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextPopupField
                 android:id="@+id/epiDataGathering_gatheringAddress"
-                style="@style/ControlSingleColumnStyle"
                 app:iconStart="@drawable/ic_edit_location_black_24dp"
-                app:hint="@string/hint_case_epid_social_event_address"
+                app:hint="@string/hint_enter_location"
                 app:locationValue="@={data.gatheringAddress}"
-                />
+                style="@style/ControlSingleColumnStyle" />
 
         </LinearLayout>
+
     </ScrollView>
+
 </layout>
 

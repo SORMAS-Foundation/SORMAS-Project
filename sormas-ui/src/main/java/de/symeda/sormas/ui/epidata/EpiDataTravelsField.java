@@ -37,9 +37,9 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 					return "Unknown";
 				} else {
 					StringBuilder periodBuilder = new StringBuilder();
-					periodBuilder.append(travel.getTravelDateFrom() != null ? DateHelper.formatDate(travel.getTravelDateFrom()) : "?");
+					periodBuilder.append(travel.getTravelDateFrom() != null ? DateHelper.formatLocalDate(travel.getTravelDateFrom()) : "?");
 					periodBuilder.append(" - ");
-					periodBuilder.append(travel.getTravelDateTo() != null ? DateHelper.formatDate(travel.getTravelDateTo()) : "?");
+					periodBuilder.append(travel.getTravelDateTo() != null ? DateHelper.formatLocalDate(travel.getTravelDateTo()) : "?");
 					return periodBuilder.toString();
 				}
 			}

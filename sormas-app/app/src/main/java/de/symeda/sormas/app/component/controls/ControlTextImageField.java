@@ -202,7 +202,7 @@ public class ControlTextImageField extends ControlTextReadField {
             textImageField.setValue(getDefaultValue(defaultValue), false);
         } else {
             if (sample.isShipped()) {
-                textImageField.setValue(DateHelper.formatShortDate(sample.getShipmentDate()), true);
+                textImageField.setValue(DateHelper.formatLocalShortDate(sample.getShipmentDate()), true);
                 textImageField.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.green);
             } else {
                 textImageField.setValue(textImageField.getResources().getString(R.string.no), false);
@@ -217,7 +217,7 @@ public class ControlTextImageField extends ControlTextReadField {
             textImageField.setValue(getDefaultValue(defaultValue), false);
         } else {
             if (sample.isReceived()) {
-                textImageField.setValue(DateHelper.formatShortDate(sample.getReceivedDate()), true);
+                textImageField.setValue(DateHelper.formatLocalShortDate(sample.getReceivedDate()), true);
                 textImageField.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.green);
             } else {
                 textImageField.setValue(textImageField.getResources().getString(R.string.no), false);

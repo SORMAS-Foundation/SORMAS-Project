@@ -8,7 +8,6 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.databinding.FragmentCaseReadHospitalizationLayoutBinding;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 import static android.view.View.GONE;
@@ -20,6 +19,11 @@ public class CaseReadHospitalizationFragment extends BaseReadFragment<FragmentCa
     private Case caze;
     private Hospitalization record;
     private ObservableArrayList preHospitalizations = new ObservableArrayList();
+
+    public static CaseReadHospitalizationFragment newInstance(Case activityRootData) {
+        return newInstance(CaseReadHospitalizationFragment.class, null, activityRootData);
+    }
+
 
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
@@ -46,7 +50,7 @@ public class CaseReadHospitalizationFragment extends BaseReadFragment<FragmentCa
 
     @Override
     protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.caption_hospitalization_information);
+        return getResources().getString(R.string.caption_case_hospitalization);
     }
 
     @Override
@@ -57,10 +61,6 @@ public class CaseReadHospitalizationFragment extends BaseReadFragment<FragmentCa
     @Override
     public int getReadLayout() {
         return R.layout.fragment_case_read_hospitalization_layout;
-    }
-
-    public static CaseReadHospitalizationFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(CaseReadHospitalizationFragment.class, capsule, activityRootData);
     }
 
     @SuppressWarnings("unchecked")

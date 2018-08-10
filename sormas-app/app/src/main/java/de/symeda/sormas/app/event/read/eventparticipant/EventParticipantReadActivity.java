@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.event.read.eventparticipant;
 
 import android.content.Context;
+import android.os.Bundle;
 
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
@@ -9,9 +10,31 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.event.edit.eventparticipant.EventParticipantEditActivity;
-import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
+import de.symeda.sormas.app.util.Bundler;
 
 public class EventParticipantReadActivity extends BaseReadActivity<EventParticipant> {
+
+    private String eventUuid;
+
+    public static void startActivity(Context context, String rootUuid, String eventUuid) {
+        BaseReadActivity.startActivity(context, EventParticipantReadActivity.class, buildBundle(rootUuid, eventUuid));
+    }
+
+    public static Bundler buildBundle(String rootUuid, String eventUuid) {
+        return buildBundle(rootUuid, 0).setEventUuid(eventUuid);
+    }
+
+    @Override
+    protected void onCreateInner(Bundle savedInstanceState) {
+        super.onCreateInner(savedInstanceState);
+        eventUuid = new Bundler(savedInstanceState).getEventUuid();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        new Bundler(outState).setEventUuid(eventUuid);
+    }
 
     @Override
     protected EventParticipant queryRootData(String recordUuid) {
@@ -20,23 +43,21 @@ public class EventParticipantReadActivity extends BaseReadActivity<EventParticip
 
     @Override
     protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, EventParticipant activityRootData) {
-        EventParticipantFormNavigationCapsule dataCapsule = new EventParticipantFormNavigationCapsule(this, getRootEntityUuid());
-        return EventParticipantReadFragment.newInstance(dataCapsule, activityRootData);
+        return EventParticipantReadFragment.newInstance(activityRootData);
     }
 
     @Override
-    public void goToEditView(PageMenuItem menuItem) {
-        EventParticipantFormNavigationCapsule dataCapsule = new EventParticipantFormNavigationCapsule(this, getRootEntityUuid());
-        if (menuItem != null) dataCapsule.setActiveMenu(menuItem.getKey());
-        EventParticipantEditActivity.goToActivity(this, dataCapsule);
+    public void goToEditView() {
+        EventParticipantEditActivity.startActivity(this, getRootUuid(), eventUuid);
+    }
+
+    @Override
+    public Enum getPageStatus() {
+        return null;
     }
 
     @Override
     protected int getActivityTitle() {
         return R.string.heading_level3_1_event_read_person_involved_info;
-    }
-
-    public static void goToActivity(Context fromActivity, EventParticipantFormNavigationCapsule dataCapsule) {
-        BaseReadActivity.goToActivity(fromActivity, EventParticipantReadActivity.class, dataCapsule);
     }
 }

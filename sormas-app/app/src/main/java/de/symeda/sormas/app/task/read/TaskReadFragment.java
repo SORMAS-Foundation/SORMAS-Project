@@ -10,25 +10,16 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
-import de.symeda.sormas.app.component.OnLinkClickListener;
 import de.symeda.sormas.app.contact.read.ContactReadActivity;
 import de.symeda.sormas.app.databinding.FragmentTaskReadLayoutBinding;
 import de.symeda.sormas.app.event.read.EventReadActivity;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
-import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
-import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
-
-import static android.view.View.GONE;
 
 public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBinding, Task, Task> {
 
     private Task record;
 
-    // Instance methods
-
-    public static TaskReadFragment newInstance(TaskFormNavigationCapsule capsule, Task activityRootData) {
-        return newInstance(TaskReadFragment.class, capsule, activityRootData);
+    public static TaskReadFragment newInstance(Task activityRootData) {
+        return newInstance(TaskReadFragment.class, null, activityRootData);
     }
 
     private void setUpControlListeners(FragmentTaskReadLayoutBinding contentBinding) {
@@ -38,9 +29,7 @@ public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBin
                 public void onClick(View v) {
                     Case caze = record.getCaze();
                     if (caze != null) {
-                        CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(getContext(),
-                                caze.getUuid(), caze.getCaseClassification()).setTaskUuid(record.getUuid());
-                        CaseReadActivity.goToActivity(getActivity(), dataCapsule);
+                        CaseReadActivity.startActivity(getActivity(), caze.getUuid(), true);
                     }
                 }
             });
@@ -52,9 +41,7 @@ public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBin
                 public void onClick(View v) {
                     Contact contact = record.getContact();
                     if (contact != null) {
-                        ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(getContext(),
-                                contact.getUuid(), contact.getContactClassification()).setTaskUuid(record.getUuid());
-                        ContactReadActivity.goToActivity(getActivity(), dataCapsule);
+                        ContactReadActivity.startActivity(getActivity(), contact.getUuid(), true);
                     }
                 }
             });
@@ -66,9 +53,7 @@ public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBin
                 public void onClick(View v) {
                     Event event = record.getEvent();
                     if (event != null) {
-                        EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(getContext(),
-                                event.getUuid(), event.getEventStatus()).setTaskUuid(record.getUuid());
-                        EventReadActivity.goToActivity(getActivity(), dataCapsule);
+                        EventReadActivity.startActivity(getActivity(), event.getUuid(), true);
                     }
                 }
             });
@@ -101,5 +86,4 @@ public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBin
     public int getReadLayout() {
         return R.layout.fragment_task_read_layout;
     }
-
 }

@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.core;
 
-import android.accounts.AuthenticatorException;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -9,7 +8,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
@@ -17,7 +15,6 @@ import android.text.TextUtils;
 
 import org.joda.time.DateTime;
 
-import java.net.ConnectException;
 import java.util.Date;
 import java.util.List;
 
@@ -33,10 +30,12 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
+import de.symeda.sormas.app.rest.ApiVersionException;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.ServerCommunicationException;
+import de.symeda.sormas.app.rest.ServerConnectionException;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.task.edit.TaskEditActivity;
-import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 
 /**
@@ -72,11 +71,7 @@ public class TaskNotificationService extends Service {
                 if (!RetroProvider.isConnected()) {
                     try {
                         RetroProvider.connect(getApplicationContext());
-                    } catch (AuthenticatorException e) {
-                        // do nothing
-                    } catch (RetroProvider.ApiVersionException e) {
-                        // do nothing
-                    } catch (ConnectException e) {
+                    } catch (ServerConnectionException | ServerCommunicationException | ApiVersionException e) {
                         // do nothing
                     }
                 }
@@ -115,10 +110,6 @@ public class TaskNotificationService extends Service {
         EventDao eventDAO = DatabaseHelper.getEventDao();
 
         for (Task task : taskList) {
-            Intent notificationIntent = new Intent(context, TaskEditActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putString(ConstantHelper.KEY_DATA_UUID, task.getUuid());
-
             Case caze = null;
             Contact contact = null;
             Event event = null;
@@ -148,7 +139,8 @@ public class TaskNotificationService extends Service {
                     continue;
             }
 
-            notificationIntent.putExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA, bundle);
+            Intent notificationIntent = new Intent(context, TaskEditActivity.class);
+            notificationIntent.putExtras(TaskEditActivity.buildBundle(task.getUuid()).get());
             // Just for your information: The issue here was that the second argument of the getActivity call
             // was set to 0, which leads to previous intents to be recycled; passing the task's ID instead
             // makes sure that a new intent with the right task behind it is created
@@ -161,7 +153,7 @@ public class TaskNotificationService extends Service {
 
             Notification notification = new NotificationCompat.Builder(context)
                     .setTicker(r.getString(R.string.headline_task_notification))
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.mipmap.ic_launcher_foreground)
                     .setContentTitle(task.getTaskType().toString() + (caze != null ? " (" + caze.getDisease().toShortString() + ")" : contact != null ? " (" + contact.getCaseDisease().toShortString() + ")" : ""))
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(content.toString())))
                     .setContentIntent(pi)

@@ -10,10 +10,15 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.task.edit.TaskEditActivity;
+import de.symeda.sormas.app.util.Bundler;
+import de.symeda.sormas.app.visit.VisitSection;
 
 public class TaskReadActivity extends BaseReadActivity<Task> {
+
+    public static void startActivity(Context context, String rootUuid) {
+        BaseReadActivity.startActivity(context, TaskReadActivity.class, buildBundle(rootUuid));
+    }
 
     @Override
     protected Task queryRootData(String recordUuid) {
@@ -22,14 +27,12 @@ public class TaskReadActivity extends BaseReadActivity<Task> {
 
     @Override
     public TaskStatus getPageStatus() {
-        return (TaskStatus) super.getPageStatus();
+        return getStoredRootEntity() == null ? null : getStoredRootEntity().getTaskStatus();
     }
 
     @Override
     protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Task activityRootData) {
-        TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(this,
-                getRootEntityUuid(), getPageStatus());
-        return TaskReadFragment.newInstance(dataCapsule, activityRootData);
+        return TaskReadFragment.newInstance(activityRootData);
     }
 
     @Override
@@ -45,13 +48,7 @@ public class TaskReadActivity extends BaseReadActivity<Task> {
     }
 
     @Override
-    public void goToEditView(PageMenuItem menuItem) {
-        TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
-        if (menuItem != null) dataCapsule.setActiveMenu(menuItem.getKey());
-        TaskEditActivity.goToActivity(this, dataCapsule);
-    }
-
-    public static void goToActivity(Context fromActivity, TaskFormNavigationCapsule dataCapsule) {
-        BaseReadActivity.goToActivity(fromActivity, TaskReadActivity.class, dataCapsule);
+    public void goToEditView() {
+        TaskEditActivity.startActivity(this, getRootUuid());
     }
 }

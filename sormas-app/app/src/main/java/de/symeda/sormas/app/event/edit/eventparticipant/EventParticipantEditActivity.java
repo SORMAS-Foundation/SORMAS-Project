@@ -2,6 +2,7 @@ package de.symeda.sormas.app.event.edit.eventparticipant;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.view.Menu;
 
 import de.symeda.sormas.api.event.EventStatus;
@@ -9,16 +10,16 @@ import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.core.NotificationContext;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
-import de.symeda.sormas.app.validation.FragmentValidator;
+import de.symeda.sormas.app.util.Bundler;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -26,10 +27,31 @@ import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 public class EventParticipantEditActivity extends BaseEditActivity<EventParticipant> {
 
     private AsyncTask saveTask;
+    private String eventUuid;
+
+    public static void startActivity(Context context, String rootUuid, String eventUuid) {
+        BaseEditActivity.startActivity(context, EventParticipantEditActivity.class, buildBundle(rootUuid, eventUuid));
+    }
+
+    public static Bundler buildBundle(String rootUuid, String eventUuid) {
+        return buildBundle(rootUuid, 0).setEventUuid(eventUuid);
+    }
 
     @Override
     public EventStatus getPageStatus() {
-        return (EventStatus) super.getPageStatus();
+        return null;
+    }
+
+    @Override
+    protected void onCreateInner(Bundle savedInstanceState) {
+        super.onCreateInner(savedInstanceState);
+        eventUuid = new Bundler(savedInstanceState).getEventUuid();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        new Bundler(outState).setEventUuid(eventUuid);
     }
 
     @Override
@@ -51,9 +73,7 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, EventParticipant activityRootData) {
-        EventParticipantFormNavigationCapsule dataCapsule = new EventParticipantFormNavigationCapsule(
-                EventParticipantEditActivity.this, getRootEntityUuid());
-        return EventParticipantEditFragment.newInstance(dataCapsule, activityRootData);
+        return EventParticipantEditFragment.newInstance(activityRootData);
     }
 
     @Override
@@ -69,7 +89,7 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
         try {
             FragmentValidator.validate(getContext(), fragment.getContentBinding());
         } catch (ValidationException e) {
-            NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
+            NotificationHelper.showNotification(this, ERROR, e.getMessage());
             return;
         }
 
@@ -81,8 +101,7 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
             }
 
             @Override
-            public void doInBackground(TaskResultHolder resultHolder) throws Exception, ValidationException {
-                validateData(eventParticipant);
+            public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
                 DatabaseHelper.getPersonDao().saveAndSnapshot(eventParticipant.getPerson());
                 DatabaseHelper.getEventParticipantDao().saveAndSnapshot(eventParticipant);
             }
@@ -91,38 +110,14 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
             protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
                 hidePreloader();
                 super.onPostExecute(taskResult);
+
                 if (taskResult.getResultStatus().isSuccess()) {
                     finish();
+                } else {
+                    onResume(); // reload data
                 }
             }
         }.executeOnThreadPool();
-    }
-
-    private void validateData(EventParticipant data) throws ValidationException {
-
-        //TODO: Validation
-        /*EventParticipantFragmentLayoutBinding eventParticipantBinding = eventParticipantTab.getBinding();
-        PersonEditFragmentLayoutBinding personBinding = personEditForm.getBinding();
-
-        EventParticipantValidator.clearErrorsForEventParticipantData(eventParticipantBinding);
-        PersonValidator.clearErrors(personBinding);
-
-        boolean validationError = false;
-
-        if (!PersonValidator.validatePersonData(person, personBinding)) {
-            validationError = true;
-        }
-        if (!EventParticipantValidator.validateEventParticipantData(eventParticipant, eventParticipantBinding)) {
-            validationError = true;
-        }
-
-        if (validationError) {
-            return true;
-        }*/
-    }
-
-    public static void goToActivity(Context fromActivity, EventParticipantFormNavigationCapsule dataCapsule) {
-        BaseEditActivity.goToActivity(fromActivity, EventParticipantEditActivity.class, dataCapsule);
     }
 
     @Override

@@ -1,14 +1,11 @@
 package de.symeda.sormas.app.event.edit.eventparticipant;
 
-import android.os.Bundle;
-
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.databinding.FragmentEventParticipantEditLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
-import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
 
 public class EventParticipantEditFragment extends BaseEditFragment<FragmentEventParticipantEditLayoutBinding, EventParticipant, EventParticipant> {
 
@@ -16,10 +13,8 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
 
     private EventParticipant record;
 
-    // Instance methods
-
-    public static EventParticipantEditFragment newInstance(EventParticipantFormNavigationCapsule capsule, EventParticipant activityRootData) {
-        return newInstance(EventParticipantEditFragment.class, capsule, activityRootData);
+    public static EventParticipantEditFragment newInstance(EventParticipant activityRootData) {
+        return newInstance(EventParticipantEditFragment.class, null, activityRootData);
     }
 
     // Overrides
@@ -35,7 +30,7 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
     }
 
     @Override
-    protected void prepareFragmentData(Bundle savedInstanceState) {
+    protected void prepareFragmentData() {
         record = getActivityRootData();
     }
 
@@ -56,5 +51,4 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
     public int getEditLayout() {
         return R.layout.fragment_event_participant_edit_layout;
     }
-
 }

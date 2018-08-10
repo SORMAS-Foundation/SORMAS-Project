@@ -2,7 +2,6 @@ package de.symeda.sormas.app.caze.edit;
 
 import android.content.res.Resources;
 import android.databinding.ObservableArrayList;
-import android.os.Bundle;
 import android.view.View;
 
 import java.util.List;
@@ -25,9 +24,7 @@ import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.databinding.FragmentCaseEditEpidLayoutBinding;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
 
 public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<FragmentCaseEditEpidLayoutBinding, EpiData, Case> {
@@ -48,10 +45,14 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     private List<Item> drinkingWaterSourceList;
     private List<Item> animalConditionList;
 
+    public static CaseEditEpidemiologicalDataFragment newInstance(Case activityRootData) {
+        return newInstance(CaseEditEpidemiologicalDataFragment.class, null, activityRootData);
+    }
+
     @Override
     protected String getSubHeadingTitle() {
         Resources r = getResources();
-        return r.getString(R.string.caption_epidemiological_information);
+        return r.getString(R.string.caption_case_epidomiological_data);
     }
 
     @Override
@@ -60,13 +61,13 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     }
 
     @Override
-    protected void prepareFragmentData(Bundle savedInstanceState) {
+    protected void prepareFragmentData() {
         Case caze = getActivityRootData();
         disease = caze.getDisease();
         record = caze.getEpiData();
 
-        drinkingWaterSourceList = DataUtils.getEnumItems(WaterSource.class, false);
-        animalConditionList = DataUtils.getEnumItems(AnimalCondition.class, false);
+        drinkingWaterSourceList = DataUtils.getEnumItems(WaterSource.class, true);
+        animalConditionList = DataUtils.getEnumItems(AnimalCondition.class, true);
     }
 
     @Override
@@ -94,6 +95,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
                 if (value != YesNoUnknown.YES) {
                     clearBurials();
                 }
+
+                verifyBurialStatus();
             }
         });
 
@@ -105,6 +108,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
                 if (value != YesNoUnknown.YES) {
                     clearGatherings();
                 }
+
+                verifyGatheringStatus();
             }
         });
 
@@ -116,8 +121,14 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
                 if (value != YesNoUnknown.YES) {
                     clearTravels();
                 }
+
+                verifyTravelStatus();
             }
         });
+
+
+        contentBinding.epiDataDateOfLastExposure.initializeDateField(getFragmentManager());
+        contentBinding.epiDataSickDeadAnimalsDate.initializeDateField(getFragmentManager());
 
         setVisibilityByDisease(EpiDataDto.class, disease, contentBinding.mainContent);
     }
@@ -155,7 +166,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     }
 
     @Override
-    public boolean isShowAddAction() {
+    public boolean isShowNewAction() {
         return false;
     }
 
@@ -360,7 +371,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     private void verifyGatheringStatus() {
         YesNoUnknown hospitalizedPreviously = record.getGatheringAttended();
         if (hospitalizedPreviously == YesNoUnknown.YES && getGatherings().size() <= 0) {
-            getContentBinding().epiDataGatheringAttended.enableWarningState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().epiDataGatheringAttended.enableWarningState(R.string.validation_soft_add_list_entry);
         } else {
             getContentBinding().epiDataGatheringAttended.disableWarningState();
         }
@@ -408,7 +419,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     private void verifyBurialStatus() {
         YesNoUnknown hospitalizedPreviously = record.getBurialAttended();
         if (hospitalizedPreviously == YesNoUnknown.YES && getBurials().size() <= 0) {
-            getContentBinding().epiDataBurialAttended.enableWarningState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().epiDataBurialAttended.enableWarningState(R.string.validation_soft_add_list_entry);
         } else {
             getContentBinding().epiDataBurialAttended.disableWarningState();
         }
@@ -465,14 +476,9 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     private void verifyTravelStatus() {
         YesNoUnknown hospitalizedPreviously = record.getTraveled();
         if (hospitalizedPreviously == YesNoUnknown.YES && getTravels().size() <= 0) {
-            getContentBinding().epiDataTraveled.enableWarningState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().epiDataTraveled.enableWarningState(R.string.validation_soft_add_list_entry);
         } else {
             getContentBinding().epiDataTraveled.disableWarningState();
         }
-    }
-
-
-    public static CaseEditEpidemiologicalDataFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(CaseEditEpidemiologicalDataFragment.class, capsule, activityRootData);
     }
 }

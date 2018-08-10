@@ -8,17 +8,14 @@ import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.databinding.FragmentEventParticipantReadLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentPersonReadLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
-import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 public class EventParticipantReadFragment extends BaseReadFragment<FragmentEventParticipantReadLayoutBinding, EventParticipant, EventParticipant> {
 
     private EventParticipant record;
 
-    // Instance methods
-
-    public static EventParticipantReadFragment newInstance(EventParticipantFormNavigationCapsule capsule, EventParticipant activityRootData) {
-        return newInstance(EventParticipantReadFragment.class, capsule, activityRootData);
+    public static EventParticipantReadFragment newInstance(EventParticipant activityRootData) {
+        return newInstance(EventParticipantReadFragment.class, null, activityRootData);
     }
 
     private void setUpPersonFragmentFieldVisibilities(FragmentPersonReadLayoutBinding contentBinding) {
@@ -59,5 +56,4 @@ public class EventParticipantReadFragment extends BaseReadFragment<FragmentEvent
     public int getReadLayout() {
         return R.layout.fragment_event_participant_read_layout;
     }
-
 }

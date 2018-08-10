@@ -1,13 +1,11 @@
 package de.symeda.sormas.app.core;
 
 /**
- * Created by Orson on 03/12/2017.
+ * Not a good concept
  */
-
+@Deprecated
 public interface IUpdateSubHeadingTitle {
 
     void updateSubHeadingTitle();
-    void updateSubHeadingTitle(int titleResId);
     void updateSubHeadingTitle(String title);
-
 }

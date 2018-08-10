@@ -3,6 +3,4 @@
     package="de.symeda.sormas.app">
 
     <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
-
 </manifest>

@@ -45,7 +45,7 @@ public class SampleTestGrid extends Grid implements ItemClickListener {
 		getColumn(EDIT_BTN_ID).setWidth(60);
 		getColumn(SampleTestDto.TEST_RESULT_VERIFIED).setRenderer(new BooleanRenderer());
 
-		getColumn(SampleTestDto.TEST_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getShortDateTimeFormat()));
+		getColumn(SampleTestDto.TEST_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalShortDateTimeFormat()));
 
 		for(Column column : getColumns()) {
 			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(

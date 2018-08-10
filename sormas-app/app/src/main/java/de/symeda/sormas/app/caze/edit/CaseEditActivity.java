@@ -4,8 +4,10 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.view.Menu;
 
+import java.util.List;
+
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
@@ -17,21 +19,17 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.caze.CaseSection;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.contact.edit.ContactNewActivity;
-import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.sample.edit.SampleNewActivity;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
-import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
-import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.symptoms.SymptomsEditFragment;
+import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
-import de.symeda.sormas.app.validation.FragmentValidator;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -40,6 +38,15 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     public static final String TAG = CaseEditActivity.class.getSimpleName();
 
     private AsyncTask saveTask;
+
+    public static void startActivity(Context context, String recordUuid, CaseSection section) {
+        BaseActivity.startActivity(context, CaseEditActivity.class, buildBundle(recordUuid, section));
+    }
+
+    public static Bundler buildBundle(String recordUuid, CaseSection section) {
+        return BaseEditActivity.buildBundle(recordUuid, section.ordinal());
+    }
+
 
     @Override
     protected Case queryRootEntity(String recordUuid) {
@@ -53,45 +60,48 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
     @Override
     public CaseClassification getPageStatus() {
-        return (CaseClassification) super.getPageStatus();
+        return getStoredRootEntity() == null ? null : getStoredRootEntity().getCaseClassification();
     }
 
     @Override
-    public int getPageMenuData() {
-        return R.xml.data_form_page_case_menu;
+    public List<PageMenuItem> getPageMenuData() {
+        List<PageMenuItem> menuItems = PageMenuItem.fromEnum(CaseSection.values(), getContext());
+        Case caze = getStoredRootEntity();
+        if (caze != null && !DiseaseHelper.hasContactFollowUp(caze.getDisease(), caze.getPlagueType())) {
+            menuItems.remove(CaseSection.CONTACTS.ordinal());
+        }
+        return menuItems;
     }
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Case activityRootData) {
-        CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
-
-        CaseSection section = CaseSection.fromMenuKey(menuItem.getKey());
+        CaseSection section = CaseSection.fromOrdinal(menuItem.getKey());
         BaseEditFragment fragment;
         switch (section) {
 
             case CASE_INFO:
-                fragment = CaseEditFragment.newInstance(dataCapsule, activityRootData);
+                fragment = CaseEditFragment.newInstance(activityRootData);
                 break;
             case PERSON_INFO:
-                fragment = PersonEditFragment.newInstance(dataCapsule, activityRootData);
+                fragment = PersonEditFragment.newInstance(activityRootData);
                 break;
             case HOSPITALIZATION:
-                fragment = CaseEditHospitalizationFragment.newInstance(dataCapsule, activityRootData);
+                fragment = CaseEditHospitalizationFragment.newInstance(activityRootData);
                 break;
             case SYMPTOMS:
-                fragment = SymptomsEditFragment.newInstance(dataCapsule, activityRootData);
+                fragment = SymptomsEditFragment.newInstance(activityRootData);
                 break;
             case EPIDEMIOLOGICAL_DATA:
-                fragment = CaseEditEpidemiologicalDataFragment.newInstance(dataCapsule, activityRootData);
+                fragment = CaseEditEpidemiologicalDataFragment.newInstance(activityRootData);
                 break;
             case CONTACTS:
-                fragment = CaseEditContactListFragment.newInstance(dataCapsule, activityRootData);
+                fragment = CaseEditContactListFragment.newInstance(activityRootData);
                 break;
             case SAMPLES:
-                fragment = CaseEditSampleListFragment.newInstance(dataCapsule, activityRootData);
+                fragment = CaseEditSampleListFragment.newInstance(activityRootData);
                 break;
             case TASKS:
-                fragment = CaseEditTaskListFragment.newInstance(dataCapsule, activityRootData);
+                fragment = CaseEditTaskListFragment.newInstance(activityRootData);
                 break;
             default:
                 throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
@@ -129,7 +139,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         try {
             FragmentValidator.validate(getContext(), getActiveFragment().getContentBinding());
         } catch (ValidationException e) {
-            NotificationHelper.showNotification((NotificationContext) getContext(), ERROR, e.getMessage());
+            NotificationHelper.showNotification(this, ERROR, e.getMessage());
             return;
         }
 
@@ -151,6 +161,8 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                 super.onPostExecute(taskResult);
                 if (taskResult.getResultStatus().isSuccess()) {
                     successCallback.accept(cazeToSave);
+                } else {
+                    onResume(); // reload data
                 }
             }
         }.executeOnThreadPool();
@@ -158,21 +170,13 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
     @Override
     public void goToNewView() {
-        CaseSection activeSection = CaseSection.fromMenuKey(getActivePage().getKey());
+        CaseSection activeSection = CaseSection.fromOrdinal(getActivePage().getKey());
 
         if (activeSection == CaseSection.CONTACTS) {
-            ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(getContext(),
-                    ContactClassification.UNCONFIRMED).setCaseUuid(getRootEntityUuid());
-            ContactNewActivity.goToActivity(this, dataCapsule);
+            ContactNewActivity.startActivity(getContext(), getRootUuid());
         } else if (activeSection == CaseSection.SAMPLES) {
-            SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(getContext(),
-                    ShipmentStatus.NOT_SHIPPED).setCaseUuid(getRootEntityUuid());
-            SampleNewActivity.goToActivity(this, dataCapsule);
+            SampleNewActivity.startActivity(getContext(), getRootUuid());
         }
-    }
-
-    public static <TActivity extends BaseActivity> void goToActivity(Context fromActivity, CaseFormNavigationCapsule dataCapsule) {
-        BaseEditActivity.goToActivity(fromActivity, CaseEditActivity.class, dataCapsule);
     }
 
     @Override
