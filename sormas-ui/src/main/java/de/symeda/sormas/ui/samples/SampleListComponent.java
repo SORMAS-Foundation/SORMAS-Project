@@ -19,6 +19,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -126,6 +127,16 @@ public class SampleListComponent extends VerticalLayout {
 			grid.setCaseClassificationFilter(((CaseClassification)e.getProperty().getValue()));
 		});
 		filterLayout.addComponent(classificationFilter);        
+
+		ComboBox diseaseFilter = new ComboBox();
+		diseaseFilter.setWidth(140, Unit.PIXELS);
+		diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
+		diseaseFilter.addItems((Object[])Disease.values());
+		diseaseFilter.addValueChangeListener(e -> {
+			grid.setDiseaseFilter(((Disease)e.getProperty().getValue()));
+		});
+		filterLayout.addComponent(diseaseFilter);        
+
 
 		ComboBox regionFilter = new ComboBox();
 		if (user.getRegion() == null) {

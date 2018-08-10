@@ -193,6 +193,11 @@ public class SampleGrid extends Grid {
 		sampleCriteria.caseClassification(caseClassification);
 		reload();
 	}
+
+	public void setDiseaseFilter(Disease disease) {
+		sampleCriteria.disease(disease);
+		reload();
+	}
 	
 	public void filterByText(String text) {
 		getContainer().removeContainerFilters(SampleIndexDto.SAMPLE_CODE);
