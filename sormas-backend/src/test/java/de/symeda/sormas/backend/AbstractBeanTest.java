@@ -27,6 +27,7 @@ import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
@@ -77,6 +78,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 	
 	public ContactFacade getContactFacade() {
 		return getBean(ContactFacadeEjbLocal.class);
+	}
+	
+	public ContactService getContactService() {
+		return getBean(ContactService.class);
 	}
 	
 	public EventFacade getEventFacade() {
