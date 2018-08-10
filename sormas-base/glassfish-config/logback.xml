@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="30 seconds" debug="true">
 
-	<!-- TODO Configure EMAIL_ERROR appender for your server OR STDOUT for your local development system  -->
+	<!-- TODO Configure EMAIL_ERROR appender for your server or STDOUT for your local development system  -->
         
     <!-- allow JMX configuration (http://logback.qos.ch/manual/jmxConfig.html) -->
     <!-- <jmxConfigurator /> -->
 
     <property name="LOG_FOLDER" value="/var/log/payara-sormas" />
 
-    <appender name="FILE_DEBUG"     class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="FILE_DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>${LOG_FOLDER}/application.debug</file>
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
                     <fileNamePattern>${LOG_FOLDER}/application.%d{yyyy-ww}.debug</fileNamePattern>
@@ -75,9 +75,6 @@
         </encoder>
 	</appender>	
 	
-    <!-- Suppress "Number larger than 32 characters in hex". -->
-    <logger name="org.wamblee.glassfish.auth.HexEncoder" level="ERROR" />
-
     <!-- Don't log personal data when copying to/from dto -->
     <logger name="org.apache.commons.beanutils.BeanUtils" level="INFO" />
 
@@ -86,6 +83,6 @@
             <appender-ref ref="FILE_INFO" />
             <appender-ref ref="FILE_WARN" />
             <!-- <appender-ref ref="EMAIL_ERROR" /> -->
-            <!-- <appender-ref ref="STDOUT" /> -->
+            <appender-ref ref="STDOUT" />
     </root>
 </configuration>
