@@ -38,16 +38,282 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     private IEntryItemOnClickListener onTravelItemClickListener;
     private IEntryItemOnClickListener onBurialItemClickListener;
 
-    private IEntryItemOnClickListener onAddGatheringEntryClickListener;
-    private IEntryItemOnClickListener onAddTravelEntryClickListener;
-    private IEntryItemOnClickListener onAddBurialEntryClickListener;
-
     private List<Item> drinkingWaterSourceList;
     private List<Item> animalConditionList;
+
+    // Static methods
 
     public static CaseEditEpidemiologicalDataFragment newInstance(Case activityRootData) {
         return newInstance(CaseEditEpidemiologicalDataFragment.class, null, activityRootData);
     }
+
+    // Instance methods
+
+    private void setUpControlListeners(final FragmentCaseEditEpidLayoutBinding contentBinding) {
+        onGatheringItemClickListener = new IEntryItemOnClickListener() {
+            @Override
+            public void onClick(View v, Object item) {
+                final EpiDataGathering gathering = (EpiDataGathering) item;
+                final EpiDataGatheringDialog dialog = new EpiDataGatheringDialog(CaseEditActivity.getActiveActivity(), gathering);
+
+                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                    @Override
+                    public void onOkClick(View v, Object item, View viewRoot) {
+                        updateGatherings();
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
+                    @Override
+                    public void onDeleteClick(View v, Object item, View viewRoot) {
+                        removeGathering((EpiDataGathering) item);
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show(null);
+            }
+        };
+
+        onTravelItemClickListener = new IEntryItemOnClickListener() {
+            @Override
+            public void onClick(View v, Object item) {
+                final EpiDataTravel travel = (EpiDataTravel) item;
+                final EpiDataTravelDialog dialog = new EpiDataTravelDialog(CaseEditActivity.getActiveActivity(), travel);
+
+                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                    @Override
+                    public void onOkClick(View v, Object item, View viewRoot) {
+                        updateTravels();
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
+                    @Override
+                    public void onDeleteClick(View v, Object item, View viewRoot) {
+                        removeTravel((EpiDataTravel) item);
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show(null);
+            }
+        };
+
+        onBurialItemClickListener = new IEntryItemOnClickListener() {
+            @Override
+            public void onClick(View v, Object item) {
+                final EpiDataBurial burial = (EpiDataBurial) item;
+                final EpiDataBurialDialog dialog = new EpiDataBurialDialog(CaseEditActivity.getActiveActivity(), burial);
+
+                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                    @Override
+                    public void onOkClick(View v, Object item, View viewRoot) {
+                        updateBurials();
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
+                    @Override
+                    public void onDeleteClick(View v, Object item, View viewRoot) {
+                        removeBurial((EpiDataBurial) item);
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show(null);
+            }
+        };
+
+        contentBinding.btnAddGathering.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final EpiDataGathering gathering = DatabaseHelper.getEpiDataGatheringDao().build();
+                final EpiDataGatheringDialog dialog = new EpiDataGatheringDialog(CaseEditActivity.getActiveActivity(), gathering);
+
+                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                    @Override
+                    public void onOkClick(View v, Object item, View viewRoot) {
+                        addGathering((EpiDataGathering) item);
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
+                    @Override
+                    public void onDeleteClick(View v, Object item, View viewRoot) {
+                        removeGathering((EpiDataGathering) item);
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show(null);
+            }
+        });
+
+        contentBinding.btnAddTravel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final EpiDataTravel travel = DatabaseHelper.getEpiDataTravelDao().build();
+                final EpiDataTravelDialog dialog = new EpiDataTravelDialog(CaseEditActivity.getActiveActivity(), travel);
+
+                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                    @Override
+                    public void onOkClick(View v, Object item, View viewRoot) {
+                        addTravel((EpiDataTravel) item);
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
+                    @Override
+                    public void onDeleteClick(View v, Object item, View viewRoot) {
+                        removeTravel((EpiDataTravel) item);
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show(null);
+            }
+        });
+
+        contentBinding.btnAddBurial.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final EpiDataBurial burial = DatabaseHelper.getEpiDataBurialDao().build();
+                final EpiDataBurialDialog dialog = new EpiDataBurialDialog(CaseEditActivity.getActiveActivity(), burial);
+
+                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                    @Override
+                    public void onOkClick(View v, Object item, View viewRoot) {
+                        addBurial((EpiDataBurial) item);
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
+                    @Override
+                    public void onDeleteClick(View v, Object item, View viewRoot) {
+                        removeBurial((EpiDataBurial) item);
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show(null);
+            }
+        });
+    }
+
+    private ObservableArrayList<EpiDataGathering> getGatherings() {
+        ObservableArrayList<EpiDataGathering> newGatherings = new ObservableArrayList<>();
+        newGatherings.addAll(record.getGatherings());
+        return newGatherings;
+    }
+
+    private void clearGatherings() {
+        record.getGatherings().clear();
+        updateGatherings();
+    }
+
+    private void removeGathering(EpiDataGathering item) {
+        record.getGatherings().remove(item);
+        updateGatherings();
+    }
+
+    private void updateGatherings() {
+        getContentBinding().setGatheringList(getGatherings());
+        verifyGatheringStatus();
+    }
+
+    private void addGathering(EpiDataGathering item) {
+        // TODO: check sorting
+        record.getGatherings().add(0, item);
+        updateGatherings();
+    }
+
+    private void verifyGatheringStatus() {
+        YesNoUnknown hospitalizedPreviously = record.getGatheringAttended();
+        if (hospitalizedPreviously == YesNoUnknown.YES && getGatherings().size() <= 0) {
+            getContentBinding().epiDataGatheringAttended.enableWarningState(R.string.validation_soft_add_list_entry);
+        } else {
+            getContentBinding().epiDataGatheringAttended.disableWarningState();
+        }
+    }
+
+    private ObservableArrayList<EpiDataBurial> getBurials() {
+        ObservableArrayList<EpiDataBurial> newBurials = new ObservableArrayList<>();
+        newBurials.addAll(record.getBurials());
+        return newBurials;
+    }
+
+    private void clearBurials() {
+        record.getBurials().clear();
+        updateBurials();
+    }
+
+    private void removeBurial(EpiDataBurial item) {
+        record.getBurials().remove(item);
+        updateBurials();
+    }
+
+    private void updateBurials() {
+        getContentBinding().setBurialList(getBurials());
+        verifyBurialStatus();
+    }
+
+    private void addBurial(EpiDataBurial item) {
+        record.getBurials().add(0, item);
+        updateBurials();
+    }
+
+    private void verifyBurialStatus() {
+        YesNoUnknown hospitalizedPreviously = record.getBurialAttended();
+        if (hospitalizedPreviously == YesNoUnknown.YES && getBurials().size() <= 0) {
+            getContentBinding().epiDataBurialAttended.enableWarningState(R.string.validation_soft_add_list_entry);
+        } else {
+            getContentBinding().epiDataBurialAttended.disableWarningState();
+        }
+    }
+
+    private ObservableArrayList<EpiDataTravel> getTravels() {
+        ObservableArrayList<EpiDataTravel> newTravels = new ObservableArrayList<>();
+        newTravels.addAll(record.getTravels());
+        return newTravels;
+    }
+
+    private void clearTravels() {
+        record.getTravels().clear();
+        updateTravels();
+    }
+
+    private void removeTravel(EpiDataTravel item) {
+        record.getTravels().remove(item);
+        updateTravels();
+    }
+
+    private void updateTravels() {
+        getContentBinding().setTravelList(getTravels());
+        verifyTravelStatus();
+    }
+
+    private void addTravel(EpiDataTravel item) {
+        record.getTravels().add(0, item);
+        updateTravels();
+    }
+
+    private void verifyTravelStatus() {
+        YesNoUnknown hospitalizedPreviously = record.getTraveled();
+        if (hospitalizedPreviously == YesNoUnknown.YES && getTravels().size() <= 0) {
+            getContentBinding().epiDataTraveled.enableWarningState(R.string.validation_soft_add_list_entry);
+        } else {
+            getContentBinding().epiDataTraveled.disableWarningState();
+        }
+    }
+
+    // Overrides
 
     @Override
     protected String getSubHeadingTitle() {
@@ -72,8 +338,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
 
     @Override
     public void onLayoutBinding(final FragmentCaseEditEpidLayoutBinding contentBinding) {
-
-        setUpControlListeners();
+        setUpControlListeners(contentBinding);
 
         contentBinding.setData(record);
         contentBinding.setWaterSourceClass(WaterSource.class);
@@ -83,15 +348,12 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         contentBinding.setGatheringItemClickCallback(onGatheringItemClickListener);
         contentBinding.setTravelItemClickCallback(onTravelItemClickListener);
         contentBinding.setBurialItemClickCallback(onBurialItemClickListener);
-        contentBinding.setAddGatheringEntryClickCallback(onAddGatheringEntryClickListener);
-        contentBinding.setAddTravelEntryClickCallback(onAddTravelEntryClickListener);
-        contentBinding.setAddBurialEntryClickCallback(onAddBurialEntryClickListener);
 
         contentBinding.epiDataBurialAttended.addValueChangedListener(new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 YesNoUnknown value = (YesNoUnknown) field.getValue();
-                contentBinding.ctrlBurials.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                contentBinding.burialsLayout.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
                 if (value != YesNoUnknown.YES) {
                     clearBurials();
                 }
@@ -104,7 +366,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
             @Override
             public void onChange(ControlPropertyField field) {
                 YesNoUnknown value = (YesNoUnknown) field.getValue();
-                contentBinding.ctrlGatherings.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                contentBinding.gatheringsLayout.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
                 if (value != YesNoUnknown.YES) {
                     clearGatherings();
                 }
@@ -117,7 +379,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
             @Override
             public void onChange(ControlPropertyField field) {
                 YesNoUnknown value = (YesNoUnknown) field.getValue();
-                contentBinding.ctrlTravels.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                contentBinding.travelsLayout.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
                 if (value != YesNoUnknown.YES) {
                     clearTravels();
                 }
@@ -125,30 +387,19 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
                 verifyTravelStatus();
             }
         });
-
-
-        contentBinding.epiDataDateOfLastExposure.initializeDateField(getFragmentManager());
-        contentBinding.epiDataSickDeadAnimalsDate.initializeDateField(getFragmentManager());
-
-        setVisibilityByDisease(EpiDataDto.class, disease, contentBinding.mainContent);
     }
 
     @Override
     public void onAfterLayoutBinding(FragmentCaseEditEpidLayoutBinding contentBinding) {
-        contentBinding.epiDataWaterSource.initializeSpinner(drinkingWaterSourceList, null, new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                WaterSource waterSource = (WaterSource) field.getValue();
+        setVisibilityByDisease(EpiDataDto.class, disease, contentBinding.mainContent);
 
-                if (waterSource == WaterSource.OTHER) {
-                    getContentBinding().epiDataWaterSourceOther.setVisibility(View.VISIBLE);
-                } else {
-                    getContentBinding().epiDataWaterSourceOther.setVisibility(View.GONE);
-                }
-            }
-        });
-
+        // Initialize ControlSpinnerFields
+        contentBinding.epiDataWaterSource.initializeSpinner(drinkingWaterSourceList);
         contentBinding.epiDataAnimalCondition.initializeSpinner(animalConditionList);
+
+        // Initialize ControlDateFields
+        contentBinding.epiDataDateOfLastExposure.initializeDateField(getFragmentManager());
+        contentBinding.epiDataSickDeadAnimalsDate.initializeDateField(getFragmentManager());
 
         verifyBurialStatus();
         verifyGatheringStatus();
@@ -170,315 +421,4 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         return false;
     }
 
-    private void setUpControlListeners() {
-
-        onGatheringItemClickListener = new IEntryItemOnClickListener() {
-            @Override
-            public void onClick(View v, Object item) {
-                final EpiDataGathering gathering = (EpiDataGathering) item;
-                final EpiDataGatheringDialog dialog = new EpiDataGatheringDialog(CaseEditActivity.getActiveActivity(), gathering);
-
-                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
-                    @Override
-                    public void onOkClick(View v, Object item, View viewRoot) {
-                        updateGatherings((EpiDataGathering) item);
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
-                    @Override
-                    public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removeGatherings((EpiDataGathering) item);
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.show(null);
-            }
-        };
-
-        onTravelItemClickListener = new IEntryItemOnClickListener() {
-            @Override
-            public void onClick(View v, Object item) {
-                final EpiDataTravel travel = (EpiDataTravel) item;
-                final EpiDataTravelDialog dialog = new EpiDataTravelDialog(CaseEditActivity.getActiveActivity(), travel);
-
-                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
-                    @Override
-                    public void onOkClick(View v, Object item, View viewRoot) {
-                        updateTravels((EpiDataTravel) item);
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
-                    @Override
-                    public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removeTravels((EpiDataTravel) item);
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.show(null);
-            }
-        };
-
-        onBurialItemClickListener = new IEntryItemOnClickListener() {
-            @Override
-            public void onClick(View v, Object item) {
-                final EpiDataBurial burial = (EpiDataBurial) item;
-                final EpiDataBurialDialog dialog = new EpiDataBurialDialog(CaseEditActivity.getActiveActivity(), burial);
-
-                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
-                    @Override
-                    public void onOkClick(View v, Object item, View viewRoot) {
-                        updateBurials((EpiDataBurial) item);
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
-                    @Override
-                    public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removeBurials((EpiDataBurial) item);
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.show(null);
-            }
-        };
-
-        onAddGatheringEntryClickListener = new IEntryItemOnClickListener() {
-            @Override
-            public void onClick(View v, Object item) {
-                final EpiDataGathering gathering = DatabaseHelper.getEpiDataGatheringDao().build();
-                final EpiDataGatheringDialog dialog = new EpiDataGatheringDialog(CaseEditActivity.getActiveActivity(), gathering);
-
-                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
-                    @Override
-                    public void onOkClick(View v, Object item, View viewRoot) {
-                        addGatherings((EpiDataGathering) item);
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
-                    @Override
-                    public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removeGatherings((EpiDataGathering) item);
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.show(null);
-            }
-        };
-
-        onAddTravelEntryClickListener = new IEntryItemOnClickListener() {
-            @Override
-            public void onClick(View v, Object item) {
-                final EpiDataTravel travel = DatabaseHelper.getEpiDataTravelDao().build();
-                final EpiDataTravelDialog dialog = new EpiDataTravelDialog(CaseEditActivity.getActiveActivity(), travel);
-
-                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
-                    @Override
-                    public void onOkClick(View v, Object item, View viewRoot) {
-                        addTravels((EpiDataTravel) item);
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
-                    @Override
-                    public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removeTravels((EpiDataTravel) item);
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.show(null);
-            }
-        };
-
-        onAddBurialEntryClickListener = new IEntryItemOnClickListener() {
-            @Override
-            public void onClick(View v, Object item) {
-                final EpiDataBurial burial = DatabaseHelper.getEpiDataBurialDao().build();
-                final EpiDataBurialDialog dialog = new EpiDataBurialDialog(CaseEditActivity.getActiveActivity(), burial);
-
-                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
-                    @Override
-                    public void onOkClick(View v, Object item, View viewRoot) {
-                        addBurials((EpiDataBurial) item);
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
-                    @Override
-                    public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removeBurials((EpiDataBurial) item);
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.show(null);
-            }
-        };
-    }
-
-    private ObservableArrayList getGatherings() {
-        ObservableArrayList newGatherings = new ObservableArrayList();
-        if (record != null)
-            newGatherings.addAll(record.getGatherings());
-
-        return newGatherings;
-    }
-
-    private void clearGatherings() {
-        if (record == null)
-            return;
-        record.getGatherings().clear();
-        getContentBinding().setGatheringList(getGatherings());
-        verifyGatheringStatus();
-    }
-
-    private void removeGatherings(EpiDataGathering item) {
-        if (record == null)
-            return;
-        record.getGatherings().remove(item);
-        getContentBinding().setGatheringList(getGatherings());
-        verifyGatheringStatus();
-    }
-
-    private void updateGatherings(EpiDataGathering item) {
-        if (record == null)
-            return;
-        getContentBinding().setGatheringList(getGatherings());
-        verifyGatheringStatus();
-    }
-
-    private void addGatherings(EpiDataGathering item) {
-        if (record == null)
-            return;
-        record.getGatherings().add(0, (EpiDataGathering) item);
-        getContentBinding().setGatheringList(getGatherings());
-        verifyGatheringStatus();
-    }
-
-    private void verifyGatheringStatus() {
-        YesNoUnknown hospitalizedPreviously = record.getGatheringAttended();
-        if (hospitalizedPreviously == YesNoUnknown.YES && getGatherings().size() <= 0) {
-            getContentBinding().epiDataGatheringAttended.enableWarningState(R.string.validation_soft_add_list_entry);
-        } else {
-            getContentBinding().epiDataGatheringAttended.disableWarningState();
-        }
-    }
-
-    private ObservableArrayList getBurials() {
-        ObservableArrayList newBurials = new ObservableArrayList();
-        if (record != null)
-            newBurials.addAll(record.getBurials());
-        return newBurials;
-    }
-
-    private void clearBurials() {
-        if (record == null)
-            return;
-        record.getBurials().clear();
-        getContentBinding().setBurialList(getBurials());
-        verifyBurialStatus();
-    }
-
-    private void removeBurials(EpiDataBurial item) {
-        if (record == null)
-            return;
-        record.getBurials().remove(item);
-        getContentBinding().setBurialList(getBurials());
-        verifyBurialStatus();
-    }
-
-    private void updateBurials(EpiDataBurial item) {
-        if (record == null)
-            return;
-        getContentBinding().setBurialList(getBurials());
-        verifyBurialStatus();
-    }
-
-    private void addBurials(EpiDataBurial item) {
-        if (record == null)
-            return;
-        record.getBurials().add(0, (EpiDataBurial) item);
-
-        getContentBinding().setBurialList(getBurials());
-        verifyBurialStatus();
-    }
-
-    private void verifyBurialStatus() {
-        YesNoUnknown hospitalizedPreviously = record.getBurialAttended();
-        if (hospitalizedPreviously == YesNoUnknown.YES && getBurials().size() <= 0) {
-            getContentBinding().epiDataBurialAttended.enableWarningState(R.string.validation_soft_add_list_entry);
-        } else {
-            getContentBinding().epiDataBurialAttended.disableWarningState();
-        }
-    }
-
-    private ObservableArrayList getTravels() {
-        ObservableArrayList newTravels = new ObservableArrayList();
-        if (record != null)
-            newTravels.addAll(record.getTravels());
-
-        return newTravels;
-    }
-
-    private void clearTravels() {
-        if (record == null)
-            return;
-        record.getTravels().clear();
-        getContentBinding().setTravelList(getTravels());
-        verifyTravelStatus();
-    }
-
-    private void removeTravels(EpiDataTravel item) {
-        if (record == null)
-            return;
-        record.getTravels().remove(item);
-        getContentBinding().setTravelList(getTravels());
-        verifyTravelStatus();
-    }
-
-    private void updateTravels(EpiDataTravel item) {
-        if (record == null)
-            return;
-
-        if (record.getTravels() == null)
-            return;
-
-        getContentBinding().setTravelList(getTravels());
-        verifyTravelStatus();
-    }
-
-    private void addTravels(EpiDataTravel item) {
-        if (record == null)
-            return;
-
-        if (record.getTravels() == null)
-            return;
-
-        record.getTravels().add(0, item);
-
-        getContentBinding().setTravelList(getTravels());
-        verifyTravelStatus();
-    }
-
-    private void verifyTravelStatus() {
-        YesNoUnknown hospitalizedPreviously = record.getTraveled();
-        if (hospitalizedPreviously == YesNoUnknown.YES && getTravels().size() <= 0) {
-            getContentBinding().epiDataTraveled.enableWarningState(R.string.validation_soft_add_list_entry);
-        } else {
-            getContentBinding().epiDataTraveled.disableWarningState();
-        }
-    }
 }

@@ -181,12 +181,12 @@
 
 
     <!-- Sub Headings -->
-    <string name="heading_sub_case_epid_burial_visited">Burial Visited</string>
+    <string name="heading_sub_case_epid_burial_visited">Burials Visited</string>
     <string name="heading_sub_case_epid_social_events">Social Events</string>
     <string name="heading_sub_case_epid_travels">Travels</string>
 
 
-    <string name="heading_sub_case_epid_animal_contact">Animal Contact</string>
+    <string name="heading_sub_case_epid_animal_contacts">Animal Contacts</string>
     <string name="heading_sub_case_epid_environmental_exposure">Environmental Exposure</string>
     <!-- ........................................................................ -->
 

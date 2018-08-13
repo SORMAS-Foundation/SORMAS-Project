@@ -1,61 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/base_layout"
-        android:descendantFocusability="beforeDescendants">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
 
     <data>
+        <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
+        <import type="de.symeda.sormas.api.epidata.WaterSource" />
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
 
-        <import type="de.symeda.sormas.api.utils.YesNoUnknown"/>
-
-        <import type="de.symeda.sormas.api.epidata.WaterSource"/>
-
-        <import type="de.symeda.sormas.app.component.controls.ControlButtonType"/>
-
-        <variable
-            name="waterSourceClass"
-            type="Class"/>
-
-        <variable
-            name="data"
-            type="de.symeda.sormas.app.backend.epidata.EpiData"/>
-
-        <variable
-            name="gatheringList"
-            type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataGathering&gt;"/>
-
-        <variable
-            name="travelList"
-            type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataTravel&gt;"/>
-
-        <variable
-            name="burialList"
-            type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataBurial&gt;"/>
-
-        <variable
-            name="gatheringItemClickCallback"
-            type="de.symeda.sormas.app.core.IEntryItemOnClickListener"/>
-
-        <variable
-            name="addGatheringEntryClickCallback"
-            type="de.symeda.sormas.app.core.IEntryItemOnClickListener"/>
-
-        <variable
-            name="travelItemClickCallback"
-            type="de.symeda.sormas.app.core.IEntryItemOnClickListener"/>
-
-        <variable
-            name="addTravelEntryClickCallback"
-            type="de.symeda.sormas.app.core.IEntryItemOnClickListener"/>
-
-        <variable
-            name="burialItemClickCallback"
-            type="de.symeda.sormas.app.core.IEntryItemOnClickListener"/>
-
-        <variable
-            name="addBurialEntryClickCallback"
-            type="de.symeda.sormas.app.core.IEntryItemOnClickListener"/>
+        <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiData" />
+        <variable name="waterSourceClass" type="Class" />
+        <variable name="gatheringList" type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataGathering&gt;" />
+        <variable name="travelList" type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataTravel&gt;" />
+        <variable name="burialList" type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataBurial&gt;" />
+        <variable name="gatheringItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+        <variable name="travelItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+        <variable name="burialItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
 
     <ScrollView
@@ -63,148 +26,133 @@
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/mainContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:id="@+id/main_content">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                android:paddingTop="@dimen/parentLayoutVerticalMargin">
+                android:padding="@dimen/fragment_padding">
 
                 <TextView
-                    style="@style/SubHeadingCompactStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/sub_heading_epidemiological_info"/>
+                    android:text="@string/sub_heading_epidemiological_info"
+                    style="@style/SubHeadingCompactStyle" />
 
                 <TextView
                     android:id="@+id/epidemiological_info_description"
-                    style="@style/SubHeadingDescriptionStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/description_epidemiological_info"/>
+                    android:text="@string/description_epidemiological_info"
+                    style="@style/SubHeadingDescriptionStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_directContactConfirmedCase"
-                    style="@style/ControlSingleColumnStyle"
                     app:slim="true"
-                    app:value="@={data.directContactConfirmedCase}"/>
+                    app:value="@={data.directContactConfirmedCase}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_directContactProbableCase"
-                    style="@style/ControlSingleColumnStyle"
                     app:slim="true"
-                    app:value="@={data.directContactProbableCase}"/>
+                    app:value="@={data.directContactProbableCase}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_closeContactProbableCase"
-                    style="@style/ControlSingleColumnStyle"
                     app:slim="true"
-                    app:value="@={data.closeContactProbableCase}"/>
+                    app:value="@={data.closeContactProbableCase}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_areaConfirmedCases"
-                    style="@style/ControlSingleColumnStyle"
                     app:slim="true"
-                    app:value="@={data.areaConfirmedCases}"/>
+                    app:value="@={data.areaConfirmedCases}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_processingConfirmedCaseFluidUnsafe"
-                    style="@style/ControlSingleColumnStyle"
                     app:slim="true"
-                    app:value="@={data.processingConfirmedCaseFluidUnsafe}"/>
+                    app:value="@={data.processingConfirmedCaseFluidUnsafe}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_percutaneousCaseBlood"
-                    style="@style/ControlSingleColumnStyle"
                     app:slim="true"
-                    app:value="@={data.percutaneousCaseBlood}"/>
+                    app:value="@={data.percutaneousCaseBlood}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_directContactDeadUnsafe"
-                    style="@style/ControlSingleColumnStyle"
                     app:slim="true"
-                    app:value="@={data.directContactDeadUnsafe}"/>
+                    app:value="@={data.directContactDeadUnsafe}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_processingSuspectedCaseSampleUnsafe"
-                    style="@style/ControlSingleColumnStyle"
                     app:slim="true"
-                    app:value="@={data.processingSuspectedCaseSampleUnsafe}"/>
+                    app:value="@={data.processingSuspectedCaseSampleUnsafe}"
+                    style="@style/ControlSingleColumnStyle" />
 
             </LinearLayout>
 
-            <!-- Burial Controls -->
+            <!-- Burials -->
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/epiData_burialAttended"
+                android:paddingStart="@dimen/parentLayoutHorizontalPadding"
+                android:paddingEnd="@dimen/parentLayoutHorizontalPadding"
+                app:value="@={data.burialAttended}"
+                style="@style/ControlSingleColumnStyle"/>
+
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                android:paddingTop="@dimen/parentLayoutVerticalMargin">
-
-                <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/epiData_burialAttended"
-                    style="@style/ControlSingleColumnStyle"
-                    app:value="@={data.burialAttended}"/>
-
-            </LinearLayout>
-
-            <!-- Burial History -->
-            <!--android:paddingBottom="@dimen/parentLayoutVerticalMargin"-->
-            <LinearLayout
-                android:id="@+id/ctrlBurials"
+                android:id="@+id/burials_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
                 android:background="@color/formListSectionBackground"
                 android:orientation="vertical"
-                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                android:paddingTop="@dimen/parentLayoutVerticalMargin"
-                >
+                android:paddingStart="@dimen/parentLayoutHorizontalPadding"
+                android:paddingEnd="@dimen/parentLayoutHorizontalPadding"
+                android:paddingTop="@dimen/parentLayoutVerticalPadding">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:alternateBottomMarginIfEmpty="@{burialList}"
                     app:emptyBottomMargin="@{@dimen/parentLayoutVerticalMargin}"
-                    app:nonEmptyBottomMargin="@{@dimen/closelyRelatedControlMarginBottom}"
-                    >
+                    app:nonEmptyBottomMargin="@{@dimen/closelyRelatedControlMarginBottom}">
 
                     <TextView
-                        android:id="@+id/hBurial"
-                        style="@style/ReadActivitySubListHeadingNoBMarginStyle"
+                        android:id="@+id/burials_headline"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
                         android:text="@string/heading_sub_case_epid_burial_visited"
-                        />
+                        style="@style/ReadActivitySubListHeadingNoBMarginStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlButton
                         android:id="@+id/btn_add_burial"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
-                        android:onClick="@{(view) -> addBurialEntryClickCallback.onClick(view, data)}"
                         android:text="@string/action_new"
                         app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                         app:iconStart="@drawable/ic_add_24dp"
                         app:rounded="true"
-                        app:slim="true"
-                        />
+                        app:slim="true" />
 
                 </RelativeLayout>
 
                 <ImageView
-                    style="@style/FullHorizontalDividerStyleNoDefaultMargin"
-                    android:layout_marginBottom="@dimen/closelyRelatedControlMarginBottom"
+                    style="@style/FullHorizontalDividerStyle"
                     app:goneIfEmpty="@{burialList}"/>
 
                 <LinearLayout
@@ -212,83 +160,64 @@
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
                     android:orientation="vertical"
-                    android:paddingBottom="@dimen/rowListItemParentElevationVerticalPadding"
-                    android:paddingLeft="@dimen/rowListItemParentElevationHorizontalPadding"
-                    android:paddingRight="@dimen/rowListItemParentElevationHorizontalPadding"
-                    android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
+                    android:padding="@dimen/rowListItemParentPadding"
                     app:callback="@{burialItemClickCallback}"
                     app:entries="@{burialList}"
-                    app:layout="@{@layout/row_case_epid_burial_layout}"
-                    />
+                    app:layout="@{@layout/row_case_epid_burial_layout}" />
 
             </LinearLayout>
 
+            <!-- Social Events -->
 
-            <!-- Social Event Controls -->
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/epiData_gatheringAttended"
+                android:paddingStart="@dimen/parentLayoutHorizontalPadding"
+                android:paddingEnd="@dimen/parentLayoutHorizontalPadding"
+                app:value="@={data.gatheringAttended}"
+                style="@style/ControlSingleColumnStyle" />
+
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                >
-
-                <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/epiData_gatheringAttended"
-                    style="@style/ControlSingleColumnStyle"
-                    app:value="@={data.gatheringAttended}"/>
-
-            </LinearLayout>
-
-            <!-- Social Event History -->
-            <LinearLayout
-                android:id="@+id/ctrlGatherings"
+                android:id="@+id/gatherings_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
                 android:background="@color/formListSectionBackground"
                 android:orientation="vertical"
-                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                android:paddingTop="@dimen/parentLayoutVerticalMargin"
-                >
+                android:paddingStart="@dimen/parentLayoutHorizontalPadding"
+                android:paddingEnd="@dimen/parentLayoutHorizontalPadding"
+                android:paddingTop="@dimen/parentLayoutVerticalPadding">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:alternateBottomMarginIfEmpty="@{gatheringList}"
                     app:emptyBottomMargin="@{@dimen/parentLayoutVerticalMargin}"
-                    app:nonEmptyBottomMargin="@{@dimen/closelyRelatedControlMarginBottom}"
-                    >
+                    app:nonEmptyBottomMargin="@{@dimen/closelyRelatedControlMarginBottom}">
 
                     <TextView
-                        android:id="@+id/hGathering"
-                        style="@style/ReadActivitySubListHeadingNoBMarginStyle"
+                        android:id="@+id/gathering_headline"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
                         android:text="@string/heading_sub_case_epid_social_events"
-                        />
+                        style="@style/ReadActivitySubListHeadingNoBMarginStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlButton
                         android:id="@+id/btn_add_gathering"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
-                        android:onClick="@{(view) -> addGatheringEntryClickCallback.onClick(view, data)}"
                         android:text="@string/action_new"
                         app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                         app:iconStart="@drawable/ic_add_24dp"
                         app:rounded="true"
-                        app:slim="true"
-                        />
+                        app:slim="true" />
 
                 </RelativeLayout>
 
                 <ImageView
-                    style="@style/FullHorizontalDividerStyleNoDefaultMargin"
-                    android:layout_marginBottom="@dimen/closelyRelatedControlMarginBottom"
+                    style="@style/FullHorizontalDividerStyle"
                     app:goneIfEmpty="@{gatheringList}"/>
 
                 <LinearLayout
@@ -296,142 +225,117 @@
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
                     android:orientation="vertical"
-                    android:paddingBottom="@dimen/rowListItemParentElevationVerticalPadding"
-                    android:paddingLeft="@dimen/rowListItemParentElevationHorizontalPadding"
-                    android:paddingRight="@dimen/rowListItemParentElevationHorizontalPadding"
-                    android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
+                    android:padding="@dimen/rowListItemParentPadding"
                     app:callback="@{gatheringItemClickCallback}"
                     app:entries="@{gatheringList}"
-                    app:layout="@{@layout/row_case_epid_gathering_layout}"
-                    />
+                    app:layout="@{@layout/row_case_epid_gathering_layout}" />
 
             </LinearLayout>
 
-            <!-- Travel Controls -->
+            <!-- Travels -->
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/epiData_traveled"
+                android:paddingStart="@dimen/parentLayoutHorizontalPadding"
+                android:paddingEnd="@dimen/parentLayoutHorizontalPadding"
+                app:value="@={data.traveled}"
+                style="@style/ControlSingleColumnStyle" />
+
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                >
-
-                <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/epiData_traveled"
-                    style="@style/ControlSingleColumnStyle"
-                    app:value="@={data.traveled}"/>
-
-            </LinearLayout>
-
-            <!-- Travel History -->
-            <!--android:paddingBottom="@dimen/parentLayoutVerticalMargin"-->
-            <LinearLayout
-                android:id="@+id/ctrlTravels"
+                android:id="@+id/travels_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
                 android:background="@color/formListSectionBackground"
                 android:orientation="vertical"
-                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                android:paddingTop="@dimen/parentLayoutVerticalMargin"
-                >
+                android:paddingStart="@dimen/parentLayoutHorizontalPadding"
+                android:paddingEnd="@dimen/parentLayoutHorizontalPadding"
+                android:paddingTop="@dimen/parentLayoutVerticalPadding">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:alternateBottomMarginIfEmpty="@{travelList}"
                     app:emptyBottomMargin="@{@dimen/parentLayoutVerticalMargin}"
-                    app:nonEmptyBottomMargin="@{@dimen/closelyRelatedControlMarginBottom}"
-                    >
+                    app:nonEmptyBottomMargin="@{@dimen/closelyRelatedControlMarginBottom}">
 
                     <TextView
-                        android:id="@+id/hTravel"
-                        style="@style/ReadActivitySubListHeadingNoBMarginStyle"
+                        android:id="@+id/travels_headline"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
                         android:text="@string/heading_sub_case_epid_travels"
-                        />
+                        style="@style/ReadActivitySubListHeadingNoBMarginStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlButton
                         android:id="@+id/btn_add_travel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
-                        android:onClick="@{(view) -> addTravelEntryClickCallback.onClick(view, data)}"
                         android:text="@string/action_new"
                         app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                         app:iconStart="@drawable/ic_add_24dp"
                         app:rounded="true"
-                        app:slim="true"
-                        />
+                        app:slim="true" />
 
                 </RelativeLayout>
 
                 <ImageView
-                    style="@style/FullHorizontalDividerStyleNoDefaultMargin"
-                    android:layout_marginBottom="@dimen/closelyRelatedControlMarginBottom"
-                    app:goneIfEmpty="@{travelList}"/>
+                    style="@style/FullHorizontalDividerStyle"
+                    app:goneIfEmpty="@{gatheringList}"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
                     android:orientation="vertical"
-                    android:paddingBottom="@dimen/rowListItemParentElevationVerticalPadding"
-                    android:paddingLeft="@dimen/rowListItemParentElevationHorizontalPadding"
-                    android:paddingRight="@dimen/rowListItemParentElevationHorizontalPadding"
-                    android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
+                    android:padding="@dimen/rowListItemParentPadding"
                     app:callback="@{travelItemClickCallback}"
                     app:entries="@{travelList}"
-                    app:layout="@{@layout/row_case_epid_travel_layout}"
-                    />
+                    app:layout="@{@layout/row_case_epid_travel_layout}" />
 
             </LinearLayout>
 
-            <!-- Animals -->
+            <!-- Animal Contacts -->
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
                 android:orientation="vertical"
-                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                >
+                android:paddingStart="@dimen/parentLayoutHorizontalPadding"
+                android:paddingEnd="@dimen/parentLayoutHorizontalPadding">
 
                 <TextView
-                    style="@style/SubHeadingStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/heading_sub_case_epid_animal_contact"
-                    />
+                    android:text="@string/heading_sub_case_epid_animal_contacts"
+                    style="@style/SubHeadingStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_areaInfectedAnimals"
-                    style="@style/ControlSingleColumnStyle"
                     app:slim="true"
-                    app:value="@={data.areaInfectedAnimals}"/>
+                    app:value="@={data.areaInfectedAnimals}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_rodents"
-                    style="@style/ControlSingleColumnStyle"
                     app:slim="true"
-                    app:value="@={data.rodents}"/>
+                    app:value="@={data.rodents}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_bats"
-                    style="@style/ControlSingleColumnStyle"
                     app:slim="true"
-                    app:value="@={data.bats}"/>
+                    app:value="@={data.bats}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_primates"
-                    style="@style/ControlSingleColumnStyle"
                     app:slim="true"
-                    app:value="@={data.primates}"/>
+                    app:value="@={data.primates}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_swine"
@@ -441,79 +345,79 @@
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_birds"
-                    style="@style/ControlSingleColumnStyle"
                     app:slim="true"
-                    app:value="@={data.birds}"/>
+                    app:value="@={data.birds}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_cattle"
-                    style="@style/ControlSingleColumnStyle"
                     app:slim="true"
-                    app:value="@={data.cattle}"/>
+                    app:value="@={data.cattle}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_sickDeadAnimals"
-                    style="@style/ControlSingleColumnStyle"
                     app:slim="true"
-                    app:value="@={data.sickDeadAnimals}"/>
+                    app:value="@={data.sickDeadAnimals}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/epiData_sickDeadAnimalsDetails"
-                    style="@style/ControlSingleColumnStyle"
                     app:dependencyParentField="@{epiDataSickDeadAnimals}"
                     app:dependencyParentValue="@{YesNoUnknown.YES}"
                     app:slim="true"
-                    app:value="@={data.sickDeadAnimalsDetails}"/>
+                    app:value="@={data.sickDeadAnimalsDetails}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/epiData_sickDeadAnimalsDate"
-                    style="@style/ControlSingleColumnStyle"
                     app:dependencyParentField="@{epiDataSickDeadAnimals}"
                     app:dependencyParentValue="@{YesNoUnknown.YES}"
                     app:slim="true"
-                    app:value="@={data.sickDeadAnimalsDate}"/>
+                    app:value="@={data.sickDeadAnimalsDate}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/epiData_sickDeadAnimalsLocation"
-                    style="@style/ControlSingleColumnStyle"
                     app:dependencyParentField="@{epiDataSickDeadAnimals}"
                     app:dependencyParentValue="@{YesNoUnknown.YES}"
                     app:slim="true"
-                    app:value="@={data.sickDeadAnimalsLocation}"/>
+                    app:value="@={data.sickDeadAnimalsLocation}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_eatingRawAnimalsInInfectedArea"
-                    style="@style/ControlSingleColumnStyle"
                     app:slim="true"
-                    app:value="@={data.eatingRawAnimalsInInfectedArea}"/>
+                    app:value="@={data.eatingRawAnimalsInInfectedArea}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_eatingRawAnimals"
-                    style="@style/ControlSingleColumnStyle"
                     app:slim="true"
-                    app:value="@={data.eatingRawAnimals}"/>
+                    app:value="@={data.eatingRawAnimals}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/epiData_eatingRawAnimalsDetails"
-                    style="@style/ControlSingleColumnStyle"
                     app:dependencyParentField="@{epiDataEatingRawAnimals}"
                     app:dependencyParentValue="@{YesNoUnknown.YES}"
                     app:slim="true"
-                    app:value="@={data.eatingRawAnimalsDetails}"/>
+                    app:value="@={data.eatingRawAnimalsDetails}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_otherAnimals"
-                    style="@style/ControlSingleColumnStyle"
                     app:slim="true"
-                    app:value="@={data.otherAnimals}"/>
+                    app:value="@={data.otherAnimals}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/epiData_otherAnimalsDetails"
-                    style="@style/ControlSingleColumnStyle"
                     app:dependencyParentField="@{epiDataOtherAnimals}"
                     app:dependencyParentValue="@{YesNoUnknown.YES}"
                     app:slim="true"
-                    app:value="@={data.otherAnimalsDetails}"/>
+                    app:value="@={data.otherAnimalsDetails}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -522,21 +426,20 @@
 
                     <de.symeda.sormas.app.component.controls.ControlDateField
                         android:id="@+id/epiData_dateOfLastExposure"
-                        style="@style/ControlFirstOfTwoColumnsStyle"
-                        app:value="@={data.dateOfLastExposure}"/>
+                        app:value="@={data.dateOfLastExposure}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/epiData_animalCondition"
-                        style="@style/ControlSecondOfTwoColumnsStyle"
-                        app:value="@={data.animalCondition}"/>
+                        app:value="@={data.animalCondition}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/epiData_placeOfLastExposure"
-                    style="@style/ControlSingleColumnStyle"
-                    app:value="@={data.placeOfLastExposure}"/>
-
+                    app:value="@={data.placeOfLastExposure}"
+                    style="@style/ControlSingleColumnStyle" />
 
             </LinearLayout>
 
@@ -547,53 +450,53 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
                 android:orientation="vertical"
-                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                >
+                android:paddingStart="@dimen/parentLayoutHorizontalPadding"
+                android:paddingEnd="@dimen/parentLayoutHorizontalPadding">
 
                 <TextView
-                    style="@style/SubHeadingStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/heading_sub_case_epid_environmental_exposure"/>
+                    android:text="@string/heading_sub_case_epid_environmental_exposure"
+                    style="@style/SubHeadingStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/epiData_waterSource"
-                    style="@style/ControlSingleColumnStyle"
-                    app:value="@={data.waterSource}"/>
+                    app:value="@={data.waterSource}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/epiData_waterSourceOther"
-                    style="@style/ControlSingleColumnStyle"
                     app:dependencyParentField="@{epiDataWaterSource}"
                     app:dependencyParentValue="@{WaterSource.OTHER}"
-                    app:value="@={data.waterSourceOther}"/>
+                    app:value="@={data.waterSourceOther}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_waterBody"
-                    style="@style/ControlSingleColumnStyle"
                     app:slim="true"
-                    app:value="@={data.waterBody}"/>
+                    app:value="@={data.waterBody}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/epiData_waterBodyDetails"
-                    style="@style/ControlSingleColumnStyle"
                     app:dependencyParentField="@{epiDataWaterBody}"
                     app:dependencyParentValue="@{YesNoUnknown.YES}"
                     app:slim="true"
-                    app:value="@={data.waterBodyDetails}"/>
+                    app:value="@={data.waterBodyDetails}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_tickBite"
-                    style="@style/ControlSingleColumnStyle"
                     app:slim="true"
-                    app:value="@={data.tickBite}"/>
+                    app:value="@={data.tickBite}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_fleaBite"
-                    style="@style/ControlSingleColumnStyle"
                     app:slim="true"
-                    app:value="@={data.fleaBite}"/>
+                    app:value="@={data.fleaBite}"
+                    style="@style/ControlSingleColumnStyle" />
+
             </LinearLayout>
 
         </LinearLayout>

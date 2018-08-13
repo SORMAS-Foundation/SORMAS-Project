@@ -44,10 +44,13 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     private List<Item> plagueTypeList;
     private List<Item> dengueFeverTypeList;
 
+    // Static methods
 
     public static CaseEditFragment newInstance(Case activityRootData) {
         return newInstance(CaseEditFragment.class, null, activityRootData);
     }
+
+    // Instance methods
 
     private void setUpFieldVisibilities(final FragmentCaseEditLayoutBinding contentBinding) {
         setVisibilityByDisease(CaseDataDto.class, contentBinding.getData().getDisease(), contentBinding.mainContent);
