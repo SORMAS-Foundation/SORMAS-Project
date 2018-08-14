@@ -33,7 +33,7 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
 
 
     public static void startActivity(Context context, String contactUuid) {
-        BaseEditActivity.startActivity(context, VisitEditActivity.class, buildBundle(contactUuid));
+        BaseEditActivity.startActivity(context, VisitNewActivity.class, buildBundle(contactUuid));
     }
 
     public static Bundler buildBundle(String contactUuid) {
