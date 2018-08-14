@@ -23,10 +23,6 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
 
     private EpiData record;
 
-    private ObservableArrayList<EpiDataBurial> burials = new ObservableArrayList<>();
-    private ObservableArrayList<EpiDataGathering> gatherings = new ObservableArrayList<>();
-    private ObservableArrayList<EpiDataTravel> travels = new ObservableArrayList<>();
-
     private IEntryItemOnClickListener onBurialItemClickListener;
     private IEntryItemOnClickListener onGatheringItemClickListener;
     private IEntryItemOnClickListener onTravelItemClickListener;
@@ -66,21 +62,6 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
                 simpleDialog.show();
             }
         };
-    }
-
-    private ObservableArrayList<EpiDataBurial> getBurialVisits() {
-        burials.addAll(record.getBurials());
-        return burials;
-    }
-
-    private ObservableArrayList<EpiDataGathering> getGatherings() {
-        gatherings.addAll(record.getGatherings());
-        return gatherings;
-    }
-
-    private ObservableArrayList<EpiDataTravel> getTravels() {
-        travels.addAll(record.getTravels());
-        return travels;
     }
 
     // Overrides
