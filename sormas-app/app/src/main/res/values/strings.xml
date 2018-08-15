@@ -159,7 +159,7 @@
     <string name="heading_level4_contact_edit">Edit Contact</string>
     <string name="heading_level4_event_edit">Edit Event</string>
     <string name="heading_level4_sample_edit">Edit Sample</string>
-    <string name="heading_level4_task_edit">Edit Task</string>
+    <string name="heading_level4_task_edit">Task</string>
     <string name="heading_person_involved_new">New Person Involved</string>
     <string name="heading_sample_new">New Sample</string>
     <string name="heading_sub_dialog_placeholder">Dialog Sub Heading</string>

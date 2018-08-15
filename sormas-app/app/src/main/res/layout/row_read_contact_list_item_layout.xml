@@ -106,13 +106,15 @@
                         app:goneIfEmpty="@{data.contactProximity}" />
 
                     <TextView
-                        android:id="@+id/number_of_visits"
+                        android:id="@+id/last_contact_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/listActivityRowTertiaryTextSize"
                         android:textColor="@color/listActivityRowLeastText"
                         android:layout_marginTop="@dimen/listActivityRowSecondaryTextVerticalMargin"
-                        android:fontFamily="sans-serif-medium" />
+                        android:fontFamily="sans-serif-medium"
+                        app:timeAgoValue="@{data.lastContactDate}"
+                        app:goneIfEmpty="@{data.lastContactDate}" />
 
                 </LinearLayout>
 
@@ -132,7 +134,7 @@
                         android:layout_alignParentBottom="false" />
 
                     <TextView
-                        android:id="@+id/last_contact_date"
+                        android:id="@+id/number_of_visits"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/row_entry_date_text_size"
@@ -141,9 +143,7 @@
                         android:layout_marginTop="@dimen/listActivityRowSecondaryTextVerticalMargin"
                         android:textAlignment="viewEnd"
                         android:layout_alignParentTop="false"
-                        android:layout_alignParentBottom="true"
-                        app:timeAgoValue="@{data.lastContactDate}"
-                        app:goneIfEmpty="@{data.lastContactDate}" />
+                        android:layout_alignParentBottom="true" />
 
                 </RelativeLayout>
 

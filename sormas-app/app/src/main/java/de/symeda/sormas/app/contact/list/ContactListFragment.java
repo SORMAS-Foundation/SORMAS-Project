@@ -43,7 +43,7 @@ public class ContactListFragment extends BaseListFragment<ContactListAdapter> im
 
     @Override
     public ContactListAdapter getNewListAdapter() {
-        return new ContactListAdapter(R.layout.row_read_contact_list_item_layout, this, this.contacts);
+        return new ContactListAdapter(R.layout.row_read_contact_list_item_layout, this, this.contacts, (FollowUpStatus) getListFilter());
     }
 
     @Override

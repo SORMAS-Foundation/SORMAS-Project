@@ -163,6 +163,11 @@ public class ContactGrid extends Grid {
 	}
 	
 	public void setFollowUpStatusFilter(FollowUpStatus status) {
+		if (status == FollowUpStatus.NO_FOLLOW_UP) {
+			this.getColumn(NUMBER_OF_VISITS).setHidden(true);
+		} else {
+			this.getColumn(NUMBER_OF_VISITS).setHidden(false);
+		}
 		contactCriteria.followUpStatus(status);
 		reload();
 	}

@@ -49,7 +49,7 @@ public class VisitDao extends AbstractAdoDao<Visit> {
         try {
             QueryBuilder qb = queryBuilder();
             Where where = qb.where();
-            applyVisitFilter(where, null, contact);
+            filterByStatusAndContact(where, null, contact);
 
             qb.orderBy(Visit.VISIT_DATE_TIME, true);
 
@@ -69,7 +69,7 @@ public class VisitDao extends AbstractAdoDao<Visit> {
             QueryBuilder qb = queryBuilder();
             Where where = qb.where();
 
-            applyVisitFilter(where, visitStatus, contact);
+            filterByStatusAndContact(where, visitStatus, contact);
 
             return (int) qb.countOf();
         } catch (SQLException e) {
@@ -78,7 +78,7 @@ public class VisitDao extends AbstractAdoDao<Visit> {
         }
     }
 
-    private void applyVisitFilter(Where where, VisitStatus visitStatus, Contact contact) throws SQLException {
+    private void filterByStatusAndContact(Where where, VisitStatus visitStatus, Contact contact) throws SQLException {
         where.and(
                 where.eq(AbstractDomainObject.SNAPSHOT, false),
                 where.eq(Visit.PERSON + "_id", contact.getPerson()),
