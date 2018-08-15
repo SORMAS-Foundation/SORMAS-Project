@@ -257,7 +257,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
                 }
 
                 // on checked changed is also called when other button is deselected before new button is selected
-                RadioButton radioButton = (RadioButton)radioGroup.getChildAt(i);
+                RadioButton radioButton = (RadioButton) radioGroup.getChildAt(i);
                 if (radioButton == null || radioButton.isChecked()) {
                     onValueChanged();
                 }
@@ -344,6 +344,11 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
         }
 
         setEnabled(true);
+
+        for (int i = 0; i < input.getChildCount(); i++) {
+            RadioButton button = (RadioButton) input.getChildAt(i);
+            button.setBackground(getButtonDrawable(i == input.getChildCount() - 1, hasError));
+        }
 
         if (state == VisualState.ERROR) {
             Drawable errorStateDrawable = getResources().getDrawable(R.drawable.control_switch_background_border_error);
