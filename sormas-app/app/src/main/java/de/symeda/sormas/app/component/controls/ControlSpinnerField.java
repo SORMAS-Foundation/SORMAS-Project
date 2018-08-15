@@ -254,12 +254,11 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 
     @Override
     protected void changeVisualState(VisualState state) {
-        if (this.visualState == state) {
-            return;
+        if (getUserEditRight() != null && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
+            state = VisualState.DISABLED;
         }
 
-        if (state != VisualState.DISABLED && getUserEditRight() != null
-                && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
+        if (this.visualState == state) {
             return;
         }
 
@@ -276,6 +275,8 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
         setBackground(drawable);
 
         input.requestLayout();
+
+        setEnabled(state != VisualState.DISABLED);
     }
 
     public void setSelectionOnOpen(Object object) {

@@ -179,12 +179,11 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
 
     @Override
     protected void changeVisualState(VisualState state) {
-        if (this.visualState == state) {
-            return;
+        if (getUserEditRight() != null && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
+            state = VisualState.DISABLED;
         }
 
-        if (state != VisualState.DISABLED && getUserEditRight() != null
-                && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
+        if (this.visualState == state) {
             return;
         }
 
@@ -195,8 +194,11 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
 
         if (state == VisualState.DISABLED) {
             setStateColor(labelColor, labelColor);
+            setEnabled(false);
             return;
         }
+
+        setEnabled(true);
 
         if (state == VisualState.ERROR) {
             setStateColor(labelColor, labelColor);

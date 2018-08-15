@@ -322,12 +322,11 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 
     @Override
     protected void changeVisualState(VisualState state) {
-        if (this.visualState == state) {
-            return;
+        if (getUserEditRight() != null && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
+            state = VisualState.DISABLED;
         }
 
-        if (state != VisualState.DISABLED && getUserEditRight() != null
-                && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
+        if (this.visualState == state) {
             return;
         }
 
@@ -340,8 +339,11 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
             Drawable disabledStateDrawable = getResources().getDrawable(R.drawable.control_switch_background_border_disabled);
             disabledStateDrawable = disabledStateDrawable.mutate();
             input.setBackground(disabledStateDrawable);
+            setEnabled(false);
             return;
         }
+
+        setEnabled(true);
 
         if (state == VisualState.ERROR) {
             Drawable errorStateDrawable = getResources().getDrawable(R.drawable.control_switch_background_border_error);

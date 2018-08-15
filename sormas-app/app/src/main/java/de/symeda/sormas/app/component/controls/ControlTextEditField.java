@@ -165,7 +165,6 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 
     // Overrides
 
-
     @Override
     public String getValue() {
         return (String)super.getValue();
@@ -291,13 +290,12 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
     }
 
     @Override
-    protected void changeVisualState(final VisualState state) {
-        if (this.visualState == state) {
-            return;
+    protected void changeVisualState(VisualState state) {
+        if (getUserEditRight() != null && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
+            state = VisualState.DISABLED;
         }
 
-        if (state != VisualState.DISABLED && getUserEditRight() != null
-                && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
+        if (this.visualState == state) {
             return;
         }
 
@@ -319,6 +317,8 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
             input.setTextColor(textColor);
             input.setHintTextColor(hintColor);
         }
+
+        setEnabled(state != VisualState.DISABLED);
     }
 
     @Override
