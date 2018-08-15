@@ -536,8 +536,9 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
         if (showProgressDialog) {
             if (progressDialog == null || !progressDialog.isShowing()) {
+                boolean isInitialSync = DatabaseHelper.getFacilityDao().isEmpty();
                 progressDialog = ProgressDialog.show(this, getString(R.string.headline_synchronization),
-                        getString(R.string.hint_synchronization), true);
+                        getString(isInitialSync ? R.string.hint_synchronization_initial : R.string.hint_synchronization), true);
             }
         } else {
             progressDialog = null;

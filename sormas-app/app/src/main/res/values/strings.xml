@@ -31,10 +31,11 @@
     <string name="action_install_app">Install</string>
     <string name="action_install_later">Install later</string>
     <string name="action_loadMore">Load more</string>
-    <string name="action_login">Sign In</string>
+    <string name="action_login">Sign in</string>
+    <string name="action_login_default_user">Sign in as demo user</string>
     <string name="action_logout">Logout</string>
     <string name="action_logout_anyway">Logout anyway</string>
-    <string name="action_markAllAsRead">Mark All As Read</string>
+    <string name="action_markAllAsRead">Mark all as read</string>
     <string name="action_move">Move</string>
     <string name="action_transfer_case">Transfer case</string>
     <string name="action_new">New</string>
@@ -207,6 +208,7 @@
     <string name="hint_select_month">Select Month</string>
     <string name="hint_select_day">Select Day</string>
     <string name="hint_synchronization">Synchronizing with SORMAS server...</string>
+    <string name="hint_synchronization_initial">Initial synchronizing with SORMAS server.\nPulling infrastructure data will take a few minutes.</string>
     <string name="hint_user_report">Please briefly describe the problem you have experienced. Don\'t enter any personal or otherwise sensitive data!</string>
     <string name="hint_weekly_report_no_data">No data available for this epi week.</string>
 

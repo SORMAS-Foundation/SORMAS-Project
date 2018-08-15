@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -24,12 +25,12 @@ import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.NavigationHelper;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
+import de.symeda.sormas.app.util.SormasProperties;
 import de.symeda.sormas.app.util.SyncCallback;
 
 public class LoginActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, NotificationContext {
 
     private ActivityLoginLayoutBinding binding;
-    private LoginViewModel loginViewModel;
 
     private ProgressDialog progressDialog = null;
 
@@ -42,17 +43,16 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
             return;
         }
 
-        loginViewModel = new LoginViewModel();
+        LoginViewModel loginViewModel = new LoginViewModel();
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login_layout);
         binding.setData(loginViewModel);
 
         binding.username.setLiveValidationDisabled(true);
         binding.password.setLiveValidationDisabled(true);
-    }
 
-    public void showSettingsView(View view) {
-        Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
+        boolean hasDefaultUser = !DataHelper.isNullOrEmpty(SormasProperties.getUserNameDefault())
+                && !DataHelper.isNullOrEmpty(SormasProperties.getUserPasswordDefault());
+        binding.btnLoginDefaultUser.setVisibility(hasDefaultUser ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -113,6 +113,17 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         super.onDestroy();
     }
 
+    public void showSettingsView(View view) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    public void loginDefaultUser(View view) {
+
+        ConfigProvider.setUsernameAndPassword(SormasProperties.getUserNameDefault(), SormasProperties.getUserPasswordDefault());
+        processLogin(true);
+    }
+
     /**
      * Called by onClick
      */
@@ -138,8 +149,9 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
     private void processLogin(boolean checkLoginAndVersion) {
 
         if (progressDialog == null || !progressDialog.isShowing()) {
+            boolean isInitialSync = DatabaseHelper.getFacilityDao().isEmpty();
             progressDialog = ProgressDialog.show(this, getString(R.string.headline_synchronization),
-                    getString(R.string.hint_synchronization), true);
+                    getString(isInitialSync ? R.string.hint_synchronization_initial : R.string.hint_synchronization), true);
         }
 
         // try to connect -> validates login and version

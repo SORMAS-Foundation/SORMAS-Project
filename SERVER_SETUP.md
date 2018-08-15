@@ -5,6 +5,7 @@
 * [Payara Application Server](#payara-application-server)
 * [SORMAS Domain](#sormas-domain)
 * [Apache Web Server](#apache-web-server)
+* [Creating an App for a Demo Server](DEMO_APP.md)
 
 ## Postgres Database
 

@@ -68,7 +68,6 @@ public class SettingsFragment extends BaseLandingFragment {
                 logout(v);
             }
         });
-        binding.resynchronizeData.setVisibility(View.GONE);
 
         binding.sormasVersion.setText("SORMAS " + InfoProvider.get().getVersion());
         binding.sormasVersion.setOnClickListener(new View.OnClickListener() {
@@ -77,7 +76,9 @@ public class SettingsFragment extends BaseLandingFragment {
                 versionClickedCount++;
                 if (isShowDevOptions()) {
                     binding.settingsServerUrl.setVisibility(View.VISIBLE);
-                    binding.logout.setVisibility(View.VISIBLE);
+                    if (ConfigProvider.getUser() != null) {
+                        binding.logout.setVisibility(View.VISIBLE);
+                    }
                     getBaseLandingActivity().getSaveMenu().setVisible(true);
                 }
             }

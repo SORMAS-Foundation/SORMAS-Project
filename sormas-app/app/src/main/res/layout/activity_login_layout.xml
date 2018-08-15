@@ -132,17 +132,34 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/loginButtonMarginTop"
                     android:text="@string/action_login"
-                    android:nextFocusForward="@+id/btn_change_settings"
                     style="@style/PrimaryButtonStyle"
                     android:onClick="login" />
 
-                <Button
-                    android:id="@+id/btn_change_settings"
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/login_change_settings"
-                    style="@style/SubtleButtonStyle"
-                    android:onClick="showSettingsView" />
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btn_login_default_user"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:text="@string/action_login_default_user"
+                        style="@style/PrimaryButtonStyle"
+                        android:onClick="loginDefaultUser" />
+
+                    <Button
+                        android:id="@+id/btn_change_settings"
+                        android:layout_alignParentEnd="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/login_change_settings"
+                        style="@style/SubtleButtonStyle"
+                        android:onClick="showSettingsView" />
+
+                </RelativeLayout>
+
 
             </LinearLayout>
 
