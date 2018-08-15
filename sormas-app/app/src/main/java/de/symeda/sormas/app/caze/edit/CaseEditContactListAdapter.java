@@ -46,7 +46,7 @@ public class CaseEditContactListAdapter extends DataBoundAdapter<RowReadContactL
         holder.setData(record);
         holder.setOnListItemClickListener(this.mOnListItemClickListener);
 
-        indicateContactClassification(holder.binding.imgContactClassificationStatusIcon, record);
+        indicateContactClassification(holder.binding.contactClassificationIcon, record);
 
 
         //Sync Icon

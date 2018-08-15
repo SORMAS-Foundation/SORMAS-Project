@@ -10,7 +10,11 @@ import android.widget.ImageView;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
@@ -45,7 +49,7 @@ public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemL
         holder.setData(record);
         holder.setOnListItemClickListener(this.mOnListItemClickListener);
 
-        indicateContactClassification(holder.binding.imgContactClassificationStatusIcon, record);
+        indicateContactClassification(holder.binding.contactClassificationIcon, record);
 
 
         //Sync Icon
@@ -55,6 +59,13 @@ public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemL
         } else {
             holder.binding.imgSyncIcon.setVisibility(View.GONE);
         }
+
+        // Number of visits
+        int numberOfVisits = DatabaseHelper.getVisitDao().getVisitCount(record, null);
+        int numberOfCooperativeVisits = DatabaseHelper.getVisitDao().getVisitCount(record, VisitStatus.COOPERATIVE);
+
+        holder.binding.numberOfVisits.setText(String.format(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, "numberOfVisitsLongFormat"),
+                numberOfCooperativeVisits, numberOfVisits - numberOfCooperativeVisits));
 
         // TODO #704
 //        updateUnreadIndicator(holder, record);
