@@ -43,7 +43,7 @@ public class NavigationHelper {
     }
 
     public static void goToContacts(Context context) {
-        ContactListActivity.startActivity(context, FollowUpStatus.NO_FOLLOW_UP);
+        ContactListActivity.startActivity(context, FollowUpStatus.FOLLOW_UP);
     }
 
     public static void goToEvents(Context context) {
