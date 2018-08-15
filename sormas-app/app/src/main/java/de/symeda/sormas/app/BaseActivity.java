@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -36,6 +37,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.component.HelpDialog;
 import de.symeda.sormas.app.component.dialog.UserReportDialog;
 import de.symeda.sormas.app.component.menu.PageMenuControl;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
@@ -329,6 +331,11 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
             case R.id.action_readAll:
                 // TODO
+                return true;
+
+            case R.id.action_help:
+                HelpDialog helpDialog = new HelpDialog(this, (ViewGroup) this.findViewById(R.id.main_content));
+                helpDialog.show();
                 return true;
 
             // Report problem button
