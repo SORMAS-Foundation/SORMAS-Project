@@ -15,7 +15,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.task.read.TaskReadActivity;
+import de.symeda.sormas.app.task.edit.TaskEditActivity;
 
 public class TaskListFragment extends BaseListFragment<TaskListAdapter> implements OnListItemClickListener {
 
@@ -31,7 +31,7 @@ public class TaskListFragment extends BaseListFragment<TaskListAdapter> implemen
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        recyclerViewForList = (RecyclerView) view.findViewById(R.id.recyclerViewForList);
+        recyclerViewForList = view.findViewById(R.id.recyclerViewForList);
 
         return view;
     }
@@ -63,7 +63,7 @@ public class TaskListFragment extends BaseListFragment<TaskListAdapter> implemen
     @Override
     public void onListItemClick(View view, int position, Object item) {
         Task t = (Task) item;
-        TaskReadActivity.startActivity(getContext(), t.getUuid());
+        TaskEditActivity.startActivity(getContext(), t.getUuid());
     }
 
     @Override

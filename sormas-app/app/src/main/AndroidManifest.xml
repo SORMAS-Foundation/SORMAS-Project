@@ -60,16 +60,9 @@
             android:launchMode="singleTop">
         </activity>
 
-        <activity android:name=".task.read.TaskReadActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
-            android:parentActivityName=".task.list.TaskListActivity"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop">
-        </activity>
-
         <activity android:name=".task.edit.TaskEditActivity"
             android:theme="@style/ActivityWithOverflowMenuTheme"
-            android:parentActivityName=".task.read.TaskReadActivity"
+            android:parentActivityName=".task.list.TaskListActivity"
             android:screenOrientation="portrait"
             android:launchMode="singleTop">
         </activity>
