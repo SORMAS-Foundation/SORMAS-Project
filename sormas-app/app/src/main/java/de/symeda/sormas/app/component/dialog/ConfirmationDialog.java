@@ -34,6 +34,9 @@ public class ConfirmationDialog extends de.symeda.sormas.app.component.dialog.Ba
     private String subHeading;
     private DialogConfirmationLayoutBinding mContentBinding;
 
+    int positiveButtonTextResId = R.string.action_confirm;
+    int negativeButtonTextResId = R.string.action_dismiss;
+
     public ConfirmationDialog(final FragmentActivity activity) {
         this(activity, R.string.heading_confirmation_dialog, R.string.heading_sub_confirmation_notification_dialog);
     }
@@ -58,6 +61,13 @@ public class ConfirmationDialog extends de.symeda.sormas.app.component.dialog.Ba
         this.tracker = ((SormasApplication) activity.getApplication()).getDefaultTracker();
 
         this.data = null;
+    }
+
+    public ConfirmationDialog(final FragmentActivity activity, int headingResId, int subHeadingResId,
+                              int positiveButtonTextResId, int negativeButtonTextResId) {
+        this(activity, headingResId, subHeadingResId);
+        getConfig().setPositiveButtonText(getContext().getResources().getString(positiveButtonTextResId));
+        getConfig().setNegativeButtonText(getContext().getResources().getString(negativeButtonTextResId));
     }
 
     @Override
@@ -148,5 +158,11 @@ public class ConfirmationDialog extends de.symeda.sormas.app.component.dialog.Ba
     public int getPositiveButtonText() {
         return R.string.action_confirm;
     }
+
+    @Override
+    public int getNegativeButtonText() {
+        return R.string.action_dismiss;
+    }
+
 }
 

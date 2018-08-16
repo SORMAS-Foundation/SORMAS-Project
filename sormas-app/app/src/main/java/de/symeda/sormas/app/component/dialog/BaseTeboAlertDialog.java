@@ -871,5 +871,9 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
         }
     }
 
+    public DialogViewConfig getConfig() {
+        return config;
+    }
+
     // </editor-fold>
 }
