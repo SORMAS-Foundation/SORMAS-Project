@@ -913,11 +913,11 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (!supervisors.isEmpty()) {
 				task.setAssigneeUser(supervisors.get(0));
 			} else {
-				List<User> nationalUsers = userService.getAllByRegionAndUserRoles(null, UserRole.NATIONAL_USER);
-				if (!nationalUsers.isEmpty()) {
-					task.setAssigneeUser(nationalUsers.get(0));
+				User currentUser = userService.getCurrentUser();
+				if (currentUser != null) {
+					task.setAssigneeUser(currentUser);
 				} else {
-					throw new UnsupportedOperationException("no national user and surveillance supervisor missing for: " + caze.getRegion());
+					logger.warn("No valid assignee user found for task " + task.getUuid());
 				}
 			}
 		}
