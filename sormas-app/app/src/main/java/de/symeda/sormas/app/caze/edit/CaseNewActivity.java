@@ -101,7 +101,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Case activityRootData) {
-        BaseEditFragment fragment = CaseNewFragment.newInstance(activityRootData);
+        BaseEditFragment fragment = CaseNewFragment.newInstance(activityRootData, contactUuid);
         fragment.setLiveValidationDisabled(true);
         return fragment;
     }
