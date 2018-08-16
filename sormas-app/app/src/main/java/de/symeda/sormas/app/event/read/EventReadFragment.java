@@ -2,9 +2,12 @@ package de.symeda.sormas.app.event.read;
 
 import android.os.Bundle;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.databinding.FragmentEventReadLayoutBinding;
 
 public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutBinding, Event, Event> {
@@ -40,6 +43,12 @@ public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutB
     @Override
     public int getReadLayout() {
         return R.layout.fragment_event_read_layout;
+    }
+
+    @Override
+    public boolean showEditAction() {
+        User user = ConfigProvider.getUser();
+        return user.hasUserRight(UserRight.EVENT_EDIT);
     }
 
 }
