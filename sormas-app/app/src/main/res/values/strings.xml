@@ -64,7 +64,7 @@
     <string name="action_save_participant">Save Participant</string>
     <string name="action_save_sample">Save Sample</string>
     <string name="action_save_task">Save Task</string>
-    <string name="action_search">Update search</string>
+    <string name="action_update_search">Update search</string>
     <string name="action_select">Select</string>
     <string name="action_send">Send</string>
     <string name="action_set_cleared_to_no">Set Cleared to No</string>
@@ -270,8 +270,10 @@
     <string name="sample_material_unknown">Material N/A</string>
     <string name="sample_result_unknown">Test Result N/A</string>
     <string name="sampling_date_unknown">Sampling Date N/A</string>
-    <string name="description_pick_or_create_person">Select a matching person below by tapping on them or click the "+ Create" button if you don't find any matches.</string>
-    <string name="description_pick_or_create_person_no_records">No matching persons found. Click the "+ Create" button below to create a new person.</string>
+    <string name="description_pick_or_create_person">The name of at least one person already existing in SORMAS is similar to the name you entered.</string>
+    <string name="description_pick_person">If possible, select a matching person below by tapping on them and then clicking the \"Select\" button below.</string>
+    <string name="description_pick_person_no_records">No matching persons found.</string>
+    <string name="description_create_person">If the person you have created is <b>not</b> among the suggested list of existing persons, click the \"Create\" button.</string>
     <string name="server_connection_error">Could not connect to SORMAS server. Try again later.</string>
     <string name="snackbar_entity_overridden">%1$s refreshed. Unsaved changes discarded.</string>
     <string name="snackbar_http_401">Could not authenticate. Please check your username and password.</string>
