@@ -67,6 +67,7 @@ import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
@@ -125,6 +126,7 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sample.SampleTest;
 import de.symeda.sormas.backend.sample.SampleTestService;
+import de.symeda.sormas.backend.sample.SampleTestFacadeEjb.SampleTestFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
@@ -143,6 +145,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
 
+	@EJB
+	private CaseClassificationLogic caseClassificationLogic;
 	@EJB
 	private CaseService caseService;
 	@EJB
@@ -177,6 +181,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private SampleService sampleService;
 	@EJB
 	private SampleTestService sampleTestService;
+	@EJB
+	private SampleTestFacadeEjbLocal sampleTestFacade;
 	@EJB
 	private HospitalizationFacadeEjbLocal hospitalizationFacade;
 	@EJB
@@ -411,23 +417,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		updatePersonAndCaseByOutcome(existingCase, newCase);
 
 		updateCaseAge(existingCase, newCase);
-
-		// Send an email to all responsible supervisors when the case classification has changed
-		if (existingCase != null && existingCase.getCaseClassification() != newCase.getCaseClassification()) {
-			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(newCase.getRegion(), 
-					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
-			for (User recipient : messageRecipients) {
-				try {
-					messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_CASE_CLASSIFICATION_CHANGED), 
-							String.format(I18nProperties.getMessage(MessagingService.CONTENT_CASE_CLASSIFICATION_CHANGED), DataHelper.getShortUuid(newCase.getUuid()), newCase.getCaseClassification().toString()), 
-							MessageType.EMAIL, MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(String.format("NotificationDeliveryFailedException when trying to notify supervisors about the change of a case classification. "
-							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
-				}
-			}
-		}
-
+		
 		if (existingCase == null 
 				|| newCase.getDisease() != existingCase.getDisease()
 				|| newCase.getReportDate() != existingCase.getReportDate()
@@ -455,6 +445,47 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (existingCase == null && newCase.getDisease() == Disease.PLAGUE) {
 			createActiveSearchForOtherCasesTask(newCase);
 		}
+		
+		// update case classification
+		if (newCase.getCaseClassification() != CaseClassification.NO_CASE) {
+			// calculate classification
+			CaseDataDto newCaseDto = toDto(newCase);
+			List<SampleTestDto> sampleTests = sampleTestService.getAllByCase(newCase).stream()
+				.map(s -> sampleTestFacade.toDto(s))
+				.collect(Collectors.toList());
+			CaseClassification classification = caseClassificationLogic.getClassification(newCaseDto, sampleTests);
+			
+			// only update when classification by system changes - user may overwrite this
+			if (classification != newCase.getSystemCaseClassification()) {
+				newCase.setSystemCaseClassification(classification);
+				
+				// really a change? (user may have already set it)
+				if (classification != newCase.getCaseClassification()) {
+					newCase.setCaseClassification(classification);
+					newCase.setClassificationUser(null);
+					newCase.setClassificationDate(new Date());
+					// TODO comment is too long. This is also bad for synchronization. May be best to not fill this automatically. 
+					//newCase.setClassificationComment(caseClassificationLogic.getClassificationDescription(newCase.getDisease(), newCase.getCaseClassification()));
+				}
+			}
+		}		
+
+		// Send an email to all responsible supervisors when the case classification has changed
+		if (existingCase != null && existingCase.getCaseClassification() != newCase.getCaseClassification()) {
+			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(newCase.getRegion(), 
+					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
+			for (User recipient : messageRecipients) {
+				try {
+					messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_CASE_CLASSIFICATION_CHANGED), 
+							String.format(I18nProperties.getMessage(MessagingService.CONTENT_CASE_CLASSIFICATION_CHANGED), DataHelper.getShortUuid(newCase.getUuid()), newCase.getCaseClassification().toString()), 
+							MessageType.EMAIL, MessageType.SMS);
+				} catch (NotificationDeliveryFailedException e) {
+					logger.error(String.format("NotificationDeliveryFailedException when trying to notify supervisors about the change of a case classification. "
+							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
+				}
+			}
+		}
+
 	}
 
 	private void updatePersonAndCaseByOutcome(CaseDataDto existingCase, Case newCase) {
@@ -597,8 +628,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (target == null) {
 			target = new Case();
 			target.setUuid(source.getUuid());
-			target.setReportDate(new Date());
-			// TODO set target.setReportingUser(user); from sesssion context
+			target.setSystemCaseClassification(CaseClassification.NOT_CLASSIFIED);
 		}
 
 		DtoHelper.validateDto(source, target);

@@ -2489,3 +2489,10 @@ UPDATE userroles SET userrole = 'EVENT_OFFICER' WHERE userrole = 'RUMOR_MANAGER'
 UPDATE userroles_history SET userrole = 'EVENT_OFFICER' WHERE userrole = 'RUMOR_MANAGER';
 
 INSERT INTO schema_version (version_number, comment) VALUES (112, 'Rename Rumor Manager user role to "Event Officer" #633');
+
+-- 2018-08-17 Automatic case classification for existing SORMAS diseases #61
+
+ALTER TABLE cases ADD COLUMN systemcaseclassification character varying(255) DEFAULT 'NOT_CLASSIFIED' NOT NULL;
+ALTER TABLE cases_history ADD COLUMN systemcaseclassification character varying(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (113, 'System case classification column #61');
