@@ -1060,7 +1060,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (26, 'Laboratory use
 
 -- 2017-02-03 Add admin role to user 'admin'
 
-INSERT INTO userroles (user_id, userrole) VALUES ((SELECT id FROM users WHERE username = 'admin'), 'ADMIN');
+INSERT INTO userroles (user_id, userrole) SELECT id, 'ADMIN' FROM users WHERE username = 'admin';
 
 INSERT INTO schema_version (version_number, comment) VALUES (27, 'Add admin role to user admin');
 
