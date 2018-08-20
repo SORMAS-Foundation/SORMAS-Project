@@ -258,7 +258,6 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         }
 
         updateStatusFrame();
-        updatePageMenu();
     }
 
     protected abstract BaseEditFragment buildEditFragment(PageMenuItem menuItem, ActivityRootEntity activityRootData);

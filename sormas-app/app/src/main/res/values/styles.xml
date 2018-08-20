@@ -304,6 +304,22 @@
 
     <!-- /CONTROL STYLES -->
 
+    <style name="LayoutContentStyle">
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+    </style>
+
+    <style name="LayoutSingleContentSpaceBelowStyle" parent="LayoutContentStyle">
+        <item name="android:paddingLeft">@dimen/fragment_padding</item>
+        <item name="android:paddingRight">@dimen/fragment_padding</item>
+        <item name="android:paddingTop">@dimen/fragment_padding</item>
+        <item name="android:paddingBottom">64dp</item>
+    </style>
+
+    <style name="LayoutMultipleContentSpaceBelowStyle" parent="LayoutContentStyle">
+        <item name="android:paddingBottom">40dp</item>
+    </style>
+
     <style name="ImageCaptionStyle">
         <item name="android:textColor">@color/controlLabelColor</item>
         <item name="android:textSize">@dimen/controlLabelSize</item>

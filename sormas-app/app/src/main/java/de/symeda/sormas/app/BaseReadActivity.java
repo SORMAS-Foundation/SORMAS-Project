@@ -224,7 +224,6 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         }
 
         updateStatusFrame();
-        updatePageMenu();
     }
 
     protected String getRootUuid() {
