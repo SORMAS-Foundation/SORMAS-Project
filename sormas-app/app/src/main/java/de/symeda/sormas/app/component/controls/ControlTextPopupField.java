@@ -221,13 +221,12 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
 
 
     @Override
-    protected void changeVisualState(final VisualState state) {
-        if (this.visualState == state) {
-            return;
+    protected void changeVisualState(VisualState state) {
+        if (getUserEditRight() != null && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
+            state = VisualState.DISABLED;
         }
 
-        if (state != VisualState.DISABLED && getUserEditRight() != null
-                && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
+        if (this.visualState == state) {
             return;
         }
 
@@ -242,6 +241,8 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
 
         label.setTextColor(labelColor);
         setBackground(drawable);
+
+        setEnabled(state != VisualState.DISABLED);
     }
 
     @Override

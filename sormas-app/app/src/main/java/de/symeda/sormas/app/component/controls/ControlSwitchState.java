@@ -10,10 +10,10 @@ import de.symeda.sormas.app.R;
 
 public enum ControlSwitchState {
 
-    NORMAL(R.color.transparent, R.color.transparent),
-    PRESSED(R.color.transparent, R.color.transparent),
-    CHECKED(R.color.lighterBlue, R.color.watchOut),
-    DISABLED(R.color.disabled, R.color.disabled);
+    NORMAL(R.color.transparent),
+    PRESSED(R.color.transparent),
+    CHECKED(R.color.lighterBlue),
+    DISABLED(R.color.disabled);
 
     private static final int DRAWABLE_SHAPE = GradientDrawable.RECTANGLE;
     private static final int STROKE_COLOR = R.color.lighterBlue;
@@ -26,16 +26,14 @@ public enum ControlSwitchState {
     private int backgroundColor;
     private int backgroundColorError;
 
-    ControlSwitchState(int backgroundColor, int backgroundColorError) {
+    ControlSwitchState(int backgroundColor) {
         this.backgroundColor = backgroundColor;
-        this.backgroundColorError = backgroundColorError;
     }
 
     public Drawable getDrawable(boolean lastButton, boolean hasError, Resources resources) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setShape(DRAWABLE_SHAPE);
-        drawable.setColor(hasError ? resources.getColor(backgroundColorError)
-                : resources.getColor(backgroundColor));
+        drawable.setColor(resources.getColor(backgroundColor));
 
         if (lastButton) {
             return drawable;
