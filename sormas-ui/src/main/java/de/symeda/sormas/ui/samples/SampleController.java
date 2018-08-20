@@ -2,6 +2,8 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.Collection;
 
+import com.vaadin.data.Buffered.SourceException;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
@@ -34,6 +36,7 @@ import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -88,6 +91,14 @@ public class SampleController {
 				}
 			}
 		});
+		
+		// Reload the page when the form is discarded because the sample has been saved before
+		createView.addDiscardListener(new DiscardListener() {
+			@Override
+			public void onDiscard() {
+				navigateToData(sample.getUuid());
+			}
+		});
 
 		VaadinUiUtil.showModalPopupWindow(createView, "Refer sample to another laboratory");
 	}
@@ -117,7 +128,7 @@ public class SampleController {
 				}
 			}
 		});
-		
+
 		if (LoginHelper.getCurrentUserRoles().contains(UserRole.ADMIN)) {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
@@ -138,13 +149,17 @@ public class SampleController {
 					private static final long serialVersionUID = 1L;
 					@Override
 					public void buttonClick(ClickEvent event) {
-						form.commit();
-						SampleDto sampleDto = form.getValue();
-						sampleDto = FacadeProvider.getSampleFacade().saveSample(sampleDto);
-						createReferral(sampleDto);
+						try {
+							form.commit();
+							SampleDto sampleDto = form.getValue();
+							sampleDto = FacadeProvider.getSampleFacade().saveSample(sampleDto);
+							createReferral(sampleDto);
+						} catch (SourceException | InvalidValueException e) {
+							Notification.show("There are errors in the sample form. Please fix them and save the sample before referring it to another laboratory.", Type.ERROR_MESSAGE);
+						}
 					}
 				});
-				
+
 				editView.getButtonsPanel().addComponentAsFirst(referOrLinkToOtherLabButton);
 				editView.getButtonsPanel().setComponentAlignment(referOrLinkToOtherLabButton, Alignment.BOTTOM_LEFT);
 			}
@@ -158,7 +173,7 @@ public class SampleController {
 					navigateToData(dto.getReferredTo().getUuid());
 				}
 			});
-			
+
 			editView.getButtonsPanel().addComponentAsFirst(referOrLinkToOtherLabButton);
 			editView.getButtonsPanel().setComponentAlignment(referOrLinkToOtherLabButton, Alignment.BOTTOM_LEFT);
 		}
@@ -215,7 +230,7 @@ public class SampleController {
 		requestTaskComponent.getCancelButton().setCaption("No");
 		return requestTaskComponent;
 	}
-	
+
 	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification("No samples selected", "You have not selected any samples.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
