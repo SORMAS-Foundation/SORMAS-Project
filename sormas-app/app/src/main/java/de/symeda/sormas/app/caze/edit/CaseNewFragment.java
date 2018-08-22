@@ -92,10 +92,14 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
             contentBinding.caseDataHealthFacility.setRequired(false);
         }
 
-        // Disable first and last name fields when case is created from contact
+        // Disable first and last name and disease fields when case is created from contact
         if (new Bundler(getArguments()).getContactUuid() != null) {
             contentBinding.caseDataFirstName.setEnabled(false);
             contentBinding.caseDataLastName.setEnabled(false);
+            contentBinding.caseDataDisease.setEnabled(false);
+            contentBinding.caseDataDiseaseDetails.setEnabled(false);
+            contentBinding.caseDataPlagueType.setEnabled(false);
+            contentBinding.caseDataDengueFeverType.setEnabled(false);
         }
     }
 
