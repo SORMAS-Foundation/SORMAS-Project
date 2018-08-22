@@ -43,14 +43,6 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 	private FacilityService facilityService;
 	
 	@Override
-	public HospitalizationDto saveHospitalization(HospitalizationDto dto) {
-		Hospitalization hospitalization = fromDto(dto);
-		service.ensurePersisted(hospitalization);
-		
-		return toDto(hospitalization);
-	}
-	
-	@Override
 	public HospitalizationDto getHospitalizationByUuid(String uuid) {
 		return toDto(service.getByUuid(uuid));
 	}

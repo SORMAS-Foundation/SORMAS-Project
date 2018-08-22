@@ -98,6 +98,7 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
+import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
@@ -126,8 +127,8 @@ import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sample.SampleTest;
-import de.symeda.sormas.backend.sample.SampleTestService;
 import de.symeda.sormas.backend.sample.SampleTestFacadeEjb.SampleTestFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.SampleTestService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
@@ -176,6 +177,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private TaskService taskService;
 	@EJB
 	private HospitalizationService hospitalizationService;
+	@EJB
+	private EpiDataService epiDataService;
 	@EJB
 	private ContactService contactService;
 	@EJB
@@ -381,6 +384,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		caseService.ensurePersisted(caze);
+		hospitalizationService.ensurePersisted(caze.getHospitalization());
+		epiDataService.ensurePersisted(caze.getEpiData());
 
 		onCaseChanged(existingCaseDto, caze);
 

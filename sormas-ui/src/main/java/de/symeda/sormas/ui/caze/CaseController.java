@@ -31,9 +31,7 @@ import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
@@ -371,10 +369,9 @@ public class CaseController {
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
-				HospitalizationDto dto = hospitalizationForm.getValue();
-				FacadeProvider.getHospitalizationFacade().saveHospitalization(dto);
-				Notification.show("Case hospitalization saved", Type.WARNING_MESSAGE);
-				navigateToView(CaseHospitalizationView.VIEW_NAME, caseUuid, viewMode);
+				CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
+				cazeDto.setHospitalization(hospitalizationForm.getValue());
+				saveCase(cazeDto, CaseHospitalizationView.VIEW_NAME, viewMode);
 			}
 		});
 
@@ -442,7 +439,6 @@ public class CaseController {
 	}
 
 	private void onCaseChanged(CaseDataDto existingCase, CaseDataDto changedCase) {
-
 		if (existingCase == null) {
 			return;
 		}
@@ -464,10 +460,9 @@ public class CaseController {
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
-				EpiDataDto dto = epiDataForm.getValue();
-				FacadeProvider.getEpiDataFacade().saveEpiData(dto);
-				Notification.show("Case epidemiological data saved", Type.WARNING_MESSAGE);
-				navigateToView(EpiDataView.VIEW_NAME, caseUuid, viewMode);
+				CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
+				cazeDto.setEpiData(epiDataForm.getValue());
+				saveCase(cazeDto, EpiDataView.VIEW_NAME, viewMode);
 			}
 		});
 

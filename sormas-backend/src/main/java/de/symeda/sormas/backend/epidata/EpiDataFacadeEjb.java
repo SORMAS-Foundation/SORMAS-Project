@@ -33,14 +33,6 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
 	
-	@Override
-	public EpiDataDto saveEpiData(EpiDataDto dto) {
-		EpiData epiData = fromDto(dto);
-		service.ensurePersisted(epiData);
-		
-		return toDto(epiData);
-	}
-	
 	public EpiData fromDto(EpiDataDto source) {
 		if (source == null) {
 			return null;
