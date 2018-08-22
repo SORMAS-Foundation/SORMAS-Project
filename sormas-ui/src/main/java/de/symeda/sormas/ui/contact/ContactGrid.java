@@ -13,6 +13,7 @@ import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Grid;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -39,39 +40,43 @@ public class ContactGrid extends Grid {
 	public static final String NUMBER_OF_VISITS = "numberOfVisits";
 	public static final String NUMBER_OF_PENDING_TASKS = "numberOfPendingTasks";
 	public static final String DISEASE_SHORT = "diseaseShort";
-	
+
 	private final ContactCriteria contactCriteria = new ContactCriteria();
-	
+
 	public ContactGrid() {
 		setSizeFull();
 
 		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-        	setSelectionMode(SelectionMode.MULTI);
-        } else {
-        	setSelectionMode(SelectionMode.NONE);
-        }
+			setSelectionMode(SelectionMode.MULTI);
+		} else {
+			setSelectionMode(SelectionMode.NONE);
+		}
 
-        BeanItemContainer<ContactIndexDto> container = new BeanItemContainer<ContactIndexDto>(ContactIndexDto.class);
+		BeanItemContainer<ContactIndexDto> container = new BeanItemContainer<ContactIndexDto>(ContactIndexDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
-        setContainerDataSource(generatedContainer);
+		setContainerDataSource(generatedContainer);
 
-        generatedContainer.addGeneratedProperty(NUMBER_OF_VISITS, new PropertyValueGenerator<String>() {
+		generatedContainer.addGeneratedProperty(NUMBER_OF_VISITS, new PropertyValueGenerator<String>() {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				ContactIndexDto indexDto = (ContactIndexDto) itemId;
-				int numberOfVisits = FacadeProvider.getVisitFacade().getNumberOfVisits(indexDto.toReference(), null);
-				int numberOfCooperativeVisits = FacadeProvider.getVisitFacade().getNumberOfVisits(indexDto.toReference(), VisitStatus.COOPERATIVE);
-				
-				return String.format(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, "numberOfVisitsFormat"),
-						numberOfCooperativeVisits, numberOfVisits - numberOfCooperativeVisits);
+				if (DiseaseHelper.hasContactFollowUp(indexDto.getCaseDisease(), null)) {
+					int numberOfVisits = FacadeProvider.getVisitFacade().getNumberOfVisits(indexDto.toReference(), null);
+					int numberOfCooperativeVisits = FacadeProvider.getVisitFacade().getNumberOfVisits(indexDto.toReference(), VisitStatus.COOPERATIVE);
+
+					return String.format(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, "numberOfVisitsFormat"),
+							numberOfCooperativeVisits, numberOfVisits - numberOfCooperativeVisits);
+				} else {
+					return "-";
+				}
 			}
 			@Override
 			public Class<String> getType() {
 				return String.class;
 			}
 		});
-        
-        generatedContainer.addGeneratedProperty(NUMBER_OF_PENDING_TASKS, new PropertyValueGenerator<String>() {
+
+		generatedContainer.addGeneratedProperty(NUMBER_OF_PENDING_TASKS, new PropertyValueGenerator<String>() {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				ContactIndexDto contactIndexDto = (ContactIndexDto)itemId;
@@ -83,85 +88,85 @@ public class ContactGrid extends Grid {
 				return String.class;
 			}
 		});
-        
-        generatedContainer.addGeneratedProperty(DISEASE_SHORT, new PropertyValueGenerator<String>() {
+
+		generatedContainer.addGeneratedProperty(DISEASE_SHORT, new PropertyValueGenerator<String>() {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				ContactIndexDto contactIndexDto = (ContactIndexDto) itemId;
 				return contactIndexDto.getCaseDisease() != Disease.OTHER 
-					? contactIndexDto.getCaseDisease().toShortString()
-					: DataHelper.toStringNullable(contactIndexDto.getCaseDiseaseDetails());
+						? contactIndexDto.getCaseDisease().toShortString()
+								: DataHelper.toStringNullable(contactIndexDto.getCaseDiseaseDetails());
 			}
 			@Override
 			public Class<String> getType() {
 				return String.class;
 			}
-        });
+		});
 
-        setColumns(ContactIndexDto.UUID, DISEASE_SHORT, ContactIndexDto.CONTACT_CLASSIFICATION, ContactIndexDto.CONTACT_STATUS,
-        		ContactIndexDto.PERSON, ContactIndexDto.CONTACT_PROXIMITY,
-        		ContactIndexDto.FOLLOW_UP_STATUS, NUMBER_OF_VISITS, NUMBER_OF_PENDING_TASKS);
-        getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);
-        getColumn(ContactIndexDto.UUID).setRenderer(new UuidRenderer());
+		setColumns(ContactIndexDto.UUID, DISEASE_SHORT, ContactIndexDto.CONTACT_CLASSIFICATION, ContactIndexDto.CONTACT_STATUS,
+				ContactIndexDto.PERSON, ContactIndexDto.CONTACT_PROXIMITY,
+				ContactIndexDto.FOLLOW_UP_STATUS, NUMBER_OF_VISITS, NUMBER_OF_PENDING_TASKS);
+		getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);
+		getColumn(ContactIndexDto.UUID).setRenderer(new UuidRenderer());
 
-        for (Column column : getColumns()) {
-        	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
-        			ContactIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
-        }
-        
-        addItemClickListener(e -> {
-	       	if (e.getPropertyId() != null && (e.getPropertyId().equals(ContactIndexDto.UUID) || e.isDoubleClick())) {
-		       	ContactIndexDto contactIndexDto = (ContactIndexDto)e.getItemId();
-	       		ControllerProvider.getContactController().editData(contactIndexDto.getUuid());
-	       	}
+		for (Column column : getColumns()) {
+			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
+					ContactIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
+		}
+
+		addItemClickListener(e -> {
+			if (e.getPropertyId() != null && (e.getPropertyId().equals(ContactIndexDto.UUID) || e.isDoubleClick())) {
+				ContactIndexDto contactIndexDto = (ContactIndexDto)e.getItemId();
+				ControllerProvider.getContactController().editData(contactIndexDto.getUuid());
+			}
 		});	
 	}
-	
+
 	public void setCaseFilter(CaseReferenceDto caseRef) {
 		contactCriteria.caseEquals(caseRef);
 		reload();
 	}
 
-    public void setDiseaseFilter(Disease disease) {
+	public void setDiseaseFilter(Disease disease) {
 		contactCriteria.caseDiseaseEquals(disease);
 		reload();
 	}
 
-    public void setReportedByFilter(UserRole reportingUserRole) {
-    	contactCriteria.reportingUserHasRole(reportingUserRole);
-    	reload();
-    }
-    
-    public void setRegionFilter(RegionReferenceDto region) {
-    	contactCriteria.caseRegion(region);
-    	reload();
+	public void setReportedByFilter(UserRole reportingUserRole) {
+		contactCriteria.reportingUserHasRole(reportingUserRole);
+		reload();
 	}
-    
-    public void setDistrictFilter(DistrictReferenceDto district) {
-    	contactCriteria.caseDistrict(district);
-    	reload();
+
+	public void setRegionFilter(RegionReferenceDto region) {
+		contactCriteria.caseRegion(region);
+		reload();
 	}
-    
-    public void setHealthFacilityFilter(FacilityReferenceDto facility) {
-    	contactCriteria.caseFacility(facility);
-    	reload();
+
+	public void setDistrictFilter(DistrictReferenceDto district) {
+		contactCriteria.caseDistrict(district);
+		reload();
 	}
-    
-    public void setContactOfficerFilter(UserReferenceDto contactOfficer) {
-    	contactCriteria.contactOfficer(contactOfficer);
-    	reload();
+
+	public void setHealthFacilityFilter(FacilityReferenceDto facility) {
+		contactCriteria.caseFacility(facility);
+		reload();
+	}
+
+	public void setContactOfficerFilter(UserReferenceDto contactOfficer) {
+		contactCriteria.contactOfficer(contactOfficer);
+		reload();
 	}
 
 	public void setClassificationFilter(ContactClassification contactClassification) {
 		contactCriteria.contactClassification(contactClassification);
 		reload();
-    }
-	
+	}
+
 	public void setStatusFilter(ContactStatus status) {
 		contactCriteria.contactStatus(status);
 		reload();
 	}
-	
+
 	public void setFollowUpStatusFilter(FollowUpStatus status) {
 		if (status == FollowUpStatus.NO_FOLLOW_UP) {
 			this.getColumn(NUMBER_OF_VISITS).setHidden(true);
@@ -175,36 +180,36 @@ public class ContactGrid extends Grid {
 	public void filterByText(String text) {
 		getContainer().removeContainerFilters(ContactIndexDto.UUID);
 		getContainer().removeContainerFilters(ContactIndexDto.PERSON);
-    	getContainer().removeContainerFilters(ContactIndexDto.CAZE);
+		getContainer().removeContainerFilters(ContactIndexDto.CAZE);
 
-    	if (text != null && !text.isEmpty()) {
-    		List<Filter> orFilters = new ArrayList<Filter>();
-    		String[] words = text.split("\\s+");
-    		for (String word : words) {
-    			orFilters.add(new SimpleStringFilter(ContactIndexDto.UUID, word, true, false));
-    			orFilters.add(new SimpleStringFilter(ContactIndexDto.PERSON, word, true, false));
-    			orFilters.add(new SimpleStringFilter(ContactIndexDto.CAZE, word, true, false));
-    		}
-            getContainer().addContainerFilter(new Or(orFilters.stream().toArray(Filter[]::new)));
+		if (text != null && !text.isEmpty()) {
+			List<Filter> orFilters = new ArrayList<Filter>();
+			String[] words = text.split("\\s+");
+			for (String word : words) {
+				orFilters.add(new SimpleStringFilter(ContactIndexDto.UUID, word, true, false));
+				orFilters.add(new SimpleStringFilter(ContactIndexDto.PERSON, word, true, false));
+				orFilters.add(new SimpleStringFilter(ContactIndexDto.CAZE, word, true, false));
+			}
+			getContainer().addContainerFilter(new Or(orFilters.stream().toArray(Filter[]::new)));
 		}
 	}
-	
+
 	public ContactCriteria getFilterCriteria() {
 		return contactCriteria;
 	}
-		
-    @SuppressWarnings("unchecked")
+
+	@SuppressWarnings("unchecked")
 	public BeanItemContainer<ContactIndexDto> getContainer() {
-    	GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
-        return (BeanItemContainer<ContactIndexDto>) container.getWrappedContainer();
-    }
-    
-    public void reload() {
-    	List<ContactIndexDto> entries = FacadeProvider.getContactFacade().getIndexList(LoginHelper.getCurrentUserAsReference().getUuid(), contactCriteria);
-   
-    	getContainer().removeAllItems();
-        getContainer().addAll(entries);  
-    }
+		GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
+		return (BeanItemContainer<ContactIndexDto>) container.getWrappedContainer();
+	}
+
+	public void reload() {
+		List<ContactIndexDto> entries = FacadeProvider.getContactFacade().getIndexList(LoginHelper.getCurrentUserAsReference().getUuid(), contactCriteria);
+
+		getContainer().removeAllItems();
+		getContainer().addAll(entries);  
+	}
 }
 
 
