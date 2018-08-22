@@ -177,13 +177,13 @@ public class CaseController {
 					dto.setEpidNumber(region.getEpidCode() != null ? region.getEpidCode() : "" 
 							+ "-" + district.getEpidCode() != null ? district.getEpidCode() : "" 
 									+ "-" + year + "-");
-					
+
 					if (contact != null) {
 						// automatically change the contact status to "converted"
 						contact.setContactStatus(ContactStatus.CONVERTED);
 						FacadeProvider.getContactFacade().saveContact(contact);
 					}
-					
+
 					if (contact != null || eventParticipant != null) {
 						// use the person of the contact or event participant the case is created for
 						dto.setPerson(person);
@@ -282,7 +282,7 @@ public class CaseController {
 				break;
 			}
 		}
-		
+
 		DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(districtUuid);
 
 		// Create a temporary case in order to use the CommitDiscardWrapperComponent
@@ -382,7 +382,6 @@ public class CaseController {
 	}
 
 	public CommitDiscardWrapperComponent<SymptomsForm> getCaseSymptomsEditComponent(final String caseUuid, ViewMode viewMode) {
-
 		CaseDataDto caseDataDto = findCase(caseUuid);
 		PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
 
@@ -403,17 +402,15 @@ public class CaseController {
 		return editView;
 	}    
 
-
 	private void saveCase(CaseDataDto cazeDto, String viewName, final ViewMode viewMode) {
-
-		// compare old and new
+		// Compare old and new case
 		CaseDataDto existingDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(cazeDto.getUuid());
 		onCaseChanged(existingDto, cazeDto);
-		
+
 		CaseDataDto resultDto = FacadeProvider.getCaseFacade().saveCase(cazeDto);
 
 		if (resultDto.getPlagueType() != cazeDto.getPlagueType()) {
-			// TODO would be much better to have a notication for this triggered in the backend
+			// TODO would be much better to have a notification for this triggered in the backend
 			Window window = VaadinUiUtil.showSimplePopupWindow("Save notification", 
 					"The symptoms selected match the clinical criteria for " + resultDto.getPlagueType().toString() + ". "
 							+ "The plague type is set to " + resultDto.getPlagueType().toString() + " for this case.");
@@ -421,22 +418,35 @@ public class CaseController {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public void windowClose(CloseEvent e) {
-					Notification.show("Case saved", Type.WARNING_MESSAGE);
-					navigateToView(viewName, cazeDto.getUuid(), viewMode);
+					if (existingDto.getCaseClassification() != resultDto.getCaseClassification() &&
+							resultDto.getClassificationUser() == null) {
+						Notification.show("Case saved. The classification was automatically changed to " + resultDto.getCaseClassification().toString() + ".", Type.WARNING_MESSAGE);
+						navigateToView(viewName, cazeDto.getUuid(), viewMode);
+					} else {
+						Notification.show("Case saved", Type.WARNING_MESSAGE);
+						navigateToView(viewName, cazeDto.getUuid(), viewMode);
+					}
 				}
 			});
 		} else {
-			Notification.show("Case saved", Type.WARNING_MESSAGE);
-			navigateToView(viewName, cazeDto.getUuid(), viewMode);
+			// Notify user about an automatic case classification change
+			if (existingDto.getCaseClassification() != resultDto.getCaseClassification() &&
+					resultDto.getClassificationUser() == null) {
+				Notification.show("Case saved. The classification was automatically changed to " + resultDto.getCaseClassification().toString() + ".", Type.WARNING_MESSAGE);
+				navigateToView(viewName, cazeDto.getUuid(), viewMode);
+			} else {
+				Notification.show("Case saved", Type.WARNING_MESSAGE);
+				navigateToView(viewName, cazeDto.getUuid(), viewMode);
+			}
 		}
 	}
 
 	private void onCaseChanged(CaseDataDto existingCase, CaseDataDto changedCase) {
-		
+
 		if (existingCase == null) {
 			return;
 		}
-		
+
 		// classification
 		if (changedCase.getCaseClassification() != existingCase.getCaseClassification()) {
 			changedCase.setClassificationDate(new Date());
@@ -494,7 +504,7 @@ public class CaseController {
 		});
 		facilityChangeView.getButtonsPanel().replaceComponent(facilityChangeView.getDiscardButton(), cancelButton);
 	}
-	
+
 	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification("No cases selected", "You have not selected any cases.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());

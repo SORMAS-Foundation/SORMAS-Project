@@ -447,7 +447,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			createActiveSearchForOtherCasesTask(newCase);
 		}
 		
-		// update case classification
+		// Update case classification
 		if (newCase.getCaseClassification() != CaseClassification.NO_CASE) {
 			// calculate classification
 			CaseDataDto newCaseDto = toDto(newCase);
