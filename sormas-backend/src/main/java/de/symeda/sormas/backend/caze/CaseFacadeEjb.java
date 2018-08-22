@@ -384,8 +384,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		caseService.ensurePersisted(caze);
-		hospitalizationService.ensurePersisted(caze.getHospitalization());
-		epiDataService.ensurePersisted(caze.getEpiData());
 
 		onCaseChanged(existingCaseDto, caze);
 
