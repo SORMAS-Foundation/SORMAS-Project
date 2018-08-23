@@ -123,6 +123,7 @@ public class CaseClassificationLogic {
 		// Lassa Fever
 		suspect = allOf(
 				oneOf(
+						symptom(SymptomsDto.FATIGUE_WEAKNESS),
 						symptom(SymptomsDto.FEVER),
 						symptom(SymptomsDto.HEADACHE),
 						symptom(SymptomsDto.SORE_THROAT),
@@ -280,7 +281,8 @@ public class CaseClassificationLogic {
 						symptom(SymptomsDto.FEVER),
 						oneOf(
 								symptom(SymptomsDto.COUGH),
-								symptom(SymptomsDto.CHEST_PAIN))),
+								symptom(SymptomsDto.CHEST_PAIN),
+								symptom(SymptomsDto.COUGHING_BLOOD))),
 				allOf(
 						caseData(CaseDataDto.PLAGUE_TYPE, PlagueType.SEPTICAEMIC),
 						symptom(SymptomsDto.FEVER),
