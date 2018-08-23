@@ -7,8 +7,16 @@ import de.symeda.sormas.app.core.enumeration.StatusElaborator;
 
 public enum VisitSection implements StatusElaborator {
 
-    VISIT_INFO,
-    SYMPTOMS;
+    VISIT_INFO(R.string.caption_visit_information, R.drawable.ic_recent_actors_black_24dp),
+    SYMPTOMS(R.string.caption_visit_symptoms, R.drawable.ic_healing_black_24dp);
+
+    private int friendlyNameResourceId;
+    private int iconResourceId;
+
+    VisitSection(int friendlyNameResourceId, int iconResourceId) {
+        this.friendlyNameResourceId = friendlyNameResourceId;
+        this.iconResourceId = iconResourceId;
+    }
 
     public static VisitSection fromOrdinal(int ordinal) {
         return VisitSection.values()[ordinal];
@@ -16,14 +24,7 @@ public enum VisitSection implements StatusElaborator {
 
     @Override
     public String getFriendlyName(Context context) {
-        switch (this) {
-            case VISIT_INFO:
-                return context.getResources().getString(R.string.caption_visit_information);
-            case SYMPTOMS:
-                return context.getResources().getString(R.string.caption_visit_symptoms);
-            default:
-                throw new IllegalArgumentException(this.toString());
-        }
+        return context.getResources().getString(friendlyNameResourceId);
     }
 
     @Override
@@ -38,6 +39,6 @@ public enum VisitSection implements StatusElaborator {
 
     @Override
     public int getIconResourceId() {
-        return 0;
+        return iconResourceId;
     }
 }

@@ -33,8 +33,7 @@ public class PageMenuAdapter extends BaseAdapter {
 
     public void initialize(int cellLayout,
                            int counterBackgroundColor, int counterBackgroundActiveColor,
-                           int iconColor, int iconActiveColor,
-                           int positionColor, int positionActiveColor, int titleColor, int titleActiveColor) {
+                           int iconColor, int iconActiveColor, int titleColor, int titleActiveColor) {
         this.cellLayout = cellLayout;
         this.counterBackgroundColor = counterBackgroundColor;
         this.counterBackgroundActiveColor = counterBackgroundActiveColor;
