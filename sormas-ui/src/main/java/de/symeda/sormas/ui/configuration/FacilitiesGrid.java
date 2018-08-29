@@ -38,6 +38,9 @@ public class FacilitiesGrid extends Grid {
 	private FacilityCriteria facilityCriteria = new FacilityCriteria();
 
 	public FacilitiesGrid() {
+		
+		facilityCriteria.excludeStaticFacilitesEquals(true);
+		
 		setSizeFull();
 
 		BeanItemContainer<FacilityDto> container = new BeanItemContainer<FacilityDto>(FacilityDto.class);
@@ -85,7 +88,6 @@ public class FacilitiesGrid extends Grid {
 	}
 
 	public void reload() {
-
 		List<FacilityDto> facilities = FacadeProvider.getFacilityFacade()
 				.getIndexList(LoginHelper.getCurrentUser().getUuid(), facilityCriteria);
 

@@ -19,6 +19,7 @@ public class FacilityCriteria implements Serializable, Cloneable {
 	private CommunityReferenceDto community;
 
 	private FacilityType type;
+	private Boolean excludeStaticFacilities;
 
 	public FacilityCriteria regionEquals(RegionReferenceDto region) {
 		this.region = region;
@@ -40,6 +41,10 @@ public class FacilityCriteria implements Serializable, Cloneable {
 	public FacilityType getType() {
 		return type;
 	}
+	
+	public Boolean isExcludeStaticFacilities() {
+		return excludeStaticFacilities;
+	}
 
 	public FacilityCriteria districtEquals(RegionReferenceDto region, DistrictReferenceDto district) {
 		this.region = region;
@@ -57,6 +62,11 @@ public class FacilityCriteria implements Serializable, Cloneable {
 
 	public FacilityCriteria typeEquals(FacilityType type) {
 		this.type = type;
+		return this;
+	}
+	
+	public FacilityCriteria excludeStaticFacilitesEquals(boolean excludeStaticFacilities) {
+		this.excludeStaticFacilities = excludeStaticFacilities;
 		return this;
 	}
 }

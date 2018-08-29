@@ -410,6 +410,9 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		if (facilityCriteria.getCommunity() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Facility.COMMUNITY, JoinType.LEFT).get(District.UUID), facilityCriteria.getCommunity().getUuid()));
 		}
+		if (facilityCriteria.isExcludeStaticFacilities() != null && facilityCriteria.isExcludeStaticFacilities()) {
+			filter = and(cb, filter, cb.isNotNull(from.get(Facility.REGION)));
+		}
 		filter = and(cb, filter, cb.equal(from.get(Facility.TYPE), facilityCriteria.getType()));
 		return filter;
 	}
