@@ -3,6 +3,7 @@ package de.symeda.sormas.api.caze.classification;
 import java.util.Arrays;
 import java.util.List;
 
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 
@@ -30,7 +31,7 @@ public class ClassificationNoneOfCriteria extends ClassificationCriteria impleme
 	@Override
 	public String buildDescription() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("<b>NONE OF</b>");
+		stringBuilder.append("<b> ").append(I18nProperties.getText("noneOf").toUpperCase()).append("</b>");
 		for (int i = 0; i < classificationCriteria.size(); i++) {
 			stringBuilder.append("<br/>- ");
 			stringBuilder.append(classificationCriteria.get(i).buildDescription());
@@ -40,7 +41,7 @@ public class ClassificationNoneOfCriteria extends ClassificationCriteria impleme
 	
 	@Override
 	public String getCriteriaName() {
-		return "<b>NONE OF</b>";
+		return "<b>" + I18nProperties.getText("noneOf").toUpperCase() + "</b>";
 	}
 	
 	@Override

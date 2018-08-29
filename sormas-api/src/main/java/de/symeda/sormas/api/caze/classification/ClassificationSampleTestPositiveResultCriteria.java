@@ -3,6 +3,7 @@ package de.symeda.sormas.api.caze.classification;
 import java.util.Arrays;
 import java.util.List;
 
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestResultType;
@@ -32,13 +33,13 @@ public class ClassificationSampleTestPositiveResultCriteria extends Classificati
 	@Override
 	public String buildDescription() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("One positive lab result of ");
+		stringBuilder.append(I18nProperties.getText("onePositiveTestResult")).append(" ");
 		for (int i = 0; i < sampleTestTypes.size(); i++) {
 			if (i > 0) {
 				if (i < sampleTestTypes.size() - 1) {
 					stringBuilder.append(", ");
 				} else {
-					stringBuilder.append(" <b>OR</b> ");
+					stringBuilder.append(" <b>").append(I18nProperties.getText("or").toUpperCase()).append("</b> ");
 				}
 			}
 

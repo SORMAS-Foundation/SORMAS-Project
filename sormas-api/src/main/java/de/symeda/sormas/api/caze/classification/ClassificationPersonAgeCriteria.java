@@ -3,6 +3,7 @@ package de.symeda.sormas.api.caze.classification;
 import java.util.List;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
@@ -48,13 +49,16 @@ public class ClassificationPersonAgeCriteria extends ClassificationCriteria {
 	@Override
 	public String buildDescription() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("person aged ");
+		stringBuilder.append(I18nProperties.getText("personAged")).append(" ");
 		if (lowerThreshold != null && upperThreshold != null) {
-			stringBuilder.append("between " + lowerThreshold + " and " + upperThreshold + " years");
+			stringBuilder.append(I18nProperties.getText("between"))
+					.append(" ").append(lowerThreshold).append(" ")
+					.append(I18nProperties.getText("and")).append(" ")
+					.append(upperThreshold).append(" ").append(I18nProperties.getText("years"));
 		} else if (lowerThreshold != null) {
-			stringBuilder.append(lowerThreshold + " years or more");
+			stringBuilder.append(lowerThreshold).append(" ").append(I18nProperties.getText("yearsOrMore"));
 		} else if (upperThreshold != null) {
-			stringBuilder.append(upperThreshold + " years or less");
+			stringBuilder.append(upperThreshold).append(" ").append(I18nProperties.getText("yearsOrLess"));
 		}
 
 		return stringBuilder.toString();

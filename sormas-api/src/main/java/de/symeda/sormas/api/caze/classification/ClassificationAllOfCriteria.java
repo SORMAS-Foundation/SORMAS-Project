@@ -3,6 +3,7 @@ package de.symeda.sormas.api.caze.classification;
 import java.util.Arrays;
 import java.util.List;
 
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 
@@ -33,7 +34,7 @@ public class ClassificationAllOfCriteria extends ClassificationCriteria implemen
 	
 	@Override
 	public String getCriteriaName() {
-		return "<b>ALL OF</b>";
+		return "<b>" + I18nProperties.getText("allOf").toUpperCase() + "</b>";
 	}
 	
 	@Override
@@ -57,7 +58,7 @@ public class ClassificationAllOfCriteria extends ClassificationCriteria implemen
 					if (i + 1 < subCriteria.size()) {
 						stringBuilder.append(", ");
 					} else {
-						stringBuilder.append(" <b>AND</b> ");
+						stringBuilder.append(" <b>").append(I18nProperties.getText("and").toUpperCase()).append("</b> ");
 					}
 				}
 				

@@ -515,7 +515,7 @@ public class CaseController {
 
 		ClassificationCriteria suspectCriterias = FacadeProvider.getCaseClassificationFacade().getSuspectCriteria(caze.getDisease());
 		if (suspectCriterias != null) {
-			Label suspectCriteriasHeadline = new Label("Suspect Criterias");
+			Label suspectCriteriasHeadline = new Label(I18nProperties.getText("suspectCriteria"));
 			CssStyles.style(suspectCriteriasHeadline, CssStyles.LABEL_BOLD, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_SUSPECT);
 			classificationRulesLayout.addComponent(suspectCriteriasHeadline);
 			buildCriteriaLayout(classificationRulesLayout, suspectCriterias);
@@ -523,7 +523,7 @@ public class CaseController {
 
 		ClassificationCriteria probableCriterias = FacadeProvider.getCaseClassificationFacade().getProbableCriteria(caze.getDisease());
 		if (probableCriterias != null) {
-			Label probableCriteriasHeadline = new Label("Probable Criterias");
+			Label probableCriteriasHeadline = new Label(I18nProperties.getText("probableCriteria"));
 			CssStyles.style(probableCriteriasHeadline, CssStyles.LABEL_BOLD, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_PROBABLE, CssStyles.VSPACE_TOP_3);
 			classificationRulesLayout.addComponent(probableCriteriasHeadline);
 			buildCriteriaLayout(classificationRulesLayout, probableCriterias);
@@ -531,7 +531,7 @@ public class CaseController {
 
 		ClassificationCriteria confirmedCriterias = FacadeProvider.getCaseClassificationFacade().getConfirmedCriteria(caze.getDisease());
 		if (confirmedCriterias != null) {
-			Label confirmedCriteriasHeadline = new Label("Confirmed Criterias");
+			Label confirmedCriteriasHeadline = new Label(I18nProperties.getText("confirmedCriteria"));
 			CssStyles.style(confirmedCriteriasHeadline, CssStyles.LABEL_BOLD, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_CONFIRMED, CssStyles.VSPACE_TOP_3);
 			classificationRulesLayout.addComponent(confirmedCriteriasHeadline);
 			buildCriteriaLayout(classificationRulesLayout, confirmedCriterias);
@@ -543,7 +543,7 @@ public class CaseController {
 		});
 		popupWindow.setWidth(860, Unit.PIXELS);
 		popupWindow.setHeight(80, Unit.PERCENTAGE);
-		popupWindow.setCaption("Classification Rules For " + caze.getDisease().toString());
+		popupWindow.setCaption(I18nProperties.getText("classificationRulesFor") + " " + caze.getDisease().toString());
 	}
 
 	private void buildCriteriaLayout(VerticalLayout classificationRulesLayout, ClassificationCriteria criteria) {
@@ -587,7 +587,7 @@ public class CaseController {
 				// For collective criteria, but not ClassificationAllOfCriteria, add a sub layout with a slightly different color to make clear
 				// that it belongs to the criteria listed before
 				VerticalLayout criteriaSubLayout = createNewSubLayoutForClassificationRules();
-				criteriaSubLayout.addComponent(new Label("<b>AND </b>" + subCriteria.buildDescription(), ContentMode.HTML));
+				criteriaSubLayout.addComponent(new Label("<b>" + I18nProperties.getText("and").toUpperCase() + "</b>" + subCriteria.buildDescription(), ContentMode.HTML));
 				criteriaLayout.addComponent(criteriaSubLayout);
 				criteriaLayout.setComponentAlignment(criteriaSubLayout, Alignment.MIDDLE_RIGHT);
 			} else {

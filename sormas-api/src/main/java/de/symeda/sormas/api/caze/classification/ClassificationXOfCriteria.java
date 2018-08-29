@@ -3,6 +3,7 @@ package de.symeda.sormas.api.caze.classification;
 import java.util.Arrays;
 import java.util.List;
 
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 
@@ -40,7 +41,7 @@ public class ClassificationXOfCriteria extends ClassificationCriteria implements
 
 	@Override
 	public String getCriteriaName() {
-		return "<b>" + parseAmountNumber() + " OF</b>";
+		return "<b>" + parseAmountNumber() + " " + I18nProperties.getText("of").toUpperCase() + "</b>";
 	}
 
 	@Override
@@ -51,29 +52,29 @@ public class ClassificationXOfCriteria extends ClassificationCriteria implements
 	protected String parseAmountNumber() {
 		switch (requiredAmount) {
 		case 1:
-			return "ONE";
+			return I18nProperties.getText("one").toUpperCase();
 		case 2:
-			return "TWO";
+			return I18nProperties.getText("two").toUpperCase();
 		case 3:
-			return "THREE";
+			return I18nProperties.getText("three").toUpperCase();
 		case 4:
-			return "FOUR";
+			return I18nProperties.getText("four").toUpperCase();
 		case 5:
-			return "FIVE";
+			return I18nProperties.getText("five").toUpperCase();
 		case 6:
-			return "SIX";
+			return I18nProperties.getText("six").toUpperCase();
 		case 7:
-			return "SEVEN";
+			return I18nProperties.getText("seven").toUpperCase();
 		case 8:
-			return "EIGHT";
+			return I18nProperties.getText("eight").toUpperCase();
 		case 9:
-			return "NINE";
+			return I18nProperties.getText("nine").toUpperCase();
 		case 10:
-			return "TEN";
+			return I18nProperties.getText("ten").toUpperCase();
 		case 11:
-			return "ELEVEN";
+			return I18nProperties.getText("eleven").toUpperCase();
 		case 12:
-			return "TWELVE";
+			return I18nProperties.getText("twelve").toUpperCase();
 		default:
 			return Integer.toString(requiredAmount);
 		}
@@ -90,7 +91,7 @@ public class ClassificationXOfCriteria extends ClassificationCriteria implements
 		@Override
 		public String buildDescription() {
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("<b> ONE OF </b>");
+			stringBuilder.append("<b> ").append(I18nProperties.getText("oneOf").toUpperCase()).append("</b>");
 			for (int i = 0; i < classificationCriteria.size(); i++) {
 				stringBuilder.append("<br/>- ");
 				stringBuilder.append(classificationCriteria.get(i).buildDescription());	
@@ -117,7 +118,7 @@ public class ClassificationXOfCriteria extends ClassificationCriteria implements
 					if (i + 1 < classificationCriteria.size()) {
 						stringBuilder.append(", ");
 					} else {
-						stringBuilder.append(" <b>OR</b> ");
+						stringBuilder.append(" <b>").append( I18nProperties.getText("or").toUpperCase()).append("</b> ");
 					}
 				}
 				
