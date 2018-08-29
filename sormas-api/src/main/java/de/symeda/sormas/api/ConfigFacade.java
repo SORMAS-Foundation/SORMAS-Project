@@ -9,6 +9,8 @@ public interface ConfigFacade {
 	
 	String getAppUrl();
 	
+	boolean isFeatureAutomaticCaseClassification();
+	
 	String getEmailSenderAddress();
 	
 	String getEmailSenderName();

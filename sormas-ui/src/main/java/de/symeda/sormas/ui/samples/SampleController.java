@@ -235,7 +235,7 @@ public class SampleController {
 		if (selectedRows.size() == 0) {
 			new Notification("No samples selected", "You have not selected any samples.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows + " selected samples?", new Runnable() {
+			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected samples?", new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
 						FacadeProvider.getSampleFacade().deleteSample(new SampleReferenceDto(((SampleIndexDto) selectedRow).getUuid()), LoginHelper.getCurrentUser().getUuid());

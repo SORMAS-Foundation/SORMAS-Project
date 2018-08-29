@@ -179,4 +179,19 @@
   .align-center {
   	text-align: center;
   }
+
+  // classification criteria
+  .background-criteria {
+	background: $s-highlight-subtle-color;
+  }
+
+  .background-sub-criteria {
+  	background: $s-highlight-color;
+  }
+
+  .background-rounded-corners {
+	border-radius: 8px;
+	padding: 8px;
+  }
+ 
 }

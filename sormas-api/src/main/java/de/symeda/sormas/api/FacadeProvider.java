@@ -4,6 +4,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
@@ -144,6 +145,10 @@ public class FacadeProvider {
 	
 	public static ImportFacade getImportFacade() {
 		return get().lookupEjbRemote(ImportFacade.class);
+	}
+	
+	public static CaseClassificationFacade getCaseClassificationFacade() {
+		return get().lookupEjbRemote(CaseClassificationFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -5,12 +5,14 @@ import java.util.List;
 
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Notification.Type;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestFacade;
@@ -43,8 +45,7 @@ public class SampleTestController {
 			@Override
 			public void onCommit() {
 				if (!createForm.getFieldGroup().isModified()) {
-					SampleTestDto dto = createForm.getValue();
-					stf.saveSampleTest(dto);
+					saveSampleTest(createForm.getValue());
 					grid.reload();
 				}
 			}
@@ -67,8 +68,7 @@ public class SampleTestController {
 			@Override
 			public void onCommit() {
 				if (!form.getFieldGroup().isModified()) {
-					SampleTestDto dto = form.getValue();
-					stf.saveSampleTest(dto);
+					saveSampleTest(form.getValue());
 					grid.reload();
 				}
 			}
@@ -83,6 +83,20 @@ public class SampleTestController {
 					grid.reload();
 				}
 			}, I18nProperties.getFieldCaption("SampleTest"));
+		}
+	}
+	
+	private void saveSampleTest(SampleTestDto dto) {
+		SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid());
+		CaseDataDto existingCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(sample.getAssociatedCase().getUuid());
+		stf.saveSampleTest(dto);
+		CaseDataDto newCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(sample.getAssociatedCase().getUuid());
+	
+		if (existingCaseDto.getCaseClassification() != newCaseDto.getCaseClassification() &&
+				newCaseDto.getClassificationUser() == null) {
+			Notification.show("Sample test saved. The classification of its associated case was automatically changed to " + newCaseDto.getCaseClassification().toString() + ".", Type.WARNING_MESSAGE);
+		} else {
+			Notification.show("Sample test saved", Type.WARNING_MESSAGE);
 		}
 	}
 	

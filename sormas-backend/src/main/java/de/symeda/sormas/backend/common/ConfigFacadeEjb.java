@@ -28,6 +28,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String APP_URL = "app.url";
 	public static final String APP_LEGACY_URL = "app.legacy.url";
 	
+	public static final String FEATURE_AUTOMATIC_CASE_CLASSIFICATION = "feature.automaticcaseclassification";
+	
 	public static final String TEMP_FILES_PATH = "temp.path";
 	public static final String GENERATED_FILES_PATH = "generated.path";
 	public static final String CSV_SEPARATOR = "csv.separator";
@@ -57,7 +59,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	protected boolean getBoolean(String name, boolean defaultValue) {
 		return Boolean.parseBoolean(getProperty(name, Boolean.toString(defaultValue)));
 	}
-	
 
 	@Override
 	public String getCountryName() {
@@ -86,6 +87,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getGeneratedFilesPath() {
 		return getProperty(GENERATED_FILES_PATH, "/opt/sormas-generated/");
+	}
+	
+	@Override
+	public boolean isFeatureAutomaticCaseClassification() {
+		return getBoolean(FEATURE_AUTOMATIC_CASE_CLASSIFICATION, false);
 	}
 
 	@Override
@@ -162,4 +168,5 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Stateless
 	public static class ConfigFacadeEjbLocal extends ConfigFacadeEjb {
 	}
+	
 }

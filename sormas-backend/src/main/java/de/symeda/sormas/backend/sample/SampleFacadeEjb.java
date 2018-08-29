@@ -228,6 +228,8 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		Sample sample = sampleService.getByReferenceDto(sampleRef);
 		sampleService.delete(sample);
+		
+		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(sample.getAssociatedCase()), sample.getAssociatedCase());
 	}
 	
 	public Sample fromDto(@NotNull SampleDto source) {

@@ -26,7 +26,7 @@ import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.caze.classification.CaseClassificationLogic;
+import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -77,8 +77,8 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(CaseFacadeEjbLocal.class);
 	}
 	
-	public CaseClassificationLogic getCaseClassificationLogic() {
-		return getBean(CaseClassificationLogic.class);
+	public CaseClassificationFacadeEjb getCaseClassificationLogic() {
+		return getBean(CaseClassificationFacadeEjb.class);
 	}
 	
 	public ContactFacade getContactFacade() {

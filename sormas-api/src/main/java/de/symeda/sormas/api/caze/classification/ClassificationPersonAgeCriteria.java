@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.caze.classification;
+package de.symeda.sormas.api.caze.classification;
 
 import java.util.List;
 
@@ -8,26 +8,28 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 
-public class CasePersonAgeCriteria extends Criteria {
+public class ClassificationPersonAgeCriteria extends ClassificationCriteria {
 
+	private static final long serialVersionUID = -3069692968632918398L;
+	
 	protected final Integer lowerThreshold;
 	protected final Integer upperThreshold;
 	protected final ApproximateAgeType ageType;
 	
-	public CasePersonAgeCriteria(Integer lowerThreshold, Integer upperThreshold, ApproximateAgeType ageType) {
+	public ClassificationPersonAgeCriteria(Integer lowerThreshold, Integer upperThreshold, ApproximateAgeType ageType) {
 		this.lowerThreshold = lowerThreshold;
 		this.upperThreshold = upperThreshold;
 		this.ageType = ageType;
 	}
 	
 	@Override
-	boolean eval(CaseDataDto caze, List<SampleTestDto> sampleTests) {
+	public boolean eval(CaseDataDto caze, List<SampleTestDto> sampleTests) {
 		PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
 		if (person.getApproximateAge() == null) {
 			return false;
 		}
 		
-		if (person.getApproximateAgeType() == ageType) {
+		if (person.getApproximateAgeType() == ageType || person.getApproximateAgeType() == null) {
 			if (lowerThreshold != null && person.getApproximateAge() < lowerThreshold) {
 				return false;
 			}
@@ -44,7 +46,8 @@ public class CasePersonAgeCriteria extends Criteria {
 	}
 	
 	@Override
-	StringBuilder appendDesc(StringBuilder stringBuilder) {
+	public String buildDescription() {
+		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("person aged ");
 		if (lowerThreshold != null && upperThreshold != null) {
 			stringBuilder.append("between " + lowerThreshold + " and " + upperThreshold + " years");
@@ -54,7 +57,7 @@ public class CasePersonAgeCriteria extends Criteria {
 			stringBuilder.append(upperThreshold + " years or less");
 		}
 
-		return stringBuilder;
+		return stringBuilder.toString();
 	}
 	
 }

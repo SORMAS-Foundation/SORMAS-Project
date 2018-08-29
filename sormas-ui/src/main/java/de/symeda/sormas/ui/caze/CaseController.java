@@ -9,15 +9,19 @@ import java.util.List;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
@@ -29,6 +33,10 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteria;
+import de.symeda.sormas.api.caze.classification.ClassificationCollectiveCriteria;
+import de.symeda.sormas.api.caze.classification.ClassificationCompactCriteria;
+import de.symeda.sormas.api.caze.classification.ClassificationCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -55,6 +63,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -498,6 +507,110 @@ public class CaseController {
 			popupWindow.close();
 		});
 		facilityChangeView.getButtonsPanel().replaceComponent(facilityChangeView.getDiscardButton(), cancelButton);
+	}
+
+	public void openClassificationRulesPopup(CaseDataDto caze) {
+		VerticalLayout classificationRulesLayout = new VerticalLayout();
+		classificationRulesLayout.setMargin(true);
+
+		ClassificationCriteria suspectCriterias = FacadeProvider.getCaseClassificationFacade().getSuspectCriteria(caze.getDisease());
+		if (suspectCriterias != null) {
+			Label suspectCriteriasHeadline = new Label("Suspect Criterias");
+			CssStyles.style(suspectCriteriasHeadline, CssStyles.LABEL_BOLD, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_SUSPECT);
+			classificationRulesLayout.addComponent(suspectCriteriasHeadline);
+			buildCriteriaLayout(classificationRulesLayout, suspectCriterias);
+		}
+
+		ClassificationCriteria probableCriterias = FacadeProvider.getCaseClassificationFacade().getProbableCriteria(caze.getDisease());
+		if (probableCriterias != null) {
+			Label probableCriteriasHeadline = new Label("Probable Criterias");
+			CssStyles.style(probableCriteriasHeadline, CssStyles.LABEL_BOLD, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_PROBABLE, CssStyles.VSPACE_TOP_3);
+			classificationRulesLayout.addComponent(probableCriteriasHeadline);
+			buildCriteriaLayout(classificationRulesLayout, probableCriterias);
+		}
+
+		ClassificationCriteria confirmedCriterias = FacadeProvider.getCaseClassificationFacade().getConfirmedCriteria(caze.getDisease());
+		if (confirmedCriterias != null) {
+			Label confirmedCriteriasHeadline = new Label("Confirmed Criterias");
+			CssStyles.style(confirmedCriteriasHeadline, CssStyles.LABEL_BOLD, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_CONFIRMED, CssStyles.VSPACE_TOP_3);
+			classificationRulesLayout.addComponent(confirmedCriteriasHeadline);
+			buildCriteriaLayout(classificationRulesLayout, confirmedCriterias);
+		}
+
+		Window popupWindow = VaadinUiUtil.showPopupWindow(classificationRulesLayout);
+		popupWindow.addCloseListener(e -> {
+			popupWindow.close();
+		});
+		popupWindow.setWidth(860, Unit.PIXELS);
+		popupWindow.setHeight(80, Unit.PERCENTAGE);
+		popupWindow.setCaption("Classification Rules For " + caze.getDisease().toString());
+	}
+
+	private void buildCriteriaLayout(VerticalLayout classificationRulesLayout, ClassificationCriteria criteria) {
+		if (!(criteria instanceof ClassificationCollectiveCriteria)) {
+			// Create a layout with a single label if the criteria is not collective (i.e. has no sub criteria)
+			VerticalLayout criteriaLayout = createNewLayoutForClassificationRules();
+			criteriaLayout.addComponent(new Label(criteria.buildDescription(), ContentMode.HTML));
+			classificationRulesLayout.addComponent(criteriaLayout);
+		} else {
+			// Otherwise, create a layout and fill it by iterating over the sub criteria
+			for (ClassificationCriteria subCriteria : ((ClassificationCollectiveCriteria) criteria).getSubCriteria()) {
+				if (subCriteria instanceof ClassificationAllOfCriteria) {
+					// If the sub criteria is an AllOfCriteria, every one of its sub criteria needs its own layout
+					for (ClassificationCriteria subSubCriteria : ((ClassificationCollectiveCriteria) subCriteria).getSubCriteria()) {
+						classificationRulesLayout.addComponent(buildSubCriteriaLayout(createNewLayoutForClassificationRules(), subSubCriteria, subCriteria));
+					}
+				} else {
+					classificationRulesLayout.addComponent(buildSubCriteriaLayout(createNewLayoutForClassificationRules(), subCriteria, criteria));
+				}
+			}
+		}
+	}
+
+	private VerticalLayout buildSubCriteriaLayout(VerticalLayout criteriaLayout, ClassificationCriteria criteria, ClassificationCriteria parentCriteria) {	
+		// For non-collective criteria, only a simple label needs to be added to the layout
+		if (!(criteria instanceof ClassificationCollectiveCriteria)) {
+			criteriaLayout.addComponent(new Label(criteria.buildDescription(), ContentMode.HTML));
+			return criteriaLayout;
+		}
+
+		// Add the criteria name to the layout (e.g. "ONE OF")
+		if (!(criteria instanceof ClassificationAllOfCriteria)) {
+			criteriaLayout.addComponent(new Label(((ClassificationCollectiveCriteria) criteria).getCriteriaName(), ContentMode.HTML));
+		}
+		
+		for (ClassificationCriteria subCriteria : ((ClassificationCollectiveCriteria) criteria).getSubCriteria()) {
+			if (!(subCriteria instanceof ClassificationCollectiveCriteria) || subCriteria instanceof ClassificationCompactCriteria) {
+				// For non-collective or compact collective criteria, add the label description as a list item
+				criteriaLayout.addComponent(new Label("- " + subCriteria.buildDescription(), ContentMode.HTML));
+			} else if (parentCriteria instanceof ClassificationCollectiveCriteria && !(parentCriteria instanceof ClassificationAllOfCriteria)) {
+				// For collective criteria, but not ClassificationAllOfCriteria, add a sub layout with a slightly different color to make clear
+				// that it belongs to the criteria listed before
+				VerticalLayout criteriaSubLayout = createNewSubLayoutForClassificationRules();
+				criteriaSubLayout.addComponent(new Label("<b>AND </b>" + subCriteria.buildDescription(), ContentMode.HTML));
+				criteriaLayout.addComponent(criteriaSubLayout);
+				criteriaLayout.setComponentAlignment(criteriaSubLayout, Alignment.MIDDLE_RIGHT);
+			} else {
+				// For everything else, recursively call this method to determine how to display the sub criteria
+				buildSubCriteriaLayout(criteriaLayout, subCriteria, criteria instanceof ClassificationAllOfCriteria ? parentCriteria : criteria);
+			}
+		}
+
+		return criteriaLayout;
+	}
+
+	private VerticalLayout createNewLayoutForClassificationRules() {
+		VerticalLayout layout = new VerticalLayout();
+		CssStyles.style(layout, CssStyles.BACKGROUND_ROUNDED_CORNERS, CssStyles.BACKGROUND_CRITERIA, CssStyles.VSPACE_TOP_4);
+		return layout;
+	}
+
+	private VerticalLayout createNewSubLayoutForClassificationRules() {
+		VerticalLayout layout = new VerticalLayout();
+		layout.setWidth(95, Unit.PERCENTAGE);
+		CssStyles.style(layout, CssStyles.BACKGROUND_ROUNDED_CORNERS, CssStyles.BACKGROUND_SUB_CRITERIA, CssStyles.VSPACE_TOP_4, 
+				CssStyles.VSPACE_4, CssStyles.HSPACE_RIGHT_3);
+		return layout;
 	}
 
 	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {

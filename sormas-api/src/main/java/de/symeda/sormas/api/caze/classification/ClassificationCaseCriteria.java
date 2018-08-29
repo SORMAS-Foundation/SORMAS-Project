@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.caze.classification;
+package de.symeda.sormas.api.caze.classification;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -11,8 +11,10 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
-public class ClassificationCaseCriteria extends Criteria {
+public class ClassificationCaseCriteria extends ClassificationCriteria {
 
+	private static final long serialVersionUID = 2640725590302569043L;
+	
 	protected final String propertyId;
 	protected final List<Object> propertyValues;
 	protected Method method;
@@ -31,7 +33,7 @@ public class ClassificationCaseCriteria extends Criteria {
 	}
 
 	@Override
-	boolean eval(CaseDataDto caze, List<SampleTestDto> sampleTests) {
+	public boolean eval(CaseDataDto caze, List<SampleTestDto> sampleTests) {
 		if (method == null) {
 			try {
 				method = getInvokeClass().getMethod("get" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));
@@ -49,22 +51,28 @@ public class ClassificationCaseCriteria extends Criteria {
 	}
 	
 	protected StringBuilder appendDescValues(StringBuilder stringBuilder) {
-		if (propertyValues.size() == 1 && propertyValues.get(0) instanceof YesNoUnknown)
+		if (propertyValues.size() == 1 && propertyValues.get(0) instanceof YesNoUnknown) {
 			return stringBuilder;
+		}
 
 		stringBuilder.append(" ");
-		for (int i=0; i<propertyValues.size(); i++) {
-			if (i > 0) stringBuilder.append(", ");
+		for (int i = 0; i < propertyValues.size(); i++) {
+			if (i > 0) {
+				stringBuilder.append(", ");
+			}
+			
 			stringBuilder.append(propertyValues.get(i).toString());
 		}
+		
 		return stringBuilder;
 	}
 
 	@Override
-	StringBuilder appendDesc(StringBuilder stringBuilder) {
+	public String buildDescription() {
+		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, propertyId));
 		appendDescValues(stringBuilder);
-		return stringBuilder;
+		return stringBuilder.toString();
 	}
 	
 }
