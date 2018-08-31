@@ -13,8 +13,11 @@ public class ClassificationSampleTestCriteria extends ClassificationCaseCriteria
 
 	private static final long serialVersionUID = 856637988490366395L;
 
-	public ClassificationSampleTestCriteria(String propertyId, Object... propertyValues) {
+	private final List<SampleTestType> testTypes;
+	
+	public ClassificationSampleTestCriteria(String propertyId, List<SampleTestType> testTypes, Object... propertyValues) {
 		super(propertyId, propertyValues);
+		this.testTypes = testTypes;
 	}
 
 	@Override
@@ -25,15 +28,20 @@ public class ClassificationSampleTestCriteria extends ClassificationCaseCriteria
 	@Override
 	public boolean eval(CaseDataDto caze, List<SampleTestDto> sampleTests) {		
 		for (SampleTestDto sampleTest : sampleTests) {
-			if (propertyId == SampleTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER
-					&& sampleTest.getTestType() != SampleTestType.IGM_SERUM_ANTIBODY) {
+			if (!testTypes.contains(sampleTest.getTestType())) {
 				continue;
 			}
 			
 			if (method == null) {
 				try {
 					method = getInvokeClass().getMethod("get" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));
-				} catch (NoSuchMethodException | SecurityException e) {
+				} catch (NoSuchMethodException e) {
+					try {
+						method = getInvokeClass().getMethod("is" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));
+					} catch (NoSuchMethodException newE) {
+						throw new RuntimeException(newE);
+					}
+				} catch (SecurityException e) {
 					throw new RuntimeException(e);
 				}
 			}
@@ -53,7 +61,22 @@ public class ClassificationSampleTestCriteria extends ClassificationCaseCriteria
 
 	@Override
 	public String buildDescription() {
-		return I18nProperties.getPrefixFieldCaption(SampleTestDto.I18N_PREFIX, propertyId);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(I18nProperties.getPrefixFieldCaption(SampleTestDto.I18N_PREFIX, propertyId));
+		if (testTypes != null && !testTypes.isEmpty()) {
+			stringBuilder.append(" (for one of the following test types: ");
+			for (int i = 0; i < testTypes.size(); i++) {
+				if (i == testTypes.size() - 1) {
+					stringBuilder.append(" <b>OR</b> ");
+				} else if (i > 0) {
+					stringBuilder.append(", ");
+				}
+				stringBuilder.append(testTypes.get(i).toString());
+			}
+			stringBuilder.append(")");
+		}
+		
+		return stringBuilder.toString();
 	}
 
 }

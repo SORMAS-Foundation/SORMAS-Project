@@ -76,6 +76,15 @@ public class TestDataCreator {
 		
 		return cazePerson;
 	}
+	
+	public CaseDataDto createUnclassifiedCase(Disease disease) {
+		RDCF rdcf = createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
+				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = createPerson("Case", "Person");
+		return createCase(user.toReference(), cazePerson.toReference(), disease, CaseClassification.NOT_CLASSIFIED, 
+				InvestigationStatus.PENDING, new Date(), rdcf);
+	}
 
 	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease, CaseClassification caseClassification, 
 			InvestigationStatus investigationStatus, Date reportDate, RDCF rdcf) {
@@ -222,6 +231,12 @@ public class TestDataCreator {
 		sampleTest = beanTest.getSampleTestFacade().saveSampleTest(sampleTest);
 		
 		return sampleTest;
+	}
+
+	public SampleTestDto createSampleTest(CaseDataDto associatedCase, SampleTestType testType, SampleTestResultType resultType) {
+		RDCF rdcf = createRDCF("Region", "District", "Community", "Facility");
+		SampleDto sample = createSample(new CaseReferenceDto(associatedCase.getUuid()), new Date(), new Date(), associatedCase.getReportingUser(), SampleMaterial.BLOOD, rdcf.facility);
+		return createSampleTest(new SampleReferenceDto(sample.getUuid()), testType, new Date(), rdcf.facility, associatedCase.getReportingUser(), resultType, "", true);
 	}
 	
 	public OutbreakDto createOutbreak(RDCF rdcf, Disease disease, UserReferenceDto user) {

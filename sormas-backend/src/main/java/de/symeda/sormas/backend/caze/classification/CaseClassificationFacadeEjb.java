@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.caze.classification;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 
 @Singleton(name = "CaseClassificationFacade")
 public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
-
+	
 	private Map<Disease, ClassificationCriteria> suspectCriterias = new HashMap<Disease, ClassificationCriteria>();
 	private Map<Disease, ClassificationCriteria> probableCriterias = new HashMap<Disease, ClassificationCriteria>();
 	private Map<Disease, ClassificationCriteria> confirmedCriterias = new HashMap<Disease, ClassificationCriteria>();
@@ -46,7 +47,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		}
 
 		Disease disease = caze.getDisease();
-
+		
 		if (confirmedCriterias.containsKey(disease) && confirmedCriterias.get(disease).eval(caze, sampleTests)) {
 			return CaseClassification.CONFIRMED;
 		} else if (probableCriterias.containsKey(disease) && probableCriterias.get(disease).eval(caze, sampleTests)) {
@@ -189,7 +190,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 										positiveTestResult(SampleTestType.WEST_NILE_FEVER_ANTIBODIES),
 										positiveTestResult(SampleTestType.DENGUE_FEVER_ANTIBODIES))),
 						positiveTestResult(SampleTestType.PCR_RT_PCR, SampleTestType.ANTIGEN_DETECTION, SampleTestType.VIRUS_ISOLATION),
-						sampleTest(SampleTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, true)));
+						sampleTest(SampleTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, Arrays.asList(new SampleTestType[]{SampleTestType.IGM_SERUM_ANTIBODY, SampleTestType.IGG_SERUM_ANTIBODY}), true)));
 		addCriterias(Disease.YELLOW_FEVER, suspect, probable, confirmed);
 
 		// Dengue fever
@@ -217,7 +218,8 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 										positiveTestResult(SampleTestType.WEST_NILE_FEVER_IGM),
 										positiveTestResult(SampleTestType.YELLOW_FEVER_IGM))),
 						positiveTestResult(SampleTestType.PCR_RT_PCR),
-						sampleTest(SampleTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, true)));
+						positiveTestResult(SampleTestType.VIRUS_ISOLATION),
+						sampleTest(SampleTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, Arrays.asList(new SampleTestType[]{SampleTestType.IGG_SERUM_ANTIBODY}), true)));
 		addCriterias(Disease.DENGUE, suspect, probable, confirmed);
 
 		// Influenca (new subtype)
@@ -240,7 +242,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		confirmed = allOf(suspect,
 				xOf(1, 
 						positiveTestResult(SampleTestType.VIRUS_ISOLATION, SampleTestType.PCR_RT_PCR),
-						sampleTest(SampleTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, true)));
+						sampleTest(SampleTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, Arrays.asList(new SampleTestType[]{SampleTestType.IGG_SERUM_ANTIBODY}), true)));
 		addCriterias(Disease.NEW_INFLUENCA, suspect, probable, confirmed);
 
 		// Measles
@@ -362,8 +364,8 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		return new ClassificationEpiDataCriteria(propertyId);
 	}
 
-	private static ClassificationSampleTestCriteria sampleTest(String propertyId, Object... propertyValues) {
-		return new ClassificationSampleTestCriteria(propertyId, propertyValues);
+	private static ClassificationSampleTestCriteria sampleTest(String propertyId, List<SampleTestType> testTypes, Object... propertyValues) {
+		return new ClassificationSampleTestCriteria(propertyId, testTypes, propertyValues);
 	}
 
 	private static ClassificationSampleTestPositiveResultCriteria positiveTestResult(SampleTestType... sampleTestTypes) {

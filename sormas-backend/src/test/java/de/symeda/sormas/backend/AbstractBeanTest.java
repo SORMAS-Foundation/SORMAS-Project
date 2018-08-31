@@ -68,7 +68,6 @@ public class AbstractBeanTest extends BaseBeanTest {
 		MockProducer.resetMocks();
 	}
 	
-
 	public ConfigFacade getConfigFacade() {
 		return getBean(ConfigFacadeEjbLocal.class);
 	}
@@ -184,4 +183,5 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public CommunityService getCommunityService() {
 		return getBean(CommunityService.class);
 	}
+	
 }
