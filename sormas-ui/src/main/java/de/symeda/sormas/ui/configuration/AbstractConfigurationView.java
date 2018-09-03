@@ -12,10 +12,6 @@ import de.symeda.sormas.ui.SubNavigationMenu;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
-/**
- * @author Christopher Riedel
- *
- */
 public abstract class AbstractConfigurationView extends AbstractSubNavigationView {
 
 	private static final long serialVersionUID = 3193505016439327054L;
@@ -39,8 +35,10 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 	}
 
 	public static void registerViews(Navigator navigator) {
-		navigator.addView(HealthFacilitiesView.VIEW_NAME, HealthFacilitiesView.class);
-		navigator.addView(LaboratoriesView.VIEW_NAME, LaboratoriesView.class);
+		if (LoginHelper.hasUserRight(UserRight.FACILITIES_VIEW)) {
+			navigator.addView(HealthFacilitiesView.VIEW_NAME, HealthFacilitiesView.class);
+			navigator.addView(LaboratoriesView.VIEW_NAME, LaboratoriesView.class);
+		}
 		navigator.addView(OutbreaksView.VIEW_NAME, OutbreaksView.class);
 	}
 

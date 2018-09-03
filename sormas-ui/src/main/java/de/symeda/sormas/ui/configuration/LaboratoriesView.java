@@ -4,10 +4,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 
-/**
- * @author Christopher Riedel
- *
- */
 public class LaboratoriesView extends AbstractFacilitiesView {
 
 	private static final long serialVersionUID = 7745914668183276666L;

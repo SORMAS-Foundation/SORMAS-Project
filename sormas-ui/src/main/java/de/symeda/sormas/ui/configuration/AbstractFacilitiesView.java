@@ -9,6 +9,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -17,24 +18,19 @@ import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
-/**
- * @author Christopher Riedel
- *
- */
 public class AbstractFacilitiesView extends AbstractConfigurationView {
 
 	private static final long serialVersionUID = -2015225571046243640L;
 
-	public static final String SEARCH_FIELD = "Search...";
+	public static final String SEARCH = "search";
 
-	private HorizontalLayout headerLayout;
-	private HorizontalLayout filterayout;
+//	private HorizontalLayout headerLayout;
+	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;
 	private FacilitiesGrid grid;
 	protected Button createButton;
 
 	private ComboBox districtFilter;
-
 	private ComboBox communityFilter;
 
 	protected AbstractFacilitiesView(String viewName, boolean showLaboratories) {
@@ -45,10 +41,12 @@ public class AbstractFacilitiesView extends AbstractConfigurationView {
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(grid);
 		grid.setTypeFilter(showLaboratories);
-		grid.reload();
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
+		gridLayout.setExpandRatio(grid, 1);
+		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
+		grid.reload();
 
 		if (LoginHelper.hasUserRight(UserRight.FACILITIES_CREATE)) {
 			createButton = new Button();
@@ -60,30 +58,27 @@ public class AbstractFacilitiesView extends AbstractConfigurationView {
 		addComponent(gridLayout);
 	}
 
-//	TODO additional filterbar (active, archieved and other)
-	@SuppressWarnings("unused")
-	private HorizontalLayout createHeaderBar() {
-		headerLayout = new HorizontalLayout();
-		headerLayout.setSpacing(true);
-		headerLayout.setWidth(100, Unit.PERCENTAGE);
-
-		return headerLayout;
-	}
+//	TODO additional filter bar (active, archived and other)
+//	private HorizontalLayout createHeaderBar() {
+//		headerLayout = new HorizontalLayout();
+//		headerLayout.setSpacing(true);
+//		headerLayout.setWidth(100, Unit.PERCENTAGE);
+//
+//		return headerLayout;
+//	}
 
 	private HorizontalLayout createFilterBar() {
-
-		filterayout = new HorizontalLayout();
-		filterayout.setSpacing(true);
+		filterLayout = new HorizontalLayout();
+		filterLayout.setSpacing(true);
 
 		TextField searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
-
-		searchField.setInputPrompt(SEARCH_FIELD);
+		searchField.setInputPrompt(I18nProperties.getText(SEARCH));
 		searchField.addTextChangeListener(e -> {
 			grid.filterByText(e.getText());
 		});
 		CssStyles.style(searchField, CssStyles.FORCE_CAPTION);
-		filterayout.addComponent(searchField);
+		filterLayout.addComponent(searchField);
 
 		ComboBox regionFilter = new ComboBox();
 		regionFilter.setWidth(140, Unit.PIXELS);
@@ -96,7 +91,7 @@ public class AbstractFacilitiesView extends AbstractConfigurationView {
 					region != null ? FacadeProvider.getDistrictFacade().getAllByRegion(region.getUuid()) : null);
 
 		});
-		filterayout.addComponent(regionFilter);
+		filterLayout.addComponent(regionFilter);
 
 		districtFilter = new ComboBox();
 		districtFilter.setWidth(140, Unit.PIXELS);
@@ -108,7 +103,7 @@ public class AbstractFacilitiesView extends AbstractConfigurationView {
 			FieldHelper.updateItems(communityFilter,
 					district != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(district.getUuid()) : null);
 		});
-		filterayout.addComponent(districtFilter);
+		filterLayout.addComponent(districtFilter);
 
 		communityFilter = new ComboBox();
 		communityFilter.setWidth(140, Unit.PIXELS);
@@ -119,9 +114,9 @@ public class AbstractFacilitiesView extends AbstractConfigurationView {
 			CommunityReferenceDto community = (CommunityReferenceDto) e.getProperty().getValue();
 			grid.setCommunityFilter(region, district, community);
 		});
-		filterayout.addComponent(communityFilter);
+		filterLayout.addComponent(communityFilter);
 
-		return filterayout;
+		return filterLayout;
 	}
 
 }

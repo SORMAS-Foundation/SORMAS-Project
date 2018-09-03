@@ -12,11 +12,9 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 
-/**
- * @author Christopher Riedel
- */
-public class FacilityCreateForm extends AbstractEditForm<FacilityDto> {
+public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 
 	private static final long serialVersionUID = 1952619382018965255L;
 
@@ -25,20 +23,24 @@ public class FacilityCreateForm extends AbstractEditForm<FacilityDto> {
 			+ LayoutUtil.fluidRowLocs(FacilityDto.CITY)
 			+ LayoutUtil.fluidRowLocs(FacilityDto.LATITUDE, FacilityDto.LONGITUDE);
 
-	private Boolean createLaboratory;
+	private Boolean laboratory;
 
-	public FacilityCreateForm(UserRight editOrCreateUserRight, boolean createLaboratory) {
+	public FacilityEditForm(UserRight editOrCreateUserRight, boolean create, boolean laboratory) {
 		super(FacilityDto.class, FacilityDto.I18N_PREFIX, editOrCreateUserRight);
 
 		setWidth(540, Unit.PIXELS);
 
-		this.createLaboratory = createLaboratory;
+		this.laboratory = laboratory;
+		if (create) {
+			hideValidationUntilNextCommit();
+		}
+		
 		addFields();
 	}
 
 	@Override
 	protected void addFields() {
-		if (createLaboratory == null) {
+		if (laboratory == null) {
 			return;
 		}
 
@@ -46,16 +48,13 @@ public class FacilityCreateForm extends AbstractEditForm<FacilityDto> {
 		ComboBox region = addField(FacilityDto.REGION, ComboBox.class);
 		ComboBox district = addField(FacilityDto.DISTRICT, ComboBox.class);
 		ComboBox community = addField(FacilityDto.COMMUNITY, ComboBox.class);
-		@SuppressWarnings("unused")
-		TextField city = addField(FacilityDto.CITY, TextField.class);
-		@SuppressWarnings("unused")
-		TextField latitude = addField(FacilityDto.LATITUDE, TextField.class);
-		@SuppressWarnings("unused")
-		TextField longitude = addField(FacilityDto.LONGITUDE, TextField.class);
+		addField(FacilityDto.CITY, TextField.class);
+    	addField(FacilityDto.LATITUDE, TextField.class).setConverter(new StringToAngularLocationConverter());
+    	addField(FacilityDto.LONGITUDE, TextField.class).setConverter(new StringToAngularLocationConverter());
 
 		name.setRequired(true);
 		region.setRequired(true);
-		if (!createLaboratory) {
+		if (!laboratory) {
 			district.setRequired(true);
 			community.setRequired(true);
 		}
@@ -85,4 +84,5 @@ public class FacilityCreateForm extends AbstractEditForm<FacilityDto> {
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
 	}
+	
 }

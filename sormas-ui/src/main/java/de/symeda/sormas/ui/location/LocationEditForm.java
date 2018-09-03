@@ -1,10 +1,5 @@
 package de.symeda.sormas.ui.location;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Locale;
-
-import com.vaadin.data.util.converter.StringToDoubleConverter;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -17,24 +12,10 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 
 @SuppressWarnings("serial")
 public class LocationEditForm extends AbstractEditForm<LocationDto> {
-
-    private final class StringToAngularLocationConverter extends StringToDoubleConverter {
-		protected NumberFormat getFormat(Locale locale) {
-			
-	        if (locale == null) {
-	            locale = Locale.getDefault();
-	        }
-			
-			DecimalFormat numberFormat = (DecimalFormat)NumberFormat.getNumberInstance(locale);
-			numberFormat.setGroupingUsed(false);
-			numberFormat.setMaximumFractionDigits(5);
-
-			return numberFormat;
-		}
-	}
 
 	private static final String HTML_LAYOUT = 
     		LayoutUtil.divs(

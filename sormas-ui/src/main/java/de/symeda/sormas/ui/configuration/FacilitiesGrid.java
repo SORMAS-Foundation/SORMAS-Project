@@ -25,10 +25,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 
-/**
- * @author Christopher Riedel
- *
- */
 public class FacilitiesGrid extends Grid {
 
 	private static final long serialVersionUID = 4488941182432777837L;
@@ -38,17 +34,17 @@ public class FacilitiesGrid extends Grid {
 	private FacilityCriteria facilityCriteria = new FacilityCriteria();
 
 	public FacilitiesGrid() {
-		
-		facilityCriteria.excludeStaticFacilitesEquals(true);
-		
 		setSizeFull();
+		setSelectionMode(SelectionMode.NONE);
+
+		// Hides "Other facility" and "Home or other place"
+		facilityCriteria.excludeStaticFacilitesEquals(true);
 
 		BeanItemContainer<FacilityDto> container = new BeanItemContainer<FacilityDto>(FacilityDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 
 		if (LoginHelper.hasUserRight(UserRight.FACILITIES_EDIT)) {
 			generatedContainer.addGeneratedProperty(EDIT_BTN_ID, new PropertyValueGenerator<String>() {
-
 				private static final long serialVersionUID = -7255691609662228895L;
 
 				@Override
@@ -63,10 +59,11 @@ public class FacilitiesGrid extends Grid {
 			});
 		}
 		setContainerDataSource(generatedContainer);
+		setColumns(FacilityDto.NAME, FacilityDto.REGION, FacilityDto.DISTRICT, FacilityDto.COMMUNITY,
+				FacilityDto.CITY, FacilityDto.LATITUDE, FacilityDto.LONGITUDE);
 
 		if (LoginHelper.hasUserRight(UserRight.FACILITIES_EDIT)) {
-			setColumns(FacilityDto.NAME, FacilityDto.REGION, FacilityDto.DISTRICT, FacilityDto.COMMUNITY,
-					FacilityDto.CITY, FacilityDto.LATITUDE, FacilityDto.LONGITUDE, EDIT_BTN_ID);
+			addColumn(EDIT_BTN_ID);
 			getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
 			getColumn(EDIT_BTN_ID).setWidth(40);
 
@@ -75,10 +72,8 @@ public class FacilitiesGrid extends Grid {
 					ControllerProvider.getFacilityController().edit(((FacilityDto) e.getItemId()).getUuid());
 				}
 			});
-		} else {
-			setColumns(FacilityDto.NAME, FacilityDto.REGION, FacilityDto.DISTRICT, FacilityDto.COMMUNITY,
-					FacilityDto.CITY, FacilityDto.LATITUDE, FacilityDto.LONGITUDE);
 		}
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -115,7 +110,7 @@ public class FacilitiesGrid extends Grid {
 		if (showLaboratories) {
 			facilityCriteria.typeEquals(FacilityType.LABORATORY);
 		} else {
-			// TODO: workaround only works, because health facilities don't have a type.
+			// TODO: Workaround; only works because normal health facilities currently don't have a type
 			facilityCriteria.typeEquals(null);
 		}
 	}

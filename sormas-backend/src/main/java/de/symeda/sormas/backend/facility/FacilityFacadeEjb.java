@@ -20,6 +20,7 @@ import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -204,39 +205,40 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 		facility = fillOrBuildEntity(dto, facility);
 
-		// Check whether any required field that does not have a not null constraint in the database is empty
 		if (facility.getRegion() == null) {
 			throw new ValidationRuntimeException("You have to specify a valid region");
 		}
-		if (facility.getDistrict() == null) {
-			throw new ValidationRuntimeException("You have to specify a valid district");
-		}
-		if (facility.getCommunity() == null) {
-			throw new ValidationRuntimeException("You have to specify a valid community");
+		if (dto.getType() != FacilityType.LABORATORY) {
+			if (facility.getDistrict() == null) {
+				throw new ValidationRuntimeException("You have to specify a valid district");
+			}
+			if (facility.getCommunity() == null) {
+				throw new ValidationRuntimeException("You have to specify a valid community");
+			}
 		}
 
 		facilityService.ensurePersisted(facility);
 	}
 
 	private Facility fillOrBuildEntity(@NotNull FacilityDto source, Facility target) {
-		
+
 		if (target == null) {
 			target = new Facility();
 			target.setUuid(source.getUuid());
 		}
 
 		DtoHelper.validateDto(source, target);
-		
+
 		target.setName(source.getName());
-		
+
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
-		
+
 		target.setCity(source.getCity());
 		target.setLatitude(source.getLatitude());
 		target.setLongitude(source.getLongitude());
-		
+
 		target.setType(source.getType());
 
 		return target;

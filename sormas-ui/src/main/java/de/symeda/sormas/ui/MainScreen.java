@@ -12,6 +12,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.caze.CasesView;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.HealthFacilitiesView;
+import de.symeda.sormas.ui.configuration.LaboratoriesView;
 import de.symeda.sormas.ui.configuration.OutbreaksView;
 import de.symeda.sormas.ui.contact.ContactsView;
 import de.symeda.sormas.ui.dashboard.DashboardView;
@@ -54,7 +55,8 @@ public class MainScreen extends HorizontalLayout {
 							|| viewName.equals(CasesView.VIEW_NAME) || viewName.equals(ContactsView.VIEW_NAME)
 							|| viewName.equals(EventsView.VIEW_NAME) || viewName.equals(SamplesView.VIEW_NAME)
 							|| viewName.equals(ReportsView.VIEW_NAME) || viewName.equals(StatisticsView.VIEW_NAME)
-							|| viewName.equals(UsersView.VIEW_NAME) || viewName.equals(OutbreaksView.VIEW_NAME)) {
+							|| viewName.equals(UsersView.VIEW_NAME) || viewName.equals(OutbreaksView.VIEW_NAME)
+							|| viewName.equals(HealthFacilitiesView.VIEW_NAME) || viewName.equals(LaboratoriesView.VIEW_NAME)) {
 						return AccessDeniedView.class.newInstance();
 					} else {
 						return ErrorView.class.newInstance();
@@ -99,7 +101,7 @@ public class MainScreen extends HorizontalLayout {
 			if (LoginHelper.hasUserRight(UserRight.FACILITIES_VIEW)) {
 				menu.addView(HealthFacilitiesView.class, HealthFacilitiesView.VIEW_NAME, "Configuration",
 						FontAwesome.COGS);
-			}else {
+			} else {
 				menu.addView(OutbreaksView.class, OutbreaksView.VIEW_NAME, "Configuration",
 						FontAwesome.COGS);
 			}
