@@ -140,6 +140,7 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 
 		onSampleTestChanged(existingSampleTest, sampleTest);
 		
+		// Update case classification if necessary
 		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(sampleTest.getSample().getAssociatedCase()), sampleTest.getSample().getAssociatedCase());
 
 		return toDto(sampleTest);

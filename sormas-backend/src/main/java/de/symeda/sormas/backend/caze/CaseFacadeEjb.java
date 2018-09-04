@@ -61,6 +61,7 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -314,6 +315,16 @@ public class CaseFacadeEjb implements CaseFacade {
 		Person person = personService.getByUuid(personUuid);
 
 		return toDto(caseService.getLatestCaseByPerson(person, user));
+	}
+	
+	@Override
+	public List<CaseDataDto> getAllCasesOfPerson(String personUuid, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		return caseService.findBy(new CaseCriteria().personEquals(new PersonReferenceDto(personUuid)), user)
+				.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
 	}
 
 	@Override

@@ -74,6 +74,8 @@ public interface CaseFacade {
 
 	CaseDataDto getLatestCaseByPerson(String personUuid, String userUuid);
 	
+	List<CaseDataDto> getAllCasesOfPerson(String personUuid, String userUuid);
+	
 	void deleteCase(CaseReferenceDto caseRef, String userUuid);
 
 	List<Object[]> queryCaseCount(StatisticsCaseCriteria caseCriteria, StatisticsCaseAttribute groupingA, StatisticsCaseSubAttribute subGroupingA,
