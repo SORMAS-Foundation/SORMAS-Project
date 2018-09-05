@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.caze.classification;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import de.symeda.sormas.api.EntityDto;
@@ -14,7 +15,7 @@ public class ClassificationSampleTestCriteria extends ClassificationCaseCriteria
 	private static final long serialVersionUID = 856637988490366395L;
 
 	private final List<SampleTestType> testTypes;
-	
+
 	public ClassificationSampleTestCriteria(String propertyId, List<SampleTestType> testTypes, Object... propertyValues) {
 		super(propertyId, propertyValues);
 		this.testTypes = testTypes;
@@ -31,19 +32,18 @@ public class ClassificationSampleTestCriteria extends ClassificationCaseCriteria
 			if (!testTypes.contains(sampleTest.getTestType())) {
 				continue;
 			}
-			
-			if (method == null) {
+
+			Method method = null;
+			try {
+				method = getInvokeClass().getMethod("get" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));
+			} catch (NoSuchMethodException e) {
 				try {
-					method = getInvokeClass().getMethod("get" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));
-				} catch (NoSuchMethodException e) {
-					try {
-						method = getInvokeClass().getMethod("is" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));
-					} catch (NoSuchMethodException newE) {
-						throw new RuntimeException(newE);
-					}
-				} catch (SecurityException e) {
-					throw new RuntimeException(e);
+					method = getInvokeClass().getMethod("is" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));
+				} catch (NoSuchMethodException newE) {
+					throw new RuntimeException(newE);
 				}
+			} catch (SecurityException e) {
+				throw new RuntimeException(e);
 			}
 
 			try {
@@ -55,7 +55,7 @@ public class ClassificationSampleTestCriteria extends ClassificationCaseCriteria
 				throw new RuntimeException(e);
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -75,7 +75,7 @@ public class ClassificationSampleTestCriteria extends ClassificationCaseCriteria
 			}
 			stringBuilder.append(")");
 		}
-		
+
 		return stringBuilder.toString();
 	}
 

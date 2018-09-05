@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.navigator.View;
+import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -148,7 +149,9 @@ public class PersonController {
 					}
 					
 					if (newClassification != null) {
-						Notification.show("Person data save. The classification of at least one case associated with this person was automatically changed to " + newClassification.toString() + ".", Type.WARNING_MESSAGE);
+						Notification notification = new Notification("Person data save. The classification of at least one case associated with this person was automatically changed to " + newClassification.toString() + ".", Type.WARNING_MESSAGE);
+						notification.setDelayMsec(-1);
+						notification.show(Page.getCurrent());
 					} else {
 						Notification.show("Person data saved", Type.WARNING_MESSAGE);
 					}

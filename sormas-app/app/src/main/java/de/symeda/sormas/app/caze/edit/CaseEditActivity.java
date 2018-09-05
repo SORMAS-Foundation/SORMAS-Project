@@ -4,10 +4,12 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.view.Menu;
 
+import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
@@ -17,6 +19,8 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.caze.CaseSection;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
@@ -141,6 +145,13 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         } catch (ValidationException e) {
             NotificationHelper.showNotification(this, ERROR, e.getMessage());
             return;
+        }
+
+        // Case classification
+        final Case existingCase = DatabaseHelper.getCaseDao().queryUuidBasic(cazeToSave.getUuid());
+        if (existingCase != null && cazeToSave.getCaseClassification() != existingCase.getCaseClassification()) {
+            cazeToSave.setClassificationDate(new Date());
+            cazeToSave.setClassificationUser(ConfigProvider.getUser());
         }
 
         saveTask = new SavingAsyncTask(getRootView(), cazeToSave) {

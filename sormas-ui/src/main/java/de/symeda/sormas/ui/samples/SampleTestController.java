@@ -94,7 +94,9 @@ public class SampleTestController {
 	
 		if (existingCaseDto.getCaseClassification() != newCaseDto.getCaseClassification() &&
 				newCaseDto.getClassificationUser() == null) {
-			Notification.show("Sample test saved. The classification of its associated case was automatically changed to " + newCaseDto.getCaseClassification().toString() + ".", Type.WARNING_MESSAGE);
+			Notification notification = new Notification("Sample test saved. The classification of its associated case was automatically changed to " + newCaseDto.getCaseClassification().toString() + ".", Type.WARNING_MESSAGE);
+			notification.setDelayMsec(-1);
+			notification.show(Page.getCurrent());
 		} else {
 			Notification.show("Sample test saved", Type.WARNING_MESSAGE);
 		}

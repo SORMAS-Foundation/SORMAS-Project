@@ -36,23 +36,23 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 @Singleton(name = "CaseClassificationFacade")
 public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	
-	private Map<Disease, ClassificationCriteria> suspectCriterias = new HashMap<Disease, ClassificationCriteria>();
-	private Map<Disease, ClassificationCriteria> probableCriterias = new HashMap<Disease, ClassificationCriteria>();
-	private Map<Disease, ClassificationCriteria> confirmedCriterias = new HashMap<Disease, ClassificationCriteria>();
+	private Map<Disease, ClassificationCriteria> suspectCriteria = new HashMap<Disease, ClassificationCriteria>();
+	private Map<Disease, ClassificationCriteria> probableCriteria = new HashMap<Disease, ClassificationCriteria>();
+	private Map<Disease, ClassificationCriteria> confirmedCriteria = new HashMap<Disease, ClassificationCriteria>();
 
 	@Override
 	public CaseClassification getClassification(CaseDataDto caze, List<SampleTestDto> sampleTests) {
-		if (suspectCriterias.isEmpty()) {
-			buildCriterias();
+		if (suspectCriteria.isEmpty()) {
+			buildCriteria();
 		}
 
 		Disease disease = caze.getDisease();
 		
-		if (confirmedCriterias.containsKey(disease) && confirmedCriterias.get(disease).eval(caze, sampleTests)) {
+		if (confirmedCriteria.containsKey(disease) && confirmedCriteria.get(disease).eval(caze, sampleTests)) {
 			return CaseClassification.CONFIRMED;
-		} else if (probableCriterias.containsKey(disease) && probableCriterias.get(disease).eval(caze, sampleTests)) {
+		} else if (probableCriteria.containsKey(disease) && probableCriteria.get(disease).eval(caze, sampleTests)) {
 			return CaseClassification.PROBABLE;
-		} else if (suspectCriterias.containsKey(disease) && suspectCriterias.get(disease).eval(caze, sampleTests)) {
+		} else if (suspectCriteria.containsKey(disease) && suspectCriteria.get(disease).eval(caze, sampleTests)) {
 			return CaseClassification.SUSPECT;
 		} else {
 			return CaseClassification.NOT_CLASSIFIED;
@@ -61,12 +61,12 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	
 	@Override
 	public ClassificationCriteria getSuspectCriteria(Disease disease) {
-		if (suspectCriterias.isEmpty()) {
-			buildCriterias();
+		if (suspectCriteria.isEmpty()) {
+			buildCriteria();
 		}
 		
-		if (suspectCriterias.containsKey(disease)) {
-			return suspectCriterias.get(disease);
+		if (suspectCriteria.containsKey(disease)) {
+			return suspectCriteria.get(disease);
 		} else {
 			return null;
 		}
@@ -74,12 +74,12 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 
 	@Override
 	public ClassificationCriteria getProbableCriteria(Disease disease) {
-		if (suspectCriterias.isEmpty()) {
-			buildCriterias();
+		if (suspectCriteria.isEmpty()) {
+			buildCriteria();
 		}
 
-		if (probableCriterias.containsKey(disease)) {
-			return probableCriterias.get(disease);
+		if (probableCriteria.containsKey(disease)) {
+			return probableCriteria.get(disease);
 		} else {
 			return null;
 		}
@@ -87,18 +87,18 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 
 	@Override
 	public ClassificationCriteria getConfirmedCriteria(Disease disease) {
-		if (suspectCriterias.isEmpty()) {
-			buildCriterias();
+		if (suspectCriteria.isEmpty()) {
+			buildCriteria();
 		}
 
-		if (confirmedCriterias.containsKey(disease)) {
-			return confirmedCriterias.get(disease);
+		if (confirmedCriteria.containsKey(disease)) {
+			return confirmedCriteria.get(disease);
 		} else {
 			return null;
 		}
 	}
 
-	private void buildCriterias() {
+	private void buildCriteria() {
 		ClassificationCriteria suspect, probable, confirmed;
 
 		// EVD
@@ -126,7 +126,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		confirmed = allOf(
 				suspect, 
 				positiveTestResult(SampleTestType.IGM_SERUM_ANTIBODY, SampleTestType.PCR_RT_PCR, SampleTestType.VIRUS_ISOLATION));
-		addCriterias(Disease.EVD, suspect, probable, confirmed);
+		addCriteria(Disease.EVD, suspect, probable, confirmed);
 
 		// CSM
 		suspect = allOf(
@@ -143,7 +143,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		confirmed = allOf(
 				suspect, 
 				positiveTestResult(SampleTestType.VIRUS_ISOLATION));
-		addCriterias(Disease.CSM, suspect, probable, confirmed);
+		addCriteria(Disease.CSM, suspect, probable, confirmed);
 
 		// Lassa Fever
 		suspect = allOf(
@@ -162,7 +162,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		confirmed = allOf(
 				suspect, 
 				positiveTestResult(SampleTestType.IGM_SERUM_ANTIBODY, SampleTestType.PCR_RT_PCR, SampleTestType.VIRUS_ISOLATION));
-		addCriterias(Disease.LASSA, suspect, probable, confirmed);
+		addCriteria(Disease.LASSA, suspect, probable, confirmed);
 
 		// Yellow fever
 		suspect = allOf(
@@ -191,7 +191,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 										positiveTestResult(SampleTestType.DENGUE_FEVER_ANTIBODIES))),
 						positiveTestResult(SampleTestType.PCR_RT_PCR, SampleTestType.ANTIGEN_DETECTION, SampleTestType.VIRUS_ISOLATION),
 						sampleTest(SampleTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, Arrays.asList(new SampleTestType[]{SampleTestType.IGM_SERUM_ANTIBODY, SampleTestType.IGG_SERUM_ANTIBODY}), true)));
-		addCriterias(Disease.YELLOW_FEVER, suspect, probable, confirmed);
+		addCriteria(Disease.YELLOW_FEVER, suspect, probable, confirmed);
 
 		// Dengue fever
 		suspect = allOf(
@@ -220,7 +220,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 						positiveTestResult(SampleTestType.PCR_RT_PCR),
 						positiveTestResult(SampleTestType.VIRUS_ISOLATION),
 						sampleTest(SampleTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, Arrays.asList(new SampleTestType[]{SampleTestType.IGG_SERUM_ANTIBODY}), true)));
-		addCriterias(Disease.DENGUE, suspect, probable, confirmed);
+		addCriteria(Disease.DENGUE, suspect, probable, confirmed);
 
 		// Influenca (new subtype)
 		suspect = allOf(
@@ -243,7 +243,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				xOf(1, 
 						positiveTestResult(SampleTestType.VIRUS_ISOLATION, SampleTestType.PCR_RT_PCR),
 						sampleTest(SampleTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, Arrays.asList(new SampleTestType[]{SampleTestType.IGG_SERUM_ANTIBODY}), true)));
-		addCriterias(Disease.NEW_INFLUENCA, suspect, probable, confirmed);
+		addCriteria(Disease.NEW_INFLUENCA, suspect, probable, confirmed);
 
 		// Measles
 		suspect = allOf(
@@ -257,7 +257,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		confirmed = allOf(
 				suspect, 
 				positiveTestResult(SampleTestType.IGM_SERUM_ANTIBODY));
-		addCriterias(Disease.MEASLES, suspect, probable, confirmed);
+		addCriteria(Disease.MEASLES, suspect, probable, confirmed);
 
 		// Cholera
 		suspect = allOf(
@@ -273,7 +273,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		confirmed = allOf(
 				suspect, 
 				positiveTestResult(SampleTestType.VIRUS_ISOLATION));
-		addCriterias(Disease.CHOLERA, suspect, probable, confirmed);
+		addCriteria(Disease.CHOLERA, suspect, probable, confirmed);
 
 		// Monkey pox
 		suspect = allOf(
@@ -283,7 +283,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		confirmed = allOf(
 				suspect, 
 				positiveTestResult(SampleTestType.IGM_SERUM_ANTIBODY, SampleTestType.PCR_RT_PCR, SampleTestType.VIRUS_ISOLATION));
-		addCriterias(Disease.MONKEYPOX, suspect, probable, confirmed);
+		addCriteria(Disease.MONKEYPOX, suspect, probable, confirmed);
 
 		// Plague
 		suspect = allOf(
@@ -312,44 +312,44 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		confirmed = allOf(
 				suspect, 
 				positiveTestResult(SampleTestType.VIRUS_ISOLATION, SampleTestType.PCR_RT_PCR));
-		addCriterias(Disease.PLAGUE, suspect, probable, confirmed);
+		addCriteria(Disease.PLAGUE, suspect, probable, confirmed);
 	}
 
-	private void addCriterias(Disease disease, ClassificationCriteria suspect, ClassificationCriteria probable,
+	private void addCriteria(Disease disease, ClassificationCriteria suspect, ClassificationCriteria probable,
 			ClassificationCriteria confirmed) {
 		if (suspect != null) {
-			suspectCriterias.put(disease, suspect);
+			suspectCriteria.put(disease, suspect);
 		}
 		if (probable != null) {
-			probableCriterias.put(disease, probable);
+			probableCriteria.put(disease, probable);
 		}
 		if (confirmed != null) {
-			confirmedCriterias.put(disease, confirmed);
+			confirmedCriteria.put(disease, confirmed);
 		}
 	}
 
-	private static ClassificationAllOfCriteria allOf(ClassificationCriteria... criterias) {
-		return new ClassificationAllOfCriteria(criterias);
+	private static ClassificationAllOfCriteria allOf(ClassificationCriteria... criteria) {
+		return new ClassificationAllOfCriteria(criteria);
 	}
 	
-	private static ClassificationAllOfCompactCriteria allOfCompact(ClassificationCriteria... criterias) {
-		return new ClassificationAllOfCompactCriteria(criterias);
+	private static ClassificationAllOfCompactCriteria allOfCompact(ClassificationCriteria... criteria) {
+		return new ClassificationAllOfCompactCriteria(criteria);
 	}
 	
-	private static ClassificationXOfCriteria xOf(int requiredAmount, ClassificationCriteria... criterias) {
-		return new ClassificationXOfCriteria(requiredAmount, criterias);
+	private static ClassificationXOfCriteria xOf(int requiredAmount, ClassificationCriteria... criteria) {
+		return new ClassificationXOfCriteria(requiredAmount, criteria);
 	}
 	
-	private static ClassificationXOfSubCriteria xOfSub(int requiredAmount, ClassificationCriteria... criterias) {
-		return new ClassificationXOfSubCriteria(requiredAmount, criterias);
+	private static ClassificationXOfSubCriteria xOfSub(int requiredAmount, ClassificationCriteria... criteria) {
+		return new ClassificationXOfSubCriteria(requiredAmount, criteria);
 	}
 	
-	private static ClassificationOneOfCompactCriteria oneOfCompact(ClassificationCriteria... criterias) {
-		return new ClassificationOneOfCompactCriteria(criterias);
+	private static ClassificationOneOfCompactCriteria oneOfCompact(ClassificationCriteria... criteria) {
+		return new ClassificationOneOfCompactCriteria(criteria);
 	}
 
-	private static ClassificationNoneOfCriteria noneOf(ClassificationCriteria... criterias) {
-		return new ClassificationNoneOfCriteria(criterias);
+	private static ClassificationNoneOfCriteria noneOf(ClassificationCriteria... criteria) {
+		return new ClassificationNoneOfCriteria(criteria);
 	}
 	
 	private static ClassificationCaseCriteria caseData(String propertyId, Object... propertyValues) {

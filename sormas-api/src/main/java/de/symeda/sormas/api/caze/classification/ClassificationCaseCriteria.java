@@ -14,10 +14,9 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 public class ClassificationCaseCriteria extends ClassificationCriteria {
 
 	private static final long serialVersionUID = 2640725590302569043L;
-	
+
 	protected final String propertyId;
 	protected final List<Object> propertyValues;
-	protected Method method;
 
 	public ClassificationCaseCriteria(String propertyId, Object... propertyValues) {
 		this.propertyId = propertyId;
@@ -34,22 +33,15 @@ public class ClassificationCaseCriteria extends ClassificationCriteria {
 
 	@Override
 	public boolean eval(CaseDataDto caze, List<SampleTestDto> sampleTests) {
-		if (method == null) {
-			try {
-				method = getInvokeClass().getMethod("get" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));
-			} catch (NoSuchMethodException | SecurityException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		
 		try {
+			Method method = getInvokeClass().getMethod("get" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));
 			Object value = method.invoke(getInvokeObject(caze));
 			return propertyValues.contains(value);
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException e) {
+		} catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	protected StringBuilder appendDescValues(StringBuilder stringBuilder) {
 		if (propertyValues.size() == 1 && propertyValues.get(0) instanceof YesNoUnknown) {
 			return stringBuilder;
@@ -60,10 +52,10 @@ public class ClassificationCaseCriteria extends ClassificationCriteria {
 			if (i > 0) {
 				stringBuilder.append(", ");
 			}
-			
+
 			stringBuilder.append(propertyValues.get(i).toString());
 		}
-		
+
 		return stringBuilder;
 	}
 
@@ -74,5 +66,5 @@ public class ClassificationCaseCriteria extends ClassificationCriteria {
 		appendDescValues(stringBuilder);
 		return stringBuilder.toString();
 	}
-	
+
 }

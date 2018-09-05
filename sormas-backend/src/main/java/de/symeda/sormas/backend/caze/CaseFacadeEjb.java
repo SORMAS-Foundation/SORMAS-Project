@@ -416,7 +416,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	 * after a case has been created/saved
 	 */
 	public void onCaseChanged(CaseDataDto existingCase, Case newCase) {
-
 		// If the case is new and the geo coordinates of the case's health facility are
 		// null, set its coordinates to the case's report coordinates, if available
 		Facility facility = newCase.getHealthFacility();

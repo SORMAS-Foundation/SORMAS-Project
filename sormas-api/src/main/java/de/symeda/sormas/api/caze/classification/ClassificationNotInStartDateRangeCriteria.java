@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.caze.classification;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
 
@@ -23,15 +24,8 @@ public class ClassificationNotInStartDateRangeCriteria extends ClassificationCas
 	
 	@Override
 	public boolean eval(CaseDataDto caze, List<SampleTestDto> sampleTests) {
-		if (method == null) {
-			try {
-				method = getInvokeClass().getMethod("get" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));
-			} catch (NoSuchMethodException | SecurityException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		
 		try {
+			Method method = getInvokeClass().getMethod("get" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));
 			Object value = method.invoke(getInvokeObject(caze));
 			if (value instanceof Date) {
 				Date startDate = CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReceptionDate(), caze.getReportDate());
@@ -44,7 +38,7 @@ public class ClassificationNotInStartDateRangeCriteria extends ClassificationCas
 			} else {
 				return true;
 			}
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException e) {
+		} catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException e) {
 			throw new RuntimeException(e);
 		}
 	}
