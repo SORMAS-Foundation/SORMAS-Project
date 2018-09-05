@@ -194,6 +194,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	public void onPersonChanged(PersonDto existingPerson, Person newPerson) {
 		List<Case> personCases = caseService.findBy(new CaseCriteria().personEquals(new PersonReferenceDto(newPerson.getUuid())), null);
 		// Call onCaseChanged once for every case to update case classification
+		// Attention: this may lead to infinite recursion when not properly implemented
 		for (Case personCase : personCases) {
 			CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
 			caseFacade.onCaseChanged(existingCase, personCase);
@@ -206,17 +207,19 @@ public class PersonFacadeEjb implements PersonFacade {
 				// Update case list after previous onCaseChanged
 				personCases = caseService.findBy(new CaseCriteria().personEquals(new PersonReferenceDto(newPerson.getUuid())), null);
 				for (Case personCase : personCases) {
-					if (newPerson.getPresentCondition().isDeceased() && personCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
-						CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
-						personCase.setOutcome(CaseOutcome.DECEASED);
-						personCase.setOutcomeDate(new Date());
-						// attention: this may lead to infinite recursion when not properly implemented
-						caseFacade.onCaseChanged(existingCase, personCase);
+					if (newPerson.getPresentCondition().isDeceased()) {
+						if (personCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
+							CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
+							personCase.setOutcome(CaseOutcome.DECEASED);
+							personCase.setOutcomeDate(new Date());
+							// Attention: this may lead to infinite recursion when not properly implemented
+							caseFacade.onCaseChanged(existingCase, personCase);
+						}
 					} else if (personCase.getOutcome() == CaseOutcome.DECEASED) {
 						CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
 						personCase.setOutcome(CaseOutcome.NO_OUTCOME);
 						personCase.setOutcomeDate(null);
-						// attention: this may lead to infinite recursion when not properly implemented
+						// Attention: this may lead to infinite recursion when not properly implemented
 						caseFacade.onCaseChanged(existingCase, personCase);
 					}
 				}
