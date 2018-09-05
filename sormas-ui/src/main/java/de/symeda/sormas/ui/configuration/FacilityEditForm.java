@@ -24,12 +24,14 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 			+ LayoutUtil.fluidRowLocs(FacilityDto.LATITUDE, FacilityDto.LONGITUDE);
 
 	private Boolean laboratory;
+	private boolean create;
 
 	public FacilityEditForm(UserRight editOrCreateUserRight, boolean create, boolean laboratory) {
 		super(FacilityDto.class, FacilityDto.I18N_PREFIX, editOrCreateUserRight);
 
 		setWidth(540, Unit.PIXELS);
 
+		this.create = create;
 		this.laboratory = laboratory;
 		if (create) {
 			hideValidationUntilNextCommit();
@@ -78,6 +80,13 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		
+		// TODO: Workaround until cases are properly transfered when facility infrastructure data changes
+		if (!create) {
+			region.setEnabled(false);
+			district.setEnabled(false);
+			community.setEnabled(false);
+		}
 	}
 
 	@Override

@@ -84,7 +84,7 @@
     <string name="alert_unsynchronized_changes">There are unsynchronized changes on your device. If you log out now, they will be lost and you will not be able to restore them. Do you still want to log out of SORMAS?</string>
 
     <string name="caption_case_contacts">Case Contacts</string>
-    <string name="caption_case_epidomiological_data">Epidemilogical Info</string>
+    <string name="caption_case_epidemiological_data">Epidemiological Info</string>
     <string name="caption_case_hospitalization">Hospitalization Info</string>
     <string name="caption_case_information">Case Information</string>
     <string name="caption_case_samples">Case Samples</string>

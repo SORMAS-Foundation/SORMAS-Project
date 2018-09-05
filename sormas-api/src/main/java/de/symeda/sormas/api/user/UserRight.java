@@ -441,7 +441,11 @@ public enum UserRight {
 			ADMIN
 			), 
 	FACILITIES_VIEW(
-			ADMIN
+			ADMIN,
+			NATIONAL_USER,
+			NATIONAL_OBSERVER,
+			STATE_OBSERVER,
+			SURVEILLANCE_SUPERVISOR
 	);
 	
 	private final Set<UserRole> userRoles;

@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.caze.read;
 
-import android.app.AlertDialog;
 import android.databinding.ObservableArrayList;
 import android.os.Bundle;
 import android.view.View;
@@ -99,7 +98,7 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
 
     @Override
     protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.caption_case_epidomiological_data);
+        return getResources().getString(R.string.caption_case_epidemiological_data);
     }
 
     @Override

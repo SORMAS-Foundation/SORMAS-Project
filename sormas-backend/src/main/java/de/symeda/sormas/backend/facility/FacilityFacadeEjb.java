@@ -12,6 +12,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
@@ -178,6 +180,9 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(Facility.class);
 		Root<Facility> facility = cq.from(Facility.class);
+		Join<Facility, Region> region = facility.join(Facility.REGION, JoinType.LEFT);
+		Join<Facility, District> district = facility.join(Facility.DISTRICT, JoinType.LEFT);
+		Join<Facility, Community> community = facility.join(Facility.COMMUNITY, JoinType.LEFT);
 
 		User user = userService.getByUuid(userUuid);
 		Predicate filter = facilityService.createUserFilter(cb, cq, facility, user);
@@ -192,7 +197,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		}
 
 		cq.select(facility);
-
+		cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)), cb.asc(community.get(Community.NAME)), cb.asc(facility.get(Facility.NAME)));
 		cq.distinct(true);
 
 		List<Facility> facilities = em.createQuery(cq).getResultList();
