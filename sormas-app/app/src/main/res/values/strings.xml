@@ -271,7 +271,7 @@
     <string name="sample_result_unknown">Test Result N/A</string>
     <string name="sampling_date_unknown">Sampling Date N/A</string>
     <string name="description_pick_or_create_person">The name of at least one person already existing in SORMAS is similar to the name you entered.</string>
-    <string name="description_pick_person">If possible, select a matching person below by tapping on them and then clicking the \"Select\" button below.</string>
+    <string name="description_pick_person">If applicable, select a matching person by tapping on them and then clicking the \"Select\" button below. <b>Do this only if you are absolutely sure that the person you have specified is the same as one of the persons in this list.</b></string>
     <string name="description_pick_person_no_records">No matching persons found.</string>
     <string name="description_create_person">If the person you have created is <b>not</b> among the suggested list of existing persons, click the \"Create\" button.</string>
     <string name="server_connection_error">Could not connect to SORMAS server. Try again later.</string>
