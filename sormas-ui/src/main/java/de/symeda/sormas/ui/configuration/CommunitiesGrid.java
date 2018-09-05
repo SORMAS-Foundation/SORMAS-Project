@@ -16,34 +16,46 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.facility.FacilityCriteria;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.CommunityCriteria;
+import de.symeda.sormas.api.region.CommunityDto;
+import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 
-public class FacilitiesGrid extends Grid {
+@SuppressWarnings("serial")
+public class CommunitiesGrid extends Grid {
 
-	private static final long serialVersionUID = 4488941182432777837L;
+	private static final long serialVersionUID = 3355810665696318673L;
 
 	private static final String EDIT_BTN_ID = "edit";
-
-	private FacilityCriteria facilityCriteria = new FacilityCriteria();
-
-	public FacilitiesGrid() {
+	private static final String REGION_LOC = "region";
+	
+	private CommunityCriteria communityCriteria = new CommunityCriteria();
+	
+	public CommunitiesGrid() {
 		setSizeFull();
 		setSelectionMode(SelectionMode.NONE);
-
-		// Hides "Other facility" and "Home or other place"
-		facilityCriteria.excludeStaticFacilitesEquals(true);
-
-		BeanItemContainer<FacilityDto> container = new BeanItemContainer<FacilityDto>(FacilityDto.class);
+		
+		BeanItemContainer<CommunityDto> container = new BeanItemContainer<CommunityDto>(CommunityDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
-
+		setContainerDataSource(generatedContainer);
+		
+		generatedContainer.addGeneratedProperty(REGION_LOC, new PropertyValueGenerator<RegionReferenceDto>() {
+			@Override
+			public RegionReferenceDto getValue(Item item, Object itemId, Object propertyId) {
+				CommunityDto dto = (CommunityDto) itemId;
+				DistrictDto district = FacadeProvider.getDistrictFacade().getDistrictByUuid(dto.getDistrict().getUuid());
+				return district.getRegion();
+			}
+			@Override
+			public Class<RegionReferenceDto> getType() {
+				return RegionReferenceDto.class;
+			}
+		});
+		
 		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			generatedContainer.addGeneratedProperty(EDIT_BTN_ID, new PropertyValueGenerator<String>() {
 				private static final long serialVersionUID = -7255691609662228895L;
@@ -60,15 +72,13 @@ public class FacilitiesGrid extends Grid {
 			});
 		}
 		
-		setContainerDataSource(generatedContainer);
-		setColumns(FacilityDto.NAME, FacilityDto.REGION, FacilityDto.DISTRICT, FacilityDto.COMMUNITY,
-				FacilityDto.CITY, FacilityDto.LATITUDE, FacilityDto.LONGITUDE);
-
+		setColumns(CommunityDto.NAME, REGION_LOC, CommunityDto.DISTRICT);
+		
         for (Column column : getColumns()) {
         	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
-        			FacilityDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
+        			CommunityDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
-        
+		
 		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addColumn(EDIT_BTN_ID);
 			getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
@@ -76,63 +86,45 @@ public class FacilitiesGrid extends Grid {
 
 			addItemClickListener(e -> {
 				if (e.getPropertyId() != null && (e.getPropertyId().equals(EDIT_BTN_ID) || e.isDoubleClick())) {
-					ControllerProvider.getInfrastructureController().editHealthFacility(((FacilityDto) e.getItemId()).getUuid());
+					ControllerProvider.getInfrastructureController().editCommunity(((CommunityDto) e.getItemId()).getUuid());
 				}
 			});
 		}
 	}
-
+	
 	@SuppressWarnings("unchecked")
-	public BeanItemContainer<FacilityDto> getContainer() {
+	public BeanItemContainer<CommunityDto> getContainer() {
 		GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
-		return (BeanItemContainer<FacilityDto>) container.getWrappedContainer();
+		return (BeanItemContainer<CommunityDto>) container.getWrappedContainer();
 	}
-
+	
 	public void reload() {
-		List<FacilityDto> facilities = FacadeProvider.getFacilityFacade()
-				.getIndexList(LoginHelper.getCurrentUser().getUuid(), facilityCriteria);
-
+		List<CommunityDto> districts = FacadeProvider.getCommunityFacade().getIndexList(communityCriteria);
 		getContainer().removeAllItems();
-		getContainer().addAll(facilities);
+		getContainer().addAll(districts);
 	}
-
-	public void setRegionFilter(RegionReferenceDto region) {
-		facilityCriteria.regionEquals(region);
-		reload();
-	}
-
-	public void setDistrictFilter(DistrictReferenceDto district) {
-		facilityCriteria.districtEquals(district);
-		reload();
-	}
-
-	public void setCommunityFilter(CommunityReferenceDto community) {
-		facilityCriteria.communityEquals(community);
-		reload();
-	}
-
-	public void setTypeFilter(boolean showLaboratories) {
-		if (showLaboratories) {
-			facilityCriteria.typeEquals(FacilityType.LABORATORY);
-		} else {
-			// TODO: Workaround; only works because normal health facilities currently don't have a type
-			facilityCriteria.typeEquals(null);
-		}
-	}
-
+	
 	public void filterByText(String text) {
-		getContainer().removeContainerFilters(FacilityDto.NAME);
-		getContainer().removeContainerFilters(FacilityDto.CITY);
+		getContainer().removeContainerFilters(CommunityDto.NAME);
 
 		if (text != null && !text.isEmpty()) {
 			List<Filter> orFilters = new ArrayList<Filter>();
 			String[] words = text.split("\\s+");
 			for (String word : words) {
-				orFilters.add(new SimpleStringFilter(FacilityDto.NAME, word, true, false));
-				orFilters.add(new SimpleStringFilter(FacilityDto.CITY, word, true, false));
+				orFilters.add(new SimpleStringFilter(CommunityDto.NAME, word, true, false));
 			}
 			getContainer().addContainerFilter(new Or(orFilters.stream().toArray(Filter[]::new)));
 		}
+	}
+	
+	public void setRegionFilter(RegionReferenceDto region) {
+		communityCriteria.regionEquals(region);
+		reload();
+	}
+
+	public void setDistrictFilter(DistrictReferenceDto district) {
+		communityCriteria.districtEquals(district);
+		reload();
 	}
 	
 }

@@ -8,6 +8,10 @@ public class CommunityDto extends EntityDto {
 
 	public static final String I18N_PREFIX = "Community";
 
+	public static final String NAME = "name";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	
 	private String name;
 	private DistrictReferenceDto district;
 	
@@ -33,4 +37,10 @@ public class CommunityDto extends EntityDto {
 	public String toString() {
 		return getName();
 	}
+
+	public static CommunityDto build() {
+		CommunityDto dto = new CommunityDto();
+		return dto;
+	}
+	
 }

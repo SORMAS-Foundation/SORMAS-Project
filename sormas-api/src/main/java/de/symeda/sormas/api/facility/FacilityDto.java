@@ -5,10 +5,6 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 
-/**
- * @author Christopher Riedel
- *
- */
 public class FacilityDto extends EntityDto {
 
 	private static final long serialVersionUID = -7987228795475507196L;
@@ -120,8 +116,6 @@ public class FacilityDto extends EntityDto {
 	}
 
 	public static FacilityDto build() {
-		// TODO Auto-generated method stub
-		
 		FacilityDto dto = new FacilityDto();
 		return dto;
 	}

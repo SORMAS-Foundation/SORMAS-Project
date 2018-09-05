@@ -1,7 +1,7 @@
 package de.symeda.sormas.ui;
 
 import de.symeda.sormas.ui.caze.CaseController;
-import de.symeda.sormas.ui.configuration.FacilityController;
+import de.symeda.sormas.ui.configuration.InfrastructureController;
 import de.symeda.sormas.ui.configuration.OutbreakController;
 import de.symeda.sormas.ui.contact.ContactController;
 import de.symeda.sormas.ui.events.EventController;
@@ -24,7 +24,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final ContactController contactController;
 	private final EventController eventController;
 	private final EventParticipantsController eventParticipantController;
-	private final FacilityController facilityController;
+	private final InfrastructureController infrastructureController;
 	private final VisitController visitController;
 	private final PersonController personController;
 	private final UserController userController;
@@ -41,7 +41,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		contactController = new ContactController();
 		eventController = new EventController();
 		eventParticipantController = new EventParticipantsController();
-		facilityController = new FacilityController();
+		infrastructureController = new InfrastructureController();
 		visitController = new VisitController();
 		personController = new PersonController();
 		userController = new UserController();
@@ -72,8 +72,8 @@ public class ControllerProvider extends BaseControllerProvider {
 		return get().eventParticipantController;
 	}
 	
-	public static FacilityController getFacilityController() {
-		return get().facilityController;
+	public static InfrastructureController getInfrastructureController() {
+		return get().infrastructureController;
 	}
 	
 	public static VisitController getVisitController() {

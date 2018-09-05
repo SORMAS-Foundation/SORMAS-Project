@@ -14,6 +14,8 @@ public interface DistrictFacade {
 
 	List<DistrictDto> getAllAfter(Date date);
 	
+	List<DistrictDto> getIndexList(DistrictCriteria criteria);
+	
 	DistrictDto getDistrictByUuid(String uuid);
 	
 	DistrictReferenceDto getDistrictReferenceByUuid(String uuid);
@@ -27,5 +29,7 @@ public interface DistrictFacade {
 	List<String> getAllUuids();
 	
 	List<DistrictDto> getByUuids(List<String> uuids);
+	
+	void saveDistrict(DistrictDto dto);
 	
 }

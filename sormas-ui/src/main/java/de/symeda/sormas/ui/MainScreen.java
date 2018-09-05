@@ -11,9 +11,12 @@ import com.vaadin.ui.HorizontalLayout;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.caze.CasesView;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
+import de.symeda.sormas.ui.configuration.CommunitiesView;
+import de.symeda.sormas.ui.configuration.DistrictsView;
 import de.symeda.sormas.ui.configuration.HealthFacilitiesView;
 import de.symeda.sormas.ui.configuration.LaboratoriesView;
 import de.symeda.sormas.ui.configuration.OutbreaksView;
+import de.symeda.sormas.ui.configuration.RegionsView;
 import de.symeda.sormas.ui.contact.ContactsView;
 import de.symeda.sormas.ui.dashboard.DashboardView;
 import de.symeda.sormas.ui.events.EventsView;
@@ -56,7 +59,9 @@ public class MainScreen extends HorizontalLayout {
 							|| viewName.equals(EventsView.VIEW_NAME) || viewName.equals(SamplesView.VIEW_NAME)
 							|| viewName.equals(ReportsView.VIEW_NAME) || viewName.equals(StatisticsView.VIEW_NAME)
 							|| viewName.equals(UsersView.VIEW_NAME) || viewName.equals(OutbreaksView.VIEW_NAME)
-							|| viewName.equals(HealthFacilitiesView.VIEW_NAME) || viewName.equals(LaboratoriesView.VIEW_NAME)) {
+							|| viewName.equals(RegionsView.VIEW_NAME) || viewName.equals(DistrictsView.VIEW_NAME)
+							|| viewName.equals(CommunitiesView.VIEW_NAME) || viewName.equals(HealthFacilitiesView.VIEW_NAME) 
+							|| viewName.equals(LaboratoriesView.VIEW_NAME)) {
 						return AccessDeniedView.class.newInstance();
 					} else {
 						return ErrorView.class.newInstance();
@@ -98,12 +103,10 @@ public class MainScreen extends HorizontalLayout {
 		}
 		if (LoginHelper.hasUserRight(UserRight.CONFIGURATION_ACCESS)) {
 			AbstractConfigurationView.registerViews(navigator);
-			if (LoginHelper.hasUserRight(UserRight.FACILITIES_VIEW)) {
-				menu.addView(HealthFacilitiesView.class, HealthFacilitiesView.VIEW_NAME, "Configuration",
-						FontAwesome.COGS);
+			if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
+				menu.addView(RegionsView.class, RegionsView.VIEW_NAME, "Configuration", FontAwesome.COGS);
 			} else {
-				menu.addView(OutbreaksView.class, OutbreaksView.VIEW_NAME, "Configuration",
-						FontAwesome.COGS);
+				menu.addView(OutbreaksView.class, OutbreaksView.VIEW_NAME, "Configuration", FontAwesome.COGS);
 			}
 		}
 		menu.addView(AboutView.class, AboutView.VIEW_NAME, "About", FontAwesome.INFO_CIRCLE);

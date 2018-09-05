@@ -201,7 +201,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		cq.distinct(true);
 
 		List<Facility> facilities = em.createQuery(cq).getResultList();
-		return facilities.stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return facilities.stream().map(f -> toDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -226,7 +226,6 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	}
 
 	private Facility fillOrBuildEntity(@NotNull FacilityDto source, Facility target) {
-
 		if (target == null) {
 			target = new Facility();
 			target.setUuid(source.getUuid());

@@ -9,9 +9,12 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.region.CommunityCriteria;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.InfrastructureDataImporter;
@@ -103,5 +106,18 @@ public class CommunityService extends AbstractAdoService<Community> {
 					persist(community);
 			}
 		});
+	}
+
+	public Predicate buildCriteriaFilter(CommunityCriteria communityCriteria, CriteriaBuilder cb, Root<Community> from) {
+		Join<Community, District> district = from.join(Community.DISTRICT, JoinType.LEFT);
+		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
+		Predicate filter = null;
+		if (communityCriteria.getRegion() != null) {
+			filter = and(cb, filter, cb.equal(region.get(Region.UUID), communityCriteria.getRegion().getUuid()));
+		}
+		if (communityCriteria.getDistrict() != null) {
+			filter = and(cb, filter, cb.equal(district.get(District.UUID), communityCriteria.getDistrict().getUuid()));
+		}
+		return filter;
 	}
 }

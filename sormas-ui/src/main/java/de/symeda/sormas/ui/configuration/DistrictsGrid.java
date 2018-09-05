@@ -12,38 +12,36 @@ import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.facility.FacilityCriteria;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.CommunityDto;
+import de.symeda.sormas.api.region.DistrictCriteria;
+import de.symeda.sormas.api.region.DistrictDto;
+import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 
-public class FacilitiesGrid extends Grid {
+public class DistrictsGrid extends Grid {
 
-	private static final long serialVersionUID = 4488941182432777837L;
+	private static final long serialVersionUID = -4437531618828715458L;
 
 	private static final String EDIT_BTN_ID = "edit";
-
-	private FacilityCriteria facilityCriteria = new FacilityCriteria();
-
-	public FacilitiesGrid() {
+	
+	private DistrictCriteria districtCriteria = new DistrictCriteria();
+	
+	public DistrictsGrid() {
 		setSizeFull();
 		setSelectionMode(SelectionMode.NONE);
-
-		// Hides "Other facility" and "Home or other place"
-		facilityCriteria.excludeStaticFacilitesEquals(true);
-
-		BeanItemContainer<FacilityDto> container = new BeanItemContainer<FacilityDto>(FacilityDto.class);
+		
+		BeanItemContainer<DistrictDto> container = new BeanItemContainer<DistrictDto>(DistrictDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
-
+		setContainerDataSource(generatedContainer);
+		
 		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			generatedContainer.addGeneratedProperty(EDIT_BTN_ID, new PropertyValueGenerator<String>() {
 				private static final long serialVersionUID = -7255691609662228895L;
@@ -60,13 +58,11 @@ public class FacilitiesGrid extends Grid {
 			});
 		}
 		
-		setContainerDataSource(generatedContainer);
-		setColumns(FacilityDto.NAME, FacilityDto.REGION, FacilityDto.DISTRICT, FacilityDto.COMMUNITY,
-				FacilityDto.CITY, FacilityDto.LATITUDE, FacilityDto.LONGITUDE);
+		setColumns(DistrictDto.NAME, DistrictDto.REGION, DistrictDto.EPID_CODE, DistrictDto.POPULATION, DistrictDto.GROWTH_RATE);
 
         for (Column column : getColumns()) {
         	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
-        			FacilityDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
+        			DistrictDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
         
 		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
@@ -76,63 +72,42 @@ public class FacilitiesGrid extends Grid {
 
 			addItemClickListener(e -> {
 				if (e.getPropertyId() != null && (e.getPropertyId().equals(EDIT_BTN_ID) || e.isDoubleClick())) {
-					ControllerProvider.getInfrastructureController().editHealthFacility(((FacilityDto) e.getItemId()).getUuid());
+					ControllerProvider.getInfrastructureController().editDistrict(((DistrictDto) e.getItemId()).getUuid());
 				}
 			});
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public BeanItemContainer<FacilityDto> getContainer() {
+	public BeanItemContainer<DistrictDto> getContainer() {
 		GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
-		return (BeanItemContainer<FacilityDto>) container.getWrappedContainer();
+		return (BeanItemContainer<DistrictDto>) container.getWrappedContainer();
 	}
 
 	public void reload() {
-		List<FacilityDto> facilities = FacadeProvider.getFacilityFacade()
-				.getIndexList(LoginHelper.getCurrentUser().getUuid(), facilityCriteria);
-
+		List<DistrictDto> districts = FacadeProvider.getDistrictFacade().getIndexList(districtCriteria);
 		getContainer().removeAllItems();
-		getContainer().addAll(facilities);
-	}
-
-	public void setRegionFilter(RegionReferenceDto region) {
-		facilityCriteria.regionEquals(region);
-		reload();
-	}
-
-	public void setDistrictFilter(DistrictReferenceDto district) {
-		facilityCriteria.districtEquals(district);
-		reload();
-	}
-
-	public void setCommunityFilter(CommunityReferenceDto community) {
-		facilityCriteria.communityEquals(community);
-		reload();
-	}
-
-	public void setTypeFilter(boolean showLaboratories) {
-		if (showLaboratories) {
-			facilityCriteria.typeEquals(FacilityType.LABORATORY);
-		} else {
-			// TODO: Workaround; only works because normal health facilities currently don't have a type
-			facilityCriteria.typeEquals(null);
-		}
+		getContainer().addAll(districts);
 	}
 
 	public void filterByText(String text) {
-		getContainer().removeContainerFilters(FacilityDto.NAME);
-		getContainer().removeContainerFilters(FacilityDto.CITY);
+		getContainer().removeContainerFilters(RegionDto.NAME);
+		getContainer().removeContainerFilters(RegionDto.EPID_CODE);
 
 		if (text != null && !text.isEmpty()) {
 			List<Filter> orFilters = new ArrayList<Filter>();
 			String[] words = text.split("\\s+");
 			for (String word : words) {
-				orFilters.add(new SimpleStringFilter(FacilityDto.NAME, word, true, false));
-				orFilters.add(new SimpleStringFilter(FacilityDto.CITY, word, true, false));
+				orFilters.add(new SimpleStringFilter(DistrictDto.NAME, word, true, false));
+				orFilters.add(new SimpleStringFilter(DistrictDto.EPID_CODE, word, true, false));
 			}
 			getContainer().addContainerFilter(new Or(orFilters.stream().toArray(Filter[]::new)));
 		}
+	}
+
+	public void setRegionFilter(RegionReferenceDto region) {
+		districtCriteria.regionEquals(region);
+		reload();
 	}
 	
 }

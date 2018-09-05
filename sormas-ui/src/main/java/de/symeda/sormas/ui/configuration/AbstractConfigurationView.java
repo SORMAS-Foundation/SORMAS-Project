@@ -23,7 +23,13 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 	@Override
 	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		menu.removeAllViews();
-		if (LoginHelper.hasUserRight(UserRight.FACILITIES_VIEW)) {
+		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
+			menu.addView(RegionsView.VIEW_NAME, I18nProperties.getPrefixFragment("View",
+					RegionsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
+			menu.addView(DistrictsView.VIEW_NAME, I18nProperties.getPrefixFragment("View",
+					DistrictsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
+			menu.addView(CommunitiesView.VIEW_NAME, I18nProperties.getPrefixFragment("View",
+					CommunitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
 			menu.addView(HealthFacilitiesView.VIEW_NAME, I18nProperties.getPrefixFragment("View",
 					HealthFacilitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
 			menu.addView(LaboratoriesView.VIEW_NAME, I18nProperties.getPrefixFragment("View",
@@ -35,7 +41,10 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 	}
 
 	public static void registerViews(Navigator navigator) {
-		if (LoginHelper.hasUserRight(UserRight.FACILITIES_VIEW)) {
+		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
+			navigator.addView(RegionsView.VIEW_NAME, RegionsView.class);
+			navigator.addView(DistrictsView.VIEW_NAME, DistrictsView.class);
+			navigator.addView(CommunitiesView.VIEW_NAME, CommunitiesView.class);
 			navigator.addView(HealthFacilitiesView.VIEW_NAME, HealthFacilitiesView.class);
 			navigator.addView(LaboratoriesView.VIEW_NAME, LaboratoriesView.class);
 		}

@@ -9,6 +9,12 @@ public class DistrictDto extends EntityDto {
 	public static final String I18N_PREFIX = "District";
 	public static final int CASE_INCIDENCE_DIVISOR = 100000;
 
+	public static final String NAME = "name";
+	public static final String EPID_CODE = "epidCode";
+	public static final String POPULATION = "population";
+	public static final String GROWTH_RATE = "growthRate";
+	public static final String REGION = "region";
+	
 	private String name;
 	private String epidCode;
 	private Integer population;
@@ -57,6 +63,11 @@ public class DistrictDto extends EntityDto {
 	
 	public DistrictReferenceDto toReference() {
 		return new DistrictReferenceDto(getUuid());
+	}
+	
+	public static DistrictDto build() {
+		DistrictDto dto = new DistrictDto();
+		return dto;
 	}
 	
 }
