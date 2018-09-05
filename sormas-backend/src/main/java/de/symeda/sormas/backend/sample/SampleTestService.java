@@ -50,8 +50,23 @@ public class SampleTestService extends AbstractAdoService<SampleTest> {
 		CriteriaQuery<SampleTest> cq = cb.createQuery(getElementClass());
 		Root<SampleTest> from = cq.from(getElementClass());
 		
-		if(sample != null) {
+		if (sample != null) {
 			cq.where(cb.equal(from.get(SampleTest.SAMPLE), sample));
+		}
+		cq.orderBy(cb.desc(from.get(SampleTest.TEST_DATE_TIME)));
+		
+		List<SampleTest> resultList = em.createQuery(cq).getResultList();
+		return resultList;
+	}
+	
+	public List<SampleTest> getAllByCase(Case caze) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<SampleTest> cq = cb.createQuery(getElementClass());
+		Root<SampleTest> from = cq.from(getElementClass());
+		
+		if (caze != null) {
+			Join<Object, Object> sampleJoin = from.join(SampleTest.SAMPLE);
+			cq.where(cb.equal(sampleJoin.get(Sample.ASSOCIATED_CASE), caze));
 		}
 		cq.orderBy(cb.desc(from.get(SampleTest.TEST_DATE_TIME)));
 		

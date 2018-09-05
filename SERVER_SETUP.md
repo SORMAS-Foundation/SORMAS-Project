@@ -1,3 +1,5 @@
+
+
 # Installing a SORMAS Server
 **Note: All commands below are Linux commands. On windows systems use the corresponding commands or the windows explorer.**
 
@@ -5,34 +7,51 @@
 * [Payara Application Server](#payara-application-server)
 * [SORMAS Domain](#sormas-domain)
 * [Apache Web Server](#apache-web-server)
+* [Creating an App for a Demo Server](DEMO_APP.md)
 
 ## Postgres Database
 
 * Install PostgreSQL (currently 9.5 or 9.6) on your system
-* **set max_prepared_transactions = 64 (at least) in postgresql.conf** (e.g. /etc/postgresql/9.5/main/postgresql.conf)
+* **set max_prepared_transactions = 64 (at least) in postgresql.conf** in postgresql.conf (e.g. /etc/postgresql/9.5/main/postgresql.conf)
 * Install the "temporal tables" addon for Postgres (https://github.com/arkhipov/temporal_tables)
-    * Windows: Download latest version for your postgres version: https://github.com/arkhipov/temporal_tables/releases/latest Then you must copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.	
-    * Linux (see https://github.com/arkhipov/temporal_tables#installation):
+    * **Windows**: Download latest version for your postgres version: https://github.com/arkhipov/temporal_tables/releases/latest 
+	Then you have to copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.	
+    * **Linux** (see https://github.com/arkhipov/temporal_tables#installation):
         * ``sudo apt-get install libpq-dev``
         * ``sudo apt-get install postgresql-server-dev-all``
         * ``sudo apt install pgxnclient``
 	* Check for GCC: ``gcc --version`` - install if missing
         * ``pgxn install temporal_tables``
-* Create a PostgreSQL database named "sormas_db" and "sormas_audit_db" with user "sormas_user" (make sure to generate a secure password) as its owner.
+* Create a PostgreSQL database named "sormas_db" and "sormas_audit_db" with user "sormas_user" (make sure to generate a secure password) as its owner. You can use for this the query-tool of pgAdmin.
     * ``sudo -u postgres psql``
     * ``CREATE USER sormas_user WITH PASSWORD '***' CREATEDB;``
     * ``CREATE DATABASE sormas_db WITH OWNER = sormas_user ENCODING = 'UTF8';``
     * ``CREATE DATABASE sormas_audit_db WITH OWNER = sormas_user ENCODING = 'UTF8';``
     * ``\q``
-* Setup the audit log database schema using the sormas_audit_schema.sql from the latest release: ``sudo -u postgres psql sormas_audit_db < sql/sormas_audit_schema.sql``
-* Setup the sormas database schema using the sormas_schema.sql from the latest release: ``sudo -u postgres psql sormas_audit_db < sql/sormas_schema.sql``
+* Setup database schemata
+	* Get the latest SORMAS build from github: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest (deploy.zip).
+	* Unzip and get the schemata from deploy\sql
+	* Setup the audit log database schema using the sormas_audit_schema.sql from the latest release:
+		* **Linux**
+			* ``sudo -u postgres psql sormas_audit_db < sql/sormas_audit_schema.sql``
+		* **Windows**
+			* Open sormas_audit_schema.sql with a texteditor and copy the content to the query-tool of sormas_audit_db (And execute the query).
+	* Setup the sormas database schema using the sormas_schema.sql from the latest release: 
+		* **Linux**
+			* ``sudo -u postgres psql sormas_db < sql/sormas_schema.sql``
+		* **Windows**
+			* Open sormas_schema.sql with a texteditor and copy the content to the query-tool of sormas_db (And execute the query).
 	
 ## Payara Application Server
-* Download payara 4.1.2.172 (https://www.payara.fish/all_downloads) and extract it to the directory where your servers should be located (e.g. /opt/payara-172)
+* Download payara 4.1.2.172 [downloadlink](http://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/4.1.2.172/payara-4.1.2.172.zip) and extract it to the directory, where your servers should be located (e.g. /opt/payara-172)
 * Remove the default domains from the server:
-    * ``rm -R /opt/payara-172/glassfish/domains/domain1``
-    * ``rm -R /opt/payara-172/glassfish/domains/payaradomain``
-* Create a directory for your domains. Put it next to the payara server or somewhere else: ``mkdir /opt/domains``
+	* **Linux**
+		* ``rm -R /opt/payara-172/glassfish/domains/domain1``
+		* ``rm -R /opt/payara-172/glassfish/domains/payaradomain``
+	* **Windows**
+		* Remove folder ``payara-172/glassfish/domains``
+* Create a directory for your domains. Put it next to the payara server or somewhere else: 
+	*Lunux: ``mkdir /opt/domains``
 
 ## SORMAS Domain
 * Get the latest SORMAS build from github: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest (deploy.zip). 
@@ -45,14 +64,15 @@
 * in opt/domains/sormas/config/logging.properties replace ``org.wamblee.glassfish.auth.HexEncoder.level.level=SEVERE`` with ``  org.wamblee.glassfish.auth.HexEncoder.level=SEVERE``
 * Make sure the domain folder is owned by the glassfish user: ``chown -R glassfish:glassfish opt/domains/sormas/``
 * Create two folders called "/opt/sormas-temp" and "/opt/sormas-generated" (if you choose another path, you have to adjust the sormas.properties file accordingly)
-* Set user rights for postgres and glassfish users: ``setfacl -m u:postgres:rwx /opt/sormas-temp
+* **Only Linux:** Set user rights for postgres and glassfish users: ``setfacl -m u:postgres:rwx /opt/sormas-temp
 setfacl -m u:glassfish:rwx /opt/sormas-temp
 setfacl -m u:postgres:rwx /opt/sormas-generated
 setfacl -m u:glassfish:rwx /opt/sormas-generated``
-* Copy the startup script to init.d: ``cp payara-sormas /etc/init.d``
-* Add the server startup sequence: ``update-rc.d payara-sormas defaults``
-* Start the server: ``service payara-sormas start``
-* [Update the SORMAS domain](SERVER_UPDATE.md) (not necessary if you are setting up your local development environment)
+* **Only** necessary if you are setting up a **productive environment**
+	* Copy the startup script to init.d: ``cp payara-sormas /etc/init.d``
+	* Add the server startup sequence: ``update-rc.d payara-sormas defaults``
+	* Start the server: ``service payara-sormas start``
+	* [Update the SORMAS domain](SERVER_UPDATE.md)
 
 ## Apache Web Server
 **Note: This is not necessary for development systems.**

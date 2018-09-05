@@ -46,8 +46,6 @@ public class PageMenuControl extends LinearLayout {
     private int counterBackgroundActiveColor;
     private int iconColor;
     private int iconActiveColor;
-    private int positionColor;
-    private int positionActiveColor;
     private int titleColor;
     private int titleActiveColor;
     private FrameLayout fabFrame;
@@ -101,8 +99,6 @@ public class PageMenuControl extends LinearLayout {
                 iconColor = a.getResourceId(R.styleable.PageMenuControl_iconColor, 0);
                 iconActiveColor = a.getResourceId(R.styleable.PageMenuControl_iconActiveColor, 0);
 
-                positionColor = a.getResourceId(R.styleable.PageMenuControl_positionColor, 0);
-                positionActiveColor = a.getResourceId(R.styleable.PageMenuControl_positionActiveColor, 0);
                 titleColor = a.getResourceId(R.styleable.PageMenuControl_titleColor, 0);
                 titleActiveColor = a.getResourceId(R.styleable.PageMenuControl_titleActiveColor, 0);
                 mVisible = a.getBoolean(R.styleable.PageMenuControl_visibility, false);
@@ -120,7 +116,7 @@ public class PageMenuControl extends LinearLayout {
 
         adapter = new PageMenuAdapter(context);
         adapter.initialize(cellLayout, counterBackgroundColor, counterBackgroundActiveColor,
-                iconColor, iconActiveColor, positionColor, positionActiveColor, titleColor, titleActiveColor);
+                iconColor, iconActiveColor, titleColor, titleActiveColor);
     }
 
     public <T extends Enum> void setMenuData(List<PageMenuItem> menuItems) {

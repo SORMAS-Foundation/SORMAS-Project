@@ -472,9 +472,9 @@ public final class DateHelper {
 	public static EpiWeek getEpiWeek(Date date) {
 		Calendar calendar = getEpiCalendar();
 		calendar.setTime(date);
-		// Year has to be manually increased for week 1 of the next year because
-		// Calendar chooses the year
-		// of the actual date
+		// Year has to be manually increased for week 1 of the next year because Calendar chooses the year
+		// of the actual date; e.g., the 31st of December 2018 is technically in 2018, but already in epi week
+		// 1 of 2019, which is why the year has to be manually increased.
 		if (calendar.get(Calendar.WEEK_OF_YEAR) == 1 && calendar.get(Calendar.MONTH) == 11) {
 			return new EpiWeek(calendar.get(Calendar.YEAR) + 1, calendar.get(Calendar.WEEK_OF_YEAR));
 		} else {

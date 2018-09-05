@@ -130,7 +130,7 @@
                     android:background="@android:color/transparent"
                     app:collapsible="true"
                     app:visibility="true"
-                    app:cellLayout="@layout/sub_menu_list_item_layout"
+                    app:cellLayout="@layout/sub_menu_item_layout"
                     app:counterBackgroundColor="@color/subMenuCounterBackground"
                     app:counterBackgroundActiveColor="@color/landingPageMenuCounterBackgroundActive"
                     app:iconColor="@color/landingPageMenuIconColor"

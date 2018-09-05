@@ -37,6 +37,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.util.SormasProperties;
 
 /**
  * Created by Martin Wahnschaffe on 10.08.2016.
@@ -366,7 +367,7 @@ public final class ConfigProvider {
                     }
 
                     if (instance.serverRestUrl == null) {
-                        setServerRestUrl("https://sormas.org.ng/sormas-rest/");
+                        setServerRestUrl(SormasProperties.getServerUrlDefault());
                     }
                 }
             }

@@ -54,6 +54,7 @@
     <color name="brightYellow">#fff7de7c</color>
     <color name="disabled">#4D374b5a</color>
     <color name="disabled50">#80374b5a</color>
+    <color name="disabled20">#2037425a</color>
 
     <color name="listItemPressed">#fff3f6fa</color>
 
@@ -151,7 +152,7 @@
     <color name="colorControlActivated">@color/blue</color>
     <color name="colorControlHighlight">@color/lightBlue</color>
     <color name="colorControlDisabled">@color/disabled</color>
-    <color name="colorControlDisabledHint">@color/disabled50</color>
+    <color name="colorControlDisabledHint">@color/disabled20</color>
     <color name="colorControlReadOnly">@color/lighterBlue40</color>
     <color name="colorControlError">@color/watchOut</color>
     <color name="textSelectionHandle">@color/blue</color>

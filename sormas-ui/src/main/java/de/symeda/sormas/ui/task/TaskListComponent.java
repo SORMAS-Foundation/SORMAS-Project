@@ -21,6 +21,7 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -104,15 +105,20 @@ public class TaskListComponent extends VerticalLayout {
 		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
 		buttonFilterLayout.setSpacing(true);
 		{
-			Button statusAll = new Button("All", e -> processAssigneeFilterChange(false, false, e.getButton()));
-			initializeStatusButton(statusAll, buttonFilterLayout, "All");
-			CssStyles.removeStyles(statusAll, CssStyles.LINK_HIGHLIGHTED_LIGHT);
-			activeStatusButton = statusAll;
-
-			Button statusPossible = new Button("Officer tasks", e -> processAssigneeFilterChange(true, false, e.getButton()));
-			initializeStatusButton(statusPossible, buttonFilterLayout, "Officer tasks");
-			Button statusInvestigated = new Button("My tasks", e -> processAssigneeFilterChange(false, true, e.getButton()));
-			initializeStatusButton(statusInvestigated, buttonFilterLayout, "My tasks");
+			Button allTasks = new Button("All", e -> processAssigneeFilterChange(false, false, e.getButton()));
+			initializeStatusButton(allTasks, buttonFilterLayout, "All");
+			Button officerTasks = new Button("Officer tasks", e -> processAssigneeFilterChange(true, false, e.getButton()));
+			initializeStatusButton(officerTasks, buttonFilterLayout, "Officer tasks");
+			Button myTasks = new Button("My tasks", e -> processAssigneeFilterChange(false, true, e.getButton()));
+			initializeStatusButton(myTasks, buttonFilterLayout, "My tasks");
+			
+			// Default filter for lab users (that don't have any other role) is "My tasks"
+			if (LoginHelper.getCurrentUserRoles().contains(UserRole.LAB_USER) && LoginHelper.getCurrentUserRoles().size() == 1) {
+				myTasks.click();
+			} else {
+				CssStyles.removeStyles(allTasks, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+				activeStatusButton = allTasks;
+			}
 		}
 		assigneeFilterLayout.addComponent(buttonFilterLayout);
 

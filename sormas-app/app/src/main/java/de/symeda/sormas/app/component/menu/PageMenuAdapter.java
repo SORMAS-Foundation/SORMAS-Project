@@ -24,8 +24,6 @@ public class PageMenuAdapter extends BaseAdapter {
     private int iconColor;
     private int iconActiveColor;
 
-    private int positionColor;
-    private int positionActiveColor;
     private int titleColor;
     private int titleActiveColor;
 
@@ -35,15 +33,12 @@ public class PageMenuAdapter extends BaseAdapter {
 
     public void initialize(int cellLayout,
                            int counterBackgroundColor, int counterBackgroundActiveColor,
-                           int iconColor, int iconActiveColor,
-                           int positionColor, int positionActiveColor, int titleColor, int titleActiveColor) {
+                           int iconColor, int iconActiveColor, int titleColor, int titleActiveColor) {
         this.cellLayout = cellLayout;
         this.counterBackgroundColor = counterBackgroundColor;
         this.counterBackgroundActiveColor = counterBackgroundActiveColor;
         this.iconColor = iconColor;
         this.iconActiveColor = iconActiveColor;
-        this.positionColor = positionColor;
-        this.positionActiveColor = positionActiveColor;
         this.titleColor = titleColor;
         this.titleActiveColor = titleActiveColor;
     }
@@ -119,15 +114,6 @@ public class PageMenuAdapter extends BaseAdapter {
             viewHolder.imgMenuItemIcon.setImageDrawable(icon);
         }
 
-        if (viewHolder.txtPosition != null) {
-            viewHolder.txtPosition.setText(String.valueOf(pageMenuItem.getKey() + 1));
-            if (pageMenuItem.isActive()) {
-                viewHolder.txtPosition.setTextColor(context.getResources().getColor(this.positionActiveColor));
-            } else {
-                viewHolder.txtPosition.setTextColor(context.getResources().getColor(this.positionColor));
-            }
-        }
-
         viewHolder.txtMenuItemTitle.setText(pageMenuItem.getTitle());
         if (pageMenuItem.isActive()) {
             viewHolder.txtMenuItemTitle.setTextColor(context.getResources().getColor(this.titleActiveColor));
@@ -144,7 +130,6 @@ public class PageMenuAdapter extends BaseAdapter {
         TextView txtNotificationCounter;
         ImageView imgMenuItemIcon;
         TextView txtMenuItemTitle;
-        TextView txtPosition;
 
         public ViewHolder(View layout) {
             this.layout = layout;
@@ -152,7 +137,6 @@ public class PageMenuAdapter extends BaseAdapter {
             txtNotificationCounter = (TextView) this.layout.findViewById(R.id.counter);
             imgMenuItemIcon = (ImageView) this.layout.findViewById(R.id.icon);
             txtMenuItemTitle = (TextView) this.layout.findViewById(R.id.title);
-            txtPosition = (TextView) this.layout.findViewById(R.id.navigation_number);
         }
     }
 }

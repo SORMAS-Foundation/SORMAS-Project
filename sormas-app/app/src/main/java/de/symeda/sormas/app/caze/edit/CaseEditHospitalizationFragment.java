@@ -23,12 +23,106 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
     private Hospitalization record;
     private Case caze;
 
-    private IEntryItemOnClickListener onAddEntryClickListener;
     private IEntryItemOnClickListener onPrevHosItemClickListener;
+
+    // Static methods
 
     public static CaseEditHospitalizationFragment newInstance(Case activityRootData) {
         return newInstance(CaseEditHospitalizationFragment.class, null, activityRootData);
     }
+
+    // Instance methods
+
+    private void setUpControlListeners() {
+        onPrevHosItemClickListener = new IEntryItemOnClickListener() {
+            @Override
+            public void onClick(View v, Object item) {
+                final PreviousHospitalization hospitalization = (PreviousHospitalization) item;
+                final PreviousHospitalizationDialog dialog = new PreviousHospitalizationDialog(CaseEditActivity.getActiveActivity(), hospitalization);
+
+                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                    @Override
+                    public void onOkClick(View v, Object item, View viewRoot) {
+                        updatePreviousHospitalizations();
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
+                    @Override
+                    public void onDeleteClick(View v, Object item, View viewRoot) {
+                        removePreviousHospitalization((PreviousHospitalization) item);
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show(null);
+            }
+        };
+
+        getContentBinding().btnAddPrevHosp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final PreviousHospitalization hospitalization = DatabaseHelper.getPreviousHospitalizationDao().build();
+                final PreviousHospitalizationDialog dialog = new PreviousHospitalizationDialog(CaseEditActivity.getActiveActivity(), hospitalization);
+
+                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                    @Override
+                    public void onOkClick(View v, Object item, View viewRoot) {
+                        addPreviousHospitalization((PreviousHospitalization) item);
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
+                    @Override
+                    public void onDeleteClick(View v, Object item, View viewRoot) {
+                        removePreviousHospitalization((PreviousHospitalization) item);
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show(null);
+            }
+        });
+    }
+
+    private ObservableArrayList<PreviousHospitalization> getPreviousHospitalizations() {
+        ObservableArrayList<PreviousHospitalization> newPreHospitalizations = new ObservableArrayList<>();
+        newPreHospitalizations.addAll(record.getPreviousHospitalizations());
+        return newPreHospitalizations;
+    }
+
+    private void clearPreviousHospitalizations() {
+        record.getPreviousHospitalizations().clear();
+        updatePreviousHospitalizations();
+    }
+
+    private void removePreviousHospitalization(PreviousHospitalization item) {
+        record.getPreviousHospitalizations().remove(item);
+        updatePreviousHospitalizations();
+    }
+
+    private void updatePreviousHospitalizations() {
+        getContentBinding().setPreviousHospitalizationList(getPreviousHospitalizations());
+        verifyPrevHospitalizationStatus();
+    }
+
+    private void addPreviousHospitalization(PreviousHospitalization item) {
+        record.getPreviousHospitalizations().add(0, item);
+        updatePreviousHospitalizations();
+    }
+
+    private void verifyPrevHospitalizationStatus() {
+        YesNoUnknown hospitalizedPreviously = record.getHospitalizedPreviously();
+        if (hospitalizedPreviously == YesNoUnknown.YES && getPreviousHospitalizations().size() <= 0) {
+            getContentBinding().caseHospitalizationHospitalizedPreviously.enableWarningState(R.string.validation_soft_add_list_entry);
+        } else {
+            getContentBinding().caseHospitalizationHospitalizedPreviously.disableWarningState();
+        }
+    }
+
+    // Overrides
 
     @Override
     protected String getSubHeadingTitle() {
@@ -49,13 +143,13 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
 
     @Override
     public void onLayoutBinding(final FragmentCaseEditHospitalizationLayoutBinding contentBinding) {
-        setupCallback();
+        setUpControlListeners();
 
         contentBinding.caseHospitalizationHospitalizedPreviously.addValueChangedListener(new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 YesNoUnknown value = (YesNoUnknown) field.getValue();
-                contentBinding.ctrlPrevHospitalization.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                contentBinding.prevHospitalizationsLayout.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
                 if (value != YesNoUnknown.YES) {
                     clearPreviousHospitalizations();
                 }
@@ -64,21 +158,21 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
             }
         });
 
-        contentBinding.caseHospitalizationAdmissionDate.initializeDateField(getFragmentManager());
-        contentBinding.caseHospitalizationDischargeDate.initializeDateField(getFragmentManager());
-        contentBinding.caseHospitalizationIsolationDate.initializeDateField(getFragmentManager());
-
         contentBinding.setData(record);
         contentBinding.setCaze(caze);
         contentBinding.setPreviousHospitalizationList(getPreviousHospitalizations());
         contentBinding.setPrevHosItemClickCallback(onPrevHosItemClickListener);
-        contentBinding.setAddEntryClickCallback(onAddEntryClickListener);
     }
 
     @Override
     protected void onAfterLayoutBinding(FragmentCaseEditHospitalizationLayoutBinding contentBinding) {
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(
                 contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
+
+        // Initialize ControlDateFields
+        contentBinding.caseHospitalizationAdmissionDate.initializeDateField(getFragmentManager());
+        contentBinding.caseHospitalizationDischargeDate.initializeDateField(getFragmentManager());
+        contentBinding.caseHospitalizationIsolationDate.initializeDateField(getFragmentManager());
 
         verifyPrevHospitalizationStatus();
     }
@@ -88,110 +182,4 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
         return R.layout.fragment_case_edit_hospitalization_layout;
     }
 
-    private void setupCallback() {
-
-        onPrevHosItemClickListener = new IEntryItemOnClickListener() {
-            @Override
-            public void onClick(View v, Object item) {
-                final PreviousHospitalization hospitalization = (PreviousHospitalization) item;
-                final PreviousHospitalizationDialog dialog = new PreviousHospitalizationDialog(CaseEditActivity.getActiveActivity(), hospitalization);
-
-                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
-                    @Override
-                    public void onOkClick(View v, Object item, View viewRoot) {
-                        updatePreviousHospitalizations((PreviousHospitalization) item);
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
-                    @Override
-                    public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removePreviousHospitalizations((PreviousHospitalization) item);
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.show(null);
-            }
-        };
-
-        onAddEntryClickListener = new IEntryItemOnClickListener() {
-            @Override
-            public void onClick(View v, Object item) {
-                final PreviousHospitalization hospitalization = DatabaseHelper.getPreviousHospitalizationDao().build();
-                final PreviousHospitalizationDialog dialog = new PreviousHospitalizationDialog(CaseEditActivity.getActiveActivity(), hospitalization);
-
-                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
-                    @Override
-                    public void onOkClick(View v, Object item, View viewRoot) {
-                        addPreviousHospitalizations((PreviousHospitalization) item);
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
-                    @Override
-                    public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removePreviousHospitalizations((PreviousHospitalization) item);
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.show(null);
-
-                //results.add(0, MemoryDatabaseHelper.PREVIOUS_HOSPITALIZATION.getPreviousHospitalizations(20).get(new Random().nextInt(10)));
-            }
-        };
-    }
-
-    private ObservableArrayList getPreviousHospitalizations() {
-        ObservableArrayList newPreHospitalizations = new ObservableArrayList();
-        if (record != null)
-            newPreHospitalizations.addAll(record.getPreviousHospitalizations());
-
-        return newPreHospitalizations;
-    }
-
-    private void clearPreviousHospitalizations() {
-        if (record == null)
-            return;
-        record.getPreviousHospitalizations().clear();
-        getContentBinding().setPreviousHospitalizationList(getPreviousHospitalizations());
-        verifyPrevHospitalizationStatus();
-    }
-
-    private void removePreviousHospitalizations(PreviousHospitalization item) {
-        if (record == null)
-            return;
-        record.getPreviousHospitalizations().remove(item);
-
-        getContentBinding().setPreviousHospitalizationList(getPreviousHospitalizations());
-        verifyPrevHospitalizationStatus();
-    }
-
-    private void updatePreviousHospitalizations(PreviousHospitalization item) {
-        if (record == null)
-            return;
-        getContentBinding().setPreviousHospitalizationList(getPreviousHospitalizations());
-        verifyPrevHospitalizationStatus();
-    }
-
-    private void addPreviousHospitalizations(PreviousHospitalization item) {
-        if (record == null)
-            return;
-        record.getPreviousHospitalizations().add(0, (PreviousHospitalization) item);
-
-        getContentBinding().setPreviousHospitalizationList(getPreviousHospitalizations());
-        verifyPrevHospitalizationStatus();
-    }
-
-    private void verifyPrevHospitalizationStatus() {
-        YesNoUnknown hospitalizedPreviously = record.getHospitalizedPreviously();
-        if (hospitalizedPreviously == YesNoUnknown.YES && getPreviousHospitalizations().size() <= 0) {
-            getContentBinding().caseHospitalizationHospitalizedPreviously.enableWarningState(R.string.validation_soft_add_list_entry);
-        } else {
-            getContentBinding().caseHospitalizationHospitalizedPreviously.disableWarningState();
-        }
-    }
 }

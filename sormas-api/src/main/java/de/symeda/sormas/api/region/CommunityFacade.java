@@ -7,7 +7,6 @@ import javax.ejb.Remote;
 
 @Remote
 public interface CommunityFacade {
-
     List<CommunityReferenceDto> getAllByDistrict(String districtUuid);
 
 	List<CommunityDto> getAllAfter(Date date);

@@ -11,9 +11,11 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -27,6 +29,10 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.InfrastructureDataImporter;
 import de.symeda.sormas.backend.util.InfrastructureDataImporter.FacilityConsumer;
 
+/**
+ * @author Christopher Riedel
+ *
+ */
 @Stateless
 @LocalBean
 public class FacilityService extends AbstractAdoService<Facility> {
@@ -113,11 +119,21 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 
-		Predicate filter = cb.equal(from.get(Facility.REGION), region);
-		if (date != null) {
-			filter = cb.and(filter, createDateFilter(cb, cq, from, date));
+		Predicate filter = null;
+		if (region != null) {
+			filter = cb.equal(from.get(Facility.REGION), region);
 		}
-		cq.where(filter);
+		if (date != null) {
+			if (filter != null) {
+				filter = cb.and(filter, createDateFilter(cb, cq, from, date));
+			} else {
+				filter = createDateFilter(cb, cq, from, date);
+			}
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
 		// order by district, community so the app can do caching while reading the data
 		cq.orderBy(cb.asc(from.get(Facility.DISTRICT)), cb.asc(from.get(Facility.COMMUNITY)),
 				cb.asc(from.get(Facility.NAME)));
@@ -380,5 +396,24 @@ public class FacilityService extends AbstractAdoService<Facility> {
 				persist(facility);
 			}
 		});
+	}
+
+	public Predicate buildCriteriaFilter(FacilityCriteria facilityCriteria, CriteriaBuilder cb,
+			Root<Facility> from) {
+		Predicate filter = null;
+		if (facilityCriteria.getRegion() != null) {
+			filter = and(cb, filter, cb.equal(from.join(Facility.REGION, JoinType.LEFT).get(Region.UUID), facilityCriteria.getRegion().getUuid()));
+		}
+		if (facilityCriteria.getDistrict() != null) {
+			filter = and(cb, filter, cb.equal(from.join(Facility.DISTRICT, JoinType.LEFT).get(District.UUID), facilityCriteria.getDistrict().getUuid()));
+		}
+		if (facilityCriteria.getCommunity() != null) {
+			filter = and(cb, filter, cb.equal(from.join(Facility.COMMUNITY, JoinType.LEFT).get(District.UUID), facilityCriteria.getCommunity().getUuid()));
+		}
+		if (facilityCriteria.isExcludeStaticFacilities() != null && facilityCriteria.isExcludeStaticFacilities()) {
+			filter = and(cb, filter, cb.isNotNull(from.get(Facility.REGION)));
+		}
+		filter = and(cb, filter, cb.equal(from.get(Facility.TYPE), facilityCriteria.getType()));
+		return filter;
 	}
 }

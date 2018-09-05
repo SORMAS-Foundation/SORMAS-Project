@@ -18,8 +18,6 @@ import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.ConfigFacade;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 
 @Stateless(name = "EmailService")

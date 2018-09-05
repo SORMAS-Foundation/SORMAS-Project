@@ -316,8 +316,10 @@
 
     <dimen name="listActivityRowPrimaryTextSize">16sp</dimen>
     <dimen name="row_entry_secondary_text_size">14sp</dimen>
-    <dimen name="listActivityRowSecondaryTextMarginBottom">8dp</dimen>
+    <dimen name="listActivityRowSecondaryTextVerticalMargin">8dp</dimen>
     <dimen name="listActivityRowTertiaryTextSize">12sp</dimen>
+    <dimen name="listActivityRowMarginEnd">36dp</dimen>
+    <dimen name="listActivityIconAndTextMargin">8dp</dimen>
     <dimen name="row_entry_status_text_size">12sp</dimen>
     <dimen name="row_entry_date_text_size">12sp</dimen>
 

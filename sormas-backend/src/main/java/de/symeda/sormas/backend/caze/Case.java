@@ -27,8 +27,6 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
-import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.epidata.EpiData;
@@ -42,15 +40,16 @@ import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 
-@Entity(name="cases")
+@Entity(name = "cases")
 @Audited
 public class Case extends AbstractDomainObject {
-	
+
 	private static final long serialVersionUID = -2697795184663562129L;
-	
+
 	public static final String TABLE_NAME = "cases";
 
 	public static final String CASE_CLASSIFICATION = "caseClassification";
+	public static final String SYSTEM_CASE_CLASSIFICATION = "systemCaseClassification";
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";
@@ -89,83 +88,88 @@ public class Case extends AbstractDomainObject {
 	private String diseaseDetails;
 	private PlagueType plagueType;
 	private DengueFeverType dengueFeverType;
-	
+
 	private CaseClassification caseClassification;
+	private CaseClassification systemCaseClassification;
 	private User classificationUser;
 	private Date classificationDate;
 	private String classificationComment;
-	
+
 	private InvestigationStatus investigationStatus;
 	private Hospitalization hospitalization;
 	private EpiData epiData;
-	
+
 	private Region region;
 	private District district;
 	private Community community;
 	private Facility healthFacility;
 	private String healthFacilityDetails;
-	
+
 	private User reportingUser;
 	private Date reportDate;
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
-	
+
 	private Date investigatedDate;
 	private Date receptionDate;
-	
+
 	private User surveillanceOfficer;
 	private User caseOfficer;
-	
+
 	private Symptoms symptoms;
-	
+
 	private YesNoUnknown pregnant;
 
 	private Vaccination vaccination;
 	private String vaccinationDoses;
-	private VaccinationInfoSource vaccinationInfoSource;	
+	private VaccinationInfoSource vaccinationInfoSource;
 	private Date vaccinationDate;
 	private YesNoUnknown smallpoxVaccinationScar;
 	private YesNoUnknown smallpoxVaccinationReceived;
-	
+
 	private String epidNumber;
-	
+
 	private CaseOutcome outcome;
 	private Date outcomeDate;
-	
+
 	private Integer caseAge;
-	
+
 	private List<Task> tasks;
-	
+
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=false)
+	@JoinColumn(nullable = false)
 	public Person getPerson() {
 		return person;
 	}
+
 	public void setPerson(Person person) {
 		this.person = person;
 	}
-	
-	@Column(length=512)
+
+	@Column(length = 512)
 	public String getDescription() {
 		return description;
 	}
+
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public Disease getDisease() {
 		return disease;
 	}
+
 	public void setDisease(Disease disease) {
 		this.disease = disease;
 	}
 
-	@Column(length=512)
+	@Column(length = 512)
 	public String getDiseaseDetails() {
 		return diseaseDetails;
 	}
+
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
 	}
@@ -174,6 +178,7 @@ public class Case extends AbstractDomainObject {
 	public PlagueType getPlagueType() {
 		return plagueType;
 	}
+
 	public void setPlagueType(PlagueType plagueType) {
 		this.plagueType = plagueType;
 	}
@@ -182,58 +187,65 @@ public class Case extends AbstractDomainObject {
 	public DengueFeverType getDengueFeverType() {
 		return dengueFeverType;
 	}
+
 	public void setDengueFeverType(DengueFeverType dengueFeverType) {
 		this.dengueFeverType = dengueFeverType;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
-	@Column(nullable=false)
+	@Column(nullable = false)
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}
+
 	public void setCaseClassification(CaseClassification caseStatus) {
 		this.caseClassification = caseStatus;
 	}
 
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=true)
+	@JoinColumn(nullable = true)
 	public User getClassificationUser() {
 		return classificationUser;
 	}
+
 	public void setClassificationUser(User classificationUser) {
 		this.classificationUser = classificationUser;
 	}
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getClassificationDate() {
 		return classificationDate;
 	}
+
 	public void setClassificationDate(Date classificationDate) {
 		this.classificationDate = classificationDate;
 	}
-	
-	@Column(length=512)
+
+	@Column(length = 512)
 	public String getClassificationComment() {
 		return classificationComment;
 	}
+
 	public void setClassificationComment(String classificationComment) {
 		this.classificationComment = classificationComment;
 	}
-	
+
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=false)
+	@JoinColumn(nullable = false)
 	public User getReportingUser() {
 		return reportingUser;
 	}
+
 	public void setReportingUser(User reportingUser) {
 		this.reportingUser = reportingUser;
 	}
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable=false)
+	@Column(nullable = false)
 	public Date getReportDate() {
 		return reportDate;
 	}
+
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
 	}
@@ -242,6 +254,7 @@ public class Case extends AbstractDomainObject {
 	public Date getInvestigatedDate() {
 		return investigatedDate;
 	}
+
 	public void setInvestigatedDate(Date investigatedDate) {
 		this.investigatedDate = investigatedDate;
 	}
@@ -250,30 +263,34 @@ public class Case extends AbstractDomainObject {
 	public Date getReceptionDate() {
 		return receptionDate;
 	}
+
 	public void setReceptionDate(Date receptionDate) {
 		this.receptionDate = receptionDate;
 	}
-	
+
 	@ManyToOne(cascade = {})
 	public Facility getHealthFacility() {
 		return healthFacility;
 	}
+
 	public void setHealthFacility(Facility healthFacility) {
 		this.healthFacility = healthFacility;
 	}
-	
+
 	@Column(length = 512)
 	public String getHealthFacilityDetails() {
 		return healthFacilityDetails;
 	}
+
 	public void setHealthFacilityDetails(String healthFacilityDetails) {
 		this.healthFacilityDetails = healthFacilityDetails;
 	}
-	
+
 	@ManyToOne(cascade = {})
 	public User getSurveillanceOfficer() {
 		return surveillanceOfficer;
 	}
+
 	public void setSurveillanceOfficer(User surveillanceOfficer) {
 		this.surveillanceOfficer = surveillanceOfficer;
 	}
@@ -282,6 +299,7 @@ public class Case extends AbstractDomainObject {
 	public User getCaseOfficer() {
 		return caseOfficer;
 	}
+
 	public void setCaseOfficer(User caseOfficer) {
 		this.caseOfficer = caseOfficer;
 	}
@@ -294,14 +312,16 @@ public class Case extends AbstractDomainObject {
 		}
 		return symptoms;
 	}
+
 	public void setSymptoms(Symptoms symptoms) {
 		this.symptoms = symptoms;
 	}
-	
+
 	@ManyToOne(cascade = {})
 	public Region getRegion() {
 		return region;
 	}
+
 	public void setRegion(Region region) {
 		this.region = region;
 	}
@@ -310,6 +330,7 @@ public class Case extends AbstractDomainObject {
 	public District getDistrict() {
 		return district;
 	}
+
 	public void setDistrict(District district) {
 		this.district = district;
 	}
@@ -318,11 +339,13 @@ public class Case extends AbstractDomainObject {
 	public Community getCommunity() {
 		return community;
 	}
+
 	public void setCommunity(Community community) {
 		this.community = community;
 	}
-	
-	// It's necessary to do a lazy fetch here because having three eager fetching one to one relations
+
+	// It's necessary to do a lazy fetch here because having three eager fetching
+	// one to one relations
 	// produces an error where two non-xa connections are opened
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@AuditedIgnore
@@ -332,28 +355,32 @@ public class Case extends AbstractDomainObject {
 		}
 		return hospitalization;
 	}
+
 	public void setHospitalization(Hospitalization hospitalization) {
 		this.hospitalization = hospitalization;
 	}
-	
-	// It's necessary to do a lazy fetch here because having three eager fetching one to one relations
+
+	// It's necessary to do a lazy fetch here because having three eager fetching
+	// one to one relations
 	// produces an error where two non-xa connections are opened
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@AuditedIgnore
 	public EpiData getEpiData() {
-		if(epiData == null) {
+		if (epiData == null) {
 			epiData = new EpiData();
 		}
 		return epiData;
 	}
+
 	public void setEpiData(EpiData epiData) {
 		this.epiData = epiData;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getPregnant() {
 		return pregnant;
 	}
+
 	public void setPregnant(YesNoUnknown pregnant) {
 		this.pregnant = pregnant;
 	}
@@ -362,6 +389,7 @@ public class Case extends AbstractDomainObject {
 	public Vaccination getVaccination() {
 		return vaccination;
 	}
+
 	public void setVaccination(Vaccination vaccination) {
 		this.vaccination = vaccination;
 	}
@@ -370,6 +398,7 @@ public class Case extends AbstractDomainObject {
 	public String getVaccinationDoses() {
 		return vaccinationDoses;
 	}
+
 	public void setVaccinationDoses(String vaccinationDoses) {
 		this.vaccinationDoses = vaccinationDoses;
 	}
@@ -378,14 +407,16 @@ public class Case extends AbstractDomainObject {
 	public VaccinationInfoSource getVaccinationInfoSource() {
 		return vaccinationInfoSource;
 	}
+
 	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
 		this.vaccinationInfoSource = vaccinationInfoSource;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getSmallpoxVaccinationScar() {
 		return smallpoxVaccinationScar;
 	}
+
 	public void setSmallpoxVaccinationScar(YesNoUnknown smallpoxVaccinationScar) {
 		this.smallpoxVaccinationScar = smallpoxVaccinationScar;
 	}
@@ -394,6 +425,7 @@ public class Case extends AbstractDomainObject {
 	public YesNoUnknown getSmallpoxVaccinationReceived() {
 		return smallpoxVaccinationReceived;
 	}
+
 	public void setSmallpoxVaccinationReceived(YesNoUnknown smallpoxVaccinationReceived) {
 		this.smallpoxVaccinationReceived = smallpoxVaccinationReceived;
 	}
@@ -402,40 +434,44 @@ public class Case extends AbstractDomainObject {
 	public Date getVaccinationDate() {
 		return vaccinationDate;
 	}
+
 	public void setVaccinationDate(Date vaccinationDate) {
 		this.vaccinationDate = vaccinationDate;
 	}
-	
+
 	@Column(length = 512)
 	public String getEpidNumber() {
 		return epidNumber;
 	}
+
 	public void setEpidNumber(String epidNumber) {
 		this.epidNumber = epidNumber;
 	}
-	
+
 	@Override
 	public String toString() {
 		return CaseReferenceDto.buildCaption(getUuid(), person.getFirstName(), person.getLastName());
 	}
-	
+
 	public CaseReferenceDto toReference() {
 		return new CaseReferenceDto(getUuid(), person.getFirstName(), person.getLastName());
 	}
-	
+
 	@OneToMany(cascade = {}, mappedBy = Task.CAZE)
 	public List<Task> getTasks() {
 		return tasks;
 	}
+
 	public void setTasks(List<Task> tasks) {
 		this.tasks = tasks;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
-	@Column(nullable=false)
+	@Column(nullable = false)
 	public InvestigationStatus getInvestigationStatus() {
 		return investigationStatus;
 	}
+
 	public void setInvestigationStatus(InvestigationStatus investigationStatus) {
 		this.investigationStatus = investigationStatus;
 	}
@@ -443,13 +479,15 @@ public class Case extends AbstractDomainObject {
 	public Double getReportLat() {
 		return reportLat;
 	}
+
 	public void setReportLat(Double reportLat) {
 		this.reportLat = reportLat;
 	}
-	
+
 	public Double getReportLon() {
 		return reportLon;
 	}
+
 	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
 	}
@@ -457,6 +495,7 @@ public class Case extends AbstractDomainObject {
 	public Float getReportLatLonAccuracy() {
 		return reportLatLonAccuracy;
 	}
+
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
@@ -465,6 +504,7 @@ public class Case extends AbstractDomainObject {
 	public CaseOutcome getOutcome() {
 		return outcome;
 	}
+
 	public void setOutcome(CaseOutcome outcome) {
 		this.outcome = outcome;
 	}
@@ -473,15 +513,27 @@ public class Case extends AbstractDomainObject {
 	public Date getOutcomeDate() {
 		return outcomeDate;
 	}
+
 	public void setOutcomeDate(Date outcomeDate) {
 		this.outcomeDate = outcomeDate;
 	}
-	
+
 	public Integer getCaseAge() {
 		return caseAge;
 	}
+
 	public void setCaseAge(Integer caseAge) {
 		this.caseAge = caseAge;
 	}
-	
+
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	public CaseClassification getSystemCaseClassification() {
+		return systemCaseClassification;
+	}
+
+	public void setSystemCaseClassification(CaseClassification systemCaseClassification) {
+		this.systemCaseClassification = systemCaseClassification;
+	}
+
 }

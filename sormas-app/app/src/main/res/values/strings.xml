@@ -31,10 +31,11 @@
     <string name="action_install_app">Install</string>
     <string name="action_install_later">Install later</string>
     <string name="action_loadMore">Load more</string>
-    <string name="action_login">Sign In</string>
+    <string name="action_login">Sign in</string>
+    <string name="action_login_default_user">Sign in as demo user</string>
     <string name="action_logout">Logout</string>
     <string name="action_logout_anyway">Logout anyway</string>
-    <string name="action_markAllAsRead">Mark All As Read</string>
+    <string name="action_markAllAsRead">Mark all as read</string>
     <string name="action_move">Move</string>
     <string name="action_transfer_case">Transfer case</string>
     <string name="action_new">New</string>
@@ -63,7 +64,7 @@
     <string name="action_save_participant">Save Participant</string>
     <string name="action_save_sample">Save Sample</string>
     <string name="action_save_task">Save Task</string>
-    <string name="action_search">Update search</string>
+    <string name="action_update_search">Update search</string>
     <string name="action_select">Select</string>
     <string name="action_send">Send</string>
     <string name="action_set_cleared_to_no">Set Cleared to No</string>
@@ -83,7 +84,7 @@
     <string name="alert_unsynchronized_changes">There are unsynchronized changes on your device. If you log out now, they will be lost and you will not be able to restore them. Do you still want to log out of SORMAS?</string>
 
     <string name="caption_case_contacts">Case Contacts</string>
-    <string name="caption_case_epidomiological_data">Epidemilogical Info</string>
+    <string name="caption_case_epidemiological_data">Epidemiological Info</string>
     <string name="caption_case_hospitalization">Hospitalization Info</string>
     <string name="caption_case_information">Case Information</string>
     <string name="caption_case_samples">Case Samples</string>
@@ -159,7 +160,7 @@
     <string name="heading_level4_contact_edit">Edit Contact</string>
     <string name="heading_level4_event_edit">Edit Event</string>
     <string name="heading_level4_sample_edit">Edit Sample</string>
-    <string name="heading_level4_task_edit">Edit Task</string>
+    <string name="heading_level4_task_edit">Task</string>
     <string name="heading_person_involved_new">New Person Involved</string>
     <string name="heading_sample_new">New Sample</string>
     <string name="heading_sub_dialog_placeholder">Dialog Sub Heading</string>
@@ -207,6 +208,7 @@
     <string name="hint_select_month">Select Month</string>
     <string name="hint_select_day">Select Day</string>
     <string name="hint_synchronization">Synchronizing with SORMAS server...</string>
+    <string name="hint_synchronization_initial">Initial synchronizing with SORMAS server.\nPulling infrastructure data will take a few minutes.</string>
     <string name="hint_user_report">Please briefly describe the problem you have experienced. Don\'t enter any personal or otherwise sensitive data!</string>
     <string name="hint_weekly_report_no_data">No data available for this epi week.</string>
 
@@ -268,8 +270,10 @@
     <string name="sample_material_unknown">Material N/A</string>
     <string name="sample_result_unknown">Test Result N/A</string>
     <string name="sampling_date_unknown">Sampling Date N/A</string>
-    <string name="description_pick_or_create_person">Select a matching person below by tapping on them or click the "+ Create" button if you don't find any matches.</string>
-    <string name="description_pick_or_create_person_no_records">No matching persons found. Click the "+ Create" button below to create a new person.</string>
+    <string name="description_pick_or_create_person">The name of at least one person already existing in SORMAS is similar to the name you entered.</string>
+    <string name="description_pick_person">If applicable, select a matching person by tapping on them and then clicking the \"Select\" button below. <b>Do this only if you are absolutely sure that the person you have specified is the same as one of the persons in this list.</b></string>
+    <string name="description_pick_person_no_records">No matching persons found.</string>
+    <string name="description_create_person">If the person you have created is <b>not</b> among the suggested list of existing persons, click the \"Create\" button.</string>
     <string name="server_connection_error">Could not connect to SORMAS server. Try again later.</string>
     <string name="snackbar_entity_overridden">%1$s refreshed. Unsaved changes discarded.</string>
     <string name="snackbar_http_401">Could not authenticate. Please check your username and password.</string>

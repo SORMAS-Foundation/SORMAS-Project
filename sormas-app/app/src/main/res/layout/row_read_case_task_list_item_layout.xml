@@ -35,7 +35,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="@dimen/listActivityRowSecondaryTextMarginBottom">
+                android:layout_marginBottom="@dimen/listActivityRowSecondaryTextVerticalMargin">
 
                 <TextView
                     android:id="@+id/txtTaskDate"
@@ -237,7 +237,7 @@
 
 
                 <ImageView
-                    android:id="@+id/imgGoToReadView"
+                    android:id="@+id/img_open_entry"
                     android:layout_width="@dimen/listGoToIconWidth"
                     android:layout_height="@dimen/listGoToIconHeight"
                     android:layout_gravity="center_vertical"

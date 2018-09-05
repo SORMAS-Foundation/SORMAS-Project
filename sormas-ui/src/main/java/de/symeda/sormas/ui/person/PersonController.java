@@ -1,15 +1,20 @@
 package de.symeda.sormas.ui.person;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.navigator.View;
+import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonIndexDto;
@@ -18,6 +23,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.events.EventParticipantsView;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -54,7 +60,7 @@ public class PersonController {
 			personSelect.selectBestMatch();
 			// TODO add user right parameter
 			final CommitDiscardWrapperComponent<PersonSelectField> selectOrCreateComponent = 
-					new CommitDiscardWrapperComponent<PersonSelectField>(personSelect, null);
+					new CommitDiscardWrapperComponent<PersonSelectField>(personSelect);
 
 			ValueChangeListener nameChangeListener = e -> {
 				selectOrCreateComponent.getCommitButton().setEnabled(!(personSelect.getFirstName() == null || personSelect.getFirstName().isEmpty()
@@ -121,15 +127,35 @@ public class PersonController {
 
 	private CommitDiscardWrapperComponent<PersonEditForm> getPersonEditView(PersonEditForm editForm, UserRight editOrCreateUserRight) {
 		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(editForm, editForm.getFieldGroup());
-
+		CaseFacade caseFacade = FacadeProvider.getCaseFacade();
+		
+		List<CaseDataDto> personCases = caseFacade.getAllCasesOfPerson(editForm.getValue().getUuid(), LoginHelper.getCurrentUserAsReference().getUuid());
+		
 		editView.addCommitListener(new CommitListener() {
-
 			@Override
 			public void onCommit() {
 				if (!editForm.getFieldGroup().isModified()) {
 					PersonDto dto = editForm.getValue();
 					personFacade.savePerson(dto);
-					Notification.show("Person data saved", Type.WARNING_MESSAGE);
+					
+					// Check whether the classification of any of this person's cases has changed
+					CaseClassification newClassification = null;
+					for (CaseDataDto personCase : personCases) {
+						CaseDataDto updatedPersonCase = caseFacade.getCaseDataByUuid(personCase.getUuid());
+						if (personCase.getCaseClassification() != updatedPersonCase.getCaseClassification() && updatedPersonCase.getClassificationUser() == null) {
+							newClassification = updatedPersonCase.getCaseClassification();
+							break;
+						}
+					}
+					
+					if (newClassification != null) {
+						Notification notification = new Notification("Person data save. The classification of at least one case associated with this person was automatically changed to " + newClassification.toString() + ".", Type.WARNING_MESSAGE);
+						notification.setDelayMsec(-1);
+						notification.show(Page.getCurrent());
+					} else {
+						Notification.show("Person data saved", Type.WARNING_MESSAGE);
+					}
+					
 					refreshView();
 				}
 			}

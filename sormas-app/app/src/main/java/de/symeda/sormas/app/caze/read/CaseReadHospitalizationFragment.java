@@ -7,6 +7,7 @@ import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
+import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.databinding.FragmentCaseReadHospitalizationLayoutBinding;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
@@ -18,12 +19,14 @@ public class CaseReadHospitalizationFragment extends BaseReadFragment<FragmentCa
 
     private Case caze;
     private Hospitalization record;
-    private ObservableArrayList preHospitalizations = new ObservableArrayList();
+
+    // Static methods
 
     public static CaseReadHospitalizationFragment newInstance(Case activityRootData) {
         return newInstance(CaseReadHospitalizationFragment.class, null, activityRootData);
     }
 
+    // Overrides
 
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
@@ -33,9 +36,12 @@ public class CaseReadHospitalizationFragment extends BaseReadFragment<FragmentCa
 
     @Override
     public void onLayoutBinding(FragmentCaseReadHospitalizationLayoutBinding contentBinding) {
+        ObservableArrayList<PreviousHospitalization> previousHospitalizations = new ObservableArrayList<>();
+        previousHospitalizations.addAll(record.getPreviousHospitalizations());
+
         contentBinding.setData(record);
         contentBinding.setCaze(caze);
-        contentBinding.setPreviousHospitalizations(getHospitalizations());
+        contentBinding.setPreviousHospitalizationList(previousHospitalizations);
     }
 
     @Override
@@ -63,10 +69,4 @@ public class CaseReadHospitalizationFragment extends BaseReadFragment<FragmentCa
         return R.layout.fragment_case_read_hospitalization_layout;
     }
 
-    @SuppressWarnings("unchecked")
-    private ObservableArrayList getHospitalizations() {
-        if (record != null && preHospitalizations != null)
-            preHospitalizations.addAll(record.getPreviousHospitalizations());
-        return preHospitalizations;
-    }
 }

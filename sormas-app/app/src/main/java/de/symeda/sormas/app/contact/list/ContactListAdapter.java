@@ -10,7 +10,13 @@ import android.widget.ImageView;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
@@ -26,10 +32,12 @@ public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemL
 
     private List<Contact> data;
     private OnListItemClickListener mOnListItemClickListener;
+    private FollowUpStatus listFilter;
 
-    public ContactListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Contact> data) {
+    public ContactListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Contact> data, FollowUpStatus listFilter) {
         super(rowLayout);
         this.mOnListItemClickListener = onListItemClickListener;
+        this.listFilter = listFilter;
 
         if (data == null)
             this.data = new ArrayList<>();
@@ -45,7 +53,7 @@ public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemL
         holder.setData(record);
         holder.setOnListItemClickListener(this.mOnListItemClickListener);
 
-        indicateContactClassification(holder.binding.imgContactClassificationStatusIcon, record);
+        indicateContactClassification(holder.binding.contactClassificationIcon, record);
 
 
         //Sync Icon
@@ -54,6 +62,17 @@ public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemL
             holder.binding.imgSyncIcon.setImageResource(R.drawable.ic_sync_blue_24dp);
         } else {
             holder.binding.imgSyncIcon.setVisibility(View.GONE);
+        }
+
+        // Number of visits
+        if (listFilter != FollowUpStatus.NO_FOLLOW_UP && DiseaseHelper.hasContactFollowUp(record.getCaseDisease(), null)) {
+            int numberOfVisits = DatabaseHelper.getVisitDao().getVisitCount(record, null);
+            int numberOfCooperativeVisits = DatabaseHelper.getVisitDao().getVisitCount(record, VisitStatus.COOPERATIVE);
+
+            holder.binding.numberOfVisits.setText(String.format(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, "numberOfVisitsLongFormat"),
+                    numberOfCooperativeVisits, numberOfVisits - numberOfCooperativeVisits));
+        } else {
+            holder.binding.numberOfVisits.setVisibility(View.GONE);
         }
 
         // TODO #704

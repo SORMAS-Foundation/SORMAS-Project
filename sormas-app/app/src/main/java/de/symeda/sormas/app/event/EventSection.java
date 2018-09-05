@@ -7,9 +7,17 @@ import de.symeda.sormas.app.core.enumeration.StatusElaborator;
 
 public enum EventSection implements StatusElaborator {
 
-    EVENT_INFO,
-    EVENT_PARTICIPANTS,
-    TASKS;
+    EVENT_INFO(R.string.caption_event_information, R.drawable.ic_alert_24dp),
+    EVENT_PARTICIPANTS(R.string.caption_event_participants, R.drawable.ic_group_black_24dp),
+    TASKS(R.string.caption_event_tasks, R.drawable.ic_drawer_user_task_blue_24dp);
+
+    private int friendlyNameResourceId;
+    private int iconResourceId;
+
+    EventSection(int friendlyNameResourceId, int iconResourceId) {
+        this.friendlyNameResourceId = friendlyNameResourceId;
+        this.iconResourceId = iconResourceId;
+    }
 
     public static EventSection fromOrdinal(int ordinal) {
         return EventSection.values()[ordinal];
@@ -17,16 +25,7 @@ public enum EventSection implements StatusElaborator {
 
     @Override
     public String getFriendlyName(Context context) {
-        switch(this) {
-            case EVENT_INFO:
-                return context.getResources().getString(R.string.caption_event_information);
-            case EVENT_PARTICIPANTS:
-                return context.getResources().getString(R.string.caption_event_participants);
-            case TASKS:
-                return context.getResources().getString(R.string.caption_event_tasks);
-            default:
-                throw new IllegalArgumentException(this.toString());
-        }
+        return context.getResources().getString(friendlyNameResourceId);
     }
 
     @Override
@@ -41,6 +40,6 @@ public enum EventSection implements StatusElaborator {
 
     @Override
     public int getIconResourceId() {
-        return 0;
+        return iconResourceId;
     }
 }

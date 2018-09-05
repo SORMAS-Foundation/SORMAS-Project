@@ -42,7 +42,7 @@ public class SampleTestEditForm extends AbstractEditForm<SampleTestDto> {
 	
 	@Override
 	protected void addFields() {
-		ComboBox testType = addField(SampleTestDto.TEST_TYPE, ComboBox.class);
+		ComboBox testTypeField = addField(SampleTestDto.TEST_TYPE, ComboBox.class);
 		addField(SampleTestDto.TEST_TYPE_TEXT, TextField.class);
 		addField(SampleTestDto.TEST_DATE_TIME, DateTimeField.class);
 		ComboBox lab = addField(SampleTestDto.LAB, ComboBox.class);
@@ -59,8 +59,9 @@ public class SampleTestEditForm extends AbstractEditForm<SampleTestDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), SampleTestDto.TEST_TYPE_TEXT, SampleTestDto.TEST_TYPE, Arrays.asList(SampleTestType.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), SampleTestDto.TEST_TYPE, Arrays.asList(SampleTestDto.TEST_TYPE_TEXT), Arrays.asList(SampleTestType.OTHER));
 		
-		testType.addValueChangeListener(e -> {
-			if (e.getProperty().getValue() == SampleTestType.IGM_SERUM_ANTIBODY) {
+		testTypeField.addValueChangeListener(e -> {
+			SampleTestType testType = (SampleTestType) e.getProperty().getValue();
+			if (testType == SampleTestType.IGM_SERUM_ANTIBODY || testType == SampleTestType.IGG_SERUM_ANTIBODY) {
 				fourFoldIncrease.setVisible(true);
 				fourFoldIncrease.setEnabled(caseSampleCount >= 2);
 			} else {

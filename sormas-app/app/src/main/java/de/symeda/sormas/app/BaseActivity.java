@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -36,6 +37,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.component.HelpDialog;
 import de.symeda.sormas.app.component.dialog.UserReportDialog;
 import de.symeda.sormas.app.component.menu.PageMenuControl;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
@@ -331,6 +333,11 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                 // TODO
                 return true;
 
+            case R.id.action_help:
+                HelpDialog helpDialog = new HelpDialog(this, (ViewGroup) this.findViewById(R.id.main_content));
+                helpDialog.show();
+                return true;
+
             // Report problem button
             case R.id.action_report:
                 UserReportDialog userReportDialog = new UserReportDialog(this, getClass().getSimpleName(), null);
@@ -529,8 +536,9 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
         if (showProgressDialog) {
             if (progressDialog == null || !progressDialog.isShowing()) {
+                boolean isInitialSync = DatabaseHelper.getFacilityDao().isEmpty();
                 progressDialog = ProgressDialog.show(this, getString(R.string.headline_synchronization),
-                        getString(R.string.hint_synchronization), true);
+                        getString(isInitialSync ? R.string.hint_synchronization_initial : R.string.hint_synchronization), true);
             }
         } else {
             progressDialog = null;

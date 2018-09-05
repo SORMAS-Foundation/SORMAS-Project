@@ -43,6 +43,25 @@
 		color: $s-minor-color;
 	}
 
+	// Label with rounded corners
+	&.v-label-rounded-corners {
+		border-radius: 8px;
+		padding: 8px;
+	}
+
+	// Label backgrounds
+	&.v-label-background-suspect {
+		background: $s-relevant-transparent-color;
+	}
+
+	&.v-label-background-probable {
+		background: $s-important-transparent-color;
+	}
+
+	&.v-label-background-confirmed {
+		background: $s-critical-transparent-color;
+	}
+
 	// Labels with colorized bar on top
 	&.v-label-bar-top-critical {
 		border-top: 4px solid $s-critical-color;

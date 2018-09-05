@@ -1,7 +1,6 @@
 package de.symeda.sormas.backend.hospitalization;
 
 import java.util.Date;
-import java.util.List;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;

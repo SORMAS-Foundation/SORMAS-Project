@@ -14,6 +14,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -44,27 +45,11 @@ public class VisitDao extends AbstractAdoDao<Visit> {
         if (contact.isSnapshot()) {
             throw new IllegalArgumentException("Does not support snapshot entities");
         }
+
         try {
             QueryBuilder qb = queryBuilder();
             Where where = qb.where();
-            where.and(
-                    where.eq(AbstractDomainObject.SNAPSHOT, false),
-                    where.eq(Visit.PERSON + "_id", contact.getPerson()),
-                    where.eq(Visit.DISEASE, contact.getCaseDisease())
-            );
-            // see sormas-backend/VisitService.getAllByContact()
-            Date contactReferenceDate = contact.getLastContactDate() != null ? contact.getLastContactDate() : contact.getReportDateTime();
-            Date lowerLimit = DateHelper.subtractDays(contactReferenceDate, VisitDto.ALLOWED_CONTACT_DATE_OFFSET);
-            if (lowerLimit != null) {
-                where.and();
-                where.gt(Visit.VISIT_DATE_TIME, lowerLimit);
-            }
-
-            Date upperLimit = DateHelper.addDays(contact.getFollowUpUntil(), VisitDto.ALLOWED_CONTACT_DATE_OFFSET);
-            if (upperLimit != null) {
-                where.and();
-                where.lt(Visit.VISIT_DATE_TIME, upperLimit);
-            }
+            filterByStatusAndContact(where, null, contact);
 
             qb.orderBy(Visit.VISIT_DATE_TIME, true);
 
@@ -72,6 +57,51 @@ public class VisitDao extends AbstractAdoDao<Visit> {
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform getByContact on Visit");
             throw new RuntimeException(e);
+        }
+    }
+
+    public int getVisitCount(Contact contact, VisitStatus visitStatus) {
+        if (contact.isSnapshot()) {
+            throw new IllegalArgumentException("Does not support snapshot entities");
+        }
+
+        try {
+            QueryBuilder qb = queryBuilder();
+            Where where = qb.where();
+
+            filterByStatusAndContact(where, visitStatus, contact);
+
+            return (int) qb.countOf();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getVisitCount on Visit");
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void filterByStatusAndContact(Where where, VisitStatus visitStatus, Contact contact) throws SQLException {
+        where.and(
+                where.eq(AbstractDomainObject.SNAPSHOT, false),
+                where.eq(Visit.PERSON + "_id", contact.getPerson()),
+                where.eq(Visit.DISEASE, contact.getCaseDisease())
+        );
+
+        if (visitStatus != null) {
+            where.and();
+            where.eq(Visit.VISIT_STATUS, visitStatus);
+        }
+
+        // see sormas-backend/VisitService.getAllByContact()
+        Date contactReferenceDate = contact.getLastContactDate() != null ? contact.getLastContactDate() : contact.getReportDateTime();
+        Date lowerLimit = DateHelper.subtractDays(contactReferenceDate, VisitDto.ALLOWED_CONTACT_DATE_OFFSET);
+        if (lowerLimit != null) {
+            where.and();
+            where.gt(Visit.VISIT_DATE_TIME, lowerLimit);
+        }
+
+        Date upperLimit = DateHelper.addDays(contact.getFollowUpUntil(), VisitDto.ALLOWED_CONTACT_DATE_OFFSET);
+        if (upperLimit != null) {
+            where.and();
+            where.lt(Visit.VISIT_DATE_TIME, upperLimit);
         }
     }
 

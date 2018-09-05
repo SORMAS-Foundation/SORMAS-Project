@@ -1,7 +1,5 @@
 package de.symeda.auditlog.api;
 
-import javax.persistence.Transient;
-
 import de.symeda.sormas.api.HasUuid;
 
 /**

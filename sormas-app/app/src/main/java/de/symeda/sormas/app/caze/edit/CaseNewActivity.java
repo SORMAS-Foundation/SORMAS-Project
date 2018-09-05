@@ -80,14 +80,16 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
     @Override
     protected Case buildRootEntity() {
         Person _person;
+        Case _case;
         if (!DataHelper.isNullOrEmpty(contactUuid)) {
             Contact sourceContact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
             _person = sourceContact.getPerson();
+            _case = DatabaseHelper.getCaseDao().build(_person,
+                    DatabaseHelper.getCaseDao().queryUuidBasic(sourceContact.getCaseUuid()));
         } else {
             _person = DatabaseHelper.getPersonDao().build();
+            _case = DatabaseHelper.getCaseDao().build(_person);
         }
-
-        Case _case = DatabaseHelper.getCaseDao().build(_person);
 
         return _case;
     }
@@ -101,7 +103,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Case activityRootData) {
-        BaseEditFragment fragment = CaseNewFragment.newInstance(activityRootData);
+        BaseEditFragment fragment = CaseNewFragment.newInstance(activityRootData, contactUuid);
         fragment.setLiveValidationDisabled(true);
         return fragment;
     }

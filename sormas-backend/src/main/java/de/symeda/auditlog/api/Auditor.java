@@ -288,7 +288,6 @@ public class Auditor implements Serializable {
 	 * 			The entity property.
 	 * @return	The {@link ValueFormatter} to be used. Must not return <code>null</code>.
 	 */
-	@SuppressWarnings("unchecked")
 	ValueFormatter<?> overrideFormatter(ValueFormatter<?> original, Method m) {
 
 		if (isDefaultFormatter(original.getClass())) {

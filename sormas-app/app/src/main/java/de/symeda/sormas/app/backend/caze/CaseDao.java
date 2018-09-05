@@ -160,6 +160,18 @@ public class CaseDao extends AbstractAdoDao<Case> {
         return caze;
     }
 
+    public Case build(Person person, Case caze) {
+        Case newCase = build(person);
+        if (caze != null) {
+            newCase.setDisease(caze.getDisease());
+            newCase.setDiseaseDetails(caze.getDiseaseDetails());
+            newCase.setPlagueType(caze.getPlagueType());
+            newCase.setDengueFeverType(caze.getDengueFeverType());
+        }
+
+        return newCase;
+    }
+
     public Case transferCase(Case caseToTransfer) throws DaoException {
         Case caze = queryForIdWithEmbedded(caseToTransfer.getId());
 

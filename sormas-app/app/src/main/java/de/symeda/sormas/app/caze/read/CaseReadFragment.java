@@ -13,6 +13,9 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.databinding.FragmentCaseReadLayoutBinding;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBinding, Case, Case> {
 
     private Case record;
@@ -35,7 +38,7 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 
         // Pregnancy
         if (record.getPerson().getSex() != Sex.FEMALE) {
-            contentBinding.caseDataPregnant.setVisibility(View.GONE);
+            contentBinding.caseDataPregnant.setVisibility(GONE);
         }
     }
 
@@ -54,6 +57,13 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
     @Override
     public void onAfterLayoutBinding(FragmentCaseReadLayoutBinding contentBinding) {
         setUpFieldVisibilities(contentBinding);
+
+        // Replace classification user field with classified by field when case has been classified automatically
+        if (contentBinding.getData().getClassificationDate() != null && contentBinding.getData().getClassificationUser() == null) {
+            contentBinding.caseDataClassificationUser.setVisibility(GONE);
+            contentBinding.caseDataClassifiedBy.setVisibility(VISIBLE);
+            contentBinding.caseDataClassifiedBy.setValue("System");
+        }
     }
 
     @Override

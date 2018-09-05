@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.Optional;
+
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
@@ -26,7 +28,14 @@ public abstract class AbstractSubNavigationView extends AbstractView {
         addComponent(subNavigationMenu);
         setExpandRatio(subNavigationMenu, 0);
         
-        infoLayout = new VerticalLayout();
+        createInfoLayout().ifPresent(l -> {
+        	infoLayout = l;
+        	addHeaderComponent(l);
+        });
+    }
+
+	protected Optional<VerticalLayout> createInfoLayout() {
+		VerticalLayout infoLayout = new VerticalLayout();
         infoLayout.setSizeUndefined();
         CssStyles.stylePrimary(infoLayout, CssStyles.CALLOUT);
         infoLabel = new Label("");
@@ -34,8 +43,9 @@ public abstract class AbstractSubNavigationView extends AbstractView {
         CssStyles.style(infoLabelSub, ValoTheme.LABEL_SMALL);
         infoLayout.addComponent(infoLabel);
         infoLayout.addComponent(infoLabelSub);
-        addHeaderComponent(infoLayout);
-    }
+        
+        return Optional.of(infoLayout);
+	}
     
     @Override
     public void enter(ViewChangeEvent event) {

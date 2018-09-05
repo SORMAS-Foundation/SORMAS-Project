@@ -13,6 +13,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentCaseNewLayoutBinding;
+import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
@@ -31,8 +32,8 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     private List<Item> initialCommunities;
     private List<Item> initialFacilities;
 
-    public static CaseNewFragment newInstance(Case activityRootData) {
-        return newInstance(CaseNewFragment.class, null, activityRootData);
+    public static CaseNewFragment newInstance(Case activityRootData, String contactUuid) {
+        return newInstance(CaseNewFragment.class, CaseNewActivity.buildBundle(contactUuid).get(), activityRootData);
     }
 
     @Override
@@ -89,6 +90,16 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
             contentBinding.caseDataCommunity.setRequired(false);
             contentBinding.caseDataHealthFacility.setEnabled(false);
             contentBinding.caseDataHealthFacility.setRequired(false);
+        }
+
+        // Disable first and last name and disease fields when case is created from contact
+        if (new Bundler(getArguments()).getContactUuid() != null) {
+            contentBinding.caseDataFirstName.setEnabled(false);
+            contentBinding.caseDataLastName.setEnabled(false);
+            contentBinding.caseDataDisease.setEnabled(false);
+            contentBinding.caseDataDiseaseDetails.setEnabled(false);
+            contentBinding.caseDataPlagueType.setEnabled(false);
+            contentBinding.caseDataDengueFeverType.setEnabled(false);
         }
     }
 

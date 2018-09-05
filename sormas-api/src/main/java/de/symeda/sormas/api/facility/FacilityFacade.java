@@ -9,10 +9,16 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 
+/**
+ * @author Christopher Riedel
+ *
+ */
 @Remote
 public interface FacilityFacade {
 
 	List<FacilityReferenceDto> getAll();
+	
+	List<FacilityDto> getIndexList(String userUuid, FacilityCriteria facilityCriteria);
 	
     List<FacilityReferenceDto> getHealthFacilitiesByCommunity(CommunityReferenceDto community, boolean includeStaticFacilities);
     List<FacilityReferenceDto> getHealthFacilitiesByDistrict(DistrictReferenceDto district, boolean includeStaticFacilities);
@@ -27,5 +33,7 @@ public interface FacilityFacade {
 	FacilityDto getByUuid(String uuid);
 
 	List<String> getAllUuids(String userUuid);
-	
+
+	void saveFacility(FacilityDto value);
+
 }

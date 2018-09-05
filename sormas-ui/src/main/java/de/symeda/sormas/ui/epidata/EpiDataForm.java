@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.vaadin.server.UserError;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 

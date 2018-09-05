@@ -11,13 +11,18 @@ $s-default-color: #6691C4;
 $s-primary-color: #005A9C;
 $s-secondary-color: #6591C4;
 $s-critical-color: #FF0000;
+$s-critical-transparent-color: rgba(255, 0, 0, 0.7);
 $s-important-color: #FF8C00;
+$s-important-transparent-color: rgba(255, 140, 0, 0.7);
 $s-warning-color: $s-important-color;
 $s-relevant-color: #FFD700;
+$s-relevant-transparent-color: rgba(255, 215, 0, 0.7);
 $s-neutral-color: #00BFFF;
 $s-positive-color: #32CD32;
 $s-minor-color: #808080;
 $s-steady-color: #FF8C00;
+$s-highlight-subtle-color: #E0E0E0;
+$s-highlight-color: #C9C9C9;
 
 $v-background-color: #FEFEFE !default;
 $v-app-background-color: $v-background-color !default;

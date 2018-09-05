@@ -5,6 +5,4 @@ import javax.ejb.Remote;
 @Remote
 public interface EpiDataFacade {
 	
-	EpiDataDto saveEpiData(EpiDataDto dto);
-	
 }

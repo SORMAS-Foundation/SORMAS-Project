@@ -105,13 +105,15 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
     public void onLayoutBinding(FragmentTaskEditLayoutBinding contentBinding) {
         setUpControlListeners(contentBinding);
 
-        // Saving and editing the assignee reply is only allowed when the task is assigned to the user
+        // Saving and editing the assignee reply is only allowed when the task is assigned to the user;
+        // Additionally, the save option is hidden for pending tasks because those should be saved
+        // by clicking on the "Done" and "Not executable" buttons
         if (!ConfigProvider.getUser().equals(record.getAssigneeUser())) {
             contentBinding.taskAssigneeReply.setEnabled(false);
             contentBinding.taskButtonPanel.setVisibility(GONE);
         } else {
-            getBaseEditActivity().getSaveMenu().setVisible(true);
             if (record.getTaskStatus() != TaskStatus.PENDING) {
+                getBaseEditActivity().getSaveMenu().setVisible(true);
                 contentBinding.taskButtonPanel.setVisibility(GONE);
             }
         }

@@ -138,7 +138,9 @@ public class LocationDialog extends BaseTeboAlertDialog {
 
                 final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActivity(),
                         R.string.heading_confirmation_dialog,
-                        R.string.heading_sub_confirmation_notification_dialog_pick_gps);
+                        R.string.heading_sub_confirmation_notification_dialog_pick_gps,
+                        R.string.yes,
+                        R.string.no);
 
                 confirmationDialog.setOnPositiveClickListener(new de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface.PositiveOnClickListener() {
                     @Override

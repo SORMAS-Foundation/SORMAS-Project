@@ -30,6 +30,9 @@ import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBinding, Case, Case> {
 
     public static final String TAG = CaseEditFragment.class.getSimpleName();
@@ -44,10 +47,13 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     private List<Item> plagueTypeList;
     private List<Item> dengueFeverTypeList;
 
+    // Static methods
 
     public static CaseEditFragment newInstance(Case activityRootData) {
         return newInstance(CaseEditFragment.class, null, activityRootData);
     }
+
+    // Instance methods
 
     private void setUpFieldVisibilities(final FragmentCaseEditLayoutBinding contentBinding) {
         setVisibilityByDisease(CaseDataDto.class, contentBinding.getData().getDisease(), contentBinding.mainContent);
@@ -181,6 +187,13 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         // Initialize ControlDateFields
         contentBinding.caseDataOutcomeDate.initializeDateField(getFragmentManager());
         contentBinding.caseDataVaccinationDate.initializeDateField(getFragmentManager());
+
+        // Replace classification user field with classified by field when case has been classified automatically
+        if (contentBinding.getData().getClassificationDate() != null && contentBinding.getData().getClassificationUser() == null) {
+            contentBinding.caseDataClassificationUser.setVisibility(GONE);
+            contentBinding.caseDataClassifiedBy.setVisibility(VISIBLE);
+            contentBinding.caseDataClassifiedBy.setValue("System");
+        }
     }
 
     @Override

@@ -26,7 +26,7 @@ public class PageMenuItem {
         int key = 0;
         for (Enum value : values) {
             StatusElaborator elaborator = StatusElaboratorFactory.getElaborator(value);
-            menuItems.add(new PageMenuItem(key, elaborator.getFriendlyName(context), value.toString(), elaborator.getIconResourceId(), true));
+            menuItems.add(new PageMenuItem(key, elaborator.getFriendlyName(context), value.toString(), elaborator.getIconResourceId(), false));
             key++;
         }
         return menuItems;

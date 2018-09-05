@@ -55,7 +55,6 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 
     @Override
     protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Case activityRootData) {
-
         CaseSection section = CaseSection.fromOrdinal(menuItem.getKey());
         BaseReadFragment fragment;
         switch (section) {

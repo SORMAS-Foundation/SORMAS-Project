@@ -9,15 +9,19 @@ import java.util.List;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
@@ -29,11 +33,13 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteria;
+import de.symeda.sormas.api.caze.classification.ClassificationCollectiveCriteria;
+import de.symeda.sormas.api.caze.classification.ClassificationCompactCriteria;
+import de.symeda.sormas.api.caze.classification.ClassificationCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
@@ -57,6 +63,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -177,13 +184,13 @@ public class CaseController {
 					dto.setEpidNumber(region.getEpidCode() != null ? region.getEpidCode() : "" 
 							+ "-" + district.getEpidCode() != null ? district.getEpidCode() : "" 
 									+ "-" + year + "-");
-					
+
 					if (contact != null) {
 						// automatically change the contact status to "converted"
 						contact.setContactStatus(ContactStatus.CONVERTED);
 						FacadeProvider.getContactFacade().saveContact(contact);
 					}
-					
+
 					if (contact != null || eventParticipant != null) {
 						// use the person of the contact or event participant the case is created for
 						dto.setPerson(person);
@@ -282,7 +289,7 @@ public class CaseController {
 				break;
 			}
 		}
-		
+
 		DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(districtUuid);
 
 		// Create a temporary case in order to use the CommitDiscardWrapperComponent
@@ -371,10 +378,9 @@ public class CaseController {
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
-				HospitalizationDto dto = hospitalizationForm.getValue();
-				FacadeProvider.getHospitalizationFacade().saveHospitalization(dto);
-				Notification.show("Case hospitalization saved", Type.WARNING_MESSAGE);
-				navigateToView(CaseHospitalizationView.VIEW_NAME, caseUuid, viewMode);
+				CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
+				cazeDto.setHospitalization(hospitalizationForm.getValue());
+				saveCase(cazeDto, CaseHospitalizationView.VIEW_NAME, viewMode);
 			}
 		});
 
@@ -382,7 +388,6 @@ public class CaseController {
 	}
 
 	public CommitDiscardWrapperComponent<SymptomsForm> getCaseSymptomsEditComponent(final String caseUuid, ViewMode viewMode) {
-
 		CaseDataDto caseDataDto = findCase(caseUuid);
 		PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
 
@@ -403,17 +408,15 @@ public class CaseController {
 		return editView;
 	}    
 
-
 	private void saveCase(CaseDataDto cazeDto, String viewName, final ViewMode viewMode) {
-
-		// compare old and new
+		// Compare old and new case
 		CaseDataDto existingDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(cazeDto.getUuid());
 		onCaseChanged(existingDto, cazeDto);
-		
+
 		CaseDataDto resultDto = FacadeProvider.getCaseFacade().saveCase(cazeDto);
 
 		if (resultDto.getPlagueType() != cazeDto.getPlagueType()) {
-			// TODO would be much better to have a notication for this triggered in the backend
+			// TODO would be much better to have a notification for this triggered in the backend
 			Window window = VaadinUiUtil.showSimplePopupWindow("Save notification", 
 					"The symptoms selected match the clinical criteria for " + resultDto.getPlagueType().toString() + ". "
 							+ "The plague type is set to " + resultDto.getPlagueType().toString() + " for this case.");
@@ -421,22 +424,38 @@ public class CaseController {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public void windowClose(CloseEvent e) {
-					Notification.show("Case saved", Type.WARNING_MESSAGE);
-					navigateToView(viewName, cazeDto.getUuid(), viewMode);
+					if (existingDto.getCaseClassification() != resultDto.getCaseClassification() &&
+							resultDto.getClassificationUser() == null) {
+						Notification notification = new Notification("Case saved. The classification was automatically changed to " + resultDto.getCaseClassification().toString() + ".", Type.WARNING_MESSAGE);
+						notification.setDelayMsec(-1);
+						notification.show(Page.getCurrent());
+						navigateToView(viewName, cazeDto.getUuid(), viewMode);
+					} else {
+						Notification.show("Case saved", Type.WARNING_MESSAGE);
+						navigateToView(viewName, cazeDto.getUuid(), viewMode);
+					}
 				}
 			});
 		} else {
-			Notification.show("Case saved", Type.WARNING_MESSAGE);
-			navigateToView(viewName, cazeDto.getUuid(), viewMode);
+			// Notify user about an automatic case classification change
+			if (existingDto.getCaseClassification() != resultDto.getCaseClassification() &&
+					resultDto.getClassificationUser() == null) {
+				Notification notification = new Notification("Case saved. The classification was automatically changed to " + resultDto.getCaseClassification().toString() + ".", Type.WARNING_MESSAGE);
+				notification.setDelayMsec(-1);
+				notification.show(Page.getCurrent());
+				navigateToView(viewName, cazeDto.getUuid(), viewMode);
+			} else {
+				Notification.show("Case saved", Type.WARNING_MESSAGE);
+				navigateToView(viewName, cazeDto.getUuid(), viewMode);
+			}
 		}
 	}
 
 	private void onCaseChanged(CaseDataDto existingCase, CaseDataDto changedCase) {
-		
 		if (existingCase == null) {
 			return;
 		}
-		
+
 		// classification
 		if (changedCase.getCaseClassification() != existingCase.getCaseClassification()) {
 			changedCase.setClassificationDate(new Date());
@@ -454,10 +473,9 @@ public class CaseController {
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
-				EpiDataDto dto = epiDataForm.getValue();
-				FacadeProvider.getEpiDataFacade().saveEpiData(dto);
-				Notification.show("Case epidemiological data saved", Type.WARNING_MESSAGE);
-				navigateToView(EpiDataView.VIEW_NAME, caseUuid, viewMode);
+				CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
+				cazeDto.setEpiData(epiDataForm.getValue());
+				saveCase(cazeDto, EpiDataView.VIEW_NAME, viewMode);
 			}
 		});
 
@@ -494,7 +512,111 @@ public class CaseController {
 		});
 		facilityChangeView.getButtonsPanel().replaceComponent(facilityChangeView.getDiscardButton(), cancelButton);
 	}
-	
+
+	public void openClassificationRulesPopup(CaseDataDto caze) {
+		VerticalLayout classificationRulesLayout = new VerticalLayout();
+		classificationRulesLayout.setMargin(true);
+
+		ClassificationCriteria suspectCriteria = FacadeProvider.getCaseClassificationFacade().getSuspectCriteria(caze.getDisease());
+		if (suspectCriteria != null) {
+			Label suspectCriteriaHeadline = new Label(I18nProperties.getText("suspectCriteria"));
+			CssStyles.style(suspectCriteriaHeadline, CssStyles.LABEL_BOLD, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_SUSPECT);
+			classificationRulesLayout.addComponent(suspectCriteriaHeadline);
+			buildCriteriaLayout(classificationRulesLayout, suspectCriteria);
+		}
+
+		ClassificationCriteria probableCriteria = FacadeProvider.getCaseClassificationFacade().getProbableCriteria(caze.getDisease());
+		if (probableCriteria != null) {
+			Label probableCriteriaHeadline = new Label(I18nProperties.getText("probableCriteria"));
+			CssStyles.style(probableCriteriaHeadline, CssStyles.LABEL_BOLD, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_PROBABLE, CssStyles.VSPACE_TOP_3);
+			classificationRulesLayout.addComponent(probableCriteriaHeadline);
+			buildCriteriaLayout(classificationRulesLayout, probableCriteria);
+		}
+
+		ClassificationCriteria confirmedCriteria = FacadeProvider.getCaseClassificationFacade().getConfirmedCriteria(caze.getDisease());
+		if (confirmedCriteria != null) {
+			Label confirmedCriteriaHeadline = new Label(I18nProperties.getText("confirmedCriteria"));
+			CssStyles.style(confirmedCriteriaHeadline, CssStyles.LABEL_BOLD, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_CONFIRMED, CssStyles.VSPACE_TOP_3);
+			classificationRulesLayout.addComponent(confirmedCriteriaHeadline);
+			buildCriteriaLayout(classificationRulesLayout, confirmedCriteria);
+		}
+
+		Window popupWindow = VaadinUiUtil.showPopupWindow(classificationRulesLayout);
+		popupWindow.addCloseListener(e -> {
+			popupWindow.close();
+		});
+		popupWindow.setWidth(860, Unit.PIXELS);
+		popupWindow.setHeight(80, Unit.PERCENTAGE);
+		popupWindow.setCaption(I18nProperties.getText("classificationRulesFor") + " " + caze.getDisease().toString());
+	}
+
+	private void buildCriteriaLayout(VerticalLayout classificationRulesLayout, ClassificationCriteria criteria) {
+		if (!(criteria instanceof ClassificationCollectiveCriteria)) {
+			// Create a layout with a single label if the criteria is not collective (i.e. has no sub criteria)
+			VerticalLayout criteriaLayout = createNewLayoutForClassificationRules();
+			criteriaLayout.addComponent(new Label(criteria.buildDescription(), ContentMode.HTML));
+			classificationRulesLayout.addComponent(criteriaLayout);
+		} else {
+			// Otherwise, create a layout and fill it by iterating over the sub criteria
+			for (ClassificationCriteria subCriteria : ((ClassificationCollectiveCriteria) criteria).getSubCriteria()) {
+				if (subCriteria instanceof ClassificationAllOfCriteria) {
+					// If the sub criteria is an AllOfCriteria, every one of its sub criteria needs its own layout
+					for (ClassificationCriteria subSubCriteria : ((ClassificationCollectiveCriteria) subCriteria).getSubCriteria()) {
+						classificationRulesLayout.addComponent(buildSubCriteriaLayout(createNewLayoutForClassificationRules(), subSubCriteria, subCriteria));
+					}
+				} else {
+					classificationRulesLayout.addComponent(buildSubCriteriaLayout(createNewLayoutForClassificationRules(), subCriteria, criteria));
+				}
+			}
+		}
+	}
+
+	private VerticalLayout buildSubCriteriaLayout(VerticalLayout criteriaLayout, ClassificationCriteria criteria, ClassificationCriteria parentCriteria) {	
+		// For non-collective criteria, only a simple label needs to be added to the layout
+		if (!(criteria instanceof ClassificationCollectiveCriteria)) {
+			criteriaLayout.addComponent(new Label(criteria.buildDescription(), ContentMode.HTML));
+			return criteriaLayout;
+		}
+
+		// Add the criteria name to the layout (e.g. "ONE OF")
+		if (!(criteria instanceof ClassificationAllOfCriteria)) {
+			criteriaLayout.addComponent(new Label(((ClassificationCollectiveCriteria) criteria).getCriteriaName(), ContentMode.HTML));
+		}
+		
+		for (ClassificationCriteria subCriteria : ((ClassificationCollectiveCriteria) criteria).getSubCriteria()) {
+			if (!(subCriteria instanceof ClassificationCollectiveCriteria) || subCriteria instanceof ClassificationCompactCriteria) {
+				// For non-collective or compact collective criteria, add the label description as a list item
+				criteriaLayout.addComponent(new Label("- " + subCriteria.buildDescription(), ContentMode.HTML));
+			} else if (parentCriteria instanceof ClassificationCollectiveCriteria && !(parentCriteria instanceof ClassificationAllOfCriteria)) {
+				// For collective criteria, but not ClassificationAllOfCriteria, add a sub layout with a slightly different color to make clear
+				// that it belongs to the criteria listed before
+				VerticalLayout criteriaSubLayout = createNewSubLayoutForClassificationRules();
+				criteriaSubLayout.addComponent(new Label("<b>" + I18nProperties.getText("and").toUpperCase() + "</b>" + subCriteria.buildDescription(), ContentMode.HTML));
+				criteriaLayout.addComponent(criteriaSubLayout);
+				criteriaLayout.setComponentAlignment(criteriaSubLayout, Alignment.MIDDLE_RIGHT);
+			} else {
+				// For everything else, recursively call this method to determine how to display the sub criteria
+				buildSubCriteriaLayout(criteriaLayout, subCriteria, criteria instanceof ClassificationAllOfCriteria ? parentCriteria : criteria);
+			}
+		}
+
+		return criteriaLayout;
+	}
+
+	private VerticalLayout createNewLayoutForClassificationRules() {
+		VerticalLayout layout = new VerticalLayout();
+		CssStyles.style(layout, CssStyles.BACKGROUND_ROUNDED_CORNERS, CssStyles.BACKGROUND_CRITERIA, CssStyles.VSPACE_TOP_4);
+		return layout;
+	}
+
+	private VerticalLayout createNewSubLayoutForClassificationRules() {
+		VerticalLayout layout = new VerticalLayout();
+		layout.setWidth(95, Unit.PERCENTAGE);
+		CssStyles.style(layout, CssStyles.BACKGROUND_ROUNDED_CORNERS, CssStyles.BACKGROUND_SUB_CRITERIA, CssStyles.VSPACE_TOP_4, 
+				CssStyles.VSPACE_4, CssStyles.HSPACE_RIGHT_3);
+		return layout;
+	}
+
 	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification("No cases selected", "You have not selected any cases.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());

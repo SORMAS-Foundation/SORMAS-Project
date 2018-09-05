@@ -6,20 +6,12 @@
 
     <data>
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
-        <variable name="data" type="de.symeda.sormas.app.backend.person.Person"/>
-        <!--<variable name="availablePersons" type="java.util.List&lt;de.symeda.sormas.app.component.Item&gt;" />-->
-        <variable name="availablePersons"
-            type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.person.Person&gt;" />
-        <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
 
-        <variable
-            name="updateSearchCallback"
-            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
-        <variable
-            name="availablePersonItemClickCallback"
-            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+        <variable name="data" type="de.symeda.sormas.app.backend.person.Person" />
+        <variable name="availablePersons" type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.person.Person&gt;" />
+        <variable name="updateSearchCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+        <variable name="availablePersonItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
-
 
     <ScrollView
         android:layout_width="match_parent"
@@ -28,94 +20,49 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingLeft="@dimen/rowListItemHorizontalMargin"
-                android:paddingRight="@dimen/rowListItemHorizontalMargin"
-                >
+                android:paddingStart="@dimen/rowListItemHorizontalMargin"
+                android:paddingEnd="@dimen/rowListItemHorizontalMargin">
 
-                <!--<TextView
-                    android:id="@+id/txtDialogHint"
+                <TextView
+                    android:id="@+id/dialog_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@={config.subHeading}"
+                    android:text="@string/description_pick_or_create_person"
                     android:textColor="@color/pageHintText"
-                    android:textSize="@dimen/defaultPageHintTextSize"/>-->
-
-
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/person_lastName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_case_patient_last_name"
-                    app:labelCaption="@string/label_case_patient_last_name"
-                    app:description="@string/desc_case_patient_last_name"
-                    app:required="true"
-                    app:value="@={data.lastName}"
-                    app:imeOptions="actionNext"
-
-
-                    />
+                    android:textSize="@dimen/defaultPageHintTextSize"/>
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/person_firstName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_case_patient_first_name"
-                    app:labelCaption="@string/label_case_patient_first_name"
-                    app:description="@string/desc_case_patient_first_name"
+                    android:nextFocusForward="@+id/person_lastName"
                     app:required="true"
                     app:value="@={data.firstName}"
                     app:imeOptions="actionNext"
+                    style="@style/ControlSingleColumnStyle" />
 
-
-                    />
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/person_lastName"
+                    app:required="true"
+                    app:value="@={data.lastName}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlButton
-                    android:id="@+id/btnUpdateSearch"
+                    android:id="@+id/update_search"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/action_search"
+                    android:text="@string/action_update_search"
                     app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
                     app:rounded="true"
-                    app:slim="true"
-                    android:onClick="@{(view) -> updateSearchCallback.onClick(view, data)}"
-                    />
-
-
-
-                <!--<de.symeda.sormas.app.component.controls.TeboRadioGroup
-                    android:id="@+id/chkAvailablePersons"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_case_patient_possible_duplicate"
-                    app:labelCaption="@string/label_case_patient_possible_duplicate"
-                    app:description="@string/desc_case_patient_possible_duplicate"
-                    app:required="false"
-                    app:horizontalFlow="false"
-                    app:scaleX="1"
-                    app:scaleY="1"
-                    app:radioButtonMarginStart="@dimen/radioButtonMarginStart"
-                    app:includeMarginStart="true"
-                    app:radioButtonLabelMarginStart="@dimen/radioButtonLabelMarginStart"
-                    app:items="@{availablePersons}"
-                    app:value="@={data.selectedPerson}"
-
-
-                    />-->
+                    app:slim="true" />
 
             </LinearLayout>
-
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -126,12 +73,11 @@
                 android:paddingTop="@dimen/parentLayoutVerticalMargin"
                 android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
                 android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                >
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/parentLayoutVerticalMargin"
                     android:orientation="vertical">
 
                     <TextView
@@ -141,40 +87,45 @@
                         style="@style/SubHeadingCompactStyle" />
 
                     <TextView
-                        android:id="@+id/pick_or_create_person_description"
+                        android:id="@+id/pick_person_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/description_pick_or_create_person"
+                        android:text="@string/description_pick_person"
                         style="@style/SubHeadingDescriptionStyle" />
 
                     <TextView
                         android:id="@+id/no_records_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/description_pick_or_create_person_no_records"
+                        android:text="@string/description_pick_person_no_records"
                         style="@style/SubHeadingDescriptionStyle" />
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/listExistingPersons"
+                    android:id="@+id/existing_persons_list"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:clipToPadding="false"
-                    android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
-                    android:paddingBottom="@dimen/rowListItemParentElevationVerticalPadding"
-                    android:paddingLeft="@dimen/rowListItemParentElevationHorizontalPadding"
-                    android:paddingRight="@dimen/rowListItemParentElevationHorizontalPadding"
+                    android:padding="@dimen/rowListItemParentPadding"
                     app:entries="@{availablePersons}"
                     app:layout="@{@layout/row_select_or_create_person_layout}"
-                    app:callback="@{availablePersonItemClickCallback}"
-                    />
-
+                    app:callback="@{availablePersonItemClickCallback}" />
 
             </LinearLayout>
 
-        </LinearLayout>
-    </ScrollView>
-</layout>
+            <TextView
+                android:id="@+id/create_person_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/description_create_person"
+                android:paddingStart="@dimen/rowListItemHorizontalMargin"
+                android:paddingEnd="@dimen/rowListItemHorizontalMargin"
+                style="@style/SubHeadingDescriptionStyle" />
 
+        </LinearLayout>
+
+    </ScrollView>
+
+</layout>

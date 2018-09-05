@@ -22,7 +22,7 @@ public class OutbreakController {
 	
 	public void openOutbreakConfigurationWindow(Disease disease, OutbreakRegionConfiguration diseaseOutbreakInformation) {
 		OutbreakRegionConfigurationForm configurationForm = new OutbreakRegionConfigurationForm(diseaseOutbreakInformation);
-		final CommitDiscardWrapperComponent<OutbreakRegionConfigurationForm> configurationComponent = new CommitDiscardWrapperComponent<OutbreakRegionConfigurationForm>(configurationForm, null);
+		final CommitDiscardWrapperComponent<OutbreakRegionConfigurationForm> configurationComponent = new CommitDiscardWrapperComponent<OutbreakRegionConfigurationForm>(configurationForm);
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(configurationComponent, disease.toShortString() + " Outbreak in " + diseaseOutbreakInformation.getRegion().toString());
 
 		configurationComponent.addCommitListener(new CommitListener() {
@@ -47,7 +47,7 @@ public class OutbreakController {
 				
 				popupWindow.close();
 				Notification.show("Outbreak information saved", Type.WARNING_MESSAGE);
-				SormasUI.get().getNavigator().navigateTo(ConfigurationView.VIEW_NAME);	
+				SormasUI.get().getNavigator().navigateTo(OutbreaksView.VIEW_NAME);	
 			}
 		});
 

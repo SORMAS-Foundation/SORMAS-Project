@@ -7,10 +7,18 @@ import de.symeda.sormas.app.core.enumeration.StatusElaborator;
 
 public enum ContactSection implements StatusElaborator {
 
-    CONTACT_INFO,
-    PERSON_INFO,
-    VISITS,
-    TASKS;
+    CONTACT_INFO(R.string.caption_contact_information, R.drawable.ic_drawer_contact_blue_24dp),
+    PERSON_INFO(R.string.caption_person_information, R.drawable.ic_person_black_24dp),
+    VISITS(R.string.caption_contact_visits, R.drawable.ic_recent_actors_black_24dp),
+    TASKS(R.string.caption_contact_tasks, R.drawable.ic_drawer_user_task_blue_24dp);
+
+    private int friendlyNameResourceId;
+    private int iconResourceId;
+
+    ContactSection(int friendlyNameResourceId, int iconResourceId) {
+        this.friendlyNameResourceId = friendlyNameResourceId;
+        this.iconResourceId = iconResourceId;
+    }
 
     public static ContactSection fromOrdinal(int ordinal) {
         return ContactSection.values()[ordinal];
@@ -18,18 +26,7 @@ public enum ContactSection implements StatusElaborator {
 
     @Override
     public String getFriendlyName(Context context) {
-        switch(this) {
-            case CONTACT_INFO:
-                return context.getResources().getString(R.string.caption_contact_information);
-            case PERSON_INFO:
-                return context.getResources().getString(R.string.caption_person_information);
-            case VISITS:
-                return context.getResources().getString(R.string.caption_contact_visits);
-            case TASKS:
-                return context.getResources().getString(R.string.caption_contact_tasks);
-            default:
-                throw new IllegalArgumentException(this.toString());
-        }
+        return context.getResources().getString(friendlyNameResourceId);
     }
 
     @Override
@@ -44,6 +41,6 @@ public enum ContactSection implements StatusElaborator {
 
     @Override
     public int getIconResourceId() {
-        return 0;
+        return iconResourceId;
     }
 }

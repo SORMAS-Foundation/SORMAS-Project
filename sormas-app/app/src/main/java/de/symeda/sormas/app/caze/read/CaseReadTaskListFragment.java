@@ -14,7 +14,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
-import de.symeda.sormas.app.task.read.TaskReadActivity;
+import de.symeda.sormas.app.task.edit.TaskEditActivity;
 
 public class CaseReadTaskListFragment extends BaseReadFragment<FragmentFormListLayoutBinding, List<Task>, Case> implements OnListItemClickListener {
 
@@ -68,6 +68,6 @@ public class CaseReadTaskListFragment extends BaseReadFragment<FragmentFormListL
     @Override
     public void onListItemClick(View view, int position, Object item) {
         Task task = (Task) item;
-        TaskReadActivity.startActivity(getContext(), task.getUuid());
+        TaskEditActivity.startActivity(getContext(), task.getUuid());
     }
 }

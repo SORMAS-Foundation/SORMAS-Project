@@ -26,9 +26,10 @@ import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
-import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
@@ -67,13 +68,16 @@ public class AbstractBeanTest extends BaseBeanTest {
 		MockProducer.resetMocks();
 	}
 	
-
 	public ConfigFacade getConfigFacade() {
 		return getBean(ConfigFacadeEjbLocal.class);
 	}
 
 	public CaseFacade getCaseFacade() {
 		return getBean(CaseFacadeEjbLocal.class);
+	}
+	
+	public CaseClassificationFacadeEjb getCaseClassificationLogic() {
+		return getBean(CaseClassificationFacadeEjb.class);
 	}
 	
 	public ContactFacade getContactFacade() {
@@ -179,4 +183,5 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public CommunityService getCommunityService() {
 		return getBean(CommunityService.class);
 	}
+	
 }

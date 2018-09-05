@@ -35,6 +35,7 @@ public class OutbreakRegionConfigurationForm extends VerticalLayout {
 	private Label affectedDistrictsNumberLabel;
 
 	public OutbreakRegionConfigurationForm(OutbreakRegionConfiguration regionOutbreakConfiguration) {
+		//TODO #232 - Possibly needs to be refactored
 		setStyleName("configuration-view");
 
 		// Copy the set of affected districts because the CommitDiscardWrapperComponent is not reset when discarding this form

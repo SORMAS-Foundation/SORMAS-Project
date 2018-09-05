@@ -29,6 +29,7 @@ import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
@@ -50,6 +51,8 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
 
+	@EJB
+	private CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private SampleTestService sampleTestService;
 	@EJB
@@ -136,6 +139,9 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 		sampleService.updateMainSampleTest(sampleTest.getSample());
 
 		onSampleTestChanged(existingSampleTest, sampleTest);
+		
+		// Update case classification if necessary
+		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(sampleTest.getSample().getAssociatedCase()), sampleTest.getSample().getAssociatedCase());
 
 		return toDto(sampleTest);
 	}
@@ -149,6 +155,8 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 
 		SampleTest sampleTest = sampleTestService.getByReferenceDto(sampleTestRef);
 		sampleTestService.delete(sampleTest);
+		
+		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(sampleTest.getSample().getAssociatedCase()), sampleTest.getSample().getAssociatedCase());
 	}
 
 	public SampleTest fromDto(@NotNull SampleTestDto source) {
@@ -236,7 +244,7 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
 				}
 			}
-		}
+		}	
 	}
 
 	@LocalBean
