@@ -69,7 +69,6 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 	 * TODO what if no disease is defined or disease doesn't have an incubation period
 	 */
 	public void udpateResultingCase(EventParticipant eventParticipant) {
-
 		// calculate the incubation period relative to the event
 		// make sure to get the maximum time span based on report date time and event date
 		Date incubationPeriodStart = eventParticipant.getEvent().getReportDateTime();

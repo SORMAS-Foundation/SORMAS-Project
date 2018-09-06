@@ -11,6 +11,7 @@ public class Bundler {
     private static final String CASE_UUID = "caseUuid";
     private static final String CONTACT_UUID = "contactUuid";
     private static final String EVENT_UUID = "eventUuid";
+    private static final String EVENT_PARTICIPANT_UUID = "eventParticipantUuid";
 
     private final Bundle bundle;
 
@@ -99,6 +100,18 @@ public class Bundler {
     public String getEventUuid() {
         if (bundle.containsKey(EVENT_UUID)) {
             return bundle.getString(EVENT_UUID);
+        }
+        return null;
+    }
+
+    public Bundler setEventParticipantUuid(String eventParticipantUuid) {
+        bundle.putString(EVENT_PARTICIPANT_UUID, eventParticipantUuid);
+        return this;
+    }
+
+    public String getEventParticipantUuid() {
+        if (bundle.containsKey(EVENT_PARTICIPANT_UUID)) {
+            return bundle.getString(EVENT_PARTICIPANT_UUID);
         }
         return null;
     }

@@ -14,6 +14,7 @@
     <string name="action_confirm_report">Confirm Report</string>
     <string name="action_create">Create</string>
     <string name="action_create_case_from_contact">Create a case for this contact person</string>
+    <string name="action_create_case_from_event_person">Create a case for this event person</string>
     <string name="action_delete">Delete</string>
     <string name="action_dismiss">Dismiss</string>
     <string name="action_done">Done</string>
@@ -48,6 +49,7 @@
     <string name="action_ok">Ok</string>
     <string name="action_open_source_case">Open Source Case</string>
     <string name="action_open_resulting_case">Open Resulting Case</string>
+    <string name="action_open_event_person_case">Open Case of Event Person</string>
     <string name="action_open_reports">Open Reports</string>
     <string name="action_open_syncLog">Synchronization conflicts</string>
     <string name="action_options">Options</string>

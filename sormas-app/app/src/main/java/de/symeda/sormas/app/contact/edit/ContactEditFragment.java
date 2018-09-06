@@ -8,10 +8,12 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
@@ -42,7 +44,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         contentBinding.createCase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CaseNewActivity.startActivity(getContext(), record.getUuid());
+                CaseNewActivity.startActivityFromContact(getContext(), record.getUuid());
             }
         });
 

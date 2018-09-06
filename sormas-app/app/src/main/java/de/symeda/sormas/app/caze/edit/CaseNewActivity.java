@@ -17,6 +17,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.caze.CaseSection;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
@@ -38,33 +39,46 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
     private AsyncTask saveTask;
 
     private String contactUuid;
+    private String eventParticipantUuid;
 
     public static void startActivity(Context fromActivity) {
         BaseEditActivity.startActivity(fromActivity, CaseNewActivity.class, buildBundle());
     }
 
-    public static void startActivity(Context fromActivity, String contactUuid) {
-        BaseEditActivity.startActivity(fromActivity, CaseNewActivity.class, buildBundle(contactUuid));
+    public static void startActivityFromContact(Context fromActivity, String contactUuid) {
+        BaseEditActivity.startActivity(fromActivity, CaseNewActivity.class, buildBundleWithContact(contactUuid));
+    }
+
+    public static void startActivityFromEventPerson(Context fromActivity, String eventParticipantUuid) {
+        BaseEditActivity.startActivity(fromActivity, CaseNewActivity.class, buildBundleWithEventParticipant(eventParticipantUuid));
     }
 
     public static Bundler buildBundle() {
         return BaseEditActivity.buildBundle(null);
     }
 
-    public static Bundler buildBundle(String contactUuid) {
+    public static Bundler buildBundleWithContact(String contactUuid) {
         return BaseEditActivity.buildBundle(null).setContactUuid(contactUuid);
+    }
+
+    public static Bundler buildBundleWithEventParticipant(String eventParticipantUuid) {
+        return BaseEditActivity.buildBundle(null).setEventParticipantUuid(eventParticipantUuid);
     }
 
     @Override
     protected void onCreateInner(Bundle savedInstanceState) {
         super.onCreateInner(savedInstanceState);
-        contactUuid = new Bundler(savedInstanceState).getContactUuid();
+        Bundler bundler = new Bundler(savedInstanceState);
+        contactUuid = bundler.getContactUuid();
+        eventParticipantUuid = bundler.getEventParticipantUuid();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        new Bundler(outState).setContactUuid(contactUuid);
+        Bundler bundler = new Bundler(outState);
+        bundler.setContactUuid(contactUuid);
+        bundler.setEventParticipantUuid(eventParticipantUuid);
     }
 
     @Override
@@ -86,6 +100,9 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
             _person = sourceContact.getPerson();
             _case = DatabaseHelper.getCaseDao().build(_person,
                     DatabaseHelper.getCaseDao().queryUuidBasic(sourceContact.getCaseUuid()));
+        } else if (!DataHelper.isNullOrEmpty(eventParticipantUuid)) {
+            EventParticipant eventParticipant = DatabaseHelper.getEventParticipantDao().queryUuid(eventParticipantUuid);
+            _case = DatabaseHelper.getCaseDao().build(eventParticipant);
         } else {
             _person = DatabaseHelper.getPersonDao().build();
             _case = DatabaseHelper.getCaseDao().build(_person);
@@ -103,7 +120,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Case activityRootData) {
-        BaseEditFragment fragment = CaseNewFragment.newInstance(activityRootData, contactUuid);
+        BaseEditFragment fragment = CaseNewFragment.newInstance(activityRootData, contactUuid, eventParticipantUuid);
         fragment.setLiveValidationDisabled(true);
         return fragment;
     }
@@ -172,6 +189,12 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                     sourceContact.setResultingCaseUuid(caseToSave.getUuid());
                     sourceContact.setResultingCaseUser(ConfigProvider.getUser());
                     DatabaseHelper.getContactDao().saveAndSnapshot(sourceContact);
+                }
+
+                if (!DataHelper.isNullOrEmpty(eventParticipantUuid)) {
+                    EventParticipant eventParticipant = DatabaseHelper.getEventParticipantDao().queryUuid(eventParticipantUuid);
+                    eventParticipant.setResultingCaseUuid(caseToSave.getUuid());
+                    DatabaseHelper.getEventParticipantDao().saveAndSnapshot(eventParticipant);
                 }
             }
 

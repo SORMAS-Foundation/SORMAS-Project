@@ -32,8 +32,14 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     private List<Item> initialCommunities;
     private List<Item> initialFacilities;
 
-    public static CaseNewFragment newInstance(Case activityRootData, String contactUuid) {
-        return newInstance(CaseNewFragment.class, CaseNewActivity.buildBundle(contactUuid).get(), activityRootData);
+    public static CaseNewFragment newInstance(Case activityRootData, String contactUuid, String eventParticipantUuid) {
+        if (contactUuid != null) {
+            return newInstance(CaseNewFragment.class, CaseNewActivity.buildBundleWithContact(contactUuid).get(), activityRootData);
+        } else if (eventParticipantUuid != null) {
+            return newInstance(CaseNewFragment.class, CaseNewActivity.buildBundleWithEventParticipant(eventParticipantUuid).get(), activityRootData);
+        } else {
+            return newInstance(CaseNewFragment.class, CaseNewActivity.buildBundle().get(), activityRootData);
+        }
     }
 
     @Override
@@ -93,7 +99,9 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         }
 
         // Disable first and last name and disease fields when case is created from contact
-        if (new Bundler(getArguments()).getContactUuid() != null) {
+        // or event person
+        Bundler bundler = new Bundler(getArguments());
+        if (bundler.getContactUuid() != null || bundler.getEventParticipantUuid() != null) {
             contentBinding.caseDataFirstName.setEnabled(false);
             contentBinding.caseDataLastName.setEnabled(false);
             contentBinding.caseDataDisease.setEnabled(false);
@@ -107,4 +115,5 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     public int getEditLayout() {
         return R.layout.fragment_case_new_layout;
     }
+
 }

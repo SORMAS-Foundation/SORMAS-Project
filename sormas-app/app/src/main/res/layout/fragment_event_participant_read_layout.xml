@@ -7,6 +7,9 @@
     android:id="@+id/base_layout">
 
     <data>
+        <import type="de.symeda.sormas.api.user.UserRight" />
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
+
         <variable name="data" type="de.symeda.sormas.app.backend.event.EventParticipant"/>
     </data>
 
@@ -23,27 +26,63 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="@dimen/fragment_padding"
-                android:paddingLeft="@dimen/fragment_padding"
-                android:paddingRight="@dimen/fragment_padding"
-                android:layout_marginBottom="@dimen/fragment_padding_negative"
                 android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:id="@+id/main_content">
+                android:focusableInTouchMode="true">
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/eventParticipant_involvementDescription"
-                    app:value="@{data.involvementDescription}"
-                    style="@style/ControlSingleColumnStyle" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingTop="@dimen/fragment_padding"
+                    android:paddingLeft="@dimen/fragment_padding"
+                    android:paddingRight="@dimen/fragment_padding"
+                    android:layout_marginBottom="@dimen/fragment_padding_negative"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:id="@+id/main_content">
 
-                <ImageView style="@style/FullHorizontalDividerStyle"/>
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/eventParticipant_involvementDescription"
+                        app:value="@{data.involvementDescription}"
+                        style="@style/ControlSingleColumnStyle" />
+
+                    <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+                </LinearLayout>
+
+                <include
+                    android:id="@+id/eventParticipant_person_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="-64dp"
+                    layout="@layout/fragment_person_read_layout"
+                    app:data="@{data.person}"/>
 
             </LinearLayout>
 
-            <include
-                android:id="@+id/eventParticipant_person_layout"
-                layout="@layout/fragment_person_read_layout"
-                app:data="@{data.person}"/>
+            <RelativeLayout
+                android:id="@+id/event_participant_buttons_panel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/background_full_width_border"
+                android:paddingLeft="@dimen/buttonPanelHorizontalMargin"
+                android:paddingRight="@dimen/buttonPanelHorizontalMargin"
+                android:paddingTop="@dimen/buttonPanelVerticalMargin"
+                android:paddingBottom="@dimen/buttonPanelVerticalMargin"
+                android:elevation="16dp"
+                app:userViewRight="@{UserRight.CASE_VIEW}">
+
+                <de.symeda.sormas.app.component.controls.ControlButton
+                    android:id="@+id/open_event_person_case"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_open_event_person_case"
+                    app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
+                    app:rounded="true"
+                    app:iconStart="@drawable/ic_open_case_black_24dp" />
+
+            </RelativeLayout>
 
         </LinearLayout>
 
