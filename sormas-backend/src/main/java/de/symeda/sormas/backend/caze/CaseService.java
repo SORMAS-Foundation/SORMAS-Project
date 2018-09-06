@@ -26,6 +26,7 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -178,7 +179,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		Predicate filter = createUserFilter(cb, cq, caze, user);
 
 		// Onset date > reception date > report date (use report date as a fallback if none of the other dates is available)
-		Predicate dateFilter = createNewCaseFilter(cb, caze, from, to);
+		Predicate dateFilter = createNewCaseFilter(cb, caze, from, to, NewCaseDateType.MOST_RELEVANT);
 		if (filter != null) {
 			filter = cb.and(filter, dateFilter);
 		} else {
@@ -536,21 +537,34 @@ public class CaseService extends AbstractAdoService<Case> {
 		}
 	}
 	
-	public Predicate createNewCaseFilter(CriteriaBuilder cb, Root<Case> caze, Date fromDate, Date toDate) {
+	public Predicate createNewCaseFilter(CriteriaBuilder cb, Root<Case> caze, Date fromDate, Date toDate, NewCaseDateType newCaseDateType) {
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
-		Predicate filter = cb.or(cb.between(symptoms.get(Symptoms.ONSET_DATE), fromDate, toDate),
-				cb.and(
-						cb.isNull(symptoms.get(Symptoms.ONSET_DATE)),
-						cb.between(caze.get(Case.RECEPTION_DATE), fromDate, toDate)
-				),
-				cb.and(
-						cb.isNull(symptoms.get(Symptoms.ONSET_DATE)),
-						cb.isNull(caze.get(Case.RECEPTION_DATE)),
-						cb.between(caze.get(Case.REPORT_DATE), fromDate, toDate)
-				)
-		);
 		
-		return filter;
+		Predicate onsetDateFilter = cb.between(symptoms.get(Symptoms.ONSET_DATE), fromDate, toDate);
+		Predicate receptionDateFilter = cb.between(caze.get(Case.RECEPTION_DATE), fromDate, toDate);
+		Predicate reportDateFilter = cb.between(caze.get(Case.REPORT_DATE), fromDate, toDate);
+		
+		Predicate newCaseFilter = null;
+		if (newCaseDateType == NewCaseDateType.MOST_RELEVANT || newCaseDateType == null) {
+			newCaseFilter = cb.or(
+					onsetDateFilter,
+					cb.and(
+							cb.isNull(symptoms.get(Symptoms.ONSET_DATE)),
+							receptionDateFilter),
+					cb.and(
+							cb.isNull(symptoms.get(Symptoms.ONSET_DATE)),
+							cb.isNull(caze.get(Case.RECEPTION_DATE)),
+							reportDateFilter)
+					);
+		} else if (newCaseDateType == NewCaseDateType.ONSET) {
+			newCaseFilter = onsetDateFilter;
+		} else if (newCaseDateType == NewCaseDateType.RECEPTION) {
+			newCaseFilter = receptionDateFilter;
+		} else {
+			newCaseFilter = reportDateFilter;
+		}
+		
+		return newCaseFilter;
 	}
 	
 	public Predicate buildCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, Root<Case> from) {
@@ -589,7 +603,7 @@ public class CaseService extends AbstractAdoService<Case> {
 			filter = and(cb, filter, cb.equal(person.get(Person.PRESENT_CONDITION), caseCriteria.getPresentCondition()));
 		}
 		if (caseCriteria.getNewCaseDateFrom() != null && caseCriteria.getNewCaseDateTo() != null) {
-			filter = and(cb, filter, createNewCaseFilter(cb, from, caseCriteria.getNewCaseDateFrom(), caseCriteria.getNewCaseDateTo()));
+			filter = and(cb, filter, createNewCaseFilter(cb, from, caseCriteria.getNewCaseDateFrom(), caseCriteria.getNewCaseDateTo(), caseCriteria.getNewCaseDateType()));
 		}
 		if (caseCriteria.getPerson() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Case.PERSON, JoinType.LEFT).get(Person.UUID), caseCriteria.getPerson().getUuid()));

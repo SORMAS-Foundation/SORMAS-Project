@@ -23,6 +23,7 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -165,8 +166,8 @@ public class CaseGrid extends Grid {
 		reload();
 	}
 	
-	public void setDateFilter(Date fromDate, Date toDate) {
-		caseCriteria.newCaseDateBetween(fromDate, toDate);
+	public void setDateFilter(Date fromDate, Date toDate, NewCaseDateType newCaseDateType) {
+		caseCriteria.newCaseDateBetween(fromDate, toDate, newCaseDateType);
 		reload();
 	}
 	

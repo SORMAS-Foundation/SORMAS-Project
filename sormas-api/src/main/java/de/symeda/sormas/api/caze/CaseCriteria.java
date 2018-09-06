@@ -28,6 +28,7 @@ public class CaseCriteria implements Serializable, Cloneable {
 	private UserReferenceDto surveillanceOfficer;
 	private Date newCaseDateFrom;
 	private Date newCaseDateTo;
+	private NewCaseDateType newCaseDateType;
 	private PersonReferenceDto person;
 	private Boolean mustHaveNoGeoCoordinates;
 
@@ -65,9 +66,10 @@ public class CaseCriteria implements Serializable, Cloneable {
 		return this;
 	}
 	
-	public CaseCriteria newCaseDateBetween(Date newCaseDateFrom, Date newCaseDateTo) {
+	public CaseCriteria newCaseDateBetween(Date newCaseDateFrom, Date newCaseDateTo, NewCaseDateType newCaseDateType) {
 		this.newCaseDateFrom = newCaseDateFrom;
 		this.newCaseDateTo = newCaseDateTo;
+		this.newCaseDateType = newCaseDateType;
 		return this;
 	}
 	
@@ -107,6 +109,10 @@ public class CaseCriteria implements Serializable, Cloneable {
 
 	public Date getNewCaseDateTo() {
 		return newCaseDateTo;
+	}
+	
+	public NewCaseDateType getNewCaseDateType() {
+		return newCaseDateType;
 	}
 
 	public PersonReferenceDto getPerson() {
