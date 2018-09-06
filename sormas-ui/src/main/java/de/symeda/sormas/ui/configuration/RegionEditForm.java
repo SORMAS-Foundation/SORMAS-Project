@@ -33,8 +33,10 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 		addField(RegionDto.EPID_CODE, TextField.class);
 		TextField population = addField(RegionDto.POPULATION, TextField.class);
 		population.setConverter(new StringToIntegerConverter());
+		population.setConversionError("Only numbers are allowed for " + population.getCaption());
 		TextField growthRate = addField(RegionDto.GROWTH_RATE, TextField.class);
 		growthRate.setConverter(new StringToFloatConverter());
+		growthRate.setConversionError("Only numbers (with decimal places) are allowed for " + growthRate.getCaption());
 		
 		setRequired(true, RegionDto.NAME, RegionDto.EPID_CODE);
 	}

@@ -49,8 +49,12 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		ComboBox district = addField(FacilityDto.DISTRICT, ComboBox.class);
 		ComboBox community = addField(FacilityDto.COMMUNITY, ComboBox.class);
 		addField(FacilityDto.CITY, TextField.class);
-    	addField(FacilityDto.LATITUDE, TextField.class).setConverter(new StringToAngularLocationConverter());
-    	addField(FacilityDto.LONGITUDE, TextField.class).setConverter(new StringToAngularLocationConverter());
+    	TextField latitude = addField(FacilityDto.LATITUDE, TextField.class);
+    	latitude.setConverter(new StringToAngularLocationConverter());
+    	latitude.setConversionError("Only geo coordinate values are allowed for " + latitude.getCaption());
+    	TextField longitude = addField(FacilityDto.LONGITUDE, TextField.class);
+    	longitude.setConverter(new StringToAngularLocationConverter());
+    	longitude.setConversionError("Only geo coordinate values are allowed for " + longitude.getCaption());
 
 		name.setRequired(true);
 		region.setRequired(true);
