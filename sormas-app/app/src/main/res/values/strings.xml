@@ -215,6 +215,7 @@
     <string name="hint_synchronization_initial">Initial synchronizing with SORMAS server.\nPulling infrastructure data will take a few minutes.</string>
     <string name="hint_user_report">Please briefly describe the problem you have experienced. Don\'t enter any personal or otherwise sensitive data!</string>
     <string name="hint_weekly_report_no_data">No data available for this epi week.</string>
+    <string name="hint_no_coordinates">No coordinates picked</string>
 
     <string name="inadequate_specimen_cond">Specimen condition not adequate</string>
     <string name="indicator_required">*</string>

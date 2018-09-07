@@ -29,6 +29,8 @@ public class EpiDataGatheringDialog extends AbstractDialog {
     private EpiDataGathering data;
     private DialogCaseEpidGatheringEditLayoutBinding contentBinding;
 
+    // Constructor
+
     EpiDataGatheringDialog(final FragmentActivity activity, EpiDataGathering epiDataGathering) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_case_epid_gathering_edit_layout,
                 R.layout.dialog_root_three_button_panel_layout,  R.string.heading_sub_case_epid_social_events, -1);
@@ -36,16 +38,46 @@ public class EpiDataGatheringDialog extends AbstractDialog {
         this.data = epiDataGathering;
     }
 
+    // Instance methods
+
+    private void setUpControlListeners() {
+        contentBinding.epiDataGatheringGatheringAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openAddressPopup();
+            }
+        });
+    }
+
+    private void openAddressPopup() {
+        final Location location = (Location) contentBinding.epiDataGatheringGatheringAddress.getValue();
+        final Location locationClone = (Location) location.clone();
+        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone);
+        locationDialog.show();
+
+        locationDialog.setPositiveCallback(new de.symeda.sormas.app.util.Callback() {
+            @Override
+            public void call() {
+                contentBinding.epiDataGatheringGatheringAddress.setValue(locationClone);
+                data.setGatheringAddress(locationClone);
+                locationDialog.dismiss();
+            }
+        });
+    }
+
+    // Overrides
+
     @Override
-    protected void setBindingVariable(Context context, ViewDataBinding binding, String layoutName) {
+    protected void setContentBinding(Context context, ViewDataBinding binding, String layoutName) {
+        this.contentBinding = (DialogCaseEpidGatheringEditLayoutBinding) binding;
+
         if (!binding.setVariable(BR.data, data)) {
             Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
     }
 
     @Override
-    protected void initializeContentView(ViewDataBinding rootBinding, final ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-        this.contentBinding = (DialogCaseEpidGatheringEditLayoutBinding) contentBinding;
+    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
         this.contentBinding.epiDataGatheringGatheringDate.initializeDateField(getFragmentManager());
 
         setUpControlListeners();
@@ -53,18 +85,19 @@ public class EpiDataGatheringDialog extends AbstractDialog {
         if (data.getId() == null) {
             setLiveValidationDisabled(true);
         }
+    }
 
-        setPositiveCallback(new de.symeda.sormas.app.util.Callback() {
-            @Override
-            public void call() {
-                setLiveValidationDisabled(false);
-                try {
-                    FragmentValidator.validate(getContext(), contentBinding);
-                } catch (ValidationException e) {
-                    NotificationHelper.showDialogNotification(EpiDataGatheringDialog.this, ERROR, e.getMessage());
-                }
-            }
-        });
+    @Override
+    public void onPositiveClick() {
+        setLiveValidationDisabled(false);
+        try {
+            FragmentValidator.validate(getContext(), contentBinding);
+        } catch (ValidationException e) {
+            NotificationHelper.showDialogNotification(EpiDataGatheringDialog.this, ERROR, e.getMessage());
+            return;
+        }
+
+        super.onPositiveClick();
     }
 
     @Override
@@ -90,29 +123,6 @@ public class EpiDataGatheringDialog extends AbstractDialog {
     @Override
     public ControlButtonType getDeleteButtonType() {
         return ControlButtonType.LINE_DANGER;
-    }
-
-    private void setUpControlListeners() {
-        contentBinding.epiDataGatheringGatheringAddress.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openAddressPopup();
-            }
-        });
-    }
-
-    private void openAddressPopup() {
-        final Location location = (Location) contentBinding.epiDataGatheringGatheringAddress.getValue();
-        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), location);
-        locationDialog.show();
-
-        locationDialog.setPositiveCallback(new de.symeda.sormas.app.util.Callback() {
-            @Override
-            public void call() {
-                contentBinding.epiDataGatheringGatheringAddress.setValue(location);
-                locationDialog.dismiss();
-            }
-        });
     }
 
 }

@@ -86,7 +86,6 @@
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/location_latLon"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     android:paddingStart="@dimen/control_spacing"
                     android:paddingEnd="@dimen/control_spacing"
                     app:defaultValue='@{@string/hint_no_coordinates}'

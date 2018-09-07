@@ -14,19 +14,23 @@ public class MissingWeeklyReportDialog extends AbstractDialog {
 
     public static final String TAG = MissingWeeklyReportDialog.class.getSimpleName();
 
+    // Constructor
+
     public MissingWeeklyReportDialog(final FragmentActivity activity) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_missing_weekly_report_layout,
                 R.layout.dialog_root_two_button_panel_edge_aligned_layout,
                 R.string.heading_missing_weekly_report_dialog, R.string.alert_missing_report);
     }
 
+    // Overrides
+
     @Override
-    protected void setBindingVariable(Context context, ViewDataBinding binding, String layoutName) {
+    protected void setContentBinding(Context context, ViewDataBinding binding, String layoutName) {
         // Nothing to bind
     }
 
     @Override
-    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
+    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
         // Nothing to initialize
     }
 

@@ -74,11 +74,12 @@ public class CaseListActivity extends BaseListActivity {
         if (user.hasUserRole(UserRole.INFORMANT)
                 && DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(lastEpiWeek, ConfigProvider.getUser()) == null) {
 
-            MissingWeeklyReportDialog confirmationDialog = new MissingWeeklyReportDialog(this);
+            final MissingWeeklyReportDialog confirmationDialog = new MissingWeeklyReportDialog(this);
             confirmationDialog.setPositiveCallback(new Callback() {
                 @Override
                 public void call() {
                     ReportActivity.startActivity(getContext());
+                    confirmationDialog.dismiss();
                 }
             });
 

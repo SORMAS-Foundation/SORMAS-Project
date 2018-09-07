@@ -24,8 +24,9 @@ public class LocationDialog extends AbstractDialog {
     public static final String TAG = LocationDialog.class.getSimpleName();
 
     private Location data;
-
     private DialogLocationLayoutBinding contentBinding;
+
+    // Constructor
 
     public LocationDialog(final FragmentActivity activity, Location location) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_location_layout,
@@ -34,17 +35,29 @@ public class LocationDialog extends AbstractDialog {
         this.data = location;
     }
 
+    // Instance methods
+
+    private void updateGpsTextView() {
+        if (contentBinding == null) {
+            return;
+        }
+
+        contentBinding.locationLatLon.setValue(data.getGpsLocation());
+    }
+
+    // Overrides
+
     @Override
-    protected void setBindingVariable(Context context, ViewDataBinding binding, String layoutName) {
+    protected void setContentBinding(Context context, ViewDataBinding binding, String layoutName) {
+        this.contentBinding = (DialogLocationLayoutBinding) binding;
+
         if (!binding.setVariable(BR.data, data)) {
             Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
     }
 
     @Override
-    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-        this.contentBinding = (DialogLocationLayoutBinding) contentBinding;
-
+    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
         updateGpsTextView();
 
         List<Item> initialRegions = InfrastructureHelper.loadRegions();
@@ -102,14 +115,6 @@ public class LocationDialog extends AbstractDialog {
     @Override
     public ControlButtonType getPositiveButtonType() {
         return ControlButtonType.LINE_PRIMARY;
-    }
-
-    private void updateGpsTextView() {
-        if (contentBinding == null) {
-            return;
-        }
-
-        contentBinding.locationLatLon.setValue(data.getGpsLocation());
     }
 
 }

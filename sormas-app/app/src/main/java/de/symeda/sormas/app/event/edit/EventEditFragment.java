@@ -43,13 +43,15 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
     private void openAddressPopup(final FragmentEventEditLayoutBinding contentBinding) {
         final Location location = record.getEventLocation();
-        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), location);
+        final Location locationClone = (Location) location.clone();
+        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone);
         locationDialog.show();
 
         locationDialog.setPositiveCallback(new Callback() {
             @Override
             public void call() {
-                contentBinding.eventEventLocation.setValue(location);
+                contentBinding.eventEventLocation.setValue(locationClone);
+                record.setEventLocation(locationClone);
                 locationDialog.dismiss();
             }
         });

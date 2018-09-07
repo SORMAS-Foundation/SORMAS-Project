@@ -38,11 +38,14 @@ public abstract class AbstractDialog implements NotificationContext {
     private DialogViewConfig config;
     private boolean liveValidationDisabled;
 
+    // Button callbacks
     private Callback positiveCallback;
     private Callback negativeCallback;
     private Callback deleteCallback;
     private Callback cancelCallback;
     private Callback createCallback;
+
+    // Constructor
 
     public AbstractDialog(final FragmentActivity activity, int rootLayoutId, int contentLayoutResourceId,
                           int buttonPanelLayoutResourceId, int headingResourceId, int subHeadingResourceId) {
@@ -55,8 +58,14 @@ public abstract class AbstractDialog implements NotificationContext {
 
         Resources resources = activity.getResources();
 
-        String heading = resources.getString(headingResourceId);
-        String subHeading = resources.getString(subHeadingResourceId);
+        String heading = null;
+        if (headingResourceId >= 0) {
+            heading = resources.getString(headingResourceId);
+        }
+        String subHeading = null;
+        if (subHeadingResourceId >= 0) {
+            subHeading = resources.getString(subHeadingResourceId);
+        }
         String positiveLabel = resources.getString(getPositiveButtonText());
         String negativeLabel = resources.getString(getNegativeButtonText());
         String deleteLabel = resources.getString(getDeleteButtonText());
@@ -66,13 +75,7 @@ public abstract class AbstractDialog implements NotificationContext {
         this.config = new DialogViewConfig(heading, subHeading, positiveLabel, negativeLabel, deleteLabel, cancelLabel, createLabel);
     }
 
-    protected View getRoot() {
-        return rootBinding.getRoot();
-    }
-
-    protected FragmentActivity getActivity() {
-        return activity;
-    }
+    // Instance methods
 
     private DialogRootLayoutBinding bindRootLayout(final Context context) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -98,7 +101,7 @@ public abstract class AbstractDialog implements NotificationContext {
                 contentBinding = DataBindingUtil.bind(inflated);
                 String layoutName = context.getResources().getResourceEntryName(contentLayoutResourceId);
                 bindConfig(contentBinding, layoutName);
-                setBindingVariable(context, contentBinding, layoutName);
+                setContentBinding(context, contentBinding, layoutName);
             }
         });
 
@@ -126,6 +129,70 @@ public abstract class AbstractDialog implements NotificationContext {
         return binding;
     }
 
+    public void show() {
+        this.rootBinding = bindRootLayout(activity);
+        setNotificationContextForPropertyFields((ViewGroup) rootBinding.getRoot());
+        initializeContentView(rootBinding, buttonPanelBinding);
+
+        ControlButton positiveButton = getPositiveButton();
+        if (positiveButton != null) {
+            positiveButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onPositiveClick();
+                }
+            });
+        }
+
+        ControlButton negativeButton = getNegativeButton();
+        if (negativeButton != null) {
+            negativeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onNegativeClick();
+                }
+            });
+        }
+
+        ControlButton createButton = getCreateButton();
+        if (createButton != null) {
+            createButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onCreateClick();
+                }
+            });
+        }
+
+        ControlButton cancelButton = getCancelButton();
+        if (cancelButton != null) {
+            cancelButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onCancelClick();
+                }
+            });
+        }
+
+        ControlButton deleteButton = getDeleteButton();
+        if (deleteButton != null) {
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onDeleteClick();
+                }
+            });
+        }
+
+        dialog = builder.show();
+    }
+
+    public void dismiss() {
+        if (dialog != null) {
+            dialog.dismiss();
+        }
+    }
+
     private void bindDialog(final ViewDataBinding binding, String layoutName) {
         if (!binding.setVariable(BR.dialog, this)) {
             Log.e(TAG, "There is no variable 'dialog' in layout " + layoutName);
@@ -138,86 +205,138 @@ public abstract class AbstractDialog implements NotificationContext {
         }
     }
 
-    // Abstract methods
-
-    protected abstract void setBindingVariable(Context context, ViewDataBinding binding, String layoutName);
-
-    protected abstract void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding);
-
-    // Instance methods
-
-    public void show() {
-        this.rootBinding = bindRootLayout(activity);
-        setNotificationContextForPropertyFields((ViewGroup) rootBinding.getRoot());
-        initializeContentView(rootBinding, contentBinding, buttonPanelBinding);
-
-        ControlButton positiveButton = getPositiveButton();
-        if (positiveButton != null) {
-            positiveButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (positiveCallback != null) {
-                        positiveCallback.call();
-                    }
-                }
-            });
+    protected void onPositiveClick() {
+        if (positiveCallback != null) {
+            positiveCallback.call();
         }
-
-        ControlButton negativeButton = getNegativeButton();
-        if (negativeButton != null) {
-            negativeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (negativeCallback != null) {
-                        negativeCallback.call();
-                    }
-                }
-            });
-        }
-
-        ControlButton createButton = getCreateButton();
-        if (createButton != null) {
-            createButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (createCallback != null) {
-                        createCallback.call();
-                    }
-                }
-            });
-        }
-
-        ControlButton cancelButton = getCancelButton();
-        if (cancelButton != null) {
-            cancelButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (cancelCallback != null) {
-                        cancelCallback.call();
-                    }
-                }
-            });
-        }
-
-        ControlButton deleteButton = getDeleteButton();
-        if (deleteButton != null) {
-            deleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (deleteCallback != null) {
-                        deleteCallback.call();
-                    }
-                }
-            });
-        }
-
-        dialog = builder.show();
     }
 
-    public void dismiss() {
-        if (dialog != null) {
-            dialog.dismiss();
+    protected void onNegativeClick() {
+        if (negativeCallback != null) {
+            negativeCallback.call();
+        } else {
+            dismiss();
         }
+    }
+
+    protected void onCreateClick() {
+        if (createCallback != null) {
+            createCallback.call();
+        }
+    }
+
+    protected void onDeleteClick() {
+        if (deleteCallback != null) {
+            final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActivity(),
+                    R.string.heading_confirmation_dialog,
+                    R.string.heading_sub_confirmation_notification_dialog_delete,
+                    R.string.yes,
+                    R.string.no);
+            confirmationDialog.setPositiveCallback(new Callback() {
+                @Override
+                public void call() {
+                    deleteCallback.call();
+                    confirmationDialog.dismiss();
+                }
+            });
+
+            confirmationDialog.show();
+        }
+    }
+
+    protected void onCancelClick() {
+        if (cancelCallback != null) {
+            cancelCallback.call();
+        }
+    }
+
+    public void setLiveValidationDisabled(boolean liveValidationDisabled) {
+        if (this.liveValidationDisabled != liveValidationDisabled) {
+            this.liveValidationDisabled = liveValidationDisabled;
+            applyLiveValidationDisabledToChildren();
+        }
+    }
+
+    private void applyLiveValidationDisabledToChildren() {
+        if (contentBinding == null) return;
+        ViewGroup root = (ViewGroup) contentBinding.getRoot();
+        ControlPropertyEditField.applyLiveValidationDisabledToChildren(root, liveValidationDisabled);
+    }
+
+    private void setNotificationContextForPropertyFields(ViewGroup parent) {
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            View child = parent.getChildAt(i);
+            if (child instanceof ControlPropertyEditField) {
+                ((ControlPropertyEditField) child).setNotificationContext(this);
+            } else if (child instanceof ViewGroup) {
+                setNotificationContextForPropertyFields((ViewGroup) child);
+            }
+        }
+    }
+
+    public boolean isPositiveButtonVisible() {
+        return true;
+    }
+
+    public boolean isNegativeButtonVisible() {
+        return true;
+    }
+
+    public boolean isCancelButtonVisible() {
+        return false;
+    }
+
+    public boolean isCreateButtonVisible() {
+        return false;
+    }
+
+    public boolean isDeleteButtonVisible() {
+        return false;
+    }
+
+    public boolean isButtonPanelVisible() {
+        return isPositiveButtonVisible() || isNegativeButtonVisible() || isCancelButtonVisible()
+                || isCreateButtonVisible() || isDeleteButtonVisible();
+    }
+
+    public boolean isHeadingVisible() {
+        return true;
+    }
+
+    public boolean isHeadingCentered() {
+        return false;
+    }
+
+    public boolean isRounded() {
+        return false;
+    }
+
+    public boolean isPositiveButtonIconOnly() {
+        return false;
+    }
+
+    public boolean isNegativeButtonIconOnly() {
+        return false;
+    }
+
+    public void setPositiveCallback(Callback positiveCallback) {
+        this.positiveCallback = positiveCallback;
+    }
+
+    public void setNegativeCallback(Callback negativeCallback) {
+        this.negativeCallback = negativeCallback;
+    }
+
+    public void setDeleteCallback(Callback deleteCallback) {
+        this.deleteCallback = deleteCallback;
+    }
+
+    public void setCancelCallback(Callback cancelCallback) {
+        this.cancelCallback = cancelCallback;
+    }
+
+    public void setCreateCallback(Callback createCallback) {
+        this.createCallback = createCallback;
     }
 
     public Context getContext() {
@@ -298,51 +417,6 @@ public abstract class AbstractDialog implements NotificationContext {
         return buttonPanelRootView.findViewById(R.id.button_delete);
     }
 
-    public boolean isPositiveButtonVisible() {
-        return true;
-    }
-
-    public boolean isNegativeButtonVisible() {
-        return true;
-    }
-
-    public boolean isCancelButtonVisible() {
-        return false;
-    }
-
-    public boolean isCreateButtonVisible() {
-        return false;
-    }
-
-    public boolean isDeleteButtonVisible() {
-        return false;
-    }
-
-    public boolean isHeadingVisible() {
-        return true;
-    }
-
-    public boolean isHeadingCentered() {
-        return false;
-    }
-
-    public boolean isButtonPanelVisible() {
-        return isPositiveButtonVisible() || isNegativeButtonVisible() || isCancelButtonVisible()
-                || isCreateButtonVisible() || isDeleteButtonVisible();
-    }
-
-    public boolean isRounded() {
-        return false;
-    }
-
-    public boolean isPositiveButtonIconOnly() {
-        return false;
-    }
-
-    public boolean isNegativeButtonIconOnly() {
-        return false;
-    }
-
     public ControlButtonType getPositiveButtonType() {
         return ControlButtonType.PRIMARY;
     }
@@ -371,89 +445,43 @@ public abstract class AbstractDialog implements NotificationContext {
         return R.string.action_dismiss;
     }
 
-    public int getDeleteButtonText() {
+    private int getDeleteButtonText() {
         return R.string.action_delete;
     }
 
-    public int getCancelButtonText() {
+    private int getCancelButtonText() {
         return R.string.action_cancel;
     }
 
-    public int getCreateButtonText() {
+    private int getCreateButtonText() {
         return R.string.action_create;
     }
+
+    // Abstract methods
+
+    protected abstract void setContentBinding(Context context, ViewDataBinding binding, String layoutName);
+
+    protected abstract void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding);
+
+    // Overrides
 
     @Override
     public View getRootView() {
         return rootBinding.getRoot();
     }
 
-    public void setLiveValidationDisabled(boolean liveValidationDisabled) {
-        if (this.liveValidationDisabled != liveValidationDisabled) {
-            this.liveValidationDisabled = liveValidationDisabled;
-            applyLiveValidationDisabledToChildren();
-        }
+    // Getters & setters
+
+    protected View getRoot() {
+        return rootBinding.getRoot();
     }
 
-    private void applyLiveValidationDisabledToChildren() {
-        if (contentBinding == null) return;
-        ViewGroup root = (ViewGroup) contentBinding.getRoot();
-        ControlPropertyEditField.applyLiveValidationDisabledToChildren(root, liveValidationDisabled);
-    }
-
-    private void setNotificationContextForPropertyFields(ViewGroup parent) {
-        for (int i = 0; i < parent.getChildCount(); i++) {
-            View child = parent.getChildAt(i);
-            if (child instanceof ControlPropertyEditField) {
-                ((ControlPropertyEditField) child).setNotificationContext(this);
-            } else if (child instanceof ViewGroup) {
-                setNotificationContextForPropertyFields((ViewGroup) child);
-            }
-        }
+    protected FragmentActivity getActivity() {
+        return activity;
     }
 
     public DialogViewConfig getConfig() {
         return config;
-    }
-
-    public void setPositiveCallback(Callback positiveCallback) {
-        this.positiveCallback = positiveCallback;
-    }
-
-    public void setNegativeCallback(Callback negativeCallback) {
-        this.negativeCallback = negativeCallback;
-    }
-
-    public void setDeleteCallback(Callback deleteCallback) {
-        this.deleteCallback = deleteCallback;
-    }
-
-    public void setCancelCallback(Callback cancelCallback) {
-        this.cancelCallback = cancelCallback;
-    }
-
-    public void setCreateCallback(Callback createCallback) {
-        this.createCallback = createCallback;
-    }
-
-    public void callPositiveCallback() {
-        positiveCallback.call();
-    }
-
-    public void callNegativeCallback() {
-        negativeCallback.call();
-    }
-
-    public void callDeleteCallback() {
-        deleteCallback.call();
-    }
-
-    public void callCancelCallback() {
-        cancelCallback.call();
-    }
-
-    public void callCreateCallback() {
-        createCallback.call();
     }
 
 }

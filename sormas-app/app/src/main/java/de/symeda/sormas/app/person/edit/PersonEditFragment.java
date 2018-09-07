@@ -155,13 +155,15 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
     private static void openAddressPopup(final Person record, final FragmentPersonEditLayoutBinding contentBinding) {
         final Location location = record.getAddress();
-        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), location);
+        final Location locationClone = (Location) location.clone();
+        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone);
         locationDialog.show();
 
         locationDialog.setPositiveCallback(new Callback() {
             @Override
             public void call() {
-                contentBinding.personAddress.setValue(location);
+                contentBinding.personAddress.setValue(locationClone);
+                record.setAddress(locationClone);
                 locationDialog.dismiss();
             }
         });

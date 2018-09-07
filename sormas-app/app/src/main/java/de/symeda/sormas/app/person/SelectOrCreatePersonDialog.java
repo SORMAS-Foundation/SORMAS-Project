@@ -22,12 +22,11 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.controls.ControlButton;
 import de.symeda.sormas.app.component.dialog.AbstractDialog;
-import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogSelectOrCreatePersonLayoutBinding;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ViewHelper;
 
@@ -54,7 +53,7 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
             return;
         }
 
-        personDialog.setPositiveCallback(new de.symeda.sormas.app.util.Callback() {
+        personDialog.setPositiveCallback(new Callback() {
             @Override
             public void call() {
                 if (personDialog.getSelectedPerson() != null && !personDialog.getSelectedPerson().getUuid().equals(person.getUuid())) {
@@ -66,7 +65,7 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
             }
         });
 
-        personDialog.setCreateCallback(new de.symeda.sormas.app.util.Callback() {
+        personDialog.setCreateCallback(new Callback() {
             @Override
             public void call() {
                 if (personDialog.contentBinding.personFirstName.getValue().isEmpty() || personDialog.contentBinding.personLastName.getValue().isEmpty()) {
@@ -80,7 +79,7 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
             }
         });
 
-        personDialog.setCancelCallback(new de.symeda.sormas.app.util.Callback() {
+        personDialog.setCancelCallback(new Callback() {
             @Override
             public void call() {
                 personDialog.dismiss();
@@ -187,16 +186,15 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
         return newList;
     }
 
-    // Override
+    // Overrides
 
     @Override
-    protected void setBindingVariable(Context context, ViewDataBinding binding, String layoutName) {
+    protected void setContentBinding(Context context, ViewDataBinding binding, String layoutName) {
+        this.contentBinding = (DialogSelectOrCreatePersonLayoutBinding) binding;
+        setupControlListeners();
+
         if (!binding.setVariable(BR.data, person)) {
             Log.e(TAG, "There is no variable 'person' in layout " + layoutName);
-        }
-
-        if (!(binding instanceof DialogSelectOrCreatePersonLayoutBinding)) {
-            return;
         }
 
         if (!binding.setVariable(BR.availablePersons, makeObservable(similarPersons))) {
@@ -209,10 +207,7 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
     }
 
     @Override
-    protected void initializeContentView(ViewDataBinding rootBinding, final ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-        this.contentBinding = (DialogSelectOrCreatePersonLayoutBinding) contentBinding;
-        setupControlListeners();
-
+    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
         this.selectedPerson.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable observable, int i) {

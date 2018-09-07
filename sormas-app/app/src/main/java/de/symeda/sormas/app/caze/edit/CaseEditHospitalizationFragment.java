@@ -38,11 +38,13 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
             @Override
             public void onClick(View v, Object item) {
                 final PreviousHospitalization previousHospitalization = (PreviousHospitalization) item;
-                final PreviousHospitalizationDialog dialog = new PreviousHospitalizationDialog(CaseEditActivity.getActiveActivity(), previousHospitalization);
+                final PreviousHospitalization previousHospitalizationClone = (PreviousHospitalization) previousHospitalization.clone();
+                final PreviousHospitalizationDialog dialog = new PreviousHospitalizationDialog(CaseEditActivity.getActiveActivity(), previousHospitalizationClone);
 
                 dialog.setPositiveCallback(new Callback() {
                     @Override
                     public void call() {
+                        record.getPreviousHospitalizations().set(record.getPreviousHospitalizations().indexOf(previousHospitalization), previousHospitalizationClone);
                         updatePreviousHospitalizations();
                         dialog.dismiss();
                     }

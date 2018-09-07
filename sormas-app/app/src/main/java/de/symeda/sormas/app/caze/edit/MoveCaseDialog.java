@@ -29,6 +29,9 @@ public class MoveCaseDialog extends AbstractDialog {
     public static final String TAG = MoveCaseDialog.class.getSimpleName();
 
     private Case data;
+    private DialogMoveCaseLayoutBinding contentBinding;
+
+    // Constructor
 
     MoveCaseDialog(final FragmentActivity activity, Case caze) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_move_case_layout,
@@ -37,46 +40,49 @@ public class MoveCaseDialog extends AbstractDialog {
         this.data = caze;
     }
 
+    // Overrides
+
     @Override
-    protected void setBindingVariable(Context context, ViewDataBinding binding, String layoutName) {
+    protected void setContentBinding(Context context, ViewDataBinding binding, String layoutName) {
+        this.contentBinding = (DialogMoveCaseLayoutBinding) binding;
+
         if (!binding.setVariable(BR.data, data)) {
             Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
     }
 
     @Override
-    protected void initializeContentView(ViewDataBinding rootBinding, final ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-        final DialogMoveCaseLayoutBinding _contentBinding = (DialogMoveCaseLayoutBinding) contentBinding;
-
-        InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(_contentBinding.caseDataHealthFacility,
-                _contentBinding.caseDataHealthFacilityDetails);
+    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
+        InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility,
+                contentBinding.caseDataHealthFacilityDetails);
 
         List<Item> initialRegions = InfrastructureHelper.loadRegions();
         List<Item> initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
         List<Item> initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
         List<Item> initialFacilities = InfrastructureHelper.loadFacilities(data.getDistrict(), data.getCommunity());
-        InfrastructureHelper.initializeFacilityFields(_contentBinding.caseDataRegion, initialRegions,
-                _contentBinding.caseDataDistrict, initialDistricts,
-                _contentBinding.caseDataCommunity, initialCommunities,
-                _contentBinding.caseDataHealthFacility, initialFacilities);
+        InfrastructureHelper.initializeFacilityFields(contentBinding.caseDataRegion, initialRegions,
+                contentBinding.caseDataDistrict, initialDistricts,
+                contentBinding.caseDataCommunity, initialCommunities,
+                contentBinding.caseDataHealthFacility, initialFacilities);
+    }
 
-        setPositiveCallback(new de.symeda.sormas.app.util.Callback() {
-            @Override
-            public void call() {
-                try {
-                    FragmentValidator.validate(getContext(), contentBinding);
-                } catch (ValidationException e) {
-                    NotificationHelper.showDialogNotification(MoveCaseDialog.this, ERROR, e.getMessage());
-                    return;
-                }
+    @Override
+    public void onPositiveClick() {
+        try {
+            FragmentValidator.validate(getContext(), contentBinding);
+        } catch (ValidationException e) {
+            NotificationHelper.showDialogNotification(MoveCaseDialog.this, ERROR, e.getMessage());
+            return;
+        }
 
-                try {
-                    DatabaseHelper.getCaseDao().transferCase(data);
-                } catch (DaoException e) {
-                    NotificationHelper.showDialogNotification(MoveCaseDialog.this, ERROR, getContext().getResources().getString(R.string.error_case_transfer));
-                }
-            }
-        });
+        try {
+            DatabaseHelper.getCaseDao().transferCase(data);
+        } catch (DaoException e) {
+            NotificationHelper.showDialogNotification(MoveCaseDialog.this, ERROR, getContext().getResources().getString(R.string.error_case_transfer));
+            return;
+        }
+
+        super.onPositiveClick();
     }
 
     @Override

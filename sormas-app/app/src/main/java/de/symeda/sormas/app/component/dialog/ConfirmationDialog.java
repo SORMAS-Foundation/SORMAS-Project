@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.component.dialog;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.databinding.ViewDataBinding;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -19,8 +20,7 @@ public class ConfirmationDialog extends AbstractDialog {
 
     public static final String TAG = ConfirmationDialog.class.getSimpleName();
 
-    private int positiveButtonTextResId = R.string.action_confirm;
-    private int negativeButtonTextResId = R.string.action_dismiss;
+    // Constructors
 
     public ConfirmationDialog(final FragmentActivity activity, int headingResId, int subHeadingResId) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_confirmation_layout,
@@ -28,19 +28,31 @@ public class ConfirmationDialog extends AbstractDialog {
     }
 
     ConfirmationDialog(final FragmentActivity activity, int headingResId, int subHeadingResId,
-                              int positiveButtonTextResId, int negativeButtonTextResId) {
+                       int positiveButtonTextResId, int negativeButtonTextResId) {
         this(activity, headingResId, subHeadingResId);
-        this.positiveButtonTextResId = positiveButtonTextResId;
-        this.negativeButtonTextResId = negativeButtonTextResId;
+
+        Resources resources = getContext().getResources();
+        if (positiveButtonTextResId >= 0) {
+            getConfig().setPositiveButtonText(resources.getString(positiveButtonTextResId));
+        } else {
+            getConfig().setPositiveButtonText(resources.getString(R.string.action_confirm));
+        }
+        if (negativeButtonTextResId >= 0) {
+            getConfig().setNegativeButtonText(resources.getString(negativeButtonTextResId));
+        } else {
+            getConfig().setNegativeButtonText(resources.getString(R.string.action_dismiss));
+        }
     }
 
+    // Overrides
+
     @Override
-    protected void setBindingVariable(Context context, ViewDataBinding binding, String layoutName) {
+    protected void setContentBinding(Context context, ViewDataBinding binding, String layoutName) {
         // Data variable is not needed in this dialog
     }
 
     @Override
-    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
+    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
         // Nothing to initialize
     }
 
@@ -62,16 +74,6 @@ public class ConfirmationDialog extends AbstractDialog {
     @Override
     public boolean isNegativeButtonIconOnly() {
         return true;
-    }
-
-    @Override
-    public int getPositiveButtonText() {
-        return positiveButtonTextResId;
-    }
-
-    @Override
-    public int getNegativeButtonText() {
-        return negativeButtonTextResId;
     }
 
 }

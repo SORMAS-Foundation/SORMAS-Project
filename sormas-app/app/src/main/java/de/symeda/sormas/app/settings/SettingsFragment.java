@@ -53,7 +53,7 @@ public class SettingsFragment extends BaseLandingFragment {
         });
         binding.resynchronizeData.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                repullData(v);
+                repullData();
             }
         });
         binding.showSyncLog.setOnClickListener(new View.OnClickListener() {
@@ -121,8 +121,7 @@ public class SettingsFragment extends BaseLandingFragment {
         startActivity(intent);
     }
 
-    private void repullData(View view) {
-
+    private void repullData() {
         final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActivity(),
                 R.string.heading_confirmation_dialog,
                 R.string.heading_sub_confirmation_notification_dialog_resync);

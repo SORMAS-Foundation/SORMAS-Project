@@ -37,6 +37,7 @@
             app:inputType="textMultiLine"
             app:textAlignment="gravity"
             app:gravity="top|start"
+            app:singleLine="false"
             app:maxLines="8"
             app:textArea="true"
             app:required="true"

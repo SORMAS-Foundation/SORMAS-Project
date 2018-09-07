@@ -29,6 +29,9 @@ public class PreviousHospitalizationDialog extends AbstractDialog {
     public static final String TAG = PreviousHospitalizationDialog.class.getSimpleName();
 
     private PreviousHospitalization data;
+    private DialogPreviousHospitalizationLayoutBinding contentBinding;
+
+    // Constructor
 
     PreviousHospitalizationDialog(final FragmentActivity activity, PreviousHospitalization previousHospitalization) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_previous_hospitalization_layout,
@@ -37,19 +40,21 @@ public class PreviousHospitalizationDialog extends AbstractDialog {
         this.data = previousHospitalization;
     }
 
+    // Overrides
+
     @Override
-    protected void setBindingVariable(Context context, ViewDataBinding binding, String layoutName) {
+    protected void setContentBinding(Context context, ViewDataBinding binding, String layoutName) {
+        contentBinding = (DialogPreviousHospitalizationLayoutBinding) binding;
+
         if (!binding.setVariable(BR.data, data)) {
             Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
     }
 
     @Override
-    protected void initializeContentView(ViewDataBinding rootBinding, final ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-        DialogPreviousHospitalizationLayoutBinding _contentBinding = (DialogPreviousHospitalizationLayoutBinding) contentBinding;
-
-        _contentBinding.casePreviousHospitalizationAdmissionDate.initializeDateField(getFragmentManager());
-        _contentBinding.casePreviousHospitalizationDischargeDate.initializeDateField(getFragmentManager());
+    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
+        contentBinding.casePreviousHospitalizationAdmissionDate.initializeDateField(getFragmentManager());
+        contentBinding.casePreviousHospitalizationDischargeDate.initializeDateField(getFragmentManager());
 
         if (data.getId() == null) {
             setLiveValidationDisabled(true);
@@ -61,24 +66,24 @@ public class PreviousHospitalizationDialog extends AbstractDialog {
         List<Item> initialFacilities = InfrastructureHelper.loadFacilities(data.getDistrict(), data.getCommunity());
 
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(
-                _contentBinding.casePreviousHospitalizationHealthFacility, _contentBinding.casePreviousHospitalizationHealthFacilityDetails);
-        InfrastructureHelper.initializeFacilityFields(_contentBinding.casePreviousHospitalizationRegion, initialRegions,
-                _contentBinding.casePreviousHospitalizationDistrict, initialDistricts,
-                _contentBinding.casePreviousHospitalizationCommunity, initialCommunities,
-                _contentBinding.casePreviousHospitalizationHealthFacility, initialFacilities);
+                contentBinding.casePreviousHospitalizationHealthFacility, contentBinding.casePreviousHospitalizationHealthFacilityDetails);
+        InfrastructureHelper.initializeFacilityFields(contentBinding.casePreviousHospitalizationRegion, initialRegions,
+                contentBinding.casePreviousHospitalizationDistrict, initialDistricts,
+                contentBinding.casePreviousHospitalizationCommunity, initialCommunities,
+                contentBinding.casePreviousHospitalizationHealthFacility, initialFacilities);
+    }
 
-        setPositiveCallback(new de.symeda.sormas.app.util.Callback() {
-            @Override
-            public void call() {
-                setLiveValidationDisabled(false);
+    @Override
+    public void onPositiveClick() {
+        setLiveValidationDisabled(false);
+        try {
+            FragmentValidator.validate(getContext(), contentBinding);
+        } catch (ValidationException e) {
+            NotificationHelper.showDialogNotification(PreviousHospitalizationDialog.this, ERROR, e.getMessage());
+            return;
+        }
 
-                try {
-                    FragmentValidator.validate(getContext(), contentBinding);
-                } catch (ValidationException e) {
-                    NotificationHelper.showDialogNotification(PreviousHospitalizationDialog.this, ERROR, e.getMessage());
-                }
-            }
-        });
+        super.onPositiveClick();
     }
 
     @Override

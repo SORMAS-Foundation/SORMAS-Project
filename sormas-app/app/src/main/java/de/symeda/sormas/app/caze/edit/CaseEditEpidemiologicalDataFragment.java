@@ -54,11 +54,13 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
             @Override
             public void onClick(View v, Object item) {
                 final EpiDataGathering gathering = (EpiDataGathering) item;
-                final EpiDataGatheringDialog dialog = new EpiDataGatheringDialog(CaseEditActivity.getActiveActivity(), gathering);
+                final EpiDataGathering gatheringClone = (EpiDataGathering) gathering.clone();
+                final EpiDataGatheringDialog dialog = new EpiDataGatheringDialog(CaseEditActivity.getActiveActivity(), gatheringClone);
 
                 dialog.setPositiveCallback(new Callback() {
                     @Override
                     public void call() {
+                        record.getGatherings().set(record.getGatherings().indexOf(gathering), gatheringClone);
                         updateGatherings();
                         dialog.dismiss();
                     }
@@ -80,11 +82,13 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
             @Override
             public void onClick(View v, Object item) {
                 final EpiDataTravel travel = (EpiDataTravel) item;
-                final EpiDataTravelDialog dialog = new EpiDataTravelDialog(CaseEditActivity.getActiveActivity(), travel);
+                final EpiDataTravel travelClone = (EpiDataTravel) travel.clone();
+                final EpiDataTravelDialog dialog = new EpiDataTravelDialog(CaseEditActivity.getActiveActivity(), travelClone);
 
                 dialog.setPositiveCallback(new Callback() {
                     @Override
                     public void call() {
+                        record.getTravels().set(record.getTravels().indexOf(travel), travelClone);
                         updateTravels();
                         dialog.dismiss();
                     }
@@ -106,11 +110,13 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
             @Override
             public void onClick(View v, Object item) {
                 final EpiDataBurial burial = (EpiDataBurial) item;
-                final EpiDataBurialDialog dialog = new EpiDataBurialDialog(CaseEditActivity.getActiveActivity(), burial);
+                final EpiDataBurial burialClone = (EpiDataBurial) burial.clone();
+                final EpiDataBurialDialog dialog = new EpiDataBurialDialog(CaseEditActivity.getActiveActivity(), burialClone);
 
                 dialog.setPositiveCallback(new Callback() {
                     @Override
                     public void call() {
+                        record.getBurials().set(record.getBurials().indexOf(burial), burialClone);
                         updateBurials();
                         dialog.dismiss();
                     }
@@ -234,8 +240,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     }
 
     private void verifyGatheringStatus() {
-        YesNoUnknown hospitalizedPreviously = record.getGatheringAttended();
-        if (hospitalizedPreviously == YesNoUnknown.YES && getGatherings().size() <= 0) {
+        YesNoUnknown gatheringAttended = record.getGatheringAttended();
+        if (gatheringAttended == YesNoUnknown.YES && getGatherings().size() <= 0) {
             getContentBinding().epiDataGatheringAttended.enableWarningState(R.string.validation_soft_add_list_entry);
         } else {
             getContentBinding().epiDataGatheringAttended.disableWarningState();
@@ -269,8 +275,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     }
 
     private void verifyBurialStatus() {
-        YesNoUnknown hospitalizedPreviously = record.getBurialAttended();
-        if (hospitalizedPreviously == YesNoUnknown.YES && getBurials().size() <= 0) {
+        YesNoUnknown burialAttended = record.getBurialAttended();
+        if (burialAttended == YesNoUnknown.YES && getBurials().size() <= 0) {
             getContentBinding().epiDataBurialAttended.enableWarningState(R.string.validation_soft_add_list_entry);
         } else {
             getContentBinding().epiDataBurialAttended.disableWarningState();
@@ -304,8 +310,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     }
 
     private void verifyTravelStatus() {
-        YesNoUnknown hospitalizedPreviously = record.getTraveled();
-        if (hospitalizedPreviously == YesNoUnknown.YES && getTravels().size() <= 0) {
+        YesNoUnknown traveled = record.getTraveled();
+        if (traveled == YesNoUnknown.YES && getTravels().size() <= 0) {
             getContentBinding().epiDataTraveled.enableWarningState(R.string.validation_soft_add_list_entry);
         } else {
             getContentBinding().epiDataTraveled.disableWarningState();

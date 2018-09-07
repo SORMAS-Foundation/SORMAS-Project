@@ -30,6 +30,9 @@ public class EpiDataTravelDialog extends AbstractDialog {
     public static final String TAG = EpiDataTravelDialog.class.getSimpleName();
 
     private EpiDataTravel data;
+    private DialogCaseEpidTravelEditLayoutBinding contentBinding;
+
+    // Constructor
 
     EpiDataTravelDialog(final FragmentActivity activity, EpiDataTravel epiDataTravel) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_case_epid_travel_edit_layout,
@@ -38,36 +41,41 @@ public class EpiDataTravelDialog extends AbstractDialog {
         this.data = epiDataTravel;
     }
 
+    // Overrides
+
     @Override
-    protected void setBindingVariable(Context context, ViewDataBinding binding, String layoutName) {
+    protected void setContentBinding(Context context, ViewDataBinding binding, String layoutName) {
+        this.contentBinding = (DialogCaseEpidTravelEditLayoutBinding) binding;
+
         if (!binding.setVariable(BR.data, data)) {
             Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
     }
 
     @Override
-    protected void initializeContentView(ViewDataBinding rootBinding, final ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-        ((DialogCaseEpidTravelEditLayoutBinding) contentBinding).epiDataTravelTravelType.initializeSpinner(DataUtils.getEnumItems(TravelType.class, true));
-        ((DialogCaseEpidTravelEditLayoutBinding) contentBinding).epiDataTravelTravelDateFrom.initializeDateField(getFragmentManager());
-        ((DialogCaseEpidTravelEditLayoutBinding) contentBinding).epiDataTravelTravelDateTo.initializeDateField(getFragmentManager());
+    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
+        contentBinding.epiDataTravelTravelType.initializeSpinner(DataUtils.getEnumItems(TravelType.class, true));
+        contentBinding.epiDataTravelTravelDateFrom.initializeDateField(getFragmentManager());
+        contentBinding.epiDataTravelTravelDateTo.initializeDateField(getFragmentManager());
 
-        CaseValidator.initializeEpiDataTravelValidation(getContext(), (DialogCaseEpidTravelEditLayoutBinding) contentBinding);
+        CaseValidator.initializeEpiDataTravelValidation(getContext(), contentBinding);
 
         if (data.getId() == null) {
             setLiveValidationDisabled(true);
         }
+    }
 
-        setPositiveCallback(new de.symeda.sormas.app.util.Callback() {
-            @Override
-            public void call() {
-                setLiveValidationDisabled(false);
-                try {
-                    FragmentValidator.validate(getContext(), contentBinding);
-                } catch (ValidationException e) {
-                    NotificationHelper.showDialogNotification(EpiDataTravelDialog.this, ERROR, e.getMessage());
-                }
-            }
-        });
+    @Override
+    public void onPositiveClick() {
+        setLiveValidationDisabled(false);
+        try {
+            FragmentValidator.validate(getContext(), contentBinding);
+        } catch (ValidationException e) {
+            NotificationHelper.showDialogNotification(EpiDataTravelDialog.this, ERROR, e.getMessage());
+            return;
+        }
+
+        super.onPositiveClick();
     }
 
     @Override

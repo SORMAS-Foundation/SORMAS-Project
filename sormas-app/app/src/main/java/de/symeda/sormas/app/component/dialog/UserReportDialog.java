@@ -30,6 +30,9 @@ public class UserReportDialog extends AbstractDialog {
     private AsyncTask dialogTask;
     private String uuid;
     private String viewName;
+    private DialogUserReportLayoutBinding contentBinding;
+
+    // Constructor
 
     public UserReportDialog(final FragmentActivity activity, String viewName, String uuid) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_user_report_layout,
@@ -40,16 +43,15 @@ public class UserReportDialog extends AbstractDialog {
         this.viewName = viewName;
     }
 
+    // Overrides
 
     @Override
-    protected void setBindingVariable(Context context, ViewDataBinding binding, String layoutName) {
-        // Not needed
+    protected void setContentBinding(Context context, ViewDataBinding binding, String layoutName) {
+        this.contentBinding = (DialogUserReportLayoutBinding) binding;
     }
 
     @Override
-    protected void initializeContentView(ViewDataBinding rootBinding, final ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-        final DialogUserReportLayoutBinding _contentBinding = (DialogUserReportLayoutBinding) contentBinding;
-
+    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
         setPositiveCallback(new Callback() {
             @Override
             public void call() {
@@ -57,7 +59,7 @@ public class UserReportDialog extends AbstractDialog {
                     @Override
                     public void doInBackground(TaskResultHolder resultHolder) {
                         try {
-                            String description = _contentBinding.userReportMessage.getValue();
+                            String description = contentBinding.userReportMessage.getValue();
                             Tracker tracker = ((SormasApplication) getActivity().getApplication()).getDefaultTracker();
                             tracker.send(new HitBuilders.EventBuilder()
                                     .setCategory("User Report")
