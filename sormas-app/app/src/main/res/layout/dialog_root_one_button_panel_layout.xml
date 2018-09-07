@@ -7,15 +7,10 @@
     <data>
         <import type="android.view.View" />
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType"/>
-        <variable name="data" type="Object"/>
+
+        <variable name="data" type="java.lang.Object"/>
         <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
-        <variable name="dialog" type="de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog" />
-        <variable
-            name="dismissCallback"
-            type="de.symeda.sormas.app.component.dialog.IDialogDismissOnClickListener" />
-        <variable
-            name="okCallback"
-            type="de.symeda.sormas.app.component.dialog.IDialogOkOnClickListener" />
+        <variable name="dialog" type="de.symeda.sormas.app.component.dialog.AbstractDialog" />
     </data>
 
     <RelativeLayout
@@ -24,21 +19,18 @@
         android:orientation="horizontal"
         android:paddingLeft="@dimen/rowListItemHorizontalMargin"
         android:paddingRight="@dimen/rowListItemHorizontalMargin"
-        android:visibility="@{dialog.isButtonPanelVisible? View.VISIBLE : View.GONE}"
-        >
+        android:visibility="@{dialog.isButtonPanelVisible? View.VISIBLE : View.GONE}">
 
         <de.symeda.sormas.app.component.controls.ControlButton
-            android:id="@+id/dismiss"
+            android:id="@+id/button_negative"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:visibility="@{dialog.isDismissButtonVisible? View.VISIBLE : View.GONE}"
+            android:visibility="@{dialog.isNegativeButtonVisible? View.VISIBLE : View.GONE}"
             android:text="@{config.negativeButtonText}"
             app:iconStart="@drawable/ic_clear_black_24dp"
-            app:buttonType="@{dialog.dismissButtonType}"
-            app:rounded="@{dialog.isRounded}"
-            android:onClick="@{(view) -> dismissCallback.onDismissClick(view, data)}"
-            />
+            app:buttonType="@{dialog.negativeButtonType}"
+            app:rounded="@{dialog.isRounded}" />
 
     </RelativeLayout>
 

@@ -127,9 +127,9 @@ public class SettingsFragment extends BaseLandingFragment {
                 R.string.heading_confirmation_dialog,
                 R.string.heading_sub_confirmation_notification_dialog_resync);
 
-        confirmationDialog.setOnPositiveClickListener(new de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface.PositiveOnClickListener() {
+        confirmationDialog.setPositiveCallback(new Callback() {
             @Override
-            public void onOkClick(View v, Object confirmationItem, View viewRoot) {
+            public void call() {
                 confirmationDialog.dismiss();
 
                 getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.CompleteAndRepull,
@@ -143,7 +143,7 @@ public class SettingsFragment extends BaseLandingFragment {
             }
         });
 
-        confirmationDialog.show(null);
+        confirmationDialog.show();
     }
 
     public void openSyncLog(View view) {

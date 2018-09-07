@@ -24,8 +24,8 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
-import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureHelper;
@@ -89,17 +89,17 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
                 final CaseEditActivity activity = (CaseEditActivity) CaseEditFragment.this.getActivity();
                 activity.saveData(new Consumer<Case>() {
                     @Override
-                    public void accept(Case caze) {
+                    public void accept(final Case caze) {
                         final MoveCaseDialog moveCaseDialog = new MoveCaseDialog(BaseActivity.getActiveActivity(), caze);
-                        moveCaseDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                        moveCaseDialog.setPositiveCallback(new Callback() {
                             @Override
-                            public void onOkClick(View v, Object item, View viewRoot) {
-                                record = (Case) item;
+                            public void call() {
+                                record = caze;
                                 requestLayoutRebind();
                                 moveCaseDialog.dismiss();
                             }
                         });
-                        moveCaseDialog.show(null);
+                        moveCaseDialog.show();
                     }
                 });
             }

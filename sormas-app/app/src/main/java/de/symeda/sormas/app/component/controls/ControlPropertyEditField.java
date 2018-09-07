@@ -11,7 +11,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.VisualState;
-import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
+import de.symeda.sormas.app.component.dialog.AbstractDialog;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -165,7 +165,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
     protected void showErrorNotification() {
         if (hasError && notificationContext != null && errorMessage != null) {
-            if (notificationContext instanceof BaseTeboAlertDialog) {
+            if (notificationContext instanceof AbstractDialog) {
                 NotificationHelper.showDialogNotification(notificationContext, NotificationType.ERROR, errorMessage);
             } else {
                 NotificationHelper.showNotification(notificationContext, NotificationType.ERROR, errorMessage);
@@ -175,7 +175,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
     protected void showWarningNotification() {
         if (hasWarning && notificationContext != null && warningMessage != null) {
-            if (notificationContext instanceof BaseTeboAlertDialog) {
+            if (notificationContext instanceof AbstractDialog) {
                 NotificationHelper.showDialogNotification(notificationContext, NotificationType.WARNING, warningMessage);
             } else {
                 NotificationHelper.showNotification(notificationContext, NotificationType.WARNING, warningMessage);

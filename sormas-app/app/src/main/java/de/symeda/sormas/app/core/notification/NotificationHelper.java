@@ -39,8 +39,8 @@ public class NotificationHelper {
     public static void hideNotification(View notificationRoot) {
         View view = notificationRoot;
 
-        if (notificationRoot.getId() != R.id.notificationFrame)
-            view = (LinearLayout) notificationRoot.findViewById(R.id.notificationFrame);
+        if (notificationRoot.getId() != R.id.notification_frame)
+            view = (LinearLayout) notificationRoot.findViewById(R.id.notification_frame);
 
         if (view == null)
             return;
@@ -56,8 +56,8 @@ public class NotificationHelper {
 
         View view = rootView;
 
-        if (rootView.getId() != R.id.notificationFrame)
-            view = (LinearLayout) rootView.findViewById(R.id.notificationFrame);
+        if (rootView.getId() != R.id.notification_frame)
+            view = (LinearLayout) rootView.findViewById(R.id.notification_frame);
 
         if (view == null)
             return;
@@ -126,8 +126,8 @@ public class NotificationHelper {
     }
 
     private static void showNotification(View notificationRoot, NotificationPosition position, NotificationType type, String message) {
-        LinearLayout notificationFrame = (LinearLayout) notificationRoot.findViewById(R.id.notificationFrame);
-        TextView tvNotificationMessage = (TextView) notificationRoot.findViewById(R.id.tvNotificationMessage);
+        LinearLayout notificationFrame = (LinearLayout) notificationRoot.findViewById(R.id.notification_frame);
+        TextView tvNotificationMessage = (TextView) notificationRoot.findViewById(R.id.notification_message);
         showNotification(notificationFrame, tvNotificationMessage, position, type, message);
     }
 
@@ -217,8 +217,8 @@ public class NotificationHelper {
     }
 
     private static void showDialogNotification(View notificationRoot, NotificationPosition position, NotificationType type, String message) {
-        LinearLayout notificationFrame = (LinearLayout) notificationRoot.findViewById(R.id.notificationFrame);
-        TextView tvNotificationMessage = (TextView) notificationRoot.findViewById(R.id.tvNotificationMessage);
+        LinearLayout notificationFrame = (LinearLayout) notificationRoot.findViewById(R.id.notification_frame);
+        TextView tvNotificationMessage = (TextView) notificationRoot.findViewById(R.id.notification_message);
 
         if (notificationFrame == null)
             return;
@@ -321,8 +321,8 @@ public class NotificationHelper {
     public static void hideDialogNotification(View notificationRoot) {
         View view = notificationRoot;
 
-        if (notificationRoot.getId() != R.id.notificationFrame)
-            view = (LinearLayout) notificationRoot.findViewById(R.id.notificationFrame);
+        if (notificationRoot.getId() != R.id.notification_frame)
+            view = (LinearLayout) notificationRoot.findViewById(R.id.notification_frame);
 
         if (view == null)
             return;
@@ -349,8 +349,8 @@ public class NotificationHelper {
 
         View view = rootView;
 
-        if (rootView.getId() != R.id.notificationFrame)
-            view = (LinearLayout) rootView.findViewById(R.id.notificationFrame);
+        if (rootView.getId() != R.id.notification_frame)
+            view = (LinearLayout) rootView.findViewById(R.id.notification_frame);
 
         if (view == null)
             return;

@@ -53,7 +53,7 @@
     <string name="action_open_reports">Open Reports</string>
     <string name="action_open_syncLog">Synchronization conflicts</string>
     <string name="action_options">Options</string>
-    <string name="action_pick_gps">Pick current GPS for address</string>
+    <string name="action_pick_gps">Pick current GPS coordinates for address</string>
     <string name="action_redownload_app">Redownload</string>
     <string name="action_redownload_app_later">Redownload later</string>
     <string name="action_report">Report Problem</string>
@@ -141,6 +141,8 @@
     <string name="event_location_unknown">Location N/A</string>
     <string name="caption_date_of_birth">Date of birth (year / month / day)</string>
     <string name="gender_unknown">Gender N/A</string>
+
+    <string name="error_case_transfer">An error occurred while trying to transfer the case.</string>
 
     <string name="heading_case_new">New Case</string>
     <string name="heading_contact_new">New Contact</string>
@@ -261,7 +263,7 @@
     <string name="not_available">N/A</string>
     <string name="notification_empty_password">Please enter a password.</string>
     <string name="notification_empty_username">Please enter a username.</string>
-    <string name="notification_internal_error">There has been an internal error, contact administrator.</string>
+    <string name="notification_internal_error">An internal error occurred. Please contact an administrator.</string>
     <string name="notification_saved_settings">Application settings has been changed.</string>
     <string name="person_unknown">Person N/A</string>
     <string name="record_desc_unknown">Description N/A</string>

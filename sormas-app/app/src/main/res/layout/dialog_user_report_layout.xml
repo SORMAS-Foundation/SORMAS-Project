@@ -5,8 +5,7 @@
     android:id="@+id/base_layout">
 
     <data>
-        <variable name="data" type="de.symeda.sormas.app.component.dialog.UserReport"/>
-        <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
+        <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig" />
     </data>
 
     <LinearLayout
@@ -14,21 +13,20 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:paddingLeft="@dimen/rowListItemHorizontalMargin"
-        android:paddingRight="@dimen/rowListItemHorizontalMargin"
-        >
+        android:paddingRight="@dimen/rowListItemHorizontalMargin">
 
         <TextView
-            android:id="@+id/txtDialogHint"
+            android:id="@+id/dialog_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="@={config.subHeading}"
             android:textColor="@color/pageHintText"
-            android:textSize="@dimen/defaultPageHintTextSize"/>
+            android:textSize="@dimen/defaultPageHintTextSize" />
 
         <de.symeda.sormas.app.component.controls.ControlTextEditField
-            android:id="@+id/txtMessage"
+            android:id="@+id/user_report_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/textControlMarginBottom"
@@ -42,11 +40,7 @@
             app:maxLines="8"
             app:textArea="true"
             app:required="true"
-            app:value="@={data.message}"
-            app:imeOptions="actionNone"
-
-
-            />
+            app:imeOptions="actionNone" />
 
     </LinearLayout>
 

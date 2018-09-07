@@ -63,7 +63,7 @@ public class DashboardActivity extends BaseDashboardActivity {
             // Report problem button
             case R.id.action_report:
                 UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
-                userReportDialog.show(null);
+                userReportDialog.show();
 
                 return true;
 

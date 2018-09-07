@@ -341,7 +341,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
             // Report problem button
             case R.id.action_report:
                 UserReportDialog userReportDialog = new UserReportDialog(this, getClass().getSimpleName(), null);
-                userReportDialog.show(null);
+                userReportDialog.show();
                 return true;
         }
 

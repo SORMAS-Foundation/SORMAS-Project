@@ -14,59 +14,24 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
-import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 import de.symeda.sormas.app.util.LocationService;
 
-public class LocationDialog extends BaseTeboAlertDialog {
+public class LocationDialog extends AbstractDialog {
 
     public static final String TAG = LocationDialog.class.getSimpleName();
 
-    private FragmentActivity activity;
-
     private Location data;
-    private List<Item> initialRegions;
-    private List<Item> initialDistricts;
-    private List<Item> initialCommunities;
 
-    private DialogLocationLayoutBinding mContentBinding;
-    private IEntryItemOnClickListener pickGpsCallback;
+    private DialogLocationLayoutBinding contentBinding;
 
     public LocationDialog(final FragmentActivity activity, Location location) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_location_layout,
-                R.layout.dialog_root_two_button_panel_layout,R.string.heading_location_dialog, -1);
+                R.layout.dialog_root_two_button_panel_layout, R.string.heading_location_dialog, -1);
 
-        this.activity = activity;
         this.data = location;
-
-        setupCallbacks();
-    }
-
-    @Override
-    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        DialogLocationLayoutBinding _contentBinding = (DialogLocationLayoutBinding)contentBinding;
-
-        if (callback != null)
-            callback.call(null);
-    }
-
-    @Override
-    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        if (callback != null)
-            callback.call(null);
-    }
-
-    @Override
-    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        if (callback != null)
-            callback.call(null);
-    }
-
-    @Override
-    protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
-        this.mContentBinding = (DialogLocationLayoutBinding)binding;
     }
 
     @Override
@@ -74,80 +39,37 @@ public class LocationDialog extends BaseTeboAlertDialog {
         if (!binding.setVariable(BR.data, data)) {
             Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
-
-        if (!binding.setVariable(BR.pickGpsCallback, pickGpsCallback)) {
-            Log.e(TAG, "There is no variable 'pickGpsCallback' in layout " + layoutName);
-        }
-    }
-
-    @Override
-    protected void prepareDialogData() {
-        initialRegions = InfrastructureHelper.loadRegions();
-        initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
-        initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
     }
 
     @Override
     protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-        mContentBinding = (DialogLocationLayoutBinding)contentBinding;
+        this.contentBinding = (DialogLocationLayoutBinding) contentBinding;
 
         updateGpsTextView();
 
-        InfrastructureHelper.initializeRegionFields(mContentBinding.locationRegion, initialRegions,
-                mContentBinding.locationDistrict, initialDistricts,
-                mContentBinding.locationCommunity, initialCommunities);
-    }
+        List<Item> initialRegions = InfrastructureHelper.loadRegions();
+        List<Item> initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
+        List<Item> initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
+        InfrastructureHelper.initializeRegionFields(this.contentBinding.locationRegion, initialRegions,
+                this.contentBinding.locationDistrict, initialDistricts,
+                this.contentBinding.locationCommunity, initialCommunities);
 
-    @Override
-    public boolean isOkButtonVisible() {
-        return true;
-    }
-
-    @Override
-    public boolean isDismissButtonVisible() {
-        return true;
-    }
-
-    @Override
-    public boolean isRounded() {
-        return true;
-    }
-
-    @Override
-    public ControlButtonType dismissButtonType() {
-        return ControlButtonType.LINE_DANGER;
-    }
-
-    @Override
-    public ControlButtonType okButtonType() {
-        return ControlButtonType.LINE_PRIMARY;
-    }
-
-    private void updateGpsTextView() {
-        if (mContentBinding == null)
-            return;
-
-        mContentBinding.locationLatLon.setValue(data.getGpsLocation());
-    }
-
-    private void setupCallbacks() {
-        pickGpsCallback = new IEntryItemOnClickListener() {
-
+        // "Pick GPS Coordinates" confirmation dialog
+        this.contentBinding.pickGpsCoordinates.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v, Object item) {
-
+            public void onClick(View v) {
                 final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActivity(),
                         R.string.heading_confirmation_dialog,
                         R.string.heading_sub_confirmation_notification_dialog_pick_gps,
                         R.string.yes,
                         R.string.no);
 
-                confirmationDialog.setOnPositiveClickListener(new de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface.PositiveOnClickListener() {
+                confirmationDialog.setPositiveCallback(new Callback() {
                     @Override
-                    public void onOkClick(View v, Object confirmationItem, View viewRoot) {
+                    public void call() {
                         confirmationDialog.dismiss();
 
-                        android.location.Location phoneLocation = LocationService.instance().getLocation(activity);
+                        android.location.Location phoneLocation = LocationService.instance().getLocation(getActivity());
                         if (phoneLocation != null) {
                             data.setLatitude(phoneLocation.getLatitude());
                             data.setLongitude(phoneLocation.getLongitude());
@@ -157,13 +79,37 @@ public class LocationDialog extends BaseTeboAlertDialog {
                             data.setLongitude(null);
                             data.setLatLonAccuracy(null);
                         }
+
                         updateGpsTextView();
                     }
                 });
 
-                confirmationDialog.show(null);
+                confirmationDialog.show();
             }
-        };
+        });
+    }
+
+    @Override
+    public boolean isRounded() {
+        return true;
+    }
+
+    @Override
+    public ControlButtonType getNegativeButtonType() {
+        return ControlButtonType.LINE_DANGER;
+    }
+
+    @Override
+    public ControlButtonType getPositiveButtonType() {
+        return ControlButtonType.LINE_PRIMARY;
+    }
+
+    private void updateGpsTextView() {
+        if (contentBinding == null) {
+            return;
+        }
+
+        contentBinding.locationLatLon.setValue(data.getGpsLocation());
     }
 
 }

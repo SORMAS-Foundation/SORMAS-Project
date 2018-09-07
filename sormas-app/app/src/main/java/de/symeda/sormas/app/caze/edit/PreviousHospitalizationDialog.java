@@ -5,7 +5,6 @@ import android.databinding.ViewDataBinding;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.android.databinding.library.baseAdapters.BR;
 
@@ -16,8 +15,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
-import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
-import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
+import de.symeda.sormas.app.component.dialog.AbstractDialog;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
@@ -26,64 +24,17 @@ import de.symeda.sormas.app.util.InfrastructureHelper;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
-public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
+public class PreviousHospitalizationDialog extends AbstractDialog {
 
     public static final String TAG = PreviousHospitalizationDialog.class.getSimpleName();
 
     private PreviousHospitalization data;
-    private DialogPreviousHospitalizationLayoutBinding contentBinding;
 
-    private List<Item> initialRegions;
-    private List<Item> initialDistricts;
-    private List<Item> initialCommunities;
-    private List<Item> initialFacilities;
-
-    public PreviousHospitalizationDialog(final FragmentActivity activity, PreviousHospitalization previousHospitalization) {
-        this(activity, R.string.heading_case_hos_prev_hospitalization, -1, previousHospitalization);
-    }
-
-    public PreviousHospitalizationDialog(final FragmentActivity activity, int headingResId, int subHeadingResId,
-                                         PreviousHospitalization previousHospitalization) {
+    PreviousHospitalizationDialog(final FragmentActivity activity, PreviousHospitalization previousHospitalization) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_previous_hospitalization_layout,
-                R.layout.dialog_root_three_button_panel_layout, headingResId, subHeadingResId);
+                R.layout.dialog_root_three_button_panel_layout, R.string.heading_case_hos_prev_hospitalization, -1);
 
         this.data = previousHospitalization;
-    }
-
-    @Override
-    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        setLiveValidationDisabled(false);
-
-        try {
-            FragmentValidator.validate(getContext(), contentBinding);
-        } catch (ValidationException e) {
-            NotificationHelper.showDialogNotification(this, ERROR, e.getMessage());
-            return;
-        }
-
-        if (callback != null)
-            callback.call(null);
-    }
-
-    @Override
-    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        if (callback != null)
-            callback.call(null);
-    }
-
-    @Override
-    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        if (callback != null)
-            callback.call(null);
-    }
-
-    @Override
-    protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
-        this.contentBinding = (DialogPreviousHospitalizationLayoutBinding) binding;
-
-        if (data.getId() == null) {
-            setLiveValidationDisabled(true);
-        }
     }
 
     @Override
@@ -94,37 +45,40 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void prepareDialogData() {
-        initialRegions = InfrastructureHelper.loadRegions();
-        initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
-        initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
-        initialFacilities = InfrastructureHelper.loadFacilities(data.getDistrict(), data.getCommunity());
-    }
+    protected void initializeContentView(ViewDataBinding rootBinding, final ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
+        DialogPreviousHospitalizationLayoutBinding _contentBinding = (DialogPreviousHospitalizationLayoutBinding) contentBinding;
 
-    @Override
-    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-        //DialogPreviousHospitalizationLayoutBinding _contentBinding = (DialogPreviousHospitalizationLayoutBinding)contentBinding;
+        _contentBinding.casePreviousHospitalizationAdmissionDate.initializeDateField(getFragmentManager());
+        _contentBinding.casePreviousHospitalizationDischargeDate.initializeDateField(getFragmentManager());
 
-        this.contentBinding.casePreviousHospitalizationAdmissionDate.initializeDateField(getFragmentManager());
-        this.contentBinding.casePreviousHospitalizationDischargeDate.initializeDateField(getFragmentManager());
+        if (data.getId() == null) {
+            setLiveValidationDisabled(true);
+        }
+
+        List<Item> initialRegions = InfrastructureHelper.loadRegions();
+        List<Item> initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
+        List<Item> initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
+        List<Item> initialFacilities = InfrastructureHelper.loadFacilities(data.getDistrict(), data.getCommunity());
 
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(
-                this.contentBinding.casePreviousHospitalizationHealthFacility, this.contentBinding.casePreviousHospitalizationHealthFacilityDetails);
+                _contentBinding.casePreviousHospitalizationHealthFacility, _contentBinding.casePreviousHospitalizationHealthFacilityDetails);
+        InfrastructureHelper.initializeFacilityFields(_contentBinding.casePreviousHospitalizationRegion, initialRegions,
+                _contentBinding.casePreviousHospitalizationDistrict, initialDistricts,
+                _contentBinding.casePreviousHospitalizationCommunity, initialCommunities,
+                _contentBinding.casePreviousHospitalizationHealthFacility, initialFacilities);
 
-        InfrastructureHelper.initializeFacilityFields(this.contentBinding.casePreviousHospitalizationRegion, initialRegions,
-                this.contentBinding.casePreviousHospitalizationDistrict, initialDistricts,
-                this.contentBinding.casePreviousHospitalizationCommunity, initialCommunities,
-                this.contentBinding.casePreviousHospitalizationHealthFacility, initialFacilities);
-    }
+        setPositiveCallback(new de.symeda.sormas.app.util.Callback() {
+            @Override
+            public void call() {
+                setLiveValidationDisabled(false);
 
-    @Override
-    public boolean isOkButtonVisible() {
-        return true;
-    }
-
-    @Override
-    public boolean isDismissButtonVisible() {
-        return true;
+                try {
+                    FragmentValidator.validate(getContext(), contentBinding);
+                } catch (ValidationException e) {
+                    NotificationHelper.showDialogNotification(PreviousHospitalizationDialog.this, ERROR, e.getMessage());
+                }
+            }
+        });
     }
 
     @Override
@@ -138,17 +92,18 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    public ControlButtonType dismissButtonType() {
+    public ControlButtonType getNegativeButtonType() {
         return ControlButtonType.LINE_SECONDARY;
     }
 
     @Override
-    public ControlButtonType okButtonType() {
+    public ControlButtonType getPositiveButtonType() {
         return ControlButtonType.LINE_PRIMARY;
     }
 
     @Override
-    public ControlButtonType deleteButtonType() {
+    public ControlButtonType getDeleteButtonType() {
         return ControlButtonType.LINE_DANGER;
     }
+
 }

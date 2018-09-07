@@ -340,7 +340,7 @@
 
 
     <!-- Location Dialog -->
-    <string name="hint_pick_gps">No coordinates picked</string>
+    <string name="hint_no_coordinates">No coordinates picked</string>
 
 
 

@@ -21,8 +21,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.controls.ControlButton;
-import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
-import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
+import de.symeda.sormas.app.component.dialog.AbstractDialog;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.NotificationContext;
@@ -32,11 +31,11 @@ import de.symeda.sormas.app.databinding.DialogSelectOrCreatePersonLayoutBinding;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ViewHelper;
 
-public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
+public class SelectOrCreatePersonDialog extends AbstractDialog {
 
     public static final String TAG = SelectOrCreatePersonDialog.class.getSimpleName();
 
-    private DialogSelectOrCreatePersonLayoutBinding binding;
+    private DialogSelectOrCreatePersonLayoutBinding contentBinding;
 
     private Person person;
     private List<PersonNameDto> existingPersons;
@@ -47,7 +46,7 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
 
     // Static methods
 
-    public static void selectOrCreatePerson(Person person, final Consumer<Person> resultConsumer) {
+    public static void selectOrCreatePerson(final Person person, final Consumer<Person> resultConsumer) {
         final SelectOrCreatePersonDialog personDialog = new SelectOrCreatePersonDialog(BaseActivity.getActiveActivity(), person);
 
         if (!personDialog.hasSimilarPersons()) {
@@ -55,31 +54,40 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
             return;
         }
 
-        personDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+        personDialog.setPositiveCallback(new de.symeda.sormas.app.util.Callback() {
             @Override
-            public void onOkClick(View v, Object item, View viewRoot) {
-                personDialog.dismiss();
-                resultConsumer.accept((Person) item);
+            public void call() {
+                if (personDialog.getSelectedPerson() != null && !personDialog.getSelectedPerson().getUuid().equals(person.getUuid())) {
+                    personDialog.dismiss();
+                    resultConsumer.accept(personDialog.getSelectedPerson());
+                } else {
+                    NotificationHelper.showDialogNotification(personDialog, NotificationType.ERROR, R.string.snackbar_select_create_person);
+                }
             }
         });
 
-        personDialog.setOnCreateClickListener(new TeboAlertDialogInterface.CreateOnClickListener() {
+        personDialog.setCreateCallback(new de.symeda.sormas.app.util.Callback() {
             @Override
-            public void onCreateClick(View v, Object item, View viewRoot) {
-                personDialog.dismiss();
-                resultConsumer.accept((Person) item);
+            public void call() {
+                if (personDialog.contentBinding.personFirstName.getValue().isEmpty() || personDialog.contentBinding.personLastName.getValue().isEmpty()) {
+                    NotificationHelper.showDialogNotification(personDialog, NotificationType.ERROR, R.string.snackbar_person_first_last_name);
+                } else {
+                    person.setFirstName(personDialog.contentBinding.personFirstName.getValue());
+                    person.setLastName(personDialog.contentBinding.personLastName.getValue());
+                    personDialog.dismiss();
+                    resultConsumer.accept(person);
+                }
             }
         });
 
-        personDialog.setOnCancelClickListener(new TeboAlertDialogInterface.CancelOnClickListener() {
-
+        personDialog.setCancelCallback(new de.symeda.sormas.app.util.Callback() {
             @Override
-            public void onCancelClick(View v, Object item, View viewRoot) {
+            public void call() {
                 personDialog.dismiss();
             }
         });
 
-        personDialog.show(null);
+        personDialog.show();
     }
 
     // Constructors
@@ -119,14 +127,14 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
     }
 
     private void setupControlListeners() {
-        binding.updateSearch.setOnClickListener(new View.OnClickListener() {
+        contentBinding.updateSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                person.setFirstName(binding.personFirstName.getValue());
-                person.setLastName(binding.personLastName.getValue());
+                person.setFirstName(contentBinding.personFirstName.getValue());
+                person.setLastName(contentBinding.personLastName.getValue());
 
                 updateSimilarPersons();
-                binding.setAvailablePersons(makeObservable(similarPersons)); // why observable?
+                contentBinding.setAvailablePersons(makeObservable(similarPersons)); // why observable?
                 setSelectedPerson(null);
             }
         });
@@ -140,7 +148,7 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
 
                 Person personItem = (Person)item;
                 String tag = getActivity().getResources().getString(R.string.tag_row_item_select_or_create_person);
-                ArrayList<View> views = ViewHelper.getViewsByTag(binding.existingPersonsList, tag);
+                ArrayList<View> views = ViewHelper.getViewsByTag(contentBinding.existingPersonsList, tag);
                 setSelectedPerson(null);
 
                 for (View itemView : views) {
@@ -156,8 +164,6 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
                         } else {
                             itemView.setSelected(false);
                         }
-
-
                     } catch (NumberFormatException ex) {
                         NotificationHelper.showDialogNotification(SelectOrCreatePersonDialog.this,
                                 NotificationType.ERROR, R.string.notification_internal_error);
@@ -170,71 +176,18 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
     private ObservableArrayList makeObservable(List<Person> persons) {
         ObservableArrayList newList = new ObservableArrayList();
         if (persons == null || persons.size() <= 0) {
-            binding.pickPersonDescription.setVisibility(View.GONE);
-            binding.noRecordsDescription.setVisibility(View.VISIBLE);
+            contentBinding.pickPersonDescription.setVisibility(View.GONE);
+            contentBinding.noRecordsDescription.setVisibility(View.VISIBLE);
             newList.addAll(new ArrayList<Person>());
         } else {
-            binding.pickPersonDescription.setVisibility(View.VISIBLE);
-            binding.noRecordsDescription.setVisibility(View.GONE);
+            contentBinding.pickPersonDescription.setVisibility(View.VISIBLE);
+            contentBinding.noRecordsDescription.setVisibility(View.GONE);
             newList.addAll(persons);
         }
         return newList;
     }
 
-    // Overrides
-
-    @Override
-    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, final Callback.IAction callback) {
-        if (getSelectedPerson() != null && getSelectedPerson().getUuid() != person.getUuid()) {
-            if (callback != null)
-                callback.call(getSelectedPerson());
-        } else {
-            NotificationHelper.showDialogNotification((NotificationContext)this, NotificationType.ERROR, R.string.snackbar_select_create_person);
-            if (callback != null)
-                callback.call(null);
-        }
-    }
-
-    @Override
-    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        if (callback != null)
-            callback.call(null);
-    }
-
-    @Override
-    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected void onCancelClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        if (callback != null)
-            callback.call(null);
-    }
-
-    @Override
-    protected void onCreateClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-
-        if (binding.personFirstName.getValue().isEmpty() || binding.personLastName.getValue().isEmpty()) {
-            NotificationHelper.showDialogNotification((NotificationContext)this, NotificationType.ERROR, R.string.snackbar_person_first_last_name);
-
-            if (callback != null)
-                callback.call(null);
-        } else {
-            person.setFirstName(binding.personFirstName.getValue());
-            person.setLastName(binding.personLastName.getValue());
-
-            if (callback != null)
-                callback.call(person);
-        }
-    }
-
-    @Override
-    protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
-        this.binding = (DialogSelectOrCreatePersonLayoutBinding)binding;
-
-        setupControlListeners();
-    }
+    // Override
 
     @Override
     protected void setBindingVariable(Context context, ViewDataBinding binding, String layoutName) {
@@ -242,8 +195,9 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
             Log.e(TAG, "There is no variable 'person' in layout " + layoutName);
         }
 
-        if (!(binding instanceof DialogSelectOrCreatePersonLayoutBinding))
+        if (!(binding instanceof DialogSelectOrCreatePersonLayoutBinding)) {
             return;
+        }
 
         if (!binding.setVariable(BR.availablePersons, makeObservable(similarPersons))) {
             Log.e(TAG, "There is no variable 'availablePersons' in layout " + layoutName);
@@ -255,18 +209,15 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void prepareDialogData() {
-        // TODO remove
-    }
-
-    @Override
     protected void initializeContentView(ViewDataBinding rootBinding, final ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
+        this.contentBinding = (DialogSelectOrCreatePersonLayoutBinding) contentBinding;
+        setupControlListeners();
+
         this.selectedPerson.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable observable, int i) {
-
                 ControlButton btnCreate = getCreateButton();
-                ControlButton btnSelect = getOkButton();
+                ControlButton btnSelect = getPositiveButton();
 
                 if (getSelectedPerson() == null) {
                     if (btnCreate != null)
@@ -283,12 +234,8 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
                 }
             }
         });
-        this.selectedPerson.notifyChange();
-    }
 
-    @Override
-    public boolean isOkButtonVisible() {
-        return true;
+        this.selectedPerson.notifyChange();
     }
 
     @Override

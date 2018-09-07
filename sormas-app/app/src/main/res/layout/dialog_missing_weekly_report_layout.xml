@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription"
     android:descendantFocusability="beforeDescendants"
     android:id="@+id/base_layout">
 
@@ -11,15 +12,13 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@color/informationNotificationDialogIcon"
-            >
+            android:background="@color/informationNotificationDialogIcon">
 
             <ImageView
                 android:layout_width="@dimen/notificationDialogIconWidth"
@@ -28,12 +27,9 @@
                 android:layout_marginBottom="@dimen/notificationDialogIconVerticalMargin"
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/ic_missing_weekly_report_info_black_24dp"
-                android:tint="@color/whiteOpaque"
-                />
-
+                android:tint="@color/whiteOpaque" />
 
         </LinearLayout>
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -42,22 +38,19 @@
             android:paddingLeft="@dimen/rowListItemHorizontalMargin"
             android:paddingRight="@dimen/rowListItemHorizontalMargin"
             android:layout_marginTop="@dimen/dialogVerticalContentSpacing"
-            android:layout_marginBottom="@dimen/dialogVerticalContentSpacing"
-            >
+            android:layout_marginBottom="@dimen/dialogVerticalContentSpacing">
 
             <TextView
-                android:id="@+id/txtDialogHint"
+                android:id="@+id/dialog_message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@{config.subHeading}"
                 android:textColor="@color/dialogSubHeadingTextColor"
-                android:textSize="@dimen/dialogSubHeadingTextSize"
-                />
+                android:textSize="@dimen/dialogSubHeadingTextSize" />
 
         </LinearLayout>
-
 
     </LinearLayout>
 

@@ -13,9 +13,8 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
-import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
+import de.symeda.sormas.app.component.dialog.AbstractDialog;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
-import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
@@ -23,59 +22,18 @@ import de.symeda.sormas.app.databinding.DialogCaseEpidGatheringEditLayoutBinding
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
-public class EpiDataGatheringDialog extends BaseTeboAlertDialog {
+public class EpiDataGatheringDialog extends AbstractDialog {
 
     public static final String TAG = EpiDataGatheringDialog.class.getSimpleName();
 
     private EpiDataGathering data;
-    private DialogCaseEpidGatheringEditLayoutBinding mContentBinding;
+    private DialogCaseEpidGatheringEditLayoutBinding contentBinding;
 
-
-    public EpiDataGatheringDialog(final FragmentActivity activity, EpiDataGathering epiDataGathering) {
-        this(activity, R.string.heading_sub_case_epid_social_events, -1, epiDataGathering);
-    }
-
-    public EpiDataGatheringDialog(final FragmentActivity activity, int headingResId, int subHeadingResId, EpiDataGathering epiDataGathering) {
+    EpiDataGatheringDialog(final FragmentActivity activity, EpiDataGathering epiDataGathering) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_case_epid_gathering_edit_layout,
-                R.layout.dialog_root_three_button_panel_layout, headingResId, subHeadingResId);
+                R.layout.dialog_root_three_button_panel_layout,  R.string.heading_sub_case_epid_social_events, -1);
 
         this.data = epiDataGathering;
-    }
-
-    @Override
-    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        setLiveValidationDisabled(false);
-
-        try {
-            FragmentValidator.validate(getContext(), contentBinding);
-        } catch (ValidationException e) {
-            NotificationHelper.showDialogNotification(this, ERROR, e.getMessage());
-            return;
-        }
-
-        if (callback != null)
-            callback.call(null);
-    }
-
-    @Override
-    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        if (callback != null)
-            callback.call(null);
-    }
-
-    @Override
-    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        if (callback != null)
-            callback.call(null);
-    }
-
-    @Override
-    protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
-        this.mContentBinding = (DialogCaseEpidGatheringEditLayoutBinding) binding;
-
-        if (data.getId() == null) {
-            setLiveValidationDisabled(true);
-        }
     }
 
     @Override
@@ -86,25 +44,27 @@ public class EpiDataGatheringDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void prepareDialogData() {
-
-    }
-
-    @Override
-    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-        mContentBinding.epiDataGatheringGatheringDate.initializeDateField(getFragmentManager());
+    protected void initializeContentView(ViewDataBinding rootBinding, final ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
+        this.contentBinding = (DialogCaseEpidGatheringEditLayoutBinding) contentBinding;
+        this.contentBinding.epiDataGatheringGatheringDate.initializeDateField(getFragmentManager());
 
         setUpControlListeners();
-    }
 
-    @Override
-    public boolean isOkButtonVisible() {
-        return true;
-    }
+        if (data.getId() == null) {
+            setLiveValidationDisabled(true);
+        }
 
-    @Override
-    public boolean isDismissButtonVisible() {
-        return true;
+        setPositiveCallback(new de.symeda.sormas.app.util.Callback() {
+            @Override
+            public void call() {
+                setLiveValidationDisabled(false);
+                try {
+                    FragmentValidator.validate(getContext(), contentBinding);
+                } catch (ValidationException e) {
+                    NotificationHelper.showDialogNotification(EpiDataGatheringDialog.this, ERROR, e.getMessage());
+                }
+            }
+        });
     }
 
     @Override
@@ -118,22 +78,22 @@ public class EpiDataGatheringDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    public ControlButtonType dismissButtonType() {
+    public ControlButtonType getNegativeButtonType() {
         return ControlButtonType.LINE_SECONDARY;
     }
 
     @Override
-    public ControlButtonType okButtonType() {
+    public ControlButtonType getPositiveButtonType() {
         return ControlButtonType.LINE_PRIMARY;
     }
 
     @Override
-    public ControlButtonType deleteButtonType() {
+    public ControlButtonType getDeleteButtonType() {
         return ControlButtonType.LINE_DANGER;
     }
 
     private void setUpControlListeners() {
-        mContentBinding.epiDataGatheringGatheringAddress.setOnClickListener(new View.OnClickListener() {
+        contentBinding.epiDataGatheringGatheringAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openAddressPopup();
@@ -142,14 +102,14 @@ public class EpiDataGatheringDialog extends BaseTeboAlertDialog {
     }
 
     private void openAddressPopup() {
-        final Location location = (Location)mContentBinding.epiDataGatheringGatheringAddress.getValue();
+        final Location location = (Location) contentBinding.epiDataGatheringGatheringAddress.getValue();
         final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), location);
-        locationDialog.show(null);
+        locationDialog.show();
 
-        locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+        locationDialog.setPositiveCallback(new de.symeda.sormas.app.util.Callback() {
             @Override
-            public void onOkClick(View v, Object item, View viewRoot) {
-                mContentBinding.epiDataGatheringGatheringAddress.setValue(location);
+            public void call() {
+                contentBinding.epiDataGatheringGatheringAddress.setValue(location);
                 locationDialog.dismiss();
             }
         });
