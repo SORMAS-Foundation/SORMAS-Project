@@ -40,8 +40,16 @@ public class DialogViewConfig {
         return positiveButtonText;
     }
 
+    public void setPositiveButtonText(String positiveButtonText) {
+        this.positiveButtonText = positiveButtonText;
+    }
+
     public String getNegativeButtonText() {
         return negativeButtonText;
+    }
+
+    public void setNegativeButtonText(String negativeButtonText) {
+        this.negativeButtonText = negativeButtonText;
     }
 
     public String getDeleteButtonText() {

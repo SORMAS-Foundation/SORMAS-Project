@@ -90,11 +90,12 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
                 activity.saveData(new Consumer<Case>() {
                     @Override
                     public void accept(final Case caze) {
-                        final MoveCaseDialog moveCaseDialog = new MoveCaseDialog(BaseActivity.getActiveActivity(), caze);
+                        final Case caseClone = (Case) caze.clone();
+                        final MoveCaseDialog moveCaseDialog = new MoveCaseDialog(BaseActivity.getActiveActivity(), caseClone);
                         moveCaseDialog.setPositiveCallback(new Callback() {
                             @Override
                             public void call() {
-                                record = caze;
+                                record = caseClone;
                                 requestLayoutRebind();
                                 moveCaseDialog.dismiss();
                             }
