@@ -211,7 +211,7 @@ public abstract class AbstractDialog implements NotificationContext {
         }
     }
 
-    protected void onNegativeClick() {
+    private void onNegativeClick() {
         if (negativeCallback != null) {
             negativeCallback.call();
         } else {
@@ -219,13 +219,13 @@ public abstract class AbstractDialog implements NotificationContext {
         }
     }
 
-    protected void onCreateClick() {
+    private void onCreateClick() {
         if (createCallback != null) {
             createCallback.call();
         }
     }
 
-    protected void onDeleteClick() {
+    private void onDeleteClick() {
         if (deleteCallback != null) {
             final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActivity(),
                     R.string.heading_confirmation_dialog,
@@ -244,7 +244,7 @@ public abstract class AbstractDialog implements NotificationContext {
         }
     }
 
-    protected void onCancelClick() {
+    private void onCancelClick() {
         if (cancelCallback != null) {
             cancelCallback.call();
         }
@@ -455,6 +455,10 @@ public abstract class AbstractDialog implements NotificationContext {
 
     private int getCreateButtonText() {
         return R.string.action_create;
+    }
+
+    public boolean isShowing() {
+        return dialog.isShowing();
     }
 
     // Abstract methods

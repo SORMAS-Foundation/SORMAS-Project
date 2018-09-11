@@ -197,7 +197,7 @@ public final class RetroProvider {
         if (!RetroProvider.isConnected()) {
             new DefaultAsyncTask(activity.getApplicationContext()) {
 
-                WeakReference<Activity> activityReference;
+                WeakReference<FragmentActivity> activityReference;
                 boolean versionCompatible = false;
 
                 @Override
@@ -264,7 +264,7 @@ public final class RetroProvider {
                     }
                 }
 
-                private DefaultAsyncTask init(Activity activity) {
+                private DefaultAsyncTask init(FragmentActivity activity) {
                     activityReference = new WeakReference<>(activity);
                     return this;
                 }

@@ -27,7 +27,7 @@ public class ConfirmationDialog extends AbstractDialog {
                 R.layout.dialog_root_two_button_panel_edge_aligned_layout, headingResId, subHeadingResId);
     }
 
-    ConfirmationDialog(final FragmentActivity activity, int headingResId, int subHeadingResId,
+    public ConfirmationDialog(final FragmentActivity activity, int headingResId, int subHeadingResId,
                        int positiveButtonTextResId, int negativeButtonTextResId) {
         this(activity, headingResId, subHeadingResId);
 

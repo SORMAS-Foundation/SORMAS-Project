@@ -109,4 +109,13 @@ public class SormasApplication extends Application implements Application.Activi
     public void onActivityDestroyed(Activity activity) {
 
     }
+
+    public void closeApp(Activity callingActivity) {
+        Activity finishActivity = callingActivity;
+        do {
+            finishActivity.finish();
+            finishActivity = finishActivity.getParent();
+        } while (finishActivity != null);
+    }
+
 }
