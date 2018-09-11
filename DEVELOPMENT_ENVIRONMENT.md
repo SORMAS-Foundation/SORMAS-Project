@@ -26,7 +26,7 @@
 
 
  **Ubuntu**: 
-At the time of this making, yatta requires a java version with javaFX-Runtime on Ubuntu to be installed. This can be achieved with
+Yatta requires a java version with javaFX-Runtime on Ubuntu to be installed. This can be achieved with
 ```
 sudo add-apt-repository ppa:webupd8team/java
 sudo apt-get update
@@ -43,7 +43,7 @@ The yatta-installer may not be able to provide you a useable development environ
   - Either: Run "Maven install" on the sormas-base project
   - Or: Execute the "install [default]" ant script (this needs a maven installation on your system with the M2_HOME variable set
   - Then: Execute the "deploy-serverlibs" and "deploy-bundles" ant scripts  
-  **Note:** the deploy-serverlibs and deploy-bundles scripts may copy broken libraries to the glassfish domain root. To resolve, execute the deploy-bundles and deploy-serverlibs, and then replace all the .jar-files in the glassfish domain root with the according files you find in the deploy.zip (https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest).
+  **Note:** the deploy-serverlibs and deploy-bundles scripts may copy broken libraries to the glassfish domain root. To resolve, execute the deploy-bundles and deploy-serverlibs scripts, and then replace all the .jar-files in the glassfish domain root with the according files you find in the deploy.zip (https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest).
 - Highlight all Eclipse projects and choose "Maven -> Update Project" from the right click menu; perform the update for all projects
 - Start the Glassfish server and deploy "sormas-ear", "sormas-rest" and "sormas-ui" by dragging the respective projects onto it, or use the "Add and Remove..."-function by right clicking on the server.
 - Open your browser and type in "http://localhost:6080/sormas-ui" to test whether everything has been set up correctly (and to use the application)  
