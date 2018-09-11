@@ -44,7 +44,7 @@
 	
 ## Payara Application Server
 * Download payara 4.1.2.172 [downloadlink](http://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/4.1.2.172/payara-4.1.2.172.zip) and extract it to the directory where your servers should be located (e.g. /opt/payara-172).  
-The `/opt/payara-172/` as payara-directory can, in some linux distros, only be modified by root. For a local development environment, it may be easier to use another directory owned by logged-in user. Same for  and `/opt/domains/` as domain directory. and `/root/deploy/sormas/$(date +%F)` as directory for the sormas deploy (both used later in this document).
+The `/opt/payara-172/` as payara-directory can, in some linux distros, only be modified by root. For a local development environment, it may be easier to use another directory owned by logged-in user. Same for `/opt/domains/` as domain directory and `/root/deploy/sormas/$(date +%F)` as directory for the sormas deploy (both used later in this document).
 * Remove the default domains from the server:
 	* **Linux**
 		* ``rm -R /opt/payara-172/glassfish/domains/domain1``
