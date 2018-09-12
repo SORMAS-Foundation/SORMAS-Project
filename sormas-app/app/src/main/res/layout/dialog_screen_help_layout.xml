@@ -9,18 +9,42 @@
     <data>
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
 
-        <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiDataGathering" />
+        <variable name="data" type="android.text.SpannableStringBuilder" />
         <variable name="dismissCallback" type="de.symeda.sormas.app.util.Callback" />
     </data>
 
-    <ScrollView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <LinearLayout
+            android:id="@+id/dialog_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_gravity="top">
+
+            <TextView
+                android:id="@+id/headline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/simple_dialog_button_margin"
+                android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+                android:paddingRight="@dimen/rowListItemHorizontalMargin"
+                android:text="@string/headline_help"
+                android:textSize="@dimen/textSizeXXLarge"
+                style="@style/HeadingStyle" />
+
+            <ImageView
+                style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
+
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="52dp"
+            android:layout_marginBottom="64dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -29,31 +53,24 @@
                 android:padding="@dimen/fragment_padding">
 
                 <TextView
+                    android:id="@+id/help_string"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/heading_gathering"
-                    style="@style/SubHeadingStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/epiDataGathering_gatheringDate"
-                    app:value="@{data.gatheringDate}"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/epiDataGathering_description"
-                    app:maxLines="2"
-                    app:value="@{data.description}"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <ImageView style="@style/FullHorizontalDividerStyle"/>
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/epiDataGathering_gatheringAddress"
-                    app:maxLines="2"
-                    app:value="@{data.gatheringAddress}"
-                    style="@style/ControlSingleColumnStyle" />
+                    android:text="@{data}"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/normalText"
+                    android:textSize="@dimen/textSizeLarge" />
 
             </LinearLayout>
+
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/button_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="bottom">
 
             <ImageView style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
 
@@ -71,7 +88,7 @@
 
         </LinearLayout>
 
-    </ScrollView>
+    </FrameLayout>
 
 </layout>
 

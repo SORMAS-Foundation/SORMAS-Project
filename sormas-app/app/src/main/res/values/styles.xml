@@ -500,6 +500,13 @@
 
 
     <!-- Sub heading with bottom margin -->
+    <style name="HeadingStyle">
+        <item name="android:textColor">@color/normalText</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">@dimen/textSizeXXLarge</item>
+        <item name="android:layout_marginBottom">@dimen/parentLayoutVerticalMargin</item>
+    </style>
+
     <style name="SubHeadingStyle">
         <item name="android:textColor">@color/normalText</item>
         <item name="android:fontFamily">sans-serif-medium</item>

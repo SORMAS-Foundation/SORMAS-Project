@@ -33,7 +33,7 @@ public class EpiDataGatheringDialog extends AbstractDialog {
 
     EpiDataGatheringDialog(final FragmentActivity activity, EpiDataGathering epiDataGathering) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_case_epid_gathering_edit_layout,
-                R.layout.dialog_root_three_button_panel_layout,  R.string.heading_sub_case_epid_social_events, -1);
+                R.layout.dialog_root_three_button_panel_layout,  R.string.heading_gathering, -1);
 
         this.data = epiDataGathering;
     }

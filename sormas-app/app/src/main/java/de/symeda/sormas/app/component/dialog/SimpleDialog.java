@@ -7,26 +7,33 @@ import android.databinding.ViewDataBinding;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.RelativeLayout;
 
 import de.symeda.sormas.app.BR;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
+import de.symeda.sormas.app.util.Callback;
 
-public class SimpleDialog extends AlertDialog.Builder implements IEntryItemOnClickListener {
+public class SimpleDialog extends AlertDialog.Builder {
 
     public static final String TAG = SimpleDialog.class.getSimpleName();
 
     private int layoutId;
     private Object data;
     private AlertDialog dialog;
-    private IEntryItemOnClickListener onDismissClickListener;
+    private Callback dismissCallback;
 
     public SimpleDialog(Context context, int layoutId, Object data) {
         super(context);
 
         this.layoutId = layoutId;
         this.data = data;
-
-        setOnDismissClickListener(this);
+        dismissCallback = new Callback() {
+            @Override
+            public void call() {
+                dialog.dismiss();
+            }
+        };
 
         ViewDataBinding binding = bindLayout(context);
 
@@ -36,20 +43,9 @@ public class SimpleDialog extends AlertDialog.Builder implements IEntryItemOnCli
     }
 
     @Override
-    public void onClick(View v, Object item) {
-        dialog.dismiss();
-    }
-
-    @Override
     public AlertDialog show() {
         dialog = super.show();
         return dialog;
-    }
-
-    private void setOnDismissClickListener(IEntryItemOnClickListener listener) {
-        if (listener != null) {
-            this.onDismissClickListener = listener;
-        }
     }
 
     private ViewDataBinding bindLayout(Context context) {
@@ -65,7 +61,7 @@ public class SimpleDialog extends AlertDialog.Builder implements IEntryItemOnCli
             Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
 
-        if (!binding.setVariable(BR.dismissCallback, onDismissClickListener)) {
+        if (!binding.setVariable(BR.dismissCallback, dismissCallback)) {
             Log.e(TAG, "There is no variable 'callback' in layout " + layoutName);
         }
 

@@ -18,20 +18,34 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingLeft="@dimen/rowListItemHorizontalMargin"
-        android:paddingRight="@dimen/rowListItemHorizontalMargin"
-        android:visibility="@{dialog.isButtonPanelVisible? View.VISIBLE : View.GONE}">
+        android:paddingRight="@dimen/rowListItemHorizontalMargin">
 
         <de.symeda.sormas.app.component.controls.ControlButton
             android:id="@+id/button_negative"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:visibility="@{dialog.isNegativeButtonVisible? View.VISIBLE : View.GONE}"
+            android:layout_gravity="end"
+            android:layout_alignParentStart="true"
             android:text="@{config.negativeButtonText}"
             app:iconStart="@drawable/ic_clear_black_24dp"
             app:buttonType="@{dialog.negativeButtonType}"
+            app:rounded="@{dialog.isRounded}"
             app:slim="true"
-            app:rounded="@{dialog.isRounded}" />
+            app:iconOnly="@{dialog.isNegativeButtonIconOnly}" />
+
+        <de.symeda.sormas.app.component.controls.ControlButton
+            android:id="@+id/button_positive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginStart="@dimen/control_spacing"
+            android:layout_alignParentEnd="true"
+            android:text="@{config.positiveButtonText}"
+            app:iconStart="@drawable/ic_autorenew_black_24dp"
+            app:buttonType="@{dialog.positiveButtonType}"
+            app:rounded="@{dialog.isRounded}"
+            app:slim="true"
+            app:iconOnly="@{dialog.isPositiveButtonIconOnly}" />
 
     </RelativeLayout>
 

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription"
     android:descendantFocusability="beforeDescendants"
     android:id="@+id/base_layout">
 
@@ -11,32 +13,35 @@
         <variable name="dialog" type="de.symeda.sormas.app.component.dialog.AbstractDialog" />
     </data>
 
-    <ScrollView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <LinearLayout
+            android:id="@+id/dialog_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/parentLayoutVerticalPadding"
-            android:paddingBottom="@dimen/parentLayoutVerticalPadding"
             android:orientation="vertical"
-            android:focusable="true"
-            android:focusableInTouchMode="true">
+            android:elevation="8dp"
+            android:layout_gravity="top">
 
             <TextView
                 android:id="@+id/dialog_heading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="top"
                 android:gravity="@{dialog.isHeadingCentered? Gravity.CENTER_HORIZONTAL : Gravity.START}"
                 android:paddingLeft="@dimen/rowListItemHorizontalMargin"
                 android:paddingRight="@dimen/rowListItemHorizontalMargin"
+                android:layout_margin="@dimen/simple_dialog_button_margin"
                 android:textColor="@color/normalText"
                 android:fontFamily="sans-serif-medium"
                 android:textSize="@dimen/dialogHeadingTextSize"
-                android:layout_marginBottom="@dimen/parentLayoutVerticalMargin"
                 android:text="@{config.heading}"
                 android:visibility="@{dialog.isHeadingVisible? View.VISIBLE : View.GONE}" />
+
+            <ImageView
+                style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
 
             <LinearLayout
                 android:id="@+id/notification_frame"
@@ -47,7 +52,6 @@
                 android:paddingLeft="@dimen/rowListItemHorizontalMargin"
                 android:paddingRight="@dimen/rowListItemHorizontalMargin"
                 android:orientation="vertical"
-                android:elevation="8dp"
                 android:background="@drawable/background_full_width_border"
                 android:paddingTop="16dp"
                 android:paddingBottom="16dp"
@@ -62,22 +66,52 @@
 
             </LinearLayout>
 
-            <ViewStub android:id="@+id/dialog_content"
-                android:inflatedId="@+id/dialogContentView"
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="52dp"
+            android:layout_marginBottom="64dp">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingLeft="@dimen/rowListItemHorizontalMargin"
-                android:paddingRight="@dimen/rowListItemHorizontalMargin" />
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/parentLayoutVerticalPadding"
+                android:orientation="vertical"
+                android:focusable="true"
+                android:focusableInTouchMode="true">
+
+                <ViewStub android:id="@+id/dialog_content"
+                    android:inflatedId="@+id/dialogContentView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+                    android:paddingRight="@dimen/rowListItemHorizontalMargin" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/button_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="bottom">
+
+            <ImageView style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
 
             <ViewStub android:id="@+id/dialog_button_panel"
                 android:inflatedId="@+id/dialogButtonPanelView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingLeft="@dimen/rowListItemHorizontalMargin"
-                android:paddingRight="@dimen/rowListItemHorizontalMargin" />
+                android:paddingRight="@dimen/rowListItemHorizontalMargin"
+                android:layout_margin="@dimen/simple_dialog_button_margin"/>
 
         </LinearLayout>
 
-    </ScrollView>
+    </FrameLayout>
 
 </layout>

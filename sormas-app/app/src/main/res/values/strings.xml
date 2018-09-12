@@ -144,6 +144,9 @@
 
     <string name="error_case_transfer">An error occurred while trying to transfer the case.</string>
 
+    <string name="heading_travel">Travel</string>
+    <string name="heading_burial">Burial</string>
+    <string name="heading_gathering">Gathering</string>
     <string name="heading_case_new">New Case</string>
     <string name="heading_contact_new">New Contact</string>
     <string name="heading_dialog_placeholder">Dialog Heading</string>

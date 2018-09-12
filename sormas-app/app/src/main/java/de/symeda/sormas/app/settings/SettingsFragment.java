@@ -59,7 +59,7 @@ public class SettingsFragment extends BaseLandingFragment {
         binding.showSyncLog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openSyncLog(v);
+                openSyncLog();
             }
         });
         binding.logout.setOnClickListener(new View.OnClickListener() {
@@ -145,9 +145,9 @@ public class SettingsFragment extends BaseLandingFragment {
         confirmationDialog.show();
     }
 
-    public void openSyncLog(View view) {
-        SyncLogDialog syncLogDialog = new SyncLogDialog(getContext());
-        syncLogDialog.show(getContext());
+    public void openSyncLog() {
+        SyncLogDialog syncLogDialog = new SyncLogDialog(this.getActivity());
+        syncLogDialog.show();
     }
 
     public void logout(View view) {

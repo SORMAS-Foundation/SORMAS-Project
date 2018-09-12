@@ -34,7 +34,7 @@ public class EpiDataBurialDialog extends AbstractDialog {
     EpiDataBurialDialog(final FragmentActivity activity, EpiDataBurial epiDataBurial) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_case_epid_burial_edit_layout,
                 R.layout.dialog_root_three_button_panel_layout,
-                R.string.heading_sub_case_epid_burial_visited, -1);
+                R.string.heading_burial, -1);
 
         this.data = epiDataBurial;
     }

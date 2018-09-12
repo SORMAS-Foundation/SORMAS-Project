@@ -93,8 +93,6 @@
 
             </LinearLayout>
 
-            <ImageView style="@style/FullHorizontalDividerStyle"/>
-
         </LinearLayout>
 
     </ScrollView>

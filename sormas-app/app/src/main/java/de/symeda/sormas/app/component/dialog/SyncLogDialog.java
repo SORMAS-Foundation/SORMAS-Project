@@ -1,12 +1,9 @@
 package de.symeda.sormas.app.component.dialog;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.support.design.widget.Snackbar;
+import android.databinding.ViewDataBinding;
+import android.support.v4.app.FragmentActivity;
 import android.text.Html;
-import android.view.View;
-import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,17 +14,18 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.synclog.SyncLog;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
+import de.symeda.sormas.app.databinding.DialogSyncLogLayoutBinding;
+import de.symeda.sormas.app.util.Callback;
 
-/**
- * Created by Mate Strysewske on 24.05.2017.
- */
+public class SyncLogDialog extends AbstractDialog {
 
-public class SyncLogDialog {
+    public static final String TAG = SyncLogDialog.class.getSimpleName();
 
-    private static int INITIAL_LOG_LIMIT = 50;
+    private static int INITIAL_LOG_LIMIT = 10;
 
-    private AlertDialog.Builder builder;
-    private AlertDialog dialog;
+    private DialogSyncLogLayoutBinding contentBinding;
 
     private int lastDisplayCount = 0;
     private int displayCount = INITIAL_LOG_LIMIT;
@@ -35,43 +33,41 @@ public class SyncLogDialog {
     private StringBuilder content = new StringBuilder();
     private Date lastDate;
 
-    public SyncLogDialog(Context context) {
-        builder = new AlertDialog.Builder(context);
-        builder.setTitle(R.string.headline_sync_log);
-        builder.setPositiveButton(R.string.action_loadMore, null);
-        builder.setNeutralButton(R.string.action_close, null);
+    public SyncLogDialog(final FragmentActivity activity) {
+        super(activity, R.layout.dialog_root_layout, R.layout.dialog_sync_log_layout,
+                R.layout.dialog_sync_log_button_panel_layout, R.string.headline_sync_log, -1);
     }
 
-    public void show(final Context context) {
+    @Override
+    protected void setContentBinding(Context context, ViewDataBinding binding, String layoutName) {
+        this.contentBinding = (DialogSyncLogLayoutBinding) binding;
+    }
+
+    @Override
+    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
         logs = DatabaseHelper.getSyncLogDao().queryForAll(AbstractDomainObject.CREATION_DATE, false);
+        buildAndDisplayDialogContent();
 
-        dialog = builder.create();
-        dialog.setCancelable(true);
-
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+        setPositiveCallback(new Callback() {
             @Override
-            public void onShow(DialogInterface dialogInterface) {
-                Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                positiveButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (logs.size() > lastDisplayCount) {
-                            buildAndDisplayDialogContent(context);
-                        } else {
-                            Snackbar.make(dialog.getWindow().getDecorView(), R.string.snackbar_no_more_entries, Snackbar.LENGTH_LONG).show();
-                        }
-                    }
-                });
+            public void call() {
+                if (logs.size() > lastDisplayCount) {
+                    buildAndDisplayDialogContent();
+                } else {
+                    NotificationHelper.showDialogNotification(SyncLogDialog.this, NotificationType.INFO,  R.string.snackbar_no_more_entries);
+                }
             }
         });
-
-        buildAndDisplayDialogContent(context);
-        dialog.show();
     }
 
-    private void buildAndDisplayDialogContent(Context context) {
+    @Override
+    public int getPositiveButtonText() {
+        return R.string.action_loadMore;
+    }
+
+    private void buildAndDisplayDialogContent() {
         if (logs.size() == 0) {
-            dialog.setMessage(context.getString(R.string.hint_no_sync_errors));
+            contentBinding.setData(Html.fromHtml(getActivity().getResources().getString(R.string.hint_no_sync_errors)));
         } else {
             for (int i = lastDisplayCount; i < displayCount; i++) {
                 if (i >= logs.size()) {
@@ -79,12 +75,22 @@ public class SyncLogDialog {
                 }
                 SyncLog log = logs.get(i);
                 if (lastDate != null && DateHelper.isSameDay(lastDate, log.getCreationDate())) {
-                    content.append("<p><b>" + log.getEntityName() + "</b><br/>" + log.getConflictText() + "</p>");
+                    content.append("<p><b>")
+                            .append(log.getEntityName())
+                            .append("</b><br/>")
+                            .append(log.getConflictText())
+                            .append("</p>");
                 } else {
                     if (lastDate != null) {
                         content.append("<br/>");
                     }
-                    content.append("<p><b><u>" + DateHelper.formatLocalShortDate(log.getCreationDate()) + "</u></b></p><p><b>" + log.getEntityName() + "</b><br/>" + log.getConflictText() + "</p>");
+                    content.append("<p><b><u>")
+                            .append(DateHelper.formatLocalShortDate(log.getCreationDate()))
+                            .append("</u></b></p><p><b>")
+                            .append(log.getEntityName())
+                            .append("</b><br/>")
+                            .append(log.getConflictText())
+                            .append("</p>");
                 }
                 lastDate = log.getCreationDate();
             }
@@ -92,7 +98,7 @@ public class SyncLogDialog {
             lastDisplayCount = displayCount;
             displayCount += INITIAL_LOG_LIMIT;
 
-            dialog.setMessage(Html.fromHtml(content.toString()));
+            contentBinding.setData(Html.fromHtml(content.toString()));
         }
     }
 

@@ -36,7 +36,7 @@ public class EpiDataTravelDialog extends AbstractDialog {
 
     EpiDataTravelDialog(final FragmentActivity activity, EpiDataTravel epiDataTravel) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_case_epid_travel_edit_layout,
-                R.layout.dialog_root_three_button_panel_layout,  R.string.heading_sub_case_epid_travels, -1);
+                R.layout.dialog_root_three_button_panel_layout,  R.string.heading_travel, -1);
 
         this.data = epiDataTravel;
     }
