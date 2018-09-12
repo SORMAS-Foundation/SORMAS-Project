@@ -43,7 +43,8 @@
 			* Open sormas_schema.sql with a texteditor and copy the content to the query-tool of sormas_db (And execute the query).
 	
 ## Payara Application Server
-* Download payara 4.1.2.172 [downloadlink](http://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/4.1.2.172/payara-4.1.2.172.zip) and extract it to the directory, where your servers should be located (e.g. /opt/payara-172)
+* Download payara 4.1.2.172 [downloadlink](http://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/4.1.2.172/payara-4.1.2.172.zip) and extract it to the directory where your servers should be located (e.g. /opt/payara-172).  
+The `/opt/payara-172/` as payara-directory can, in some linux distros, only be modified by root. For a local development environment, it may be easier to use another directory owned by logged-in user. Same for `/opt/domains/` as domain directory and `/root/deploy/sormas/$(date +%F)` as directory for the sormas deploy (both used later in this document).
 * Remove the default domains from the server:
 	* **Linux**
 		* ``rm -R /opt/payara-172/glassfish/domains/domain1``
@@ -51,7 +52,7 @@
 	* **Windows**
 		* Remove folder ``payara-172/glassfish/domains``
 * Create a directory for your domains. Put it next to the payara server or somewhere else: 
-	*Lunux: ``mkdir /opt/domains``
+	* **Linux:** ``mkdir /opt/domains``
 
 ## SORMAS Domain
 * Get the latest SORMAS build from github: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest (deploy.zip). 
@@ -60,14 +61,19 @@
 * Open ``glassfish-config.sh`` (or glassfish-config.bat on windows) in a text editor and change GLASSFISH_HOME, DOMAINS_HOME, PORT_BASE, PORT_ADMIN, DB_PW, DB_PW_AUDIT, MAIL_FROM to appropriate values for your server.
 * Make the file executable: ``chmod +x glassfish-config.sh``
 * Set up a payara domain called "sormas" by executing it: ``./glassfish-config.sh`` Press enter whenever asked for it.
+	* **Linux** In some cases, the glassfish-config.sh can not be read properly, probably due to encoding issues. Opening the config with pluma/gedit, copying all the contained text into a new file and using this file instead helps.
 * Adjust the logging configuration in opt/domains/sormas/config/logback.xml based on your needs (e.g. configure and activate email appender)
 * in opt/domains/sormas/config/logging.properties replace ``org.wamblee.glassfish.auth.HexEncoder.level.level=SEVERE`` with ``  org.wamblee.glassfish.auth.HexEncoder.level=SEVERE``
-* Make sure the domain folder is owned by the glassfish user: ``chown -R glassfish:glassfish opt/domains/sormas/``
+* Make sure the domain folder is owned by the glassfish user: ``chown -R glassfish:glassfish opt/domains/sormas/``  
+This is not necessary when you setup a development environment and use another folder as domain directory. 
 * Create two folders called "/opt/sormas-temp" and "/opt/sormas-generated" (if you choose another path, you have to adjust the sormas.properties file accordingly)
-* **Only Linux:** Set user rights for postgres and glassfish users: ``setfacl -m u:postgres:rwx /opt/sormas-temp
+* **Only Linux:** Set user rights for postgres and glassfish users: 
+```
+setfacl -m u:postgres:rwx /opt/sormas-temp  
 setfacl -m u:glassfish:rwx /opt/sormas-temp
 setfacl -m u:postgres:rwx /opt/sormas-generated
-setfacl -m u:glassfish:rwx /opt/sormas-generated``
+setfacl -m u:glassfish:rwx /opt/sormas-generated
+```
 * **Only** necessary if you are setting up a **productive environment**
 	* Copy the startup script to init.d: ``cp payara-sormas /etc/init.d``
 	* Add the server startup sequence: ``update-rc.d payara-sormas defaults``
