@@ -25,6 +25,8 @@ public class ConfirmationDialog extends AbstractDialog {
     public ConfirmationDialog(final FragmentActivity activity, int headingResId, int subHeadingResId) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_confirmation_layout,
                 R.layout.dialog_root_two_button_panel_edge_aligned_layout, headingResId, subHeadingResId);
+
+        getConfig().setHideHeadlineSeparator(true);
     }
 
     public ConfirmationDialog(final FragmentActivity activity, int headingResId, int subHeadingResId,
@@ -69,11 +71,6 @@ public class ConfirmationDialog extends AbstractDialog {
     @Override
     public ControlButtonType getNegativeButtonType() {
         return ControlButtonType.LINE_DANGER;
-    }
-
-    @Override
-    public boolean isNegativeButtonIconOnly() {
-        return true;
     }
 
 }

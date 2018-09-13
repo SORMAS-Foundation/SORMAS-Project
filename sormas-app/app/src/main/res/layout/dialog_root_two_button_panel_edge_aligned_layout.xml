@@ -17,8 +17,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingLeft="@dimen/rowListItemHorizontalMargin"
-        android:paddingRight="@dimen/rowListItemHorizontalMargin"
+        android:paddingLeft="@dimen/dialog_panel_horizontal_padding"
+        android:paddingRight="@dimen/dialog_panel_horizontal_padding"
         android:visibility="@{dialog.isButtonPanelVisible? View.VISIBLE : View.GONE}">
 
         <de.symeda.sormas.app.component.controls.ControlButton
@@ -29,26 +29,24 @@
             android:layout_alignParentStart="true"
             android:visibility="@{dialog.isNegativeButtonVisible? View.VISIBLE : View.GONE}"
             android:text="@{config.negativeButtonText}"
-            app:iconStart="@drawable/ic_clear_black_24dp"
+            app:iconStart="@{config.negativeButtonIcon}"
             app:buttonType="@{dialog.negativeButtonType}"
             app:rounded="@{dialog.isRounded}"
-            app:slim="true"
-            app:iconOnly="@{dialog.isNegativeButtonIconOnly}" />
+            app:slim="true" />
 
         <de.symeda.sormas.app.component.controls.ControlButton
             android:id="@+id/button_positive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginStart="@dimen/control_spacing"
+            android:layout_marginStart="@dimen/control_spacing_slim"
             android:layout_alignParentEnd="true"
             android:visibility="@{dialog.isPositiveButtonVisible? View.VISIBLE : View.GONE}"
             android:text="@{config.positiveButtonText}"
-            app:iconStart="@drawable/ic_done_black_24dp"
+            app:iconStart="@{config.positiveButtonIcon}"
             app:buttonType="@{dialog.positiveButtonType}"
             app:rounded="@{dialog.isRounded}"
-            app:slim="true"
-            app:iconOnly="@{dialog.isPositiveButtonIconOnly}" />
+            app:slim="true" />
 
     </RelativeLayout>
 

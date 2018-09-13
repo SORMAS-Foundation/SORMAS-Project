@@ -220,7 +220,7 @@
     <dimen name="listActivityRowItemBorderLeft">-1dp</dimen>
     <!-- ************************************************* -->
 
-    <dimen name="dialog_button_panel_horizontal_padding">12dp</dimen>
+    <dimen name="dialog_panel_horizontal_padding">12dp</dimen>
 
     <!-- List Layout Indicators -->
     <dimen name="indicatorRadius">10dp</dimen>

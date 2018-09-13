@@ -31,8 +31,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="top"
                 android:gravity="@{dialog.isHeadingCentered? Gravity.CENTER_HORIZONTAL : Gravity.START}"
-                android:paddingLeft="@dimen/rowListItemHorizontalMargin"
-                android:paddingRight="@dimen/rowListItemHorizontalMargin"
+                android:paddingLeft="@dimen/dialog_panel_horizontal_padding"
+                android:paddingRight="@dimen/dialog_panel_horizontal_padding"
                 android:layout_margin="@dimen/simple_dialog_button_margin"
                 android:textColor="@color/normalText"
                 android:fontFamily="sans-serif-medium"
@@ -41,7 +41,8 @@
                 android:visibility="@{dialog.isHeadingVisible? View.VISIBLE : View.GONE}" />
 
             <ImageView
-                style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
+                android:visibility="@{config.hideHeadlineSeparator ? View.GONE : View.VISIBLE}"
+                style="@style/FullHorizontalDividerStyleNoDefaultMargin" />
 
             <LinearLayout
                 android:id="@+id/notification_frame"

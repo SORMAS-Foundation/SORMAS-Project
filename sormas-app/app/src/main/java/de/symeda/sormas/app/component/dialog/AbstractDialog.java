@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -71,8 +72,10 @@ public abstract class AbstractDialog implements NotificationContext {
         String deleteLabel = resources.getString(getDeleteButtonText());
         String cancelLabel = resources.getString(getCancelButtonText());
         String createLabel = resources.getString(getCreateButtonText());
+        Drawable positiveIcon = resources.getDrawable(getPositiveButtonIconResourceId());
+        Drawable negativeIcon = resources.getDrawable(getNegativeButtonIconResourceId());
 
-        this.config = new DialogViewConfig(heading, subHeading, positiveLabel, negativeLabel, deleteLabel, cancelLabel, createLabel);
+        this.config = new DialogViewConfig(heading, subHeading, positiveLabel, negativeLabel, deleteLabel, cancelLabel, createLabel, positiveIcon, negativeIcon);
     }
 
     // Instance methods
@@ -311,14 +314,6 @@ public abstract class AbstractDialog implements NotificationContext {
         return false;
     }
 
-    public boolean isPositiveButtonIconOnly() {
-        return false;
-    }
-
-    public boolean isNegativeButtonIconOnly() {
-        return false;
-    }
-
     public void setPositiveCallback(Callback positiveCallback) {
         this.positiveCallback = positiveCallback;
     }
@@ -455,6 +450,14 @@ public abstract class AbstractDialog implements NotificationContext {
 
     private int getCreateButtonText() {
         return R.string.action_create;
+    }
+
+    public int getPositiveButtonIconResourceId() {
+        return R.drawable.ic_done_black_24dp;
+    }
+
+    public int getNegativeButtonIconResourceId() {
+        return R.drawable.ic_clear_black_24dp;
     }
 
     public boolean isShowing() {

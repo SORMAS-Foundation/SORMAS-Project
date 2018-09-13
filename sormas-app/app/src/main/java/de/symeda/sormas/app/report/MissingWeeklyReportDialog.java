@@ -54,9 +54,4 @@ public class MissingWeeklyReportDialog extends AbstractDialog {
         return R.string.action_open_reports;
     }
 
-    @Override
-    public boolean isNegativeButtonIconOnly() {
-        return true;
-    }
-
 }

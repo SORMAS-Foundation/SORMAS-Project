@@ -18,8 +18,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingLeft="@dimen/dialog_button_panel_horizontal_padding"
-        android:paddingRight="@dimen/dialog_button_panel_horizontal_padding"
+        android:paddingLeft="@dimen/dialog_panel_horizontal_padding"
+        android:paddingRight="@dimen/dialog_panel_horizontal_padding"
         android:visibility="@{dialog.isButtonPanelVisible? View.VISIBLE : View.GONE}">
 
         <de.symeda.sormas.app.component.controls.ControlButton

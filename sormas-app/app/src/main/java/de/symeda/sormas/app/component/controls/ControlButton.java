@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 
@@ -82,6 +83,10 @@ public class ControlButton extends android.support.v7.widget.AppCompatButton {
             return;
         }
 
+        if (iconOnly) {
+            setText("");
+        }
+
         Resources resources = getResources();
 
         int textColor = resources.getColor(buttonType.getTextColor());
@@ -120,10 +125,6 @@ public class ControlButton extends android.support.v7.widget.AppCompatButton {
 
         setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding);
         setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-
-        if (iconOnly) {
-            setText("");
-        }
     }
 
     // Calculation methods for dimensions
@@ -199,6 +200,16 @@ public class ControlButton extends android.support.v7.widget.AppCompatButton {
             this.iconOnly = iconOnly;
             updateButton();
         }
+    }
+
+    public void setIconStart(Drawable iconStart) {
+        this.iconStart = iconStart;
+        updateButton();
+    }
+
+    public void setIconEnd(Drawable iconEnd) {
+        this.iconEnd = iconEnd;
+        updateButton();
     }
 
 }

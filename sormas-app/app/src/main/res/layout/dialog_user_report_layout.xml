@@ -29,7 +29,6 @@
             android:id="@+id/user_report_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/textControlMarginBottom"
             app:hint="@string/hint_dialog_report_message"
             app:labelCaption="@string/label_dialog_report_message"
             app:description="@string/desc_dialog_report_message"
