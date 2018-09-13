@@ -43,8 +43,6 @@ public abstract class AbstractDialog implements NotificationContext {
     private Callback positiveCallback;
     private Callback negativeCallback;
     private Callback deleteCallback;
-    private Callback cancelCallback;
-    private Callback createCallback;
 
     // Constructor
 
@@ -70,12 +68,10 @@ public abstract class AbstractDialog implements NotificationContext {
         String positiveLabel = resources.getString(getPositiveButtonText());
         String negativeLabel = resources.getString(getNegativeButtonText());
         String deleteLabel = resources.getString(getDeleteButtonText());
-        String cancelLabel = resources.getString(getCancelButtonText());
-        String createLabel = resources.getString(getCreateButtonText());
         Drawable positiveIcon = resources.getDrawable(getPositiveButtonIconResourceId());
         Drawable negativeIcon = resources.getDrawable(getNegativeButtonIconResourceId());
 
-        this.config = new DialogViewConfig(heading, subHeading, positiveLabel, negativeLabel, deleteLabel, cancelLabel, createLabel, positiveIcon, negativeIcon);
+        this.config = new DialogViewConfig(heading, subHeading, positiveLabel, negativeLabel, deleteLabel, positiveIcon, negativeIcon);
     }
 
     // Instance methods
@@ -157,26 +153,6 @@ public abstract class AbstractDialog implements NotificationContext {
             });
         }
 
-        ControlButton createButton = getCreateButton();
-        if (createButton != null) {
-            createButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onCreateClick();
-                }
-            });
-        }
-
-        ControlButton cancelButton = getCancelButton();
-        if (cancelButton != null) {
-            cancelButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onCancelClick();
-                }
-            });
-        }
-
         ControlButton deleteButton = getDeleteButton();
         if (deleteButton != null) {
             deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -222,12 +198,6 @@ public abstract class AbstractDialog implements NotificationContext {
         }
     }
 
-    private void onCreateClick() {
-        if (createCallback != null) {
-            createCallback.call();
-        }
-    }
-
     private void onDeleteClick() {
         if (deleteCallback != null) {
             final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActivity(),
@@ -244,12 +214,6 @@ public abstract class AbstractDialog implements NotificationContext {
             });
 
             confirmationDialog.show();
-        }
-    }
-
-    private void onCancelClick() {
-        if (cancelCallback != null) {
-            cancelCallback.call();
         }
     }
 
@@ -285,21 +249,12 @@ public abstract class AbstractDialog implements NotificationContext {
         return true;
     }
 
-    public boolean isCancelButtonVisible() {
-        return false;
-    }
-
-    public boolean isCreateButtonVisible() {
-        return false;
-    }
-
     public boolean isDeleteButtonVisible() {
         return false;
     }
 
     public boolean isButtonPanelVisible() {
-        return isPositiveButtonVisible() || isNegativeButtonVisible() || isCancelButtonVisible()
-                || isCreateButtonVisible() || isDeleteButtonVisible();
+        return isPositiveButtonVisible() || isNegativeButtonVisible() || isDeleteButtonVisible();
     }
 
     public boolean isHeadingVisible() {
@@ -324,14 +279,6 @@ public abstract class AbstractDialog implements NotificationContext {
 
     public void setDeleteCallback(Callback deleteCallback) {
         this.deleteCallback = deleteCallback;
-    }
-
-    public void setCancelCallback(Callback cancelCallback) {
-        this.cancelCallback = cancelCallback;
-    }
-
-    public void setCreateCallback(Callback createCallback) {
-        this.createCallback = createCallback;
     }
 
     public Context getContext() {
@@ -370,34 +317,6 @@ public abstract class AbstractDialog implements NotificationContext {
         return buttonPanelRootView.findViewById(R.id.button_negative);
     }
 
-    public ControlButton getCreateButton() {
-        if (buttonPanelBinding == null) {
-            return null;
-        }
-
-        View buttonPanelRootView = buttonPanelBinding.getRoot();
-
-        if (buttonPanelRootView == null) {
-            return null;
-        }
-
-        return buttonPanelRootView.findViewById(R.id.button_create);
-    }
-
-    public ControlButton getCancelButton() {
-        if (buttonPanelBinding == null) {
-            return null;
-        }
-
-        View buttonPanelRootView = buttonPanelBinding.getRoot();
-
-        if (buttonPanelRootView == null) {
-            return null;
-        }
-
-        return buttonPanelRootView.findViewById(R.id.button_cancel);
-    }
-
     public ControlButton getDeleteButton() {
         if (buttonPanelBinding == null) {
             return null;
@@ -424,14 +343,6 @@ public abstract class AbstractDialog implements NotificationContext {
         return ControlButtonType.DANGER;
     }
 
-    public ControlButtonType getCancelButtonType() {
-        return ControlButtonType.LINE_PRIMARY;
-    }
-
-    public ControlButtonType getCreateButtonType() {
-        return ControlButtonType.LINE_PRIMARY;
-    }
-
     public int getPositiveButtonText() {
         return R.string.action_ok;
     }
@@ -442,14 +353,6 @@ public abstract class AbstractDialog implements NotificationContext {
 
     private int getDeleteButtonText() {
         return R.string.action_delete;
-    }
-
-    private int getCancelButtonText() {
-        return R.string.action_cancel;
-    }
-
-    private int getCreateButtonText() {
-        return R.string.action_create;
     }
 
     public int getPositiveButtonIconResourceId() {

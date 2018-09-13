@@ -24,7 +24,7 @@ public class ConfirmationDialog extends AbstractDialog {
 
     public ConfirmationDialog(final FragmentActivity activity, int headingResId, int subHeadingResId) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_confirmation_layout,
-                R.layout.dialog_root_two_button_panel_edge_aligned_layout, headingResId, subHeadingResId);
+                R.layout.dialog_root_two_button_panel_layout, headingResId, subHeadingResId);
 
         getConfig().setHideHeadlineSeparator(true);
     }

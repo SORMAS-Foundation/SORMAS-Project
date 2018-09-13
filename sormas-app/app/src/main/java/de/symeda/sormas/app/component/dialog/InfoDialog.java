@@ -6,24 +6,20 @@ import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.RelativeLayout;
 
 import de.symeda.sormas.app.BR;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.util.Callback;
 
-public class SimpleDialog extends AlertDialog.Builder {
+public class InfoDialog extends AlertDialog.Builder {
 
-    public static final String TAG = SimpleDialog.class.getSimpleName();
+    public static final String TAG = InfoDialog.class.getSimpleName();
 
     private int layoutId;
     private Object data;
     private AlertDialog dialog;
     private Callback dismissCallback;
 
-    public SimpleDialog(Context context, int layoutId, Object data) {
+    public InfoDialog(Context context, int layoutId, Object data) {
         super(context);
 
         this.layoutId = layoutId;

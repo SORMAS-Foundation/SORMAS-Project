@@ -25,6 +25,7 @@ import de.symeda.sormas.app.component.dialog.AbstractDialog;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
+import de.symeda.sormas.app.databinding.DialogRootCancelCreateSelectButtonPanelLayoutBinding;
 import de.symeda.sormas.app.databinding.DialogSelectOrCreatePersonLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
@@ -41,6 +42,7 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
     private List<Person> similarPersons;
 
     private IEntryItemOnClickListener availablePersonItemClickCallback;
+    private Callback createCallback;
     private final ObservableField<Person> selectedPerson = new ObservableField<>();
 
     // Static methods
@@ -65,7 +67,7 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
             }
         });
 
-        personDialog.setCreateCallback(new Callback() {
+        personDialog.createCallback = new Callback() {
             @Override
             public void call() {
                 if (personDialog.contentBinding.personFirstName.getValue().isEmpty() || personDialog.contentBinding.personLastName.getValue().isEmpty()) {
@@ -77,14 +79,7 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
                     resultConsumer.accept(person);
                 }
             }
-        });
-
-        personDialog.setCancelCallback(new Callback() {
-            @Override
-            public void call() {
-                personDialog.dismiss();
-            }
-        });
+        };
 
         personDialog.show();
     }
@@ -191,6 +186,7 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
     @Override
     protected void setContentBinding(Context context, ViewDataBinding binding, String layoutName) {
         this.contentBinding = (DialogSelectOrCreatePersonLayoutBinding) binding;
+        // Needs to be done here because callback needs to be initialized before being bound to the layout
         setupControlListeners();
 
         if (!binding.setVariable(BR.data, person)) {
@@ -207,11 +203,11 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
     }
 
     @Override
-    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
+    protected void initializeContentView(ViewDataBinding rootBinding, final ViewDataBinding buttonPanelBinding) {
         this.selectedPerson.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable observable, int i) {
-                ControlButton btnCreate = getCreateButton();
+                ControlButton btnCreate = ((DialogRootCancelCreateSelectButtonPanelLayoutBinding) buttonPanelBinding).buttonCreate;
                 ControlButton btnSelect = getPositiveButton();
 
                 if (getSelectedPerson() == null) {
@@ -231,16 +227,13 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
         });
 
         this.selectedPerson.notifyChange();
-    }
 
-    @Override
-    public boolean isCancelButtonVisible() {
-        return true;
-    }
-
-    @Override
-    public boolean isCreateButtonVisible() {
-        return true;
+        ((DialogRootCancelCreateSelectButtonPanelLayoutBinding) buttonPanelBinding).buttonCreate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createCallback.call();
+            }
+        });
     }
 
     @Override
@@ -251,6 +244,11 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
     @Override
     public int getPositiveButtonText() {
         return R.string.action_select;
+    }
+
+    @Override
+    public int getNegativeButtonText() {
+        return R.string.action_cancel;
     }
 
     // Getters & setters

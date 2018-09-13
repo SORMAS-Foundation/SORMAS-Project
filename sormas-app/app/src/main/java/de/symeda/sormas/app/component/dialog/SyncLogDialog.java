@@ -35,7 +35,7 @@ public class SyncLogDialog extends AbstractDialog {
 
     public SyncLogDialog(final FragmentActivity activity) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_sync_log_layout,
-                R.layout.dialog_root_two_button_panel_edge_aligned_layout, R.string.headline_sync_log, -1);
+                R.layout.dialog_root_two_button_panel_layout, R.string.headline_sync_log, -1);
     }
 
     @Override

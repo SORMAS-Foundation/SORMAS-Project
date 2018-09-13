@@ -44,7 +44,7 @@
             android:layout_toStartOf="@+id/button_positive"
             android:visibility="@{dialog.isNegativeButtonVisible? View.VISIBLE : View.GONE}"
             android:text="@{config.negativeButtonText}"
-            app:iconStart="@drawable/ic_clear_black_24dp"
+            app:iconStart="@{config.negativeButtonIcon}"
             app:buttonType="@{dialog.negativeButtonType}"
             app:rounded="@{dialog.isRounded}"
             app:slim="true" />
@@ -58,7 +58,7 @@
             android:layout_alignParentEnd="true"
             android:visibility="@{dialog.isPositiveButtonVisible? View.VISIBLE : View.GONE}"
             android:text="@{config.positiveButtonText}"
-            app:iconStart="@drawable/ic_done_black_24dp"
+            app:iconStart="@{config.positiveButtonIcon}"
             app:buttonType="@{dialog.positiveButtonType}"
             app:rounded="@{dialog.isRounded}"
             app:slim="true" />

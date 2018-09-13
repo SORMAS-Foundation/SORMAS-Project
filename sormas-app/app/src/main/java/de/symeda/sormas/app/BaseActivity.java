@@ -41,7 +41,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.dialog.SimpleDialog;
+import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.component.dialog.UserReportDialog;
 import de.symeda.sormas.app.component.menu.PageMenuControl;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
@@ -340,9 +340,9 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
             case R.id.action_help:
                 StringBuilder helpStringBuilder = new StringBuilder();
                 extendHelpString(helpStringBuilder, (ViewGroup) this.findViewById(R.id.main_content));
-                SimpleDialog simpleDialog = new SimpleDialog(getContext(),
+                InfoDialog infoDialog = new InfoDialog(getContext(),
                         R.layout.dialog_screen_help_layout, Html.fromHtml(helpStringBuilder.toString()));
-                simpleDialog.show();
+                infoDialog.show();
                 return true;
 
             // Report problem button

@@ -9,8 +9,6 @@ public class DialogViewConfig {
     private String positiveButtonText;
     private String negativeButtonText;
     private String deleteButtonText;
-    private String cancelButtonText;
-    private String createButtonText;
     private boolean hideHeadlineSeparator;
     private Drawable positiveButtonIcon;
     private Drawable negativeButtonIcon;
@@ -20,15 +18,12 @@ public class DialogViewConfig {
     }
 
     public DialogViewConfig(String heading, String subHeading, String positiveButtonText, String negativeButtonText,
-                            String deleteButtonText, String cancelButtonText, String createButtonText,
-                            Drawable positiveButtonIcon, Drawable negativeButtonIcon) {
+                            String deleteButtonText, Drawable positiveButtonIcon, Drawable negativeButtonIcon) {
         this.heading = heading;
         this.subHeading = subHeading;
         this.positiveButtonText = positiveButtonText;
         this.negativeButtonText = negativeButtonText;
         this.deleteButtonText = deleteButtonText;
-        this.cancelButtonText = cancelButtonText;
-        this.createButtonText = createButtonText;
         this.positiveButtonIcon = positiveButtonIcon;
         this.negativeButtonIcon = negativeButtonIcon;
     }
@@ -63,14 +58,6 @@ public class DialogViewConfig {
 
     public String getDeleteButtonText() {
         return deleteButtonText;
-    }
-
-    public String getCancelButtonText() {
-        return cancelButtonText;
-    }
-
-    public String getCreateButtonText() {
-        return createButtonText;
     }
 
     public boolean isHideHeadlineSeparator() {
