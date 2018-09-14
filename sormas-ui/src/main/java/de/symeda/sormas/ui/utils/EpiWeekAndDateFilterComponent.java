@@ -96,7 +96,12 @@ public class EpiWeekAndDateFilterComponent extends HorizontalLayout {
 			
 			Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 			infoLabel.setSizeUndefined();
-			infoLabel.setDescription("By default (when \"Most relevant date\" is selected), cases are filtered by the most relevant date available: first symptom onset date, then case reception date, and finally report date. This means that cases with an onset date prior to the range you specify will not appear in the list, even if their report date may be in that range. If you want to filter by a specific date, you can select it in the dropdown menu, which will result in only this specific date type being considered when filtering cases.");
+			infoLabel.setDescription("By default, cases are filtered by the most relevant date available:<br/><ul><li>Symptom onset date</li><li>Case reception date</li><li>Case report date</li></ul>"
+					+ "This means that, when a case e.g. has a symptom onset date, only this date will be taken into account when searching the list for cases in the specified date range. You can specify a date type "
+					+ "in the dropdown menu to instead specifically filter by this date.<br/><br/>"
+					+ "<b>Example:</b> Case A has been created this week and therefore has a report date that lies in this week as well. However, Case A also has a symptom onset date that is set to last week (because it has been entered retrospectively). "
+					+ "By default, when \"Most relevant date\" is selected and you have set the filter to only display cases of this week, Case A will not appear in the list because its symptom onset date lies in the previous week. "
+					+ "For the case to appear in the list, you need to select \"Case report date\" which will result in only the report date being considered when filtering the list.");
 			CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
 			addComponent(infoLabel);
 		}
