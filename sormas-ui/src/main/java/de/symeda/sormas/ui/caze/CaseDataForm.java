@@ -96,7 +96,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		this.disease = disease;
 		this.viewMode = viewMode;
 		addFields();
-		setWidth(100, Unit.PERCENTAGE);
 	}
 
 	@Override

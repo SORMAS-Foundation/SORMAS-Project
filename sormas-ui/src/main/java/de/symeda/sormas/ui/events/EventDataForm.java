@@ -29,45 +29,26 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
 public class EventDataForm extends AbstractEditForm<EventDto> {
-	
+
 	private static final String STATUS_CHANGE = "statusChange";
-	
-	private static final String HTML_LAYOUT = 
-			LayoutUtil.h3("Event data") +
-			LayoutUtil.fluidRow(
-					LayoutUtil.oneOfTwoCol(EventDto.UUID),
-					LayoutUtil.oneOfFourCol(EventDto.REPORT_DATE_TIME),
-					LayoutUtil.oneOfFourCol(EventDto.REPORTING_USER)) +
-			LayoutUtil.fluidRow(
-					LayoutUtil.oneOfTwoCol(EventDto.EVENT_TYPE),
-					LayoutUtil.oneOfFourCol(EventDto.DISEASE),
-					LayoutUtil.oneOfFourCol(EventDto.DISEASE_DETAILS)) +
-			LayoutUtil.fluidRow(
-					LayoutUtil.oneOfFourCol(EventDto.EVENT_DATE),
-					LayoutUtil.threeOfFourCol(EventDto.EVENT_STATUS)) +
-			LayoutUtil.fluidRowLocs(EventDto.EVENT_DESC) +
-			LayoutUtil.h3("Source of information") +
-			LayoutUtil.fluidRowLocs(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME) +
-			LayoutUtil.fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL) +
-			LayoutUtil.h3("Location") +
-			LayoutUtil.fluidRow(
-					LayoutUtil.fluidColumn(8, 0, 
-							LayoutUtil.fluidRowLocs(EventDto.EVENT_LOCATION)
-					),
-					LayoutUtil.fluidColumn(4, 0,
-							LayoutUtil.fluidRowLocs(EventDto.TYPE_OF_PLACE) +
-							LayoutUtil.fluidRowLocs(EventDto.TYPE_OF_PLACE_TEXT)
-					)
-			) +
-			LayoutUtil.fluidRowLocs("", EventDto.SURVEILLANCE_OFFICER)
-			;
-	
+
+	private static final String HTML_LAYOUT = LayoutUtil.h3("Event data")
+			+ LayoutUtil.fluidRowLocs(4, EventDto.UUID, 3, EventDto.REPORT_DATE_TIME, 5, EventDto.REPORTING_USER)
+			+ LayoutUtil.fluidRowLocs(EventDto.EVENT_TYPE, EventDto.DISEASE, EventDto.DISEASE_DETAILS)
+			+ LayoutUtil.fluidRowLocs(4, EventDto.EVENT_DATE, 8, EventDto.EVENT_STATUS)
+			+ LayoutUtil.fluidRowLocs(EventDto.EVENT_DESC) + LayoutUtil.h3("Source of information")
+			+ LayoutUtil.fluidRowLocs(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME)
+			+ LayoutUtil.fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL) + LayoutUtil.h3("Location")
+			+ LayoutUtil.fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT)
+			+ LayoutUtil.fluidRowLocs(EventDto.EVENT_LOCATION)
+			+ LayoutUtil.fluidRowLocs("", EventDto.SURVEILLANCE_OFFICER);
+
 	private final VerticalLayout statusChangeLayout;
 	private Boolean isCreateForm = null;
-	
+
 	public EventDataForm(boolean create, UserRight editOrCreateUserRight) {
 		super(EventDto.class, EventDto.I18N_PREFIX, editOrCreateUserRight);
-		
+
 		isCreateForm = create;
 		if (create) {
 			hideValidationUntilNextCommit();
@@ -76,7 +57,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		statusChangeLayout.setSpacing(false);
 		statusChangeLayout.setMargin(false);
 		getContent().addComponent(statusChangeLayout, STATUS_CHANGE);
-		
+
 		addFields();
 	}
 
@@ -85,7 +66,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		if (isCreateForm == null) {
 			return;
 		}
-		
+
 		addField(EventDto.UUID, TextField.class);
 		addField(EventDto.EVENT_TYPE, OptionGroup.class);
 		addField(EventDto.DISEASE, ComboBox.class).setNullSelectionAllowed(true);
@@ -102,57 +83,63 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
 		ComboBox surveillanceOfficerField = addField(EventDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		surveillanceOfficerField.setNullSelectionAllowed(true);
-		
+
 		ComboBox typeOfPlace = addField(EventDto.TYPE_OF_PLACE, ComboBox.class);
 		typeOfPlace.setNullSelectionAllowed(true);
-		addField(EventDto.TYPE_OF_PLACE_TEXT, TextField.class);		
+		addField(EventDto.TYPE_OF_PLACE_TEXT, TextField.class);
 		addField(EventDto.REPORT_DATE_TIME, DateTimeField.class);
 		addField(EventDto.REPORTING_USER, ComboBox.class);
 		TextField srcFirstName = addField(EventDto.SRC_FIRST_NAME, TextField.class);
 		TextField srcLastName = addField(EventDto.SRC_LAST_NAME, TextField.class);
 		TextField srcTelNo = addField(EventDto.SRC_TEL_NO, TextField.class);
 		addField(EventDto.SRC_EMAIL, TextField.class);
-		
+
 		setReadOnly(true, EventDto.UUID, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
-		
-		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.TYPE_OF_PLACE_TEXT, EventDto.TYPE_OF_PLACE, Arrays.asList(TypeOfPlace.OTHER), true);
-		
-		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EventDto.DISEASE_DETAILS), EventDto.DISEASE, Arrays.asList(Disease.OTHER), true);
-		FieldHelper.setRequiredWhen(getFieldGroup(), EventDto.DISEASE, Arrays.asList(EventDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
-		
+
+		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.TYPE_OF_PLACE_TEXT, EventDto.TYPE_OF_PLACE,
+				Arrays.asList(TypeOfPlace.OTHER), true);
+
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EventDto.DISEASE_DETAILS), EventDto.DISEASE,
+				Arrays.asList(Disease.OTHER), true);
+		FieldHelper.setRequiredWhen(getFieldGroup(), EventDto.DISEASE, Arrays.asList(EventDto.DISEASE_DETAILS),
+				Arrays.asList(Disease.OTHER));
+
 		setRequired(true, EventDto.EVENT_TYPE, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_DESC,
 				EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 		setTypeOfPlaceTextRequirement();
 		locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
-		
+
 		districtField.addValueChangeListener(e -> {
-			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict((DistrictReferenceDto) districtField.getValue(), false, UserRole.SURVEILLANCE_OFFICER);
+			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade()
+					.getAssignableUsersByDistrict((DistrictReferenceDto) districtField.getValue(), false,
+							UserRole.SURVEILLANCE_OFFICER);
 			FieldHelper.updateItems(surveillanceOfficerField, assignableSurveillanceOfficers);
 		});
-		
-		FieldHelper.addSoftRequiredStyle(eventDate, typeOfPlace, surveillanceOfficerField, srcFirstName, srcLastName, srcTelNo);
+
+		FieldHelper.addSoftRequiredStyle(eventDate, typeOfPlace, surveillanceOfficerField, srcFirstName, srcLastName,
+				srcTelNo);
 	}
-	
+
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	public void setTypeOfPlaceTextRequirement() {
 		FieldGroup fieldGroup = getFieldGroup();
 		ComboBox typeOfPlaceField = (ComboBox) fieldGroup.getField(EventDto.TYPE_OF_PLACE);
 		TextField typeOfPlaceTextField = (TextField) fieldGroup.getField(EventDto.TYPE_OF_PLACE_TEXT);
 		((AbstractField) typeOfPlaceField).setImmediate(true);
-		
+
 		// initialize
 		{
 			typeOfPlaceTextField.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.OTHER);
 		}
-		
+
 		typeOfPlaceField.addValueChangeListener(event -> {
 			typeOfPlaceTextField.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.OTHER);
 		});
 	}
-	
+
 }

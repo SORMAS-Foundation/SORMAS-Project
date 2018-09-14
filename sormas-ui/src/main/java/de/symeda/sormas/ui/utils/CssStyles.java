@@ -166,6 +166,11 @@ public final class CssStyles {
 	// Checkbox styles
 	public static final String CHECKBOX_FILTER_INLINE = "filter-inline";
 	
+	// Layout components
+	public static final String ROOT_COMPONENT = "root-component";
+	public static final String MAIN_COMPONENT = "main-component";
+	public static final String SIDE_COMPONENT = "side-component";
+	
 	// Statistics layout
 	public static final String STATISTICS_TITLE_BOX = "title-box";
 	public static final String STATISTICS_TITLE = "title";
