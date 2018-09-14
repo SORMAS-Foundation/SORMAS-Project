@@ -2,7 +2,6 @@ package de.symeda.sormas.api.caze.classification;
 
 import java.util.List;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -24,8 +23,7 @@ public class ClassificationPersonAgeCriteria extends ClassificationCriteria {
 	}
 	
 	@Override
-	public boolean eval(CaseDataDto caze, List<SampleTestDto> sampleTests) {
-		PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
+	public boolean eval(CaseDataDto caze, PersonDto person, List<SampleTestDto> sampleTests) {
 		if (person.getApproximateAge() == null) {
 			return false;
 		}

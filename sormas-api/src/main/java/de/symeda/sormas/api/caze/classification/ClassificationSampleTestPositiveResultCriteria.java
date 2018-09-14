@@ -5,6 +5,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.SampleTestType;
@@ -20,7 +21,7 @@ public class ClassificationSampleTestPositiveResultCriteria extends Classificati
 	}
 
 	@Override
-	public boolean eval(CaseDataDto caze, List<SampleTestDto> sampleTests) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<SampleTestDto> sampleTests) {
 		for (SampleTestDto sampleTest : sampleTests) {
 			if (sampleTest.getTestResult() == SampleTestResultType.POSITIVE
 					&& sampleTestTypes.contains(sampleTest.getTestType())) {

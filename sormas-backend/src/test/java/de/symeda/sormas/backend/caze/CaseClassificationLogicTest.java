@@ -733,17 +733,65 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());		
 	}
 
-	// TODO: Add test
-	//	@Test
-	//	public void testAutomaticClassificationForCholera() {
-	//		
-	//	}
+	@Test
+	public void testAutomaticClassificationForCholera() {
+		// Suspect
+		CaseDataDto caze = buildSuspectCaseBasis(Disease.CHOLERA);
+		caze.getSymptoms().setDehydration(SymptomState.YES);
+		caze = getCaseFacade().saveCase(caze);
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 
-	// TODO: Add test
-	//	@Test
-	//	public void ruleOutFalsePositivesForCholera() {
-	//		
-	//	}
+		caze = buildSuspectCaseBasis(Disease.CHOLERA);
+		caze.getSymptoms().setDiarrhea(SymptomState.YES);
+		caze.setOutcome(CaseOutcome.DECEASED);
+		caze = getCaseFacade().saveCase(caze);
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		caze = buildSuspectCaseBasis(Disease.CHOLERA);
+		caze.getSymptoms().setDiarrhea(SymptomState.YES);
+		caze.getEpiData().setAreaConfirmedCases(YesNoUnknown.YES);
+		caze = getCaseFacade().saveCase(caze);
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		// Confirmed
+		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.CHOLERA));
+		creator.createSampleTest(caze, SampleTestType.VIRUS_ISOLATION, SampleTestResultType.POSITIVE);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());		
+	}
+
+	@Test
+	public void ruleOutFalsePositivesForCholera() {
+		// Suspect
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.CHOLERA);
+		fillSymptoms(caze.getSymptoms());
+		fillEpiData(caze.getEpiData());
+		caze.getSymptoms().setDehydration(SymptomState.NO);
+		caze.getSymptoms().setDiarrhea(SymptomState.NO);
+		caze.getEpiData().setAreaConfirmedCases(YesNoUnknown.NO);
+		PersonDto casePerson = getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
+		casePerson.setApproximateAge(5);
+		casePerson.setApproximateAgeType(ApproximateAgeType.YEARS);
+		getPersonFacade().savePerson(casePerson);
+		caze = getCaseFacade().saveCase(caze);
+		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
+		casePerson.setApproximateAge(0);
+		getPersonFacade().savePerson(casePerson);
+		caze.setOutcome(CaseOutcome.DECEASED);
+		caze.getEpiData().setAreaConfirmedCases(YesNoUnknown.YES);
+		caze = getCaseFacade().saveCase(caze);
+		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
+		caze.getSymptoms().setDiarrhea(SymptomState.YES);
+		caze.getSymptoms().setDehydration(SymptomState.YES);
+		caze = getCaseFacade().saveCase(caze);
+		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
+		
+		// Confirmed
+		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.CHOLERA));
+		createSampleTestsForAllTestTypesExcept(caze, SampleTestType.VIRUS_ISOLATION);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());	
+	}
 
 	@Test
 	public void testAutomaticClassificationForMonkeypox() {

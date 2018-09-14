@@ -5,6 +5,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 
 public class ClassificationAllOfCriteria extends ClassificationCriteria implements ClassificationCollectiveCriteria {
@@ -18,9 +19,9 @@ public class ClassificationAllOfCriteria extends ClassificationCriteria implemen
 	}
 
 	@Override
-	public boolean eval(CaseDataDto caze, List<SampleTestDto> sampleTests) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<SampleTestDto> sampleTests) {
 		for (ClassificationCriteria classificationCriteria : subCriteria) {
-			if (!classificationCriteria.eval(caze, sampleTests))
+			if (!classificationCriteria.eval(caze, person, sampleTests))
 				return false;
 		}
 		
@@ -42,6 +43,10 @@ public class ClassificationAllOfCriteria extends ClassificationCriteria implemen
 		return subCriteria;
 	}
 	
+	/**
+	 * Has a different buildDescription method to display all sub criteria in one line, with the sub criteria separated
+	 * by an "AND". Functionality is identical to ClassificationAllOfCriteria.
+	 */
 	public static class ClassificationAllOfCompactCriteria extends ClassificationAllOfCriteria implements ClassificationCompactCriteria {
 		
 		private static final long serialVersionUID = 3761118522728690578L;
