@@ -114,7 +114,7 @@ public class TaskListComponent extends VerticalLayout {
 			
 			// Default filter for lab users (that don't have any other role) is "My tasks"
 			if (LoginHelper.getCurrentUserRoles().contains(UserRole.LAB_USER) && LoginHelper.getCurrentUserRoles().size() == 1) {
-				myTasks.click();
+				processAssigneeFilterChange(false, true, myTasks);
 			} else {
 				CssStyles.removeStyles(allTasks, CssStyles.LINK_HIGHLIGHTED_LIGHT);
 				activeStatusButton = allTasks;
