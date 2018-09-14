@@ -120,7 +120,14 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Case activityRootData) {
-        BaseEditFragment fragment = CaseNewFragment.newInstance(activityRootData, contactUuid, eventParticipantUuid);
+        BaseEditFragment fragment;
+        if (contactUuid != null && eventParticipantUuid == null) {
+            fragment = CaseNewFragment.newInstanceFromContact(activityRootData, contactUuid);
+        } else if (eventParticipantUuid != null && contactUuid == null) {
+            fragment = CaseNewFragment.newInstanceFromEventParticipant(activityRootData, eventParticipantUuid);
+        } else {
+            fragment = CaseNewFragment.newInstance(activityRootData);
+        }
         fragment.setLiveValidationDisabled(true);
         return fragment;
     }

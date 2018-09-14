@@ -32,14 +32,16 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     private List<Item> initialCommunities;
     private List<Item> initialFacilities;
 
-    public static CaseNewFragment newInstance(Case activityRootData, String contactUuid, String eventParticipantUuid) {
-        if (contactUuid != null) {
-            return newInstance(CaseNewFragment.class, CaseNewActivity.buildBundleWithContact(contactUuid).get(), activityRootData);
-        } else if (eventParticipantUuid != null) {
-            return newInstance(CaseNewFragment.class, CaseNewActivity.buildBundleWithEventParticipant(eventParticipantUuid).get(), activityRootData);
-        } else {
-            return newInstance(CaseNewFragment.class, CaseNewActivity.buildBundle().get(), activityRootData);
-        }
+    public static CaseNewFragment newInstance(Case activityRootData) {
+        return newInstance(CaseNewFragment.class, CaseNewActivity.buildBundle().get(), activityRootData);
+    }
+
+    public static CaseNewFragment newInstanceFromContact(Case activityRootData, String contactUuid) {
+        return newInstance(CaseNewFragment.class, CaseNewActivity.buildBundleWithContact(contactUuid).get(), activityRootData);
+    }
+
+    public static CaseNewFragment newInstanceFromEventParticipant(Case activityRootData, String eventParticipantUuid) {
+        return newInstance(CaseNewFragment.class, CaseNewActivity.buildBundleWithEventParticipant(eventParticipantUuid).get(), activityRootData);
     }
 
     @Override
