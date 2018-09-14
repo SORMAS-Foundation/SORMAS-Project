@@ -43,7 +43,7 @@ import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
-public class SampleListComponent extends VerticalLayout {
+public class SampleGridComponent extends VerticalLayout {
 
 	public static final String LGA = "lga";
 	public static final String SEARCH_FIELD = "searchField";
@@ -55,7 +55,7 @@ public class SampleListComponent extends VerticalLayout {
 
 	private VerticalLayout gridLayout;
 
-	public SampleListComponent() {
+	public SampleGridComponent() {
 		setSizeFull();
 
 		grid = new SampleGrid();
@@ -74,7 +74,7 @@ public class SampleListComponent extends VerticalLayout {
 		addComponent(gridLayout);
 	}
 
-	public SampleListComponent(CaseReferenceDto caseRef) {
+	public SampleGridComponent(CaseReferenceDto caseRef) {
 		setSizeFull();
 		setMargin(true);
 
@@ -318,7 +318,7 @@ public class SampleListComponent extends VerticalLayout {
 			Button createButton = new Button("New sample");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
-			createButton.addClickListener(e -> ControllerProvider.getSampleController().create(caseRef, grid));
+			createButton.addClickListener(e -> ControllerProvider.getSampleController().create(caseRef, this::reload));
 			shipmentFilterLayout.addComponent(createButton);
 			shipmentFilterLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
 		}

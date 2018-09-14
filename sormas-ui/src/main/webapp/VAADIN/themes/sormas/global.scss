@@ -13,6 +13,20 @@
   
   .force-caption {
 	margin-top: 1.5em;
+	margin-bottom: 16px;
+  }
+  
+  /* like bootstrap grid with free columns */
+  .inline-container {
+    margin-left: -15px;
+    margin-right: -15px;
+    
+  	> div {
+  	  padding-left: 15px;
+  	  padding-right: 15px;
+  	  display: inline-block;
+  	  vertical-align: top;
+  	}
   }
  
   .hide-errorindicator {
@@ -194,4 +208,18 @@
 	padding: 8px;
   }
  
+  .root-component {
+    max-width: 1280px;
+  }
+  .main-component {
+    min-width: 600px;
+    margin-bottom: 24px;   
+  }
+  .side-component {
+    min-width: 200px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 12px 24px;
+    margin-bottom: 24px;    
+  }
 }

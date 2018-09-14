@@ -11,7 +11,7 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.caze.CaseDataForm;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
-import de.symeda.sormas.ui.task.TaskListComponent;
+import de.symeda.sormas.ui.task.TaskGridComponent;
 
 /**
  * CaseDataView for reading and editing the case data fields.
@@ -45,7 +45,7 @@ public class ContactDataView extends AbstractContactView {
     	layout.addComponent(caseInfoLayout);
     	addComponent(layout);
     	
-    	TaskListComponent taskListComponent = new TaskListComponent(TaskContext.CONTACT, getContactRef());
+    	TaskGridComponent taskListComponent = new TaskGridComponent(TaskContext.CONTACT, getContactRef());
     	addComponent(taskListComponent);
     	taskListComponent.reload();
     	taskListComponent.updateActiveStatusButtonCaption();

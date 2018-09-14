@@ -20,12 +20,12 @@ public class SamplesView extends AbstractView {
 
 	public static final String VIEW_NAME = "samples";	
 	
-	private final SampleListComponent sampleListComponent;
+	private final SampleGridComponent sampleListComponent;
 	
 	public SamplesView() {
     	super(VIEW_NAME);
     	
-		sampleListComponent = new SampleListComponent();
+		sampleListComponent = new SampleGridComponent();
 		setSizeFull();
 		addComponent(sampleListComponent);
 		

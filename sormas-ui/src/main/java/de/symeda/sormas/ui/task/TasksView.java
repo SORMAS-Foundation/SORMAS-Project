@@ -16,19 +16,19 @@ public class TasksView extends AbstractView {
 
 	public static final String VIEW_NAME = "tasks";
 	
-	private final TaskListComponent taskListComponent;
+	private final TaskGridComponent taskListComponent;
 
     public TasksView() {
     	super(VIEW_NAME);
     	
-        taskListComponent = new TaskListComponent();
+        taskListComponent = new TaskGridComponent();
         addComponent(taskListComponent);
         
     	if (LoginHelper.hasUserRight(UserRight.TASK_CREATE)) {
 	    	Button createButton = new Button("New task");
 	        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 	        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
-	        createButton.addClickListener(e -> ControllerProvider.getTaskController().create(TaskContext.GENERAL, null, taskListComponent.getGrid()));
+	        createButton.addClickListener(e -> ControllerProvider.getTaskController().create(TaskContext.GENERAL, null, taskListComponent.getGrid()::reload));
 	        addHeaderComponent(createButton);
     	}
     }

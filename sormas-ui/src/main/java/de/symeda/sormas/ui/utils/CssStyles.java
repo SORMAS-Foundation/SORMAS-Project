@@ -66,6 +66,9 @@ public final class CssStyles {
 	public static final String LABEL_NEUTRAL = "neutral";
 	public static final String LABEL_POSITIVE = "positive";
 	public static final String LABEL_MINOR = "minor";
+	public static final String LABEL_DISCARDED = "discarded";
+	public static final String LABEL_DONE = "done";
+	public static final String LABEL_NOT = "not";
 	
 	// Font sizes
 	public static final String LABEL_SMALL = "small";
@@ -77,7 +80,7 @@ public final class CssStyles {
 	
 	// Font styles
 	public static final String LABEL_BOLD = "bold";
-	public static final String LABEL_UPPERCASE = "text-uppercase";
+	public static final String LABEL_UPPERCASE = "uppercase";
 	
 	// Label styles
 	public static final String LABEL_BAR_TOP_CRITICAL = "bar-top-critical";
@@ -109,6 +112,11 @@ public final class CssStyles {
 	public static final String LINK_HIGHLIGHTED_LIGHT = "link-highlighted-light";
 	public static final String LINK_HIGHLIGHTED_DARK = "link-highlighted-dark";
 	public static final String BUTTON_FONT_SIZE_LARGE = "font-size-large";
+	
+	// List styles
+	public static final String SORMAS_LIST = "s-list";
+	public static final String SORMAS_LIST_ENTRY = "s-list-entry";
+	
 	
 	// SVG fill and stroke styles
 	public static final String SVG_FILL_BACKGROUND = "svg-fill-background";

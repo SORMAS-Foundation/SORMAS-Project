@@ -54,7 +54,7 @@ public class SampleController {
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
-	public void create(CaseReferenceDto caseRef, SampleGrid grid) {
+	public void create(CaseReferenceDto caseRef, Runnable callback) {
 		SampleCreateForm createForm = new SampleCreateForm(UserRight.SAMPLE_CREATE);
 		createForm.setValue(SampleDto.buildSample(LoginHelper.getCurrentUserAsReference(), caseRef));
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<SampleCreateForm>(createForm, createForm.getFieldGroup());
@@ -65,7 +65,7 @@ public class SampleController {
 				if( !createForm.getFieldGroup().isModified()) {
 					SampleDto dto = createForm.getValue();
 					FacadeProvider.getSampleFacade().saveSample(dto);
-					grid.reload();
+					callback.run();
 				}
 			}
 		});

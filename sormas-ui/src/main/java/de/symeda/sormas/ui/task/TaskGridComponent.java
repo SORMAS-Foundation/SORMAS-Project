@@ -28,7 +28,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
-public class TaskListComponent extends VerticalLayout {
+public class TaskGridComponent extends VerticalLayout {
 
 	private TaskGrid grid;    
 	private Button createButton;
@@ -37,7 +37,7 @@ public class TaskListComponent extends VerticalLayout {
 
 	private VerticalLayout gridLayout;
 
-	public TaskListComponent() {
+	public TaskGridComponent() {
 		setSizeFull();
 
 		grid = new TaskGrid();
@@ -56,7 +56,7 @@ public class TaskListComponent extends VerticalLayout {
 		addComponent(gridLayout);
 	}
 
-	public TaskListComponent(TaskContext context, ReferenceDto entityRef) {
+	public TaskGridComponent(TaskContext context, ReferenceDto entityRef) {
 		setSizeFull();
 		setMargin(true);
 
@@ -196,7 +196,7 @@ public class TaskListComponent extends VerticalLayout {
 			createButton = new Button("New task");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
-			createButton.addClickListener(e -> ControllerProvider.getTaskController().create(context, entityRef, grid));
+			createButton.addClickListener(e -> ControllerProvider.getTaskController().create(context, entityRef, grid::reload));
 			filterLayout.addComponent(createButton);
 			filterLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
 		}

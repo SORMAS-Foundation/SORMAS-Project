@@ -39,7 +39,7 @@ public class TaskController {
 
 	}
 
-	public void create(TaskContext context, ReferenceDto entityRef, TaskGrid grid) {
+	public void create(TaskContext context, ReferenceDto entityRef, Runnable callback) {
 		TaskEditForm createForm = new TaskEditForm(true, UserRight.TASK_CREATE);
 		createForm.setValue(createNewTask(context, entityRef));
 		final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(createForm, createForm.getFieldGroup());
@@ -50,7 +50,7 @@ public class TaskController {
 				if (!createForm.getFieldGroup().isModified()) {
 					TaskDto dto = createForm.getValue();
 					FacadeProvider.getTaskFacade().saveTask(dto);
-					grid.reload();
+					callback.run();
 				}
 			}
 		});
@@ -80,7 +80,7 @@ public class TaskController {
 		VaadinUiUtil.showModalPopupWindow(createView, "Create new task");
 	}
 
-	public void edit(TaskIndexDto dto, TaskGrid grid) {
+	public void edit(TaskIndexDto dto, Runnable callback) {
 		// get fresh data
 		TaskDto newDto = FacadeProvider.getTaskFacade().getByUuid(dto.getUuid());
 
@@ -97,7 +97,7 @@ public class TaskController {
 					TaskDto dto = form.getValue();
 					FacadeProvider.getTaskFacade().saveTask(dto);
 					popupWindow.close();
-					grid.reload();
+					callback.run();
 				}
 			}
 		});
@@ -115,7 +115,7 @@ public class TaskController {
 				public void onDelete() {
 					FacadeProvider.getTaskFacade().deleteTask(newDto, LoginHelper.getCurrentUserAsReference().getUuid());
 					UI.getCurrent().removeWindow(popupWindow);
-					grid.reload();
+					callback.run();
 				}
 			}, I18nProperties.getFieldCaption("Task"));
 		}
