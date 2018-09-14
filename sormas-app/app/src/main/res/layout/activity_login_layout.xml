@@ -9,168 +9,174 @@
         <variable name="data" type="de.symeda.sormas.app.login.LoginViewModel" />
     </data>
 
-    <FrameLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_gravity="center_vertical"
-            android:gravity="center_horizontal"
-            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-            android:focusable="true"
-            android:focusableInTouchMode="true">
-
-            <ImageView
-                android:id="@+id/logo"
-                android:layout_width="@dimen/logoWidth"
-                android:layout_height="@dimen/logoHeight"
-                android:layout_marginTop="@dimen/logoMarginTop"
-                android:layout_marginBottom="@dimen/logoMarginBottom"
-                android:contentDescription="@string/sormas_logo_desc"
-                android:src="@drawable/sormas_logo" />
-
-            <!-- SORMAS description texts -->
-
-            <TextView
-                android:id="@+id/heading_1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/login_heading_1"
-                style="@style/LoginHeading1" />
-
-            <TextView
-                android:id="@+id/heading_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/login_heading_2"
-                style="@style/LoginHeading2" />
+            android:layout_height="wrap_content">
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="@dimen/serviceMarginBottom">
-
-                <TextView
-                    android:id="@+id/sub_heading_1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/login_sub_heading_1"
-                    style="@style/LoginSubHeadingText" />
-
-                <View
-                    android:id="@+id/sub_heading_separator_1"
-                    style="@style/LoginSubHeadingSeparator" />
-
-                <TextView
-                    android:id="@+id/sub_heading_2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/login_sub_heading_2"
-                    style="@style/LoginSubHeadingText" />
-
-                <View
-                    android:id="@+id/sub_heading_separator_2"
-                    style="@style/LoginSubHeadingSeparator" />
-
-                <TextView
-                    android:id="@+id/sub_heading_3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/login_sub_heading_3"
-                    style="@style/LoginSubHeadingText" />
-
-            </LinearLayout>
-
-            <!-- Sign In -->
-
-            <LinearLayout
-                android:id="@+id/signInLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_horizontal"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                android:focusable="true"
+                android:focusableInTouchMode="true">
+
+                <ImageView
+                    android:id="@+id/logo"
+                    android:layout_width="@dimen/logoWidth"
+                    android:layout_height="@dimen/logoHeight"
+                    android:layout_marginTop="@dimen/logoMarginTop"
+                    android:layout_marginBottom="@dimen/logoMarginBottom"
+                    android:contentDescription="@string/sormas_logo_desc"
+                    android:src="@drawable/sormas_logo" />
+
+                <!-- SORMAS description texts -->
 
                 <TextView
-                    android:id="@+id/signInHeader"
-                    android:layout_width="match_parent"
+                    android:id="@+id/heading_1"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/login_sign_in"
-                    style="@style/LoginSignInText" />
+                    android:text="@string/login_heading_1"
+                    style="@style/LoginHeading1" />
 
                 <TextView
-                    android:id="@+id/signInSubHeader"
-                    android:layout_width="match_parent"
+                    android:id="@+id/heading_2"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/login_sign_in_tag_line"
-                    style="@style/LoginSignInTagLineText" />
+                    android:text="@string/login_heading_2"
+                    style="@style/LoginHeading2" />
 
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/username"
-                    style="@style/ControlSingleColumnStyle"
-                    app:hint="@string/hint_login_username"
-                    app:labelCaption="@string/label_login_username"
-                    app:description="@string/desc_login_username"
-                    app:required="true"
-                    app:value="@={data.userName}" />
-
-                <de.symeda.sormas.app.component.controls.ControlPasswordField
-                    android:id="@+id/password"
-                    style="@style/ControlSingleColumnStyle"
-                    app:hint="@string/hint_login_password"
-                    app:labelCaption="@string/label_login_password"
-                    app:description="@string/desc_login_password"
-                    app:required="true"
-                    app:value="@={data.password}" />
-
-                <Button
-                    android:id="@+id/btn_login"
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/loginButtonMarginTop"
-                    android:text="@string/action_login"
-                    style="@style/PrimaryButtonStyle"
-                    android:onClick="login" />
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="@dimen/serviceMarginBottom">
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <Button
-                        android:id="@+id/btn_login_default_user"
+                    <TextView
+                        android:id="@+id/sub_heading_1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:text="@string/action_login_default_user"
+                        android:text="@string/login_sub_heading_1"
+                        style="@style/LoginSubHeadingText" />
+
+                    <View
+                        android:id="@+id/sub_heading_separator_1"
+                        style="@style/LoginSubHeadingSeparator" />
+
+                    <TextView
+                        android:id="@+id/sub_heading_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/login_sub_heading_2"
+                        style="@style/LoginSubHeadingText" />
+
+                    <View
+                        android:id="@+id/sub_heading_separator_2"
+                        style="@style/LoginSubHeadingSeparator" />
+
+                    <TextView
+                        android:id="@+id/sub_heading_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/login_sub_heading_3"
+                        style="@style/LoginSubHeadingText" />
+
+                </LinearLayout>
+
+                <!-- Sign In -->
+
+                <LinearLayout
+                    android:id="@+id/signInLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/signInHeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/login_sign_in"
+                        style="@style/LoginSignInText" />
+
+                    <TextView
+                        android:id="@+id/signInSubHeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/login_sign_in_tag_line"
+                        style="@style/LoginSignInTagLineText" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/username"
+                        style="@style/ControlSingleColumnStyle"
+                        app:hint="@string/hint_login_username"
+                        app:labelCaption="@string/label_login_username"
+                        app:description="@string/desc_login_username"
+                        app:required="true"
+                        app:value="@={data.userName}" />
+
+                    <de.symeda.sormas.app.component.controls.ControlPasswordField
+                        android:id="@+id/password"
+                        style="@style/ControlSingleColumnStyle"
+                        app:hint="@string/hint_login_password"
+                        app:labelCaption="@string/label_login_password"
+                        app:description="@string/desc_login_password"
+                        app:required="true"
+                        app:value="@={data.password}" />
+
+                    <Button
+                        android:id="@+id/btn_login"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/loginButtonMarginTop"
+                        android:text="@string/action_login"
                         style="@style/PrimaryButtonStyle"
-                        android:onClick="loginDefaultUser" />
+                        android:onClick="login" />
 
-                    <Button
-                        android:id="@+id/btn_change_settings"
-                        android:layout_alignParentEnd="true"
-                        android:layout_width="wrap_content"
+                    <RelativeLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/login_change_settings"
-                        style="@style/SubtleButtonStyle"
-                        android:onClick="showSettingsView" />
+                        android:orientation="horizontal">
 
-                </RelativeLayout>
+                        <Button
+                            android:id="@+id/btn_login_default_user"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:text="@string/action_login_default_user"
+                            style="@style/PrimaryButtonStyle"
+                            android:onClick="loginDefaultUser" />
 
+                        <Button
+                            android:id="@+id/btn_change_settings"
+                            android:layout_alignParentEnd="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/login_change_settings"
+                            style="@style/SubtleButtonStyle"
+                            android:onClick="showSettingsView" />
+
+                    </RelativeLayout>
+
+
+                </LinearLayout>
 
             </LinearLayout>
 
-        </LinearLayout>
+            <include
+                android:id="@+id/notification_frame"
+                layout="@layout/activity_root_notification_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-        <include
-            android:id="@+id/notification_frame"
-            layout="@layout/activity_root_notification_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+        </FrameLayout>
 
-    </FrameLayout>
+    </ScrollView>
 
 </layout>
