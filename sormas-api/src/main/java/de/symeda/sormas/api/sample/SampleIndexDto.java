@@ -24,6 +24,7 @@ public class SampleIndexDto implements Serializable {
 	public static final String LAB_SAMPLE_ID = "labSampleID";
 	public static final String CASE_REGION_UUID = "caseRegionUuid";
 	public static final String CASE_DISTRICT = "caseDistrict";
+	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String SHIPMENT_DATE = "shipmentDate";
 	public static final String RECEIVED_DATE = "receivedDate";
 	public static final String LAB = "lab";
@@ -45,6 +46,7 @@ public class SampleIndexDto implements Serializable {
 	private boolean shipped;
 	private boolean received;
 	private boolean referred;
+	private Date sampleDateTime;
 	private Date shipmentDate;
 	private Date receivedDate;
 	private FacilityReferenceDto lab;
@@ -53,7 +55,7 @@ public class SampleIndexDto implements Serializable {
 	private SampleTestResultType sampleTestResult;
 	private String sampleTestLabUserName;
 	
-	public SampleIndexDto(String uuid, String sampleCode, String labSampleId, 
+	public SampleIndexDto(String uuid, String sampleCode, String labSampleId, Date sampleDateTime,
 			boolean shipped, Date shipmentDate, boolean received, Date receivedDate, 
 			SampleMaterial sampleMaterial, SpecimenCondition specimenCondition,
 			String labUuid, String labName, String referredSampleUuid, 
@@ -72,6 +74,7 @@ public class SampleIndexDto implements Serializable {
 		this.shipped = shipped;
 		this.received = received;
 		this.referred = referredSampleUuid != null;
+		this.sampleDateTime = sampleDateTime;
 		this.shipmentDate = shipmentDate;
 		this.receivedDate = receivedDate;
 		this.lab = new FacilityReferenceDto(labUuid, FacilityHelper.buildToString(labUuid, labName));
@@ -196,5 +199,13 @@ public class SampleIndexDto implements Serializable {
 
 	public void setSampleTestLabUserName(String sampleTestLabUserName) {
 		this.sampleTestLabUserName = sampleTestLabUserName;
+	}
+
+	public Date getSampleDateTime() {
+		return sampleDateTime;
+	}
+
+	public void setSampleDateTime(Date sampleDateTime) {
+		this.sampleDateTime = sampleDateTime;
 	}
 }

@@ -176,7 +176,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		Join<Case, District> caseDistrict = caze.join(Case.DISTRICT, JoinType.LEFT);
 		
 		cq.multiselect(sample.get(Sample.UUID), 
-				sample.get(Sample.SAMPLE_CODE), sample.get(Sample.LAB_SAMPLE_ID),
+				sample.get(Sample.SAMPLE_CODE), sample.get(Sample.LAB_SAMPLE_ID), sample.get(Sample.SAMPLE_DATE_TIME), 
 				sample.get(Sample.SHIPPED), sample.get(Sample.SHIPMENT_DATE), sample.get(Sample.RECEIVED), sample.get(Sample.RECEIVED_DATE), 
 				sample.get(Sample.SAMPLE_MATERIAL), sample.get(Sample.SPECIMEN_CONDITION), 
 				lab.get(Facility.UUID), lab.get(Facility.NAME), referredSample.get(Sample.UUID), 

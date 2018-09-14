@@ -107,6 +107,7 @@ public final class CssStyles {
 	public static final String BUTTON_WARNING = "warning";
 	public static final String BUTTON_SUBTLE = "subtle";
 	public static final String BUTTON_BORDER_NEUTRAL = "border-neutral";
+	public static final String BUTTON_NO_PADDING = "no-padding";
 	public static final String LINK_ACTIVE = "active";
 	public static final String LINK_HIGHLIGHTED = "link-highlighted";
 	public static final String LINK_HIGHLIGHTED_LIGHT = "link-highlighted-light";

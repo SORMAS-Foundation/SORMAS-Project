@@ -3,8 +3,8 @@ package de.symeda.sormas.ui.task;
 import java.util.Comparator;
 import java.util.List;
 
-import com.vaadin.event.LayoutEvents.LayoutClickEvent;
-import com.vaadin.event.LayoutEvents.LayoutClickListener;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -16,12 +16,13 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
-public class TaskList extends VerticalLayout implements LayoutClickListener {
+public class TaskList extends VerticalLayout {
 
 	private final TaskCriteria taskCriteria = new TaskCriteria();
 
@@ -73,18 +74,20 @@ public class TaskList extends VerticalLayout implements LayoutClickListener {
 		});
 
 		removeAllComponents();
+		boolean hasEditRight = LoginHelper.hasUserRight(UserRight.TASK_EDIT);
+
 		// build entries
 		for (TaskIndexDto task : tasks) {
 			TaskListEntry listEntry = new TaskListEntry(task);
-			listEntry.addLayoutClickListener(this);
+			if (hasEditRight) {
+				listEntry.addEditListener(new ClickListener() {
+					@Override
+					public void buttonClick(ClickEvent event) {
+						ControllerProvider.getTaskController().edit(listEntry.getTask(), TaskList.this::reload);		
+					}
+				});
+			}
 			addComponent(listEntry);
 		}
-	}
-
-	@Override
-	public void layoutClick(LayoutClickEvent event) {
-		TaskListEntry listEntry = (TaskListEntry) event.getComponent();
-		ControllerProvider.getTaskController().edit(listEntry.getTask(), this::reload);
-
 	}
 }
