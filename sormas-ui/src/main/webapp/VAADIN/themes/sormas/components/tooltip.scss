@@ -1,0 +1,10 @@
+
+@mixin sormas-tooltip {
+	
+  .v-tooltip {
+  	.v-tooltip-text {
+      max-height: 20em;
+    }
+   }
+  
+}
