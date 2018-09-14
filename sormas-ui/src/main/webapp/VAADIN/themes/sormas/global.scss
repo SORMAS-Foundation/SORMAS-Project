@@ -209,17 +209,18 @@
   }
  
   .root-component {
-    max-width: 1280px;
+    min-width: 640px;
+	max-width: 1280px;
   }
   .main-component {
-    min-width: 600px;
+    min-width: 640px;
     margin-bottom: 24px;   
   }
   .side-component {
-    min-width: 240px;
+    min-width: 300px;
     border: 1px solid #ccc;
     border-radius: 6px;
-    padding: 12px 24px;
+    padding: 12px 20px;
     margin-bottom: 24px;    
   }
 }

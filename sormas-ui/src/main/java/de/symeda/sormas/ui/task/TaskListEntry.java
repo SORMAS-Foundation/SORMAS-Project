@@ -37,7 +37,7 @@ public class TaskListEntry extends HorizontalLayout {
 		addComponent(labelLayout);
 		setExpandRatio(labelLayout, 1);
 
-		// very hacky: clean up when needed elsewher! 
+		// very hacky: clean up when needed elsewher!
 		String htmlLeft = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE,
 				task.getTaskType().toString())
 				+ LayoutUtil.div(I18nProperties.getPrefixFieldCaption(TaskDto.I18N_PREFIX, TaskDto.SUGGESTED_START)

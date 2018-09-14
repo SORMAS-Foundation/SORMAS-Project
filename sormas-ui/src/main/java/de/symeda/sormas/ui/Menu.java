@@ -91,7 +91,6 @@ public class Menu extends CssLayout {
             }
         });
         showMenu.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        showMenu.addStyleName(ValoTheme.BUTTON_SMALL);
         showMenu.addStyleName(VALO_MENU_TOGGLE);
         showMenu.setIcon(FontAwesome.NAVICON);
         menuPart.addComponent(showMenu);
