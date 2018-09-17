@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ejb.EJB;
-import javax.ejb.Singleton;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -36,15 +37,21 @@ import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 
-@Singleton(name = "CaseClassificationFacade")
+/**
+ * Stateless instead of Singleton. It's ok to have multiple instances with an individual cache. 
+ * 
+ * @author Martin Wahnschaffe
+ */
+@Stateless(name = "CaseClassificationFacade")
 public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	
 	@EJB
 	private PersonFacadeEjbLocal personFacade;
 	
-	private Map<Disease, ClassificationCriteria> suspectCriteria = new HashMap<Disease, ClassificationCriteria>();
-	private Map<Disease, ClassificationCriteria> probableCriteria = new HashMap<Disease, ClassificationCriteria>();
-	private Map<Disease, ClassificationCriteria> confirmedCriteria = new HashMap<Disease, ClassificationCriteria>();
+	/** local cache */
+	private Map<Disease, ClassificationCriteria> suspectCriteria = new HashMap<>();
+	private Map<Disease, ClassificationCriteria> probableCriteria = new HashMap<>();
+	private Map<Disease, ClassificationCriteria> confirmedCriteria = new HashMap<>();
 
 	@Override
 	public CaseClassification getClassification(CaseDataDto caze, List<SampleTestDto> sampleTests) {
@@ -387,4 +394,8 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		return new ClassificationPersonAgeCriteria(lowerThreshold, upperThreshold, ageType);
 	}
 	
+	@LocalBean
+	@Stateless
+	public static class CaseClassificationFacadeEjbLocal extends CaseClassificationFacadeEjb {
+	}
 }

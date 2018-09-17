@@ -53,7 +53,6 @@ import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.PlagueType;
-import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -90,6 +89,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.MessageType;
@@ -150,7 +150,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	protected EntityManager em;
 
 	@EJB
-	private CaseClassificationFacade caseClassificationFacade;
+	private CaseClassificationFacadeEjbLocal caseClassificationFacade;
 	@EJB
 	private CaseService caseService;
 	@EJB
