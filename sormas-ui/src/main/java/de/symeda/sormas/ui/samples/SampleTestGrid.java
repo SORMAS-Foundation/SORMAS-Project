@@ -101,7 +101,7 @@ public class SampleTestGrid extends Grid implements ItemClickListener {
 	public void itemClick(ItemClickEvent event) {
 		SampleTestDto sampleTest = (SampleTestDto)event.getItemId();
 		if(event.getPropertyId() != null && (EDIT_BTN_ID.equals(event.getPropertyId()) || event.isDoubleClick())) {
-			ControllerProvider.getSampleTestController().edit(sampleTest, this, caseSampleCount);
+			ControllerProvider.getSampleTestController().edit(sampleTest, caseSampleCount, this::reload);
 		}
 	}
 
