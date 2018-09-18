@@ -28,6 +28,8 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 
 	public static final String VIEW_MODE_URL_PREFIX = "v";
 	
+	public static final String ROOT_VIEW_NAME = CasesView.VIEW_NAME;
+	
 	private CaseReferenceDto caseRef = null;
 
 	private ViewMode viewMode;

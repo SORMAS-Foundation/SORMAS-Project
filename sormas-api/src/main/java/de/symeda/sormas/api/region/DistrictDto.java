@@ -1,5 +1,7 @@
 package de.symeda.sormas.api.region;
 
+import java.util.Date;
+
 import de.symeda.sormas.api.EntityDto;
 
 public class DistrictDto extends EntityDto {
@@ -20,6 +22,19 @@ public class DistrictDto extends EntityDto {
 	private Integer population;
 	private Float growthRate;
 	private RegionReferenceDto region;
+	
+	public DistrictDto(Date creationDate, Date changeDate, String uuid, String name, String epidCode, Integer population, Float growthRate, String regionUuid, String regionName) {
+		super(creationDate, changeDate, uuid);
+		this.name = name;
+		this.epidCode = epidCode;
+		this.population = population;
+		this.growthRate = growthRate;
+		this.region = new RegionReferenceDto(regionUuid, regionName);
+	}
+	
+	public DistrictDto() {
+		super();
+	}
 	
 	public String getName() {
 		return name;

@@ -29,7 +29,7 @@ public class DatabaseExportView extends AbstractStatisticsView {
 
 	private static final long serialVersionUID = 1557269026685787333L;
 
-	public static final String VIEW_NAME = "statistics/database-export";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/database-export";
 
 	private VerticalLayout databaseExportLayout;
 	private Map<CheckBox, DatabaseTable> databaseTableToggles;

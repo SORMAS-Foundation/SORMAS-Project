@@ -20,7 +20,7 @@ public class CasePersonView extends AbstractCaseView {
 
 	private static final long serialVersionUID = -1L;
 	
-	public static final String VIEW_NAME = "cases/person";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/person";
 
     public CasePersonView() {
     	super(VIEW_NAME);

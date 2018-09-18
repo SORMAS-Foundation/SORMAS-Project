@@ -1,5 +1,7 @@
 package de.symeda.sormas.api.facility;
 
+import java.util.Date;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -33,6 +35,25 @@ public class FacilityDto extends EntityDto {
 	private Double longitude;
 	private FacilityType type;
 	private boolean publicOwnership;
+
+	public FacilityDto(Date creationDate, Date changeDate, String uuid, String name, String regionUuid, String regionName, String districtUuid, String districtName,
+			String communityUuid, String communityName, String city, Double latitude, Double longitude, FacilityType type,
+			boolean publicOwnership) {
+		super(creationDate, changeDate, uuid);
+		this.name = name;
+		this.region = new RegionReferenceDto(regionUuid, regionName);
+		this.district = new DistrictReferenceDto(districtUuid, districtName);
+		this.community = new CommunityReferenceDto(communityUuid, communityName);
+		this.city = city;
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.type = type;
+		this.publicOwnership = publicOwnership;
+	}
+	
+	public FacilityDto() {
+		super();
+	}
 
 	public String getName() {
 		return name;

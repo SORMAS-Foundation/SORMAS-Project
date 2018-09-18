@@ -24,7 +24,7 @@ public class CaseDataView extends AbstractCaseView {
 
 	private static final long serialVersionUID = -1L;
 
-	public static final String VIEW_NAME = "cases/data";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/data";
 
 	public static final String CASE_LOC = "case";
 	public static final String TASKS_LOC = "tasks";

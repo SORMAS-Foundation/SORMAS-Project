@@ -19,7 +19,7 @@ public class RegionsView extends AbstractConfigurationView {
 	
 	public static final String SEARCH = "search";
 
-	public static final String VIEW_NAME = "configuration/regions";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/regions";
 	
 	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;

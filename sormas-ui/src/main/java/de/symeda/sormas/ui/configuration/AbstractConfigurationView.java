@@ -16,6 +16,8 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 
 	private static final long serialVersionUID = 3193505016439327054L;
 
+	public static final String ROOT_VIEW_NAME = "configuration";
+	
 	protected AbstractConfigurationView(String viewName) {
 		super(viewName);
 	}

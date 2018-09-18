@@ -18,6 +18,8 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 
 	private ContactReferenceDto contactRef;
 
+	public static final String ROOT_VIEW_NAME = ContactsView.VIEW_NAME;
+	
 	protected AbstractContactView(String viewName) {
 		super(viewName);
 	}

@@ -18,7 +18,7 @@ public class ContactPersonView extends AbstractContactView {
 
 	private static final long serialVersionUID = -1L;
 	
-	public static final String VIEW_NAME = "contacts/person";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/person";
 
     public ContactPersonView() {
     	super(VIEW_NAME);

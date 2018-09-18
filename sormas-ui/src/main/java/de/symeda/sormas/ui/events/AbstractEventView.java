@@ -13,6 +13,8 @@ import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 @SuppressWarnings("serial")
 public class AbstractEventView extends AbstractSubNavigationView {
 
+	public static final String ROOT_VIEW_NAME = EventsView.VIEW_NAME;
+	
 	private EventReferenceDto eventRef;
 	
 	protected AbstractEventView(String viewName) {

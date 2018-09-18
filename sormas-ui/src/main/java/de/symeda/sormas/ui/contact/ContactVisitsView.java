@@ -26,7 +26,7 @@ public class ContactVisitsView extends AbstractContactView {
 
 	private static final long serialVersionUID = -1L;
 
-	public static final String VIEW_NAME = "contacts/visits";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/visits";
 
 	private VisitGrid grid;    
 	private Button newButton;

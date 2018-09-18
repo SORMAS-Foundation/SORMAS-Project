@@ -17,7 +17,7 @@ public class SampleDataView extends AbstractSampleView {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String VIEW_NAME = "samples/data";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/data";
 
 	public static final String EDIT_LOC = "edit";
 	public static final String CASE_LOC = "case";

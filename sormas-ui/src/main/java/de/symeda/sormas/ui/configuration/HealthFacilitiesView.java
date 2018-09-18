@@ -8,7 +8,7 @@ public class HealthFacilitiesView extends AbstractFacilitiesView {
 
 	private static final long serialVersionUID = -7708098278141028591L;
 
-	public static final String VIEW_NAME = "configuration/healthFacilities";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/healthFacilities";
 
 	public HealthFacilitiesView() {
 		super(VIEW_NAME, false);

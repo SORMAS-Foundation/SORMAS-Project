@@ -10,7 +10,7 @@ public class OutbreaksView extends AbstractConfigurationView {
 
 	private static final long serialVersionUID = -6589135368637794263L;
 	
-	public static final String VIEW_NAME = "configuration/outbreaks";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/outbreaks";
 
 	private OutbreakOverviewGrid grid;
 	private VerticalLayout contentLayout;

@@ -9,7 +9,7 @@ public class CaseSymptomsView extends AbstractCaseView {
 
 	private static final long serialVersionUID = -1L;
 	
-	public static final String VIEW_NAME = "cases/symptoms";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/symptoms";
 
     public CaseSymptomsView() {
     	super(VIEW_NAME);

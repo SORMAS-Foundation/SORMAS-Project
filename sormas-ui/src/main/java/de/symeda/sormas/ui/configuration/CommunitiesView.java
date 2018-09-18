@@ -24,7 +24,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 
 	public static final String SEARCH = "search";
 
-	public static final String VIEW_NAME = "configuration/communities";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/communities";
 
 	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;

@@ -13,6 +13,8 @@ public class AbstractStatisticsView extends AbstractSubNavigationView {
 
 	public final static String I18N_PREFIX = "Statistics";
 	
+	public static final String ROOT_VIEW_NAME = "statistics";
+	
 	protected AbstractStatisticsView(String viewName) {
 		super(viewName);
 	}

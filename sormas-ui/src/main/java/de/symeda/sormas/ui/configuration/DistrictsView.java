@@ -22,7 +22,7 @@ public class DistrictsView extends AbstractConfigurationView {
 
 	public static final String SEARCH = "search";
 
-	public static final String VIEW_NAME = "configuration/districts";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/districts";
 	
 	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;

@@ -67,7 +67,7 @@ public class StatisticsView extends AbstractStatisticsView {
 
 	private static final long serialVersionUID = -4440568319850399685L;
 
-	public static final String VIEW_NAME = "statistics";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME;
 
 	private VerticalLayout filtersLayout;
 	private VerticalLayout resultsLayout;

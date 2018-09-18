@@ -61,7 +61,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	@Override
 	public List<CommunityDto> getIndexList(CommunityCriteria criteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Community> cq = cb.createQuery(Community.class);
+		CriteriaQuery<CommunityDto> cq = cb.createQuery(CommunityDto.class);
 		Root<Community> community = cq.from(Community.class);
 		Join<Community, District> district = community.join(Community.DISTRICT, JoinType.LEFT);
 		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
@@ -73,12 +73,12 @@ public class CommunityFacadeEjb implements CommunityFacade {
 			}
 		}
 		
-		cq.select(community);
-		cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)));
-		cq.distinct(true);
-		
-		List<Community> communities = em.createQuery(cq).getResultList();
-		return communities.stream().map(c -> toDto(c)).collect(Collectors.toList());
+		cq.multiselect(community.get(Community.CREATION_DATE), community.get(Community.CHANGE_DATE), community.get(Community.UUID), 
+				community.get(Community.NAME), district.get(District.UUID), district.get(District.NAME));
+		cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)), cb.asc(community.get(Community.NAME)));
+
+		List<CommunityDto> resultList = em.createQuery(cq).getResultList();
+		return resultList;
 	}
 	
 	@Override

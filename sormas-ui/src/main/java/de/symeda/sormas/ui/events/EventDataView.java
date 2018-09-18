@@ -15,7 +15,7 @@ public class EventDataView extends AbstractEventView {
 
 	private static final long serialVersionUID = -1L;
 
-	public static final String VIEW_NAME = "events/data";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/data";
 
 	public static final String EVENT_LOC = "event";
 	public static final String TASKS_LOC = "tasks";

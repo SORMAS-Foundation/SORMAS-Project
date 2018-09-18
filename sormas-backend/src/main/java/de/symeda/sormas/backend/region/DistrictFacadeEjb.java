@@ -18,11 +18,13 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.region.DistrictCriteria;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -68,7 +70,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	@Override
 	public List<DistrictDto> getIndexList(DistrictCriteria criteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<District> cq = cb.createQuery(District.class);
+		CriteriaQuery<DistrictDto> cq = cb.createQuery(DistrictDto.class);
 		Root<District> district = cq.from(District.class);
 		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
 
@@ -79,12 +81,13 @@ public class DistrictFacadeEjb implements DistrictFacade {
 			}
 		}
 		
-		cq.select(district);
+		cq.multiselect(district.get(District.CREATION_DATE), district.get(District.CHANGE_DATE), district.get(District.UUID), 
+				district.get(District.NAME), district.get(District.EPID_CODE), district.get(District.POPULATION), district.get(District.GROWTH_RATE), 
+				region.get(Region.UUID), region.get(Region.NAME));
 		cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)));
-		cq.distinct(true);
-		
-		List<District> districts = em.createQuery(cq).getResultList();
-		return districts.stream().map(d -> toDto(d)).collect(Collectors.toList());
+
+		List<DistrictDto> resultList = em.createQuery(cq).getResultList();
+		return resultList;
 	}
 
 	@Override

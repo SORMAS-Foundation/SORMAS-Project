@@ -178,7 +178,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	@Override
 	public List<FacilityDto> getIndexList(String userUuid, FacilityCriteria facilityCriteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Facility> cq = cb.createQuery(Facility.class);
+		CriteriaQuery<FacilityDto> cq = cb.createQuery(FacilityDto.class);
 		Root<Facility> facility = cq.from(Facility.class);
 		Join<Facility, Region> region = facility.join(Facility.REGION, JoinType.LEFT);
 		Join<Facility, District> district = facility.join(Facility.DISTRICT, JoinType.LEFT);
@@ -196,12 +196,15 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			cq.where(filter);
 		}
 
-		cq.select(facility);
+		cq.multiselect(facility.get(Facility.CREATION_DATE), facility.get(Facility.CHANGE_DATE), facility.get(Facility.UUID), 
+				facility.get(Facility.NAME), region.get(Region.UUID), region.get(Region.NAME),
+				district.get(District.UUID), district.get(District.NAME), community.get(Community.UUID), community.get(Community.NAME),
+				facility.get(Facility.CITY), facility.get(Facility.LATITUDE), facility.get(Facility.LONGITUDE), 
+				facility.get(Facility.TYPE), facility.get(Facility.PUBLIC_OWNERSHIP));
 		cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)), cb.asc(community.get(Community.NAME)), cb.asc(facility.get(Facility.NAME)));
-		cq.distinct(true);
 
-		List<Facility> facilities = em.createQuery(cq).getResultList();
-		return facilities.stream().map(f -> toDto(f)).collect(Collectors.toList());
+		List<FacilityDto> resultList = em.createQuery(cq).getResultList();
+		return resultList;
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import de.symeda.sormas.ui.utils.ViewMode;
 @SuppressWarnings("serial")
 public class CaseHospitalizationView extends AbstractCaseView {
 	
-	public static final String VIEW_NAME = "cases/hospitalization";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/hospitalization";
 	
 	public CaseHospitalizationView() {
 		super(VIEW_NAME); 	

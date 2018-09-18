@@ -23,6 +23,7 @@ import de.symeda.sormas.ui.events.EventsView;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.reports.ReportsView;
 import de.symeda.sormas.ui.samples.SamplesView;
+import de.symeda.sormas.ui.statistics.AbstractStatisticsView;
 import de.symeda.sormas.ui.statistics.StatisticsView;
 import de.symeda.sormas.ui.task.TasksView;
 import de.symeda.sormas.ui.user.UsersView;
@@ -97,16 +98,16 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, "Reports", FontAwesome.FILE_TEXT);
 		}
 		ControllerProvider.getStatisticsController().registerViews(navigator);
-		menu.addView(StatisticsView.class, StatisticsView.VIEW_NAME, "Statistics", FontAwesome.BAR_CHART);
+		menu.addView(StatisticsView.class, AbstractStatisticsView.ROOT_VIEW_NAME, "Statistics", FontAwesome.BAR_CHART);
 		if (LoginHelper.hasUserRight(UserRight.USER_VIEW)) {
 			menu.addView(UsersView.class, UsersView.VIEW_NAME, "Users", FontAwesome.USERS);
 		}
 		if (LoginHelper.hasUserRight(UserRight.CONFIGURATION_ACCESS)) {
 			AbstractConfigurationView.registerViews(navigator);
 			if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
-				menu.addView(RegionsView.class, RegionsView.VIEW_NAME, "Configuration", FontAwesome.COGS);
+				menu.addView(RegionsView.class, AbstractConfigurationView.ROOT_VIEW_NAME, "Configuration", FontAwesome.COGS);
 			} else {
-				menu.addView(OutbreaksView.class, OutbreaksView.VIEW_NAME, "Configuration", FontAwesome.COGS);
+				menu.addView(OutbreaksView.class, AbstractConfigurationView.ROOT_VIEW_NAME, "Configuration", FontAwesome.COGS);
 			}
 		}
 		menu.addView(AboutView.class, AboutView.VIEW_NAME, "About", FontAwesome.INFO_CIRCLE);
