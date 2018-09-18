@@ -2,6 +2,7 @@ package de.symeda.sormas.app.component.dialog;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
@@ -23,6 +24,9 @@ import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.databinding.DialogRootLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
 
+/**
+ * This should probably inherit from DialogFragment
+ */
 public abstract class AbstractDialog implements NotificationContext {
 
     public static final String TAG = AbstractDialog.class.getSimpleName();

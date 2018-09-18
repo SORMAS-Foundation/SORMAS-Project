@@ -71,7 +71,7 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="52dp"
             android:layout_marginBottom="64dp">
 
@@ -83,10 +83,12 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true">
 
+                <requestFocus />
+
                 <ViewStub android:id="@+id/dialog_content"
                     android:inflatedId="@+id/dialogContentView"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:paddingLeft="@dimen/rowListItemHorizontalMargin"
                     android:paddingRight="@dimen/rowListItemHorizontalMargin" />
 
@@ -106,7 +108,7 @@
             <ViewStub android:id="@+id/dialog_button_panel"
                 android:inflatedId="@+id/dialogButtonPanelView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:paddingLeft="@dimen/rowListItemHorizontalMargin"
                 android:paddingRight="@dimen/rowListItemHorizontalMargin"
                 android:layout_margin="@dimen/simple_dialog_button_margin"/>
