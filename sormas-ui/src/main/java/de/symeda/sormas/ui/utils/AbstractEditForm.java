@@ -59,6 +59,10 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	private List<Field<?>> visibleAllowedFields = new ArrayList<>();
 
 	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight) {
+		this(type, propertyI18nPrefix, editOrCreateUserRight, true);
+	}
+
+	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight, boolean addFields) {
 
 		this.type = type;
 		this.propertyI18nPrefix = propertyI18nPrefix;
@@ -163,7 +167,9 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		setWidth(900, Unit.PIXELS);
 		setHeightUndefined();
 
-		addFields();
+		if (addFields) {
+			addFields();
+		}
 
 		if (editOrCreateUserRight != null && !LoginHelper.hasUserRight(editOrCreateUserRight)) {
 			getFieldGroup().setReadOnly(true);

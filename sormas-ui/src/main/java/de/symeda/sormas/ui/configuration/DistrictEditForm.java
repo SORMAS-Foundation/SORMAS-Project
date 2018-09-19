@@ -19,15 +19,19 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 			LayoutUtil.fluidRowLocs(DistrictDto.NAME, DistrictDto.EPID_CODE)
 			+ LayoutUtil.loc(DistrictDto.REGION)
 			+ LayoutUtil.fluidRowLocs(DistrictDto.POPULATION, DistrictDto.GROWTH_RATE);
+
+	private boolean create;
 	
 	public DistrictEditForm(UserRight editOrCreateUserRight, boolean create) {
-		super(DistrictDto.class, DistrictDto.I18N_PREFIX, editOrCreateUserRight);
+		super(DistrictDto.class, DistrictDto.I18N_PREFIX, editOrCreateUserRight, false);
+		this.create = create;
 		
 		setWidth(540, Unit.PIXELS);
 		
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
+		addFields();
 	}
 	
 	@Override
@@ -44,7 +48,12 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 
 		setRequired(true, DistrictDto.NAME, DistrictDto.EPID_CODE, DistrictDto.REGION);
 		
-		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());		
+		
+		// TODO: Workaround until cases and other data is properly transfered when infrastructure data changes
+		if (!create) {
+			region.setEnabled(false);
+		}
 	}
 
 	@Override

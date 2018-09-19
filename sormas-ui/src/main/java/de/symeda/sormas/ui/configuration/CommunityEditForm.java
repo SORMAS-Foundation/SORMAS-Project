@@ -23,15 +23,19 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 	private static final String HTML_LAYOUT =
 			LayoutUtil.loc(CommunityDto.NAME)
 			+ LayoutUtil.fluidRowLocs(REGION_LOC, CommunityDto.DISTRICT);
+
+	private boolean create;
 	
 	public CommunityEditForm(UserRight editOrCreateUserRight, boolean create) {
-		super(CommunityDto.class, CommunityDto.I18N_PREFIX, editOrCreateUserRight);
+		super(CommunityDto.class, CommunityDto.I18N_PREFIX, editOrCreateUserRight, false);
+		this.create = create;
 		
 		setWidth(540, Unit.PIXELS);
 		
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
+		addFields();
 	}
 
 	@Override
@@ -60,6 +64,12 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 		});
 
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		
+		// TODO: Workaround until cases and other data is properly transfered when infrastructure data changes
+		if (!create) {
+			region.setEnabled(false);
+			district.setEnabled(false);
+		}
 	}
 
 	@Override
