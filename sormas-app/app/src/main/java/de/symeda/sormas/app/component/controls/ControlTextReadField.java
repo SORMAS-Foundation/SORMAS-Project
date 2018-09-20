@@ -6,6 +6,7 @@ import android.databinding.BindingAdapter;
 import android.databinding.BindingMethod;
 import android.databinding.BindingMethods;
 import android.databinding.InverseBindingListener;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -34,6 +35,7 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.util.ResourceUtils;
+import de.symeda.sormas.app.util.TypefaceUtil;
 
 @BindingMethods({@BindingMethod(type = ControlTextReadField.class, attribute = "valueFormat", method = "setValueFormat")})
 public class ControlTextReadField extends ControlPropertyField<String> {
@@ -72,7 +74,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
         if (defaultValue != null) {
             return defaultValue;
         } else {
-            return I18nProperties.getText(I18nConstants.NOT_AVAILABLE_SHORT);
+            return I18nProperties.getText(I18nConstants.NOT_ANSWERED);
         }
     }
 
@@ -197,6 +199,10 @@ public class ControlTextReadField extends ControlPropertyField<String> {
         setFieldValue(DataHelper.toStringNullable(value));
     }
 
+    public void applyDefaultValueStyle() {
+        textView.setTextColor(textView.getTextColors().withAlpha(145).getDefaultColor());
+    }
+
     @Override
     public Object getValue() {
         return internalValue;
@@ -212,7 +218,10 @@ public class ControlTextReadField extends ControlPropertyField<String> {
     public static void setValue(ControlTextReadField textField, String stringValue, String appendValue, String valueFormat, String defaultValue, Object originalValue) {
         if (StringUtils.isEmpty(stringValue)) {
             textField.setValue(getDefaultValue(defaultValue), originalValue);
+            textField.applyDefaultValueStyle();
         } else {
+            // TODO reset default style?
+
             if (!StringUtils.isEmpty(valueFormat) && !StringUtils.isEmpty(appendValue)) {
                 textField.setValue(String.format(valueFormat, stringValue, appendValue), originalValue);
             } else if (!StringUtils.isEmpty(appendValue)){
