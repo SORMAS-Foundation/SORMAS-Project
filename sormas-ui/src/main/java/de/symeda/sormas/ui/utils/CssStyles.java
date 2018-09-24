@@ -91,15 +91,15 @@ public final class CssStyles {
 	public static final String LABEL_BAR_TOP_MINOR = "bar-top-minor";
 	public static final String LABEL_BOTTOM_LINE = "bottom-line";
 	public static final String LABEL_ROUNDED_CORNERS = "rounded-corners";
-	public static final String LABEL_BACKGROUND_SUSPECT = "background-suspect";
-	public static final String LABEL_BACKGROUND_PROBABLE = "background-probable";
-	public static final String LABEL_BACKGROUND_CONFIRMED = "background-confirmed";
 	
 	// Layout stlyes
 	public static final String LAYOUT_MINIMAL = "minimal";
 	public static final String BACKGROUND_ROUNDED_CORNERS = "background-rounded-corners";
 	public static final String BACKGROUND_CRITERIA = "background-criteria";
 	public static final String BACKGROUND_SUB_CRITERIA = "background-sub-criteria";
+	public static final String BACKGROUND_SUSPECT_CRITERIA = "background-suspect-criteria";
+	public static final String BACKGROUND_PROBABLE_CRITERIA = "background-probable-criteria";
+	public static final String BACKGROUND_CONFIRMED_CRITERIA = "background-confirmed-criteria";
 	
 	// Button styles
 	public static final String VAADIN_BUTTON = "v-button";

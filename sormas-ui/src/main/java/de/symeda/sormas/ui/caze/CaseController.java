@@ -526,26 +526,41 @@ public class CaseController {
 
 		ClassificationCriteria suspectCriteria = FacadeProvider.getCaseClassificationFacade().getSuspectCriteria(caze.getDisease());
 		if (suspectCriteria != null) {
+			VerticalLayout suspectCriteriaLayout = new VerticalLayout();
+			CssStyles.style(suspectCriteriaLayout, CssStyles.BACKGROUND_ROUNDED_CORNERS, CssStyles.BACKGROUND_SUSPECT_CRITERIA, CssStyles.VSPACE_3);
 			Label suspectCriteriaHeadline = new Label(I18nProperties.getText("suspectCriteria"));
-			CssStyles.style(suspectCriteriaHeadline, CssStyles.LABEL_BOLD, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_SUSPECT);
-			classificationRulesLayout.addComponent(suspectCriteriaHeadline);
-			buildCriteriaLayout(classificationRulesLayout, suspectCriteria);
+			CssStyles.style(suspectCriteriaHeadline, CssStyles.LABEL_BOLD);
+			suspectCriteriaLayout.addComponent(suspectCriteriaHeadline);
+			Label suspectCriteriaInfo = new Label(I18nProperties.getText("suspectCriteriaInfo"));
+			suspectCriteriaLayout.addComponent(suspectCriteriaInfo);
+			classificationRulesLayout.addComponent(suspectCriteriaLayout);
+			buildCriteriaLayout(suspectCriteriaLayout, suspectCriteria);
 		}
 
 		ClassificationCriteria probableCriteria = FacadeProvider.getCaseClassificationFacade().getProbableCriteria(caze.getDisease());
 		if (probableCriteria != null) {
+			VerticalLayout probableCriteriaLayout = new VerticalLayout();
+			CssStyles.style(probableCriteriaLayout, CssStyles.BACKGROUND_ROUNDED_CORNERS, CssStyles.BACKGROUND_PROBABLE_CRITERIA, CssStyles.VSPACE_3);
 			Label probableCriteriaHeadline = new Label(I18nProperties.getText("probableCriteria"));
-			CssStyles.style(probableCriteriaHeadline, CssStyles.LABEL_BOLD, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_PROBABLE, CssStyles.VSPACE_TOP_3);
-			classificationRulesLayout.addComponent(probableCriteriaHeadline);
-			buildCriteriaLayout(classificationRulesLayout, probableCriteria);
+			CssStyles.style(probableCriteriaHeadline, CssStyles.LABEL_BOLD);
+			probableCriteriaLayout.addComponent(probableCriteriaHeadline);
+			Label probableCriteriaInfo = new Label(I18nProperties.getText("probableCriteriaInfo"));
+			probableCriteriaLayout.addComponent(probableCriteriaInfo);
+			classificationRulesLayout.addComponent(probableCriteriaLayout);
+			buildCriteriaLayout(probableCriteriaLayout, probableCriteria);
 		}
 
 		ClassificationCriteria confirmedCriteria = FacadeProvider.getCaseClassificationFacade().getConfirmedCriteria(caze.getDisease());
 		if (confirmedCriteria != null) {
+			VerticalLayout confirmedCriteriaLayout = new VerticalLayout();
+			CssStyles.style(confirmedCriteriaLayout, CssStyles.BACKGROUND_ROUNDED_CORNERS, CssStyles.BACKGROUND_CONFIRMED_CRITERIA);
 			Label confirmedCriteriaHeadline = new Label(I18nProperties.getText("confirmedCriteria"));
-			CssStyles.style(confirmedCriteriaHeadline, CssStyles.LABEL_BOLD, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_CONFIRMED, CssStyles.VSPACE_TOP_3);
-			classificationRulesLayout.addComponent(confirmedCriteriaHeadline);
-			buildCriteriaLayout(classificationRulesLayout, confirmedCriteria);
+			CssStyles.style(confirmedCriteriaHeadline, CssStyles.LABEL_BOLD);
+			confirmedCriteriaLayout.addComponent(confirmedCriteriaHeadline);
+			Label confirmedCriteriaInfo = new Label(I18nProperties.getText("confirmedCriteriaInfo"));
+			confirmedCriteriaLayout.addComponent(confirmedCriteriaInfo);
+			classificationRulesLayout.addComponent(confirmedCriteriaLayout);
+			buildCriteriaLayout(confirmedCriteriaLayout, confirmedCriteria);
 		}
 
 		Window popupWindow = VaadinUiUtil.showPopupWindow(classificationRulesLayout);

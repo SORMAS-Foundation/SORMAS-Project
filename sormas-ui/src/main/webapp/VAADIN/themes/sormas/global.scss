@@ -202,6 +202,18 @@
   .background-sub-criteria {
   	background: $s-highlight-color;
   }
+ 
+  .background-suspect-criteria {
+    background: $s-relevant-transparent-color;	
+  }
+ 
+  .background-probable-criteria {
+    background: $s-important-transparent-color;	
+  }
+ 
+  .background-confirmed-criteria {
+    background: $s-critical-transparent-color;	
+  }
 
   .background-rounded-corners {
 	border-radius: 8px;
