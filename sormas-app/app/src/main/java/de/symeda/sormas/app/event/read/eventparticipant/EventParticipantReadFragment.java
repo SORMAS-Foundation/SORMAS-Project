@@ -5,6 +5,7 @@ import android.view.View;
 
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
@@ -29,7 +30,8 @@ public class EventParticipantReadFragment extends BaseReadFragment<FragmentEvent
     // Instance methods
 
     private void setUpFieldVisibilities(FragmentEventParticipantReadLayoutBinding contentBinding) {
-        if (record.getResultingCaseUuid() == null) {
+        if (record.getResultingCaseUuid() == null
+                || DatabaseHelper.getCaseDao().queryUuidBasic(record.getResultingCaseUuid()) == null) {
             contentBinding.eventParticipantButtonsPanel.setVisibility(GONE);
         }
     }

@@ -79,9 +79,9 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
             target.setPerson(null);
         }
 
+        // Resulting case is never set to null from within the app because it
         if (source.getResultingCaseUuid() != null) {
-            Case resultingCase = DatabaseHelper.getCaseDao().queryUuidBasic(source.getResultingCaseUuid());
-            target.setResultingCase(CaseDtoHelper.toReferenceDto(resultingCase));
+            target.setResultingCase(new CaseReferenceDto(source.getResultingCaseUuid()));
         } else {
             target.setResultingCase(null);
         }

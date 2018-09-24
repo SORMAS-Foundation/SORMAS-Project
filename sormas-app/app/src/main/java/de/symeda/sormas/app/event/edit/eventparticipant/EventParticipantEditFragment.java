@@ -5,6 +5,7 @@ import android.view.View;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
@@ -26,10 +27,13 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
     // Instance methods
 
     private void setUpFieldVisibilities(FragmentEventParticipantEditLayoutBinding contentBinding) {
-        if (record.getResultingCaseUuid() == null) {
-            contentBinding.openEventPersonCase.setVisibility(GONE);
-        } else {
+        if (record.getResultingCaseUuid() != null) {
             contentBinding.createCaseFromEventPerson.setVisibility(GONE);
+            if (DatabaseHelper.getCaseDao().queryUuidBasic(record.getResultingCaseUuid()) == null) {
+                contentBinding.eventParticipantButtonsPanel.setVisibility(GONE);
+            }
+        } else {
+            contentBinding.openEventPersonCase.setVisibility(GONE);
         }
     }
 

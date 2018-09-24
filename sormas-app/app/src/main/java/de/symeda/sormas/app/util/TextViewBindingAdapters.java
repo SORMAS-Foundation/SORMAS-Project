@@ -591,7 +591,11 @@ public class TextViewBindingAdapters {
             textField.setText(val);
         } else {
             Case caze = DatabaseHelper.getCaseDao().queryUuidBasic(resultingCaseUuid);
-            val = "Resulting Case Status: " + caze.getInvestigationStatus().toString();
+            if (caze != null) {
+                val = "Resulting Case Status: " + caze.getInvestigationStatus().toString();
+            } else {
+                val = "Resulting Case UUID: " + DataHelper.getShortUuid(resultingCaseUuid);
+            }
 
             if (valueFormat != null && !valueFormat.trim().equals("")) {
                 textField.setText(String.format(valueFormat, val));
