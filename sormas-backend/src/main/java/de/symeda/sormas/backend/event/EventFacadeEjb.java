@@ -143,10 +143,6 @@ public class EventFacadeEjb implements EventFacade {
 		Event event = fromDto(dto);
 		eventService.ensurePersisted(event);
 		
-		for (EventParticipant eventPerson : event.getEventPersons()) {
-			eventParticipantService.udpateResultingCase(eventPerson);
-		}
-		
 		return toDto(event);
 	}
 	

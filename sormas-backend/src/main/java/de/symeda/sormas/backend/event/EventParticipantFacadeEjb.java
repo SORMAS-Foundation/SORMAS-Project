@@ -96,11 +96,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	
 	@Override
 	public EventParticipantDto saveEventParticipant(EventParticipantDto dto) {
-
 		EventParticipant entity = fromDto(dto);
 		eventParticipantService.ensurePersisted(entity);
-		
-		eventParticipantService.udpateResultingCase(entity);
 		
 		return toDto(entity);
 	}
@@ -122,7 +119,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		if (target == null) {
 			target = new EventParticipant();
 			target.setUuid(source.getUuid());
-			if(source.getCreationDate() != null) {
+			if (source.getCreationDate() != null) {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
@@ -131,9 +128,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		target.setEvent(eventService.getByReferenceDto(source.getEvent()));
 		target.setPerson(personService.getByUuid(source.getPerson().getUuid()));
 		target.setInvolvementDescription(source.getInvolvementDescription());
-		
-		// resulting case is not set from DTO @see EventParticipantService#udpateResultingCase
-		//target.setResultingCase(caseService.getByReferenceDto(source.getResultingCase()));
+		target.setResultingCase(caseService.getByReferenceDto(source.getResultingCase()));
 
 		return target;
 	}

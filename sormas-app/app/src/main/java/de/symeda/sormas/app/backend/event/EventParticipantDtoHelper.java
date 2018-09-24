@@ -60,7 +60,6 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
         }
 
         target.setInvolvementDescription(source.getInvolvementDescription());
-
         target.setResultingCaseUuid(source.getResultingCase() != null ? source.getResultingCase().getUuid() : null);
     }
 
@@ -80,11 +79,11 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
             target.setPerson(null);
         }
 
-        // The resulting case is NOT set to null if resultingCaseUuid is null because it could be possible
-        // that a resulting case is present in the main database and simply not synchronized to the app instance
         if (source.getResultingCaseUuid() != null) {
             Case resultingCase = DatabaseHelper.getCaseDao().queryUuidBasic(source.getResultingCaseUuid());
             target.setResultingCase(CaseDtoHelper.toReferenceDto(resultingCase));
+        } else {
+            target.setResultingCase(null);
         }
 
         target.setInvolvementDescription(source.getInvolvementDescription());

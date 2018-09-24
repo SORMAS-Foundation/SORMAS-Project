@@ -101,7 +101,6 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataService;
-import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
@@ -456,11 +455,6 @@ public class CaseFacadeEjb implements CaseFacade {
 			for (Contact contact : contactService.getAllByResultingCase(newCase)) {
 				contactService.updateFollowUpUntilAndStatus(contact);
 				contactService.udpateContactStatusAndResultingCase(contact);
-			}
-
-			// update result case of all related event participants
-			for (EventParticipant eventParticipant : eventParticipantService.getAllByPerson(newCase.getPerson())) {
-				eventParticipantService.udpateResultingCase(eventParticipant);
 			}
 		}
 

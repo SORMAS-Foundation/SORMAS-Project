@@ -194,7 +194,14 @@ public class CaseController {
 					if (contact != null || eventParticipant != null) {
 						// use the person of the contact or event participant the case is created for
 						dto.setPerson(person);
-						FacadeProvider.getCaseFacade().saveCase(dto);        				
+						CaseDataDto savedCase = FacadeProvider.getCaseFacade().saveCase(dto);
+						if (eventParticipant != null) {
+							// retrieve the event participant just in case it has been changed during case saving
+							EventParticipantDto updatedEventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid());
+							// set resulting case on event participant and save it
+							updatedEventParticipant.setResultingCase(savedCase.toReference());
+							FacadeProvider.getEventParticipantFacade().saveEventParticipant(updatedEventParticipant);
+						}
 						Notification.show("New case created", Type.ASSISTIVE_NOTIFICATION);
 						navigateToView(CasePersonView.VIEW_NAME, dto.getUuid(), null);
 					} else {

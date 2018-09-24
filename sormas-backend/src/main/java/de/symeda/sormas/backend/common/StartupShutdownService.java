@@ -27,7 +27,6 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.epidata.EpiDataService;
-import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityService;
@@ -170,9 +169,7 @@ public class StartupShutdownService {
 						contactService.udpateContactStatusAndResultingCase(contact);
 					}
 					// .. and event participants
-					for (EventParticipant eventParticipant : eventParticipantService.getAll()) {
-						eventParticipantService.udpateResultingCase(eventParticipant);
-					}
+					// automatic assignment of resulting cases are not done anymore
 					break;
 				
 				default:

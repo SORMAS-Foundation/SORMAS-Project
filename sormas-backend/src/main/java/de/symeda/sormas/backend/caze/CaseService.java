@@ -38,6 +38,8 @@ import de.symeda.sormas.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.epidata.EpiDataTravel;
+import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.hospitalization.HospitalizationService;
@@ -66,6 +68,8 @@ public class CaseService extends AbstractAdoService<Case> {
 	PersonFacadeEjbLocal personFacade;
 	@EJB
 	PersonService personService;
+	@EJB
+	EventParticipantService eventParticipantService;
 	@EJB
 	HospitalizationService hospitalizationService;
 	@EJB
@@ -457,8 +461,14 @@ public class CaseService extends AbstractAdoService<Case> {
 		Root<Contact> contactRoot = contactCaseSubquery.from(Contact.class);
 		contactCaseSubquery.where(contactService.createUserFilterWithoutCase(cb, cq, contactRoot, user));
 		contactCaseSubquery.select(contactRoot.get(Contact.CAZE).get(Case.ID));
-
 		filter = cb.or(filter, cb.in(casePath.get(Case.ID)).value(contactCaseSubquery));
+		
+		// get all cases based on the event participants the user can access
+		Subquery<Long> eventParticipantCaseSubquery = cq.subquery(Long.class);
+		Root<EventParticipant> eventParticipantRoot = eventParticipantCaseSubquery.from(EventParticipant.class);
+		eventParticipantCaseSubquery.where(eventParticipantService.createUserFilter(cb, cq, eventParticipantRoot, user));
+		eventParticipantCaseSubquery.select(eventParticipantRoot.get(EventParticipant.RESULTING_CASE).get(Case.ID));
+		filter = cb.or(filter, cb.in(casePath.get(Case.ID)).value(eventParticipantCaseSubquery));
 
 		// users can only be assigned to a task when they have also access to the case
 		//Join<Case, Task> tasksJoin = from.join(Case.TASKS, JoinType.LEFT);
