@@ -531,7 +531,7 @@ public class CaseController {
 			Label suspectCriteriaHeadline = new Label(I18nProperties.getText("suspectCriteria"));
 			CssStyles.style(suspectCriteriaHeadline, CssStyles.LABEL_BOLD);
 			suspectCriteriaLayout.addComponent(suspectCriteriaHeadline);
-			Label suspectCriteriaInfo = new Label(I18nProperties.getText("suspectCriteriaInfo"));
+			Label suspectCriteriaInfo = new Label(I18nProperties.getText("criteriaInfo"), ContentMode.HTML);
 			suspectCriteriaLayout.addComponent(suspectCriteriaInfo);
 			classificationRulesLayout.addComponent(suspectCriteriaLayout);
 			buildCriteriaLayout(suspectCriteriaLayout, suspectCriteria);
@@ -544,7 +544,7 @@ public class CaseController {
 			Label probableCriteriaHeadline = new Label(I18nProperties.getText("probableCriteria"));
 			CssStyles.style(probableCriteriaHeadline, CssStyles.LABEL_BOLD);
 			probableCriteriaLayout.addComponent(probableCriteriaHeadline);
-			Label probableCriteriaInfo = new Label(I18nProperties.getText("probableCriteriaInfo"));
+			Label probableCriteriaInfo = new Label(I18nProperties.getText("criteriaInfo"), ContentMode.HTML);
 			probableCriteriaLayout.addComponent(probableCriteriaInfo);
 			classificationRulesLayout.addComponent(probableCriteriaLayout);
 			buildCriteriaLayout(probableCriteriaLayout, probableCriteria);
@@ -557,7 +557,7 @@ public class CaseController {
 			Label confirmedCriteriaHeadline = new Label(I18nProperties.getText("confirmedCriteria"));
 			CssStyles.style(confirmedCriteriaHeadline, CssStyles.LABEL_BOLD);
 			confirmedCriteriaLayout.addComponent(confirmedCriteriaHeadline);
-			Label confirmedCriteriaInfo = new Label(I18nProperties.getText("confirmedCriteriaInfo"));
+			Label confirmedCriteriaInfo = new Label(I18nProperties.getText("criteriaInfo"), ContentMode.HTML);
 			confirmedCriteriaLayout.addComponent(confirmedCriteriaInfo);
 			classificationRulesLayout.addComponent(confirmedCriteriaLayout);
 			buildCriteriaLayout(confirmedCriteriaLayout, confirmedCriteria);
