@@ -267,55 +267,25 @@ public class ContactService extends AbstractAdoService<Contact> {
 	 * cases (and classification) of the person - the incubation period and - the
 	 * contact classification - the follow-up status
 	 */
-	public void udpateContactStatusAndResultingCase(Contact contact) {
-
+	public void udpateContactStatus(Contact contact) {
 		ContactClassification contactClassification = contact.getContactClassification();
-		if (contactClassification == null) { // fallback
+		if (contactClassification == null) { // Fall-back
 			contactClassification = ContactClassification.UNCONFIRMED;
 		}
 
 		switch (contactClassification) {
 		case UNCONFIRMED:
 			contact.setContactStatus(ContactStatus.ACTIVE);
-			contact.setResultingCase(null);
-			contact.setResultingCaseUser(null);
 			break;
 		case NO_CONTACT:
 			contact.setContactStatus(ContactStatus.DROPPED);
-			contact.setResultingCase(null);
-			contact.setResultingCaseUser(null);
 			break;
 		case CONFIRMED:
-
-			// calculate the incubation period relative to the contact
-			// make sure to get the maximum time span based on report date time and last
-			// contact date
-			Date incubationPeriodStart = contact.getReportDateTime();
-			Date incubationPeriodEnd = contact.getReportDateTime();
-			if (contact.getLastContactDate() != null) {
-				if (contact.getLastContactDate().before(incubationPeriodStart)) { // whatever is earlier
-					incubationPeriodStart = contact.getLastContactDate();
-				}
-				if (contact.getLastContactDate().after(incubationPeriodEnd)) { // whatever is later
-					incubationPeriodEnd = contact.getLastContactDate();
-				}
-			}
-			incubationPeriodEnd = DateHelper.addDays(incubationPeriodEnd, DiseaseHelper
-					.getIncubationPeriodDays(contact.getCaze().getDisease(), contact.getCaze().getPlagueType()));
-
-			// see if any case was reported or has symptom onset within the period
-			Case resultingCase = caseService.getFirstByPersonDiseaseAndOnset(contact.getCaze().getDisease(),
-					contact.getPerson(), incubationPeriodStart, incubationPeriodEnd);
-
-			// set
-			if (resultingCase != null) {
+			if (contact.getResultingCase() != null) {
 				contact.setContactStatus(ContactStatus.CONVERTED);
-				contact.setResultingCase(resultingCase);
-				contact.setResultingCaseUser(null);
 			} else {
-				FollowUpStatus followUpStatus = contact.getFollowUpStatus();
-				if (followUpStatus != null) {
-					switch (followUpStatus) {
+				if (contact.getFollowUpStatus() != null) {
+					switch (contact.getFollowUpStatus()) {
 					case CANCELED:
 					case COMPLETED:
 					case LOST:
@@ -326,17 +296,13 @@ public class ContactService extends AbstractAdoService<Contact> {
 						contact.setContactStatus(ContactStatus.ACTIVE);
 						break;
 					default:
-						throw new NoSuchElementException(followUpStatus.toString());
+						throw new NoSuchElementException(contact.getFollowUpStatus().toString());
 					}
 				} else {
 					contact.setContactStatus(ContactStatus.ACTIVE);
 				}
-				contact.setResultingCase(null);
-				contact.setResultingCaseUser(null);
 			}
-
 			break;
-
 		default:
 			throw new NoSuchElementException(DataHelper.toStringNullable(contactClassification));
 		}
@@ -448,6 +414,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Contact, Contact> contactPath,
 			User user) {
@@ -463,6 +430,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 		return filter;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, CriteriaQuery cq,
 			From<Contact, Contact> contactPath, User user) {
 		// National users can access all contacts in the system

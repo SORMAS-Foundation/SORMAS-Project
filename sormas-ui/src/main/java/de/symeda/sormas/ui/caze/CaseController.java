@@ -202,6 +202,13 @@ public class CaseController {
 							updatedEventParticipant.setResultingCase(savedCase.toReference());
 							FacadeProvider.getEventParticipantFacade().saveEventParticipant(updatedEventParticipant);
 						}
+						if (contact != null) {
+							// retrieve the contact just in case it has been changed during case saving
+							ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
+							// set resulting case on contact and save it
+							updatedContact.setResultingCase(savedCase.toReference());
+							FacadeProvider.getContactFacade().saveContact(updatedContact);
+						}
 						Notification.show("New case created", Type.ASSISTIVE_NOTIFICATION);
 						navigateToView(CasePersonView.VIEW_NAME, dto.getUuid(), null);
 					} else {
@@ -604,7 +611,7 @@ public class CaseController {
 		if (!(criteria instanceof ClassificationAllOfCriteria)) {
 			criteriaLayout.addComponent(new Label(((ClassificationCollectiveCriteria) criteria).getCriteriaName(), ContentMode.HTML));
 		}
-		
+
 		for (ClassificationCriteria subCriteria : ((ClassificationCollectiveCriteria) criteria).getSubCriteria()) {
 			if (!(subCriteria instanceof ClassificationCollectiveCriteria) || subCriteria instanceof ClassificationCompactCriteria) {
 				// For non-collective or compact collective criteria, add the label description as a list item

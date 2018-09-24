@@ -174,8 +174,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		contactService.ensurePersisted(entity);
 
 		contactService.updateFollowUpUntilAndStatus(entity);
-		
-		contactService.udpateContactStatusAndResultingCase(entity);
+		contactService.udpateContactStatus(entity);
 		
 		return toDto(entity);
 	}
@@ -317,9 +316,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setContactOfficer(userService.getByReferenceDto(source.getContactOfficer()));
 		target.setDescription(source.getDescription());
 		target.setRelationToCase(source.getRelationToCase());
-		
-		// resulting case is not set from DTO @see ContactService#udpateContactStatusAndResultingCase
-		//target.setResultingCase(caseService.getByReferenceDto(source.getResultingCase()));
+		target.setResultingCase(caseService.getByReferenceDto(source.getResultingCase()));
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());

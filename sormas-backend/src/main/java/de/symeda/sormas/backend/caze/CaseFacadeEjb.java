@@ -450,11 +450,11 @@ public class CaseFacadeEjb implements CaseFacade {
 			// Update follow-up until and status of all contacts
 			for (Contact contact : contactService.getAllByCase(newCase)) {
 				contactService.updateFollowUpUntilAndStatus(contact);
-				contactService.udpateContactStatusAndResultingCase(contact);
+				contactService.udpateContactStatus(contact);
 			}
 			for (Contact contact : contactService.getAllByResultingCase(newCase)) {
 				contactService.updateFollowUpUntilAndStatus(contact);
-				contactService.udpateContactStatusAndResultingCase(contact);
+				contactService.udpateContactStatus(contact);
 			}
 		}
 

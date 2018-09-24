@@ -163,13 +163,11 @@ public class StartupShutdownService {
 		for (Integer versionNeedingUpgrade : versionsNeedingUpgrade) {
 			switch (versionNeedingUpgrade) {
 				case 95:
-					// resulting case was added
-					// update follow up and status for all contacts and events
-					for (Contact contact : contactService.getAll()) {
-						contactService.udpateContactStatusAndResultingCase(contact);
+					// update follow up and status for all contacts
+					for (Contact contact : contactService.getAll()) {				
+						contactService.updateFollowUpUntilAndStatus(contact);
+						contactService.udpateContactStatus(contact);
 					}
-					// .. and event participants
-					// automatic assignment of resulting cases are not done anymore
 					break;
 				
 				default:

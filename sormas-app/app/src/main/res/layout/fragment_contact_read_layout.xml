@@ -209,7 +209,7 @@
 
             </LinearLayout>
 
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/task_buttons_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -240,7 +240,7 @@
                     app:rounded="true"
                     app:iconStart="@drawable/ic_open_case_black_24dp" />
 
-            </RelativeLayout>
+            </LinearLayout>
 
         </LinearLayout>
 
