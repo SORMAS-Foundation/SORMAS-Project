@@ -19,7 +19,11 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -30,11 +34,15 @@ import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.MessageType;
+import de.symeda.sormas.backend.common.MessagingService;
+import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
@@ -83,6 +91,10 @@ public class SampleFacadeEjb implements SampleFacade {
 	private FacilityFacadeEjbLocal facilityFacade;
 	@EJB
 	private SampleTestFacadeEjbLocal sampleTestFacade;
+	@EJB
+	private MessagingService messagingService;
+
+	private static final Logger logger = LoggerFactory.getLogger(SampleTestFacadeEjb.class);
 
 	@Override
 	public List<String> getAllUuids(String userUuid) {
@@ -148,8 +160,11 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public SampleDto saveSample(SampleDto dto) {
+		SampleDto existingSample = toDto(sampleService.getByUuid(dto.getUuid()));
 		Sample sample = fromDto(dto);
 		sampleService.ensurePersisted(sample);
+		
+		onSampleChanged(existingSample, sample);
 		
 		return toDto(sample);
 	}
@@ -315,6 +330,26 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 		SampleReferenceDto dto = new SampleReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
+	}
+	
+	private void onSampleChanged(SampleDto existingSample, Sample newSample) {
+		// Send an email to the lab user when a sample has been shipped to his lab
+		if (newSample.isShipped() && (existingSample == null || !existingSample.isShipped())) {
+			List<User> messageRecipients = userService.getLabUsersOfLab(newSample.getLab());
+
+			for (User recipient : messageRecipients) {
+				try {
+					messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_LAB_SAMPLE_SHIPPED), 
+							String.format(I18nProperties.getMessage(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED), 
+									DataHelper.getShortUuid(newSample.getUuid()), 
+									DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid())), 
+							MessageType.EMAIL, MessageType.SMS);
+				} catch (NotificationDeliveryFailedException e) {
+					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the shipment of a lab sample. "
+							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
+				}
+			}
+		}
 	}
 	
 	@LocalBean
