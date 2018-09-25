@@ -40,7 +40,6 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 
 	@Test
 	public void testUpdateFollowUpUntilAndStatus() {
-		
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid()
 				,"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
@@ -70,8 +69,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 	}
 	
 	@Test
-	public void testUdpateContactStatusAndResultingCase() {
-		
+	public void testUpdateContactStatus() {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid()
 				,"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
@@ -94,21 +92,13 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		CaseDataDto resultingCaze = creator.createCase(user.toReference(), contactPerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, contactDate, rdcf);
 		contact.setContactClassification(ContactClassification.CONFIRMED);
+		contact.setResultingCase(getCaseFacade().getReferenceByUuid(resultingCaze.getUuid()));
 		contact = getContactFacade().saveContact(contact);
 		assertEquals(ContactStatus.CONVERTED, contact.getContactStatus());
-		assertEquals(resultingCaze.getUuid(), contact.getResultingCase().getUuid());
-		
-		// move case before contact -> can't be result any more
-		resultingCaze.getSymptoms().setOnsetDate(DateHelper.subtractDays(contactDate, 1));
-		resultingCaze = getCaseFacade().saveCase(resultingCaze);
-		contact = getContactFacade().getContactByUuid(contact.getUuid());
-		assertEquals(ContactStatus.ACTIVE, contact.getContactStatus());
-		assertNull(contact.getResultingCase());
 	}
 	
 	@Test
 	public void testGenerateContactFollowUpTasks() {
-		
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -135,7 +125,6 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 	
 	@Test
 	public void testMapContactListCreation() {
-		
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -153,7 +142,6 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 	
 	@Test
 	public void testContactDeletion() {
-
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		String userUuid = user.getUuid();
@@ -182,7 +170,6 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 	
 	@Test
 	public void testGetIndexList() {
-
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		String userUuid = user.getUuid();
