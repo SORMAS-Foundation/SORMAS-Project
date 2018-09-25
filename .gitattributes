@@ -23,6 +23,7 @@
 *.bat      text eol=crlf
 *.coffee   text
 *.css      text
+gradlew    text eol=lf
 *.htm      text
 *.html     text
 *.inc      text
