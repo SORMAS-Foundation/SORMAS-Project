@@ -42,6 +42,7 @@ public class MessagingService {
 	public static final String CONTENT_LAB_RESULT_ARRIVED = "labResultArrived";
 	public static final String CONTENT_LAB_RESULT_SPECIFIED = "labResultSpecified";
 	public static final String CONTENT_LAB_SAMPLE_SHIPPED = "labSampleShipped";
+	public static final String CONTENT_LAB_SAMPLE_SHIPPED_SHORT = "labSampleShippedShort";
 	public static final String CONTENT_CONTACT_SYMPTOMATIC = "contactSymptomatic";
 	public static final String CONTENT_TASK_START_GENERAL = "taskStartGeneral";
 	public static final String CONTENT_TASK_START_SPECIFIC = "taskStartSpecific";
