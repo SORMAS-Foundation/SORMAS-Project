@@ -130,18 +130,19 @@ public abstract class PaginationList<T> extends VerticalLayout {
 		}
 		
 		int firstDisplayedEntryIndex = entries.indexOf(displayedEntries.get(0));
-		
+		int lastPageNumber = calculateLastPageNumber();
+
 		// Enable/disable first and last page buttons
 		firstPageButton.setEnabled(currentPage > 1);
-		lastPageButton.setEnabled(currentPage < calculateLastPageNumber());
+		lastPageButton.setEnabled(currentPage < lastPageNumber);
 
 		// Numbered button and gap labels visibility
 		previousGapLabel.setVisible(currentPage >= 4);
 		previousPreviousPageButton.setVisible(currentPage >= 3);
 		previousPageButton.setVisible(currentPage >= 2);
-		nextPageButton.setVisible(currentPage < calculateLastPageNumber());
-		nextNextPageButton.setVisible(currentPage < calculateLastPageNumber() - 1);
-		nextGapLabel.setVisible(currentPage < calculateLastPageNumber() - 2);
+		nextPageButton.setVisible(currentPage < lastPageNumber);
+		nextNextPageButton.setVisible(currentPage < lastPageNumber - 1);
+		nextGapLabel.setVisible(currentPage < lastPageNumber - 2);
 		
 		// Numbered button captions
 		currentPageButton.setCaption(String.valueOf((int) Math.ceil((firstDisplayedEntryIndex + 1) / (double) maxDisplayedEntries)));

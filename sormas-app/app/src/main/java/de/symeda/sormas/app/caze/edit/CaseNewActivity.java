@@ -157,7 +157,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
             return;
         }
 
-        if (caze.getPerson().isNew() && contactUuid == null && eventParticipantUuid == null) {
+        if (caze.getPerson().getId() == null) {
             SelectOrCreatePersonDialog.selectOrCreatePerson(caze.getPerson(), new Consumer<Person>() {
                 @Override
                 public void accept(Person person) {
