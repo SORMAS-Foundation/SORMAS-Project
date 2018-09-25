@@ -184,9 +184,13 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	@SuppressWarnings("rawtypes")
 	public static CommitDiscardWrapperComponent<VerticalLayout> buildCommitDiscardWrapper(AbstractEditForm ...wrappedForms) {
 		VerticalLayout formsLayout = new VerticalLayout();
+		if (wrappedForms.length > 0) { // not perfect, but necessary to make this work in grid views like CaseDataView
+			formsLayout.setWidth(wrappedForms[0].getWidth(), wrappedForms[0].getWidthUnits());
+		}
 		FieldGroup[] fieldGroups = new FieldGroup[wrappedForms.length];
 		for (int i=0; i<wrappedForms.length; i++) {
 			formsLayout.addComponent(wrappedForms[i]);
+			wrappedForms[i].setWidth(100, Unit.PERCENTAGE);
 			fieldGroups[i] = wrappedForms[i].getFieldGroup();
 		}
 		return new CommitDiscardWrapperComponent<>(formsLayout, fieldGroups);

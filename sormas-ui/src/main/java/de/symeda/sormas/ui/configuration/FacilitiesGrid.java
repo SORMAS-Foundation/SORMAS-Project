@@ -59,16 +59,16 @@ public class FacilitiesGrid extends Grid {
 				}
 			});
 		}
-		
-		setContainerDataSource(generatedContainer);
-		setColumns(FacilityDto.NAME, FacilityDto.REGION, FacilityDto.DISTRICT, FacilityDto.COMMUNITY,
-				FacilityDto.CITY, FacilityDto.LATITUDE, FacilityDto.LONGITUDE);
 
-        for (Column column : getColumns()) {
-        	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
-        			FacilityDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
-        }
-        
+		setContainerDataSource(generatedContainer);
+		setColumns(FacilityDto.NAME, FacilityDto.REGION, FacilityDto.DISTRICT, FacilityDto.COMMUNITY, FacilityDto.CITY,
+				FacilityDto.LATITUDE, FacilityDto.LONGITUDE);
+
+		for (Column column : getColumns()) {
+			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX,
+					column.getPropertyId().toString(), column.getHeaderCaption()));
+		}
+
 		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addColumn(EDIT_BTN_ID);
 			getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
@@ -76,7 +76,8 @@ public class FacilitiesGrid extends Grid {
 
 			addItemClickListener(e -> {
 				if (e.getPropertyId() != null && (e.getPropertyId().equals(EDIT_BTN_ID) || e.isDoubleClick())) {
-					ControllerProvider.getInfrastructureController().editHealthFacility(((FacilityDto) e.getItemId()).getUuid());
+					ControllerProvider.getInfrastructureController()
+							.editHealthFacility(((FacilityDto) e.getItemId()).getUuid());
 				}
 			});
 		}
@@ -84,16 +85,25 @@ public class FacilitiesGrid extends Grid {
 
 	@SuppressWarnings("unchecked")
 	public BeanItemContainer<FacilityDto> getContainer() {
-		GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
+		GeneratedPropertyContainer container = (GeneratedPropertyContainer) getContainerDataSource();
 		return (BeanItemContainer<FacilityDto>) container.getWrappedContainer();
 	}
 
 	public void reload() {
+
+		// remove the container before updating items to speed up the process
+		GeneratedPropertyContainer container = (GeneratedPropertyContainer) getContainerDataSource();
+		BeanItemContainer<FacilityDto> innerContainer = (BeanItemContainer<FacilityDto>) container.getWrappedContainer();
+		setContainerDataSource(new BeanItemContainer<FacilityDto>(FacilityDto.class));
+
+		innerContainer.removeAllItems();
+
 		List<FacilityDto> facilities = FacadeProvider.getFacilityFacade()
 				.getIndexList(LoginHelper.getCurrentUser().getUuid(), facilityCriteria);
 
-		getContainer().removeAllItems();
-		getContainer().addAll(facilities);
+		innerContainer.addAll(facilities);
+
+		setContainerDataSource(container);
 	}
 
 	public void setRegionFilter(RegionReferenceDto region) {
@@ -115,7 +125,8 @@ public class FacilitiesGrid extends Grid {
 		if (showLaboratories) {
 			facilityCriteria.typeEquals(FacilityType.LABORATORY);
 		} else {
-			// TODO: Workaround; only works because normal health facilities currently don't have a type
+			// TODO: Workaround; only works because normal health facilities currently don't
+			// have a type
 			facilityCriteria.typeEquals(null);
 		}
 	}
@@ -134,5 +145,5 @@ public class FacilitiesGrid extends Grid {
 			getContainer().addContainerFilter(new Or(orFilters.stream().toArray(Filter[]::new)));
 		}
 	}
-	
+
 }
