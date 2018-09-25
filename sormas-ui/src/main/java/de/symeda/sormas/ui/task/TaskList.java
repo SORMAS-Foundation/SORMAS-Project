@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
@@ -19,17 +19,17 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.PaginationList;
 
 @SuppressWarnings("serial")
-public class TaskList extends VerticalLayout {
+public class TaskList extends PaginationList<TaskIndexDto> {
 
 	private final TaskCriteria taskCriteria = new TaskCriteria();
-
+	private final TaskContext context;
+	
 	public TaskList(TaskContext context, ReferenceDto entityRef) {
-
-		setWidth(100, Unit.PERCENTAGE);
-		addStyleName(CssStyles.SORMAS_LIST);
+		super(5);
+		this.context = context;
 
 		switch (context) {
 		case CASE:
@@ -41,18 +41,17 @@ public class TaskList extends VerticalLayout {
 		case EVENT:
 			taskCriteria.eventEquals((EventReferenceDto) entityRef);
 			break;
-		case GENERAL:
 		default:
 			throw new IndexOutOfBoundsException(context.toString());
 		}
 	}
 
+	@Override
 	public void reload() {
 		List<TaskIndexDto> tasks = FacadeProvider.getTaskFacade()
 				.getIndexList(LoginHelper.getCurrentUserAsReference().getUuid(), taskCriteria);
-
+		
 		tasks.sort(new Comparator<TaskIndexDto>() {
-
 			@Override
 			public int compare(TaskIndexDto o1, TaskIndexDto o2) {
 				if (o1.getTaskStatus() != o2.getTaskStatus()) {
@@ -73,13 +72,21 @@ public class TaskList extends VerticalLayout {
 			}
 		});
 
-		removeAllComponents();
-		boolean hasEditRight = LoginHelper.hasUserRight(UserRight.TASK_EDIT);
-
-		// build entries
-		for (TaskIndexDto task : tasks) {
+		setEntries(tasks);
+		if (!tasks.isEmpty()) {
+			showPage(1);
+		} else {
+			updatePaginationLayout();
+			Label noTasksLabel = new Label("There are no tasks for this " + context.toString() + ".");
+			listLayout.addComponent(noTasksLabel);
+		}
+	}
+	
+	@Override
+	protected void drawDisplayedEntries() {
+		for (TaskIndexDto task : getDisplayedEntries()) {
 			TaskListEntry listEntry = new TaskListEntry(task);
-			if (hasEditRight) {
+			if (LoginHelper.hasUserRight(UserRight.TASK_EDIT)) {
 				listEntry.addEditListener(new ClickListener() {
 					@Override
 					public void buttonClick(ClickEvent event) {
@@ -87,7 +94,7 @@ public class TaskList extends VerticalLayout {
 					}
 				});
 			}
-			addComponent(listEntry);
+			listLayout.addComponent(listEntry);
 		}
 	}
 }

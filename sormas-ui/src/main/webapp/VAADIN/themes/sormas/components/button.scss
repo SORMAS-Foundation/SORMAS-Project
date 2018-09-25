@@ -42,16 +42,25 @@
       color: $v-font-color;
       
       &.v-button-link-highlighted-light {
-        background-color: $v-focus-light-color !important;
+        background-color: $v-focus-light-color;
         
-        &.v-button-link-highlighted-light:hover {
-          background-color: $v-focus-color !important;
+        &:hover {
+          background-color: $v-focus-color;
+        }
+       
+        &.v-disabled {
+          background-color: $v-focus-light-color;	
         }
       }
      
       &.v-button-link-highlighted-dark {
-      	background-color: $s-primary-color !important;
+      	background-color: $s-primary-color;
       	color: #FFFFFF;
+      }
+     
+      &.v-button-link-highlighted-small {
+      	height: 26px;
+      	padding: 0px 7px;
       }
     }
    

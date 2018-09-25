@@ -16,13 +16,14 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 
 @SuppressWarnings("serial")
-public class CaseInfoLayout extends VerticalLayout {
+public class CaseInfoLayout extends HorizontalLayout {
 
 	private final CaseDataDto caseDto;
 
 	public CaseInfoLayout(CaseDataDto caseDto) {
 		this.caseDto = caseDto;
 		this.setSpacing(true);
+		this.setWidth(100, Unit.PERCENTAGE);
 		updateCaseInfo();
 	}
 
@@ -31,30 +32,40 @@ public class CaseInfoLayout extends VerticalLayout {
 
 		PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(caseDto.getPerson().getUuid());
 
-		addDescLabel(this, DataHelper.getShortUuid(caseDto.getUuid()),
-				I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.UUID))
-		.setDescription(caseDto.getUuid());
-		addDescLabel(this, caseDto.getPerson(),
-				I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON));
+		VerticalLayout leftColumnLayout = new VerticalLayout();
+		leftColumnLayout.setSpacing(true);
+		{
+			addDescLabel(leftColumnLayout, DataHelper.getShortUuid(caseDto.getUuid()),
+					I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.UUID))
+			.setDescription(caseDto.getUuid());
+			addDescLabel(leftColumnLayout, caseDto.getPerson(),
+					I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON));
 
-		HorizontalLayout ageSexLayout = new HorizontalLayout();
-		ageSexLayout.setSpacing(true);
-		addDescLabel(ageSexLayout, ApproximateAgeHelper.formatApproximateAge(
-				personDto.getApproximateAge(),personDto.getApproximateAgeType()),
-				I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.APPROXIMATE_AGE));
-		addDescLabel(ageSexLayout, personDto.getSex(),
-				I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
-		this.addComponent(ageSexLayout);
+			HorizontalLayout ageSexLayout = new HorizontalLayout();
+			ageSexLayout.setSpacing(true);
+			addDescLabel(ageSexLayout, ApproximateAgeHelper.formatApproximateAge(
+					personDto.getApproximateAge(),personDto.getApproximateAgeType()),
+					I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.APPROXIMATE_AGE));
+			addDescLabel(ageSexLayout, personDto.getSex(),
+					I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
+			leftColumnLayout.addComponent(ageSexLayout);
+		}
+		this.addComponent(leftColumnLayout);
 
-		addDescLabel(this, 
-				caseDto.getDisease() != Disease.OTHER 
-				? caseDto.getDisease().toShortString()
-				: DataHelper.toStringNullable(caseDto.getDiseaseDetails()),
-				I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
-		addDescLabel(this, caseDto.getCaseClassification(),
-				I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
-		addDescLabel(this, DateHelper.formatLocalShortDate(caseDto.getSymptoms().getOnsetDate()),
-				I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
+		VerticalLayout rightColumnLayout = new VerticalLayout();
+		rightColumnLayout.setSpacing(true);
+		{
+			addDescLabel(rightColumnLayout, 
+					caseDto.getDisease() != Disease.OTHER 
+					? caseDto.getDisease().toShortString()
+							: DataHelper.toStringNullable(caseDto.getDiseaseDetails()),
+							I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
+			addDescLabel(rightColumnLayout, caseDto.getCaseClassification(),
+					I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
+			addDescLabel(rightColumnLayout, DateHelper.formatLocalShortDate(caseDto.getSymptoms().getOnsetDate()),
+					I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
+		}
+		this.addComponent(rightColumnLayout);
 	}
 
 	private static Label addDescLabel(AbstractLayout layout, Object content, String caption) {

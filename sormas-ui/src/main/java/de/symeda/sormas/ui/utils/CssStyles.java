@@ -112,6 +112,7 @@ public final class CssStyles {
 	public static final String LINK_HIGHLIGHTED = "link-highlighted";
 	public static final String LINK_HIGHLIGHTED_LIGHT = "link-highlighted-light";
 	public static final String LINK_HIGHLIGHTED_DARK = "link-highlighted-dark";
+	public static final String LINK_HIGHLIGHTED_SMALL = "link-highlighted-small";
 	public static final String BUTTON_FONT_SIZE_LARGE = "font-size-large";
 	
 	// List styles
@@ -162,6 +163,8 @@ public final class CssStyles {
 	
 	public static final String LABEL_CONFIGURATION_SEVERITY_INDICATOR = "severity-indicator";
 	public static final String BADGE = "badge";
+	
+	public static final String SPACING_SMALL = "spacing-small";
 	
 	// Checkbox styles
 	public static final String CHECKBOX_FILTER_INLINE = "filter-inline";

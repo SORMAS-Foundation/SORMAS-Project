@@ -2,44 +2,50 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.List;
 
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.PaginationList;
 
 @SuppressWarnings("serial")
-public class SampleTestList extends VerticalLayout {
+public class SampleTestList extends PaginationList<SampleTestDto> {
 
 	private SampleReferenceDto sampleRef;
 	private int caseSampleCount;
 
 	public SampleTestList(SampleReferenceDto sampleRef) {
-
-		setWidth(100, Unit.PERCENTAGE);
-		addStyleName(CssStyles.SORMAS_LIST);
+		super(5);
 
 		this.sampleRef = sampleRef;
 	}
 
+	@Override
 	public void reload() {
-
 		List<SampleTestDto> sampleTests = ControllerProvider.getSampleTestController()
 				.getSampleTestsBySample(sampleRef);
+		
 
-		removeAllComponents();
-
-		boolean hasEditRight = LoginHelper.hasUserRight(UserRight.SAMPLE_EDIT);
-
-		// build entries
-		for (SampleTestDto sampleTest : sampleTests) {
+		setEntries(sampleTests);
+		if (!sampleTests.isEmpty()) {
+			showPage(1);
+		} else {
+			updatePaginationLayout();
+			Label noSampleTestsLabel = new Label("There are no tests for this Sample.");
+			listLayout.addComponent(noSampleTestsLabel);
+		}
+	}
+	
+	@Override
+	protected void drawDisplayedEntries() {
+		for (SampleTestDto sampleTest : getDisplayedEntries()) {
 			SampleTestListEntry listEntry = new SampleTestListEntry(sampleTest);
-			if (hasEditRight) {
+			if (LoginHelper.hasUserRight(UserRight.SAMPLE_EDIT)) {
 				listEntry.addEditListener(new ClickListener() {
 					@Override
 					public void buttonClick(ClickEvent event) {
@@ -48,7 +54,7 @@ public class SampleTestList extends VerticalLayout {
 					}
 				});
 			}
-			addComponent(listEntry);
+			listLayout.addComponent(listEntry);
 		}
 	}
 }
