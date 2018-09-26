@@ -121,6 +121,7 @@ public final class InfrastructureHelper {
                 }
             }
         });
+
         facilityField.initializeSpinner(facilities);
     }
 

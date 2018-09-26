@@ -25,7 +25,6 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 
     private Contact record;
     private Case sourceCase;
-    private Case resultingCase = null;
 
     // Enum lists
 
@@ -42,7 +41,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         contentBinding.createCase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CaseNewActivity.startActivity(getContext(), record.getUuid());
+                CaseNewActivity.startActivityFromContact(getContext(), record.getUuid());
             }
         });
 
@@ -56,7 +55,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         contentBinding.openResultingCase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CaseReadActivity.startActivity(getActivity(), resultingCase.getUuid(), true);
+                CaseReadActivity.startActivity(getActivity(), record.getResultingCaseUuid(), true);
             }
         });
     }
@@ -64,9 +63,16 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
     private void setUpFieldVisibilities(FragmentContactEditLayoutBinding contentBinding) {
         setVisibilityByDisease(ContactDto.class, sourceCase.getDisease(), contentBinding.mainContent);
 
-        if (resultingCase == null) {
-            contentBinding.openResultingCase.setVisibility(GONE);
+        if (record.getResultingCaseUuid() != null) {
+            contentBinding.createCase.setVisibility(GONE);
+            if (DatabaseHelper.getCaseDao().queryUuidBasic(record.getResultingCaseUuid()) == null) {
+                contentBinding.openResultingCase.setVisibility(GONE);
+            }
         } else {
+            contentBinding.openResultingCase.setVisibility(GONE);
+        }
+
+        if (record.getContactClassification() != ContactClassification.CONFIRMED) {
             contentBinding.createCase.setVisibility(GONE);
         }
     }
@@ -87,10 +93,6 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
     protected void prepareFragmentData() {
         record = getActivityRootData();
         sourceCase = DatabaseHelper.getCaseDao().queryUuidBasic(record.getCaseUuid());
-
-        if (record.getResultingCaseUuid() != null) {
-            resultingCase = DatabaseHelper.getCaseDao().queryUuidBasic(record.getResultingCaseUuid());
-        }
 
         relationshipList = DataUtils.getEnumItems(ContactRelation.class, true);
         contactClassificationList = DataUtils.getEnumItems(ContactClassification.class, true);

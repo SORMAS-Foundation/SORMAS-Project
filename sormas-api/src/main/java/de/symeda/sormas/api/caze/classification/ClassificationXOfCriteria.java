@@ -5,8 +5,13 @@ import java.util.List;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 
+/**
+ * A criteria determining that a specific number of sub criteria need to be true in order for the whole criteria
+ * to be applicable. The exact number is specified in the constructor.
+ */
 public class ClassificationXOfCriteria extends ClassificationCriteria implements ClassificationCollectiveCriteria {
 
 	private static final long serialVersionUID = 1139711267145230378L;
@@ -20,10 +25,10 @@ public class ClassificationXOfCriteria extends ClassificationCriteria implements
 	}
 
 	@Override
-	public boolean eval(CaseDataDto caze, List<SampleTestDto> sampleTests) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<SampleTestDto> sampleTests) {
 		int amount = 0;
 		for (ClassificationCriteria classificationCriteria : classificationCriteria) {
-			if (classificationCriteria.eval(caze, sampleTests)) {
+			if (classificationCriteria.eval(caze, person, sampleTests)) {
 				amount++;
 				if (amount >= requiredAmount) {
 					return true;
@@ -80,6 +85,10 @@ public class ClassificationXOfCriteria extends ClassificationCriteria implements
 		}
 	}
 
+	/**
+	 * Has a different buildDescription method to display all sub criteria with bullet points.
+	 * Functionality is identical to ClassificationXOfCriteria.
+	 */
 	public static class ClassificationXOfSubCriteria extends ClassificationXOfCriteria {
 
 		private static final long serialVersionUID = 8374870595895910414L;
@@ -102,6 +111,10 @@ public class ClassificationXOfCriteria extends ClassificationCriteria implements
 		
 	}
 	
+	/**
+	 * Has a different buildDescription method to display all sub criteria in one line, separated by commas and
+	 * an "OR" for the last criteria. Functionality is identical to ClassificationXOfCriteria.
+	 */
 	public static class ClassificationOneOfCompactCriteria extends ClassificationXOfCriteria implements ClassificationCompactCriteria {
 
 		private static final long serialVersionUID = 8374870595895910414L;

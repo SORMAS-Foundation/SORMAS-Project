@@ -14,66 +14,77 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
-import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
+import de.symeda.sormas.app.component.dialog.AbstractDialog;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
-import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
-import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogCaseEpidBurialEditLayoutBinding;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
-public class EpiDataBurialDialog extends BaseTeboAlertDialog {
+public class EpiDataBurialDialog extends AbstractDialog {
 
     public static final String TAG = EpiDataBurialDialog.class.getSimpleName();
 
     private EpiDataBurial data;
-    private DialogCaseEpidBurialEditLayoutBinding mContentBinding;
+    private DialogCaseEpidBurialEditLayoutBinding contentBinding;
 
+    // Constructor
 
-    public EpiDataBurialDialog(final FragmentActivity activity, EpiDataBurial epiDataBurial) {
-        this(activity, R.string.heading_sub_case_epid_burial_visited, -1, epiDataBurial);
-    }
-
-    public EpiDataBurialDialog(final FragmentActivity activity, int headingResId, int subHeadingResId, EpiDataBurial epiDataBurial) {
+    EpiDataBurialDialog(final FragmentActivity activity, EpiDataBurial epiDataBurial) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_case_epid_burial_edit_layout,
-                R.layout.dialog_root_three_button_panel_layout, headingResId, subHeadingResId);
+                R.layout.dialog_root_three_button_panel_layout,
+                R.string.heading_burial, -1);
 
         this.data = epiDataBurial;
     }
 
+    // Instance methods
+
+    private void setUpControlListeners() {
+        contentBinding.epiDataBurialBurialAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openAddressPopup();
+            }
+        });
+    }
+
+    private void openAddressPopup() {
+        final Location location = (Location) contentBinding.epiDataBurialBurialAddress.getValue();
+        final Location locationClone = (Location) location.clone();
+        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone);
+        locationDialog.show();
+
+        locationDialog.setPositiveCallback(new de.symeda.sormas.app.util.Callback() {
+            @Override
+            public void call() {
+                contentBinding.epiDataBurialBurialAddress.setValue(locationClone);
+                data.setBurialAddress(locationClone);
+                locationDialog.dismiss();
+            }
+        });
+    }
+
+    // Overrides
+
     @Override
-    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
+    protected void setContentBinding(Context context, ViewDataBinding binding, String layoutName) {
+        this.contentBinding = (DialogCaseEpidBurialEditLayoutBinding) binding;
 
-        setLiveValidationDisabled(false);
-
-        try {
-            FragmentValidator.validate(getContext(), contentBinding);
-        } catch (ValidationException e) {
-            NotificationHelper.showDialogNotification(this, ERROR, e.getMessage());
-            return;
+        if (!binding.setVariable(BR.data, data)) {
+            Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
-
-        if (callback != null)
-            callback.call(null);
     }
 
     @Override
-    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        if (callback != null)
-            callback.call(null);
-    }
+    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
+        this.contentBinding.epiDataBurialBurialDateFrom.initializeDateField(getFragmentManager());
+        this.contentBinding.epiDataBurialBurialDateTo.initializeDateField(getFragmentManager());
 
-    @Override
-    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        if (callback != null)
-            callback.call(null);
-    }
+        CaseValidator.initializeEpiDataBurialValidation(getContext(), contentBinding);
 
-    @Override
-    protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
-        this.mContentBinding = (DialogCaseEpidBurialEditLayoutBinding) binding;
+        setUpControlListeners();
 
         if (data.getId() == null) {
             setLiveValidationDisabled(true);
@@ -81,35 +92,16 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void setBindingVariable(Context context, ViewDataBinding binding, String layoutName) {
-        if (!binding.setVariable(BR.data, data)) {
-            Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
+    public void onPositiveClick() {
+        setLiveValidationDisabled(false);
+        try {
+            FragmentValidator.validate(getContext(), contentBinding);
+        } catch (ValidationException e) {
+            NotificationHelper.showDialogNotification(EpiDataBurialDialog.this, ERROR, e.getMessage());
+            return;
         }
-    }
 
-    @Override
-    protected void prepareDialogData() {
-
-    }
-
-    @Override
-    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-        mContentBinding.epiDataBurialBurialDateFrom.initializeDateField(getFragmentManager());
-        mContentBinding.epiDataBurialBurialDateTo.initializeDateField(getFragmentManager());
-
-        CaseValidator.initializeEpiDataBurialValidation(getContext(), (DialogCaseEpidBurialEditLayoutBinding) contentBinding);
-
-        setUpControlListeners();
-    }
-
-    @Override
-    public boolean isOkButtonVisible() {
-        return true;
-    }
-
-    @Override
-    public boolean isDismissButtonVisible() {
-        return true;
+        super.onPositiveClick();
     }
 
     @Override
@@ -123,40 +115,18 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    public ControlButtonType dismissButtonType() {
+    public ControlButtonType getNegativeButtonType() {
         return ControlButtonType.LINE_SECONDARY;
     }
 
     @Override
-    public ControlButtonType okButtonType() {
+    public ControlButtonType getPositiveButtonType() {
         return ControlButtonType.LINE_PRIMARY;
     }
 
     @Override
-    public ControlButtonType deleteButtonType() {
+    public ControlButtonType getDeleteButtonType() {
         return ControlButtonType.LINE_DANGER;
     }
 
-    private void setUpControlListeners() {
-        mContentBinding.epiDataBurialBurialAddress.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openAddressPopup();
-            }
-        });
-    }
-
-    private void openAddressPopup() {
-        final Location location = (Location) mContentBinding.epiDataBurialBurialAddress.getValue();
-        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), location);
-        locationDialog.show(null);
-
-        locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
-            @Override
-            public void onOkClick(View v, Object item, View viewRoot) {
-                mContentBinding.epiDataBurialBurialAddress.setValue(location);
-                locationDialog.dismiss();
-            }
-        });
-    }
 }

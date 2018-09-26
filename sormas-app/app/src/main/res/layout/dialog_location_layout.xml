@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription"
     android:descendantFocusability="beforeDescendants"
     android:id="@+id/base_layout">
 
     <data>
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
-        <variable name="data" type="de.symeda.sormas.app.backend.location.Location"/>
 
-        <variable
-            name="pickGpsCallback"
-            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+        <variable name="data" type="de.symeda.sormas.app.backend.location.Location" />
     </data>
 
 
@@ -23,93 +22,80 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingLeft="@dimen/rowListItemHorizontalMargin"
-            android:paddingRight="@dimen/rowListItemHorizontalMargin"
-            >
+            android:paddingRight="@dimen/rowListItemHorizontalMargin">
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/location_address"
                 style="@style/ControlSingleColumnStyle"
-                app:value="@={data.address}"
-                />
+                app:value="@={data.address}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/location_details"
                 style="@style/ControlSingleColumnStyle"
-                app:value="@={data.details}"
-                />
+                app:value="@={data.details}" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
+                android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/location_region"
                     style="@style/ControlFirstOfTwoColumnsStyle"
-                    app:value="@={data.region}"
-                    />
+                    app:value="@={data.region}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/location_district"
                     style="@style/ControlSecondOfTwoColumnsStyle"
-                    app:value="@={data.district}"
-                    />
+                    app:value="@={data.district}" />
+
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
+                android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/location_community"
                     style="@style/ControlFirstOfTwoColumnsStyle"
-                    app:value="@={data.community}"
-                    />
+                    app:value="@={data.community}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/location_city"
                     style="@style/ControlSecondOfTwoColumnsStyle"
-                    app:value="@={data.city}"
-                    />
+                    app:value="@={data.city}" />
 
             </LinearLayout>
 
-            <ImageView style="@style/FullHorizontalDividerStyle"/>
+            <ImageView style="@style/FullHorizontalDividerStyle" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
+                android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlButton
-                    android:id="@+id/btnPickGpsCoordinates"
+                    android:id="@+id/pick_gps_coordinates"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:slim="true"
                     app:iconStart="@drawable/ic_gps_fixed_black_24dp"
                     app:buttonType="@{ControlButtonType.SECONDARY}"
-                    android:text="@string/action_pick_gps"
-                    android:onClick="@{(view) -> pickGpsCallback.onClick(view, data)}" />
+                    android:text="@string/action_pick_gps" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/location_latLon"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    android:paddingLeft="@dimen/control_spacing"
-                    app:defaultValue='@{@string/hint_pick_gps}'
-                    />
+                    android:paddingStart="@dimen/control_spacing"
+                    android:paddingEnd="@dimen/control_spacing"
+                    app:defaultValue='@{@string/hint_no_coordinates}'
+                    style="@style/ControlSingleColumnStyle" />
 
             </LinearLayout>
 
-            <ImageView style="@style/FullHorizontalDividerStyle"/>
-
         </LinearLayout>
+
     </ScrollView>
+
 </layout>
 

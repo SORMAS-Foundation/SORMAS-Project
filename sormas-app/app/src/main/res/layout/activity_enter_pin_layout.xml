@@ -189,6 +189,7 @@
                     android:textAlignment="viewEnd"/>
 
             </LinearLayout>
+
         </LinearLayout>
 
         <!--<ViewStub android:id="@+id/vsApplicationNotificationView"
@@ -199,7 +200,7 @@
             />-->
 
         <include
-            android:id="@+id/notificationFrame"
+            android:id="@+id/notification_frame"
             layout="@layout/activity_root_notification_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

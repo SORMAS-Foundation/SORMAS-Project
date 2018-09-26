@@ -142,6 +142,7 @@ public class EventService extends AbstractAdoService<Event> {
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Event,Event> eventPath, User user) {
 		// National users can access all events in the system
@@ -190,6 +191,7 @@ public class EventService extends AbstractAdoService<Event> {
 		return filter;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createDateFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Event, Event> eventPath, Date date) {
 

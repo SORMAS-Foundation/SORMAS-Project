@@ -8,17 +8,32 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.region.CommunityCriteria;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "CommunityFacade")
 public class CommunityFacadeEjb implements CommunityFacade {
-	
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	protected EntityManager em;
+
 	@EJB
 	private CommunityService communityService;
 	@EJB
@@ -41,6 +56,29 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		return communityService.getAllAfter(date, null).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<CommunityDto> getIndexList(CommunityCriteria criteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CommunityDto> cq = cb.createQuery(CommunityDto.class);
+		Root<Community> community = cq.from(Community.class);
+		Join<Community, District> district = community.join(Community.DISTRICT, JoinType.LEFT);
+		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
+
+		if (criteria != null) {
+			Predicate filter = communityService.buildCriteriaFilter(criteria, cb, community);
+			if (filter != null) {
+				cq.where(filter);
+			}
+		}
+		
+		cq.multiselect(community.get(Community.CREATION_DATE), community.get(Community.CHANGE_DATE), community.get(Community.UUID), 
+				community.get(Community.NAME), district.get(District.UUID), district.get(District.NAME));
+		cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)), cb.asc(community.get(Community.NAME)));
+
+		List<CommunityDto> resultList = em.createQuery(cq).getResultList();
+		return resultList;
 	}
 	
 	@Override
@@ -73,6 +111,19 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		return toReferenceDto(communityService.getByUuid(uuid));
 	}
 	
+	@Override
+	public void saveCommunity(CommunityDto dto) {
+		Community community = communityService.getByUuid(dto.getUuid());
+		
+		community = fillOrBuildEntity(dto, community);
+		
+		if (community.getDistrict() == null) {
+			throw new ValidationRuntimeException("You have to specify a valid district");
+		}
+		
+		communityService.ensurePersisted(community);
+	}
+	
 	public static CommunityReferenceDto toReferenceDto(Community entity) {
 		if (entity == null) {
 			return null;
@@ -92,6 +143,20 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
 
 		return dto;
+	}
+	
+	private Community fillOrBuildEntity(@NotNull CommunityDto source, Community target) {
+		if (target == null) {
+			target = new Community();
+			target.setUuid(source.getUuid());
+		}
+		
+		DtoHelper.validateDto(source, target);
+		
+		target.setName(source.getName());
+		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
+		
+		return target;
 	}
 	
 	@LocalBean

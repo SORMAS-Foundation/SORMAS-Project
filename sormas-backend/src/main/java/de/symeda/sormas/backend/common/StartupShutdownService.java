@@ -27,7 +27,6 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.epidata.EpiDataService;
-import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityService;
@@ -164,14 +163,10 @@ public class StartupShutdownService {
 		for (Integer versionNeedingUpgrade : versionsNeedingUpgrade) {
 			switch (versionNeedingUpgrade) {
 				case 95:
-					// resulting case was added
-					// update follow up and status for all contacts and events
-					for (Contact contact : contactService.getAll()) {
-						contactService.udpateContactStatusAndResultingCase(contact);
-					}
-					// .. and event participants
-					for (EventParticipant eventParticipant : eventParticipantService.getAll()) {
-						eventParticipantService.udpateResultingCase(eventParticipant);
+					// update follow up and status for all contacts
+					for (Contact contact : contactService.getAll()) {				
+						contactService.updateFollowUpUntilAndStatus(contact);
+						contactService.udpateContactStatus(contact);
 					}
 					break;
 				

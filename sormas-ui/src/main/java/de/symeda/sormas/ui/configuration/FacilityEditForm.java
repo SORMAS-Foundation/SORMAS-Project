@@ -23,36 +23,35 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 			+ LayoutUtil.fluidRowLocs(FacilityDto.CITY)
 			+ LayoutUtil.fluidRowLocs(FacilityDto.LATITUDE, FacilityDto.LONGITUDE);
 
-	private Boolean laboratory;
+	private boolean laboratory;
 	private boolean create;
 
 	public FacilityEditForm(UserRight editOrCreateUserRight, boolean create, boolean laboratory) {
-		super(FacilityDto.class, FacilityDto.I18N_PREFIX, editOrCreateUserRight);
+		super(FacilityDto.class, FacilityDto.I18N_PREFIX, editOrCreateUserRight, false);
+		this.create = create;
+		this.laboratory = laboratory;
 
 		setWidth(540, Unit.PIXELS);
 
-		this.create = create;
-		this.laboratory = laboratory;
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
-		
 		addFields();
 	}
 
 	@Override
 	protected void addFields() {
-		if (laboratory == null) {
-			return;
-		}
-
 		TextField name = addField(FacilityDto.NAME, TextField.class);
 		ComboBox region = addField(FacilityDto.REGION, ComboBox.class);
 		ComboBox district = addField(FacilityDto.DISTRICT, ComboBox.class);
 		ComboBox community = addField(FacilityDto.COMMUNITY, ComboBox.class);
 		addField(FacilityDto.CITY, TextField.class);
-    	addField(FacilityDto.LATITUDE, TextField.class).setConverter(new StringToAngularLocationConverter());
-    	addField(FacilityDto.LONGITUDE, TextField.class).setConverter(new StringToAngularLocationConverter());
+		TextField latitude = addField(FacilityDto.LATITUDE, TextField.class);
+		latitude.setConverter(new StringToAngularLocationConverter());
+		latitude.setConversionError("Only geo coordinate values are allowed for " + latitude.getCaption());
+		TextField longitude = addField(FacilityDto.LONGITUDE, TextField.class);
+		longitude.setConverter(new StringToAngularLocationConverter());
+		longitude.setConversionError("Only geo coordinate values are allowed for " + longitude.getCaption());
 
 		name.setRequired(true);
 		region.setRequired(true);
@@ -80,8 +79,8 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
-		
-		// TODO: Workaround until cases are properly transfered when facility infrastructure data changes
+
+		// TODO: Workaround until cases and other data is properly transfered when infrastructure data changes
 		if (!create) {
 			region.setEnabled(false);
 			district.setEnabled(false);
@@ -93,5 +92,5 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
 	}
-	
+
 }

@@ -14,6 +14,8 @@ import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
 @SuppressWarnings("serial")
 public class AbstractSampleView extends AbstractSubNavigationView {
+
+	public static final String ROOT_VIEW_NAME = SamplesView.VIEW_NAME;
 	
 	private SampleReferenceDto sampleRef;
 	

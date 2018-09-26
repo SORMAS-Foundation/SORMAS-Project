@@ -5,8 +5,14 @@ import java.util.List;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 
+/**
+ * Classification criteria that specifies that none of the sub criteria may be true in order for the whole
+ * criteria to be applicable. This is used e.g. to make sure that certain sample test types have returned
+ * a negative result in order to rule out specific diseases.
+ */
 public class ClassificationNoneOfCriteria extends ClassificationCriteria implements ClassificationCollectiveCriteria {
 
 	private static final long serialVersionUID = 2199852259112272090L;
@@ -18,9 +24,9 @@ public class ClassificationNoneOfCriteria extends ClassificationCriteria impleme
 	}
 
 	@Override
-	public boolean eval(CaseDataDto caze, List<SampleTestDto> sampleTests) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<SampleTestDto> sampleTests) {
 		for (ClassificationCriteria classificationCriteria : classificationCriteria) {
-			if (classificationCriteria.eval(caze, sampleTests)) {
+			if (classificationCriteria.eval(caze, person, sampleTests)) {
 				return false;
 			}
 		}

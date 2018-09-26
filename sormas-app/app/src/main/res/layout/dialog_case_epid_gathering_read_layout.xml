@@ -10,59 +10,96 @@
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiDataGathering" />
-        <variable name="dismissCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+        <variable name="dismissCallback" type="de.symeda.sormas.app.util.Callback" />
     </data>
 
-    <ScrollView
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <LinearLayout
+            android:id="@+id/dialog_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/fragment_padding">
+            android:elevation="8dp"
+            android:layout_gravity="top">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/heading_sub_case_epid_social_events"
+                android:paddingLeft="@dimen/dialog_panel_horizontal_padding"
+                android:paddingRight="@dimen/dialog_panel_horizontal_padding"
+                android:layout_margin="@dimen/simple_dialog_button_margin"
+                android:text="@string/heading_gathering"
                 style="@style/SubHeadingStyle" />
 
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/epiDataGathering_gatheringDate"
-                app:value="@{data.gatheringDate}"
-                style="@style/ControlSingleColumnStyle" />
+            <ImageView style="@style/FullHorizontalDividerStyleNoDefaultMargin" />
 
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/epiDataGathering_description"
-                app:maxLines="2"
-                app:value="@{data.description}"
-                style="@style/ControlSingleColumnStyle" />
+        </LinearLayout>
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="52dp"
+            android:layout_marginBottom="64dp">
 
-            <ImageView style="@style/FullHorizontalDividerStyle"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/fragment_padding">
 
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/epiDataGathering_gatheringAddress"
-                app:maxLines="2"
-                app:value="@{data.gatheringAddress}"
-                style="@style/ControlSingleColumnStyle" />
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiDataGathering_gatheringDate"
+                    app:value="@{data.gatheringDate}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiDataGathering_description"
+                    app:maxLines="2"
+                    app:value="@{data.description}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiDataGathering_gatheringAddress"
+                    app:maxLines="2"
+                    app:value="@{data.gatheringAddress}"
+                    style="@style/ControlSingleColumnStyle" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/button_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="bottom">
+
+            <ImageView style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
 
             <de.symeda.sormas.app.component.controls.ControlButton
-                android:id="@+id/dismiss"
+                android:id="@+id/button_dismiss"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:layout_marginTop="@dimen/primaryButtonMarginTop"
+                android:layout_marginEnd="@dimen/simple_dialog_button_horizontal_padding"
+                android:layout_marginTop="@dimen/simple_dialog_button_margin"
+                android:layout_marginBottom="@dimen/simple_dialog_button_margin"
                 android:text="@string/action_dismiss"
-                android:onClickListener="@{(view) -> dismissCallback.onClick(view, data)}"
+                android:onClickListener="@{(view) -> dismissCallback.call()}"
                 app:iconStart="@drawable/ic_clear_black_24dp"
+                app:slim="true"
                 app:buttonType="@{ControlButtonType.PRIMARY}" />
 
         </LinearLayout>
 
-    </ScrollView>
+    </FrameLayout>
 
 </layout>
 

@@ -6,82 +6,63 @@
 
     <data>
         <import type="android.view.View" />
-        <import type="de.symeda.sormas.app.component.controls.ControlButtonType"/>
-        <import type="de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog" />
-        <import type="java.lang.Object" />
-        <variable name="data" type="Object"/>
-        <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
-        <variable name="dialog" type="de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog" />
-        <variable
-            name="deleteCallback"
-            type="de.symeda.sormas.app.component.dialog.IDialogDeleteOnClickListener" />
-        <variable
-            name="dismissCallback"
-            type="de.symeda.sormas.app.component.dialog.IDialogDismissOnClickListener" />
-        <variable
-            name="okCallback"
-            type="de.symeda.sormas.app.component.dialog.IDialogOkOnClickListener" />
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
+        <import type="de.symeda.sormas.app.component.dialog.AbstractDialog" />
+
+        <variable name="data" type="java.lang.Object"/>
+        <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig" />
+        <variable name="dialog" type="de.symeda.sormas.app.component.dialog.AbstractDialog" />
     </data>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingLeft="@dimen/rowListItemHorizontalMargin"
-        android:paddingRight="@dimen/rowListItemHorizontalMargin"
-        android:visibility="@{dialog.isButtonPanelVisible? View.VISIBLE : View.GONE}"
-        >
-
-
+        android:paddingLeft="@dimen/dialog_panel_horizontal_padding"
+        android:paddingRight="@dimen/dialog_panel_horizontal_padding"
+        android:visibility="@{dialog.isButtonPanelVisible? View.VISIBLE : View.GONE}">
 
         <de.symeda.sormas.app.component.controls.ControlButton
-            android:id="@+id/btnDelete"
+            android:id="@+id/button_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:visibility="@{dialog.isDeleteButtonVisible? View.VISIBLE : View.GONE}"
             android:text="@{config.deleteButtonText}"
             app:iconStart="@drawable/ic_delete_forever_black_24dp"
             app:buttonType="@{dialog.deleteButtonType}"
             app:rounded="@{dialog.isRounded}"
             app:slim="true"
-            app:iconOnly="true"
-            android:onClick="@{(view) -> deleteCallback.onDeleteClick(view, data)}"
-            />
-
-
+            app:iconOnly="true" />
 
         <de.symeda.sormas.app.component.controls.ControlButton
-            android:id="@+id/dismiss"
+            android:id="@+id/button_negative"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_toLeftOf="@+id/btnOk"
-            android:visibility="@{dialog.isDismissButtonVisible? View.VISIBLE : View.GONE}"
+            android:layout_toStartOf="@+id/button_positive"
+            android:visibility="@{dialog.isNegativeButtonVisible? View.VISIBLE : View.GONE}"
             android:text="@{config.negativeButtonText}"
-            app:iconStart="@drawable/ic_clear_black_24dp"
-            app:buttonType="@{dialog.dismissButtonType}"
+            app:iconStart="@{config.negativeButtonIcon}"
+            app:buttonType="@{dialog.negativeButtonType}"
             app:rounded="@{dialog.isRounded}"
-            app:slim="true"
-            android:onClick="@{(view) -> dismissCallback.onDismissClick(view, data)}"
-            />
+            app:slim="true" />
 
         <de.symeda.sormas.app.component.controls.ControlButton
-            android:id="@+id/btnOk"
+            android:id="@+id/button_positive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginLeft="@dimen/control_spacing"
-            android:layout_alignParentRight="true"
-            android:visibility="@{dialog.isOkButtonVisible? View.VISIBLE : View.GONE}"
+            android:layout_marginStart="@dimen/control_spacing_slim"
+            android:layout_alignParentEnd="true"
+            android:visibility="@{dialog.isPositiveButtonVisible? View.VISIBLE : View.GONE}"
             android:text="@{config.positiveButtonText}"
-            app:iconStart="@drawable/ic_done_black_24dp"
-            app:buttonType="@{dialog.okButtonType}"
+            app:iconStart="@{config.positiveButtonIcon}"
+            app:buttonType="@{dialog.positiveButtonType}"
             app:rounded="@{dialog.isRounded}"
-            app:slim="true"
-            android:onClick="@{(view) -> okCallback.onOkClick(view, data)}"
-            />
+            app:slim="true" />
+
     </RelativeLayout>
 
 </layout>

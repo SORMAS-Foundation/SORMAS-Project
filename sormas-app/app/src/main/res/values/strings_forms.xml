@@ -326,7 +326,7 @@
 
     <!-- Move Case Dialog -->
     <!-- ........................................................................ -->
-    <string name="heading_move_case_dialog">Move Case</string>
+    <string name="heading_move_case_dialog">Transfer Case</string>
     <!-- ........................................................................ -->
 
 
@@ -339,8 +339,6 @@
 
 
 
-    <!-- Location Dialog -->
-    <string name="hint_pick_gps">No coordinates picked</string>
 
 
 

@@ -2,6 +2,7 @@ package de.symeda.sormas.app.backend.contact;
 
 import java.util.List;
 
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -52,7 +53,6 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 
     @Override
     public void fillInnerFromDto(Contact target, ContactDto source) {
-
         target.setCaseUuid(source.getCaze() != null ? source.getCaze().getUuid() : null);
         target.setCaseDisease(source.getCaseDisease());
         target.setPerson(DatabaseHelper.getPersonDao().getByReferenceDto(source.getPerson()));
@@ -81,7 +81,6 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 
     @Override
     public void fillInnerFromAdo(ContactDto target, Contact source) {
-
         if (source.getPerson() != null) {
             Person person = DatabaseHelper.getPersonDao().queryForId(source.getPerson().getId());
             target.setPerson(PersonDtoHelper.toReferenceDto(person));
@@ -89,11 +88,16 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
             target.setPerson(null);
         }
         if (source.getCaseUuid() != null) {
-            Case caze = DatabaseHelper.getCaseDao().queryUuidReference(source.getCaseUuid());
-            target.setCaze(CaseDtoHelper.toReferenceDto(caze));
+            target.setCaze(new CaseReferenceDto(source.getCaseUuid()));
         } else {
             target.setCaze(null);
         }
+        if (source.getResultingCaseUuid() != null) {
+            target.setResultingCase(new CaseReferenceDto(source.getResultingCaseUuid()));
+        } else {
+            target.setResultingCase(null);
+        }
+
         target.setCaseDisease(source.getCaseDisease());
 
         if (source.getReportingUser() != null) {
@@ -112,14 +116,15 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
         target.setFollowUpStatus(source.getFollowUpStatus());
         target.setFollowUpComment(source.getFollowUpComment());
         target.setFollowUpUntil(source.getFollowUpUntil());
+
         if (source.getContactOfficer() != null) {
             User user = DatabaseHelper.getUserDao().queryForId(source.getContactOfficer().getId());
             target.setContactOfficer(UserDtoHelper.toReferenceDto(user));
         } else {
             target.setContactOfficer(null);
         }
-        target.setDescription(source.getDescription());
 
+        target.setDescription(source.getDescription());
         target.setReportLat(source.getReportLat());
         target.setReportLon(source.getReportLon());
         target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());

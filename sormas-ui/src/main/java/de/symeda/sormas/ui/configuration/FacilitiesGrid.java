@@ -15,6 +15,7 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -43,7 +44,7 @@ public class FacilitiesGrid extends Grid {
 		BeanItemContainer<FacilityDto> container = new BeanItemContainer<FacilityDto>(FacilityDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 
-		if (LoginHelper.hasUserRight(UserRight.FACILITIES_EDIT)) {
+		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			generatedContainer.addGeneratedProperty(EDIT_BTN_ID, new PropertyValueGenerator<String>() {
 				private static final long serialVersionUID = -7255691609662228895L;
 
@@ -58,36 +59,51 @@ public class FacilitiesGrid extends Grid {
 				}
 			});
 		}
-		setContainerDataSource(generatedContainer);
-		setColumns(FacilityDto.NAME, FacilityDto.REGION, FacilityDto.DISTRICT, FacilityDto.COMMUNITY,
-				FacilityDto.CITY, FacilityDto.LATITUDE, FacilityDto.LONGITUDE);
 
-		if (LoginHelper.hasUserRight(UserRight.FACILITIES_EDIT)) {
+		setContainerDataSource(generatedContainer);
+		setColumns(FacilityDto.NAME, FacilityDto.REGION, FacilityDto.DISTRICT, FacilityDto.COMMUNITY, FacilityDto.CITY,
+				FacilityDto.LATITUDE, FacilityDto.LONGITUDE);
+
+		for (Column column : getColumns()) {
+			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX,
+					column.getPropertyId().toString(), column.getHeaderCaption()));
+		}
+
+		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addColumn(EDIT_BTN_ID);
 			getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
 			getColumn(EDIT_BTN_ID).setWidth(40);
 
 			addItemClickListener(e -> {
 				if (e.getPropertyId() != null && (e.getPropertyId().equals(EDIT_BTN_ID) || e.isDoubleClick())) {
-					ControllerProvider.getFacilityController().edit(((FacilityDto) e.getItemId()).getUuid());
+					ControllerProvider.getInfrastructureController()
+							.editHealthFacility(((FacilityDto) e.getItemId()).getUuid());
 				}
 			});
 		}
-
 	}
 
 	@SuppressWarnings("unchecked")
 	public BeanItemContainer<FacilityDto> getContainer() {
-		GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
+		GeneratedPropertyContainer container = (GeneratedPropertyContainer) getContainerDataSource();
 		return (BeanItemContainer<FacilityDto>) container.getWrappedContainer();
 	}
 
 	public void reload() {
+
+		// remove the container before updating items to speed up the process
+		GeneratedPropertyContainer container = (GeneratedPropertyContainer) getContainerDataSource();
+		BeanItemContainer<FacilityDto> innerContainer = (BeanItemContainer<FacilityDto>) container.getWrappedContainer();
+		setContainerDataSource(new BeanItemContainer<FacilityDto>(FacilityDto.class));
+
+		innerContainer.removeAllItems();
+
 		List<FacilityDto> facilities = FacadeProvider.getFacilityFacade()
 				.getIndexList(LoginHelper.getCurrentUser().getUuid(), facilityCriteria);
 
-		getContainer().removeAllItems();
-		getContainer().addAll(facilities);
+		innerContainer.addAll(facilities);
+
+		setContainerDataSource(container);
 	}
 
 	public void setRegionFilter(RegionReferenceDto region) {
@@ -95,14 +111,13 @@ public class FacilitiesGrid extends Grid {
 		reload();
 	}
 
-	public void setDistrictFilter(RegionReferenceDto region, DistrictReferenceDto district) {
-		facilityCriteria.districtEquals(region, district);
+	public void setDistrictFilter(DistrictReferenceDto district) {
+		facilityCriteria.districtEquals(district);
 		reload();
 	}
 
-	public void setCommunityFilter(RegionReferenceDto region, DistrictReferenceDto district,
-			CommunityReferenceDto community) {
-		facilityCriteria.communityEquals(region, district, community);
+	public void setCommunityFilter(CommunityReferenceDto community) {
+		facilityCriteria.communityEquals(community);
 		reload();
 	}
 
@@ -110,7 +125,8 @@ public class FacilitiesGrid extends Grid {
 		if (showLaboratories) {
 			facilityCriteria.typeEquals(FacilityType.LABORATORY);
 		} else {
-			// TODO: Workaround; only works because normal health facilities currently don't have a type
+			// TODO: Workaround; only works because normal health facilities currently don't
+			// have a type
 			facilityCriteria.typeEquals(null);
 		}
 	}
@@ -128,6 +144,6 @@ public class FacilitiesGrid extends Grid {
 			}
 			getContainer().addContainerFilter(new Or(orFilters.stream().toArray(Filter[]::new)));
 		}
-
 	}
+
 }

@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.Singleton;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -29,16 +31,27 @@ import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteria.Classi
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteria.ClassificationXOfSubCriteria;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 
-@Singleton(name = "CaseClassificationFacade")
+/**
+ * Stateless instead of Singleton. It's ok to have multiple instances with an individual cache. 
+ * 
+ * @author Martin Wahnschaffe
+ */
+@Stateless(name = "CaseClassificationFacade")
 public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	
-	private Map<Disease, ClassificationCriteria> suspectCriteria = new HashMap<Disease, ClassificationCriteria>();
-	private Map<Disease, ClassificationCriteria> probableCriteria = new HashMap<Disease, ClassificationCriteria>();
-	private Map<Disease, ClassificationCriteria> confirmedCriteria = new HashMap<Disease, ClassificationCriteria>();
+	@EJB
+	private PersonFacadeEjbLocal personFacade;
+	
+	/** local cache */
+	private Map<Disease, ClassificationCriteria> suspectCriteria = new HashMap<>();
+	private Map<Disease, ClassificationCriteria> probableCriteria = new HashMap<>();
+	private Map<Disease, ClassificationCriteria> confirmedCriteria = new HashMap<>();
 
 	@Override
 	public CaseClassification getClassification(CaseDataDto caze, List<SampleTestDto> sampleTests) {
@@ -47,12 +60,13 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		}
 
 		Disease disease = caze.getDisease();
+		PersonDto person = personFacade.getPersonByUuid(caze.getPerson().getUuid());
 		
-		if (confirmedCriteria.containsKey(disease) && confirmedCriteria.get(disease).eval(caze, sampleTests)) {
+		if (confirmedCriteria.containsKey(disease) && confirmedCriteria.get(disease).eval(caze, person, sampleTests)) {
 			return CaseClassification.CONFIRMED;
-		} else if (probableCriteria.containsKey(disease) && probableCriteria.get(disease).eval(caze, sampleTests)) {
+		} else if (probableCriteria.containsKey(disease) && probableCriteria.get(disease).eval(caze, person, sampleTests)) {
 			return CaseClassification.PROBABLE;
-		} else if (suspectCriteria.containsKey(disease) && suspectCriteria.get(disease).eval(caze, sampleTests)) {
+		} else if (suspectCriteria.containsKey(disease) && suspectCriteria.get(disease).eval(caze, person, sampleTests)) {
 			return CaseClassification.SUSPECT;
 		} else {
 			return CaseClassification.NOT_CLASSIFIED;
@@ -380,4 +394,8 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		return new ClassificationPersonAgeCriteria(lowerThreshold, upperThreshold, ageType);
 	}
 	
+	@LocalBean
+	@Stateless
+	public static class CaseClassificationFacadeEjbLocal extends CaseClassificationFacadeEjb {
+	}
 }

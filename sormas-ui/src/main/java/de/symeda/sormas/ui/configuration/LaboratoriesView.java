@@ -8,14 +8,14 @@ public class LaboratoriesView extends AbstractFacilitiesView {
 
 	private static final long serialVersionUID = 7745914668183276666L;
 
-	public static final String VIEW_NAME = "configuration/laboratories";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/laboratories";
 
 	public LaboratoriesView() {
 		super(VIEW_NAME, true);
-		if (LoginHelper.hasUserRight(UserRight.FACILITIES_CREATE)) {
+		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton.setCaption("new laboratory");
 			createButton.addClickListener(
-					e -> ControllerProvider.getFacilityController().create("Create new laboratory", true));
+					e -> ControllerProvider.getInfrastructureController().createHealthFacility("Create new laboratory", true));
 		}
 	}
 

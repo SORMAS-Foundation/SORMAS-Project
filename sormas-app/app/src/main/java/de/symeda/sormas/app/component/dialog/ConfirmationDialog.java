@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.component.dialog;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.databinding.ViewDataBinding;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -15,118 +16,46 @@ import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.databinding.DialogConfirmationLayoutBinding;
 
-/**
- * Created by Orson on 18/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
-public class ConfirmationDialog extends de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog {
+public class ConfirmationDialog extends AbstractDialog {
 
     public static final String TAG = ConfirmationDialog.class.getSimpleName();
 
-    private String uuid;
-    private String viewName;
-    private Tracker tracker;
-    private de.symeda.sormas.app.component.dialog.DialogViewConfig data;
-    private String subHeading;
-    private DialogConfirmationLayoutBinding mContentBinding;
-
-    int positiveButtonTextResId = R.string.action_confirm;
-    int negativeButtonTextResId = R.string.action_dismiss;
-
-    public ConfirmationDialog(final FragmentActivity activity) {
-        this(activity, R.string.heading_confirmation_dialog, R.string.heading_sub_confirmation_notification_dialog);
-    }
-
-    public ConfirmationDialog(final FragmentActivity activity, int headingResId, String subHeading) {
-        super(activity, R.layout.dialog_root_layout, R.layout.dialog_confirmation_layout,
-                R.layout.dialog_root_two_button_panel_edge_aligned_layout, headingResId, subHeading);
-
-        this.uuid = "";
-        this.viewName = "";
-        this.tracker = ((SormasApplication) activity.getApplication()).getDefaultTracker();
-
-        this.data = null;
-    }
+    // Constructors
 
     public ConfirmationDialog(final FragmentActivity activity, int headingResId, int subHeadingResId) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_confirmation_layout,
-                R.layout.dialog_root_two_button_panel_edge_aligned_layout, headingResId, subHeadingResId);
+                R.layout.dialog_root_two_button_panel_layout, headingResId, subHeadingResId);
 
-        this.uuid = "";
-        this.viewName = "";
-        this.tracker = ((SormasApplication) activity.getApplication()).getDefaultTracker();
-
-        this.data = null;
+        getConfig().setHideHeadlineSeparator(true);
     }
 
     public ConfirmationDialog(final FragmentActivity activity, int headingResId, int subHeadingResId,
-                              int positiveButtonTextResId, int negativeButtonTextResId) {
+                       int positiveButtonTextResId, int negativeButtonTextResId) {
         this(activity, headingResId, subHeadingResId);
-        getConfig().setPositiveButtonText(getContext().getResources().getString(positiveButtonTextResId));
-        getConfig().setNegativeButtonText(getContext().getResources().getString(negativeButtonTextResId));
-    }
 
-    @Override
-    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        /*TeboTextInputEditText txtMessage = (TeboTextInputEditText)rootView.findViewById(R.id.txtMessage);
-        txtMessage.enableErrorState("Hello");*/
-        /*String description = this.data.getHeading();
-        tracker.send(new HitBuilders.EventBuilder()
-                .setCategory("User Report")
-                .setAction("Error Report")
-                .setText("Location: " + viewName + (uuid!=null?" - UUID: " + uuid:"") +
-                        (ConfigProvider.getUser()!=null?" - User: " +
-                                ConfigProvider.getUser().getUuid():"") +
-                        " - Description: " + description)
-                .build());
-        Snackbar.make(activity.findViewById(R.id.base_layout),
-                activity.getString(R.string.snackbar_report_sent), Snackbar.LENGTH_LONG).show();*/
-        if (callback != null)
-            callback.call(null);
-
-    }
-
-    @Override
-    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        if (callback != null)
-            callback.call(null);
-    }
-
-    @Override
-    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        if (callback != null)
-            callback.call(null);
-    }
-
-    @Override
-    protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
-        this.mContentBinding = (DialogConfirmationLayoutBinding)binding;
-    }
-
-    @Override
-    protected void setBindingVariable(Context context, ViewDataBinding binding, String layoutName) {
-        if (!binding.setVariable(BR.data, data)) {
-            Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
+        Resources resources = getContext().getResources();
+        if (positiveButtonTextResId >= 0) {
+            getConfig().setPositiveButtonText(resources.getString(positiveButtonTextResId));
+        } else {
+            getConfig().setPositiveButtonText(resources.getString(R.string.action_confirm));
+        }
+        if (negativeButtonTextResId >= 0) {
+            getConfig().setNegativeButtonText(resources.getString(negativeButtonTextResId));
+        } else {
+            getConfig().setNegativeButtonText(resources.getString(R.string.action_dismiss));
         }
     }
 
-    @Override
-    protected void prepareDialogData() {
+    // Overrides
 
+    @Override
+    protected void setContentBinding(Context context, ViewDataBinding binding, String layoutName) {
+        // Data variable is not needed in this dialog
     }
 
     @Override
-    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-
-    }
-
-    @Override
-    public boolean isOkButtonVisible() {
-        return true;
+    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
+        // Nothing to initialize
     }
 
     @Override
@@ -140,29 +69,8 @@ public class ConfirmationDialog extends de.symeda.sormas.app.component.dialog.Ba
     }
 
     @Override
-    public float getWidth() {
-        return getContext().getResources().getDimension(R.dimen.notificationDialogWidth);
-    }
-
-    @Override
-    public ControlButtonType dismissButtonType() {
+    public ControlButtonType getNegativeButtonType() {
         return ControlButtonType.LINE_DANGER;
     }
 
-    @Override
-    public boolean iconOnlyDismissButtons() {
-        return true;
-    }
-
-    @Override
-    public int getPositiveButtonText() {
-        return R.string.action_confirm;
-    }
-
-    @Override
-    public int getNegativeButtonText() {
-        return R.string.action_dismiss;
-    }
-
 }
-

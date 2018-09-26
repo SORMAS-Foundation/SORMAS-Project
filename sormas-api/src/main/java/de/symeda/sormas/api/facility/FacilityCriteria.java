@@ -6,10 +6,6 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 
-/**
- * @author Christopher Riedel
- *
- */
 public class FacilityCriteria implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 3958619224286048978L;
@@ -46,16 +42,12 @@ public class FacilityCriteria implements Serializable, Cloneable {
 		return excludeStaticFacilities;
 	}
 
-	public FacilityCriteria districtEquals(RegionReferenceDto region, DistrictReferenceDto district) {
-		this.region = region;
+	public FacilityCriteria districtEquals(DistrictReferenceDto district) {
 		this.district = district;
 		return this;
 	}
 
-	public FacilityCriteria communityEquals(RegionReferenceDto region, DistrictReferenceDto district,
-			CommunityReferenceDto community) {
-		this.region = region;
-		this.district = district;
+	public FacilityCriteria communityEquals(CommunityReferenceDto community) {
 		this.community = community;
 		return this;
 	}

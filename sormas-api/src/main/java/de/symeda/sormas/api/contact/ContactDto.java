@@ -148,9 +148,6 @@ public class ContactDto extends EntityDto {
 	public CaseReferenceDto getResultingCase() {
 		return resultingCase;
 	}
-	/**
-	 * This should only be called when filling the DTO in the server backend!
-	 */
 	public void setResultingCase(CaseReferenceDto resultingCase) {
 		this.resultingCase = resultingCase;
 	}

@@ -18,7 +18,6 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateTimeField;
@@ -27,34 +26,26 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
 public class SampleCreateForm extends AbstractEditForm<SampleDto> {
-	
-	private static final String HTML_LAYOUT =
-			LayoutUtil.divs(
-					LayoutUtil.divs(
-						LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_CODE),
-						LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_MATERIAL, SampleDto.SAMPLE_MATERIAL_TEXT),
-						LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_SOURCE, ""),
-						LayoutUtil.fluidRowLocs(SampleDto.SUGGESTED_TYPE_OF_TEST, ""),
-						LayoutUtil.fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS)
-					),
-					LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.SHIPPED),
-					LayoutUtil.divs(
-							LayoutUtil.fluidRowLocs(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS)
-					),
-					LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.RECEIVED),
-					LayoutUtil.divs(
-							LayoutUtil.fluidRowLocs(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID),
-							LayoutUtil.fluidRowLocs(SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON),
-							LayoutUtil.fluidRowLocs(SampleDto.COMMENT)
-					)
-			);
-	
+
+	private static final String HTML_LAYOUT = LayoutUtil.divs(
+			LayoutUtil.divs(LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_CODE),
+					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_MATERIAL, SampleDto.SAMPLE_MATERIAL_TEXT),
+					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_SOURCE, ""),
+					LayoutUtil.fluidRowLocs(SampleDto.SUGGESTED_TYPE_OF_TEST, ""),
+					LayoutUtil.fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS)),
+			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.SHIPPED),
+			LayoutUtil.divs(LayoutUtil.fluidRowLocs(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS)),
+			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.RECEIVED),
+			LayoutUtil.divs(LayoutUtil.fluidRowLocs(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID),
+					LayoutUtil.fluidRowLocs(SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON),
+					LayoutUtil.fluidRowLocs(SampleDto.COMMENT)));
+
 	public SampleCreateForm(UserRight editOrCreateUserRight) {
 		super(SampleDto.class, SampleDto.I18N_PREFIX, editOrCreateUserRight);
-		
+
 		hideValidationUntilNextCommit();
 	}
-	
+
 	@Override
 	protected void addFields() {
 		addField(SampleDto.SAMPLE_CODE, TextField.class);
@@ -76,26 +67,37 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.COMMENT, TextArea.class).setRows(2);
 		CheckBox shipped = addField(SampleDto.SHIPPED, CheckBox.class);
 		CheckBox received = addField(SampleDto.RECEIVED, CheckBox.class);
-		
-		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.SAMPLE_MATERIAL_TEXT, SampleDto.SAMPLE_MATERIAL, Arrays.asList(SampleMaterial.OTHER), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.NO_TEST_POSSIBLE_REASON, SampleDto.SPECIMEN_CONDITION, Arrays.asList(SpecimenCondition.NOT_ADEQUATE), true);
-		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SAMPLE_MATERIAL, Arrays.asList(SampleDto.SAMPLE_MATERIAL_TEXT), Arrays.asList(SampleMaterial.OTHER));
-		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SPECIMEN_CONDITION, Arrays.asList(SampleDto.NO_TEST_POSSIBLE_REASON), Arrays.asList(SpecimenCondition.NOT_ADEQUATE));
-		
+
+		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.SAMPLE_MATERIAL_TEXT, SampleDto.SAMPLE_MATERIAL,
+				Arrays.asList(SampleMaterial.OTHER), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.NO_TEST_POSSIBLE_REASON, SampleDto.SPECIMEN_CONDITION,
+				Arrays.asList(SpecimenCondition.NOT_ADEQUATE), true);
+		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SAMPLE_MATERIAL,
+				Arrays.asList(SampleDto.SAMPLE_MATERIAL_TEXT), Arrays.asList(SampleMaterial.OTHER));
+		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SPECIMEN_CONDITION,
+				Arrays.asList(SampleDto.NO_TEST_POSSIBLE_REASON), Arrays.asList(SpecimenCondition.NOT_ADEQUATE));
+
 		setRequired(true, SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_MATERIAL, SampleDto.LAB);
-		
+
 		addValueChangeListener(e -> {
-			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getAssociatedCase().getUuid());
+			CaseDataDto caze = FacadeProvider.getCaseFacade()
+					.getCaseDataByUuid(getValue().getAssociatedCase().getUuid());
 			if (caze.getDisease() != Disease.NEW_INFLUENCA) {
 				sampleSource.setVisible(false);
 			}
 
-			FieldHelper.setEnabledWhen(getFieldGroup(), shipped, Arrays.asList(true), Arrays.asList(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS), true);
-			FieldHelper.setRequiredWhen(getFieldGroup(), shipped, Arrays.asList(SampleDto.SHIPMENT_DATE), Arrays.asList(true));
-			FieldHelper.setRequiredWhen(getFieldGroup(), received, Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.SPECIMEN_CONDITION), Arrays.asList(true));
-			FieldHelper.setEnabledWhen(getFieldGroup(), received, Arrays.asList(true), Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID, SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON), true);
+			FieldHelper.setEnabledWhen(getFieldGroup(), shipped, Arrays.asList(true),
+					Arrays.asList(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS), true);
+			FieldHelper.setRequiredWhen(getFieldGroup(), shipped, Arrays.asList(SampleDto.SHIPMENT_DATE),
+					Arrays.asList(true));
+			FieldHelper.setRequiredWhen(getFieldGroup(), received,
+					Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.SPECIMEN_CONDITION), Arrays.asList(true));
+			FieldHelper.setEnabledWhen(
+					getFieldGroup(), received, Arrays.asList(true), Arrays.asList(SampleDto.RECEIVED_DATE,
+							SampleDto.LAB_SAMPLE_ID, SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON),
+					true);
 		});
-		
+
 		shipped.addValueChangeListener(event -> {
 			if ((boolean) event.getProperty().getValue() == true) {
 				if (shipmentDate.getValue() == null) {
@@ -103,7 +105,7 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 				}
 			}
 		});
-		
+
 		received.addValueChangeListener(event -> {
 			if ((boolean) event.getProperty().getValue() == true) {
 				if (receivedDate.getValue() == null) {
@@ -111,9 +113,10 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 				}
 			}
 		});
-		
+
 		lab.addValueChangeListener(e -> {
-			if (e.getProperty().getValue() != null && ((FacilityReferenceDto) e.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+			if (e.getProperty().getValue() != null && ((FacilityReferenceDto) e.getProperty().getValue()).getUuid()
+					.equals(FacilityDto.OTHER_LABORATORY_UUID)) {
 				labDetails.setVisible(true);
 				labDetails.setRequired(true);
 			} else {
@@ -123,7 +126,7 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 			}
 		});
 	}
-	
+
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;

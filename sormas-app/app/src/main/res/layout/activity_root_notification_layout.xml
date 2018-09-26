@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/notificationFrame"
+    android:id="@+id/notification_frame"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
 
@@ -16,7 +16,7 @@
     android:visibility="gone"
     >
     <TextView
-        android:id="@+id/tvNotificationMessage"
+        android:id="@+id/notification_message"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:textColor="@color/whiteOpaque"

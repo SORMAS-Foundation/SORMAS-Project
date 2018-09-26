@@ -16,7 +16,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
-import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
+import de.symeda.sormas.app.component.dialog.AbstractDialog;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogCaseEpidTravelEditLayoutBinding;
@@ -25,60 +25,40 @@ import de.symeda.sormas.app.component.validation.FragmentValidator;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
-public class EpiDataTravelDialog extends BaseTeboAlertDialog {
+public class EpiDataTravelDialog extends AbstractDialog {
 
     public static final String TAG = EpiDataTravelDialog.class.getSimpleName();
 
     private EpiDataTravel data;
-    private DialogCaseEpidTravelEditLayoutBinding mContentBinding;
+    private DialogCaseEpidTravelEditLayoutBinding contentBinding;
 
-    private List<Item> travelTypeList;
+    // Constructor
 
-
-    public EpiDataTravelDialog(final FragmentActivity activity, EpiDataTravel epiDataTravel) {
-        this(activity, R.string.heading_sub_case_epid_travels, -1, epiDataTravel);
-    }
-
-    public EpiDataTravelDialog(final FragmentActivity activity, int headingResId, int subHeadingResId, EpiDataTravel epiDataTravel) {
+    EpiDataTravelDialog(final FragmentActivity activity, EpiDataTravel epiDataTravel) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_case_epid_travel_edit_layout,
-                R.layout.dialog_root_three_button_panel_layout, headingResId, subHeadingResId);
+                R.layout.dialog_root_three_button_panel_layout,  R.string.heading_travel, -1);
 
         this.data = epiDataTravel;
-
-        travelTypeList = DataUtils.getEnumItems(TravelType.class, true);
     }
 
+    // Overrides
+
     @Override
-    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
+    protected void setContentBinding(Context context, ViewDataBinding binding, String layoutName) {
+        this.contentBinding = (DialogCaseEpidTravelEditLayoutBinding) binding;
 
-        setLiveValidationDisabled(false);
-
-        try {
-            FragmentValidator.validate(getContext(), contentBinding);
-        } catch (ValidationException e) {
-            NotificationHelper.showDialogNotification(this, ERROR, e.getMessage());
-            return;
+        if (!binding.setVariable(BR.data, data)) {
+            Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
-
-        if (callback != null)
-            callback.call(null);
     }
 
     @Override
-    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        if (callback != null)
-            callback.call(null);
-    }
+    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
+        contentBinding.epiDataTravelTravelType.initializeSpinner(DataUtils.getEnumItems(TravelType.class, true));
+        contentBinding.epiDataTravelTravelDateFrom.initializeDateField(getFragmentManager());
+        contentBinding.epiDataTravelTravelDateTo.initializeDateField(getFragmentManager());
 
-    @Override
-    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        if (callback != null)
-            callback.call(null);
-    }
-
-    @Override
-    protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
-        this.mContentBinding = (DialogCaseEpidTravelEditLayoutBinding) binding;
+        CaseValidator.initializeEpiDataTravelValidation(getContext(), contentBinding);
 
         if (data.getId() == null) {
             setLiveValidationDisabled(true);
@@ -86,34 +66,16 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void setBindingVariable(Context context, ViewDataBinding binding, String layoutName) {
-        if (!binding.setVariable(BR.data, data)) {
-            Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
+    public void onPositiveClick() {
+        setLiveValidationDisabled(false);
+        try {
+            FragmentValidator.validate(getContext(), contentBinding);
+        } catch (ValidationException e) {
+            NotificationHelper.showDialogNotification(EpiDataTravelDialog.this, ERROR, e.getMessage());
+            return;
         }
-    }
 
-    @Override
-    protected void prepareDialogData() {
-
-    }
-
-    @Override
-    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-        mContentBinding.epiDataTravelTravelDateFrom.initializeDateField(getFragmentManager());
-        mContentBinding.epiDataTravelTravelDateTo.initializeDateField(getFragmentManager());
-        mContentBinding.epiDataTravelTravelType.initializeSpinner(travelTypeList);
-
-        CaseValidator.initializeEpiDataTravelValidation(getContext(), (DialogCaseEpidTravelEditLayoutBinding) contentBinding);
-    }
-
-    @Override
-    public boolean isOkButtonVisible() {
-        return true;
-    }
-
-    @Override
-    public boolean isDismissButtonVisible() {
-        return true;
+        super.onPositiveClick();
     }
 
     @Override
@@ -127,17 +89,17 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    public ControlButtonType dismissButtonType() {
+    public ControlButtonType getNegativeButtonType() {
         return ControlButtonType.LINE_SECONDARY;
     }
 
     @Override
-    public ControlButtonType okButtonType() {
+    public ControlButtonType getPositiveButtonType() {
         return ControlButtonType.LINE_PRIMARY;
     }
 
     @Override
-    public ControlButtonType deleteButtonType() {
+    public ControlButtonType getDeleteButtonType() {
         return ControlButtonType.LINE_DANGER;
     }
 

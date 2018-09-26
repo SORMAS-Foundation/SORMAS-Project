@@ -13,9 +13,9 @@ import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
-import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentCaseEditHospitalizationLayoutBinding;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCaseEditHospitalizationLayoutBinding, Hospitalization, Case> {
@@ -37,52 +37,54 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
         onPrevHosItemClickListener = new IEntryItemOnClickListener() {
             @Override
             public void onClick(View v, Object item) {
-                final PreviousHospitalization hospitalization = (PreviousHospitalization) item;
-                final PreviousHospitalizationDialog dialog = new PreviousHospitalizationDialog(CaseEditActivity.getActiveActivity(), hospitalization);
+                final PreviousHospitalization previousHospitalization = (PreviousHospitalization) item;
+                final PreviousHospitalization previousHospitalizationClone = (PreviousHospitalization) previousHospitalization.clone();
+                final PreviousHospitalizationDialog dialog = new PreviousHospitalizationDialog(CaseEditActivity.getActiveActivity(), previousHospitalizationClone);
 
-                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                dialog.setPositiveCallback(new Callback() {
                     @Override
-                    public void onOkClick(View v, Object item, View viewRoot) {
+                    public void call() {
+                        record.getPreviousHospitalizations().set(record.getPreviousHospitalizations().indexOf(previousHospitalization), previousHospitalizationClone);
                         updatePreviousHospitalizations();
                         dialog.dismiss();
                     }
                 });
 
-                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
+                dialog.setDeleteCallback(new Callback() {
                     @Override
-                    public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removePreviousHospitalization((PreviousHospitalization) item);
+                    public void call() {
+                        removePreviousHospitalization(previousHospitalization);
                         dialog.dismiss();
                     }
                 });
 
-                dialog.show(null);
+                dialog.show();
             }
         };
 
         getContentBinding().btnAddPrevHosp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final PreviousHospitalization hospitalization = DatabaseHelper.getPreviousHospitalizationDao().build();
-                final PreviousHospitalizationDialog dialog = new PreviousHospitalizationDialog(CaseEditActivity.getActiveActivity(), hospitalization);
+                final PreviousHospitalization previousHospitalization = DatabaseHelper.getPreviousHospitalizationDao().build();
+                final PreviousHospitalizationDialog dialog = new PreviousHospitalizationDialog(CaseEditActivity.getActiveActivity(), previousHospitalization);
 
-                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                dialog.setPositiveCallback(new Callback() {
                     @Override
-                    public void onOkClick(View v, Object item, View viewRoot) {
-                        addPreviousHospitalization((PreviousHospitalization) item);
+                    public void call() {
+                        addPreviousHospitalization(previousHospitalization);
                         dialog.dismiss();
                     }
                 });
 
-                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
+                dialog.setDeleteCallback(new Callback() {
                     @Override
-                    public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removePreviousHospitalization((PreviousHospitalization) item);
+                    public void call() {
+                        removePreviousHospitalization(previousHospitalization);
                         dialog.dismiss();
                     }
                 });
 
-                dialog.show(null);
+                dialog.show();
             }
         });
     }

@@ -145,11 +145,10 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
     }
 
     private void synchronizeChangedData() throws DaoException, ServerConnectionException, ServerCommunicationException {
-
         PersonDtoHelper personDtoHelper = new PersonDtoHelper();
+        CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
         EventDtoHelper eventDtoHelper = new EventDtoHelper();
         EventParticipantDtoHelper eventParticipantDtoHelper = new EventParticipantDtoHelper();
-        CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
         SampleDtoHelper sampleDtoHelper = new SampleDtoHelper();
         SampleTestDtoHelper sampleTestDtoHelper = new SampleTestDtoHelper();
         ContactDtoHelper contactDtoHelper = new ContactDtoHelper();
@@ -163,9 +162,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new OutbreakDtoHelper().pullEntities(false);
 
         boolean personsNeedPull = personDtoHelper.pullAndPushEntities();
+        boolean casesNeedPull = caseDtoHelper.pullAndPushEntities();
         boolean eventsNeedPull = eventDtoHelper.pullAndPushEntities();
         boolean eventParticipantsNeedPull = eventParticipantDtoHelper.pullAndPushEntities();
-        boolean casesNeedPull = caseDtoHelper.pullAndPushEntities();
         boolean samplesNeedPull = sampleDtoHelper.pullAndPushEntities();
         boolean sampleTestsNeedPull = sampleTestDtoHelper.pullAndPushEntities();
         boolean contactsNeedPull = contactDtoHelper.pullAndPushEntities();
@@ -176,12 +175,12 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
         if (personsNeedPull)
             personDtoHelper.pullEntities(true);
+        if (casesNeedPull)
+            caseDtoHelper.pullEntities(true);
         if (eventsNeedPull)
             eventDtoHelper.pullEntities(true);
         if (eventParticipantsNeedPull)
             eventParticipantDtoHelper.pullEntities(true);
-        if (casesNeedPull)
-            caseDtoHelper.pullEntities(true);
         if (samplesNeedPull)
             sampleDtoHelper.pullEntities(true);
         if (sampleTestsNeedPull)
@@ -199,11 +198,10 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
     }
 
     private void repullData() throws DaoException, ServerConnectionException, ServerCommunicationException {
-
         PersonDtoHelper personDtoHelper = new PersonDtoHelper();
+        CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
         EventDtoHelper eventDtoHelper = new EventDtoHelper();
         EventParticipantDtoHelper eventParticipantDtoHelper = new EventParticipantDtoHelper();
-        CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
         SampleDtoHelper sampleDtoHelper = new SampleDtoHelper();
         SampleTestDtoHelper sampleTestDtoHelper = new SampleTestDtoHelper();
         ContactDtoHelper contactDtoHelper = new ContactDtoHelper();
@@ -217,9 +215,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new UserDtoHelper().repullEntities();
         new OutbreakDtoHelper().repullEntities();
         personDtoHelper.repullEntities();
+        caseDtoHelper.repullEntities();
         eventDtoHelper.repullEntities();
         eventParticipantDtoHelper.repullEntities();
-        caseDtoHelper.repullEntities();
         sampleDtoHelper.repullEntities();
         sampleTestDtoHelper.repullEntities();
         contactDtoHelper.repullEntities();
@@ -267,15 +265,15 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // samples
         List<String> sampleUuids = executeUuidCall(RetroProvider.getSampleFacade().pullUuids());
         DatabaseHelper.getSampleDao().deleteInvalid(sampleUuids);
-        // cases
-        List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullUuids());
-        DatabaseHelper.getCaseDao().deleteInvalid(caseUuids);
         // event participants
         List<String> eventParticipantUuids = executeUuidCall(RetroProvider.getEventParticipantFacade().pullUuids());
         DatabaseHelper.getEventParticipantDao().deleteInvalid(eventParticipantUuids);
         // events
         List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullUuids());
         DatabaseHelper.getEventDao().deleteInvalid(eventUuids);
+        // cases
+        List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullUuids());
+        DatabaseHelper.getCaseDao().deleteInvalid(caseUuids);
         // persons
         List<String> personUuids = executeUuidCall(RetroProvider.getPersonFacade().pullUuids());
         DatabaseHelper.getPersonDao().deleteInvalid(personUuids);
@@ -286,9 +284,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // order is important, due to dependencies (e.g. case & person)
 
         new PersonDtoHelper().pullMissing(personUuids);
+        new CaseDtoHelper().pullMissing(caseUuids);
         new EventDtoHelper().pullMissing(eventUuids);
         new EventParticipantDtoHelper().pullMissing(eventParticipantUuids);
-        new CaseDtoHelper().pullMissing(caseUuids);
         new SampleDtoHelper().pullMissing(sampleUuids);
         new SampleTestDtoHelper().pullMissing(sampleTestUuids);
         new ContactDtoHelper().pullMissing(contactUuids);

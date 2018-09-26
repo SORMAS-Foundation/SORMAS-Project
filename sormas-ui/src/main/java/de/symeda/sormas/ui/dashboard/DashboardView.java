@@ -251,7 +251,7 @@ public class DashboardView extends AbstractView {
 			CssStyles.style(applyButton, CssStyles.FORCE_CAPTION, ValoTheme.BUTTON_PRIMARY);
 
 			// Date & Epi Week filter
-			EpiWeekAndDateFilterComponent weekAndDateFilter = new EpiWeekAndDateFilterComponent(applyButton, true, true);
+			EpiWeekAndDateFilterComponent weekAndDateFilter = new EpiWeekAndDateFilterComponent(applyButton, true, true, false);
 			customDateFilterLayout.addComponent(weekAndDateFilter);
 			dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
 			dashboardDataProvider.setDateFilterOption(dateFilterOption);

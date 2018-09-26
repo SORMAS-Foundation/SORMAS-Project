@@ -7,6 +7,10 @@ $valo-menu-background-color: $s-default-color !default;
     font-size: 16px;
     vertical-align: middle;
     border-right-color: $v-focus-color;
+    
+    .valo-menu-toggle {
+      font-size: 11px;
+    }
   
     .valo-menu-title {
       padding: 36px 12px;
@@ -64,6 +68,31 @@ $valo-menu-background-color: $s-default-color !default;
 		}
 	  }
 	}
+  }
+  
+  .valo-menu-responsive[width-range~="0-800px"] {
+    padding-top: 46px;
+	
+	.valo-menuitems {
+	  top: 41px;
+    }
+  
+    .valo-menu-title {
+      height: 38px !important;
+    }
+    
+    .valo-menu-logo {
+      margin-top: 1px;
+    }
+    
+    .valo-menu-title {
+      margin-top: 3px;
+    }
+    
+    .valo-menu .v-menubar-user-menu {
+      top: 3px;
+      color: valo-font-color(#fff, 0.9);
+    }
   }
     
   // Move logout button to the bottom of the menu on large screens

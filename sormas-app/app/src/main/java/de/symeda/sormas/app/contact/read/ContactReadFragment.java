@@ -18,7 +18,6 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
 
     private Contact record;
     private Case sourceCase;
-    private Case resultingCase = null;
 
     public static ContactReadFragment newInstance(Contact activityRootData) {
         return newInstance(ContactReadFragment.class, null, activityRootData);
@@ -35,7 +34,7 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
         contentBinding.openResultingCase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CaseReadActivity.startActivity(getContext(), resultingCase.getUuid(), true);
+                CaseReadActivity.startActivity(getContext(), record.getResultingCaseUuid(), true);
             }
         });
     }
@@ -43,7 +42,8 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
     private void setUpFieldVisibilities(FragmentContactReadLayoutBinding contentBinding) {
         setVisibilityByDisease(ContactDto.class, sourceCase.getDisease(), contentBinding.mainContent);
 
-        if (resultingCase == null) {
+        if (record.getResultingCaseUuid() == null
+                || DatabaseHelper.getCaseDao().queryUuidBasic(record.getResultingCaseUuid()) == null) {
             contentBinding.openResultingCase.setVisibility(GONE);
         }
     }
@@ -54,10 +54,6 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
     protected void prepareFragmentData(Bundle savedInstanceState) {
         record = getActivityRootData();
         sourceCase = DatabaseHelper.getCaseDao().queryUuidBasic(record.getCaseUuid());
-
-        if (record.getResultingCaseUuid() != null) {
-            resultingCase = DatabaseHelper.getCaseDao().queryUuidBasic(record.getResultingCaseUuid());
-        }
     }
 
     @Override

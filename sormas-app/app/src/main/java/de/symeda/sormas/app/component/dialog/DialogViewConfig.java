@@ -1,12 +1,6 @@
 package de.symeda.sormas.app.component.dialog;
 
-/**
- * Created by Orson on 01/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
+import android.graphics.drawable.Drawable;
 
 public class DialogViewConfig {
 
@@ -15,29 +9,27 @@ public class DialogViewConfig {
     private String positiveButtonText;
     private String negativeButtonText;
     private String deleteButtonText;
-    private String cancelButtonText;
-    private String createButtonText;
+    private boolean hideHeadlineSeparator;
+    private Drawable positiveButtonIcon;
+    private Drawable negativeButtonIcon;
 
     public DialogViewConfig(String heading) {
         this.heading = heading;
     }
 
-    public DialogViewConfig(String heading, String subHeading, String positiveButtonText, String negativeButtonText, String deleteButtonText, String cancelButtonText, String createButtonText) {
+    public DialogViewConfig(String heading, String subHeading, String positiveButtonText, String negativeButtonText,
+                            String deleteButtonText, Drawable positiveButtonIcon, Drawable negativeButtonIcon) {
         this.heading = heading;
         this.subHeading = subHeading;
         this.positiveButtonText = positiveButtonText;
         this.negativeButtonText = negativeButtonText;
         this.deleteButtonText = deleteButtonText;
-        this.cancelButtonText = cancelButtonText;
-        this.createButtonText = createButtonText;
+        this.positiveButtonIcon = positiveButtonIcon;
+        this.negativeButtonIcon = negativeButtonIcon;
     }
 
     public String getHeading() {
         return heading;
-    }
-
-    public void setHeading(String heading) {
-        this.heading = heading;
     }
 
     public String getSubHeading() {
@@ -68,23 +60,20 @@ public class DialogViewConfig {
         return deleteButtonText;
     }
 
-    public void setDeleteButtonText(String deleteButtonText) {
-        this.deleteButtonText = deleteButtonText;
+    public boolean isHideHeadlineSeparator() {
+        return hideHeadlineSeparator;
     }
 
-    public String getCancelButtonText() {
-        return cancelButtonText;
+    public void setHideHeadlineSeparator(boolean hideHeadlineSeparator) {
+        this.hideHeadlineSeparator = hideHeadlineSeparator;
     }
 
-    public void setCancelButtonText(String cancelButtonText) {
-        this.cancelButtonText = cancelButtonText;
+    public Drawable getPositiveButtonIcon() {
+        return positiveButtonIcon;
     }
 
-    public String getCreateButtonText() {
-        return createButtonText;
+    public Drawable getNegativeButtonIcon() {
+        return negativeButtonIcon;
     }
 
-    public void setCreateButtonText(String createButtonText) {
-        this.createButtonText = createButtonText;
-    }
 }

@@ -8,10 +8,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.FileProvider;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -22,11 +22,10 @@ import java.io.File;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.component.ConfirmationDialog;
+import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 
-/**
- * Created by Mate Strysewske on 16.02.2018.
- */
+import static android.view.View.GONE;
+
 public class AppUpdateController {
 
     public final static int INSTALL_RESULT =  99;
@@ -38,7 +37,7 @@ public class AppUpdateController {
     private boolean allowDismiss;
     private String appUrl;
     private String fileName;
-    private Activity activity;
+    private FragmentActivity activity;
     private Callback dismissCallback;
     private Tracker tracker;
 
@@ -83,7 +82,7 @@ public class AppUpdateController {
      * @param dismissCallback ICallback that will be called after the logic added in this class has been executed when the user has
      *                         clicked the negative button
      */
-    public void updateApp(final Activity activity, final String appUrl, final String version, boolean allowDismiss, final Callback dismissCallback) {
+    public void updateApp(final FragmentActivity activity, final String appUrl, final String version, boolean allowDismiss, final Callback dismissCallback) {
         // don't do anything if there is already an actively displayed dialog
         if (displayedDialog != null && displayedDialog.isShowing()) {
             return;
@@ -154,88 +153,143 @@ public class AppUpdateController {
     private ConfirmationDialog buildDownloadAppDialog() {
         dismissExistingDialog();
 
-        Resources resources = activity.getResources();
-        String title = resources.getString(R.string.headline_update_app);
-        String message = resources.getString(R.string.message_update_app_required);
-        String positiveButtonText = resources.getString(R.string.action_download);
-        String negativeButtonText = allowDismiss ? resources.getString(R.string.action_download_later) : resources.getString(R.string.action_close_app);
+        int headingResId = R.string.headline_update_app;
+        int subHeadingResId = R.string.message_update_app_required;
+        int positiveButtonTextResId = R.string.action_download;
+        int negativeButtonTextResId = allowDismiss ? R.string.action_download_later : R.string.action_close_app;
 
-        Callback positiveCallback = new Callback() {
+        final ConfirmationDialog downloadAppDialog = new ConfirmationDialog(activity, headingResId, subHeadingResId, positiveButtonTextResId, negativeButtonTextResId);
+        downloadAppDialog.setPositiveCallback(new Callback() {
             @Override
             public void call() {
+                downloadAppDialog.dismiss();
                 downloadNewAppVersion();
             }
-        };
+        });
+        if (allowDismiss) {
+            downloadAppDialog.setNegativeCallback(dismissCallback);
+        } else {
+            downloadAppDialog.setNegativeCallback(new Callback() {
+                @Override
+                public void call() {
+                    ((SormasApplication) activity.getApplication()).closeApp(activity);
+                }
+            });
+        }
 
-        return new ConfirmationDialog(activity, title, message, positiveButtonText, negativeButtonText, positiveCallback, dismissCallback);
+        return downloadAppDialog;
     }
 
     private ConfirmationDialog buildDownloadFailedDialog() {
         dismissExistingDialog();
 
-        Resources resources = activity.getResources();
-        String title = resources.getString(R.string.headline_download_app_failed);
-        String message = resources.getString(R.string.message_download_app_failed);
-        String positiveButtonText = resources.getString(R.string.action_try_again);
-        String negativeButtonText = allowDismiss ? resources.getString(R.string.action_download_later) : resources.getString(R.string.action_close_app);
+        int headingResId = R.string.headline_download_app_failed;
+        int subHeadingResId = R.string.message_download_app_failed;
+        int positiveButtonTextResId = R.string.action_try_again;
+        int negativeButtonTextResId = allowDismiss ? R.string.action_download_later : R.string.action_close_app;
 
-        Callback positiveCallback = new Callback() {
+        final ConfirmationDialog downloadFailedDialog = new ConfirmationDialog(activity, headingResId, subHeadingResId, positiveButtonTextResId, negativeButtonTextResId);
+        downloadFailedDialog.setPositiveCallback(new Callback() {
             @Override
             public void call() {
+                downloadFailedDialog.dismiss();
                 downloadNewAppVersion();
             }
-        };
+        });
+        if (allowDismiss) {
+            downloadFailedDialog.setNegativeCallback(dismissCallback);
+        } else {
+            downloadFailedDialog.setNegativeCallback(new Callback() {
+                @Override
+                public void call() {
+                    ((SormasApplication) activity.getApplication()).closeApp(activity);
+                }
+            });
+        }
 
-        return new ConfirmationDialog(activity, title, message, positiveButtonText, negativeButtonText, positiveCallback, dismissCallback);
+        return downloadFailedDialog;
     }
 
     private ConfirmationDialog buildInstallAppDialog() {
         dismissExistingDialog();
 
-        Resources resources = activity.getResources();
-        String title = resources.getString(R.string.headline_install_app);
-        String message = resources.getString(R.string.message_install_app);
-        String positiveButtonText = resources.getString(R.string.action_install_app);
-        String negativeButtonText = allowDismiss ? resources.getString(R.string.action_install_later) : resources.getString(R.string.action_close_app);
+        int headingResId = R.string.headline_install_app;
+        int subHeadingResId = R.string.message_install_app;
+        int positiveButtonTextResId = R.string.action_install_app;
+        int negativeButtonTextResId = allowDismiss ? R.string.action_install_later : R.string.action_close_app;
 
-        Callback positiveCallback = new Callback() {
+        final ConfirmationDialog installAppDialog = new ConfirmationDialog(activity, headingResId, subHeadingResId, positiveButtonTextResId, negativeButtonTextResId);
+        installAppDialog.setPositiveCallback(new Callback() {
             @Override
             public void call() {
+                installAppDialog.dismiss();
                 installApp();
             }
-        };
+        });
+        if (allowDismiss) {
+            installAppDialog.setNegativeCallback(dismissCallback);
+        } else {
+            installAppDialog.setNegativeCallback(new Callback() {
+                @Override
+                public void call() {
+                    ((SormasApplication) activity.getApplication()).closeApp(activity);
+                }
+            });
+        }
 
-        return new ConfirmationDialog(activity, title, message, positiveButtonText, negativeButtonText, positiveCallback, dismissCallback);
+        return installAppDialog;
     }
 
     private ConfirmationDialog buildInstallFailedDialog() {
         dismissExistingDialog();
 
-        Resources resources = activity.getResources();
-        String title = resources.getString(R.string.headline_install_app_failed);
-        String message = resources.getString(R.string.message_install_app_failed);
-        String positiveButtonText = resources.getString(R.string.action_redownload_app);
-        String negativeButtonText = allowDismiss ? resources.getString(R.string.action_redownload_app_later) : resources.getString(R.string.action_close_app);
+        int headingResId = R.string.headline_install_app_failed;
+        int subHeadingResId = R.string.message_install_app_failed;
+        int positiveButtonTextResId = R.string.action_redownload_app;
+        int negativeButtonTextResId = allowDismiss ? R.string.action_redownload_app_later : R.string.action_close_app;
 
-        Callback positiveCallback = new Callback() {
+        final ConfirmationDialog installFailedDialog = new ConfirmationDialog(activity, headingResId, subHeadingResId, positiveButtonTextResId, negativeButtonTextResId);
+        installFailedDialog.setPositiveCallback(new Callback() {
             @Override
             public void call() {
+                installFailedDialog.dismiss();
                 downloadNewAppVersion();
             }
-        };
+        });
+        if (allowDismiss) {
+            installFailedDialog.setNegativeCallback(dismissCallback);
+        } else {
+            installFailedDialog.setNegativeCallback(new Callback() {
+                @Override
+                public void call() {
+                    ((SormasApplication) activity.getApplication()).closeApp(activity);
+                }
+            });
+        }
 
-        return new ConfirmationDialog(activity, title, message, positiveButtonText, negativeButtonText, positiveCallback, dismissCallback);
+        return installFailedDialog;
     }
 
     private ConfirmationDialog buildInstallNotPossibleDialog() {
         dismissExistingDialog();
 
-        Resources resources = activity.getResources();
-        String title = resources.getString(R.string.headline_install_app_failed);
-        String message = resources.getString(R.string.message_install_app_not_possible);
-        String positiveButtonText = allowDismiss ? resources.getString(R.string.action_ok) : resources.getString(R.string.action_close_app);
+        int headingResId = R.string.headline_install_app_failed;
+        int subHeadingResId = R.string.message_install_app_not_possible;
+        int positiveButtonTextResId = allowDismiss ? R.string.action_ok : R.string.action_close_app;
 
-        return new ConfirmationDialog(activity, title, message, positiveButtonText, null, null, null);
+        ConfirmationDialog installNotPossibleDialog = new ConfirmationDialog(activity, headingResId, subHeadingResId, positiveButtonTextResId, -1);
+        installNotPossibleDialog.getNegativeButton().setVisibility(GONE);
+        if (allowDismiss) {
+            installNotPossibleDialog.setPositiveCallback(dismissCallback);
+        } else {
+            installNotPossibleDialog.setPositiveCallback(new Callback() {
+                @Override
+                public void call() {
+                    ((SormasApplication) activity.getApplication()).closeApp(activity);
+                }
+            });
+        }
+        return installNotPossibleDialog;
     }
 
     private void downloadNewAppVersion() {
@@ -286,6 +340,12 @@ public class AppUpdateController {
             if (ConfigProvider.getCurrentAppDownloadId() == referenceId) {
                 context.unregisterReceiver(this);
                 ConfigProvider.setCurrentAppDownloadId(null);
+
+                if (progressDialog != null) {
+                    progressDialog.dismiss();
+                    progressDialog = null;
+                }
+
                 // Check if the download has been successful
                 File file = new File(activity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName);
                 if (!file.exists()) {
@@ -296,8 +356,6 @@ public class AppUpdateController {
                 // If progressDialog is null, the download has been completed in the background
                 // and the install prompt should not be shown automatically
                 if (progressDialog != null) {
-                    progressDialog.dismiss();
-                    progressDialog = null;
                     displayedDialog = buildInstallAppDialog();
                     displayedDialog.show();
                 }

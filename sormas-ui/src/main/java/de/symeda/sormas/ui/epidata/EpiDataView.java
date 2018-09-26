@@ -9,7 +9,7 @@ import de.symeda.sormas.ui.utils.ViewMode;
 @SuppressWarnings("serial")
 public class EpiDataView extends AbstractCaseView {
 	
-	public static final String VIEW_NAME = "cases/epidata";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/epidata";
 	
 	public EpiDataView() {
 		super(VIEW_NAME);

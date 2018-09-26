@@ -12,7 +12,7 @@ import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
-import de.symeda.sormas.app.component.dialog.SimpleDialog;
+import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentCaseReadEpidLayoutBinding;
 
@@ -38,27 +38,27 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
         onBurialItemClickListener = new IEntryItemOnClickListener() {
             @Override
             public void onClick(View v, Object item) {
-                SimpleDialog simpleDialog = new SimpleDialog(getContext(),
+                InfoDialog infoDialog = new InfoDialog(getContext(),
                         R.layout.dialog_case_epid_burial_read_layout, item);
-                simpleDialog.show();
+                infoDialog.show();
             }
         };
 
         onGatheringItemClickListener = new IEntryItemOnClickListener() {
             @Override
             public void onClick(View v, Object item) {
-                SimpleDialog simpleDialog = new SimpleDialog(getContext(),
+                InfoDialog infoDialog = new InfoDialog(getContext(),
                         R.layout.dialog_case_epid_gathering_read_layout, item);
-                simpleDialog.show();
+                infoDialog.show();
             }
         };
 
         onTravelItemClickListener = new IEntryItemOnClickListener() {
             @Override
             public void onClick(View v, Object item) {
-                SimpleDialog simpleDialog = new SimpleDialog(getContext(),
+                InfoDialog infoDialog = new InfoDialog(getContext(),
                         R.layout.dialog_case_epid_travel_read_layout, item);
-                simpleDialog.show();
+                infoDialog.show();
             }
         };
     }

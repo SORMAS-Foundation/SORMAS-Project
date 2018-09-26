@@ -14,6 +14,7 @@
     <string name="action_confirm_report">Confirm Report</string>
     <string name="action_create">Create</string>
     <string name="action_create_case_from_contact">Create a case for this contact person</string>
+    <string name="action_create_case_from_event_person">Create a case for this event person</string>
     <string name="action_delete">Delete</string>
     <string name="action_dismiss">Dismiss</string>
     <string name="action_done">Done</string>
@@ -48,6 +49,7 @@
     <string name="action_ok">Ok</string>
     <string name="action_open_source_case">Open Source Case</string>
     <string name="action_open_resulting_case">Open Resulting Case</string>
+    <string name="action_open_event_person_case">Open Case of Event Person</string>
     <string name="action_open_reports">Open Reports</string>
     <string name="action_open_syncLog">Synchronization conflicts</string>
     <string name="action_options">Options</string>
@@ -140,6 +142,11 @@
     <string name="caption_date_of_birth">Date of birth (year / month / day)</string>
     <string name="gender_unknown">Gender N/A</string>
 
+    <string name="error_case_transfer">An error occurred while trying to transfer the case.</string>
+
+    <string name="heading_travel">Travel</string>
+    <string name="heading_burial">Burial</string>
+    <string name="heading_gathering">Gathering</string>
     <string name="heading_case_new">New Case</string>
     <string name="heading_contact_new">New Contact</string>
     <string name="heading_dialog_placeholder">Dialog Heading</string>
@@ -211,6 +218,7 @@
     <string name="hint_synchronization_initial">Initial synchronizing with SORMAS server.\nPulling infrastructure data will take a few minutes.</string>
     <string name="hint_user_report">Please briefly describe the problem you have experienced. Don\'t enter any personal or otherwise sensitive data!</string>
     <string name="hint_weekly_report_no_data">No data available for this epi week.</string>
+    <string name="hint_no_coordinates">No coordinates picked</string>
 
     <string name="inadequate_specimen_cond">Specimen condition not adequate</string>
     <string name="indicator_required">*</string>
@@ -259,7 +267,7 @@
     <string name="not_available">N/A</string>
     <string name="notification_empty_password">Please enter a password.</string>
     <string name="notification_empty_username">Please enter a username.</string>
-    <string name="notification_internal_error">There has been an internal error, contact administrator.</string>
+    <string name="notification_internal_error">An internal error occurred. Please contact an administrator.</string>
     <string name="notification_saved_settings">Application settings has been changed.</string>
     <string name="person_unknown">Person N/A</string>
     <string name="record_desc_unknown">Description N/A</string>

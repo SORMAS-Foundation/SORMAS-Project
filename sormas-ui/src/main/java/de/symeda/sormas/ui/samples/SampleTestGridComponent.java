@@ -19,13 +19,13 @@ import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
-public class SampleTestsComponent extends VerticalLayout {
+public class SampleTestGridComponent extends VerticalLayout {
 
 	private SampleTestGrid grid;
 
 	private VerticalLayout gridLayout;
 
-	public SampleTestsComponent(SampleReferenceDto sampleRef, boolean sampleReceived, int caseSampleCount) {
+	public SampleTestGridComponent(SampleReferenceDto sampleRef, boolean sampleReceived, int caseSampleCount) {
 		Label headline = new Label("Sample tests");
 		CssStyles.style(headline, CssStyles.H3);
 		addComponent(headline);
@@ -83,7 +83,7 @@ public class SampleTestsComponent extends VerticalLayout {
 		Button createButton = new Button("New result");
 		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		createButton.setIcon(FontAwesome.PLUS_CIRCLE);
-		createButton.addClickListener(e -> ControllerProvider.getSampleTestController().create(sampleRef, grid, caseSampleCount));
+		createButton.addClickListener(e -> ControllerProvider.getSampleTestController().create(sampleRef, caseSampleCount, grid::reload));
 		topLayout.addComponent(createButton);
 		topLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
 

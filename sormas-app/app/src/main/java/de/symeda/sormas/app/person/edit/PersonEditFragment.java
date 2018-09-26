@@ -31,8 +31,8 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
-import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
@@ -155,13 +155,15 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
     private static void openAddressPopup(final Person record, final FragmentPersonEditLayoutBinding contentBinding) {
         final Location location = record.getAddress();
-        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), location);
-        locationDialog.show(null);
+        final Location locationClone = (Location) location.clone();
+        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone);
+        locationDialog.show();
 
-        locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+        locationDialog.setPositiveCallback(new Callback() {
             @Override
-            public void onOkClick(View v, Object item, View viewRoot) {
-                contentBinding.personAddress.setValue(location);
+            public void call() {
+                contentBinding.personAddress.setValue(locationClone);
+                record.setAddress(locationClone);
                 locationDialog.dismiss();
             }
         });

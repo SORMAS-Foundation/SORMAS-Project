@@ -39,7 +39,7 @@
 
     <dimen name="fragment_padding">24dp</dimen>
     <dimen name="fragment_padding_negative">-24dp</dimen>
-
+    <dimen name="simple_dialog_button_margin">12dp</dimen>
 
 
 
@@ -64,6 +64,7 @@
     <dimen name="serviceSeparatorMarginRight">8dp</dimen>
     <dimen name="signInTextSize">34dp</dimen>
     <dimen name="control_spacing">24dp</dimen>
+    <dimen name="control_spacing_slim">12dp</dimen>
 
     <!-- Logo -->
     <dimen name="logoWidth">100dp</dimen>
@@ -219,6 +220,8 @@
     <dimen name="listActivityRowItemBorderLeft">-1dp</dimen>
     <!-- ************************************************* -->
 
+    <dimen name="dialog_panel_horizontal_padding">12dp</dimen>
+    <dimen name="simple_dialog_button_horizontal_padding">24dp</dimen>
 
     <!-- List Layout Indicators -->
     <dimen name="indicatorRadius">10dp</dimen>
@@ -330,8 +333,10 @@
 
 
     <dimen name="verySmallTextSize">10sp</dimen>
-    <dimen name="textSizeNormal">14dp</dimen>
-
+    <dimen name="textSizeNormal">14sp</dimen>
+    <dimen name="textSizeLarge">16sp</dimen>
+    <dimen name="textSizeXLarge">18sp</dimen>
+    <dimen name="textSizeXXLarge">20sp</dimen>
 
     <dimen name="readActivitySubHeadingTextSize">18sp</dimen>
     <dimen name="readActivitySubListHeadingTextSize">@dimen/h4</dimen>

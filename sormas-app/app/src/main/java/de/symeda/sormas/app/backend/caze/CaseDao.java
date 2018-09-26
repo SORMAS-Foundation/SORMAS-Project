@@ -34,6 +34,8 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
@@ -169,6 +171,14 @@ public class CaseDao extends AbstractAdoDao<Case> {
             newCase.setDengueFeverType(caze.getDengueFeverType());
         }
 
+        return newCase;
+    }
+
+    public Case build(EventParticipant eventParticipant) {
+        Case newCase = build(eventParticipant.getPerson());
+        Event event = eventParticipant.getEvent();
+        newCase.setDisease(event.getDisease());
+        newCase.setDiseaseDetails(event.getDiseaseDetails());
         return newCase;
     }
 

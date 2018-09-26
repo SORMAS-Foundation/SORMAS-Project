@@ -66,6 +66,9 @@ public final class CssStyles {
 	public static final String LABEL_NEUTRAL = "neutral";
 	public static final String LABEL_POSITIVE = "positive";
 	public static final String LABEL_MINOR = "minor";
+	public static final String LABEL_DISCARDED = "discarded";
+	public static final String LABEL_DONE = "done";
+	public static final String LABEL_NOT = "not";
 	
 	// Font sizes
 	public static final String LABEL_SMALL = "small";
@@ -77,7 +80,7 @@ public final class CssStyles {
 	
 	// Font styles
 	public static final String LABEL_BOLD = "bold";
-	public static final String LABEL_UPPERCASE = "text-uppercase";
+	public static final String LABEL_UPPERCASE = "uppercase";
 	
 	// Label styles
 	public static final String LABEL_BAR_TOP_CRITICAL = "bar-top-critical";
@@ -88,15 +91,15 @@ public final class CssStyles {
 	public static final String LABEL_BAR_TOP_MINOR = "bar-top-minor";
 	public static final String LABEL_BOTTOM_LINE = "bottom-line";
 	public static final String LABEL_ROUNDED_CORNERS = "rounded-corners";
-	public static final String LABEL_BACKGROUND_SUSPECT = "background-suspect";
-	public static final String LABEL_BACKGROUND_PROBABLE = "background-probable";
-	public static final String LABEL_BACKGROUND_CONFIRMED = "background-confirmed";
 	
 	// Layout stlyes
 	public static final String LAYOUT_MINIMAL = "minimal";
 	public static final String BACKGROUND_ROUNDED_CORNERS = "background-rounded-corners";
 	public static final String BACKGROUND_CRITERIA = "background-criteria";
 	public static final String BACKGROUND_SUB_CRITERIA = "background-sub-criteria";
+	public static final String BACKGROUND_SUSPECT_CRITERIA = "background-suspect-criteria";
+	public static final String BACKGROUND_PROBABLE_CRITERIA = "background-probable-criteria";
+	public static final String BACKGROUND_CONFIRMED_CRITERIA = "background-confirmed-criteria";
 	
 	// Button styles
 	public static final String VAADIN_BUTTON = "v-button";
@@ -104,11 +107,18 @@ public final class CssStyles {
 	public static final String BUTTON_WARNING = "warning";
 	public static final String BUTTON_SUBTLE = "subtle";
 	public static final String BUTTON_BORDER_NEUTRAL = "border-neutral";
+	public static final String BUTTON_NO_PADDING = "no-padding";
 	public static final String LINK_ACTIVE = "active";
 	public static final String LINK_HIGHLIGHTED = "link-highlighted";
 	public static final String LINK_HIGHLIGHTED_LIGHT = "link-highlighted-light";
 	public static final String LINK_HIGHLIGHTED_DARK = "link-highlighted-dark";
+	public static final String LINK_HIGHLIGHTED_SMALL = "link-highlighted-small";
 	public static final String BUTTON_FONT_SIZE_LARGE = "font-size-large";
+	
+	// List styles
+	public static final String SORMAS_LIST = "s-list";
+	public static final String SORMAS_LIST_ENTRY = "s-list-entry";
+	
 	
 	// SVG fill and stroke styles
 	public static final String SVG_FILL_BACKGROUND = "svg-fill-background";
@@ -154,8 +164,15 @@ public final class CssStyles {
 	public static final String LABEL_CONFIGURATION_SEVERITY_INDICATOR = "severity-indicator";
 	public static final String BADGE = "badge";
 	
+	public static final String SPACING_SMALL = "spacing-small";
+	
 	// Checkbox styles
 	public static final String CHECKBOX_FILTER_INLINE = "filter-inline";
+	
+	// Layout components
+	public static final String ROOT_COMPONENT = "root-component";
+	public static final String MAIN_COMPONENT = "main-component";
+	public static final String SIDE_COMPONENT = "side-component";
 	
 	// Statistics layout
 	public static final String STATISTICS_TITLE_BOX = "title-box";

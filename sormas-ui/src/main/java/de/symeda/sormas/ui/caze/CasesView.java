@@ -33,6 +33,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -329,7 +330,7 @@ public class CasesView extends AbstractView {
 		{
 			Button applyButton = new Button("Apply date filter");
 			
-			EpiWeekAndDateFilterComponent weekAndDateFilter = new EpiWeekAndDateFilterComponent(applyButton, false, false);
+			EpiWeekAndDateFilterComponent weekAndDateFilter = new EpiWeekAndDateFilterComponent(applyButton, false, false, true);
 			weekAndDateFilter.getWeekFromFilter().setInputPrompt("New cases from epi week...");
 			weekAndDateFilter.getWeekToFilter().setInputPrompt("... to epi week");
 			weekAndDateFilter.getDateFromFilter().setInputPrompt("New cases from...");
@@ -348,7 +349,8 @@ public class CasesView extends AbstractView {
 				}
 				if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
 					applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
-					grid.setDateFilter(fromDate, toDate);
+					NewCaseDateType newCaseDateType = (NewCaseDateType) weekAndDateFilter.getNewCaseDateTypeSelector().getValue();
+					grid.setDateFilter(fromDate, toDate, newCaseDateType != null ? newCaseDateType : NewCaseDateType.MOST_RELEVANT);
 				} else {
 					if (dateFilterOption == DateFilterOption.DATE) {
 						Notification notification = new Notification("Missing date filter", "Please fill in both date filter fields", Type.WARNING_MESSAGE, false);

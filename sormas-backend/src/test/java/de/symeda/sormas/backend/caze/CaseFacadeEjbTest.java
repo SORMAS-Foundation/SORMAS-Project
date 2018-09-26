@@ -310,9 +310,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(),
 				caze.toReference(), new Date(), new Date());
-		creator.createCase(user.toReference(), contactPerson.toReference(), Disease.EVD,
+		CaseDataDto contactCase = creator.createCase(user.toReference(), contactPerson.toReference(), Disease.EVD,
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 		contact.setContactClassification(ContactClassification.CONFIRMED);
+		contact.setResultingCase(getCaseFacade().getReferenceByUuid(contactCase.getUuid()));
 		contact = getContactFacade().saveContact(contact);
 		assertNotNull(contact.getResultingCase());
 

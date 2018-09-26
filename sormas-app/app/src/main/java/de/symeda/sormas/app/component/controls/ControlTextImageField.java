@@ -163,7 +163,10 @@ public class ControlTextImageField extends ControlTextReadField {
     public static void setTaskPriorityValue(ControlTextImageField textImageField, TaskPriority priority, String defaultValue) {
         if (priority == null) {
             textImageField.setFieldValue(getDefaultValue(defaultValue));
+            textImageField.applyDefaultValueStyle();
         } else {
+            // TODO reset default style?
+
             textImageField.setValue(priority.toString(), priority);
 
             if (priority == TaskPriority.HIGH) {
@@ -181,7 +184,10 @@ public class ControlTextImageField extends ControlTextReadField {
     public static void setTaskStatusValue(ControlTextImageField textImageField, TaskStatus status, String defaultValue) {
         if (status == null) {
             textImageField.setFieldValue(getDefaultValue(defaultValue));
+            textImageField.applyDefaultValueStyle();
         } else {
+            // TODO reset default style?
+
             textImageField.setValue(status.toString(), status);
 
             if (status == TaskStatus.PENDING) {
@@ -200,7 +206,10 @@ public class ControlTextImageField extends ControlTextReadField {
     public static void setShipmentStatus(ControlTextImageField textImageField, Sample sample, String defaultValue) {
         if (sample == null) {
             textImageField.setValue(getDefaultValue(defaultValue), false);
+            textImageField.applyDefaultValueStyle();
         } else {
+            // TODO reset default style?
+
             if (sample.isShipped()) {
                 textImageField.setValue(DateHelper.formatLocalShortDate(sample.getShipmentDate()), true);
                 textImageField.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.green);
@@ -215,7 +224,10 @@ public class ControlTextImageField extends ControlTextReadField {
     public static void setReceivedStatus(ControlTextImageField textImageField, Sample sample, String defaultValue) {
         if (sample == null) {
             textImageField.setValue(getDefaultValue(defaultValue), false);
+            textImageField.applyDefaultValueStyle();
         } else {
+            // TODO reset default style?
+
             if (sample.isReceived()) {
                 textImageField.setValue(DateHelper.formatLocalShortDate(sample.getReceivedDate()), true);
                 textImageField.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.green);

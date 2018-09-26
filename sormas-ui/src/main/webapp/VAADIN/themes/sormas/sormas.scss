@@ -21,7 +21,7 @@ $s-neutral-color: #00BFFF;
 $s-positive-color: #32CD32;
 $s-minor-color: #808080;
 $s-steady-color: #FF8C00;
-$s-highlight-subtle-color: #E0E0E0;
+$s-highlight-subtle-color: rgba(244, 244, 244, 0.8);
 $s-highlight-color: #C9C9C9;
 
 $v-background-color: #FEFEFE !default;
@@ -75,6 +75,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 @import "components/exttokenfield.scss";
 @import "components/grid.scss";
 @import "components/label.scss";
+@import "components/list.scss";
 @import "components/menu.scss";
 @import "components/notification.scss";
 @import "components/optiongroup.scss";
@@ -85,6 +86,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 @import "components/table.scss";
 @import "components/textarea.scss";
 @import "components/textfield.scss";
+@import "components/tooltip.scss";
 @import "components/upload.scss";
 @import "components/window.scss";
 
@@ -128,6 +130,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
   @include sormas-exttokenfield;
   @include sormas-grid;
   @include sormas-label;
+  @include sormas-list;
   @include sormas-menu;
   @include sormas-notification;
   @include sormas-optiongroup;
@@ -138,6 +141,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
   @include sormas-table;
   @include sormas-textarea;
   @include sormas-textfield;
+  @include sormas-tooltip;
   @include sormas-upload;
   @include sormas-window;
 

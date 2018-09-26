@@ -1,7 +1,6 @@
 package de.symeda.sormas.backend.event;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import java.util.Date;
 import java.util.List;
@@ -9,15 +8,9 @@ import java.util.List;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
-import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -86,73 +79,4 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, results.size());
 	}
 	
-	@Test
-	public void testUpdateResultingCase() {
-		
-		// create an event & participant
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-
-		Disease disease = Disease.EVD;
-		
-		LocationDto eventLocation = new LocationDto();
-		eventLocation.setDistrict(getDistrictFacade().getDistrictReferenceByUuid(rdcf.district.getUuid()));
-		Date eventDate = DateHelper.subtractDays(new Date(), 1);
-		EventDto event = creator.createEvent(EventType.OUTBREAK, EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE, 
-				eventDate, new Date(), user.toReference(), user.toReference(), disease, eventLocation);
-		PersonDto eventPerson = creator.createPerson("Event", "Person");
-		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), eventPerson, "Description");
-		
-		// create a case for the same person after the event and incubation period
-		CaseDataDto caze = creator.createCase(user.toReference(), eventPerson.toReference(), disease, CaseClassification.PROBABLE,
-				InvestigationStatus.PENDING, new Date(), rdcf);
-		caze.getSymptoms().setOnsetDate(DateHelper.addDays(eventDate, DiseaseHelper.getIncubationPeriodDays(disease, null) + 2));
-		caze = getCaseFacade().saveCase(caze);
-
-		eventParticipant = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid());
-		assertNull(eventParticipant.getResultingCase());
-		
-		// change the onsetdate to a date within the incubation period
-		caze.getSymptoms().setOnsetDate(DateHelper.addDays(eventDate, 1));
-		caze = getCaseFacade().saveCase(caze);
-		eventParticipant = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid());
-		assertEquals(caze.getUuid(), eventParticipant.getResultingCase().getUuid());
-
-		// change the onsetdate to the end of the incubation period
-		caze.getSymptoms().setOnsetDate(DateHelper.addDays(eventDate, DiseaseHelper.getIncubationPeriodDays(disease, null)));
-		caze = getCaseFacade().saveCase(caze);
-		eventParticipant = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid());
-		assertEquals(caze.getUuid(), eventParticipant.getResultingCase().getUuid());
-
-		// change the onsetdate to a date before the event incubation period
-		caze.getSymptoms().setOnsetDate(DateHelper.subtractDays(eventDate, 5));
-		caze = getCaseFacade().saveCase(caze);
-		eventParticipant = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid());
-		assertEquals(caze.getUuid(), eventParticipant.getResultingCase().getUuid());
-		
-		// change the disease
-		event.setDisease(Disease.OTHER);
-		event = getEventFacade().saveEvent(event);
-		eventParticipant = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid());
-		assertNull(eventParticipant.getResultingCase());
-		
-		// change to any disease
-		event.setDisease(null);
-		event = getEventFacade().saveEvent(event);
-		eventParticipant = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid());
-		assertEquals(caze.getUuid(), eventParticipant.getResultingCase().getUuid());
-		
-		// set outcome date before event
-		caze.setOutcome(CaseOutcome.RECOVERED);
-		caze.setOutcomeDate(DateHelper.subtractDays(eventDate, 1));
-		caze = getCaseFacade().saveCase(caze);
-		eventParticipant = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid());
-		assertNull(eventParticipant.getResultingCase());
-		
-		// set outcome date after event
-		caze.setOutcomeDate(DateHelper.addDays(eventDate, 1));
-		caze = getCaseFacade().saveCase(caze);
-		eventParticipant = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid());
-		assertEquals(caze.getUuid(), eventParticipant.getResultingCase().getUuid());
-	}
 }

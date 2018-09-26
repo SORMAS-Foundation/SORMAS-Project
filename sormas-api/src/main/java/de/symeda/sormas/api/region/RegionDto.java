@@ -7,7 +7,11 @@ public class RegionDto extends EntityDto {
 	private static final long serialVersionUID = -1610675328037466348L;
 
 	public static final String I18N_PREFIX = "Region";
-
+	public static final String NAME = "name";
+	public static final String EPID_CODE = "epidCode";
+	public static final String POPULATION = "population";
+	public static final String GROWTH_RATE = "growthRate";
+	
 	private String name;
 	private String epidCode;
 	private Integer population;
@@ -48,5 +52,10 @@ public class RegionDto extends EntityDto {
 	
 	public RegionReferenceDto toReference() {
 		return new RegionReferenceDto(getUuid());
+	}
+	
+	public static RegionDto build() {
+		RegionDto dto = new RegionDto();
+		return dto;
 	}
 }

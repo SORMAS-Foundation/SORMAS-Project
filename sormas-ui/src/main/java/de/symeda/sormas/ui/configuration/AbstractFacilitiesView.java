@@ -18,7 +18,7 @@ import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
-public class AbstractFacilitiesView extends AbstractConfigurationView {
+public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 
 	private static final long serialVersionUID = -2015225571046243640L;
 
@@ -48,7 +48,7 @@ public class AbstractFacilitiesView extends AbstractConfigurationView {
 		gridLayout.setStyleName("crud-main-layout");
 		grid.reload();
 
-		if (LoginHelper.hasUserRight(UserRight.FACILITIES_CREATE)) {
+		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = new Button();
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
@@ -97,9 +97,8 @@ public class AbstractFacilitiesView extends AbstractConfigurationView {
 		districtFilter.setWidth(140, Unit.PIXELS);
 		districtFilter.setCaption("District");
 		districtFilter.addValueChangeListener(e -> {
-			RegionReferenceDto region = (RegionReferenceDto) regionFilter.getValue();
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
-			grid.setDistrictFilter(region, district);
+			grid.setDistrictFilter(district);
 			FieldHelper.updateItems(communityFilter,
 					district != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(district.getUuid()) : null);
 		});
@@ -109,10 +108,8 @@ public class AbstractFacilitiesView extends AbstractConfigurationView {
 		communityFilter.setWidth(140, Unit.PIXELS);
 		communityFilter.setCaption("Community");
 		communityFilter.addValueChangeListener(e -> {
-			RegionReferenceDto region = (RegionReferenceDto) regionFilter.getValue();
-			DistrictReferenceDto district = (DistrictReferenceDto) districtFilter.getValue();
 			CommunityReferenceDto community = (CommunityReferenceDto) e.getProperty().getValue();
-			grid.setCommunityFilter(region, district, community);
+			grid.setCommunityFilter(community);
 		});
 		filterLayout.addComponent(communityFilter);
 

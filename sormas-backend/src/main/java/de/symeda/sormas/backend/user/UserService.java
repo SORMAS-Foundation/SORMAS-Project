@@ -17,6 +17,7 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -88,6 +89,24 @@ public class UserService extends AbstractAdoService<User> {
 		}
 		
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
+		return em.createQuery(cq).getResultList();
+	}
+	
+	public List<User> getLabUsersOfLab(Facility facility) {
+		if (facility == null || facility.getType() != FacilityType.LABORATORY) {
+			throw new IllegalArgumentException("Facility needs to be a laboratory");
+		}
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
+		Root<User> from = cq.from(getElementClass());
+		Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
+		
+		Predicate filter = cb.and(
+				cb.equal(from.get(User.LABORATORY), facility),
+				joinRoles.in(Arrays.asList(new UserRole[]{UserRole.LAB_USER})));
+		
+		cq.where(filter).distinct(true);
 		return em.createQuery(cq).getResultList();
 	}
 	
@@ -167,6 +186,7 @@ public class UserService extends AbstractAdoService<User> {
 		return getByUserName(sessionContext.getCallerPrincipal().getName());
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<User, User> from, User user) {
 		// a user can read all other users

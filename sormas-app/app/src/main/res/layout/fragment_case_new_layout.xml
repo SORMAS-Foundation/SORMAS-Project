@@ -7,9 +7,8 @@
 
     <data>
         <import type="de.symeda.sormas.api.Disease" />
-        <variable
-            name="data"
-            type="de.symeda.sormas.app.backend.caze.Case"/>
+
+        <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
     </data>
 
 

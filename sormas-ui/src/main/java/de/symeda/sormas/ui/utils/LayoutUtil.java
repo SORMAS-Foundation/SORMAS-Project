@@ -35,9 +35,13 @@ public class LayoutUtil {
 	}
 
 	public static String locsCss(String css, String... locations) {
-		return divsCss(css, locs(locations));
+		return divCss(css, locs(locations));
 	}
 
+	public static String inlineLocs(String... locations) {
+		return locsCss("inline-container", locations);
+	}
+	
 	/**
 	 * Ein Html-Element
 	 * 

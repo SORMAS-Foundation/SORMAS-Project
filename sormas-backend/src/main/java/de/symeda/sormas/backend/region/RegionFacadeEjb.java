@@ -8,6 +8,12 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionFacade;
@@ -15,10 +21,14 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "RegionFacade")
 public class RegionFacadeEjb implements RegionFacade {
-
+	
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	protected EntityManager em;
+	
 	@EJB
 	protected RegionService regionService;
 	@EJB
@@ -40,6 +50,20 @@ public class RegionFacadeEjb implements RegionFacade {
 		return regionService.getAllAfter(date, null).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<RegionDto> getIndexList() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Region> cq = cb.createQuery(Region.class);
+		Root<Region> region = cq.from(Region.class);
+		
+		cq.select(region);
+		cq.orderBy(cb.asc(region.get(Region.NAME)));
+		cq.distinct(true);
+		
+		List<Region> regions = em.createQuery(cq).getResultList();
+		return regions.stream().map(r -> toDto(r)).collect(Collectors.toList());
 	}
 	
 	@Override
@@ -103,6 +127,29 @@ public class RegionFacadeEjb implements RegionFacade {
 		dto.setGrowthRate(entity.getGrowthRate());
 
 		return dto;
+	}
+	
+	@Override
+	public void saveRegion(RegionDto dto) {
+		Region region = regionService.getByUuid(dto.getUuid());
+		region = fillOrBuildEntity(dto, region);
+		regionService.ensurePersisted(region);
+	}
+	
+	private Region fillOrBuildEntity(@NotNull RegionDto source, Region target) {
+		if (target == null) {
+			target = new Region();
+			target.setUuid(source.getUuid());
+		}
+		
+		DtoHelper.validateDto(source, target);
+		
+		target.setName(source.getName());
+		target.setEpidCode(source.getEpidCode());
+		target.setPopulation(source.getPopulation());
+		target.setGrowthRate(source.getGrowthRate());
+		
+		return target;
 	}
 	
 	@LocalBean

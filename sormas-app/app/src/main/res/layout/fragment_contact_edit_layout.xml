@@ -8,6 +8,7 @@
 
     <data>
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
+        <import type="de.symeda.sormas.api.user.UserRight" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.contact.Contact"/>
         <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
@@ -233,7 +234,8 @@
                     android:text="@string/action_create_case_from_contact"
                     app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                     app:rounded="true"
-                    app:iconStart="@drawable/ic_create_case_black_24dp" />
+                    app:iconStart="@drawable/ic_create_case_black_24dp"
+                    app:userViewRight="@{UserRight.CASE_CREATE}" />
 
                 <de.symeda.sormas.app.component.controls.ControlButton
                     android:id="@+id/open_resulting_case"

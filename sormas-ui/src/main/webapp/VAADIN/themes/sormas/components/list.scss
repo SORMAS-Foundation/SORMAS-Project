@@ -1,0 +1,10 @@
+
+@mixin sormas-list {
+  
+  .s-list {
+    .s-list-entry {
+      border-top: 1px solid $v-focus-color;
+      padding: 9px 0px;
+    }
+  }
+}

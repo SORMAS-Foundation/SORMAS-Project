@@ -15,6 +15,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +28,8 @@ import android.widget.TextView;
 
 import com.google.android.gms.analytics.Tracker;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +40,8 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.component.HelpDialog;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.component.dialog.UserReportDialog;
 import de.symeda.sormas.app.component.menu.PageMenuControl;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
@@ -334,14 +338,17 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                 return true;
 
             case R.id.action_help:
-                HelpDialog helpDialog = new HelpDialog(this, (ViewGroup) this.findViewById(R.id.main_content));
-                helpDialog.show();
+                StringBuilder helpStringBuilder = new StringBuilder();
+                extendHelpString(helpStringBuilder, (ViewGroup) this.findViewById(R.id.main_content));
+                InfoDialog infoDialog = new InfoDialog(getContext(),
+                        R.layout.dialog_screen_help_layout, Html.fromHtml(helpStringBuilder.toString()));
+                infoDialog.show();
                 return true;
 
             // Report problem button
             case R.id.action_report:
                 UserReportDialog userReportDialog = new UserReportDialog(this, getClass().getSimpleName(), null);
-                userReportDialog.show(null);
+                userReportDialog.show();
                 return true;
         }
 
@@ -630,6 +637,27 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 //            }
 //        });
 //        snackbar.show();
+    }
+
+    private void extendHelpString(StringBuilder sb, ViewGroup parent) {
+        if (parent == null) return;
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            View child = parent.getChildAt(i);
+            if (child instanceof ControlPropertyField && child.getVisibility() == View.VISIBLE) {
+                ControlPropertyField propertyField = (ControlPropertyField) child;
+                if (propertyField.getCaption() != null) {
+                    sb.append("<b>").append(Html.escapeHtml(propertyField.getCaption())).append("</b>").append("<br>");
+                    if (!StringUtils.isEmpty(propertyField.getDescription())) {
+                        sb.append(Html.escapeHtml(propertyField.getDescription()));
+                    } else {
+                        sb.append(Html.escapeHtml("-"));
+                    }
+                    sb.append("<br><br>");
+                }
+            } else if (child instanceof ViewGroup) {
+                extendHelpString(sb, (ViewGroup) child);
+            }
+        }
     }
 
     public void goToSettings(View view) {

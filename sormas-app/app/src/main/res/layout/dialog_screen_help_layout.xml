@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
+
+        <variable name="data" type="android.text.SpannableStringBuilder" />
+        <variable name="dismissCallback" type="de.symeda.sormas.app.util.Callback" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/dialog_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="top">
+
+            <TextView
+                android:id="@+id/headline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/simple_dialog_button_margin"
+                android:paddingLeft="@dimen/dialog_panel_horizontal_padding"
+                android:paddingRight="@dimen/dialog_panel_horizontal_padding"
+                android:text="@string/headline_help"
+                android:textSize="@dimen/textSizeXXLarge"
+                style="@style/HeadingStyle" />
+
+            <ImageView
+                style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
+
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="52dp"
+            android:layout_marginBottom="64dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/fragment_padding">
+
+                <TextView
+                    android:id="@+id/help_string"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{data}"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/normalText"
+                    android:textSize="@dimen/textSizeLarge" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/button_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="bottom">
+
+            <ImageView style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
+
+            <de.symeda.sormas.app.component.controls.ControlButton
+                android:id="@+id/button_dismiss"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_margin="@dimen/simple_dialog_button_margin"
+                android:text="@string/action_dismiss"
+                android:onClickListener="@{(view) -> dismissCallback.call()}"
+                app:iconStart="@drawable/ic_clear_black_24dp"
+                app:slim="true"
+                app:buttonType="@{ControlButtonType.PRIMARY}" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</layout>
+

@@ -19,7 +19,13 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -30,11 +36,15 @@ import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.MessageType;
+import de.symeda.sormas.backend.common.MessagingService;
+import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
@@ -58,7 +68,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
-	
+
 	@EJB
 	private SampleService sampleService;
 	@EJB
@@ -83,32 +93,36 @@ public class SampleFacadeEjb implements SampleFacade {
 	private FacilityFacadeEjbLocal facilityFacade;
 	@EJB
 	private SampleTestFacadeEjbLocal sampleTestFacade;
+	@EJB
+	private MessagingService messagingService;
+
+	private static final Logger logger = LoggerFactory.getLogger(SampleTestFacadeEjb.class);
 
 	@Override
 	public List<String> getAllUuids(String userUuid) {
-		
+
 		User user = userService.getByUuid(userUuid);
-		
+
 		if (user == null) {
 			return Collections.emptyList();
 		}
-		
+
 		return sampleService.getAllUuids(user);
 	}	
-	
+
 	@Override
 	public List<SampleDto> getAllAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		
+
 		if(user == null) {
 			return Collections.emptyList();
 		}
-		
+
 		return sampleService.getAllAfter(date, user).stream()
 				.map(e -> toDto(e))
 				.collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public List<SampleDto> getByUuids(List<String> uuids) {
 		return sampleService.getByUuids(uuids)
@@ -122,22 +136,22 @@ public class SampleFacadeEjb implements SampleFacade {
 		if(caseRef == null) {
 			return Collections.emptyList();
 		}
-		
+
 		Case caze = caseService.getByUuid(caseRef.getUuid());
-		
+
 		return sampleService.getAllByCase(caze).stream()
 				.map(s -> toDto(s))
 				.collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public int getReceivedSampleCountByCase(CaseReferenceDto caseRef) {
 		if (caseRef == null) {
 			return 0;
 		}
-		
+
 		Case caze = caseService.getByUuid(caseRef.getUuid());
-		
+
 		return sampleService.getReceivedSampleCountByCase(caze);
 	}
 
@@ -148,17 +162,20 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public SampleDto saveSample(SampleDto dto) {
+		SampleDto existingSample = toDto(sampleService.getByUuid(dto.getUuid()));
 		Sample sample = fromDto(dto);
 		sampleService.ensurePersisted(sample);
-		
+
+		onSampleChanged(existingSample, sample);
+
 		return toDto(sample);
 	}
-	
+
 	@Override
 	public SampleReferenceDto getReferenceByUuid(String uuid) {
 		return toReferenceDto(sampleService.getByUuid(uuid));
 	}
-	
+
 	@Override
 	public List<SampleIndexDto> getIndexList(String userUuid, SampleCriteria sampleCriteria) {
 
@@ -174,9 +191,9 @@ public class SampleFacadeEjb implements SampleFacade {
 		Join<Case, Person> cazePerson = caze.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, Region> caseRegion = caze.join(Case.REGION, JoinType.LEFT);
 		Join<Case, District> caseDistrict = caze.join(Case.DISTRICT, JoinType.LEFT);
-		
+
 		cq.multiselect(sample.get(Sample.UUID), 
-				sample.get(Sample.SAMPLE_CODE), sample.get(Sample.LAB_SAMPLE_ID),
+				sample.get(Sample.SAMPLE_CODE), sample.get(Sample.LAB_SAMPLE_ID), sample.get(Sample.SAMPLE_DATE_TIME), 
 				sample.get(Sample.SHIPPED), sample.get(Sample.SHIPMENT_DATE), sample.get(Sample.RECEIVED), sample.get(Sample.RECEIVED_DATE), 
 				sample.get(Sample.SAMPLE_MATERIAL), sample.get(Sample.SPECIMEN_CONDITION), 
 				lab.get(Facility.UUID), lab.get(Facility.NAME), referredSample.get(Sample.UUID), 
@@ -184,41 +201,41 @@ public class SampleFacadeEjb implements SampleFacade {
 				caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), 
 				caseRegion.get(Region.UUID), caseDistrict.get(District.UUID), caseDistrict.get(District.NAME), 
 				mainTest.get(SampleTest.TEST_RESULT), mainTestLabUser.get(User.FIRST_NAME), mainTestLabUser.get(User.LAST_NAME));
-		
+
 		Predicate filter = null;
 		if (userUuid != null) {
 			User user = userService.getByUuid(userUuid);
 			filter = sampleService.createUserFilter(cb, cq, sample, user);
 		}
-			
+
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, sample);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}		
-		
+
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		List<SampleIndexDto> resultList = em.createQuery(cq).getResultList();
-		
+
 		return resultList;	
 	}
-	
+
 	@Override
 	public List<DashboardSampleDto> getNewSamplesForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
-		
+
 		return sampleService.getNewSamplesForDashboard(region, district, disease, from, to, user);
 	}
-	
+
 	@Override
 	public SampleReferenceDto getReferredFrom(String sampleUuid) {
 		return toReferenceDto(sampleService.getReferredFrom(sampleUuid));
 	}
-	
+
 	@Override
 	public void deleteSample(SampleReferenceDto sampleRef, String userUuid) {
 		User user = userService.getByUuid(userUuid);
@@ -228,12 +245,12 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		Sample sample = sampleService.getByReferenceDto(sampleRef);
 		sampleService.delete(sample);
-		
+
 		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(sample.getAssociatedCase()), sample.getAssociatedCase());
 	}
-	
+
 	public Sample fromDto(@NotNull SampleDto source) {
-		
+
 		Sample target = sampleService.getByUuid(source.getUuid());
 		if(target == null) {
 			target = new Sample();
@@ -243,7 +260,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			}
 		}
 		DtoHelper.validateDto(source, target);
-		
+
 		target.setAssociatedCase(caseService.getByReferenceDto(source.getAssociatedCase()));
 		target.setSampleCode(source.getSampleCode());
 		target.setLabSampleID(source.getLabSampleID());
@@ -269,17 +286,17 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
-		
+
 		return target;
 	}
-	
+
 	public static SampleDto toDto(Sample source) {
 		if(source == null) {
 			return null;
 		}
 		SampleDto target = new SampleDto();
 		DtoHelper.fillDto(target, source);
-		
+
 		target.setAssociatedCase(CaseFacadeEjb.toReferenceDto(source.getAssociatedCase()));
 		target.setSampleCode(source.getSampleCode());
 		target.setLabSampleID(source.getLabSampleID());
@@ -305,10 +322,10 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
-		
+
 		return target;
 	}
-	
+
 	public static SampleReferenceDto toReferenceDto(Sample entity) {
 		if(entity == null) {
 			return null;
@@ -316,7 +333,34 @@ public class SampleFacadeEjb implements SampleFacade {
 		SampleReferenceDto dto = new SampleReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}
-	
+
+	private void onSampleChanged(SampleDto existingSample, Sample newSample) {
+		// Send an email to the lab user when a sample has been shipped to his lab
+		if (newSample.isShipped() && (existingSample == null || !existingSample.isShipped())) {
+			List<User> messageRecipients = userService.getLabUsersOfLab(newSample.getLab());
+
+			for (User recipient : messageRecipients) {
+				try {
+					if (!StringUtils.isEmpty(newSample.getSampleCode())) {
+						messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_LAB_SAMPLE_SHIPPED), 
+								String.format(I18nProperties.getMessage(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED), 
+										newSample.getSampleCode(), 
+										DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid())), 
+								MessageType.EMAIL, MessageType.SMS);
+					} else {
+						messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_LAB_SAMPLE_SHIPPED), 
+								String.format(I18nProperties.getMessage(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT), 
+										DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid())), 
+								MessageType.EMAIL, MessageType.SMS);
+					}
+				} catch (NotificationDeliveryFailedException e) {
+					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the shipment of a lab sample. "
+							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
+				}
+			}
+		}
+	}
+
 	@LocalBean
 	@Stateless
 	public static class SampleFacadeEjbLocal extends SampleFacadeEjb {

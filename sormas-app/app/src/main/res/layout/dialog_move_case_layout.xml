@@ -8,7 +8,6 @@
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
     </data>
 
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -17,7 +16,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/fragment_padding"
+            android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+            android:paddingRight="@dimen/rowListItemHorizontalMargin"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:id="@+id/main_content">
@@ -68,6 +68,8 @@
                 style="@style/ControlSingleColumnStyle" />
 
         </LinearLayout>
+
     </ScrollView>
+
 </layout>
 

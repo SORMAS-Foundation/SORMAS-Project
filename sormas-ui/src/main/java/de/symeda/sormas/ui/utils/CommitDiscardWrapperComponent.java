@@ -153,7 +153,7 @@ VerticalLayout implements Buffered {
 
 		applyAutoDisabling();
 
-		if (fieldGroups != null) {
+		if (fieldGroups != null && fieldGroups.length > 0) {
 			// convention: set wrapper to read-only when all wrapped field groups are read-only
 			boolean allReadOnly = true;
 			for (FieldGroup fieldGroup : fieldGroups)  {

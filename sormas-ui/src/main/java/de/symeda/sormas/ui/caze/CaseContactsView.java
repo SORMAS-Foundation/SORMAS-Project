@@ -39,7 +39,7 @@ public class CaseContactsView extends AbstractCaseView {
 
 	private static final long serialVersionUID = -1L;
 
-	public static final String VIEW_NAME = "cases/contacts";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/contacts";
 
 	private ContactGrid grid;    
 	private ComboBox classificationFilter;

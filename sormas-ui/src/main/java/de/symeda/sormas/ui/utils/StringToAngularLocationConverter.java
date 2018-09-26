@@ -8,6 +8,8 @@ import com.vaadin.data.util.converter.StringToDoubleConverter;
 
 public final class StringToAngularLocationConverter extends StringToDoubleConverter {
 	
+	private static final long serialVersionUID = -8697124581004777191L;
+
 	protected NumberFormat getFormat(Locale locale) {
         if (locale == null) {
             locale = Locale.getDefault();

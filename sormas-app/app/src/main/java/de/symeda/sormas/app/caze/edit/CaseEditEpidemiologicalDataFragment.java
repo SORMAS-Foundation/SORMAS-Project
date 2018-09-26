@@ -22,9 +22,9 @@ import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
-import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentCaseEditEpidLayoutBinding;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 
 public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<FragmentCaseEditEpidLayoutBinding, EpiData, Case> {
@@ -54,25 +54,27 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
             @Override
             public void onClick(View v, Object item) {
                 final EpiDataGathering gathering = (EpiDataGathering) item;
-                final EpiDataGatheringDialog dialog = new EpiDataGatheringDialog(CaseEditActivity.getActiveActivity(), gathering);
+                final EpiDataGathering gatheringClone = (EpiDataGathering) gathering.clone();
+                final EpiDataGatheringDialog dialog = new EpiDataGatheringDialog(CaseEditActivity.getActiveActivity(), gatheringClone);
 
-                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                dialog.setPositiveCallback(new Callback() {
                     @Override
-                    public void onOkClick(View v, Object item, View viewRoot) {
+                    public void call() {
+                        record.getGatherings().set(record.getGatherings().indexOf(gathering), gatheringClone);
                         updateGatherings();
                         dialog.dismiss();
                     }
                 });
 
-                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
+                dialog.setDeleteCallback(new Callback() {
                     @Override
-                    public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removeGathering((EpiDataGathering) item);
+                    public void call() {
+                        removeGathering(gathering);
                         dialog.dismiss();
                     }
                 });
 
-                dialog.show(null);
+                dialog.show();
             }
         };
 
@@ -80,25 +82,27 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
             @Override
             public void onClick(View v, Object item) {
                 final EpiDataTravel travel = (EpiDataTravel) item;
-                final EpiDataTravelDialog dialog = new EpiDataTravelDialog(CaseEditActivity.getActiveActivity(), travel);
+                final EpiDataTravel travelClone = (EpiDataTravel) travel.clone();
+                final EpiDataTravelDialog dialog = new EpiDataTravelDialog(CaseEditActivity.getActiveActivity(), travelClone);
 
-                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                dialog.setPositiveCallback(new Callback() {
                     @Override
-                    public void onOkClick(View v, Object item, View viewRoot) {
+                    public void call() {
+                        record.getTravels().set(record.getTravels().indexOf(travel), travelClone);
                         updateTravels();
                         dialog.dismiss();
                     }
                 });
 
-                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
+                dialog.setDeleteCallback(new Callback() {
                     @Override
-                    public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removeTravel((EpiDataTravel) item);
+                    public void call() {
+                        removeTravel(travel);
                         dialog.dismiss();
                     }
                 });
 
-                dialog.show(null);
+                dialog.show();
             }
         };
 
@@ -106,25 +110,27 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
             @Override
             public void onClick(View v, Object item) {
                 final EpiDataBurial burial = (EpiDataBurial) item;
-                final EpiDataBurialDialog dialog = new EpiDataBurialDialog(CaseEditActivity.getActiveActivity(), burial);
+                final EpiDataBurial burialClone = (EpiDataBurial) burial.clone();
+                final EpiDataBurialDialog dialog = new EpiDataBurialDialog(CaseEditActivity.getActiveActivity(), burialClone);
 
-                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                dialog.setPositiveCallback(new Callback() {
                     @Override
-                    public void onOkClick(View v, Object item, View viewRoot) {
+                    public void call() {
+                        record.getBurials().set(record.getBurials().indexOf(burial), burialClone);
                         updateBurials();
                         dialog.dismiss();
                     }
                 });
 
-                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
+                dialog.setDeleteCallback(new Callback() {
                     @Override
-                    public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removeBurial((EpiDataBurial) item);
+                    public void call() {
+                        removeBurial(burial);
                         dialog.dismiss();
                     }
                 });
 
-                dialog.show(null);
+                dialog.show();
             }
         };
 
@@ -134,23 +140,23 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
                 final EpiDataGathering gathering = DatabaseHelper.getEpiDataGatheringDao().build();
                 final EpiDataGatheringDialog dialog = new EpiDataGatheringDialog(CaseEditActivity.getActiveActivity(), gathering);
 
-                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                dialog.setPositiveCallback(new Callback() {
                     @Override
-                    public void onOkClick(View v, Object item, View viewRoot) {
-                        addGathering((EpiDataGathering) item);
+                    public void call() {
+                        addGathering(gathering);
                         dialog.dismiss();
                     }
                 });
 
-                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
+                dialog.setDeleteCallback(new Callback() {
                     @Override
-                    public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removeGathering((EpiDataGathering) item);
+                    public void call() {
+                        removeGathering(gathering);
                         dialog.dismiss();
                     }
                 });
 
-                dialog.show(null);
+                dialog.show();
             }
         });
 
@@ -160,23 +166,23 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
                 final EpiDataTravel travel = DatabaseHelper.getEpiDataTravelDao().build();
                 final EpiDataTravelDialog dialog = new EpiDataTravelDialog(CaseEditActivity.getActiveActivity(), travel);
 
-                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                dialog.setPositiveCallback(new Callback() {
                     @Override
-                    public void onOkClick(View v, Object item, View viewRoot) {
-                        addTravel((EpiDataTravel) item);
+                    public void call() {
+                        addTravel(travel);
                         dialog.dismiss();
                     }
                 });
 
-                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
+                dialog.setDeleteCallback(new Callback() {
                     @Override
-                    public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removeTravel((EpiDataTravel) item);
+                    public void call() {
+                        removeTravel(travel);
                         dialog.dismiss();
                     }
                 });
 
-                dialog.show(null);
+                dialog.show();
             }
         });
 
@@ -186,23 +192,23 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
                 final EpiDataBurial burial = DatabaseHelper.getEpiDataBurialDao().build();
                 final EpiDataBurialDialog dialog = new EpiDataBurialDialog(CaseEditActivity.getActiveActivity(), burial);
 
-                dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                dialog.setPositiveCallback(new Callback() {
                     @Override
-                    public void onOkClick(View v, Object item, View viewRoot) {
-                        addBurial((EpiDataBurial) item);
+                    public void call() {
+                        addBurial(burial);
                         dialog.dismiss();
                     }
                 });
 
-                dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
+                dialog.setDeleteCallback(new Callback() {
                     @Override
-                    public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removeBurial((EpiDataBurial) item);
+                    public void call() {
+                        removeBurial(burial);
                         dialog.dismiss();
                     }
                 });
 
-                dialog.show(null);
+                dialog.show();
             }
         });
     }
@@ -229,14 +235,13 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     }
 
     private void addGathering(EpiDataGathering item) {
-        // TODO: check sorting
         record.getGatherings().add(0, item);
         updateGatherings();
     }
 
     private void verifyGatheringStatus() {
-        YesNoUnknown hospitalizedPreviously = record.getGatheringAttended();
-        if (hospitalizedPreviously == YesNoUnknown.YES && getGatherings().size() <= 0) {
+        YesNoUnknown gatheringAttended = record.getGatheringAttended();
+        if (gatheringAttended == YesNoUnknown.YES && getGatherings().size() <= 0) {
             getContentBinding().epiDataGatheringAttended.enableWarningState(R.string.validation_soft_add_list_entry);
         } else {
             getContentBinding().epiDataGatheringAttended.disableWarningState();
@@ -270,8 +275,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     }
 
     private void verifyBurialStatus() {
-        YesNoUnknown hospitalizedPreviously = record.getBurialAttended();
-        if (hospitalizedPreviously == YesNoUnknown.YES && getBurials().size() <= 0) {
+        YesNoUnknown burialAttended = record.getBurialAttended();
+        if (burialAttended == YesNoUnknown.YES && getBurials().size() <= 0) {
             getContentBinding().epiDataBurialAttended.enableWarningState(R.string.validation_soft_add_list_entry);
         } else {
             getContentBinding().epiDataBurialAttended.disableWarningState();
@@ -305,8 +310,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     }
 
     private void verifyTravelStatus() {
-        YesNoUnknown hospitalizedPreviously = record.getTraveled();
-        if (hospitalizedPreviously == YesNoUnknown.YES && getTravels().size() <= 0) {
+        YesNoUnknown traveled = record.getTraveled();
+        if (traveled == YesNoUnknown.YES && getTravels().size() <= 0) {
             getContentBinding().epiDataTraveled.enableWarningState(R.string.validation_soft_add_list_entry);
         } else {
             getContentBinding().epiDataTraveled.disableWarningState();

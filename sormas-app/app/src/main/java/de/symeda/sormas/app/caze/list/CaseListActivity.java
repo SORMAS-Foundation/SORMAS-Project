@@ -21,10 +21,10 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
-import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.report.MissingWeeklyReportDialog;
 import de.symeda.sormas.app.report.ReportActivity;
+import de.symeda.sormas.app.util.Callback;
 
 public class CaseListActivity extends BaseListActivity {
 
@@ -74,15 +74,16 @@ public class CaseListActivity extends BaseListActivity {
         if (user.hasUserRole(UserRole.INFORMANT)
                 && DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(lastEpiWeek, ConfigProvider.getUser()) == null) {
 
-            MissingWeeklyReportDialog confirmationDialog = new MissingWeeklyReportDialog(this);
-            confirmationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+            final MissingWeeklyReportDialog confirmationDialog = new MissingWeeklyReportDialog(this);
+            confirmationDialog.setPositiveCallback(new Callback() {
                 @Override
-                public void onOkClick(View v, Object item, View viewRoot) {
+                public void call() {
                     ReportActivity.startActivity(getContext());
+                    confirmationDialog.dismiss();
                 }
             });
 
-            confirmationDialog.show(null);
+            confirmationDialog.show();
         } else {
             CaseNewActivity.startActivity(getContext());
         }

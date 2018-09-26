@@ -36,7 +36,7 @@ public class SampleTestController {
 		return stf.getAllBySample(sampleRef);
 	}
 	
-	public void create(SampleReferenceDto sampleRef, SampleTestGrid grid, int caseSampleCount) {
+	public void create(SampleReferenceDto sampleRef, int caseSampleCount, Runnable callback) {
 		SampleTestEditForm createForm = new SampleTestEditForm(true, UserRight.SAMPLETEST_CREATE, caseSampleCount);
 		createForm.setValue(createNewSampleTest(sampleRef));
 		final CommitDiscardWrapperComponent<SampleTestEditForm> editView = new CommitDiscardWrapperComponent<SampleTestEditForm>(createForm, createForm.getFieldGroup());
@@ -46,7 +46,7 @@ public class SampleTestController {
 			public void onCommit() {
 				if (!createForm.getFieldGroup().isModified()) {
 					saveSampleTest(createForm.getValue());
-					grid.reload();
+					callback.run();
 				}
 			}
 		});
@@ -54,7 +54,7 @@ public class SampleTestController {
 		VaadinUiUtil.showModalPopupWindow(editView, "Create new sample test result"); 
 	}
 	
-	public void edit(SampleTestDto dto, SampleTestGrid grid, int caseSampleCount) {
+	public void edit(SampleTestDto dto, int caseSampleCount, Runnable callback) {
 		// get fresh data
 		SampleTestDto newDto = stf.getByUuid(dto.getUuid());
 		
@@ -69,7 +69,7 @@ public class SampleTestController {
 			public void onCommit() {
 				if (!form.getFieldGroup().isModified()) {
 					saveSampleTest(form.getValue());
-					grid.reload();
+					callback.run();
 				}
 			}
 		});
@@ -80,7 +80,7 @@ public class SampleTestController {
 				public void onDelete() {
 					FacadeProvider.getSampleTestFacade().deleteSampleTest(dto.toReference(), LoginHelper.getCurrentUserAsReference().getUuid());
 					UI.getCurrent().removeWindow(popupWindow);
-					grid.reload();
+					callback.run();
 				}
 			}, I18nProperties.getFieldCaption("SampleTest"));
 		}

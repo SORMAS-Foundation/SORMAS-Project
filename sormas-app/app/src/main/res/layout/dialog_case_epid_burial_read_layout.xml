@@ -10,90 +10,127 @@
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiDataBurial"/>
-        <variable name="dismissCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener"/>
+        <variable name="dismissCallback" type="de.symeda.sormas.app.util.Callback"/>
     </data>
 
-    <ScrollView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <LinearLayout
+            android:id="@+id/dialog_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/fragment_padding">
+            android:elevation="8dp"
+            android:layout_gravity="top">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/heading_sub_case_epid_burial_visited"
+                android:paddingLeft="@dimen/dialog_panel_horizontal_padding"
+                android:paddingRight="@dimen/dialog_panel_horizontal_padding"
+                android:layout_margin="@dimen/simple_dialog_button_margin"
+                android:text="@string/heading_burial"
                 style="@style/SubHeadingStyle" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+            <ImageView style="@style/FullHorizontalDividerStyleNoDefaultMargin" />
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/epiDataBurial_burialDateFrom"
-                    app:value="@{data.burialDateFrom}"
-                    style="@style/ControlFirstOfTwoColumnsStyle" />
+        </LinearLayout>
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/epiDataBurial_burialDateTo"
-                    app:value="@{data.burialDateTo}"
-                    style="@style/ControlSecondOfTwoColumnsStyle" />
-
-            </LinearLayout>
-
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/epiDataBurial_burialRelation"
-                app:value="@{data.burialPersonname}"
-                app:appendValue="@{data.burialRelation}"
-                app:valueFormat='@{@string/two_strings_with_brackets_format}'
-                style="@style/ControlSingleColumnStyle" />
-
-            <ImageView style="@style/FullHorizontalDividerStyle"/>
-
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/epiDataBurial_address"
-                app:maxLines="2"
-                app:value="@{data.burialAddress}"
-                style="@style/ControlSingleColumnStyle" />
-
-            <ImageView style="@style/FullHorizontalDividerStyle"/>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="52dp"
+            android:layout_marginBottom="64dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:padding="@dimen/fragment_padding">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/epiDataBurial_burialDateFrom"
+                        app:value="@{data.burialDateFrom}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/epiDataBurial_burialDateTo"
+                        app:value="@{data.burialDateTo}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/epiDataBurial_burialIll"
-                    app:value="@{data.burialIll}"
-                    style="@style/ControlFirstOfTwoColumnsStyle" />
+                    android:id="@+id/epiDataBurial_burialRelation"
+                    app:value="@{data.burialPersonname}"
+                    app:appendValue="@{data.burialRelation}"
+                    app:valueFormat='@{@string/two_strings_with_brackets_format}'
+                    style="@style/ControlSingleColumnStyle" />
+
+                <ImageView style="@style/FullHorizontalDividerStyle"/>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/epiDataBurial_burialTouching"
-                    app:value="@{data.burialTouching}"
-                    style="@style/ControlSecondOfTwoColumnsStyle" />
+                    android:id="@+id/epiDataBurial_address"
+                    app:maxLines="2"
+                    app:value="@{data.burialAddress}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/epiDataBurial_burialIll"
+                        app:value="@{data.burialIll}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/epiDataBurial_burialTouching"
+                        app:value="@{data.burialTouching}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
 
             </LinearLayout>
+
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/button_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="bottom">
+
+            <ImageView style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
 
             <de.symeda.sormas.app.component.controls.ControlButton
-                android:id="@+id/dismiss"
+                android:id="@+id/button_dismiss"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:layout_marginTop="@dimen/primaryButtonMarginTop"
+                android:layout_marginEnd="@dimen/simple_dialog_button_horizontal_padding"
+                android:layout_marginTop="@dimen/simple_dialog_button_margin"
+                android:layout_marginBottom="@dimen/simple_dialog_button_margin"
                 android:text="@string/action_dismiss"
-                android:onClickListener="@{(view) -> dismissCallback.onClick(view, data)}"
+                android:onClickListener="@{(view) -> dismissCallback.call()}"
                 app:iconStart="@drawable/ic_clear_black_24dp"
+                app:slim="true"
                 app:buttonType="@{ControlButtonType.PRIMARY}" />
 
         </LinearLayout>
 
-    </ScrollView>
+    </FrameLayout>
 
 </layout>
 

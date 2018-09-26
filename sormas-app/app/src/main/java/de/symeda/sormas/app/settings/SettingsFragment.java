@@ -53,13 +53,13 @@ public class SettingsFragment extends BaseLandingFragment {
         });
         binding.resynchronizeData.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                repullData(v);
+                repullData();
             }
         });
         binding.showSyncLog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openSyncLog(v);
+                openSyncLog();
             }
         });
         binding.logout.setOnClickListener(new View.OnClickListener() {
@@ -121,15 +121,14 @@ public class SettingsFragment extends BaseLandingFragment {
         startActivity(intent);
     }
 
-    private void repullData(View view) {
-
+    private void repullData() {
         final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActivity(),
                 R.string.heading_confirmation_dialog,
                 R.string.heading_sub_confirmation_notification_dialog_resync);
 
-        confirmationDialog.setOnPositiveClickListener(new de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface.PositiveOnClickListener() {
+        confirmationDialog.setPositiveCallback(new Callback() {
             @Override
-            public void onOkClick(View v, Object confirmationItem, View viewRoot) {
+            public void call() {
                 confirmationDialog.dismiss();
 
                 getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.CompleteAndRepull,
@@ -143,12 +142,12 @@ public class SettingsFragment extends BaseLandingFragment {
             }
         });
 
-        confirmationDialog.show(null);
+        confirmationDialog.show();
     }
 
-    public void openSyncLog(View view) {
-        SyncLogDialog syncLogDialog = new SyncLogDialog(getContext());
-        syncLogDialog.show(getContext());
+    public void openSyncLog() {
+        SyncLogDialog syncLogDialog = new SyncLogDialog(this.getActivity());
+        syncLogDialog.show();
     }
 
     public void logout(View view) {

@@ -174,7 +174,6 @@
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:maxLines">1</item>
-        <item name="android:singleLine">true</item>
         <item name="android:textColor">@color/controlTextColor</item>
         <item name="android:textColorHint">@color/controlTextViewHint</item>
         <item name="android:textCursorDrawable">@drawable/cursor</item>
@@ -501,6 +500,13 @@
 
 
     <!-- Sub heading with bottom margin -->
+    <style name="HeadingStyle">
+        <item name="android:textColor">@color/normalText</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">@dimen/textSizeXXLarge</item>
+        <item name="android:layout_marginBottom">@dimen/parentLayoutVerticalMargin</item>
+    </style>
+
     <style name="SubHeadingStyle">
         <item name="android:textColor">@color/normalText</item>
         <item name="android:fontFamily">sans-serif-medium</item>

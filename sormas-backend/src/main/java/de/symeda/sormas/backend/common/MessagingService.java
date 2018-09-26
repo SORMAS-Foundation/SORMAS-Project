@@ -30,6 +30,7 @@ public class MessagingService {
 	public static final String SUBJECT_CASE_INVESTIGATION_DONE = "caseInvestigationDoneSubject";
 	public static final String SUBJECT_LAB_RESULT_ARRIVED = "labResultArrivedSubject";
 	public static final String SUBJECT_LAB_RESULT_SPECIFIED = "labResultSpecifiedSubject";
+	public static final String SUBJECT_LAB_SAMPLE_SHIPPED = "labSampleShippedSubject";
 	public static final String SUBJECT_CONTACT_SYMPTOMATIC = "contactSymptomaticSubject";
 	public static final String SUBJECT_TASK_START = "taskStartSubject";
 	public static final String SUBJECT_TASK_DUE = "taskDueSubject";
@@ -40,6 +41,8 @@ public class MessagingService {
 	public static final String CONTENT_CASE_INVESTIGATION_DONE = "caseInvestigationDone";
 	public static final String CONTENT_LAB_RESULT_ARRIVED = "labResultArrived";
 	public static final String CONTENT_LAB_RESULT_SPECIFIED = "labResultSpecified";
+	public static final String CONTENT_LAB_SAMPLE_SHIPPED = "labSampleShipped";
+	public static final String CONTENT_LAB_SAMPLE_SHIPPED_SHORT = "labSampleShippedShort";
 	public static final String CONTENT_CONTACT_SYMPTOMATIC = "contactSymptomatic";
 	public static final String CONTENT_TASK_START_GENERAL = "taskStartGeneral";
 	public static final String CONTENT_TASK_START_SPECIFIC = "taskStartSpecific";

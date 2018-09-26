@@ -2,11 +2,10 @@ package de.symeda.sormas.app.backend.event;
 
 import java.util.List;
 
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
@@ -57,13 +56,11 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
         }
 
         target.setInvolvementDescription(source.getInvolvementDescription());
-
         target.setResultingCaseUuid(source.getResultingCase() != null ? source.getResultingCase().getUuid() : null);
     }
 
     @Override
     public void fillInnerFromAdo(EventParticipantDto target, EventParticipant source) {
-
         if (source.getEvent() != null) {
             Event event = DatabaseHelper.getEventDao().queryForId(source.getEvent().getId());
             target.setEvent(EventDtoHelper.toReferenceDto(event));
@@ -76,6 +73,13 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
             target.setPerson(personHelper.adoToDto(person));
         } else {
             target.setPerson(null);
+        }
+
+        // Resulting case is never set to null from within the app because it
+        if (source.getResultingCaseUuid() != null) {
+            target.setResultingCase(new CaseReferenceDto(source.getResultingCaseUuid()));
+        } else {
+            target.setResultingCase(null);
         }
 
         target.setInvolvementDescription(source.getInvolvementDescription());

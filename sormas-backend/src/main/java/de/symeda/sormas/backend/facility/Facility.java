@@ -25,7 +25,10 @@ public class Facility extends AbstractDomainObject {
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String CITY = "city";
+	public static final String LATITUDE = "latitude";
+	public static final String LONGITUDE = "longitude";
 	public static final String TYPE = "type";
+	public static final String PUBLIC_OWNERSHIP = "publicOwnership";
 	
 	private String name;
 	private Region region;

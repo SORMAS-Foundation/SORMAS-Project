@@ -14,6 +14,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -140,52 +141,45 @@ public class TextViewBindingAdapters {
 
     @BindingAdapter(value={"ageWithDateValue", "prependValue", "valueFormat", "defaultValue"}, requireAll=true)
     public static void setAgeWithDateValueAndPrepend(TextView textField, Person person, String prependValue, String valueFormat, String defaultValue) {
-        String val = defaultValue;
-
         if (person == null || person.getApproximateAge() == null) {
-            textField.setText(prependValue + ": " + val);
+            textField.setText(prependValue + ": " + defaultValue);
         } else {
-            val = person.getApproximateAge().toString();
+            String age = person.getApproximateAge().toString();
+            ApproximateAgeType ageType = person.getApproximateAgeType();
+            String day = person.getBirthdateDD() != null ? person.getBirthdateDD().toString() : null;
+            String month = person.getBirthdateMM() != null ? person.getBirthdateMM().toString() : null;
+            String year = person.getBirthdateYYYY() != null ? person.getBirthdateYYYY().toString() : null;
+            StringBuilder ageWithDateBuilder = new StringBuilder();
+            ageWithDateBuilder.append(age).append(" ").append(ageType != null ? ageType.toString() : "");
 
-            if (valueFormat != null && valueFormat.trim() != "") {
-                //Age
-
-                //Year or Month
-                String ageType = person.getApproximateAgeType().toString();
-
-                //Dob
-                String dateFormat = textField.getContext().getResources().getString(R.string.date_format);
-                String date = person.getBirthdateDD() != null ? person.getBirthdateDD().toString() : "1";
-                String month = person.getBirthdateMM() != null ? String.valueOf(person.getBirthdateMM() - 1) : "0";
-                String year = person.getBirthdateYYYY().toString();
-
-                String dob = String.format(dateFormat, date, month, year);
-
-
-                textField.setText(String.format(valueFormat,prependValue, val, ageType, dob));
-            } else {
-                textField.setText(prependValue + ": " + val);
+            String dateOfBirth = null;
+            if (year != null) {
+                if (month != null) {
+                    if (day != null) {
+                        dateOfBirth = String.format(
+                                ResourceUtils.getString(textField.getContext(), R.string.date_format),
+                                day, month, year);
+                    } else {
+                        dateOfBirth = String.format(
+                                ResourceUtils.getString(textField.getContext(), R.string.date_two_values_format),
+                                month, year);
+                    }
+                } else {
+                    dateOfBirth = year;
+                }
+            } else if (month != null && day != null) {
+                dateOfBirth = String.format(
+                        ResourceUtils.getString(textField.getContext(), R.string.date_two_values_format),
+                        day, month);
             }
+
+            if (dateOfBirth != null) {
+                ageWithDateBuilder.append(" (").append(dateOfBirth).append(")");
+            }
+
+            textField.setText(prependValue + ": " + ageWithDateBuilder.toString());
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     @BindingAdapter(value={"value", "appendValue", "valueFormat", "defaultValue"}, requireAll=false)
     public static void setValue(TextView textField, String stringValue, String appendValue, String valueFormat, String defaultValue) {
@@ -597,7 +591,11 @@ public class TextViewBindingAdapters {
             textField.setText(val);
         } else {
             Case caze = DatabaseHelper.getCaseDao().queryUuidBasic(resultingCaseUuid);
-            val = "Resulting Case Status: " + caze.getInvestigationStatus().toString();
+            if (caze != null) {
+                val = "Resulting Case Status: " + caze.getInvestigationStatus().toString();
+            } else {
+                val = "Resulting Case UUID: " + DataHelper.getShortUuid(resultingCaseUuid);
+            }
 
             if (valueFormat != null && !valueFormat.trim().equals("")) {
                 textField.setText(String.format(valueFormat, val));

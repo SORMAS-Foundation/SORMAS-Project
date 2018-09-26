@@ -53,7 +53,6 @@ import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.PlagueType;
-import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -90,6 +89,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.MessageType;
@@ -101,7 +101,6 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataService;
-import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
@@ -150,7 +149,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	protected EntityManager em;
 
 	@EJB
-	private CaseClassificationFacade caseClassificationFacade;
+	private CaseClassificationFacadeEjbLocal caseClassificationFacade;
 	@EJB
 	private CaseService caseService;
 	@EJB
@@ -451,16 +450,11 @@ public class CaseFacadeEjb implements CaseFacade {
 			// Update follow-up until and status of all contacts
 			for (Contact contact : contactService.getAllByCase(newCase)) {
 				contactService.updateFollowUpUntilAndStatus(contact);
-				contactService.udpateContactStatusAndResultingCase(contact);
+				contactService.udpateContactStatus(contact);
 			}
 			for (Contact contact : contactService.getAllByResultingCase(newCase)) {
 				contactService.updateFollowUpUntilAndStatus(contact);
-				contactService.udpateContactStatusAndResultingCase(contact);
-			}
-
-			// update result case of all related event participants
-			for (EventParticipant eventParticipant : eventParticipantService.getAllByPerson(newCase.getPerson())) {
-				eventParticipantService.udpateResultingCase(eventParticipant);
+				contactService.udpateContactStatus(contact);
 			}
 		}
 

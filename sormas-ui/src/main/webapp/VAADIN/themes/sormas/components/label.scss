@@ -3,131 +3,131 @@
 	
   .v-label {
 	// Font colors
-	&.v-label-primary {
+	&.v-label-primary, .primary {
 		color: $s-primary-color;
 		font-weight: 600;
 	}
 
-	&.v-label-secondary {
+	&.v-label-secondary, .secondary {
 		color: $s-secondary-color;
 	}
 
-	&.v-label-critical {
+	&.v-label-critical, .critical {
 		color: $s-critical-color;
 		font-weight: 600;
 	}
 
-	&.v-label-important {
+	&.v-label-important, .important {
 		color: $s-important-color;
 		font-weight: 600;
 	}
 
-	&.v-label-warning {
+	&.v-label-warning, .warning {
 		color: $s-warning-color;
 		font-weight: 600;
 	}
 
-	&.v-label-relevant {
+	&.v-label-relevant, .relevant {
 		color: $s-relevant-color;
 	}
 
-	&.v-label-neutral {
+	&.v-label-neutral, .neutral {
 		color: $s-neutral-color;
 	}
 
-	&.v-label-positive {
+	&.v-label-positive, .positive {
 		color: $s-positive-color;
 	}
 
-	&.v-label-minor {
+	&.v-label-minor, .minor {
 		color: $s-minor-color;
 	}
+	
+	&.v-label-discarded, .discarded {
+        text-decoration: line-through;
+        color: #888;
+    }
+
+    &.v-label-done, .done {
+        color: #888;
+    }
+
+   	&.v-label-not, .not {
+        color: #C44;
+    }
 
 	// Label with rounded corners
-	&.v-label-rounded-corners {
+	&.v-label-rounded-corners, .rounded-corners {
 		border-radius: 8px;
 		padding: 8px;
 	}
 
-	// Label backgrounds
-	&.v-label-background-suspect {
-		background: $s-relevant-transparent-color;
-	}
-
-	&.v-label-background-probable {
-		background: $s-important-transparent-color;
-	}
-
-	&.v-label-background-confirmed {
-		background: $s-critical-transparent-color;
-	}
-
 	// Labels with colorized bar on top
-	&.v-label-bar-top-critical {
+	&.v-label-bar-top-critical, .bar-top-critical {
 		border-top: 4px solid $s-critical-color;
 		padding-top: 6px;
 	}
 
-	&.v-label-bar-top-important {
+	&.v-label-bar-top-important, .bar-top-important {
 		border-top: 4px solid $s-important-color;
 		padding-top: 6px;
 	}
 
-	&.v-label-bar-top-relevant {
+	&.v-label-bar-top-relevant, .bar-top-relevant {
 		border-top: 4px solid $s-relevant-color;
 		padding-top: 6px;
 	}
 
-	&.v-label-bar-top-neutral {
+	&.v-label-bar-top-neutral, .bar-top-neutral {
 		border-top: 4px solid $s-neutral-color;
 		padding-top: 6px;
 	}
 
-	&.v-label-bar-top-positive {
+	&.v-label-bar-top-positive, .bar-top-positive {
 		border-top: 4px solid $s-positive-color;
 		padding-top: 6px;
 	}
 
-	&.v-label-bar-top-minor {
+	&.v-label-bar-top-minor, .bar-top-minor {
 		border-top: 4px solid $s-minor-color;
 		padding-top: 6px;
 	}
 
 	// Font sizes
-	&.v-label-small {
+	&.v-label-small, .small {
     	font-size: 0.75em;
 	}
 
-	&.v-label-medium {
+	&.v-label-medium, .medium {
     	font-size: 1em;
 	}
 
-	&.v-label-large {
+	&.v-label-large, .large {
 		font-size: 1.25em;
 	}
 
-	&.v-label-xlarge {
+	&.v-label-xlarge, .xlarge {
 		font-size: 1.5em;
 	}
 	
-	&.v-label-xxlarge {
+	&.v-label-xxlarge, .xxlarge {
 		font-size: 2em;
 	}
 
-	&.v-label-xxxlarge {
+	&.v-label-xxxlarge, .xxxlarge {
     	font-size: 2.5em;
 	}
 
 	// Font styles
-	&.v-label-bold {
+	&.v-label-bold, .bold {
 		font-weight: bold;
 	}
 
-	&.v-label-uppercase {
+	&.v-label-uppercase, .uppercase {
 		text-transform: uppercase;
 	}
 
-	&.v-label-bottom-line {
+	&.v-label-bottom-line, .bottom-line {
 		border-bottom: 1px solid #CDD8EC;
 	}
   }
