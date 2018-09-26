@@ -318,6 +318,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		final int xAxisIdIndex;
 		final int seriesIdIndex;
 		hcjs.append("chart:{ "
+				+ " ignoreHiddenSeries: false, "
 				+ " type: '");
 		switch (chartType) {
 		case COLUMN:
@@ -398,7 +399,8 @@ public class StatisticsView extends AbstractStatisticsView {
 			} else {
 				hcjs.append("'").append(getEscapedFragment(StatisticsHelper.TOTAL)).append("'");
 			}
-			hcjs.append("]},");
+			int numberOfCategories = xAxisIdIndex >= 1 ? appendUnknownXAxisCaption ? xAxisCaptions.size() + 1 : xAxisCaptions.size() : 1;
+			hcjs.append("], min: 0, max: " + (numberOfCategories - 1) + "},");
 
 			hcjs.append("yAxis: { min: 0, title: { text: '").append(getEscapedFragment(StatisticsHelper.CASE_COUNT)).append("' },")
 				.append("allowDecimals: false, softMax: 10, "
