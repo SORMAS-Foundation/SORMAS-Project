@@ -21,7 +21,7 @@ import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.ui.dashboard.DashboardView;
+import de.symeda.sormas.ui.dashboard.DashboardSurveillanceView;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -58,7 +58,7 @@ public class Menu extends CssLayout {
         image.addClickListener(new com.vaadin.event.MouseEvents.ClickListener() {
 			@Override
 			public void click(com.vaadin.event.MouseEvents.ClickEvent event) {
-	        	SormasUI.get().getNavigator().navigateTo(DashboardView.VIEW_NAME);
+	        	SormasUI.get().getNavigator().navigateTo(DashboardSurveillanceView.VIEW_NAME);
 			}
         });
         top.addComponent(image);

@@ -33,7 +33,7 @@ public enum UserRight {
 			INFORMANT,
 			LAB_USER,
 			EVENT_OFFICER
-	),
+			),
 	CASE_VIEW(
 			ADMIN,
 			NATIONAL_USER,
@@ -48,7 +48,7 @@ public enum UserRight {
 			INFORMANT,
 			LAB_USER,
 			EVENT_OFFICER
-	),
+			),
 	CASE_EDIT(
 			ADMIN,
 			NATIONAL_USER,
@@ -61,14 +61,14 @@ public enum UserRight {
 			INFORMANT,
 			LAB_USER,
 			EVENT_OFFICER
-	),
+			),
 	CASE_TRANSFER(
 			ADMIN,
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR
-	),
+			),
 	/*
 	 * Edit the investigation status - either by setting a respective task to done or by manually changing it in the case
 	 */
@@ -78,7 +78,7 @@ public enum UserRight {
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR
-	),
+			),
 	/*
 	 * Edit the classification and outcome of a case
 	 */
@@ -89,13 +89,13 @@ public enum UserRight {
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR,
 			LAB_USER
-	),
+			),
 	CASE_CHANGE_DISEASE(
 			ADMIN,
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR,
 			CASE_SUPERVISOR
-	),
+			),
 	CASE_CHANGE_EPID_NUMBER(
 			ADMIN,
 			NATIONAL_USER,
@@ -107,13 +107,13 @@ public enum UserRight {
 			CONTACT_OFFICER,
 			LAB_USER,
 			EVENT_OFFICER
-	),
+			),
 	CASE_DELETE(
 			ADMIN
-	),
+			),
 	CASE_IMPORT(
 			ADMIN
-	),
+			),
 	CASE_EXPORT(
 			ADMIN,
 			NATIONAL_USER,
@@ -123,7 +123,7 @@ public enum UserRight {
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
 			LAB_USER
-	),
+			),
 	SAMPLE_CREATE(
 			ADMIN,
 			NATIONAL_USER,
@@ -133,7 +133,7 @@ public enum UserRight {
 			CASE_OFFICER,
 			INFORMANT,
 			LAB_USER
-	),
+			),
 	SAMPLE_VIEW(
 			ADMIN,
 			NATIONAL_USER,
@@ -148,7 +148,7 @@ public enum UserRight {
 			INFORMANT,
 			LAB_USER,
 			EVENT_OFFICER
-	),
+			),
 	SAMPLE_EDIT(
 			ADMIN,
 			NATIONAL_USER,
@@ -158,17 +158,17 @@ public enum UserRight {
 			CASE_OFFICER,
 			INFORMANT,
 			LAB_USER
-	),
+			),
 	SAMPLE_DELETE(
 			ADMIN
-	),
+			),
 	SAMPLE_TRANSFER(
 			ADMIN,
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR,
 			CASE_SUPERVISOR,
 			LAB_USER
-	),
+			),
 	SAMPLE_EXPORT(
 			ADMIN,
 			NATIONAL_USER,
@@ -178,21 +178,21 @@ public enum UserRight {
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
 			LAB_USER
-	),
+			),
 	SAMPLETEST_CREATE(
 			ADMIN,
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR,
 			CASE_SUPERVISOR,
 			LAB_USER
-	),
+			),
 	SAMPLETEST_EDIT(
 			ADMIN,
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR,
 			CASE_SUPERVISOR,
 			LAB_USER
-	),
+			),
 	CONTACT_CREATE(
 			ADMIN,
 			NATIONAL_USER,
@@ -200,7 +200,7 @@ public enum UserRight {
 			SURVEILLANCE_OFFICER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER
-	),
+			),
 	CONTACT_VIEW(
 			ADMIN,
 			NATIONAL_USER,
@@ -212,12 +212,12 @@ public enum UserRight {
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER,
 			EVENT_OFFICER
-	),
+			),
 	CONTACT_ASSIGN(
 			ADMIN,
 			NATIONAL_USER,
 			CONTACT_SUPERVISOR
-	),
+			),
 	CONTACT_EDIT(
 			ADMIN,
 			NATIONAL_USER,
@@ -225,16 +225,16 @@ public enum UserRight {
 			SURVEILLANCE_OFFICER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER
-	),
+			),
 	CONTACT_DELETE(
 			ADMIN
-	),
+			),
 	CONTACT_CLASSIFY(
 			ADMIN,
 			NATIONAL_USER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER
-	),
+			),
 	// users that are allowed to convert a contact to a case need to be allowed to create a case
 	CONTACT_CONVERT(
 			ADMIN,
@@ -243,7 +243,7 @@ public enum UserRight {
 			SURVEILLANCE_OFFICER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER
-	),
+			),
 	CONTACT_EXPORT(
 			ADMIN,
 			NATIONAL_USER,
@@ -253,19 +253,19 @@ public enum UserRight {
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
 			LAB_USER
-	),
+			),
 	VISIT_CREATE(
 			ADMIN,
 			NATIONAL_USER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER
-	),
+			),
 	VISIT_EDIT(
 			ADMIN,
 			NATIONAL_USER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER
-	),
+			),
 	TASK_CREATE(
 			ADMIN,
 			NATIONAL_USER,
@@ -273,7 +273,7 @@ public enum UserRight {
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
 			LAB_USER
-	),
+			),
 	TASK_VIEW(
 			ADMIN,
 			NATIONAL_USER,
@@ -288,7 +288,7 @@ public enum UserRight {
 			INFORMANT,
 			LAB_USER,
 			EVENT_OFFICER
-	),
+			),
 	TASK_EDIT(
 			ADMIN,
 			NATIONAL_USER,
@@ -301,7 +301,7 @@ public enum UserRight {
 			INFORMANT,
 			LAB_USER,
 			EVENT_OFFICER
-	),
+			),
 	TASK_ASSIGN(
 			ADMIN,
 			NATIONAL_USER,
@@ -309,14 +309,14 @@ public enum UserRight {
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
 			LAB_USER
-	),
+			),
 	EVENT_CREATE(
 			ADMIN,
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
 			EVENT_OFFICER
-	),
+			),
 	EVENT_VIEW(
 			ADMIN,
 			NATIONAL_USER,
@@ -330,14 +330,14 @@ public enum UserRight {
 			CONTACT_OFFICER,
 			INFORMANT,
 			EVENT_OFFICER
-	),
+			),
 	EVENT_EDIT(
 			ADMIN,
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
 			EVENT_OFFICER
-	),
+			),
 	EVENT_EXPORT(
 			ADMIN,
 			NATIONAL_USER,
@@ -347,24 +347,24 @@ public enum UserRight {
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
 			LAB_USER
-	),
+			),
 	EVENTPARTICIPANT_CREATE(
 			ADMIN,
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
 			EVENT_OFFICER
-	),
+			),
 	EVENTPARTICIPANT_EDIT(
 			ADMIN,
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
 			EVENT_OFFICER
-	),
+			),
 	WEEKLYREPORT_CREATE(
 			INFORMANT
-	),
+			),
 	WEEKLYREPORT_VIEW(
 			ADMIN,
 			NATIONAL_USER,
@@ -375,48 +375,48 @@ public enum UserRight {
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
 			INFORMANT
-	),
+			),
 	USER_CREATE(
 			ADMIN
-//			NATIONAL_USER,
-//			SURVEILLANCE_SUPERVISOR,
-//			CASE_SUPERVISOR,
-//			CONTACT_SUPERVISOR,
-//			LAB_USER,
-//			EVENT_OFFICER
-	),
+			//			NATIONAL_USER,
+			//			SURVEILLANCE_SUPERVISOR,
+			//			CASE_SUPERVISOR,
+			//			CONTACT_SUPERVISOR,
+			//			LAB_USER,
+			//			EVENT_OFFICER
+			),
 	USER_EDIT(
 			ADMIN
-//			NATIONAL_USER,
-//			SURVEILLANCE_SUPERVISOR,
-//			CASE_SUPERVISOR,
-//			CONTACT_SUPERVISOR,
-//			LAB_USER,
-//			EVENT_OFFICER
-	),
+			//			NATIONAL_USER,
+			//			SURVEILLANCE_SUPERVISOR,
+			//			CASE_SUPERVISOR,
+			//			CONTACT_SUPERVISOR,
+			//			LAB_USER,
+			//			EVENT_OFFICER
+			),
 	USER_VIEW(
 			ADMIN
-//			NATIONAL_USER,
-//			SURVEILLANCE_SUPERVISOR,
-//			CASE_SUPERVISOR,
-//			CONTACT_SUPERVISOR,
-//			LAB_USER,
-//			EVENT_OFFICER
-	),
+			//			NATIONAL_USER,
+			//			SURVEILLANCE_SUPERVISOR,
+			//			CASE_SUPERVISOR,
+			//			CONTACT_SUPERVISOR,
+			//			LAB_USER,
+			//			EVENT_OFFICER
+			),
 	CONFIGURATION_ACCESS(
 			ADMIN,
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
 			SURVEILLANCE_SUPERVISOR
-	),
+			),
 	OUTBREAK_CONFIGURE_ALL(
 			ADMIN,
 			NATIONAL_USER
-	),
+			),
 	OUTBREAK_CONFIGURE_RESTRICTED(
 			SURVEILLANCE_SUPERVISOR
-	),
+			),
 	STATISTICS_EXPORT(
 			ADMIN,
 			NATIONAL_USER,
@@ -426,14 +426,14 @@ public enum UserRight {
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
 			LAB_USER
-	),
+			),
 	DATABASE_EXPORT_ACCESS(
 			ADMIN,
 			NATIONAL_USER
-	),
+			),
 	PERFORM_BULK_OPERATIONS(
 			ADMIN
-	), 
+			), 
 	INFRASTRUCTURE_CREATE(
 			ADMIN
 			), 
@@ -446,18 +446,46 @@ public enum UserRight {
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
 			SURVEILLANCE_SUPERVISOR
-	);
-	
+			),
+	DASHBOARD_VIEW(
+			ADMIN,
+			NATIONAL_USER,
+			NATIONAL_OBSERVER,
+			STATE_OBSERVER,
+			SURVEILLANCE_SUPERVISOR,
+			CASE_SUPERVISOR,
+			CONTACT_SUPERVISOR,
+			LAB_USER,
+			EVENT_OFFICER
+			),
+	DASHBOARD_SURVEILLANCE_ACCESS(
+			ADMIN,
+			NATIONAL_USER,
+			NATIONAL_OBSERVER,
+			STATE_OBSERVER,
+			SURVEILLANCE_SUPERVISOR,
+			CASE_SUPERVISOR,
+			LAB_USER,
+			EVENT_OFFICER
+			),
+	DASHBOARD_CONTACT_ACCESS(
+			ADMIN,
+			NATIONAL_USER,
+			NATIONAL_OBSERVER,
+			STATE_OBSERVER,
+			CONTACT_SUPERVISOR
+			);
+
 	private final Set<UserRole> userRoles;
-	
+
 	private UserRight(UserRole... userRoles) {
 		this.userRoles = Collections.unmodifiableSet(new HashSet<UserRole>(Arrays.asList(userRoles)));
 	}
-	
+
 	public boolean isForRole(UserRole userRole) {
 		return userRoles.contains(userRole);
 	}
-	
+
 	public Set<UserRole> getUserRoles() {
 		return userRoles;
 	}
