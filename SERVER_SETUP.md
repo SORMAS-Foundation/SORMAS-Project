@@ -60,7 +60,7 @@ The `/opt/payara-172/` as payara-directory can, in some linux distros, only be m
 * Upload to /root/deploy/sormas/$(date +%F)
 * ``cd /root/deploy/sormas/$(date +%F)``
 * Open ``setup/server-setup.sh`` in a text editor and change DEV_SYSTEM, GLASSFISH_HOME, DOMAINS_HOME, PORT_BASE, PORT_ADMIN, DB_PW, DB_PW_AUDIT, MAIL_FROM to appropriate values for your server or development environment.
-* Make the file executable: ``chmod +x glassfish-config.sh``
+* Make the file executable: ``chmod +x server-setup.sh``
 * Set up a payara domain called "sormas" by executing it: ``./server-setup.sh`` Press enter whenever asked for it.
 * **IMPORTANT**: Make sure the script executed successfully. If anything goes you need to fix the problem (or ask for help), then delete the created domain directory and re-execute the script.
 * Adjust the logging configuration in opt/domains/sormas/config/logback.xml based on your needs (e.g. configure and activate email appender)

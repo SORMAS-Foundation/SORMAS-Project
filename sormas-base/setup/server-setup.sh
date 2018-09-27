@@ -12,13 +12,13 @@
 DEV_SYSTEM=false
 
 # GLASSFISH
+TEMP_DIR=/opt/sormas-temp
+GENERATED_DIR=/opt/sormas-generated
 GLASSFISH_HOME=/opt/payara-172/glassfish
 DOMAIN_NAME=sormas
 DOMAINS_HOME=/opt/domains
 DOMAIN_DIR=${DOMAINS_HOME}/${DOMAIN_NAME}
 LOG_HOME=/var/log/glassfish/sormas
-TEMP_DIR=/opt/sormas-temp
-GENERATED_DIR=/opt/sormas-generated
 PORT_BASE=6000
 PORT_ADMIN=6048
 
@@ -33,12 +33,16 @@ DB_SERVER=localhost
 DB_PORT=5432
 
 # MAIL
-MAIL_FROM=
+MAIL_FROM=dummy@sormas.org
 
 # ------ Config END ------
 
 echo "--- all values set properly?"
-echo 
+echo "WINDOWS: You may need to prefix the directories with /c"
+echo "WINDOWS: setfacl and chown messages can be ignored"
+echo "------"
+echo "Temp Directory: ${TEMP_DIR}"
+echo "Generated Directory: ${GENERATED_DIR}"
 echo "GF_HOME: ${GLASSFISH_HOME}"
 echo "Domain Name: ${DOMAIN_NAME}"
 echo "Domain Home: ${DOMAIN_DIR}"
@@ -49,8 +53,10 @@ echo "Admin Port: ${PORT_ADMIN}"
 read -p "Press [Enter] to continue..."
 
 # create needed directories and set user rights
-mkdir -R ${TEMP_DIR}
-mkdir -R ${GENERATED_DIR}
+mkdir ${DOMAINS_HOME}
+mkdir ${LOG_HOME}
+mkdir ${TEMP_DIR}
+mkdir ${GENERATED_DIR}
 setfacl -m u:postgres:rwx ${TEMP_DIR} 
 setfacl -m u:glassfish:rwx ${TEMP_DIR}
 setfacl -m u:postgres:rwx ${GENERATED_DIR}
@@ -62,17 +68,15 @@ ${GLASSFISH_HOME}/bin/asadmin create-domain --domaindir ${DOMAINS_HOME} --portba
 
 read -p "Press [Enter] to continue..."
 
-if [ $DEV_SYSTEM != true ] then
-  # copying server-libs
-  cp serverlibs/*.jar ${DOMAIN_DIR}/lib/
+# copying server-libs
+cp serverlibs/*.jar ${DOMAIN_DIR}/lib/
 
-  # copying bundles
-  mkdir -p ${DOMAIN_DIR}/autodeploy/bundles
-  cp -a bundles/*.jar ${DOMAIN_DIR}/autodeploy/bundles/
+# copying bundles
+mkdir -p ${DOMAIN_DIR}/autodeploy/bundles
+cp -a bundles/*.jar ${DOMAIN_DIR}/autodeploy/bundles/
 
-  echo "copying libs completed"
-  read -p "Press [Enter] to continue..."
-fi
+echo "copying libs completed"
+read -p "Press [Enter] to continue..."
 
 cat << END > ${DOMAIN_DIR}/config/login.conf
 ${DOMAIN_NAME}Realm { org.wamblee.glassfish.auth.FlexibleJdbcLoginModule required; };
@@ -85,6 +89,7 @@ ${GLASSFISH_HOME}/bin/asadmin start-domain --domaindir ${DOMAINS_HOME} ${DOMAIN_
 read -p "Press [Enter] to continue..."
 
 # General domain settings
+${ASADMIN} delete-jvm-options -Xmx512m
 ${ASADMIN} create-jvm-options -Xmx1024m
 
 # JDBC pool
@@ -130,7 +135,7 @@ ${ASADMIN} set-log-levels javax.enterprise.system.util=SEVERE
 
 read -p "Press [Enter] to continue..."
 
-if [ $DEV_SYSTEM != true ] then
+if [ $DEV_SYSTEM != true ]; then
   #make the glassfish listen to localhost only
   ${ASADMIN} set configs.config.server-config.http-service.virtual-server.server.network-listeners=http-listener-1
   ${ASADMIN} delete-network-listener --target=server-config http-listener-2
