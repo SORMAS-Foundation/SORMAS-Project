@@ -90,20 +90,12 @@ public class FacilitiesGrid extends Grid {
 	}
 
 	public void reload() {
-
-		// remove the container before updating items to speed up the process
-		GeneratedPropertyContainer container = (GeneratedPropertyContainer) getContainerDataSource();
-		BeanItemContainer<FacilityDto> innerContainer = (BeanItemContainer<FacilityDto>) container.getWrappedContainer();
-		setContainerDataSource(new BeanItemContainer<FacilityDto>(FacilityDto.class));
-
-		innerContainer.removeAllItems();
+		getContainer().removeAllItems();
 
 		List<FacilityDto> facilities = FacadeProvider.getFacilityFacade()
 				.getIndexList(LoginHelper.getCurrentUser().getUuid(), facilityCriteria);
 
-		innerContainer.addAll(facilities);
-
-		setContainerDataSource(container);
+		getContainer().addAll(facilities);
 	}
 
 	public void setRegionFilter(RegionReferenceDto region) {
