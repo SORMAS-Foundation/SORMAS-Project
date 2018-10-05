@@ -1,0 +1,39 @@
+
+@mixin sormas-countelement {
+
+  .count-element {
+  	
+  	> .v-slot:first-child {
+  	  border-bottom: 4px solid;
+  	  padding-top: 6px;
+  	}
+  	 
+  	&.important .v-slot {
+  	  border-color: $s-important-color;
+  	}
+  	 
+  	&.critical .v-slot {
+  	  border-color: $s-critical-color;
+  	}
+  	 
+  	&.relevant .v-slot {
+  	  border-color: $s-relevant-color;
+  	}
+  	  
+  	&.neutral .v-slot {
+  	  border-color: $s-neutral-color;
+  	}
+  	 
+  	&.positive .v-slot {
+  	  border-color: $s-positive-color;
+  	}
+  	 
+  	&.minor .v-slot {
+  	  border-color: $s-minor-color;
+  	}
+  
+    &.primary .v-slot {
+      border-color: $s-primary-color;
+    }
+  }
+}

@@ -56,7 +56,7 @@ import de.symeda.sormas.api.statistics.StatisticsHelper.StatisticsKeyComparator;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.ui.dashboard.MapComponent;
+import de.symeda.sormas.ui.dashboard.DashboardMapComponent;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.statistics.StatisticsFilterElement.TokenizableValue;
 import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisualizationChartType;
@@ -696,7 +696,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		mapLayout.addComponent(map);
 		mapLayout.setExpandRatio(map, 1);
 
-		AbstractOrderedLayout regionLegend = MapComponent.buildRegionLegend(
+		AbstractOrderedLayout regionLegend = DashboardMapComponent.buildRegionLegend(
 				true, CaseMeasure.CASE_COUNT, false, 
 				valuesLowerQuartile, valuesMedian, valuesUpperQuartile);
 		Label legendHeader = new Label("Map key");

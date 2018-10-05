@@ -340,6 +340,13 @@ public final class DateHelper {
 	}
 
 	/**
+	 * Calculate full days between the two given dates.
+	 */
+	public static int getFullDaysBetween(Date start, Date end) {
+		return Days.daysBetween(new LocalDate(start.getTime()), new LocalDate(end.getTime())).getDays();
+	}
+	
+	/**
 	 * Calculate days between the two given dates. This includes both the start and
 	 * end dates, so a one-week period from Monday to Sunday will return 7.
 	 */
@@ -441,6 +448,10 @@ public final class DateHelper {
 		calendar.setTime(getEndOfDay(date));
 		return new LocalDateTime(calendar.getTime()).withDayOfYear(calendar.getActualMaximum(Calendar.DAY_OF_YEAR))
 				.toDate();
+	}
+	
+	public static boolean isBetween(Date date, Date start, Date end) {
+		return (date.equals(start) || date.after(start)) && (date.equals(end) || date.before(end));
 	}
 
 	/**

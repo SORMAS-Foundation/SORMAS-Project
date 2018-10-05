@@ -29,11 +29,11 @@ public class CasePopupGrid extends Grid {
 	public static final String LAST_NAME = "lastName";
 	
 	private final FacilityReferenceDto facility;
-	private final MapComponent mapComponent;
+	private final DashboardMapComponent dashboardMapComponent;
 	
-	public CasePopupGrid(Window window, FacilityReferenceDto facility, MapComponent mapComponent) {
+	public CasePopupGrid(Window window, FacilityReferenceDto facility, DashboardMapComponent dashboardMapComponent) {
 		this.facility = facility;
-		this.mapComponent = mapComponent;
+		this.dashboardMapComponent = dashboardMapComponent;
 		setWidth(960, Unit.PIXELS);
 		setHeightUndefined();
 		
@@ -117,9 +117,9 @@ public class CasePopupGrid extends Grid {
 		
 		List<CaseDataDto> cases;
 		if (facility != null) {
-			cases = mapComponent.getCasesForFacility(facility);
+			cases = dashboardMapComponent.getCasesForFacility(facility);
 		} else {
-			cases = mapComponent.getCasesWithoutGPSTag();
+			cases = dashboardMapComponent.getCasesWithoutGPSTag();
 		}
 		
         getContainer().addAll(cases);

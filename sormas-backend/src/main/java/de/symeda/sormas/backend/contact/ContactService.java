@@ -4,7 +4,9 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -25,6 +27,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.contact.DashboardContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -262,6 +265,155 @@ public class ContactService extends AbstractAdoService<Contact> {
 		return result;
 	}
 
+	public List<DashboardContactDto> getContactsForDashboard(Region region, District district, Disease disease, Date from, Date to, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<DashboardContactDto> cq = cb.createQuery(DashboardContactDto.class);
+		Root<Contact> contact = cq.from(getElementClass());
+		Join<Contact, Case> caze = contact.join(Contact.CAZE, JoinType.LEFT);
+
+		Predicate filter = createUserFilter(cb, cq, contact, user);
+
+		// Date filter
+		Predicate dateFilter = cb.or(
+				cb.between(contact.get(Contact.REPORT_DATE_TIME), from, to),
+				cb.between(contact.get(Contact.FOLLOW_UP_UNTIL), from, to));
+		if (filter != null) {
+			filter = cb.and(filter, dateFilter);
+		} else {
+			filter = dateFilter;
+		}
+
+		if (region != null) {
+			Predicate regionFilter = cb.equal(caze.get(Case.REGION), region);
+			if (filter != null) {
+				filter = cb.and(filter, regionFilter);
+			} else {
+				filter = regionFilter;
+			}
+		}
+
+		if (district != null) {
+			Predicate districtFilter = cb.equal(caze.get(Case.DISTRICT), district);
+			if (filter != null) {
+				filter = cb.and(filter, districtFilter);
+			} else {
+				filter = districtFilter;
+			}
+		}
+
+		if (disease != null) {
+			Predicate diseaseFilter = cb.equal(caze.get(Case.DISEASE), disease);
+			if (filter != null) {
+				filter = cb.and(filter, diseaseFilter);
+			} else {
+				filter = diseaseFilter;
+			}
+		}
+
+		List<DashboardContactDto> result;
+		if (filter != null) {
+			cq.where(filter);
+			cq.multiselect(
+					contact.get(Contact.UUID),
+					contact.get(Contact.REPORT_DATE_TIME),
+					contact.get(Contact.CONTACT_STATUS),
+					contact.get(Contact.CONTACT_CLASSIFICATION),
+					contact.get(Contact.FOLLOW_UP_STATUS),
+					contact.get(Contact.FOLLOW_UP_UNTIL),
+					caze.get(Case.DISEASE));
+
+			result = em.createQuery(cq).getResultList();	
+			for (DashboardContactDto dashboardContactDto : result) {
+				Visit lastVisit = visitService.getLastVisitByContact(getByUuid(dashboardContactDto.getUuid()), null);
+				dashboardContactDto.setSymptomatic(lastVisit != null ? lastVisit.getSymptoms().getSymptomatic() : false);
+				dashboardContactDto.setLastVisitStatus(lastVisit != null ? lastVisit.getVisitStatus() : null);
+				dashboardContactDto.setLastVisitDateTime(lastVisit != null ? lastVisit.getVisitDateTime() : null);
+			}
+		} else {
+			result = Collections.emptyList();
+		}
+
+		return result;
+	}
+	
+	public Map<ContactStatus, Long> getNewContactCountPerStatus(ContactCriteria contactCriteria, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Contact> contact = cq.from(getElementClass());
+		
+		Predicate filter = createUserFilter(cb, cq, contact, user);
+		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, cb, contact);
+		if (filter != null) {
+			filter = cb.and(filter, criteriaFilter);
+		} else {
+			filter = criteriaFilter;
+		}
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.groupBy(contact.get(Contact.CONTACT_STATUS));
+		cq.multiselect(contact.get(Contact.CONTACT_STATUS), cb.count(contact));
+		List<Object[]> results = em.createQuery(cq).getResultList();
+		
+		Map<ContactStatus, Long> resultMap = results.stream().collect(
+				Collectors.toMap(e -> (ContactStatus) e[0], e -> (Long) e[1]));
+		return resultMap;
+	}
+
+	public Map<ContactClassification, Long> getNewContactCountPerClassification(ContactCriteria contactCriteria, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Contact> contact = cq.from(getElementClass());
+		
+		Predicate filter = createUserFilter(cb, cq, contact, user);
+		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, cb, contact);
+		if (filter != null) {
+			filter = cb.and(filter, criteriaFilter);
+		} else {
+			filter = criteriaFilter;
+		}
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.groupBy(contact.get(Contact.CONTACT_CLASSIFICATION));
+		cq.multiselect(contact.get(Contact.CONTACT_CLASSIFICATION), cb.count(contact));
+		List<Object[]> results = em.createQuery(cq).getResultList();
+		
+		Map<ContactClassification, Long> resultMap = results.stream().collect(
+				Collectors.toMap(e -> (ContactClassification) e[0], e -> (Long) e[1]));
+		return resultMap;
+	}
+
+	public Map<FollowUpStatus, Long> getNewContactCountPerFollowUpStatus(ContactCriteria contactCriteria, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Contact> contact = cq.from(getElementClass());
+		
+		Predicate filter = createUserFilter(cb, cq, contact, user);
+		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, cb, contact);
+		if (filter != null) {
+			filter = cb.and(filter, criteriaFilter);
+		} else {
+			filter = criteriaFilter;
+		}
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.groupBy(contact.get(Contact.FOLLOW_UP_STATUS));
+		cq.multiselect(contact.get(Contact.FOLLOW_UP_STATUS), cb.count(contact));
+		List<Object[]> results = em.createQuery(cq).getResultList();
+		
+		Map<FollowUpStatus, Long> resultMap = results.stream().collect(
+				Collectors.toMap(e -> (FollowUpStatus) e[0], e -> (Long) e[1]));
+		return resultMap;
+	}
+	
 	/**
 	 * Calculates resultingCase and contact status based on: - existing disease
 	 * cases (and classification) of the person - the incubation period and - the
@@ -484,6 +636,9 @@ public class ContactService extends AbstractAdoService<Contact> {
 		}
 		if (contactCriteria.getFollowUpStatus() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Contact.FOLLOW_UP_STATUS), contactCriteria.getFollowUpStatus()));
+		}
+		if (contactCriteria.getReportDateFrom() != null && contactCriteria.getReportDateTo() != null) {
+			filter = and(cb, filter, cb.between(from.get(Contact.REPORT_DATE_TIME), contactCriteria.getReportDateFrom(), contactCriteria.getReportDateTo()));
 		}
 
 		return filter;

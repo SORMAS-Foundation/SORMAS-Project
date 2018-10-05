@@ -77,20 +77,17 @@ public final class CssStyles {
 	public static final String LABEL_XLARGE = "xlarge";
 	public static final String LABEL_XXLARGE = "xxlarge";
 	public static final String LABEL_XXXLARGE = "xxxlarge";
+	public static final String LABEL_REALLY_LARGE = "really-large";
 	
 	// Font styles
 	public static final String LABEL_BOLD = "bold";
 	public static final String LABEL_UPPERCASE = "uppercase";
 	
 	// Label styles
-	public static final String LABEL_BAR_TOP_CRITICAL = "bar-top-critical";
-	public static final String LABEL_BAR_TOP_IMPORTANT = "bar-top-important";
-	public static final String LABEL_BAR_TOP_RELEVANT = "bar-top-relevant";
-	public static final String LABEL_BAR_TOP_NEUTRAL = "bar-top-neutral";
-	public static final String LABEL_BAR_TOP_POSITIVE = "bar-top-positive";
-	public static final String LABEL_BAR_TOP_MINOR = "bar-top-minor";
 	public static final String LABEL_BOTTOM_LINE = "bottom-line";
 	public static final String LABEL_ROUNDED_CORNERS = "rounded-corners";
+	public static final String LABEL_ROUNDED_CORNERS_SLIM = "rounded-corners-slim";
+	public static final String LABEL_BACKGROUND_FOCUS_LIGHT = "background-focus-light";
 	
 	// Layout stlyes
 	public static final String LAYOUT_MINIMAL = "minimal";
@@ -121,6 +118,7 @@ public final class CssStyles {
 	
 	
 	// SVG fill and stroke styles
+	public static final String SVG_FILL_PRIMARY = "svg-fill-primary";
 	public static final String SVG_FILL_BACKGROUND = "svg-fill-background";
 	public static final String SVG_FILL_CRITICAL = "svg-fill-critical";
 	public static final String SVG_FILL_IMPORTANT = "svg-fill-important";
@@ -168,6 +166,9 @@ public final class CssStyles {
 	
 	// Checkbox styles
 	public static final String CHECKBOX_FILTER_INLINE = "filter-inline";
+	
+	// Combo Box styles
+	public static final String COMBO_BOX_SUBTLE = "subtle";
 	
 	// Layout components
 	public static final String ROOT_COMPONENT = "root-component";

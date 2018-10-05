@@ -200,7 +200,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 				dashboardDataProvider.setToDate(DateHelper.getEpiWeekEnd(toWeek));
 			}
 
-			if (fromDate != null && toDate != null) {
+			if ((fromDate != null && toDate != null) || (fromWeek != null && toWeek != null)) {
 				changeDateFilterButtonsStyles(customButton);
 				dashboardView.refreshDashboard();
 				if (dateFilterOption == DateFilterOption.DATE) {

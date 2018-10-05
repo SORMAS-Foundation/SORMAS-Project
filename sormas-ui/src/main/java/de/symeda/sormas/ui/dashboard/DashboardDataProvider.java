@@ -7,6 +7,7 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
+import de.symeda.sormas.api.contact.DashboardContactDto;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -19,6 +20,7 @@ import de.symeda.sormas.ui.login.LoginHelper;
 
 public class DashboardDataProvider {
 
+	private DashboardType dashboardType;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private Disease disease;
@@ -35,7 +37,9 @@ public class DashboardDataProvider {
 	private List<DashboardSampleDto> samples = new ArrayList<>();
 	private List<DashboardTaskDto> tasks = new ArrayList<>();
 	private List<DashboardTaskDto> pendingTasks = new ArrayList<>();
-
+	private List<DashboardContactDto> contacts = new ArrayList<>();
+	private List<DashboardContactDto> previousContacts = new ArrayList<>();
+	
 	public void refreshData() {
 		// Update the entities lists according to the filters
 		String userUuid = LoginHelper.getCurrentUser().getUuid();
@@ -54,11 +58,15 @@ public class DashboardDataProvider {
 		setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district, disease, previousFromDate, previousToDate, userUuid));
 		// Samples
 		setSamples(FacadeProvider.getSampleFacade().getNewSamplesForDashboard(region, district, disease, fromDate, toDate, userUuid));
-
 		// Tasks
 		setTasks(FacadeProvider.getTaskFacade().getAllByUserForDashboard(null, 
 				DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(new Date())), DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(new Date())), userUuid));
 		setPendingTasks(FacadeProvider.getTaskFacade().getAllByUserForDashboard(TaskStatus.PENDING, null, null, userUuid));
+		// Contacts
+		setContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, fromDate, toDate, userUuid));
+		setPreviousContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, previousFromDate, previousToDate, userUuid));
+		// Visits
+		
 	}
 
 	public List<DashboardCaseDto> getCases() {
@@ -115,6 +123,18 @@ public class DashboardDataProvider {
 	public void setPendingTasks(List<DashboardTaskDto> pendingTasks) {
 		this.pendingTasks = pendingTasks;
 	}
+	public List<DashboardContactDto> getContacts() {
+		return contacts;
+	}
+	public void setContacts(List<DashboardContactDto> contacts) {
+		this.contacts = contacts;
+	}
+	public List<DashboardContactDto> getPreviousContacts() {
+		return previousContacts;
+	}
+	public void setPreviousContacts(List<DashboardContactDto> previousContacts) {
+		this.previousContacts = previousContacts;
+	}
 	public RegionReferenceDto getRegion() {
 		return region;
 	}
@@ -150,6 +170,12 @@ public class DashboardDataProvider {
 	}
 	public void setToDate(Date toDate) {
 		this.toDate = toDate;
+	}
+	public DashboardType getDashboardType() {
+		return dashboardType;
+	}
+	public void setDashboardType(DashboardType dashboardType) {
+		this.dashboardType = dashboardType;
 	}
 
 }

@@ -2,6 +2,7 @@ package de.symeda.sormas.api.contact;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Remote;
 
@@ -42,4 +43,12 @@ public interface ContactFacade {
 	List<ContactReferenceDto> getAllByVisit(VisitReferenceDto visitRef);
 
 	List<ContactExportDto> getExportList(String userUuid, ContactCriteria contactCriteria);
+	
+	List<DashboardContactDto> getContactsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
+	
+	Map<ContactStatus, Long> getNewContactCountPerStatus(ContactCriteria contactCriteria, String userUuid);
+
+	Map<ContactClassification, Long> getNewContactCountPerClassification(ContactCriteria contactCriteria, String userUuid);
+	
+	Map<FollowUpStatus, Long> getNewContactCountPerFollowUpStatus(ContactCriteria contactCriteria, String userUuid);
 }

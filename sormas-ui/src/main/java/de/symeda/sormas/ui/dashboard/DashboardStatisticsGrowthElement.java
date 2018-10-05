@@ -11,41 +11,70 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
 public class DashboardStatisticsGrowthElement extends VerticalLayout {
-	
-	private Label countLabel;
-	private Label growthLabel;
-	private Label percentageLabel;
+
+	protected HorizontalLayout growthLayout;
+	protected Label countLabel;
+	protected Label growthLabel;
+	protected Label percentageLabel;
+	protected Label captionLabel;
+
+	protected String caption;
+	private String captionClass;
+
+	public DashboardStatisticsGrowthElement(String caption) {
+		this(caption, null, null);
+	}
 
 	public DashboardStatisticsGrowthElement(String caption, String captionClass, Alignment alignment) {
-		setDefaultComponentAlignment(alignment);
+		this.caption = caption;
+		this.captionClass = captionClass;
+
+		if (alignment != null) {
+			setDefaultComponentAlignment(alignment);
+		}
 		CssStyles.style(this, CssStyles.VSPACE_3);
+
+		growthLayout = new HorizontalLayout();
+
+		createCountLabel();
+		growthLayout.addComponent(countLabel);
+		createGrowthLabel();
+		growthLayout.addComponent(growthLabel);
+		growthLayout.setComponentAlignment(growthLabel, Alignment.MIDDLE_CENTER);
+		createPercentageLabel();
+		growthLayout.addComponent(percentageLabel);
+
+		addComponent(growthLayout);
 		
-		HorizontalLayout growthLayout = new HorizontalLayout();
-		
+		createCaptionLabel();
+		addComponent(captionLabel);
+	}
+
+	protected void createCountLabel() {
 		countLabel = new Label();
 		CssStyles.style(countLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.HSPACE_RIGHT_4);
-		growthLayout.addComponent(countLabel);
-		
+	}
+
+	protected void createGrowthLabel() {
 		growthLabel = new Label();
 		growthLabel.setHeightUndefined();
 		growthLabel.setContentMode(ContentMode.HTML);
 		CssStyles.style(growthLabel, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.HSPACE_RIGHT_4);
-		growthLayout.addComponent(growthLabel);
-		growthLayout.setComponentAlignment(growthLabel, Alignment.MIDDLE_CENTER);
-		
+
+	}
+
+	protected void createPercentageLabel() {
 		percentageLabel = new Label();
 		CssStyles.style(percentageLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD);
-		growthLayout.addComponent(percentageLabel);
-		
-		addComponent(growthLayout);
-		
-		Label captionLabel = new Label(caption);
+	}
+
+	protected void createCaptionLabel() {
+		captionLabel = new Label(caption);
 		captionLabel.setWidthUndefined();
 		CssStyles.style(captionLabel, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_UPPERCASE, CssStyles.LABEL_BOLD, captionClass);
-		
-		addComponent(captionLabel);
+
 	}
-	
+
 	public void update(int count, float percentage, boolean increaseIsPositive) {
 		countLabel.setValue(Integer.toString(count));
 		percentageLabel.setValue(percentage != Float.MIN_VALUE ? percentage % 1.0 != 0 ? String.format("%s", Float.toString(Math.abs(percentage))) + "%" : String.format("%.0f", percentage) + "%" : "");
@@ -61,5 +90,5 @@ public class DashboardStatisticsGrowthElement extends VerticalLayout {
 			CssStyles.style(growthLabel, CssStyles.LABEL_IMPORTANT);
 		}
 	}
-	
+
 }

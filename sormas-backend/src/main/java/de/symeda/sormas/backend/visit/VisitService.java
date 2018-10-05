@@ -20,6 +20,7 @@ import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.visit.DashboardVisitDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -96,7 +97,6 @@ public class VisitService extends AbstractAdoService<Visit> {
 	 * All visits of the contact person with the same disease and within lastContactDate and followUpUntil
 	 */
 	public List<Visit> getAllByContact(Contact contact) {
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Visit> cq = cb.createQuery(getElementClass());
 		Root<Visit> from = cq.from(getElementClass());
@@ -107,6 +107,20 @@ public class VisitService extends AbstractAdoService<Visit> {
 		cq.orderBy(cb.asc(from.get(Visit.VISIT_DATE_TIME)));
 
 		List<Visit> resultList = em.createQuery(cq).getResultList();
+		return resultList;
+	}
+	
+	public List<DashboardVisitDto> getDashboardVisitsByContact(Contact contact) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<DashboardVisitDto> cq = cb.createQuery(DashboardVisitDto.class);
+		Root<Visit> from = cq.from(getElementClass());
+
+		Predicate filter = buildVisitFilter(contact, null, cb, cq, from);
+
+		cq.where(filter);
+		cq.multiselect(
+				from.get(Visit.VISIT_STATUS));
+		List<DashboardVisitDto> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}
 
@@ -227,12 +241,14 @@ public class VisitService extends AbstractAdoService<Visit> {
 		return filter;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Visit, Visit> from, User user) {
 		// getAllUuids and getAllAfter have custom implementations
 		throw new UnsupportedOperationException();
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createDateFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Visit,Visit> visitPath, Date date) {
 

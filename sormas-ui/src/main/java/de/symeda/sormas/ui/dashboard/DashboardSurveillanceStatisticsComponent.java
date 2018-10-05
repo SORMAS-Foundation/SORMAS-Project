@@ -9,6 +9,7 @@ import java.util.TreeMap;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -88,29 +89,30 @@ public class DashboardSurveillanceStatisticsComponent extends AbstractDashboardS
 		firstComponent = new DashboardStatisticsSubComponent();
 
 		// Header
-		firstComponent.addHeader("My Tasks", null);
+		firstComponent.addHeader("My Tasks", null, true);
 
 		// Count layout
-		firstComponent.addCountLayout();
-		taskPriorityHigh = new DashboardStatisticsCountElement("High", CssStyles.LABEL_BAR_TOP_CRITICAL);
-		firstComponent.addComponentToCountLayout(taskPriorityHigh);
-		taskPriorityNormal = new DashboardStatisticsCountElement("Normal", CssStyles.LABEL_BAR_TOP_NEUTRAL);
-		firstComponent.addComponentToCountLayout(taskPriorityNormal);
-		taskPriorityLow = new DashboardStatisticsCountElement("Low", CssStyles.LABEL_BAR_TOP_MINOR);
-		firstComponent.addComponentToCountLayout(taskPriorityLow);
+		CssLayout countLayout = firstComponent.createCountLayout(true);
+		taskPriorityHigh = new DashboardStatisticsCountElement("High", CountElementStyle.CRITICAL);
+		firstComponent.addComponentToCountLayout(countLayout, taskPriorityHigh);
+		taskPriorityNormal = new DashboardStatisticsCountElement("Normal", CountElementStyle.NEUTRAL);
+		firstComponent.addComponentToCountLayout(countLayout, taskPriorityNormal);
+		taskPriorityLow = new DashboardStatisticsCountElement("Low", CountElementStyle.MINOR);
+		firstComponent.addComponentToCountLayout(countLayout, taskPriorityLow);
 
 		Label separator = new Label();
 		separator.setHeight(100, Unit.PERCENTAGE);
 		CssStyles.style(separator, CssStyles.VR);
-		firstComponent.addComponentToCountLayout(separator);
+		firstComponent.addComponentToCountLayout(countLayout, separator);
 
-		taskStatusPending = new DashboardStatisticsCountElement("Pending", CssStyles.LABEL_BAR_TOP_IMPORTANT);
-		firstComponent.addComponentToCountLayout(taskStatusPending);
-		taskStatusDone = new DashboardStatisticsCountElement("Done", CssStyles.LABEL_BAR_TOP_POSITIVE);
-		firstComponent.addComponentToCountLayout(taskStatusDone);
+		taskStatusPending = new DashboardStatisticsCountElement("Pending", CountElementStyle.IMPORTANT);
+		firstComponent.addComponentToCountLayout(countLayout, taskStatusPending);
+		taskStatusDone = new DashboardStatisticsCountElement("Done", CountElementStyle.POSITIVE);
+		firstComponent.addComponentToCountLayout(countLayout, taskStatusDone);
+		firstComponent.addComponent(countLayout);
 
 		// Content
-		firstComponent.addTwoColumnsContent(false, 60);
+		firstComponent.addTwoColumnsMainContent(false, 60);
 		taskStatusPendingPercentage = new DashboardStatisticsPercentageElement("Pending", CssStyles.SVG_FILL_IMPORTANT);
 		firstComponent.addComponentToLeftContentColumn(taskStatusPendingPercentage);
 		taskStatusDonePercentage = new DashboardStatisticsPercentageElement("Done", CssStyles.SVG_FILL_POSITIVE);
@@ -174,23 +176,24 @@ public class DashboardSurveillanceStatisticsComponent extends AbstractDashboardS
 		secondComponent = new DashboardStatisticsSubComponent();
 
 		// Header
-		secondComponent.addHeader("New Cases", null);
+		secondComponent.addHeader("New Cases", null, true);
 
 		// Count layout
-		secondComponent.addCountLayout();
-		caseClassificationConfirmed = new DashboardStatisticsCountElement("Confirmed", CssStyles.LABEL_BAR_TOP_CRITICAL);
-		secondComponent.addComponentToCountLayout(caseClassificationConfirmed);
-		caseClassificationProbable = new DashboardStatisticsCountElement("Probable", CssStyles.LABEL_BAR_TOP_IMPORTANT);
-		secondComponent.addComponentToCountLayout(caseClassificationProbable);
-		caseClassificationSuspect = new DashboardStatisticsCountElement("Suspect", CssStyles.LABEL_BAR_TOP_RELEVANT);
-		secondComponent.addComponentToCountLayout(caseClassificationSuspect);
-		caseClassificationNotACase = new DashboardStatisticsCountElement("Not A Case", CssStyles.LABEL_BAR_TOP_POSITIVE);
-		secondComponent.addComponentToCountLayout(caseClassificationNotACase);
-		caseClassificationNotYetClassified = new DashboardStatisticsCountElement("Not Yet Classified", CssStyles.LABEL_BAR_TOP_MINOR);
-		secondComponent.addComponentToCountLayout(caseClassificationNotYetClassified);
+		CssLayout countLayout = secondComponent.createCountLayout(true);
+		caseClassificationConfirmed = new DashboardStatisticsCountElement("Confirmed", CountElementStyle.CRITICAL);
+		secondComponent.addComponentToCountLayout(countLayout, caseClassificationConfirmed);
+		caseClassificationProbable = new DashboardStatisticsCountElement("Probable", CountElementStyle.IMPORTANT);
+		secondComponent.addComponentToCountLayout(countLayout, caseClassificationProbable);
+		caseClassificationSuspect = new DashboardStatisticsCountElement("Suspect", CountElementStyle.RELEVANT);
+		secondComponent.addComponentToCountLayout(countLayout, caseClassificationSuspect);
+		caseClassificationNotACase = new DashboardStatisticsCountElement("Not A Case", CountElementStyle.POSITIVE);
+		secondComponent.addComponentToCountLayout(countLayout, caseClassificationNotACase);
+		caseClassificationNotYetClassified = new DashboardStatisticsCountElement("Not Yet Classified", CountElementStyle.MINOR);
+		secondComponent.addComponentToCountLayout(countLayout, caseClassificationNotYetClassified);
+		secondComponent.addComponent(countLayout);
 
 		// Content
-		secondComponent.addContent();
+		secondComponent.addMainContent();
 		caseInvestigationStatusDone = new DashboardStatisticsGrowthElement("Investigated", CssStyles.LABEL_SECONDARY, Alignment.MIDDLE_LEFT);
 		caseInvestigationStatusDiscarded = new DashboardStatisticsGrowthElement("Discarded", CssStyles.LABEL_SECONDARY, Alignment.MIDDLE_LEFT);
 		caseFatalities = new DashboardStatisticsGrowthElement("Fatalities", CssStyles.LABEL_CRITICAL, Alignment.MIDDLE_RIGHT);
@@ -300,19 +303,20 @@ public class DashboardSurveillanceStatisticsComponent extends AbstractDashboardS
 		thirdComponent = new DashboardStatisticsSubComponent();
 
 		// Header
-		thirdComponent.addHeader("New Events", null);
+		thirdComponent.addHeader("New Events", null, true);
 
 		// Count layout
-		thirdComponent.addCountLayout();
-		eventStatusConfirmed = new DashboardStatisticsCountElement("Confirmed", CssStyles.LABEL_BAR_TOP_CRITICAL);
-		thirdComponent.addComponentToCountLayout(eventStatusConfirmed);
-		eventStatusPossible = new DashboardStatisticsCountElement("Possible", CssStyles.LABEL_BAR_TOP_IMPORTANT);
-		thirdComponent.addComponentToCountLayout(eventStatusPossible);
-		eventStatusNotAnEvent = new DashboardStatisticsCountElement("Not An Event", CssStyles.LABEL_BAR_TOP_POSITIVE);
-		thirdComponent.addComponentToCountLayout(eventStatusNotAnEvent);
+		CssLayout countLayout = thirdComponent.createCountLayout(true);
+		eventStatusConfirmed = new DashboardStatisticsCountElement("Confirmed", CountElementStyle.CRITICAL);
+		thirdComponent.addComponentToCountLayout(countLayout, eventStatusConfirmed);
+		eventStatusPossible = new DashboardStatisticsCountElement("Possible", CountElementStyle.IMPORTANT);
+		thirdComponent.addComponentToCountLayout(countLayout, eventStatusPossible);
+		eventStatusNotAnEvent = new DashboardStatisticsCountElement("Not An Event", CountElementStyle.POSITIVE);
+		thirdComponent.addComponentToCountLayout(countLayout, eventStatusNotAnEvent);
+		thirdComponent.addComponent(countLayout);
 
 		// Content
-		thirdComponent.addContent();
+		thirdComponent.addMainContent();
 		eventTypeRumorCircleGraph = new SvgCircleElement(true);
 		eventTypeOutbreakCircleGraph = new SvgCircleElement(true);
 		eventStatusConfirmedPercentage = new DashboardStatisticsPercentageElement("Confirmed", CssStyles.SVG_FILL_CRITICAL);
@@ -341,7 +345,7 @@ public class DashboardSurveillanceStatisticsComponent extends AbstractDashboardS
 		if ((currentDisease == null && previousDisease != null) || (previousDisease == null && currentDisease != null)) {
 			thirdComponent.removeContent();
 			if (currentDisease != null) {
-				thirdComponent.addTwoColumnsContent(true, 20);
+				thirdComponent.addTwoColumnsMainContent(true, 20);
 				thirdComponent.addComponentToLeftContentColumn(eventTypeRumorCircleGraph);
 				Label rumorCircleLabel = new Label("Rumor");
 				rumorCircleLabel.setWidth(100, Unit.PERCENTAGE);
@@ -356,7 +360,7 @@ public class DashboardSurveillanceStatisticsComponent extends AbstractDashboardS
 				thirdComponent.addComponentToRightContentColumn(eventStatusPossiblePercentage);
 				thirdComponent.addComponentToRightContentColumn(eventStatusNotAnEventPercentage);
 			} else {
-				thirdComponent.addContent();
+				thirdComponent.addMainContent();
 			}
 		}
 
@@ -413,21 +417,22 @@ public class DashboardSurveillanceStatisticsComponent extends AbstractDashboardS
 		fourthComponent = new DashboardStatisticsSubComponent();
 
 		// Header
-		fourthComponent.addHeader("New Test Results", null);
+		fourthComponent.addHeader("New Test Results", null, true);
 
 		// Count layout
-		fourthComponent.addCountLayout();
-		testResultPositive = new DashboardStatisticsCountElement("Positive", CssStyles.LABEL_BAR_TOP_CRITICAL);
-		fourthComponent.addComponentToCountLayout(testResultPositive);
-		testResultNegative = new DashboardStatisticsCountElement("Negative", CssStyles.LABEL_BAR_TOP_POSITIVE);
-		fourthComponent.addComponentToCountLayout(testResultNegative);
-		testResultPending = new DashboardStatisticsCountElement("Pending", CssStyles.LABEL_BAR_TOP_IMPORTANT);
-		fourthComponent.addComponentToCountLayout(testResultPending);
-		testResultIndeterminate = new DashboardStatisticsCountElement("Indeterminate", CssStyles.LABEL_BAR_TOP_MINOR);
-		fourthComponent.addComponentToCountLayout(testResultIndeterminate);
+		CssLayout countLayout = fourthComponent.createCountLayout(true);
+		testResultPositive = new DashboardStatisticsCountElement("Positive", CountElementStyle.CRITICAL);
+		fourthComponent.addComponentToCountLayout(countLayout, testResultPositive);
+		testResultNegative = new DashboardStatisticsCountElement("Negative", CountElementStyle.POSITIVE);
+		fourthComponent.addComponentToCountLayout(countLayout, testResultNegative);
+		testResultPending = new DashboardStatisticsCountElement("Pending", CountElementStyle.IMPORTANT);
+		fourthComponent.addComponentToCountLayout(countLayout, testResultPending);
+		testResultIndeterminate = new DashboardStatisticsCountElement("Indeterminate", CountElementStyle.MINOR);
+		fourthComponent.addComponentToCountLayout(countLayout, testResultIndeterminate);
+		fourthComponent.addComponent(countLayout);
 
 		// Content
-		fourthComponent.addContent();
+		fourthComponent.addMainContent();
 		testResultShippedCircleGraph = new SvgCircleElement(true);
 		testResultReceivedCircleGraph = new SvgCircleElement(true);
 		testResultPositivePercentage = new DashboardStatisticsPercentageElement("Positive", CssStyles.SVG_FILL_CRITICAL);
@@ -458,7 +463,7 @@ public class DashboardSurveillanceStatisticsComponent extends AbstractDashboardS
 		if ((currentDisease == null && previousDisease != null) || (previousDisease == null && currentDisease != null)) {
 			fourthComponent.removeContent();
 			if (currentDisease != null) {
-				fourthComponent.addTwoColumnsContent(true, 20);
+				fourthComponent.addTwoColumnsMainContent(true, 20);
 				fourthComponent.addComponentToLeftContentColumn(testResultShippedCircleGraph);
 				Label shippedCircleLabel = new Label("Shipped");
 				shippedCircleLabel.setWidth(100, Unit.PERCENTAGE);
@@ -474,7 +479,7 @@ public class DashboardSurveillanceStatisticsComponent extends AbstractDashboardS
 				fourthComponent.addComponentToRightContentColumn(testResultPendingPercentage);
 				fourthComponent.addComponentToRightContentColumn(testResultIndeterminatePercentage);
 			} else {
-				fourthComponent.addContent();
+				fourthComponent.addMainContent();
 			}
 		}
 		

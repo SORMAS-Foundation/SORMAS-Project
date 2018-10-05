@@ -20,6 +20,12 @@
   .curve-and-map-layout {
   	background-color: $v-focus-color;
   }
+ 
+  .highlighted-statistics-component {
+  	background-color: $v-focus-light-color;
+  	border-radius: 8px;
+  	padding-top: 16px;
+  }
   
   /* "hack" to hide map tiles in google maps component */
   .googlemap.no-tiles img {

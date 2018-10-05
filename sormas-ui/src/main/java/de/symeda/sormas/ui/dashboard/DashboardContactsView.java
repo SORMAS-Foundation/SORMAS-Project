@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.dashboard;
 
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-
 @SuppressWarnings("serial")
 public class DashboardContactsView extends AbstractDashboardView {
 
@@ -13,16 +11,19 @@ public class DashboardContactsView extends AbstractDashboardView {
 		super(VIEW_NAME, DashboardType.CONTACTS);
 		
 		filterLayout.setInfoLabelText("All Dashboard elements that display general information about contacts use the follow-up period of the respective contact, starting with the contact report date.");
-	}
-	
-	@Override
-	public void refreshDashboard() {
-		dashboardDataProvider.refreshData();
-	}
 
-	@Override
-	public void enter(ViewChangeEvent event) {
+		// Add statistics
+		statisticsComponent = new DashboardContactsStatisticsComponent(dashboardDataProvider);
+		dashboardLayout.addComponent(statisticsComponent);
+		dashboardLayout.setExpandRatio(statisticsComponent, 0);
+
+		epiCurveComponent = new EpiCurveContactsComponent(dashboardDataProvider);
+		mapComponent = new DashboardMapComponent(dashboardDataProvider);
 		
+		// Add epi curve and map
+		epiCurveAndMapLayout = createEpiCurveAndMapLayout();
+		dashboardLayout.addComponent(epiCurveAndMapLayout);
+		dashboardLayout.setExpandRatio(epiCurveAndMapLayout, 1);
 	}
 	
 }

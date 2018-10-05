@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
@@ -30,12 +31,16 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.contact.DashboardContactDto;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
@@ -323,6 +328,37 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
 		return target;
+	}
+	
+	@Override
+	public List<DashboardContactDto> getContactsForDashboard(RegionReferenceDto regionRef,
+			DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+		Region region = regionService.getByReferenceDto(regionRef);
+		District district = districtService.getByReferenceDto(districtRef);
+		User user = userService.getByUuid(userUuid);
+		
+		return contactService.getContactsForDashboard(region, district, disease, from, to, user);
+	}
+	
+	@Override
+	public Map<ContactStatus, Long> getNewContactCountPerStatus(ContactCriteria contactCriteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		return contactService.getNewContactCountPerStatus(contactCriteria, user);
+	}
+	
+	@Override
+	public Map<ContactClassification, Long> getNewContactCountPerClassification(ContactCriteria contactCriteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		return contactService.getNewContactCountPerClassification(contactCriteria, user);
+	}
+	
+	@Override
+	public Map<FollowUpStatus, Long> getNewContactCountPerFollowUpStatus(ContactCriteria contactCriteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		return contactService.getNewContactCountPerFollowUpStatus(contactCriteria, user);
 	}
 
 	public static ContactReferenceDto toReferenceDto(Contact source) {
