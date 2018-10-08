@@ -133,7 +133,8 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 				.count();
 		newContacts.updateCountLabel(newContactsCount);
 		int symptomaticContactsCount = (int) dashboardContactDtos.stream().filter(c -> c.isSymptomatic()).count();
-		symptomaticContacts.updateCountLabel(symptomaticContactsCount);
+		int symptomaticContactsPercentage = contactsCount == 0 ? 0 : (int) ((symptomaticContactsCount * 100.0f) / contactsCount);
+		symptomaticContacts.updateCountLabel(symptomaticContactsCount + " (" + symptomaticContactsPercentage + " %)");
 
 		int contactStatusActiveCount = (int) dashboardContactDtos.stream().filter(c -> c.getContactStatus() == ContactStatus.ACTIVE).count();
 		int contactStatusActivePercentage = contactsCount == 0 ? 0 : (int) ((contactStatusActiveCount * 100.0f) / contactsCount);
@@ -176,13 +177,13 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 		secondComponent.addComponentToCountLayout(followUpStatusCountLayout, followUpCompleted);
 		secondComponent.addComponentToCountLayout(followUpStatusCountLayout, followUpCanceled);
 		secondComponent.addComponentToContent(followUpStatusCountLayout);
-		
+
 		followUpStatusCircleGraph = new SvgCircleElement(false);
 		underFollowUpGrowthElement = new DashboardStatisticsGraphicalGrowthElement("Under F/U", CssStyles.SVG_FILL_PRIMARY);
 		lostToFollowUpGrowthElement = new DashboardStatisticsGraphicalGrowthElement("Lost To F/U", CssStyles.SVG_FILL_CRITICAL);
 		followUpCompletedGrowthElement = new DashboardStatisticsGraphicalGrowthElement("Completed F/U", CssStyles.SVG_FILL_POSITIVE);
 		followUpCanceledGrowthElement = new DashboardStatisticsGraphicalGrowthElement("Canceled F/U", CssStyles.SVG_FILL_IMPORTANT);
-		
+
 		subComponentsLayout.addComponent(secondComponent, SECOND_LOC);
 	}
 
@@ -209,7 +210,7 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 				secondComponent.addComponentToContent(followUpStatusCountLayout);
 			}
 		}
-		
+
 		int underFollowUpCount = (int) contacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.FOLLOW_UP).count();
 		int previousUnderFollowUpCount = (int) previousContacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.FOLLOW_UP).count();
 		int lostToFollowUpCount = (int) contacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.LOST).count();
@@ -228,7 +229,7 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 			// Remove all children of the content layout
 			secondComponent.removeAllComponentsFromContent();
 			secondComponent.addComponentToContent(followUpStatusCountLayout);
-			
+
 			underFollowUp.update(underFollowUpCount, underFollowUpGrowth, true);
 			lostToFollowUp.update(lostToFollowUpCount, lostToFollowUpGrowth, false);
 			followUpCompleted.update(followUpCompletedCount, followUpCompletedGrowth, true);
@@ -314,13 +315,17 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 		thirdComponent.updateCountLabel(contactsCount);
 
 		int cooperativeContactsCount = (int) contacts.stream().filter(c -> c.getLastVisitStatus() == VisitStatus.COOPERATIVE).count();
-		cooperativeContacts.updateCountLabel(cooperativeContactsCount);
+		int cooperativeContactsPercentage = contactsCount == 0 ? 0 : (int) ((cooperativeContactsCount * 100.0f) / contactsCount);
+		cooperativeContacts.updateCountLabel(cooperativeContactsCount + " (" + cooperativeContactsPercentage + " %)");
 		int uncooperativeContactsCount = (int) contacts.stream().filter(c -> c.getLastVisitStatus() == VisitStatus.UNCOOPERATIVE).count();
-		uncooperativeContacts.updateCountLabel(uncooperativeContactsCount);
+		int uncooperativeContactsPercentage = contactsCount == 0 ? 0 : (int) ((uncooperativeContactsCount * 100.0f) / contactsCount);
+		uncooperativeContacts.updateCountLabel(uncooperativeContactsCount + " (" + uncooperativeContactsPercentage + " %)");
 		int unavailableContactsCount = (int) contacts.stream().filter(c -> c.getLastVisitStatus() == VisitStatus.UNAVAILABLE).count();
-		unavailableContacts.updateCountLabel(unavailableContactsCount);
+		int unavailableContactsPercentage = contactsCount == 0 ? 0 : (int) ((unavailableContactsCount * 100.0f) / contactsCount);
+		unavailableContacts.updateCountLabel(unavailableContactsCount + " (" + unavailableContactsPercentage + " %)");
 		int notVisitedContactsCount = (int) contacts.stream().filter(c -> c.getLastVisitStatus() == null).count();
-		neverVisitedContacts.updateCountLabel(notVisitedContactsCount);
+		int notVisitedContactsPercentage = contactsCount == 0 ? 0 : (int) ((notVisitedContactsCount * 100.0f) / contactsCount);
+		neverVisitedContacts.updateCountLabel(notVisitedContactsCount + " (" + notVisitedContactsPercentage + " %)");
 
 		int missedVisitsOneDayCount = 0;
 		int missedVisitsTwoDaysCount = 0;
@@ -328,28 +333,26 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 		int missedVisitsGtThreeDaysCount = 0;
 
 		for (DashboardContactDto contact : contacts) {
-			Date lastVisitDateTime = contact.getLastVisitDateTime();
+			Date lastVisitDateTime = contact.getLastVisitDateTime() != null ? contact.getLastVisitDateTime() : contact.getReportDate();
 
-			if (lastVisitDateTime != null) {
-				Date referenceDate;
-				Date now = new Date();
-				// Current time should either be the end of the specified period or now if now is in the specified time interval
-				if (DateHelper.isBetween(now, dashboardDataProvider.getFromDate(), dashboardDataProvider.getToDate())) {
-					referenceDate = now;
-				} else {
-					referenceDate = dashboardDataProvider.getToDate();
-				}
+			Date referenceDate;
+			Date now = new Date();
+			// Current time should either be the end of the specified period or now if now is in the specified time interval
+			if (DateHelper.isBetween(now, dashboardDataProvider.getFromDate(), dashboardDataProvider.getToDate())) {
+				referenceDate = now;
+			} else {
+				referenceDate = dashboardDataProvider.getToDate();
+			}
 
-				int missedDays = DateHelper.getFullDaysBetween(lastVisitDateTime, referenceDate);
-				if (missedDays == 1) {
-					missedVisitsOneDayCount++;
-				} else if (missedDays == 2) {
-					missedVisitsTwoDaysCount++;
-				} else if (missedDays == 3) {
-					missedVisitsThreeDaysCount++;
-				} else if (missedDays > 3) {
-					missedVisitsGtThreeDaysCount++;
-				}
+			int missedDays = DateHelper.getFullDaysBetween(lastVisitDateTime, referenceDate);
+			if (missedDays == 1) {
+				missedVisitsOneDayCount++;
+			} else if (missedDays == 2) {
+				missedVisitsTwoDaysCount++;
+			} else if (missedDays == 3) {
+				missedVisitsThreeDaysCount++;
+			} else if (missedDays > 3) {
+				missedVisitsGtThreeDaysCount++;
 			}
 		}
 
@@ -365,7 +368,7 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 
 		// Header
 		fourthComponent.addHeader("Follow-up Visits", null, false);
-		
+
 		// Content
 		fourthComponent.addMainContent();
 		completedAndMissedVisits = new DashboardStatisticsComparisonElement("Visits", "Missed");
