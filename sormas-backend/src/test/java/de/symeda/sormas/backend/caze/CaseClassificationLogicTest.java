@@ -42,7 +42,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		// Suspect
 		CaseDataDto caze = buildSuspectCaseBasis(Disease.EVD);
 		caze.getSymptoms().setDiarrhea(SymptomState.YES);
-		caze.getSymptoms().setBloodInStool(SymptomState.YES);
+		caze.getSymptoms().setBloodyBlackStool(SymptomState.YES);
 		caze = getCaseFacade().saveCase(caze);
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 
