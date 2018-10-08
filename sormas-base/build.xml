@@ -6,7 +6,6 @@
 	<property name="deploy.path" value="${glassfish.domain.root}/autodeploy" />
 	<property name="deploy.bundles.path" value="${deploy.path}/bundles" />
 	<property name="deploy.serverlibs.path" value="${glassfish.domain.root}/lib" />
-	<property name="config.path" value="glassfish-config" />
 	<property name="collect.root.path" value="../deploy" />
 	<property name="collect.serverlibs.path" value="${collect.root.path}/serverlibs" />
 	<property name="collect.gf-modules.path" value="${collect.root.path}/gf-modules" />
@@ -131,7 +130,7 @@
 		</copy>
 	</target>
 
-	<target name="collect-config" description="Collects setup scripts and config files">
+	<target name="collect-setup" description="Collects setup scripts and config files">
 
 		<delete failonerror="false" includeemptydirs="true">
 			<fileset dir="${collect.root.path}" casesensitive="false">
@@ -141,13 +140,13 @@
 		</delete>
 
 		<copy todir="${collect.root.path}">
-			<fileset dir="glassfish-config">
-				<include name="*.*" />
+			<fileset dir="setup">
+				<include name="*" />
 			</fileset>
 		</copy>
 	</target>
 
-	<target name="collect-serverlibs" description="serverlibs für glassfish-config bereitstellen">
+	<target name="collect-serverlibs" description="serverlibs für server setup bereitstellen">
 
 		<artifact:pom id="serverlibsPom" file="dependencies/serverlibs.pom">
 		</artifact:pom>
@@ -167,7 +166,7 @@
 		</copy>
 	</target>
 
-	<target name="collect-sql" description="SQL für glassfish-config bereitstellen">
+	<target name="collect-sql" description="SQL für server setup bereitstellen">
 
 		<delete failonerror="false" includeemptydirs="true">
 			<fileset dir="${collect.sql.path}" casesensitive="false">
@@ -200,7 +199,7 @@
 		<antcall target="collect-sql" />
 
 		<echo>Collecting config und scripts</echo>
-		<antcall target="collect-config" />
+		<antcall target="collect-setup" />
 
 		<echo>Collecting gf-modules</echo>
 		<antcall target="collect-gf-modules" />
