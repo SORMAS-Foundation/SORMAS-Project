@@ -565,14 +565,14 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public CaseDataDto transferCase(CaseReferenceDto cazeRef, CommunityReferenceDto communityDto,
-			FacilityReferenceDto facilityDto, String facilityDetails, UserReferenceDto officerDto) {
+	public CaseDataDto transferCase(CaseReferenceDto cazeRef, RegionReferenceDto regionDto, DistrictReferenceDto districtDto,
+			CommunityReferenceDto communityDto,	FacilityReferenceDto facilityDto, String facilityDetails, UserReferenceDto officerDto) {
 		Case caze = fillOrBuildEntity(getCaseDataByUuid(cazeRef.getUuid()), caseService.getByUuid(cazeRef.getUuid()));
 
 		Community community = communityDto != null ? communityService.getByUuid(communityDto.getUuid()) : null;
 		Facility facility = facilityService.getByUuid(facilityDto.getUuid());
-		District district = facility.getDistrict();
-		Region region = district.getRegion();
+		District district = districtService.getByUuid(districtDto.getUuid());
+		Region region = regionService.getByUuid(regionDto.getUuid());
 		User officer = null;
 		if (officerDto != null) {
 			officer = userService.getByUuid(officerDto.getUuid());

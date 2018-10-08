@@ -49,7 +49,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testDiseaseChangeUpdatesContacts() {
-
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
@@ -74,10 +73,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(FollowUpStatus.NO_FOLLOW_UP, contact.getFollowUpStatus());
 		assertEquals(null, contact.getFollowUpUntil());
 	}
-
+	
 	@Test
 	public void testMovingCaseUpdatesTaskAssigneeAndCreatesPreviousHospitalization() {
-
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
@@ -93,6 +91,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		RDCF newRDCF = creator.createRDCF("New Region", "New District", "New Community", "New Facility");
 		getCaseFacade().transferCase(caze.toReference(),
+				getRegionFacade().getRegionReferenceByUuid(newRDCF.region.getUuid()),
+				getDistrictFacade().getDistrictReferenceByUuid(newRDCF.district.getUuid()),
 				getCommunityFacade().getCommunityReferenceByUuid(newRDCF.community.getUuid()),
 				getFacilityFacade().getFacilityReferenceByUuid(newRDCF.facility.getUuid()),
 				caze.getHealthFacilityDetails(), caseOfficer.toReference());
