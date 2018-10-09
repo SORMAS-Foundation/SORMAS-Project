@@ -20,6 +20,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -62,10 +63,10 @@ public class ContactGrid extends Grid {
 				ContactIndexDto indexDto = (ContactIndexDto) itemId;
 				if (DiseaseHelper.hasContactFollowUp(indexDto.getCaseDisease(), null)) {
 					int numberOfVisits = FacadeProvider.getVisitFacade().getNumberOfVisits(indexDto.toReference(), null);
-					int numberOfCooperativeVisits = FacadeProvider.getVisitFacade().getNumberOfVisits(indexDto.toReference(), VisitStatus.COOPERATIVE);
-
+					int numberOfRequiredVisits = ContactLogic.getNumberOfRequiredVisitsSoFar(indexDto.getReportDate(), indexDto.getFollowUpUntil());
+					
 					return String.format(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, "numberOfVisitsFormat"),
-							numberOfCooperativeVisits, numberOfVisits - numberOfCooperativeVisits);
+							numberOfVisits, numberOfRequiredVisits - numberOfVisits);
 				} else {
 					return "-";
 				}

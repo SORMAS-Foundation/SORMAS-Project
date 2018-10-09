@@ -257,7 +257,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				contactCasePerson.get(Person.LAST_NAME), contactCaseRegion.get(Region.UUID), contactCaseDistrict.get(District.UUID),
 				contactCaseFacility.get(Facility.UUID), contact.get(Contact.LAST_CONTACT_DATE), contact.get(Contact.CONTACT_PROXIMITY),
 				contact.get(Contact.CONTACT_CLASSIFICATION), contact.get(Contact.CONTACT_STATUS), contact.get(Contact.FOLLOW_UP_STATUS), contact.get(Contact.FOLLOW_UP_UNTIL),
-				contactOfficer.get(User.UUID));
+				contactOfficer.get(User.UUID), contact.get(Contact.REPORT_DATE_TIME));
 		
 		Predicate filter = null;
 		if (userUuid != null 
