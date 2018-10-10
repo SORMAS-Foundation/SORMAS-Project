@@ -147,7 +147,7 @@ public class CasesView extends AbstractView {
 			exportLayout.addComponent(extendedExportButton);
 			
 			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class,
-					() -> FacadeProvider.getCaseFacade().getExportList(LoginHelper.getCurrentUser().getUuid(), grid.getFilterCriteria()), 
+					(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(LoginHelper.getCurrentUser().getUuid(), grid.getFilterCriteria(), start, max), 
 					propertyId -> {
 						return I18nProperties.getPrefixFieldCaption(CaseExportDto.I18N_PREFIX, propertyId,
 							I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, propertyId,

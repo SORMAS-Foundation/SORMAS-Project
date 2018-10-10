@@ -50,6 +50,7 @@ public class EpiData extends AbstractDomainObject {
 	public static final String DATE_OF_LAST_EXPOSURE = "dateOfLastExposure";
 	public static final String PLACE_OF_LAST_EXPOSURE = "placeOfLastExposure";
 	public static final String ANIMAL_CONDITION = "animalCondition";
+	public static final String DIRECT_CONTACT_CONFIRMED_CASE = "directContactConfirmedCase";
 	
 	private YesNoUnknown burialAttended;
 	private YesNoUnknown gatheringAttended;

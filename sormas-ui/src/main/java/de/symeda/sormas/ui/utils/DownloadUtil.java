@@ -16,8 +16,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import com.opencsv.CSVWriter;
 import com.vaadin.data.Container.Indexed;
@@ -39,6 +39,8 @@ import de.symeda.sormas.ui.statistics.DatabaseExportView;
 
 public class DownloadUtil {
 
+	public static final int DETAILED_EXPORT_STEP_SIZE = 10;
+	
 	private DownloadUtil() {
 
 	}
@@ -97,60 +99,62 @@ public class DownloadUtil {
 	}
 
 	@SuppressWarnings("serial")
-	public static <T> StreamResource createCsvExportStreamResource(Class<T> exportRowClass, Supplier<List<T>> exportRowsSuplier, Function<String,String> propertyIdCaptionFunction, String exportFileName) {
+	public static <T> StreamResource createCsvExportStreamResource(Class<T> exportRowClass, BiFunction<Integer, Integer, List<T>> exportRowsSupplier, Function<String,String> propertyIdCaptionFunction, String exportFileName) {
 		StreamResource extendedStreamResource = new StreamResource(new StreamSource() {
 			@Override
 			public InputStream getStream() {
-				
 				try {
-
-					List<T> exportRows = exportRowsSuplier.get();
-
 					ByteArrayOutputStream baos = new ByteArrayOutputStream();
 					OutputStreamWriter osw = new OutputStreamWriter(baos, StandardCharsets.UTF_8.name());
 					CSVWriter writer = CSVUtils.createCSVWriter(osw, FacadeProvider.getConfigFacade().getCsvSeparator());
-					
+
 					// fields in order of declaration - not using Introspector here, because it gives properties in alphabetical order
 					Method[] readMethods = Arrays.stream(exportRowClass.getDeclaredMethods())
-							.filter(m -> m.getName().startsWith("get") || m.getName().startsWith("is"))
+							.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) && m.isAnnotationPresent(Order.class))
 							.sorted((a,b) -> Integer.compare(a.getAnnotationsByType(Order.class)[0].value(), 
 									b.getAnnotationsByType(Order.class)[0].value()))
 							.toArray(Method[]::new);
-									
+
 					String[] fieldValues = new String[readMethods.length];
-					for (int i=0; i<readMethods.length; i++) {
+					for (int i = 0; i < readMethods.length; i++) {
 						Method method = readMethods[i];
 						String propertyId = method.getName().startsWith("get") 
 								? method.getName().substring(3)
-								: method.getName().substring(2); 
+										: method.getName().substring(2); 
 								propertyId = Character.toLowerCase(propertyId.charAt(0)) + propertyId.substring(1);
-						// field caption - export, case, person, symptoms, hospitalization
-						fieldValues[i] = propertyIdCaptionFunction.apply(propertyId);
+								// field caption - export, case, person, symptoms, hospitalization
+								fieldValues[i] = propertyIdCaptionFunction.apply(propertyId);
 					}
 					writer.writeNext(fieldValues);
 					
-					try {
-						for (T exportRow : exportRows) {
-							for (int i=0; i<readMethods.length; i++) {
-								Method method = readMethods[i];
-								Object value = method.invoke(exportRow);
-								if (value == null) {
-									fieldValues[i] = "";
-								} else if (value instanceof Date) {
-									fieldValues[i] = DateHelper.formatLocalShortDate((Date)value);
-								} else {
-									fieldValues[i] = value.toString();
+					int startIndex = 0;
+					List<T> exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
+					while (!exportRows.isEmpty()) {						
+						try {
+							for (T exportRow : exportRows) {
+								for (int i=0; i<readMethods.length; i++) {
+									Method method = readMethods[i];
+									Object value = method.invoke(exportRow);
+									if (value == null) {
+										fieldValues[i] = "";
+									} else if (value instanceof Date) {
+										fieldValues[i] = DateHelper.formatLocalShortDate((Date)value);
+									} else {
+										fieldValues[i] = value.toString();
+									}
 								}
-							}
-							writer.writeNext(fieldValues);
-						};
-					} catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
-						throw new RuntimeException(e);
+								writer.writeNext(fieldValues);
+							};
+						} catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
+							throw new RuntimeException(e);
+						}
+
+						osw.flush();
+						baos.flush();
+						startIndex += DETAILED_EXPORT_STEP_SIZE;
+						exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
 					}
 
-					osw.flush();
-					baos.flush();
-					
 					return new BufferedInputStream(new ByteArrayInputStream(baos.toByteArray()));
 				} catch (IOException e) {
 					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI

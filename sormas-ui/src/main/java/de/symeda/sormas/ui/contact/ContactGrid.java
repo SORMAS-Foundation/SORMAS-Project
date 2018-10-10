@@ -30,7 +30,6 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.UuidRenderer;

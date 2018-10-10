@@ -14,7 +14,6 @@ import org.junit.rules.ExpectedException;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
@@ -22,7 +21,6 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
-import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
@@ -36,7 +34,6 @@ import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.util.DateHelper8;
@@ -169,6 +166,22 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// List should have one entry
 		assertEquals(1, results.size());
 	}
+	
+	@Test
+	public void testGetExportList() {
+
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
+				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+
+		List<CaseExportDto> results = getCaseFacade().getExportList(user.getUuid(), null, 0, 100);
+
+		// List should have one entry
+		assertEquals(1, results.size());
+	}
 
 	@Test
 	public void testCaseDeletion() {
@@ -277,7 +290,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testOutcomePersonConditionUpdateForAppSync() throws InterruptedException {
-
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
@@ -296,35 +308,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// this should throw an exception
 		exception.expect(UnsupportedOperationException.class);
 		firstCase = getCaseFacade().saveCase(firstCase);
-	}
-
-	@Test
-	public void testExportHadContactWithConfirmedCase() {
-
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
-				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
-				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
-		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(),
-				caze.toReference(), new Date(), new Date());
-		CaseDataDto contactCase = creator.createCase(user.toReference(), contactPerson.toReference(), Disease.EVD,
-				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
-		contact.setContactClassification(ContactClassification.CONFIRMED);
-		contact.setResultingCase(getCaseFacade().getReferenceByUuid(contactCase.getUuid()));
-		contact = getContactFacade().saveContact(contact);
-		assertNotNull(contact.getResultingCase());
-
-		List<CaseExportDto> exportList = getCaseFacade().getExportList(user.getUuid(), new CaseCriteria());
-		assertEquals(YesNoUnknown.NO, exportList.get(1).getContactWithConfirmedCase());
-
-		caze.setCaseClassification(CaseClassification.CONFIRMED);
-		getCaseFacade().saveCase(caze);
-
-		exportList = getCaseFacade().getExportList(user.getUuid(), new CaseCriteria());
-		assertEquals(YesNoUnknown.YES, exportList.get(1).getContactWithConfirmedCase());
 	}
 
 }

@@ -2,9 +2,19 @@ package de.symeda.sormas.api.caze;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.facility.FacilityHelper;
+import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.sample.SampleTestResultType;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
@@ -13,7 +23,11 @@ public class CaseExportDto implements Serializable {
 	private static final long serialVersionUID = 8581579464816945555L;
 
 	public static final String I18N_PREFIX = "CaseExport";
-	
+
+	private long id;
+	private long personId;
+	private long epiDataId;
+	private long symptomsId;
 	private String uuid;
 	private String epidNumber;
 	private String disease;
@@ -43,11 +57,62 @@ public class CaseExportDto implements Serializable {
 	private Date onsetDate;
 	private String symptoms;
 
+	public CaseExportDto(long id, long personId, long epiDataId, long symptomsId, String uuid, String epidNumber, Disease disease, String diseaseDetails, String firstName, String lastName, 
+			Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType, Date reportDate, String region, 
+			String district, String community, Date admissionDate, String healthFacility, String healthFacilityUuid,
+			String healthFacilityDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus, 
+			PresentCondition presentCondition, CaseOutcome outcome, Date deathDate, String phone, String phoneOwner,
+			OccupationType occupationType, String occupationDetails, String occupationFacility, String occupationFacilityUuid, String occupationFacilityDetails,
+			YesNoUnknown contactWithRodent, YesNoUnknown contactWithConfirmedCase, Date onsetDate) {
+		this.id = id;
+		this.personId = personId;
+		this.epiDataId = epiDataId;
+		this.symptomsId = symptomsId;
+		this.uuid = uuid;
+		this.epidNumber = epidNumber;
+		this.disease = DiseaseHelper.toString(disease, diseaseDetails);
+		this.person = PersonDto.buildCaption(firstName, lastName);
+		this.sex = sex;
+		this.approximateAge = PersonHelper.buildAgeString(approximateAge, approximateAgeType);
+		this.reportDate = reportDate;
+		this.region = region;
+		this.district = district;
+		this.community = community;
+		this.admissionDate = admissionDate;
+		this.healthFacility = FacilityHelper.buildFacilityString(healthFacilityUuid, healthFacility, healthFacilityDetails);
+		this.caseClassification = caseClassification;
+		this.investigationStatus = investigationStatus;
+		this.presentCondition = presentCondition;
+		this.outcome = outcome;
+		this.deathDate = deathDate;
+		this.phone = PersonHelper.buildPhoneString(phone, phoneOwner);
+		this.occupationType = PersonHelper.buildOccupationString(occupationType, occupationDetails,
+				FacilityHelper.buildFacilityString(occupationFacilityUuid, occupationFacility, occupationFacilityDetails));
+		this.contactWithRodent = contactWithRodent;
+		this.contactWithConfirmedCase = contactWithConfirmedCase;
+		this.onsetDate = onsetDate;
+	}
 
 	public CaseReferenceDto toReference() {
 		return new CaseReferenceDto(uuid, person);
 	}
 
+	public long getId() {
+		return id;
+	}
+
+	public long getPersonId() {
+		return personId;
+	}
+
+	public long getEpiDataId() {
+		return epiDataId;
+	}
+
+	public long getSymptomsId() {
+		return symptomsId;
+	}
+	
 	@Order(0)
 	public String getUuid() {
 		return uuid;
@@ -187,7 +252,23 @@ public class CaseExportDto implements Serializable {
 	public String getSymptoms() {
 		return symptoms;
 	}
+	
+	public void setId(long id) {
+		this.id = id;
+	}
+	
+	public void setPersonId(long personId) {
+		this.personId = personId;
+	}
+	
+	public void setEpiDataId(long epiDataId) {
+		this.epiDataId = epiDataId;
+	}
 
+	public void setSymptomsId(long symptomsId) {
+		this.symptomsId = symptomsId;
+	}
+	
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 	}
@@ -244,8 +325,30 @@ public class CaseExportDto implements Serializable {
 		this.sampleDates = sampleDates;
 	}
 
+	public void setSampleDates(List<Date> sampleDates) {
+		StringBuilder sampleDateBuilder = new StringBuilder();
+		for (int i = 0; i < sampleDates.size(); i++) {
+			if (i > 0) {
+				sampleDateBuilder.append(", ");
+			}
+			sampleDateBuilder.append(DateHelper.formatLocalShortDate(sampleDates.get(i)));
+		}
+		this.sampleDates = sampleDateBuilder.toString();
+	}
+
 	public void setLabResults(String labResults) {
 		this.labResults = labResults;
+	}
+
+	public void setLabResults(List<SampleTestResultType> labResults) {
+		StringBuilder testResultsBuilder = new StringBuilder();
+		for (int i = 0; i < labResults.size(); i++) {
+			if (i > 0) {
+				testResultsBuilder.append(", ");
+			}
+			testResultsBuilder.append(labResults.get(i).toString());
+		}
+		this.labResults = testResultsBuilder.toString();
 	}
 
 	public void setCaseClassification(CaseClassification caseClassification) {

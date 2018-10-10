@@ -182,4 +182,19 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		// Database should contain one contact, associated visit and task
 		assertEquals(1, getContactFacade().getIndexList(userUuid, null).size());
 	}
+
+	@Test
+	public void testGetExportList() {
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		String userUuid = user.getUuid();
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze.toReference(), new Date(), new Date());
+		
+		// Database should contain one contact, associated visit and task
+		assertEquals(1, getContactFacade().getExportList(userUuid, null, 0, 100).size());
+	}
 }

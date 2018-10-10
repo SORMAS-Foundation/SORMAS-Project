@@ -42,7 +42,7 @@ public interface ContactFacade {
 	
 	List<ContactReferenceDto> getAllByVisit(VisitReferenceDto visitRef);
 
-	List<ContactExportDto> getExportList(String userUuid, ContactCriteria contactCriteria);
+	List<ContactExportDto> getExportList(String userUuid, ContactCriteria contactCriteria, int first, int max);
 	
 	List<DashboardContactDto> getContactsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 	

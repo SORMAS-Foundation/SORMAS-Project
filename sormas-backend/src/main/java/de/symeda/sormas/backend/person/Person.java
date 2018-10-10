@@ -57,11 +57,15 @@ public class Person extends AbstractDomainObject {
 	public static final String CAZE = "caze";
 	public static final String DEATH_DATE = "deathDate";
 	public static final String PRESENT_CONDITION = "presentCondition";
+	public static final String OCCUPATION_TYPE = "occupationType";
+	public static final String OCCUPATION_DETAILS = "occupationDetails";
 	public static final String OCCUPATION_REGION = "occupationRegion";
 	public static final String OCCUPATION_DISTRICT = "occupationDistrict";
 	public static final String OCCUPATION_COMMUNITY = "occupationCommunity";
 	public static final String OCCUPATION_FACILITY = "occupationFacility";
 	public static final String OCCUPATION_FACILITY_DETAILS = "occupationFacilityDetails";
+	public static final String PHONE = "phone";
+	public static final String PHONE_OWNER = "phoneOwner";
 
 	private String firstName;
 	private String lastName;
