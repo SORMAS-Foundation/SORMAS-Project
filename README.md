@@ -38,11 +38,12 @@ The project consists of the following modules:
 * TODO: Code of conduct
 * [Setting up your local environment](DEVELOPMENT_ENVIRONMENT.md)
 
-### Most Important
-1. Use the Eclipse code formatter (Ctrl+Shift+F).
-
+### Developers
+1. Use the Eclipse code formatter (Ctrl+Shift+F).  
    Use the Android Studio code formatter for the **sormas-app** project
-2. Each commit should be related to a single issue on Github and have a reference to this issue. Example (5a8d101):
-   
-   > #460 - added contacts dashboard (without content yet), added abstract components for dashboard view, filter layout and statistics component
+2. Each commit should be related to a single issue on Github and have a reference to this issue. Separate subject from body with a blank line.   
+   > Automatic case classification for existing SORMAS diseases #61
+   >
+   > build model to define classification  
+   > apply automatic case classification whenever a field value changes
 3. Each pull request should be related to a single issue as-well (if possible). 
