@@ -37,4 +37,12 @@ The project consists of the following modules:
 * TODO: Reporting an issue
 * TODO: Code of conduct
 * [Setting up your local environment](DEVELOPMENT_ENVIRONMENT.md)
-* TODO Code style guide
+
+### Most Important
+1. Use the Eclipse code formatter (Ctrl+Shift+F).
+
+   Use the Android Studio code formatter for the **sormas-app** project
+2. Each commit should be related to a single issue on Github and have a reference to this issue. Example (5a8d101):
+   
+   > #460 - added contacts dashboard (without content yet), added abstract components for dashboard view, filter layout and statistics component
+3. Each pull request should be related to a single issue as-well (if possible). 
