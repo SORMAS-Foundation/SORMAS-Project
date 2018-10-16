@@ -414,6 +414,32 @@ public class ContactService extends AbstractAdoService<Contact> {
 		return resultMap;
 	}
 	
+	public Map<Date, Long> getFollowUpUntilCountPerDate(ContactCriteria contactCriteria, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Contact> contact = cq.from(getElementClass());
+		
+		Predicate filter = createUserFilter(cb, cq, contact, user);
+		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, cb, contact);
+		if (filter != null) {
+			filter = cb.and(filter, criteriaFilter);
+		} else {
+			filter = criteriaFilter;
+		}
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.groupBy(contact.get(Contact.FOLLOW_UP_UNTIL));
+		cq.multiselect(contact.get(Contact.FOLLOW_UP_UNTIL), cb.count(contact));
+		List<Object[]> results = em.createQuery(cq).getResultList();
+		
+		Map<Date, Long> resultMap = results.stream().collect(
+				Collectors.toMap(e -> DateHelper.getStartOfDay((Date) e[0]), e -> (Long) e[1]));
+		return resultMap;
+	}
+	
 	/**
 	 * Calculates resultingCase and contact status based on: - existing disease
 	 * cases (and classification) of the person - the incubation period and - the
@@ -639,6 +665,9 @@ public class ContactService extends AbstractAdoService<Contact> {
 		}
 		if (contactCriteria.getReportDateFrom() != null && contactCriteria.getReportDateTo() != null) {
 			filter = and(cb, filter, cb.between(from.get(Contact.REPORT_DATE_TIME), contactCriteria.getReportDateFrom(), contactCriteria.getReportDateTo()));
+		}
+		if (contactCriteria.getFollowUpUntilFrom() != null && contactCriteria.getFollowUpUntilTo() != null) {
+			filter = and(cb, filter, cb.between(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilFrom(), contactCriteria.getFollowUpUntilTo()));
 		}
 
 		return filter;

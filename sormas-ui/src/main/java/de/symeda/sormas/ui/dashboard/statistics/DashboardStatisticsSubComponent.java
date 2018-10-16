@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.dashboard;
+package de.symeda.sormas.ui.dashboard.statistics;
 
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractComponent;
@@ -43,6 +43,8 @@ public class DashboardStatisticsSubComponent extends VerticalLayout {
 				totalCountLabel = new Label();
 				CssStyles.style(totalCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_XXXLARGE, CssStyles.LABEL_BOLD, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 				labelAndTotalLayout.addComponent(totalCountLabel);
+			} else {
+				CssStyles.style(labelAndTotalLayout, CssStyles.VSPACE_4);
 			}
 
 		}

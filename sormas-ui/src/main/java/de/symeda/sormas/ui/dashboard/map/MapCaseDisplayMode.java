@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.dashboard;
+package de.symeda.sormas.ui.dashboard.map;
 
 import de.symeda.sormas.api.I18nProperties;
 

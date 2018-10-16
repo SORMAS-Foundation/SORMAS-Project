@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.dashboard;
+package de.symeda.sormas.ui.dashboard.contacts;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -17,6 +17,9 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
+import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
+import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -25,7 +28,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 	private static final long serialVersionUID = 6582975657305031105L;
 
 	private EpiCurveContactsMode epiCurveContactsMode;
-	
+
 	public EpiCurveContactsComponent(DashboardDataProvider dashboardDataProvider) {
 		super(dashboardDataProvider);
 	}
@@ -33,10 +36,10 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 	@Override
 	protected PopupButton createEpiCurveModeSelector() {
 		if (epiCurveContactsMode == null) {
-			epiCurveContactsMode = EpiCurveContactsMode.CONTACT_STATUS;
+			epiCurveContactsMode = EpiCurveContactsMode.FOLLOW_UP_STATUS;
 			epiCurveLabel.setValue(epiCurveContactsMode.toString() + " Curve");
 		}
-		
+
 		PopupButton dataDropdown = new PopupButton("Data");
 		CssStyles.style(dataDropdown, CssStyles.BUTTON_SUBTLE);
 
@@ -44,7 +47,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 		groupingLayout.setMargin(true);
 		groupingLayout.setSizeUndefined();
 		dataDropdown.setContent(groupingLayout);
-		
+
 		OptionGroup dataSelect = new OptionGroup();
 		dataSelect.setWidth(100, Unit.PERCENTAGE);
 		dataSelect.addItems((Object[]) EpiCurveContactsMode.values());
@@ -56,10 +59,10 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 			clearAndFillEpiCurveChart();
 		});
 		groupingLayout.addComponent(dataSelect);
-		
+
 		return dataDropdown;
 	}
-	
+
 	@Override
 	public void clearAndFillEpiCurveChart() {
 		StringBuilder hcjs = new StringBuilder();
@@ -114,63 +117,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 				+ "enabled: true, formatter: function() { if (this.y > 0) return this.y; },"
 				+ "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } } },");
 
-		if (epiCurveContactsMode == EpiCurveContactsMode.CONTACT_STATUS) {
-			int[] activeNumbers = new int[newLabels.size()];
-			int[] convertedNumbers = new int[newLabels.size()];
-			int[] droppedNumbers = new int[newLabels.size()];
-
-			for (int i = 0; i < filteredDates.size(); i++) {
-				Date date = filteredDates.get(i);
-
-				ContactCriteria contactCriteria = new ContactCriteria()
-						.caseDiseaseEquals(dashboardDataProvider.getDisease())
-						.caseRegion(dashboardDataProvider.getRegion())
-						.caseDistrict(dashboardDataProvider.getDistrict());
-				if (epiCurveGrouping == EpiCurveGrouping.DAY) {
-					contactCriteria.reportDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date));
-				} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
-					contactCriteria.reportDateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date));
-				} else {
-					contactCriteria.reportDateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date));
-				}
-
-				Map<ContactStatus, Long> contactCounts = FacadeProvider.getContactFacade()
-						.getNewContactCountPerStatus(contactCriteria, LoginHelper.getCurrentUser().getUuid());
-
-				Long activeCount = contactCounts.get(ContactStatus.ACTIVE);
-				Long convertedCount = contactCounts.get(ContactStatus.CONVERTED);
-				Long droppedCount = contactCounts.get(ContactStatus.DROPPED);
-				activeNumbers[i] = activeCount != null ? activeCount.intValue() : 0;
-				convertedNumbers[i] = convertedCount != null ? convertedCount.intValue() : 0;
-				droppedNumbers[i] = droppedCount != null ? droppedCount.intValue() : 0;
-			}
-
-			hcjs.append("series: [");
-			hcjs.append("{ name: 'Active', color: '#B22222', dataLabels: { allowOverlap: false }, data: [");
-			for (int i = 0; i < activeNumbers.length; i++) {
-				if (i == activeNumbers.length - 1) {
-					hcjs.append(activeNumbers[i] + "]},");
-				} else {
-					hcjs.append(activeNumbers[i] + ", ");
-				}
-			}
-			hcjs.append("{ name: 'Converted To Case', color: '#FFD700', dataLabels: { allowOverlap: false },  data: [");
-			for (int i = 0; i < convertedNumbers.length; i++) {
-				if (i == convertedNumbers.length - 1) {
-					hcjs.append(convertedNumbers[i] + "]},");
-				} else {
-					hcjs.append(convertedNumbers[i] + ", ");
-				}
-			}
-			hcjs.append("{ name: 'Dropped', color: '#808080', dataLabels: { allowOverlap: false },  data: [");
-			for (int i = 0; i < droppedNumbers.length; i++) {
-				if (i == droppedNumbers.length - 1) {
-					hcjs.append(droppedNumbers[i] + "]}]};");
-				} else {
-					hcjs.append(droppedNumbers[i] + ", ");
-				}
-			}
-		} else if (epiCurveContactsMode == EpiCurveContactsMode.CONTACT_CLASSIFICATION) {
+		if (epiCurveContactsMode == EpiCurveContactsMode.CONTACT_CLASSIFICATION) {
 			int[] unconfirmedNumbers = new int[newLabels.size()];
 			int[] confirmedNumbers = new int[newLabels.size()];
 
@@ -220,6 +167,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 			int[] lostToFollowUpNumbers = new int[newLabels.size()];
 			int[] completedFollowUpNumbers = new int[newLabels.size()];
 			int[] canceledFollowUpNumbers = new int[newLabels.size()];
+			int[] convertedNumbers = new int[newLabels.size()];
 
 			for (int i = 0; i < filteredDates.size(); i++) {
 				Date date = filteredDates.get(i);
@@ -238,15 +186,19 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 
 				Map<FollowUpStatus, Long> contactCounts = FacadeProvider.getContactFacade()
 						.getNewContactCountPerFollowUpStatus(contactCriteria, LoginHelper.getCurrentUser().getUuid());
+				Map<ContactStatus, Long> contactStatusCounts = FacadeProvider.getContactFacade()
+						.getNewContactCountPerStatus(contactCriteria, LoginHelper.getCurrentUser().getUuid());
 
 				Long underFollowUpCount = contactCounts.get(FollowUpStatus.FOLLOW_UP);
 				Long lostToFollowUpCount = contactCounts.get(FollowUpStatus.LOST);
 				Long completedFollowUpCount = contactCounts.get(FollowUpStatus.COMPLETED);
 				Long canceledFollowUpCount = contactCounts.get(FollowUpStatus.CANCELED);
+				Long convertedCount = contactStatusCounts.get(ContactStatus.CONVERTED);
 				underFollowUpNumbers[i] = underFollowUpCount != null ? underFollowUpCount.intValue() : 0;
 				lostToFollowUpNumbers[i] = lostToFollowUpCount != null ? lostToFollowUpCount.intValue() : 0;
 				completedFollowUpNumbers[i] = completedFollowUpCount != null ? completedFollowUpCount.intValue() : 0;
 				canceledFollowUpNumbers[i] = canceledFollowUpCount != null ? canceledFollowUpCount.intValue() : 0;
+				convertedNumbers[i] = convertedCount != null ? convertedCount.intValue() : 0;
 			}
 
 			hcjs.append("series: [");
@@ -277,15 +229,90 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 			hcjs.append("{ name: 'Canceled F/U', color: '#FF8C00', dataLabels: { allowOverlap: false },  data: [");
 			for (int i = 0; i < canceledFollowUpNumbers.length; i++) {
 				if (i == canceledFollowUpNumbers.length - 1) {
-					hcjs.append(canceledFollowUpNumbers[i] + "]}]};");
+					hcjs.append(canceledFollowUpNumbers[i] + "]},");
 				} else {
 					hcjs.append(canceledFollowUpNumbers[i] + ", ");
+				}
+			}
+			hcjs.append("{ name: 'Converted to Case', color: '#00BFFF', dataLabels: { allowOverlap: false },  data: [");
+			for (int i = 0; i < convertedNumbers.length; i++) {
+				if (i == convertedNumbers.length - 1) {
+					hcjs.append(convertedNumbers[i] + "]}]};");
+				} else {
+					hcjs.append(convertedNumbers[i] + ", ");
+				}
+			}
+		} else if (epiCurveContactsMode == EpiCurveContactsMode.FOLLOW_UP_UNTIL) {
+			int[] followUpUntilNumbers = new int[newLabels.size()];
+// TODO month grouping too few contacts, epi week grouping not showing lost ones
+			ContactCriteria contactCriteria = new ContactCriteria()
+					.caseDiseaseEquals(dashboardDataProvider.getDisease())
+					.caseRegion(dashboardDataProvider.getRegion())
+					.caseDistrict(dashboardDataProvider.getDistrict());
+			if (epiCurveGrouping == EpiCurveGrouping.DAY) {
+				contactCriteria.followUpUntilBetween(DateHelper.getStartOfDay(filteredDates.get(0)), DateHelper.getEndOfDay(filteredDates.get(filteredDates.size() - 1)));
+			} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
+				contactCriteria.followUpUntilBetween(DateHelper.getStartOfWeek(filteredDates.get(0)), DateHelper.getEndOfWeek(filteredDates.get(filteredDates.size() - 1)));
+			} else {
+				contactCriteria.followUpUntilBetween(DateHelper.getStartOfMonth(filteredDates.get(0)), DateHelper.getEndOfMonth(filteredDates.get(filteredDates.size() - 1)));
+			}
+
+			Map<Date, Long> followUpUntilDateCounts = FacadeProvider.getContactFacade()
+					.getFollowUpUntilCountPerDate(contactCriteria, LoginHelper.getCurrentUser().getUuid());
+
+			for (Date date : followUpUntilDateCounts.keySet()) {
+				Long followUpUntilCount = followUpUntilDateCounts.get(date);
+				int filteredDatesIndex = getFilteredDatesIndexForDate(filteredDates, 0, filteredDates.size() - 1, date);
+				followUpUntilNumbers[filteredDatesIndex] = followUpUntilCount != null ? followUpUntilCount.intValue() : 0;
+			}
+
+			hcjs.append("series: [");
+			hcjs.append("{ name: 'F/U Until', color: '#00BFFF', dataLabels: { allowOverlap: false },  data: [");
+			for (int i = 0; i < followUpUntilNumbers.length; i++) {
+				if (i == followUpUntilNumbers.length - 1) {
+					hcjs.append(followUpUntilNumbers[i] + "]}]};");
+				} else {
+					hcjs.append(followUpUntilNumbers[i] + ", ");
 				}
 			}
 		}
 
 		epiCurveChart.setHcjs(hcjs.toString());	
 	}
-	
-	
+
+	private int getFilteredDatesIndexForDate(List<Date> filteredDates, int startIndex, int endIndex, Date date) {
+		int middleIndex = (startIndex + endIndex) / 2;
+
+		if (epiCurveGrouping == EpiCurveGrouping.DAY) {
+			if (filteredDates.get(middleIndex).equals(date)) {
+				return middleIndex;
+			} else if (filteredDates.get(middleIndex).before(date)) {
+				return getFilteredDatesIndexForDate(filteredDates, middleIndex, endIndex, date);
+			} else {
+				return getFilteredDatesIndexForDate(filteredDates, startIndex, middleIndex, date);
+			}
+		} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
+			if (DateHelper.isBetween(date, 
+					DateHelper.getStartOfWeek(filteredDates.get(middleIndex)), 
+					DateHelper.getEndOfWeek(filteredDates.get(middleIndex)))) {
+				return middleIndex;
+			} else if (DateHelper.getStartOfWeek(filteredDates.get(middleIndex)).before(date)) {
+				return getFilteredDatesIndexForDate(filteredDates, middleIndex, endIndex, date);
+			} else {
+				return getFilteredDatesIndexForDate(filteredDates, startIndex, middleIndex, date);
+			}
+		} else {
+			if (DateHelper.isBetween(date, 
+					DateHelper.getStartOfMonth(filteredDates.get(middleIndex)), 
+					DateHelper.getEndOfMonth(filteredDates.get(middleIndex)))) {
+				return middleIndex;
+			} else if (DateHelper.getStartOfMonth(filteredDates.get(middleIndex)).before(date)) {
+				return getFilteredDatesIndexForDate(filteredDates, middleIndex, endIndex, date);
+			} else {
+				return getFilteredDatesIndexForDate(filteredDates, startIndex, middleIndex, date);
+			}
+		}
+	}
+
+
 }

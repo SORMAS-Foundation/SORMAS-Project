@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.dashboard;
+package de.symeda.sormas.ui.dashboard.diagram;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,6 +18,7 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.utils.CssStyles;
 

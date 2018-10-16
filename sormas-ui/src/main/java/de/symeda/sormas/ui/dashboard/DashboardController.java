@@ -3,6 +3,8 @@ package de.symeda.sormas.ui.dashboard;
 import com.vaadin.navigator.Navigator;
 
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.dashboard.contacts.DashboardContactsView;
+import de.symeda.sormas.ui.dashboard.surveillance.DashboardSurveillanceView;
 import de.symeda.sormas.ui.login.LoginHelper;
 
 public class DashboardController {

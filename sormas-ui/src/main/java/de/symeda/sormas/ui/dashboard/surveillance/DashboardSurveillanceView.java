@@ -1,4 +1,8 @@
-package de.symeda.sormas.ui.dashboard;
+package de.symeda.sormas.ui.dashboard.surveillance;
+
+import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
+import de.symeda.sormas.ui.dashboard.DashboardType;
+import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 
 @SuppressWarnings("serial")
 public class DashboardSurveillanceView extends AbstractDashboardView {

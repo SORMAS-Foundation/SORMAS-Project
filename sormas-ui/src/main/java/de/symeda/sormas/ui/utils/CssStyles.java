@@ -124,6 +124,7 @@ public final class CssStyles {
 	public static final String SVG_FILL_IMPORTANT = "svg-fill-important";
 	public static final String SVG_FILL_POSITIVE = "svg-fill-positive";
 	public static final String SVG_FILL_MINOR = "svg-fill-minor";
+	public static final String SVG_FILL_NEUTRAL = "svg-fill-neutral";
 	public static final String SVG_STROKE_PRIMARY = "svg-stroke-primary";
 	public static final String SVG_STROKE_CRITICAL = "svg-stroke-critical";
 	public static final String SVG_STROKE_IMPORTANT = "svg-stroke-important";

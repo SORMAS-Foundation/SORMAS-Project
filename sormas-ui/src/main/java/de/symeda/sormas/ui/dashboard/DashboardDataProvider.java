@@ -27,6 +27,8 @@ public class DashboardDataProvider {
 	private DateFilterOption dateFilterOption;
 	private Date fromDate;
 	private Date toDate;
+	private Date previousFromDate;
+	private Date previousToDate;
 
 	private List<DashboardCaseDto> cases = new ArrayList<>();
 	private List<DashboardCaseDto> previousCases = new ArrayList<>();
@@ -45,8 +47,8 @@ public class DashboardDataProvider {
 		String userUuid = LoginHelper.getCurrentUser().getUuid();
 
 		int period = DateHelper.getDaysBetween(fromDate, toDate);
-		Date previousFromDate = DateHelper.getStartOfDay(DateHelper.subtractDays(fromDate, period));
-		Date previousToDate = DateHelper.getEndOfDay(DateHelper.subtractDays(toDate, period));
+		previousFromDate = DateHelper.getStartOfDay(DateHelper.subtractDays(fromDate, period));
+		previousToDate = DateHelper.getEndOfDay(DateHelper.subtractDays(toDate, period));
 		// Cases
 		setCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(region, district, disease, fromDate, toDate, userUuid));
 		setPreviousCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(region, district, disease, previousFromDate, previousToDate, userUuid));
@@ -65,8 +67,6 @@ public class DashboardDataProvider {
 		// Contacts
 		setContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, fromDate, toDate, userUuid));
 		setPreviousContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, previousFromDate, previousToDate, userUuid));
-		// Visits
-		
 	}
 
 	public List<DashboardCaseDto> getCases() {
@@ -171,6 +171,19 @@ public class DashboardDataProvider {
 	public void setToDate(Date toDate) {
 		this.toDate = toDate;
 	}
+	public Date getPreviousFromDate() {
+		return previousFromDate;
+	}
+	public void setPreviousFromDate(Date previousFromDate) {
+		this.previousFromDate = previousFromDate;
+	}
+	public Date getPreviousToDate() {
+		return previousToDate;
+	}
+	public void setPreviousToDate(Date previousToDate) {
+		this.previousToDate = previousToDate;
+	}
+
 	public DashboardType getDashboardType() {
 		return dashboardType;
 	}

@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.dashboard;
+package de.symeda.sormas.ui.dashboard.statistics;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +15,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -25,7 +26,7 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 	protected static final String SECOND_LOC = "secondLoc";
 	protected static final String THIRD_LOC = "thirdLoc";
 	protected static final String FOURTH_LOC = "fourthLoc";
-	
+
 	protected final DashboardDataProvider dashboardDataProvider;
 
 	protected CustomLayout subComponentsLayout;
@@ -38,7 +39,7 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 
 	protected Disease previousDisease;
 	protected Disease currentDisease;
-	
+
 	public AbstractDashboardStatisticsComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
 		this.setWidth(100, Unit.PERCENTAGE);
@@ -52,27 +53,31 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 						LayoutUtil.fluidColumnLoc(3, 0, 6, 0, THIRD_LOC),
 						LayoutUtil.fluidColumnLoc(3, 0, 6, 0, FOURTH_LOC)));
 		subComponentsLayout.setWidth(100, Unit.PERCENTAGE);
-		
+
 		addFirstComponent();
 		addSecondComponent();
 		addThirdComponent();
 		addFourthComponent();
-		
+
 		addComponent(subComponentsLayout);
 		if (Disease.values().length > 6) {
 			addShowMoreAndLessButtons();
 		}
 	}
-	
+
 	protected abstract void addFirstComponent();
 	protected abstract void addSecondComponent();
 	protected abstract void addThirdComponent();
 	protected abstract void addFourthComponent();
-	
+
 	protected abstract void updateFirstComponent(int visibleDiseasesCount);
 	protected abstract void updateSecondComponent(int visibleDiseasesCount);
 	protected abstract void updateThirdComponent(int visibleDiseasesCount);
 	protected abstract void updateFourthComponent(int visibleDiseasesCount);
+
+	protected abstract int getNormalHeight();
+	protected abstract int getFullHeight();
+	protected abstract int getFilteredHeight();
 
 	public void updateStatistics(Disease disease) {
 		previousDisease = currentDisease;
@@ -92,26 +97,26 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 		updateSecondComponent(visibleDiseasesCount);
 		updateThirdComponent(visibleDiseasesCount);
 		updateFourthComponent(visibleDiseasesCount);
-		
+
 		// fixed height makes sure they stack correct when screen gets smaller
 		if (isFullMode()) {
-			firstComponent.setHeight(430, Unit.PIXELS);
-			secondComponent.setHeight(430, Unit.PIXELS);
-			thirdComponent.setHeight(430, Unit.PIXELS);
-			fourthComponent.setHeight(430, Unit.PIXELS);
+			firstComponent.setHeight(getFullHeight(), Unit.PIXELS);
+			secondComponent.setHeight(getFullHeight(), Unit.PIXELS);
+			thirdComponent.setHeight(getFullHeight(), Unit.PIXELS);
+			fourthComponent.setHeight(getFullHeight(), Unit.PIXELS);
 		} else if (currentDisease == null) {
-			firstComponent.setHeight(320, Unit.PIXELS);
-			secondComponent.setHeight(320, Unit.PIXELS);
-			thirdComponent.setHeight(320, Unit.PIXELS);
-			fourthComponent.setHeight(320, Unit.PIXELS);
+			firstComponent.setHeight(getNormalHeight(), Unit.PIXELS);
+			secondComponent.setHeight(getNormalHeight(), Unit.PIXELS);
+			thirdComponent.setHeight(getNormalHeight(), Unit.PIXELS);
+			fourthComponent.setHeight(getNormalHeight(), Unit.PIXELS);
 		} else {
-			firstComponent.setHeight(370, Unit.PIXELS);
-			secondComponent.setHeight(370, Unit.PIXELS);
-			thirdComponent.setHeight(370, Unit.PIXELS);
-			fourthComponent.setHeight(370, Unit.PIXELS);
+			firstComponent.setHeight(getFilteredHeight(), Unit.PIXELS);
+			secondComponent.setHeight(getFilteredHeight(), Unit.PIXELS);
+			thirdComponent.setHeight(getFilteredHeight(), Unit.PIXELS);
+			fourthComponent.setHeight(getFilteredHeight(), Unit.PIXELS);
 		}
 	}
-	
+
 	private void addShowMoreAndLessButtons() {
 		showMoreButton = new Button("Show All Diseases", FontAwesome.CHEVRON_DOWN);
 		CssStyles.style(showMoreButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_3);
@@ -151,5 +156,13 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 
 		return sortedDiseaseList;
 	}
-	
+
+	public int calculateGrowth(int currentCount, int previousCount) {
+		return currentCount == 0 ?
+				(previousCount > 0 ? -100 : 0) : 
+					previousCount == 0 ? 
+							(currentCount > 0 ? Integer.MIN_VALUE : 0) : 
+								Math.round(((currentCount - previousCount * 1.0f) / previousCount) * 100.0f);
+	}
+
 }

@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.dashboard;
+package de.symeda.sormas.ui.dashboard.statistics;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -75,9 +75,9 @@ public class DashboardStatisticsGrowthElement extends VerticalLayout {
 
 	}
 
-	public void update(int count, float percentage, boolean increaseIsPositive) {
+	public void update(int count, int percentage, boolean increaseIsPositive) {
 		countLabel.setValue(Integer.toString(count));
-		percentageLabel.setValue(percentage != Float.MIN_VALUE ? percentage % 1.0 != 0 ? String.format("%s", Float.toString(Math.abs(percentage))) + "%" : String.format("%.0f", percentage) + "%" : "");
+		percentageLabel.setValue(percentage != Integer.MIN_VALUE ? (percentage + " %") : "");
 		CssStyles.removeStyles(growthLabel, CssStyles.LABEL_CRITICAL, CssStyles.LABEL_POSITIVE, CssStyles.LABEL_IMPORTANT);
 		if (percentage > 0) {
 			growthLabel.setValue(FontAwesome.CHEVRON_UP.getHtml());

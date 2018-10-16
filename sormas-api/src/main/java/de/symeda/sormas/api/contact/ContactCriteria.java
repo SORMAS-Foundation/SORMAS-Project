@@ -27,6 +27,8 @@ public class ContactCriteria implements Serializable {
 	private FollowUpStatus followUpStatus;
 	private Date reportDateFrom;
 	private Date reportDateTo;
+	private Date followUpUntilFrom;
+	private Date followUpUntilTo;
 
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -130,6 +132,20 @@ public class ContactCriteria implements Serializable {
 
 	public Date getReportDateTo() {
 		return reportDateTo;
+	}
+	
+	public ContactCriteria followUpUntilBetween(Date followUpUntilFrom, Date followUpUntilTo) {
+		this.followUpUntilFrom = followUpUntilFrom;
+		this.followUpUntilTo = followUpUntilTo;
+		return this;
+	}
+	
+	public Date getFollowUpUntilFrom() {
+		return followUpUntilFrom;
+	}
+	
+	public Date getFollowUpUntilTo() {
+		return followUpUntilTo;
 	}
 	
 }

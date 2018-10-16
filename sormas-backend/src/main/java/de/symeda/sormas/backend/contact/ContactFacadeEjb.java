@@ -424,6 +424,13 @@ public class ContactFacadeEjb implements ContactFacade {
 		
 		return contactService.getNewContactCountPerFollowUpStatus(contactCriteria, user);
 	}
+	
+	@Override
+	public Map<Date, Long> getFollowUpUntilCountPerDate(ContactCriteria contactCriteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		return contactService.getFollowUpUntilCountPerDate(contactCriteria, user);
+	}
 
 	public static ContactReferenceDto toReferenceDto(Contact source) {
 		if (source == null) {

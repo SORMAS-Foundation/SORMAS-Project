@@ -111,12 +111,18 @@ public class VisitService extends AbstractAdoService<Visit> {
 		return resultList;
 	}
 
-	public List<DashboardVisitDto> getDashboardVisitsByContact(Contact contact) {
+	public List<DashboardVisitDto> getDashboardVisitsByContact(Contact contact, Date fromDate, Date toDate) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardVisitDto> cq = cb.createQuery(DashboardVisitDto.class);
 		Root<Visit> from = cq.from(getElementClass());
 
 		Predicate filter = buildVisitFilter(contact, null, cb, cq, from);
+		if (from != null) {
+			filter = cb.and(filter, cb.or(cb.greaterThan(from.get(Visit.VISIT_DATE_TIME), fromDate), cb.equal(from.get(Visit.VISIT_DATE_TIME), fromDate)));
+		}
+		if (toDate != null) {
+			filter = cb.and(filter, cb.or(cb.lessThan(from.get(Visit.VISIT_DATE_TIME), toDate), cb.equal(from.get(Visit.VISIT_DATE_TIME), toDate)));
+		}
 
 		cq.where(filter);
 		cq.multiselect(

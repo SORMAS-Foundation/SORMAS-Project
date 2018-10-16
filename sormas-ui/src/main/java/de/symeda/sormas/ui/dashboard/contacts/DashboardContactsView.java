@@ -1,4 +1,8 @@
-package de.symeda.sormas.ui.dashboard;
+package de.symeda.sormas.ui.dashboard.contacts;
+
+import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
+import de.symeda.sormas.ui.dashboard.DashboardType;
+import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 
 @SuppressWarnings("serial")
 public class DashboardContactsView extends AbstractDashboardView {

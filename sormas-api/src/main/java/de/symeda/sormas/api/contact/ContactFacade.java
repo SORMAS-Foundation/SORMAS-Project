@@ -51,4 +51,7 @@ public interface ContactFacade {
 	Map<ContactClassification, Long> getNewContactCountPerClassification(ContactCriteria contactCriteria, String userUuid);
 	
 	Map<FollowUpStatus, Long> getNewContactCountPerFollowUpStatus(ContactCriteria contactCriteria, String userUuid);
+	
+	Map<Date, Long> getFollowUpUntilCountPerDate(ContactCriteria contactCriteria, String userUuid);
+	
 }

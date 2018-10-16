@@ -158,10 +158,10 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 	
 	@Override
-	public List<DashboardVisitDto> getDashboardVisitsByContact(ContactReferenceDto contactRef) {
+	public List<DashboardVisitDto> getDashboardVisitsByContact(ContactReferenceDto contactRef, Date from, Date to) {
 		Contact contact = contactService.getByReferenceDto(contactRef);
 		
-		return visitService.getDashboardVisitsByContact(contact);
+		return visitService.getDashboardVisitsByContact(contact, from, to);
 	}
 
 	public Visit fromDto(@NotNull VisitDto source) {

@@ -31,6 +31,6 @@ public interface VisitFacade {
 	
 	int getNumberOfVisits(ContactReferenceDto contactRef, VisitStatus visitStatus);
 	
-	List<DashboardVisitDto> getDashboardVisitsByContact(ContactReferenceDto contactRef);
+	List<DashboardVisitDto> getDashboardVisitsByContact(ContactReferenceDto contactRef, Date from, Date to);
 	
 }

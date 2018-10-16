@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.dashboard;
+package de.symeda.sormas.ui.dashboard.surveillance;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -28,7 +28,16 @@ import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.task.DashboardTaskDto;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
-import de.symeda.sormas.ui.dashboard.SvgCircleElement.SvgCircleElementPart;
+import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
+import de.symeda.sormas.ui.dashboard.statistics.AbstractDashboardStatisticsComponent;
+import de.symeda.sormas.ui.dashboard.statistics.CountElementStyle;
+import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsCountElement;
+import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsDiseaseElement;
+import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsGrowthElement;
+import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsPercentageElement;
+import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsSubComponent;
+import de.symeda.sormas.ui.dashboard.statistics.SvgCircleElement;
+import de.symeda.sormas.ui.dashboard.statistics.SvgCircleElement.SvgCircleElementPart;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -278,15 +287,9 @@ public class DashboardSurveillanceStatisticsComponent extends AbstractDashboardS
 					c.getCauseOfDeathDisease() != null && c.getCauseOfDeathDisease() == c.getDisease()).count();
 			int previousFatalitiesCount = (int) previousDashboardCases.stream().filter(c -> c.getCasePersonCondition() == PresentCondition.DEAD).count();
 			
-			float investigatedCasesGrowth = investigatedCasesCount == 0 ? previousInvestigatedCasesCount > 0 ? -100 : 0 : 
-				previousInvestigatedCasesCount == 0 ? investigatedCasesCount > 0 ? Float.MIN_VALUE : 0 :
-				new BigDecimal(investigatedCasesCount).subtract(new BigDecimal(previousInvestigatedCasesCount)).divide(new BigDecimal(investigatedCasesCount), 1, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).floatValue();
-			float discardedCasesGrowth = discardedCasesCount == 0 ? previousDiscardedCasesCount > 0 ? -100 : 0 : 
-				previousDiscardedCasesCount == 0 ? discardedCasesCount > 0 ? Float.MIN_VALUE : 0 :
-				new BigDecimal(discardedCasesCount).subtract(new BigDecimal(previousDiscardedCasesCount)).divide(new BigDecimal(discardedCasesCount), 1, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).floatValue();
-			float fatalitiesGrowth = fatalitiesCount == 0 ? previousFatalitiesCount > 0 ? -100 : 0 : 
-				previousFatalitiesCount == 0 ? fatalitiesCount > 0 ? Float.MIN_VALUE : 0 :
-				new BigDecimal(fatalitiesCount).subtract(new BigDecimal(previousFatalitiesCount)).divide(new BigDecimal(fatalitiesCount), 1, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).floatValue();
+			int investigatedCasesGrowth = calculateGrowth(investigatedCasesCount, previousInvestigatedCasesCount);
+			int discardedCasesGrowth = calculateGrowth(discardedCasesCount, previousDiscardedCasesCount);
+			int fatalitiesGrowth = calculateGrowth(fatalitiesCount, previousFatalitiesCount);
 			int fatalityRateRelevantCasesCount = confirmedCasesCount + suspectCasesCount + probableCasesCount;
 			float fatalityRate = fatalitiesCount == 0 ? 0 : newCasesCount == 0 ? 0 : fatalityRateRelevantCasesCount == 0 ? 0 :
 				new BigDecimal(fatalitiesCount).multiply(new BigDecimal(100)).divide(new BigDecimal(fatalityRateRelevantCasesCount), 1, RoundingMode.HALF_UP).floatValue();
@@ -534,5 +537,20 @@ public class DashboardSurveillanceStatisticsComponent extends AbstractDashboardS
 			testResultIndeterminatePercentage.updatePercentageValue(indeterminateTestResultsPercentage);
 		}
 	}
+	
+	@Override
+	protected int getFullHeight() {
+		return 430;
+	}
+	
+	@Override
+	protected int getNormalHeight() {
+		return 320;
+	}
 
+	@Override
+	protected int getFilteredHeight() {
+		return 370;
+	}
+	
 }
