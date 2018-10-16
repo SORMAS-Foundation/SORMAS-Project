@@ -2,7 +2,6 @@
 #  * Payara 4.1.2.172 installed and proper Java-Version configured in asenv.conf 
 #  * Database created
 #  * setup directory prepared
-#  * log directory (e.g. /var/log/glassfish/${DOMAIN_NAME}) exists and is owned by user 'glassfish'
 
 
 # ------ Config BEGIN ------
@@ -11,14 +10,16 @@
 #DEV_SYSTEM=true
 DEV_SYSTEM=false
 
-# GLASSFISH
+# WINDOWS: You may need to prefix the directories with /c
 TEMP_DIR=/opt/sormas-temp
 GENERATED_DIR=/opt/sormas-generated
-GLASSFISH_HOME=/opt/payara-172/glassfish
+PAYARA_HOME=/opt/payara-172/glassfish
 DOMAIN_NAME=sormas
 DOMAINS_HOME=/opt/domains
 DOMAIN_DIR=${DOMAINS_HOME}/${DOMAIN_NAME}
+# keep this directory if possible - otherwise also adjust directory in logback.xml
 LOG_HOME=/var/log/glassfish/sormas
+DOWNLOAD_DIR=/var/www/sormas/downloads
 PORT_BASE=6000
 PORT_ADMIN=6048
 
@@ -43,7 +44,7 @@ echo "WINDOWS: setfacl and chown messages can be ignored"
 echo "------"
 echo "Temp Directory: ${TEMP_DIR}"
 echo "Generated Directory: ${GENERATED_DIR}"
-echo "GF_HOME: ${GLASSFISH_HOME}"
+echo "Payara Home: ${PAYARA_HOME}"
 echo "Domain Name: ${DOMAIN_NAME}"
 echo "Domain Home: ${DOMAIN_DIR}"
 echo "Log Home: ${LOG_HOME}"
@@ -53,18 +54,20 @@ echo "Admin Port: ${PORT_ADMIN}"
 read -p "Press [Enter] to continue..."
 
 # create needed directories and set user rights
-mkdir ${DOMAINS_HOME}
-mkdir ${LOG_HOME}
-mkdir ${TEMP_DIR}
-mkdir ${GENERATED_DIR}
+mkdir -p ${DOMAINS_HOME}
+mkdir -p ${TEMP_DIR}
+mkdir -p ${GENERATED_DIR}
+mkdir -p ${LOG_HOME}
+mkdir -p ${DOWNLOAD_DIR}
+chown -R payara:payara ${LOG_HOME}
 setfacl -m u:postgres:rwx ${TEMP_DIR} 
-setfacl -m u:glassfish:rwx ${TEMP_DIR}
+setfacl -m u:payara:rwx ${TEMP_DIR}
 setfacl -m u:postgres:rwx ${GENERATED_DIR}
-setfacl -m u:glassfish:rwx ${GENERATED_DIR}
+setfacl -m u:payara:rwx ${GENERATED_DIR}
 
 # setting ASADMIN_CALL and creating domain
-ASADMIN="${GLASSFISH_HOME}/bin/asadmin --port ${PORT_ADMIN}"
-${GLASSFISH_HOME}/bin/asadmin create-domain --domaindir ${DOMAINS_HOME} --portbase ${PORT_BASE} --nopassword ${DOMAIN_NAME}
+${PAYARA_HOME}/bin/asadmin create-domain --domaindir ${DOMAINS_HOME} --portbase ${PORT_BASE} --nopassword ${DOMAIN_NAME}
+ASADMIN="${PAYARA_HOME}/bin/asadmin --port ${PORT_ADMIN}"
 
 read -p "Press [Enter] to continue..."
 
@@ -82,10 +85,10 @@ cat << END > ${DOMAIN_DIR}/config/login.conf
 ${DOMAIN_NAME}Realm { org.wamblee.glassfish.auth.FlexibleJdbcLoginModule required; };
 END
 
-chown -R glassfish:glassfish ${GLASSFISH_HOME}
+chown -R payara:payara ${PAYARA_HOME}
 read -p "Press [Enter] to continue..."
 
-${GLASSFISH_HOME}/bin/asadmin start-domain --domaindir ${DOMAINS_HOME} ${DOMAIN_NAME}
+${PAYARA_HOME}/bin/asadmin start-domain --domaindir ${DOMAINS_HOME} ${DOMAIN_NAME}
 read -p "Press [Enter] to continue..."
 
 # General domain settings
@@ -116,11 +119,11 @@ ${ASADMIN} create-javamail-resource --mailhost localhost --mailuser user --froma
 
 ${ASADMIN} create-custom-resource --restype java.util.Properties --factoryclass org.glassfish.resources.custom.factory.PropertiesFactory --property "org.glassfish.resources.custom.factory.PropertiesFactory.fileName=\${com.sun.aas.instanceRoot}/sormas.properties" sormas/Properties
 
-cp ./sormas.properties ${DOMAIN_DIR}
-chown glassfish:glassfish ${DOMAIN_DIR}/sormas.properties
-
+cp sormas.properties ${DOMAIN_DIR}
 cp logback.xml ${DOMAIN_DIR}/config/
-chown glassfish:glassfish ${DOMAIN_DIR}/config/logback.xml
+# fixes outdated certificate
+cp cacerts.jks ${DOMAIN_DIR}/config/
+chown -R payara:payara ${DOMAIN_DIR}
 
 read -p "Press [Enter] to continue..."
 
@@ -136,7 +139,7 @@ ${ASADMIN} set-log-levels javax.enterprise.system.util=SEVERE
 read -p "Press [Enter] to continue..."
 
 if [ $DEV_SYSTEM != true ]; then
-  #make the glassfish listen to localhost only
+  #make the payara listen to localhost only
   ${ASADMIN} set configs.config.server-config.http-service.virtual-server.server.network-listeners=http-listener-1
   ${ASADMIN} delete-network-listener --target=server-config http-listener-2
   ${ASADMIN} set configs.config.server-config.network-config.network-listeners.network-listener.admin-listener.address=127.0.0.1
@@ -151,11 +154,11 @@ if [ $DEV_SYSTEM != true ]; then
 fi
 
 
-${GLASSFISH_HOME}/bin/asadmin stop-domain --domaindir ${DOMAINS_HOME} ${DOMAIN_NAME}
+${PAYARA_HOME}/bin/asadmin stop-domain --domaindir ${DOMAINS_HOME} ${DOMAIN_NAME}
 
 read -p "Press [Enter] to continue..."
 
-chown -R glassfish:glassfish ${GLASSFISH_HOME}
+chown -R payara:payara ${PAYARA_HOME}
 
 echo 'setup completed. Please run the server using the init.d script for the proper permissions' 
 

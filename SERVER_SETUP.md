@@ -12,8 +12,8 @@
 
 ## Postgres Database
 
-* Install PostgreSQL (currently 9.5 or 9.6) on your system
-* **set max_prepared_transactions = 64 (at least) in postgresql.conf** in postgresql.conf (e.g. /etc/postgresql/9.5/main/postgresql.conf)
+* Install PostgreSQL (currently 9.5, 9.6 or 10) on your system (manuals for all OS can be found here: https://www.postgresql.org/download)
+* **set max_prepared_transactions = 64 (at least) in postgresql.conf** in postgresql.conf (e.g. ``/etc/postgresql/9.5/main/postgresql.conf``; ``C:/Program Files/PostgreSQL/9.5/data``)
 * Install the "temporal tables" addon for Postgres (https://github.com/arkhipov/temporal_tables)
     * **Windows**: Download latest version for your postgres version: https://github.com/arkhipov/temporal_tables/releases/latest 
 	Then you have to copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.	
