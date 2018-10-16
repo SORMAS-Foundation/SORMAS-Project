@@ -1,24 +1,18 @@
-package de.symeda.sormas.ui.dashboard;
+package de.symeda.sormas.ui.dashboard.surveillance;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -34,32 +28,21 @@ import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.task.DashboardTaskDto;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
-import de.symeda.sormas.ui.dashboard.SvgCircleElement.SvgCircleElementPart;
+import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
+import de.symeda.sormas.ui.dashboard.statistics.AbstractDashboardStatisticsComponent;
+import de.symeda.sormas.ui.dashboard.statistics.CountElementStyle;
+import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsCountElement;
+import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsDiseaseElement;
+import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsGrowthElement;
+import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsPercentageElement;
+import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsSubComponent;
+import de.symeda.sormas.ui.dashboard.statistics.SvgCircleElement;
+import de.symeda.sormas.ui.dashboard.statistics.SvgCircleElement.SvgCircleElementPart;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
-public class DashboardStatisticsComponent extends VerticalLayout {
-
-	private static final String TASKS_LOC = "tasks";
-	private static final String CASES_LOC = "cases";
-	private static final String EVENTS_LOC = "events";
-	private static final String TESTS_LOC = "tests";
+public class DashboardSurveillanceStatisticsComponent extends AbstractDashboardStatisticsComponent {
 	
-	private final DashboardDataProvider dashboardDataProvider;
-	
-	private CustomLayout subComponentsLayout;
-	private DashboardStatisticsSubComponent myTasksComponent;
-	private DashboardStatisticsSubComponent newCasesComponent;
-	private DashboardStatisticsSubComponent newEventsComponent;
-	private DashboardStatisticsSubComponent newTestResultsComponent;
-	
-	private Button showMoreButton;
-	private Button showLessButton;
-
-	private Disease previousDisease;
-	private Disease currentDisease;
-
 	// "My Tasks" elements
 	private DashboardStatisticsCountElement taskPriorityHigh;
 	private DashboardStatisticsCountElement taskPriorityNormal;
@@ -106,142 +89,61 @@ public class DashboardStatisticsComponent extends VerticalLayout {
 	private DashboardStatisticsPercentageElement testResultPendingPercentage;
 	private DashboardStatisticsPercentageElement testResultIndeterminatePercentage;
 
-	public DashboardStatisticsComponent(DashboardDataProvider dashboardDataProvider) {
-		this.dashboardDataProvider = dashboardDataProvider;
-		this.setWidth(100, Unit.PERCENTAGE);
-		this.setMargin(new MarginInfo(true, true, false, true));
-
-		subComponentsLayout = new CustomLayout();
-		subComponentsLayout.setTemplateContents(
-				LayoutUtil.fluidRow(
-						LayoutUtil.fluidColumnLoc(3, 0, 6, 0, TASKS_LOC), 
-						LayoutUtil.fluidColumnLoc(3, 0, 6, 0, CASES_LOC),
-						LayoutUtil.fluidColumnLoc(3, 0, 6, 0, EVENTS_LOC),
-						LayoutUtil.fluidColumnLoc(3, 0, 6, 0, TESTS_LOC)));
-		subComponentsLayout.setWidth(100, Unit.PERCENTAGE);
-
-		addMyTasksComponent();
-		addNewCasesComponent();
-		addNewEventsComponent();
-		addNewTestResultsComponent();
-		
-		addComponent(subComponentsLayout);
-		if (Disease.values().length > 6) {
-			addShowMoreAndLessButtons();
-		}
+	public DashboardSurveillanceStatisticsComponent(DashboardDataProvider dashboardDataProvider) {
+		super(dashboardDataProvider);
 	}
 
-	public void updateStatistics(Disease disease) {
-		previousDisease = currentDisease;
-		currentDisease = disease;
-
-		if (currentDisease != null) {
-			showMoreButton.setVisible(false);
-			showLessButton.setVisible(false);
-		} else if (!showLessButton.isVisible() && !showMoreButton.isVisible()) {
-			if (!showMoreButton.isVisible() && !showLessButton.isVisible()) {
-				showMoreButton.setVisible(true);
-			}
-		}
-
-		int visibleDiseases = currentDisease == null ? (isFullMode() ? Disease.values().length : 6) : 0; 
-		updateMyTasksComponent();
-		updateNewCasesComponent(visibleDiseases);
-		updateNewEventsComponent(visibleDiseases);
-		updateNewTestResultsComponent(visibleDiseases);
-		
-		// fixed height makes sure they stack correct when screen gets smaller
-		if (isFullMode()) {
-			myTasksComponent.setHeight(430, Unit.PIXELS);
-			newCasesComponent.setHeight(430, Unit.PIXELS);
-			newEventsComponent.setHeight(430, Unit.PIXELS);
-			newTestResultsComponent.setHeight(430, Unit.PIXELS);
-		} else if (currentDisease == null) {
-			myTasksComponent.setHeight(320, Unit.PIXELS);
-			newCasesComponent.setHeight(320, Unit.PIXELS);
-			newEventsComponent.setHeight(320, Unit.PIXELS);
-			newTestResultsComponent.setHeight(320, Unit.PIXELS);
-		} else {
-			myTasksComponent.setHeight(370, Unit.PIXELS);
-			newCasesComponent.setHeight(370, Unit.PIXELS);
-			newEventsComponent.setHeight(370, Unit.PIXELS);
-			newTestResultsComponent.setHeight(370, Unit.PIXELS);
-		}
-	}
-
-	private void addShowMoreAndLessButtons() {
-		showMoreButton = new Button("Show All Diseases", FontAwesome.CHEVRON_DOWN);
-		CssStyles.style(showMoreButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_3);
-		showLessButton = new Button("Show First 6 Diseases", FontAwesome.CHEVRON_UP);
-		CssStyles.style(showLessButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_3);
-
-		showMoreButton.addClickListener(e -> {
-			showMoreButton.setVisible(false);
-			showLessButton.setVisible(true);
-			updateStatistics(currentDisease);
-		});
-
-		showLessButton.addClickListener(e -> {
-			showLessButton.setVisible(false);
-			showMoreButton.setVisible(true);
-			updateStatistics(currentDisease);
-		});
-
-		addComponent(showMoreButton);
-		addComponent(showLessButton);
-		setComponentAlignment(showMoreButton, Alignment.MIDDLE_CENTER);
-		setComponentAlignment(showLessButton, Alignment.MIDDLE_CENTER);
-		showLessButton.setVisible(false);
-	}
-
-	private void addMyTasksComponent() {
-		myTasksComponent = new DashboardStatisticsSubComponent();
+	@Override
+	protected void addFirstComponent() {
+		firstComponent = new DashboardStatisticsSubComponent();
 
 		// Header
-		myTasksComponent.addHeader("My Tasks", null);
+		firstComponent.addHeader("My Tasks", null, true);
 
 		// Count layout
-		myTasksComponent.addCountLayout();
-		taskPriorityHigh = new DashboardStatisticsCountElement("High", CssStyles.LABEL_BAR_TOP_CRITICAL);
-		myTasksComponent.addComponentToCountLayout(taskPriorityHigh);
-		taskPriorityNormal = new DashboardStatisticsCountElement("Normal", CssStyles.LABEL_BAR_TOP_NEUTRAL);
-		myTasksComponent.addComponentToCountLayout(taskPriorityNormal);
-		taskPriorityLow = new DashboardStatisticsCountElement("Low", CssStyles.LABEL_BAR_TOP_MINOR);
-		myTasksComponent.addComponentToCountLayout(taskPriorityLow);
+		CssLayout countLayout = firstComponent.createCountLayout(true);
+		taskPriorityHigh = new DashboardStatisticsCountElement("High", CountElementStyle.CRITICAL);
+		firstComponent.addComponentToCountLayout(countLayout, taskPriorityHigh);
+		taskPriorityNormal = new DashboardStatisticsCountElement("Normal", CountElementStyle.NEUTRAL);
+		firstComponent.addComponentToCountLayout(countLayout, taskPriorityNormal);
+		taskPriorityLow = new DashboardStatisticsCountElement("Low", CountElementStyle.MINOR);
+		firstComponent.addComponentToCountLayout(countLayout, taskPriorityLow);
 
 		Label separator = new Label();
 		separator.setHeight(100, Unit.PERCENTAGE);
 		CssStyles.style(separator, CssStyles.VR);
-		myTasksComponent.addComponentToCountLayout(separator);
+		firstComponent.addComponentToCountLayout(countLayout, separator);
 
-		taskStatusPending = new DashboardStatisticsCountElement("Pending", CssStyles.LABEL_BAR_TOP_IMPORTANT);
-		myTasksComponent.addComponentToCountLayout(taskStatusPending);
-		taskStatusDone = new DashboardStatisticsCountElement("Done", CssStyles.LABEL_BAR_TOP_POSITIVE);
-		myTasksComponent.addComponentToCountLayout(taskStatusDone);
+		taskStatusPending = new DashboardStatisticsCountElement("Pending", CountElementStyle.IMPORTANT);
+		firstComponent.addComponentToCountLayout(countLayout, taskStatusPending);
+		taskStatusDone = new DashboardStatisticsCountElement("Done", CountElementStyle.POSITIVE);
+		firstComponent.addComponentToCountLayout(countLayout, taskStatusDone);
+		firstComponent.addComponent(countLayout);
 
 		// Content
-		myTasksComponent.addTwoColumnsContent(false, 60);
+		firstComponent.addTwoColumnsMainContent(false, 60);
 		taskStatusPendingPercentage = new DashboardStatisticsPercentageElement("Pending", CssStyles.SVG_FILL_IMPORTANT);
-		myTasksComponent.addComponentToLeftContentColumn(taskStatusPendingPercentage);
+		firstComponent.addComponentToLeftContentColumn(taskStatusPendingPercentage);
 		taskStatusDonePercentage = new DashboardStatisticsPercentageElement("Done", CssStyles.SVG_FILL_POSITIVE);
-		myTasksComponent.addComponentToLeftContentColumn(taskStatusDonePercentage);
+		firstComponent.addComponentToLeftContentColumn(taskStatusDonePercentage);
 		taskStatusRemovedPercentage = new DashboardStatisticsPercentageElement("Removed", CssStyles.SVG_FILL_CRITICAL);
-		myTasksComponent.addComponentToLeftContentColumn(taskStatusRemovedPercentage);
+		firstComponent.addComponentToLeftContentColumn(taskStatusRemovedPercentage);
 		taskStatusNotExecutablePercentage = new DashboardStatisticsPercentageElement("Not Executable", CssStyles.SVG_FILL_MINOR);
-		myTasksComponent.addComponentToLeftContentColumn(taskStatusNotExecutablePercentage);
+		firstComponent.addComponentToLeftContentColumn(taskStatusNotExecutablePercentage);
 
 		taskStatusCircleGraph = new SvgCircleElement(false);
-		myTasksComponent.addComponentToRightContentColumn(taskStatusCircleGraph);
+		firstComponent.addComponentToRightContentColumn(taskStatusCircleGraph);
 
-		subComponentsLayout.addComponent(myTasksComponent, TASKS_LOC);
+		subComponentsLayout.addComponent(firstComponent, FIRST_LOC);
 	}
 
-	private void updateMyTasksComponent() {
+	@Override
+	protected void updateFirstComponent(int visibleDiseasesCount) {
 		List<DashboardTaskDto> dashboardTaskDtos = dashboardDataProvider.getTasks();
 		List<DashboardTaskDto> dashboardPendingTasks = dashboardDataProvider.getPendingTasks();
 
 		int pendingTasksCount = dashboardPendingTasks.size();		
-		myTasksComponent.updateCountLabel(pendingTasksCount);
+		firstComponent.updateCountLabel(pendingTasksCount);
 
 		int highPriorityCount = (int) dashboardPendingTasks.stream().filter(t -> t.getPriority() == TaskPriority.HIGH).count();
 		taskPriorityHigh.updateCountLabel(highPriorityCount);
@@ -278,27 +180,29 @@ public class DashboardStatisticsComponent extends VerticalLayout {
 		taskStatusCircleGraph.updateSvg(pendingPart, donePart, removedPart, notExecutablePart);
 	}
 
-	private void addNewCasesComponent() {
-		newCasesComponent = new DashboardStatisticsSubComponent();
+	@Override
+	protected void addSecondComponent() {
+		secondComponent = new DashboardStatisticsSubComponent();
 
 		// Header
-		newCasesComponent.addHeader("New Cases", null);
+		secondComponent.addHeader("New Cases", null, true);
 
 		// Count layout
-		newCasesComponent.addCountLayout();
-		caseClassificationConfirmed = new DashboardStatisticsCountElement("Confirmed", CssStyles.LABEL_BAR_TOP_CRITICAL);
-		newCasesComponent.addComponentToCountLayout(caseClassificationConfirmed);
-		caseClassificationProbable = new DashboardStatisticsCountElement("Probable", CssStyles.LABEL_BAR_TOP_IMPORTANT);
-		newCasesComponent.addComponentToCountLayout(caseClassificationProbable);
-		caseClassificationSuspect = new DashboardStatisticsCountElement("Suspect", CssStyles.LABEL_BAR_TOP_RELEVANT);
-		newCasesComponent.addComponentToCountLayout(caseClassificationSuspect);
-		caseClassificationNotACase = new DashboardStatisticsCountElement("Not A Case", CssStyles.LABEL_BAR_TOP_POSITIVE);
-		newCasesComponent.addComponentToCountLayout(caseClassificationNotACase);
-		caseClassificationNotYetClassified = new DashboardStatisticsCountElement("Not Yet Classified", CssStyles.LABEL_BAR_TOP_MINOR);
-		newCasesComponent.addComponentToCountLayout(caseClassificationNotYetClassified);
+		CssLayout countLayout = secondComponent.createCountLayout(true);
+		caseClassificationConfirmed = new DashboardStatisticsCountElement("Confirmed", CountElementStyle.CRITICAL);
+		secondComponent.addComponentToCountLayout(countLayout, caseClassificationConfirmed);
+		caseClassificationProbable = new DashboardStatisticsCountElement("Probable", CountElementStyle.IMPORTANT);
+		secondComponent.addComponentToCountLayout(countLayout, caseClassificationProbable);
+		caseClassificationSuspect = new DashboardStatisticsCountElement("Suspect", CountElementStyle.RELEVANT);
+		secondComponent.addComponentToCountLayout(countLayout, caseClassificationSuspect);
+		caseClassificationNotACase = new DashboardStatisticsCountElement("Not A Case", CountElementStyle.POSITIVE);
+		secondComponent.addComponentToCountLayout(countLayout, caseClassificationNotACase);
+		caseClassificationNotYetClassified = new DashboardStatisticsCountElement("Not Yet Classified", CountElementStyle.MINOR);
+		secondComponent.addComponentToCountLayout(countLayout, caseClassificationNotYetClassified);
+		secondComponent.addComponent(countLayout);
 
 		// Content
-		newCasesComponent.addContent();
+		secondComponent.addMainContent();
 		caseInvestigationStatusDone = new DashboardStatisticsGrowthElement("Investigated", CssStyles.LABEL_SECONDARY, Alignment.MIDDLE_LEFT);
 		caseInvestigationStatusDiscarded = new DashboardStatisticsGrowthElement("Discarded", CssStyles.LABEL_SECONDARY, Alignment.MIDDLE_LEFT);
 		caseFatalities = new DashboardStatisticsGrowthElement("Fatalities", CssStyles.LABEL_CRITICAL, Alignment.MIDDLE_RIGHT);
@@ -307,15 +211,16 @@ public class DashboardStatisticsComponent extends VerticalLayout {
 		caseFatalityRateCaption = new Label("Case Fatality Rate");
 		CssStyles.style(caseFatalityRateCaption, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_CRITICAL, CssStyles.LABEL_UPPERCASE, CssStyles.LABEL_BOLD);
 
-		subComponentsLayout.addComponent(newCasesComponent, CASES_LOC);
+		subComponentsLayout.addComponent(secondComponent, SECOND_LOC);
 	}
 
-	private void updateNewCasesComponent(int amountOfDisplayedDiseases) {
+	@Override
+	protected void updateSecondComponent(int visibleDiseasesCount) {
 		List<DashboardCaseDto> dashboardCaseDtos = dashboardDataProvider.getCases();
 		List<DashboardCaseDto> previousDashboardCases = dashboardDataProvider.getPreviousCases();
 
 		int newCasesCount = dashboardCaseDtos.size();
-		newCasesComponent.updateCountLabel(newCasesCount);
+		secondComponent.updateCountLabel(newCasesCount);
 
 		int confirmedCasesCount = (int) dashboardCaseDtos.stream().filter(c -> c.getCaseClassification() == CaseClassification.CONFIRMED).count();
 		caseClassificationConfirmed.updateCountLabel(confirmedCasesCount);
@@ -330,11 +235,11 @@ public class DashboardStatisticsComponent extends VerticalLayout {
 
 		// Remove and re-create content layout if the disease filter has been applied or set to null
 		if ((currentDisease == null && previousDisease != null) || (previousDisease == null && currentDisease != null)) {
-			newCasesComponent.removeAllComponentsFromContent();
-			newCasesComponent.addComponentToContent(caseInvestigationStatusDone);
-			newCasesComponent.addComponentToContent(caseInvestigationStatusDiscarded);
+			secondComponent.removeAllComponentsFromContent();
+			secondComponent.addComponentToContent(caseInvestigationStatusDone);
+			secondComponent.addComponentToContent(caseInvestigationStatusDiscarded);
 			Label separator = new Label("<hr/>", ContentMode.HTML);
-			newCasesComponent.addComponentToContent(separator);
+			secondComponent.addComponentToContent(separator);
 			HorizontalLayout fatalityLayout = new HorizontalLayout();
 			fatalityLayout.setWidth(100, Unit.PERCENTAGE);
 			VerticalLayout fatalityRateLayout = new VerticalLayout();
@@ -350,12 +255,12 @@ public class DashboardStatisticsComponent extends VerticalLayout {
 			fatalityRateLayout.addComponent(fatalityCaptionLayout);
 			fatalityLayout.addComponent(fatalityRateLayout);
 			fatalityLayout.addComponent(caseFatalities);
-			newCasesComponent.addComponentToContent(fatalityLayout);
+			secondComponent.addComponentToContent(fatalityLayout);
 		}
 
 		if (currentDisease == null) {
 			// Remove all children of the content layout
-			newCasesComponent.removeAllComponentsFromContent();
+			secondComponent.removeAllComponentsFromContent();
 
 			// Create a map with all diseases as keys and their respective case counts as values
 			Map<Disease, Integer> diseaseMap = new TreeMap<Disease, Integer>();
@@ -367,11 +272,11 @@ public class DashboardStatisticsComponent extends VerticalLayout {
 			List<Map.Entry<Disease, Integer>> sortedDiseaseList = createSortedDiseaseList(diseaseMap);
 
 			// Create a new StatisticsDiseaseElement for every disease, automatically sorting them by case count
-			for (int i = 0; i < amountOfDisplayedDiseases; i++) {
+			for (int i = 0; i < visibleDiseasesCount; i++) {
 				Map.Entry<Disease, Integer> mapEntry = sortedDiseaseList.get(i);
 				int previousDiseaseCount = (int) previousDashboardCases.stream().filter(c -> c.getDisease() == mapEntry.getKey()).count();
 				DashboardStatisticsDiseaseElement diseaseElement = new DashboardStatisticsDiseaseElement(mapEntry.getKey().toString(), mapEntry.getValue(), previousDiseaseCount);
-				newCasesComponent.addComponentToContent(diseaseElement);
+				secondComponent.addComponentToContent(diseaseElement);
 			}
 		} else {
 			int investigatedCasesCount = (int) dashboardCaseDtos.stream().filter(c -> c.getInvestigationStatus() == InvestigationStatus.DONE).count();
@@ -382,15 +287,9 @@ public class DashboardStatisticsComponent extends VerticalLayout {
 					c.getCauseOfDeathDisease() != null && c.getCauseOfDeathDisease() == c.getDisease()).count();
 			int previousFatalitiesCount = (int) previousDashboardCases.stream().filter(c -> c.getCasePersonCondition() == PresentCondition.DEAD).count();
 			
-			float investigatedCasesGrowth = investigatedCasesCount == 0 ? previousInvestigatedCasesCount > 0 ? -100 : 0 : 
-				previousInvestigatedCasesCount == 0 ? investigatedCasesCount > 0 ? Float.MIN_VALUE : 0 :
-				new BigDecimal(investigatedCasesCount).subtract(new BigDecimal(previousInvestigatedCasesCount)).divide(new BigDecimal(investigatedCasesCount), 1, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).floatValue();
-			float discardedCasesGrowth = discardedCasesCount == 0 ? previousDiscardedCasesCount > 0 ? -100 : 0 : 
-				previousDiscardedCasesCount == 0 ? discardedCasesCount > 0 ? Float.MIN_VALUE : 0 :
-				new BigDecimal(discardedCasesCount).subtract(new BigDecimal(previousDiscardedCasesCount)).divide(new BigDecimal(discardedCasesCount), 1, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).floatValue();
-			float fatalitiesGrowth = fatalitiesCount == 0 ? previousFatalitiesCount > 0 ? -100 : 0 : 
-				previousFatalitiesCount == 0 ? fatalitiesCount > 0 ? Float.MIN_VALUE : 0 :
-				new BigDecimal(fatalitiesCount).subtract(new BigDecimal(previousFatalitiesCount)).divide(new BigDecimal(fatalitiesCount), 1, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).floatValue();
+			int investigatedCasesGrowth = calculateGrowth(investigatedCasesCount, previousInvestigatedCasesCount);
+			int discardedCasesGrowth = calculateGrowth(discardedCasesCount, previousDiscardedCasesCount);
+			int fatalitiesGrowth = calculateGrowth(fatalitiesCount, previousFatalitiesCount);
 			int fatalityRateRelevantCasesCount = confirmedCasesCount + suspectCasesCount + probableCasesCount;
 			float fatalityRate = fatalitiesCount == 0 ? 0 : newCasesCount == 0 ? 0 : fatalityRateRelevantCasesCount == 0 ? 0 :
 				new BigDecimal(fatalitiesCount).multiply(new BigDecimal(100)).divide(new BigDecimal(fatalityRateRelevantCasesCount), 1, RoundingMode.HALF_UP).floatValue();
@@ -402,38 +301,41 @@ public class DashboardStatisticsComponent extends VerticalLayout {
 		}
 	}
 
-	private void addNewEventsComponent() {
-		newEventsComponent = new DashboardStatisticsSubComponent();
+	@Override
+	protected void addThirdComponent() {
+		thirdComponent = new DashboardStatisticsSubComponent();
 
 		// Header
-		newEventsComponent.addHeader("New Events", null);
+		thirdComponent.addHeader("New Events", null, true);
 
 		// Count layout
-		newEventsComponent.addCountLayout();
-		eventStatusConfirmed = new DashboardStatisticsCountElement("Confirmed", CssStyles.LABEL_BAR_TOP_CRITICAL);
-		newEventsComponent.addComponentToCountLayout(eventStatusConfirmed);
-		eventStatusPossible = new DashboardStatisticsCountElement("Possible", CssStyles.LABEL_BAR_TOP_IMPORTANT);
-		newEventsComponent.addComponentToCountLayout(eventStatusPossible);
-		eventStatusNotAnEvent = new DashboardStatisticsCountElement("Not An Event", CssStyles.LABEL_BAR_TOP_POSITIVE);
-		newEventsComponent.addComponentToCountLayout(eventStatusNotAnEvent);
+		CssLayout countLayout = thirdComponent.createCountLayout(true);
+		eventStatusConfirmed = new DashboardStatisticsCountElement("Confirmed", CountElementStyle.CRITICAL);
+		thirdComponent.addComponentToCountLayout(countLayout, eventStatusConfirmed);
+		eventStatusPossible = new DashboardStatisticsCountElement("Possible", CountElementStyle.IMPORTANT);
+		thirdComponent.addComponentToCountLayout(countLayout, eventStatusPossible);
+		eventStatusNotAnEvent = new DashboardStatisticsCountElement("Not An Event", CountElementStyle.POSITIVE);
+		thirdComponent.addComponentToCountLayout(countLayout, eventStatusNotAnEvent);
+		thirdComponent.addComponent(countLayout);
 
 		// Content
-		newEventsComponent.addContent();
+		thirdComponent.addMainContent();
 		eventTypeRumorCircleGraph = new SvgCircleElement(true);
 		eventTypeOutbreakCircleGraph = new SvgCircleElement(true);
 		eventStatusConfirmedPercentage = new DashboardStatisticsPercentageElement("Confirmed", CssStyles.SVG_FILL_CRITICAL);
 		eventStatusPossiblePercentage = new DashboardStatisticsPercentageElement("Possible", CssStyles.SVG_FILL_IMPORTANT);
 		eventStatusNotAnEventPercentage = new DashboardStatisticsPercentageElement("Not An Event", CssStyles.SVG_FILL_MINOR);
 
-		subComponentsLayout.addComponent(newEventsComponent, EVENTS_LOC);
+		subComponentsLayout.addComponent(thirdComponent, THIRD_LOC);
 	}
 
-	private void updateNewEventsComponent(int amountOfDisplayedDiseases) {
+	@Override
+	protected void updateThirdComponent(int visibleDiseasesCount) {
 		List<DashboardEventDto> dashboardEventDtos = dashboardDataProvider.getEvents();
 		List<DashboardEventDto> previousDashboardEvents = dashboardDataProvider.getPreviousEvents();
 
 		int newEventsCount = dashboardEventDtos.size();
-		newEventsComponent.updateCountLabel(newEventsCount);
+		thirdComponent.updateCountLabel(newEventsCount);
 
 		int confirmedEventsCount = (int) dashboardEventDtos.stream().filter(e -> e.getEventStatus() == EventStatus.CONFIRMED).count();
 		eventStatusConfirmed.updateCountLabel(confirmedEventsCount);
@@ -444,30 +346,30 @@ public class DashboardStatisticsComponent extends VerticalLayout {
 
 		// Remove and re-create content layout if the disease filter has been applied or set to null
 		if ((currentDisease == null && previousDisease != null) || (previousDisease == null && currentDisease != null)) {
-			newEventsComponent.removeContent();
+			thirdComponent.removeContent();
 			if (currentDisease != null) {
-				newEventsComponent.addTwoColumnsContent(true, 20);
-				newEventsComponent.addComponentToLeftContentColumn(eventTypeRumorCircleGraph);
+				thirdComponent.addTwoColumnsMainContent(true, 20);
+				thirdComponent.addComponentToLeftContentColumn(eventTypeRumorCircleGraph);
 				Label rumorCircleLabel = new Label("Rumor");
 				rumorCircleLabel.setWidth(100, Unit.PERCENTAGE);
 				CssStyles.style(rumorCircleLabel, CssStyles.LABEL_SECONDARY, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_3, CssStyles.ALIGN_CENTER);
-				newEventsComponent.addComponentToLeftContentColumn(rumorCircleLabel);
-				newEventsComponent.addComponentToLeftContentColumn(eventTypeOutbreakCircleGraph);
+				thirdComponent.addComponentToLeftContentColumn(rumorCircleLabel);
+				thirdComponent.addComponentToLeftContentColumn(eventTypeOutbreakCircleGraph);
 				Label outbreakCircleLabel = new Label("Outbreak");
 				outbreakCircleLabel.setWidth(100, Unit.PERCENTAGE);
 				CssStyles.style(outbreakCircleLabel, CssStyles.LABEL_SECONDARY, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_3, CssStyles.ALIGN_CENTER);
-				newEventsComponent.addComponentToLeftContentColumn(outbreakCircleLabel);
-				newEventsComponent.addComponentToRightContentColumn(eventStatusConfirmedPercentage);
-				newEventsComponent.addComponentToRightContentColumn(eventStatusPossiblePercentage);
-				newEventsComponent.addComponentToRightContentColumn(eventStatusNotAnEventPercentage);
+				thirdComponent.addComponentToLeftContentColumn(outbreakCircleLabel);
+				thirdComponent.addComponentToRightContentColumn(eventStatusConfirmedPercentage);
+				thirdComponent.addComponentToRightContentColumn(eventStatusPossiblePercentage);
+				thirdComponent.addComponentToRightContentColumn(eventStatusNotAnEventPercentage);
 			} else {
-				newEventsComponent.addContent();
+				thirdComponent.addMainContent();
 			}
 		}
 
 		if (currentDisease == null) {
 			// Remove all children of the content layout
-			newEventsComponent.removeAllComponentsFromContent();
+			thirdComponent.removeAllComponentsFromContent();
 	
 			// Create a map with all diseases as keys and their respective event counts as values
 			Map<Disease, Integer> diseaseMap = new TreeMap<Disease, Integer>();
@@ -479,11 +381,11 @@ public class DashboardStatisticsComponent extends VerticalLayout {
 			List<Map.Entry<Disease, Integer>> sortedDiseaseList = createSortedDiseaseList(diseaseMap);
 	
 			// Create a new StatisticsDiseaseElement for every disease, automatically sorting them by event count
-			for (int i = 0; i < amountOfDisplayedDiseases; i++) {
+			for (int i = 0; i < visibleDiseasesCount; i++) {
 				Map.Entry<Disease, Integer> mapEntry = sortedDiseaseList.get(i);
 				int previousDiseaseCount = (int) previousDashboardEvents.stream().filter(e -> e.getDisease() == mapEntry.getKey()).count();
 				DashboardStatisticsDiseaseElement diseaseElement = new DashboardStatisticsDiseaseElement(mapEntry.getKey().toString(), mapEntry.getValue(), previousDiseaseCount);
-				newEventsComponent.addComponentToContent(diseaseElement);
+				thirdComponent.addComponentToContent(diseaseElement);
 			}
 		} else {
 			int rumorsCount = (int) dashboardEventDtos.stream().filter(e -> e.getEventType() == EventType.RUMOR).count();
@@ -513,25 +415,27 @@ public class DashboardStatisticsComponent extends VerticalLayout {
 		}
 	}
 
-	private void addNewTestResultsComponent() {
-		newTestResultsComponent = new DashboardStatisticsSubComponent();
+	@Override
+	protected void addFourthComponent() {
+		fourthComponent = new DashboardStatisticsSubComponent();
 
 		// Header
-		newTestResultsComponent.addHeader("New Test Results", null);
+		fourthComponent.addHeader("New Test Results", null, true);
 
 		// Count layout
-		newTestResultsComponent.addCountLayout();
-		testResultPositive = new DashboardStatisticsCountElement("Positive", CssStyles.LABEL_BAR_TOP_CRITICAL);
-		newTestResultsComponent.addComponentToCountLayout(testResultPositive);
-		testResultNegative = new DashboardStatisticsCountElement("Negative", CssStyles.LABEL_BAR_TOP_POSITIVE);
-		newTestResultsComponent.addComponentToCountLayout(testResultNegative);
-		testResultPending = new DashboardStatisticsCountElement("Pending", CssStyles.LABEL_BAR_TOP_IMPORTANT);
-		newTestResultsComponent.addComponentToCountLayout(testResultPending);
-		testResultIndeterminate = new DashboardStatisticsCountElement("Indeterminate", CssStyles.LABEL_BAR_TOP_MINOR);
-		newTestResultsComponent.addComponentToCountLayout(testResultIndeterminate);
+		CssLayout countLayout = fourthComponent.createCountLayout(true);
+		testResultPositive = new DashboardStatisticsCountElement("Positive", CountElementStyle.CRITICAL);
+		fourthComponent.addComponentToCountLayout(countLayout, testResultPositive);
+		testResultNegative = new DashboardStatisticsCountElement("Negative", CountElementStyle.POSITIVE);
+		fourthComponent.addComponentToCountLayout(countLayout, testResultNegative);
+		testResultPending = new DashboardStatisticsCountElement("Pending", CountElementStyle.IMPORTANT);
+		fourthComponent.addComponentToCountLayout(countLayout, testResultPending);
+		testResultIndeterminate = new DashboardStatisticsCountElement("Indeterminate", CountElementStyle.MINOR);
+		fourthComponent.addComponentToCountLayout(countLayout, testResultIndeterminate);
+		fourthComponent.addComponent(countLayout);
 
 		// Content
-		newTestResultsComponent.addContent();
+		fourthComponent.addMainContent();
 		testResultShippedCircleGraph = new SvgCircleElement(true);
 		testResultReceivedCircleGraph = new SvgCircleElement(true);
 		testResultPositivePercentage = new DashboardStatisticsPercentageElement("Positive", CssStyles.SVG_FILL_CRITICAL);
@@ -539,15 +443,16 @@ public class DashboardStatisticsComponent extends VerticalLayout {
 		testResultPendingPercentage = new DashboardStatisticsPercentageElement("Pending", CssStyles.SVG_FILL_IMPORTANT);
 		testResultIndeterminatePercentage = new DashboardStatisticsPercentageElement("Indeterminate", CssStyles.SVG_FILL_MINOR);
 
-		subComponentsLayout.addComponent(newTestResultsComponent, TESTS_LOC);
+		subComponentsLayout.addComponent(fourthComponent, FOURTH_LOC);
 	}
 
-	private void updateNewTestResultsComponent(int amountOfDisplayedDiseases) {
+	@Override
+	protected void updateFourthComponent(int visibleDiseasesCount) {
 		List<DashboardTestResultDto> dashboardTestResultDtos = dashboardDataProvider.getTestResults();
 		List<DashboardTestResultDto> previousDashboardTestResults = dashboardDataProvider.getPreviousTestResults();
 
 		int newTestResultsCount = dashboardTestResultDtos.size();
-		newTestResultsComponent.updateCountLabel(newTestResultsCount);
+		fourthComponent.updateCountLabel(newTestResultsCount);
 
 		int positiveTestResultsCount = (int) dashboardTestResultDtos.stream().filter(r -> r.getTestResult() == SampleTestResultType.POSITIVE).count();
 		testResultPositive.updateCountLabel(positiveTestResultsCount);
@@ -559,31 +464,31 @@ public class DashboardStatisticsComponent extends VerticalLayout {
 		testResultIndeterminate.updateCountLabel(indeterminateTestResultsCount);
 
 		if ((currentDisease == null && previousDisease != null) || (previousDisease == null && currentDisease != null)) {
-			newTestResultsComponent.removeContent();
+			fourthComponent.removeContent();
 			if (currentDisease != null) {
-				newTestResultsComponent.addTwoColumnsContent(true, 20);
-				newTestResultsComponent.addComponentToLeftContentColumn(testResultShippedCircleGraph);
+				fourthComponent.addTwoColumnsMainContent(true, 20);
+				fourthComponent.addComponentToLeftContentColumn(testResultShippedCircleGraph);
 				Label shippedCircleLabel = new Label("Shipped");
 				shippedCircleLabel.setWidth(100, Unit.PERCENTAGE);
 				CssStyles.style(shippedCircleLabel, CssStyles.LABEL_SECONDARY, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_3, CssStyles.ALIGN_CENTER);
-				newTestResultsComponent.addComponentToLeftContentColumn(shippedCircleLabel);
-				newTestResultsComponent.addComponentToLeftContentColumn(testResultReceivedCircleGraph);
+				fourthComponent.addComponentToLeftContentColumn(shippedCircleLabel);
+				fourthComponent.addComponentToLeftContentColumn(testResultReceivedCircleGraph);
 				Label receivedCircleLabel = new Label("Received");
 				receivedCircleLabel.setWidth(100, Unit.PERCENTAGE);
 				CssStyles.style(receivedCircleLabel, CssStyles.LABEL_SECONDARY, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_3, CssStyles.ALIGN_CENTER);
-				newTestResultsComponent.addComponentToLeftContentColumn(receivedCircleLabel);
-				newTestResultsComponent.addComponentToRightContentColumn(testResultPositivePercentage);
-				newTestResultsComponent.addComponentToRightContentColumn(testResultNegativePercentage);
-				newTestResultsComponent.addComponentToRightContentColumn(testResultPendingPercentage);
-				newTestResultsComponent.addComponentToRightContentColumn(testResultIndeterminatePercentage);
+				fourthComponent.addComponentToLeftContentColumn(receivedCircleLabel);
+				fourthComponent.addComponentToRightContentColumn(testResultPositivePercentage);
+				fourthComponent.addComponentToRightContentColumn(testResultNegativePercentage);
+				fourthComponent.addComponentToRightContentColumn(testResultPendingPercentage);
+				fourthComponent.addComponentToRightContentColumn(testResultIndeterminatePercentage);
 			} else {
-				newTestResultsComponent.addContent();
+				fourthComponent.addMainContent();
 			}
 		}
 		
 		if (currentDisease == null) {
 			// Remove all children of the content layout
-			newTestResultsComponent.removeAllComponentsFromContent();
+			fourthComponent.removeAllComponentsFromContent();
 	
 			// Create a map with all diseases as keys and their respective positive test result counts as values
 			Map<Disease, Integer> diseaseMap = new TreeMap<Disease, Integer>();
@@ -595,11 +500,11 @@ public class DashboardStatisticsComponent extends VerticalLayout {
 			List<Map.Entry<Disease, Integer>> sortedDiseaseList = createSortedDiseaseList(diseaseMap);
 	
 			// Create a new StatisticsDiseaseElement for every disease, automatically sorting them by test result count
-			for (int i = 0; i < amountOfDisplayedDiseases; i++) {
+			for (int i = 0; i < visibleDiseasesCount; i++) {
 				Map.Entry<Disease, Integer> mapEntry = sortedDiseaseList.get(i);
 				int previousDiseaseCount = (int) previousDashboardTestResults.stream().filter(r -> r.getDisease() == mapEntry.getKey()).count();
 				DashboardStatisticsDiseaseElement diseaseElement = new DashboardStatisticsDiseaseElement(mapEntry.getKey().toString(), mapEntry.getValue(), previousDiseaseCount);
-				newTestResultsComponent.addComponentToContent(diseaseElement);
+				fourthComponent.addComponentToContent(diseaseElement);
 			}
 		} else {
 			List<DashboardSampleDto> dashboardSampleDtos = dashboardDataProvider.getSamples();
@@ -632,20 +537,20 @@ public class DashboardStatisticsComponent extends VerticalLayout {
 			testResultIndeterminatePercentage.updatePercentageValue(indeterminateTestResultsPercentage);
 		}
 	}
-
-	private List<Map.Entry<Disease, Integer>> createSortedDiseaseList(Map<Disease, Integer> diseaseMap) {
-		List<Map.Entry<Disease, Integer>> sortedDiseaseList = new ArrayList<>(diseaseMap.entrySet());
-		Collections.sort(sortedDiseaseList, new Comparator<Map.Entry<Disease, Integer>>() {
-			public int compare(Map.Entry<Disease, Integer> e1, Map.Entry<Disease, Integer> e2) {
-				return e2.getValue().compareTo(e1.getValue());
-			}
-		});
-
-		return sortedDiseaseList;
+	
+	@Override
+	protected int getFullHeight() {
+		return 430;
+	}
+	
+	@Override
+	protected int getNormalHeight() {
+		return 320;
 	}
 
-	private boolean isFullMode() {
-		return showLessButton.isVisible();
+	@Override
+	protected int getFilteredHeight() {
+		return 370;
 	}
-
+	
 }

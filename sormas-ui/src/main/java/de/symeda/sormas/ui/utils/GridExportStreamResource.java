@@ -42,13 +42,15 @@ public class GridExportStreamResource extends StreamResource {
 					columns.removeIf(c -> ignoredPropertyIdsList.contains(c.getPropertyId()));
 					Collection<?> itemIds = container.getItemIds();
 
-					List<List<String>> exportedRows = new ArrayList<>();
-					
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					OutputStreamWriter osw = new OutputStreamWriter(baos, StandardCharsets.UTF_8.name());
+					CSVWriter writer = CSVUtils.createCSVWriter(osw, FacadeProvider.getConfigFacade().getCsvSeparator());
+
 					List<String> headerRow = new ArrayList<>();
 					columns.forEach(c -> {
 						headerRow.add(c.getHeaderCaption());
 					});
-					exportedRows.add(headerRow);
+					writer.writeNext(headerRow.toArray(new String[headerRow.size()]));
 					
 					itemIds.forEach(i -> {
 						List<String> row = new ArrayList<>();
@@ -70,14 +72,7 @@ public class GridExportStreamResource extends StreamResource {
 							}
 						});
 
-						exportedRows.add(row);
-					});
-
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					OutputStreamWriter osw = new OutputStreamWriter(baos, StandardCharsets.UTF_8.name());
-					CSVWriter writer = CSVUtils.createCSVWriter(osw, FacadeProvider.getConfigFacade().getCsvSeparator());
-					exportedRows.forEach(r -> {
-						writer.writeNext(r.toArray(new String[r.size()]));
+						writer.writeNext(row.toArray(new String[row.size()]));
 					});
 
 					osw.flush();

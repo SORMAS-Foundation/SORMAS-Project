@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.dashboard;
+package de.symeda.sormas.ui.dashboard.map;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -59,14 +59,16 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
+import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
-public class MapComponent extends VerticalLayout {
+public class DashboardMapComponent extends VerticalLayout {
 
-	final static Logger logger = LoggerFactory.getLogger(MapComponent.class);
+	final static Logger logger = LoggerFactory.getLogger(DashboardMapComponent.class);
 
 	private static final int MARKER_NORMAL_SIZE = 2;
 	private static final int MARKER_LARGE_SIZE = 3;
@@ -109,7 +111,7 @@ public class MapComponent extends VerticalLayout {
 	private ClickListener externalCollapseButtonListener;
 	private boolean emptyPopulationDistrictPresent;
 
-	public MapComponent(DashboardDataProvider dashboardDataProvider) {    	
+	public DashboardMapComponent(DashboardDataProvider dashboardDataProvider) {    	
 		this.dashboardDataProvider = dashboardDataProvider;
 		map = new GoogleMap("AIzaSyAaJpN8a_NhEU-02-t5uVi02cAaZtKafkw", null, null);
 
@@ -121,11 +123,19 @@ public class MapComponent extends VerticalLayout {
 			GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfAllRegions();
 			map.setCenter(new LatLon(mapCenter.getLon(), mapCenter.getLat()));
 		} else {
-			showCases = true;
-			showContacts = true;
-			showEvents = true;
-			showConfirmedContacts = true;
-			showUnconfirmedContacts = true;
+			if (dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE) {
+				showCases = true;
+				showContacts = true;
+				showEvents = true;
+				showConfirmedContacts = true;
+				showUnconfirmedContacts = true;
+			} else if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
+				showCases = false;
+				showContacts = true;
+				showEvents = false;
+				showConfirmedContacts = true;
+				showUnconfirmedContacts = true;
+			}
 
 			UserDto user = LoginHelper.getCurrentUser();
 			if (user.getRegion() != null) {
@@ -159,7 +169,7 @@ public class MapComponent extends VerticalLayout {
 				if (facility != null) {
 					VerticalLayout layout = new VerticalLayout();
 					Window window = VaadinUiUtil.showPopupWindow(layout);
-					CasePopupGrid caseGrid = new CasePopupGrid(window, new FacilityReferenceDto(facility.getUuid()), MapComponent.this);
+					CasePopupGrid caseGrid = new CasePopupGrid(window, new FacilityReferenceDto(facility.getUuid()), DashboardMapComponent.this);
 					caseGrid.setHeightMode(HeightMode.ROW);
 					layout.addComponent(caseGrid);
 					layout.setMargin(true);
@@ -246,13 +256,18 @@ public class MapComponent extends VerticalLayout {
 		mapHeaderLayout.setSpacing(true);
 		CssStyles.style(mapHeaderLayout, CssStyles.VSPACE_4);
 
-		Label caseMapLabel = new Label("Case Status Map");
-		caseMapLabel.setSizeUndefined();
-		CssStyles.style(caseMapLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
-	
-		mapHeaderLayout.addComponent(caseMapLabel);
-		mapHeaderLayout.setComponentAlignment(caseMapLabel, Alignment.BOTTOM_LEFT);
-		mapHeaderLayout.setExpandRatio(caseMapLabel, 1);
+		Label mapLabel = new Label();
+		if (dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE) {
+			mapLabel.setValue("Case Status Map");
+		} else {
+			mapLabel.setValue("Contact Map");
+		}
+		mapLabel.setSizeUndefined();
+		CssStyles.style(mapLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+
+		mapHeaderLayout.addComponent(mapLabel);
+		mapHeaderLayout.setComponentAlignment(mapLabel, Alignment.BOTTOM_LEFT);
+		mapHeaderLayout.setExpandRatio(mapLabel, 1);
 
 		// Map key dropdown button
 		legendDropdown = new PopupButton("Map Key");
@@ -563,7 +578,7 @@ public class MapComponent extends VerticalLayout {
 		regionLegendLayout.setSpacing(true);
 		CssStyles.style(regionLegendLayout, CssStyles.LAYOUT_MINIMAL);
 		regionLegendLayout.setSizeUndefined();
-		
+
 		HorizontalLayout legendEntry;
 		switch (caseMeasure) {
 		case CASE_COUNT:
@@ -680,10 +695,10 @@ public class MapComponent extends VerticalLayout {
 		if (caseMeasure == CaseMeasure.CASE_COUNT) {
 			districtValuesLowerQuartile = measurePerDistrict.size() > 0 ? 
 					measurePerDistrict.get((int) (measurePerDistrict.size()  * 0.25)).getElement1() : null;
-			districtValuesMedian = measurePerDistrict.size() > 0 ? 
-					measurePerDistrict.get((int) (measurePerDistrict.size() * 0.5)).getElement1() : null;
-			districtValuesUpperQuartile = measurePerDistrict.size() > 0 ? 
-					measurePerDistrict.get((int) (measurePerDistrict.size() * 0.75)).getElement1() : null;
+					districtValuesMedian = measurePerDistrict.size() > 0 ? 
+							measurePerDistrict.get((int) (measurePerDistrict.size() * 0.5)).getElement1() : null;
+							districtValuesUpperQuartile = measurePerDistrict.size() > 0 ? 
+									measurePerDistrict.get((int) (measurePerDistrict.size() * 0.75)).getElement1() : null;
 		} else {
 			// For case incidence, districts without or with a population <= 0 should not be used for the calculation of the quartiles because they will falsify the result
 			List<Pair<DistrictDto, BigDecimal>> measurePerDistrictWithoutMissingPopulations = new ArrayList<>();
@@ -874,7 +889,7 @@ public class MapComponent extends VerticalLayout {
 					casesByFacility.get(facility).add(caze);
 				}
 			}
-			
+
 			mapAndFacilityCases.add(caze);
 		}
 	}
@@ -1026,5 +1041,5 @@ public class MapComponent extends VerticalLayout {
 			return "VAADIN/themes/sormas/mapicons/" + imgName + ".png";
 		};
 	}
-	
+
 }

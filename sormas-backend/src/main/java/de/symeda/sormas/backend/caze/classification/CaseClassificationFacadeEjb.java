@@ -120,7 +120,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				symptom(SymptomsDto.FEVER),
 				xOf(1,
 						allOfCompact(
-								symptom(SymptomsDto.BLOOD_IN_STOOL), 
+								symptom(SymptomsDto.BLOODY_BLACK_STOOL), 
 								symptom(SymptomsDto.DIARRHEA)),
 						symptom(SymptomsDto.GUMS_BLEEDING), 
 						symptom(SymptomsDto.SKIN_BRUISING),

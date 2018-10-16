@@ -7,6 +7,10 @@ public enum VisitStatus {
 	UNCOOPERATIVE,
 	COOPERATIVE,
 	;
+
+	public String getName() {
+		return this.name();
+	}
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

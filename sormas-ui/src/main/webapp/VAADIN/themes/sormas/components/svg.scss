@@ -7,6 +7,10 @@
 		stroke-width: 3;
 	}
 
+	.svg-fill-primary {
+		fill: $s-primary-color;
+	}
+
 	.svg-fill-critical {
 		fill: $s-critical-color;
 	}
@@ -21,6 +25,10 @@
 
 	.svg-fill-minor {
 		fill: $s-minor-color;
+	}
+
+	.svg-fill-neutral {
+		fill: $s-neutral-color;
 	}
 
 	.svg-fill-background {

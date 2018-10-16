@@ -297,13 +297,20 @@ public class PersonService extends AbstractAdoService<Person> {
 		List<Person> casePersonsResultList = em.createQuery(casePersonsQuery).getResultList();
 		return casePersonsResultList;
 	}
+	
+	public long getAddressIdByPersonId(long personId) {
+		return (long) em.createNativeQuery("SELECT " + Person.ADDRESS + "_id FROM " + Person.TABLE_NAME 
+				+ " WHERE " + Person.ID + " = " + personId + ";").getSingleResult();
+	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Person, Person> from, User user) {
 		// getAllUuids and getAllAfter have custom implementations
 		throw new UnsupportedOperationException();
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createDateFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Person, Person> from, Date date) {
 		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);

@@ -6,7 +6,7 @@
     <!-- allow JMX configuration (http://logback.qos.ch/manual/jmxConfig.html) -->
     <!-- <jmxConfigurator /> -->
 
-    <property name="LOG_FOLDER" value="/var/log/payara-sormas" />
+    <property name="LOG_FOLDER" value="/var/log/glassfish/sormas" />
 
     <appender name="FILE_DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>${LOG_FOLDER}/application.debug</file>

@@ -70,6 +70,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 @import "components/button.scss";
 @import "components/checkbox.scss";
 @import "components/combobox.scss";
+@import "components/countelement.scss";
 @import "components/customcomponent.scss";
 @import "components/datefield.scss";
 @import "components/exttokenfield.scss";
@@ -125,6 +126,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
   @include sormas-button;
   @include sormas-checkbox;		
   @include sormas-combobox;
+  @include sormas-countelement;
   @include sormas-customcomponent;
   @include sormas-datefield;
   @include sormas-exttokenfield;

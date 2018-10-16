@@ -37,4 +37,13 @@ The project consists of the following modules:
 * TODO: Reporting an issue
 * TODO: Code of conduct
 * [Setting up your local environment](DEVELOPMENT_ENVIRONMENT.md)
-* TODO Code style guide
+
+### Developers
+1. Use the Eclipse code formatter (Ctrl+Shift+F).  
+   Use the Android Studio code formatter for the **sormas-app** project
+2. Each commit should be related to a single issue on Github and have a reference to this issue. Separate subject from body with a blank line.   
+   > Automatic case classification for existing SORMAS diseases #61
+   >
+   > build model to define classification  
+   > apply automatic case classification whenever a field value changes
+3. Each pull request should be related to a single issue as-well (if possible). 

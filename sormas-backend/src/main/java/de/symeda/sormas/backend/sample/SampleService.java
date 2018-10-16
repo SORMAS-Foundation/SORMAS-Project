@@ -34,16 +34,16 @@ import de.symeda.sormas.backend.user.User;
 @Stateless
 @LocalBean
 public class SampleService extends AbstractAdoService<Sample> {
-	
+
 	@EJB
 	private CaseService caseService;	
 	@EJB
 	private SampleTestService sampleTestService;
-	
+
 	public SampleService() {
 		super(Sample.class);
 	}
-	
+
 	@Override
 	public void delete(Sample sample) {
 		sample.setMainSampleTest(null);
@@ -56,37 +56,37 @@ public class SampleService extends AbstractAdoService<Sample> {
 		if (referralSample != null) {
 			referralSample.setReferredTo(null);
 		}
-		
+
 		super.delete(sample);
 	}
-	
+
 	public List<Sample> getAllByCase(Case caze) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Sample> cq = cb.createQuery(getElementClass());
 		Root<Sample> from = cq.from(getElementClass());
-		
+
 		if(caze != null) {
 			cq.where(cb.equal(from.get(Sample.ASSOCIATED_CASE), caze));
 		}
 		cq.orderBy(cb.desc(from.get(Sample.REPORT_DATE_TIME)));
-		
+
 		List<Sample> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}
-	
+
 	public int getReceivedSampleCountByCase(Case caze) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Sample> from = cq.from(getElementClass());
-		
+
 		cq.select(cb.count(from));
 		cq.where(cb.and(
 				cb.equal(from.get(Sample.ASSOCIATED_CASE), caze),
 				cb.equal(from.get(Sample.RECEIVED), true)));
-		
+
 		return em.createQuery(cq).getSingleResult().intValue();
 	}
-	
+
 	/**
 	 * Returns the sample that refers to the sample identified by the sampleUuid.
 	 * 
@@ -97,7 +97,7 @@ public class SampleService extends AbstractAdoService<Sample> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Sample> cq = cb.createQuery(getElementClass());
 		Root<Sample> from = cq.from(getElementClass());
-		
+
 		cq.where(cb.equal(from.get(Sample.REFERRED_TO), getByUuid(sampleUuid)));
 		try {
 			return em.createQuery(cq).getSingleResult();
@@ -105,7 +105,7 @@ public class SampleService extends AbstractAdoService<Sample> {
 			return null;
 		}
 	}
-	
+
 	public void updateMainSampleTest(Sample sample) {
 		if (sample.getSampleTests().isEmpty()) {
 			sample.setMainSampleTest(null);
@@ -115,13 +115,13 @@ public class SampleService extends AbstractAdoService<Sample> {
 					.findFirst().get());
 		}
 	}
-	
+
 	public List<DashboardSampleDto> getNewSamplesForDashboard(Region region, District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardSampleDto> cq = cb.createQuery(DashboardSampleDto.class);
 		Root<Sample> sample = cq.from(getElementClass());
 		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
-		
+
 		Predicate filter = createUserFilter(cb, cq, sample, user);
 		Predicate dateFilter = cb.between(sample.get(Sample.REPORT_DATE_TIME), from, to);
 		if (filter != null) {
@@ -138,7 +138,7 @@ public class SampleService extends AbstractAdoService<Sample> {
 				filter = regionFilter;
 			}
 		}
-		
+
 		if (district != null) {
 			Predicate districtFilter = cb.equal(caze.get(Case.DISTRICT), district);
 			if (filter != null) {
@@ -147,7 +147,7 @@ public class SampleService extends AbstractAdoService<Sample> {
 				filter = districtFilter;
 			}
 		}
-		
+
 		if (disease != null) {
 			Predicate diseaseFilter = cb.equal(caze.get(Case.DISEASE), disease);
 			if (filter != null) {
@@ -156,61 +156,68 @@ public class SampleService extends AbstractAdoService<Sample> {
 				filter = diseaseFilter;
 			}
 		}
-		
+
 		List<DashboardSampleDto> result;
 		if (filter != null) {
 			cq.where(filter);
 			cq.multiselect(
 					sample.get(Sample.SHIPPED),
 					sample.get(Sample.RECEIVED)
-			);
-			
+					);
+
 			result = em.createQuery(cq).getResultList();
 		} else {
 			result = Collections.emptyList();
 		}
-		
+
 		return result;
 	}
-	
+
+	@SuppressWarnings("unchecked")
+	public List<Date> getSampleDatesForCase(long caseId) {
+		return em.createNativeQuery("SELECT " + Sample.SAMPLE_DATE_TIME + " FROM " + Sample.TABLE_NAME + " WHERE "
+				+ Sample.ASSOCIATED_CASE + "_id = " + caseId).getResultList();
+	}
+
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Sample,Sample> samplePath, User user) {
-		
+
 		Predicate filter = createUserFilterWithoutCase(cb, cq, samplePath, user);
 
 		// whoever created the case the sample is associated with or is assigned to it
 		// is allowed to access it
 		Path<Case> casePath = samplePath.get(Sample.ASSOCIATED_CASE);
-		
+
 		Predicate caseFilter = caseService.createUserFilter(cb, cq, (From<Case,Case>)casePath, user);
 		filter = or(cb, filter, caseFilter);
 
 		return filter;
 	}
-	
+
+	@SuppressWarnings("rawtypes")
 	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, CriteriaQuery cq, From<Sample,Sample> samplePath, User user) {
-		
+
 		Predicate filter = null;
 		// user that reported it is not able to access it. Otherwise they would also need to access the case
 		//filter = cb.equal(samplePath.get(Sample.REPORTING_USER), user);
-		
+
 		// lab users can see samples assigned to their laboratory
 		if (user.getUserRoles().contains(UserRole.LAB_USER)) {
 			if(user.getLaboratory() != null) {
 				filter = or(cb, filter, cb.equal(samplePath.get(Sample.LAB), user.getLaboratory()));			}
 		}
-		
+
 		return filter;
 	}
-	
+
 	public Predicate buildCriteriaFilter(SampleCriteria sampleCriteria, CriteriaBuilder cb, Root<Sample> from) {
-		
+
 		Join<Sample, Case> caze = from.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
-		
+
 		Predicate filter = null;
 		if (sampleCriteria.getRegion() != null) {
 			filter = and(cb, filter, cb.equal(caze.join(Case.REGION, JoinType.LEFT).get(Region.UUID), sampleCriteria.getRegion().getUuid()));

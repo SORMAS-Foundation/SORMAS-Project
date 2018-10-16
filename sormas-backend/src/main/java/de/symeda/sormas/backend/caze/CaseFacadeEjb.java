@@ -59,7 +59,6 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -98,18 +97,23 @@ import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataService;
+import de.symeda.sormas.backend.epidata.EpiDataTravel;
+import de.symeda.sormas.backend.epidata.EpiDataTravelService;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.HospitalizationService;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalizationService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
@@ -127,12 +131,12 @@ import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sample.SampleTest;
 import de.symeda.sormas.backend.sample.SampleTestFacadeEjb.SampleTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleTestService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
+import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
@@ -177,9 +181,15 @@ public class CaseFacadeEjb implements CaseFacade {
 	@EJB
 	private TaskService taskService;
 	@EJB
+	private LocationService locationService;
+	@EJB
 	private HospitalizationService hospitalizationService;
 	@EJB
 	private EpiDataService epiDataService;
+	@EJB
+	private EpiDataTravelService epiDataTravelService;
+	@EJB
+	private SymptomsService symptomsService;
 	@EJB
 	private ContactService contactService;
 	@EJB
@@ -226,7 +236,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public List<CaseIndexDto> getIndexList(String userUuid, CaseCriteria caseCriteria) {
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CaseIndexDto> cq = cb.createQuery(CaseIndexDto.class);
 		Root<Case> caze = cq.from(Case.class);
@@ -261,11 +270,98 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria) {
+	public List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria, int first, int max) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CaseExportDto> cq = cb.createQuery(CaseExportDto.class);
+		Root<Case> caze = cq.from(Case.class);
+		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
+		Join<Case, Hospitalization> hospitalization = caze.join(Case.HOSPITALIZATION, JoinType.LEFT);
+		Join<Case, EpiData> epiData = caze.join(Case.EPI_DATA, JoinType.LEFT);
+		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
+		Join<Case, Region> region = caze.join(Case.REGION, JoinType.LEFT);
+		Join<Case, District> district = caze.join(Case.DISTRICT, JoinType.LEFT);
+		Join<Case, Community> community = caze.join(Case.COMMUNITY, JoinType.LEFT);
+		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
+		Join<Person, Facility> occupationFacility = person.join(Person.OCCUPATION_FACILITY, JoinType.LEFT);
 
+		cq.multiselect(
+				caze.get(Case.ID),
+				person.get(Person.ID),
+				epiData.get(EpiData.ID),
+				symptoms.get(Symptoms.ID),
+				caze.get(Case.UUID),
+				caze.get(Case.EPID_NUMBER),
+				caze.get(Case.DISEASE),
+				caze.get(Case.DISEASE_DETAILS),
+				person.get(Person.FIRST_NAME),
+				person.get(Person.LAST_NAME),
+				person.get(Person.SEX),
+				person.get(Person.APPROXIMATE_AGE),
+				person.get(Person.APPROXIMATE_AGE_TYPE),
+				caze.get(Case.REPORT_DATE),
+				region.get(Region.NAME),
+				district.get(District.NAME),
+				community.get(Community.NAME),
+				hospitalization.get(Hospitalization.ADMISSION_DATE),
+				facility.get(Facility.NAME),
+				facility.get(Facility.UUID),
+				caze.get(Case.HEALTH_FACILITY_DETAILS),
+				caze.get(Case.CASE_CLASSIFICATION),
+				caze.get(Case.INVESTIGATION_STATUS),
+				person.get(Person.PRESENT_CONDITION),
+				caze.get(Case.OUTCOME),
+				person.get(Person.DEATH_DATE),
+				person.get(Person.PHONE),
+				person.get(Person.PHONE_OWNER),
+				person.get(Person.OCCUPATION_TYPE),
+				person.get(Person.OCCUPATION_DETAILS),
+				occupationFacility.get(Facility.NAME),
+				occupationFacility.get(Facility.UUID),
+				person.get(Person.OCCUPATION_FACILITY_DETAILS),
+				epiData.get(EpiData.RODENTS),
+				epiData.get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE),
+				symptoms.get(Symptoms.ONSET_DATE));
+				
 		User user = userService.getByUuid(userUuid);
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
 
-		return caseService.findBy(caseCriteria, user).stream().map(c -> toExportDto(c)).collect(Collectors.toList());
+		if (caseCriteria != null) {
+			Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.orderBy(cb.desc(caze.get(Case.REPORT_DATE)));
+
+		List<CaseExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		
+		for (CaseExportDto exportDto : resultList) {
+			List<Date> sampleDates = sampleService.getSampleDatesForCase(exportDto.getId());
+			exportDto.setSampleTaken((sampleDates == null || sampleDates.isEmpty()) ? YesNoUnknown.NO : YesNoUnknown.YES);
+			exportDto.setSampleDates(sampleDates);
+			exportDto.setLabResults(sampleTestService.getSampleTestResultsForCase(exportDto.getId()));
+			exportDto.setSymptoms(symptomsService.getById(exportDto.getSymptomsId()).toHumanString(false));
+			exportDto.setAddress(locationService.getById(personService.getAddressIdByPersonId(exportDto.getPersonId())).toString());
+			
+			// Build travel history - done here to avoid transforming EpiDataTravel to EpiDataTravelDto
+			List<EpiDataTravel> travels = epiDataTravelService.getAllByEpiDataId(exportDto.getEpiDataId());
+			StringBuilder travelHistoryBuilder = new StringBuilder();
+			for (int i = 0; i < travels.size(); i++) {
+				EpiDataTravel travel = travels.get(i);
+				if (i > 0) {
+					travelHistoryBuilder.append(", ");
+				}
+				travelHistoryBuilder.append(EpiDataTravelHelper.buildTravelString(
+						travel.getTravelType(), travel.getTravelDestination(),
+						travel.getTravelDateFrom(), travel.getTravelDateTo()));
+			}
+			exportDto.setTravelHistory(travelHistoryBuilder.toString());
+		}
+		
+		return resultList;
 	}
 
 	@Override
@@ -565,14 +661,14 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public CaseDataDto transferCase(CaseReferenceDto cazeRef, CommunityReferenceDto communityDto,
-			FacilityReferenceDto facilityDto, String facilityDetails, UserReferenceDto officerDto) {
+	public CaseDataDto transferCase(CaseReferenceDto cazeRef, RegionReferenceDto regionDto, DistrictReferenceDto districtDto,
+			CommunityReferenceDto communityDto,	FacilityReferenceDto facilityDto, String facilityDetails, UserReferenceDto officerDto) {
 		Case caze = fillOrBuildEntity(getCaseDataByUuid(cazeRef.getUuid()), caseService.getByUuid(cazeRef.getUuid()));
 
 		Community community = communityDto != null ? communityService.getByUuid(communityDto.getUuid()) : null;
 		Facility facility = facilityService.getByUuid(facilityDto.getUuid());
-		District district = facility.getDistrict();
-		Region region = district.getRegion();
+		District district = districtService.getByUuid(districtDto.getUuid());
+		Region region = regionService.getByUuid(regionDto.getUuid());
 		User officer = null;
 		if (officerDto != null) {
 			officer = userService.getByUuid(officerDto.getUuid());
@@ -768,80 +864,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setOutcome(source.getOutcome());
 		target.setOutcomeDate(source.getOutcomeDate());
-
-		return target;
-	}
-
-	public CaseExportDto toExportDto(Case source) {
-
-		Person sourcePerson = source.getPerson();
-
-		CaseExportDto target = new CaseExportDto();
-
-		target.setUuid(source.getUuid());
-		target.setEpidNumber(source.getEpidNumber());
-		target.setDisease(DiseaseHelper.toString(source.getDisease(), source.getDiseaseDetails()));
-		target.setPerson(PersonDto.buildCaption(sourcePerson.getFirstName(), sourcePerson.getLastName()));
-		target.setSex(sourcePerson.getSex());
-		target.setApproximateAge(
-				PersonHelper.buildAgeString(sourcePerson.getApproximateAge(), sourcePerson.getApproximateAgeType()));
-		target.setReportDate(source.getReportDate());
-		target.setRegion(source.getRegion().getName());
-		target.setDistrict(source.getDistrict().getName());
-		if (source.getCommunity() != null) {
-			target.setCommunity(source.getCommunity().getName());
-		}
-		target.setAdmissionDate(source.getHospitalization().getAdmissionDate());
-		target.setHealthFacility(FacilityHelper.buildFacilityString(source.getHealthFacility().getName(),
-				source.getHealthFacilityDetails()));
-		target.setHealthFacility(source.getHealthFacility().toString());
-
-		// samples
-		List<Sample> sourceSamples = sampleService.getAllByCase(source);
-		target.setSampleTaken(sourceSamples.size() > 0 ? YesNoUnknown.YES : YesNoUnknown.NO);
-		String sampleDates = "", labResults = "";
-		for (Sample sourceSample : sourceSamples) {
-			if (sourceSample.getSampleDateTime() != null) {
-				if (sampleDates.length() > 0) {
-					sampleDates += ", ";
-				}
-				sampleDates += DateHelper.formatLocalShortDate(sourceSample.getSampleDateTime());
-			}
-
-			for (SampleTest sourceSampleTest : sourceSample.getSampleTests()) {
-				if (sourceSampleTest.getTestResult() != null) {
-					if (labResults.length() > 0) {
-						labResults += ", ";
-					}
-					labResults += sourceSampleTest.getTestResult();
-				}
-			}
-		}
-		target.setSampleDates(sampleDates);
-		target.setLabResults(labResults);
-
-		target.setCaseClassification(source.getCaseClassification());
-		target.setInvestigationStatus(source.getInvestigationStatus());
-		target.setPresentCondition(sourcePerson.getPresentCondition());
-		target.setOutcome(source.getOutcome());
-		target.setDeathDate(sourcePerson.getDeathDate());
-
-		target.setAddress(sourcePerson.getAddress().toString());
-		target.setPhone(PersonHelper.buildPhoneString(sourcePerson.getPhone(), sourcePerson.getPhoneOwner()));
-		target.setOccupationType(PersonHelper.buildOccupationString(sourcePerson.getOccupationType(),
-				sourcePerson.getOccupationDetails(),
-				sourcePerson.getOccupationFacility() != null ? sourcePerson.getOccupationFacility().getName() : null));
-
-		target.setTravelHistory(source
-				.getEpiData().getTravels().stream().map(t -> EpiDataTravelHelper.buildTravelString(t.getTravelType(),
-						t.getTravelDestination(), t.getTravelDateFrom(), t.getTravelDateTo()))
-				.collect(Collectors.joining(", ")));
-		target.setContactWithRodent(source.getEpiData().getRodents());
-		// contact with confirmed case
-		target.setContactWithConfirmedCase(
-				contactService.hadContactWithConfirmedCase(source) ? YesNoUnknown.YES : YesNoUnknown.NO);
-		target.setOnsetDate(source.getSymptoms().getOnsetDate());
-		target.setSymptoms(source.getSymptoms().toHumanString(false));
 
 		return target;
 	}

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
@@ -28,17 +29,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.contact.DashboardContactDto;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
@@ -56,6 +58,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
@@ -98,6 +101,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
+	@EJB
+	private LocationService locationService;
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
 	
@@ -224,14 +229,80 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 	
 	@Override
-	public List<ContactExportDto> getExportList(String userUuid, ContactCriteria contactCriteria) {
-		
-		User user = userService.getByUuid(userUuid);
+	public List<ContactExportDto> getExportList(String userUuid, ContactCriteria contactCriteria, int first, int max) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ContactExportDto> cq = cb.createQuery(ContactExportDto.class);
+		Root<Contact> contact = cq.from(Contact.class);
+		Join<Contact, Case> contactCase = contact.join(Contact.CAZE, JoinType.LEFT);
+		Join<Contact, Person> contactPerson = contact.join(Contact.PERSON, JoinType.LEFT);
+		Join<Person, Facility> occupationFacility = contactPerson.join(Person.OCCUPATION_FACILITY, JoinType.LEFT);
 
-		return contactService.findBy(contactCriteria, user)
-				.stream()
-				.map(c -> toExportDto(c))
-				.collect(Collectors.toList());
+		cq.multiselect(
+				contact.get(Contact.ID),
+				contactPerson.get(Person.ID),
+				contact.get(Contact.UUID),
+				contactCase.get(Case.UUID),
+				contactCase.get(Case.CASE_CLASSIFICATION),
+				contactCase.get(Case.DISEASE),
+				contactCase.get(Case.DISEASE_DETAILS),
+				contact.get(Contact.CONTACT_CLASSIFICATION),
+				contact.get(Contact.LAST_CONTACT_DATE),
+				contactPerson.get(Person.FIRST_NAME),
+				contactPerson.get(Person.LAST_NAME),
+				contactPerson.get(Person.SEX),
+				contactPerson.get(Person.APPROXIMATE_AGE),
+				contactPerson.get(Person.APPROXIMATE_AGE_TYPE),
+				contact.get(Contact.REPORT_DATE_TIME),
+				contact.get(Contact.CONTACT_PROXIMITY),
+				contact.get(Contact.CONTACT_STATUS),
+				contact.get(Contact.FOLLOW_UP_STATUS),
+				contact.get(Contact.FOLLOW_UP_UNTIL),
+				contactPerson.get(Person.PRESENT_CONDITION),
+				contactPerson.get(Person.DEATH_DATE),
+				contactPerson.get(Person.PHONE),
+				contactPerson.get(Person.PHONE_OWNER),
+				contactPerson.get(Person.OCCUPATION_TYPE),
+				contactPerson.get(Person.OCCUPATION_DETAILS),
+				occupationFacility.get(Facility.NAME),
+				occupationFacility.get(Facility.UUID),
+				contactPerson.get(Person.OCCUPATION_FACILITY_DETAILS));
+		
+		Predicate filter = null;
+
+		// Only use user filter if no restricting case is specified
+		if (userUuid != null 
+				&& (contactCriteria == null || contactCriteria.getCaze() == null)) {
+			User user = userService.getByUuid(userUuid);
+			filter = contactService.createUserFilter(cb, cq, contact, user);
+		}
+		
+		if (contactCriteria != null) {
+			Predicate criteriaFilter = contactService.buildCriteriaFilter(contactCriteria, cb, contact);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.orderBy(cb.desc(contact.get(Contact.REPORT_DATE_TIME)));
+		
+		List<ContactExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+
+		for (ContactExportDto exportDto : resultList) {
+			exportDto.setAddress(locationService.getById(personService.getAddressIdByPersonId(exportDto.getPersonId())).toString());
+			exportDto.setNumberOfVisits(visitService.getVisitCountByContactId(exportDto.getId(), exportDto.getPersonId(), 
+					exportDto.getLastContactDate(), exportDto.getReportDate(), exportDto.getFollowUpUntil(), exportDto.getInternalDisease()));
+			Visit lastCooperativeVisit = visitService.getLastVisitByContactId(exportDto.getId(), exportDto.getPersonId(), 
+					exportDto.getLastContactDate(), exportDto.getReportDate(), exportDto.getFollowUpUntil(), exportDto.getInternalDisease(), VisitStatus.COOPERATIVE);
+			if (lastCooperativeVisit != null) {
+				exportDto.setLastCooperativeVisitSymptomatic(lastCooperativeVisit.getSymptoms().getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
+				exportDto.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
+				exportDto.setLastCooperativeVisitSymptoms(lastCooperativeVisit.getSymptoms().toHumanString(true));
+			}
+		}
+		
+		return resultList;
 	}
 	
 	@Override
@@ -252,9 +323,11 @@ public class ContactFacadeEjb implements ContactFacade {
 				contactCasePerson.get(Person.LAST_NAME), contactCaseRegion.get(Region.UUID), contactCaseDistrict.get(District.UUID),
 				contactCaseFacility.get(Facility.UUID), contact.get(Contact.LAST_CONTACT_DATE), contact.get(Contact.CONTACT_PROXIMITY),
 				contact.get(Contact.CONTACT_CLASSIFICATION), contact.get(Contact.CONTACT_STATUS), contact.get(Contact.FOLLOW_UP_STATUS), contact.get(Contact.FOLLOW_UP_UNTIL),
-				contactOfficer.get(User.UUID));
+				contactOfficer.get(User.UUID), contact.get(Contact.REPORT_DATE_TIME));
 		
 		Predicate filter = null;
+		
+		// Only use user filter if no restricting case is specified
 		if (userUuid != null 
 				&& (contactCriteria == null || contactCriteria.getCaze() == null)) {
 			User user = userService.getByUuid(userUuid);
@@ -324,6 +397,44 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		return target;
 	}
+	
+	@Override
+	public List<DashboardContactDto> getContactsForDashboard(RegionReferenceDto regionRef,
+			DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+		Region region = regionService.getByReferenceDto(regionRef);
+		District district = districtService.getByReferenceDto(districtRef);
+		User user = userService.getByUuid(userUuid);
+		
+		return contactService.getContactsForDashboard(region, district, disease, from, to, user);
+	}
+	
+	@Override
+	public Map<ContactStatus, Long> getNewContactCountPerStatus(ContactCriteria contactCriteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		return contactService.getNewContactCountPerStatus(contactCriteria, user);
+	}
+	
+	@Override
+	public Map<ContactClassification, Long> getNewContactCountPerClassification(ContactCriteria contactCriteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		return contactService.getNewContactCountPerClassification(contactCriteria, user);
+	}
+	
+	@Override
+	public Map<FollowUpStatus, Long> getNewContactCountPerFollowUpStatus(ContactCriteria contactCriteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		return contactService.getNewContactCountPerFollowUpStatus(contactCriteria, user);
+	}
+	
+	@Override
+	public Map<Date, Long> getFollowUpUntilCountPerDate(ContactCriteria contactCriteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		return contactService.getFollowUpUntilCountPerDate(contactCriteria, user);
+	}
 
 	public static ContactReferenceDto toReferenceDto(Contact source) {
 		if (source == null) {
@@ -366,44 +477,6 @@ public class ContactFacadeEjb implements ContactFacade {
 		return target;
 	}
 
-	public ContactExportDto toExportDto(Contact source) {
-		
-		Person sourcePerson = source.getPerson();
-		Case sourceCase = source.getCaze();
-		
-		ContactExportDto target = new ContactExportDto();
-
-		target.setUuid(source.getUuid());
-		target.setSourceCaseUuid(sourceCase.getUuid());
-		target.setCaseClassification(sourceCase.getCaseClassification());
-		target.setDisease(DiseaseHelper.toString(sourceCase.getDisease(), sourceCase.getDiseaseDetails()));
-		target.setContactClassification(source.getContactClassification());
-		target.setLastContactDate(source.getLastContactDate());
-		target.setPerson(PersonDto.buildCaption(sourcePerson.getFirstName(), sourcePerson.getLastName()));
-		target.setSex(sourcePerson.getSex());
-		target.setApproximateAge(PersonHelper.buildAgeString(sourcePerson.getApproximateAge(), sourcePerson.getApproximateAgeType()));
-		target.setReportDate(source.getReportDateTime());
-		target.setContactProximity(source.getContactProximity());
-		target.setContactStatus(source.getContactStatus());
-		target.setFollowUpStatus(source.getFollowUpStatus());
-		target.setPresentCondition(sourcePerson.getPresentCondition());
-		target.setDeathDate(sourcePerson.getDeathDate());
-		target.setAddress(sourcePerson.getAddress().toString());
-		target.setPhone(PersonHelper.buildPhoneString(sourcePerson.getPhone(), sourcePerson.getPhoneOwner()));
-		target.setOccupationType(PersonHelper.buildOccupationString(sourcePerson.getOccupationType(), sourcePerson.getOccupationDetails(), 
-				sourcePerson.getOccupationFacility() != null ? sourcePerson.getOccupationFacility().getName() : null));
-		
-		target.setNumberOfVisits(visitService.getVisitCount(source, null));
-		Visit sourceLastCooperativeVisit = visitService.getLastVisitByContact(source, VisitStatus.COOPERATIVE);
-		if (sourceLastCooperativeVisit != null) {
-			target.setLastCooperativeVisitSymptomatic(YesNoUnknown.valueOf(sourceLastCooperativeVisit.getSymptoms().getSymptomatic()));
-			target.setLastCooperativeVisitDate(sourceLastCooperativeVisit.getVisitDateTime());
-			target.setLastCooperativeVisitSymptoms(sourceLastCooperativeVisit.getSymptoms().toHumanString(true));
-		}
-		
-		return target;
-	}
-	
 	@RolesAllowed(UserRole._SYSTEM)
 	public void generateContactFollowUpTasks() {
 

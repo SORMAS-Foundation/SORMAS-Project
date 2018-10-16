@@ -5,10 +5,14 @@ import de.symeda.sormas.api.utils.DataHelper;
 
 public class FacilityHelper {
 
-	public static String buildFacilityString(String facilityName, String facilityDetails) {
+	public static String buildFacilityString(String facilityUuid, String facilityName, String facilityDetails) {
 		StringBuilder result = new StringBuilder();
 		if (!DataHelper.isNullOrEmpty(facilityName)) {
-			result.append(facilityName);
+			if (!DataHelper.isNullOrEmpty(facilityUuid)) {
+				result.append(buildToString(facilityUuid, facilityName));
+			} else {
+				result.append(facilityName);
+			}
 		}
 		if (!DataHelper.isNullOrEmpty(facilityDetails)) {
 			if (result.length() > 0) {
@@ -18,7 +22,7 @@ public class FacilityHelper {
 		}		
 		return result.toString();
 	}
-	
+
 	public static String buildToString(String facilityUuid, String facilityName) {
 		if (facilityUuid.equals(FacilityDto.OTHER_FACILITY_UUID)) {
 			return I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX, FacilityDto.OTHER_FACILITY);
@@ -29,13 +33,13 @@ public class FacilityHelper {
 		if (facilityUuid.equals(FacilityDto.OTHER_LABORATORY_UUID)) {
 			return I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX, FacilityDto.OTHER_LABORATORY);
 		}
-		
+
 		StringBuilder caption = new StringBuilder();
 		caption.append(facilityName);
 
 		return caption.toString();
 	}
-	
+
 	public static boolean isOtherOrNoneHealthFacility(String facilityUuid) {
 		return FacilityDto.OTHER_FACILITY_UUID.equals(facilityUuid)
 				|| FacilityDto.NONE_FACILITY_UUID.equals(facilityUuid);

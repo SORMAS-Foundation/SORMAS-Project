@@ -38,6 +38,14 @@
 		border-color: $v-selection-color;
 	  }
 	}
+
+	&.v-filterselect-subtle {
+	  margin-bottom: 0px;
+	  [class$="input"] {
+	  	background: $v-focus-color;
+	  	border: $v-border-subtle;	
+	  }	
+	}
   }
   
   .v-filterselect-suggestpopup {

@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.sample;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -18,6 +19,7 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
+import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.region.District;
@@ -131,10 +133,21 @@ public class SampleTestService extends AbstractAdoService<SampleTest> {
 		
 		return result;
 	}
-	
+
+
+	@SuppressWarnings("unchecked")
+	public List<SampleTestResultType> getSampleTestResultsForCase(long caseId) {
+		return (List<SampleTestResultType>) em.createNativeQuery("SELECT " + SampleTest.TEST_RESULT + " FROM " + SampleTest.TABLE_NAME + " WHERE "
+				+ SampleTest.SAMPLE + "_id IN (SELECT " + Sample.ID + " FROM " + Sample.TABLE_NAME + " WHERE "
+				+ Sample.ASSOCIATED_CASE + "_id = " + caseId + ");").getResultList().stream()
+				.map(e -> SampleTestResultType.valueOf((String) e))
+				.collect(Collectors.toList());
+	}
+
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */	
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<SampleTest,SampleTest> sampleTestPath, User user) {
 		// whoever created the sample the sample test is associated with is allowed to access it

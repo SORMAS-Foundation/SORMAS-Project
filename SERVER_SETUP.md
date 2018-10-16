@@ -2,6 +2,7 @@
 
 # Installing a SORMAS Server
 **Note: All commands below are Linux commands. On windows systems use the corresponding commands or the windows explorer.**
+**To execute the shell script on Windows systems you can use git bash (MinGW64).**
 
 * [Postgres Database](#postgres-database)
 * [Payara Application Server](#payara-application-server)
@@ -11,8 +12,8 @@
 
 ## Postgres Database
 
-* Install PostgreSQL (currently 9.5 or 9.6) on your system
-* **set max_prepared_transactions = 64 (at least) in postgresql.conf** in postgresql.conf (e.g. /etc/postgresql/9.5/main/postgresql.conf)
+* Install PostgreSQL (currently 9.5, 9.6 or 10) on your system (manuals for all OS can be found here: https://www.postgresql.org/download)
+* **set max_prepared_transactions = 64 (at least) in postgresql.conf** in postgresql.conf (e.g. ``/etc/postgresql/9.5/main/postgresql.conf``; ``C:/Program Files/PostgreSQL/9.5/data``)
 * Install the "temporal tables" addon for Postgres (https://github.com/arkhipov/temporal_tables)
     * **Windows**: Download latest version for your postgres version: https://github.com/arkhipov/temporal_tables/releases/latest 
 	Then you have to copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.	
@@ -58,22 +59,13 @@ The `/opt/payara-172/` as payara-directory can, in some linux distros, only be m
 * Get the latest SORMAS build from github: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest (deploy.zip). 
 * Upload to /root/deploy/sormas/$(date +%F)
 * ``cd /root/deploy/sormas/$(date +%F)``
-* Open ``glassfish-config.sh`` (or glassfish-config.bat on windows) in a text editor and change GLASSFISH_HOME, DOMAINS_HOME, PORT_BASE, PORT_ADMIN, DB_PW, DB_PW_AUDIT, MAIL_FROM to appropriate values for your server.
-* Make the file executable: ``chmod +x glassfish-config.sh``
-* Set up a payara domain called "sormas" by executing it: ``./glassfish-config.sh`` Press enter whenever asked for it.
-	* **Linux** In some cases, the glassfish-config.sh can not be read properly, probably due to encoding issues. Opening the config with pluma/gedit, copying all the contained text into a new file and using this file instead helps.
+* Open ``setup/server-setup.sh`` in a text editor and change DEV_SYSTEM, GLASSFISH_HOME, DOMAINS_HOME, PORT_BASE, PORT_ADMIN, DB_PW, DB_PW_AUDIT, MAIL_FROM to appropriate values for your server or development environment.
+* Make the file executable: ``chmod +x server-setup.sh``
+* Set up a payara domain called "sormas" by executing it: ``./server-setup.sh`` Press enter whenever asked for it.
+* **IMPORTANT**: Make sure the script executed successfully. If anything goes you need to fix the problem (or ask for help), then delete the created domain directory and re-execute the script.
 * Adjust the logging configuration in opt/domains/sormas/config/logback.xml based on your needs (e.g. configure and activate email appender)
-* in opt/domains/sormas/config/logging.properties replace ``org.wamblee.glassfish.auth.HexEncoder.level.level=SEVERE`` with ``  org.wamblee.glassfish.auth.HexEncoder.level=SEVERE``
 * Make sure the domain folder is owned by the glassfish user: ``chown -R glassfish:glassfish opt/domains/sormas/``  
 This is not necessary when you setup a development environment and use another folder as domain directory. 
-* Create two folders called "/opt/sormas-temp" and "/opt/sormas-generated" (if you choose another path, you have to adjust the sormas.properties file accordingly)
-* **Only Linux:** Set user rights for postgres and glassfish users: 
-```
-setfacl -m u:postgres:rwx /opt/sormas-temp  
-setfacl -m u:glassfish:rwx /opt/sormas-temp
-setfacl -m u:postgres:rwx /opt/sormas-generated
-setfacl -m u:glassfish:rwx /opt/sormas-generated
-```
 * **Only** necessary if you are setting up a **productive environment**
 	* Copy the startup script to init.d: ``cp payara-sormas /etc/init.d``
 	* Add the server startup sequence: ``update-rc.d payara-sormas defaults``

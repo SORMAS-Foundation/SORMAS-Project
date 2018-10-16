@@ -46,11 +46,13 @@ public class ContactIndexDto implements Serializable {
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntil;
 	private String contactOfficerUuid;
+	private Date reportDate;
 	
 	public ContactIndexDto(String uuid, String personUuid, String personFirstName, String personLastName, String cazeUuid,
 			Disease caseDisease, String caseDiseaseDetails, String casePersonUuid, String caseFirstName, String caseLastName, String caseRegionUuid,
 			String caseDistrictUuid, String caseHealthFacilityUuid, Date lastContactDate, ContactProximity contactProximity,
-			ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus, Date followUpUntil, String contactOfficerUuid) {
+			ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus, 
+			Date followUpUntil, String contactOfficerUuid, Date reportDate) {
 		this.uuid = uuid;
 		this.person = new PersonReferenceDto(personUuid, personFirstName, personLastName);
 		this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName);
@@ -66,6 +68,7 @@ public class ContactIndexDto implements Serializable {
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
 		this.contactOfficerUuid = contactOfficerUuid;
+		this.reportDate = reportDate;
 	}
 	
 	public String getUuid() {
@@ -157,6 +160,12 @@ public class ContactIndexDto implements Serializable {
 	}
 	public void setContactOfficerUuid(String contactOfficerUuid) {
 		this.contactOfficerUuid = contactOfficerUuid;
+	}
+	public Date getReportDate() {
+		return reportDate;
+	}
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
 
 	public ContactReferenceDto toReference() {

@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.dashboard;
+package de.symeda.sormas.ui.dashboard.statistics;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
@@ -39,6 +39,11 @@ public class DashboardStatisticsPercentageElement extends VerticalLayout {
 	
 	public void updatePercentageValue(int percentageValue) {
 		percentageLabel.setValue(Integer.toString(percentageValue) + "%");
+		svgBarElement.updateSvg(percentageValue);
+	}
+	
+	public void updatePercentageValueWithCount(int count, int percentageValue) {
+		percentageLabel.setValue(Integer.toString(count) +  " (" + Integer.toString(percentageValue) + " %)");
 		svgBarElement.updateSvg(percentageValue);
 	}
 

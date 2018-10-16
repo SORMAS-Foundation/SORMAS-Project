@@ -61,36 +61,15 @@
 		border-radius: 8px;
 		padding: 8px;
 	}
-
-	// Labels with colorized bar on top
-	&.v-label-bar-top-critical, .bar-top-critical {
-		border-top: 4px solid $s-critical-color;
-		padding-top: 6px;
+		
+	&.v-label-rounded-corners-slim, .rounded-corners-slim {
+		border-radius: 4px;
+		padding: 4px;
 	}
 
-	&.v-label-bar-top-important, .bar-top-important {
-		border-top: 4px solid $s-important-color;
-		padding-top: 6px;
-	}
-
-	&.v-label-bar-top-relevant, .bar-top-relevant {
-		border-top: 4px solid $s-relevant-color;
-		padding-top: 6px;
-	}
-
-	&.v-label-bar-top-neutral, .bar-top-neutral {
-		border-top: 4px solid $s-neutral-color;
-		padding-top: 6px;
-	}
-
-	&.v-label-bar-top-positive, .bar-top-positive {
-		border-top: 4px solid $s-positive-color;
-		padding-top: 6px;
-	}
-
-	&.v-label-bar-top-minor, .bar-top-minor {
-		border-top: 4px solid $s-minor-color;
-		padding-top: 6px;
+	// Label with background
+	&.v-label-background-focus-light, .background-focus-light {
+		background: $v-focus-light-color;
 	}
 
 	// Font sizes
@@ -116,6 +95,11 @@
 
 	&.v-label-xxxlarge, .xxxlarge {
     	font-size: 2.5em;
+	}
+
+	&.v-label-really-large, .really-large {
+		font-size: 5em;
+		line-height: 1em;
 	}
 
 	// Font styles

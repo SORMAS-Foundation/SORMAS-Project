@@ -30,4 +30,7 @@ public interface VisitFacade {
 	void deleteVisit(VisitReferenceDto visitRef, String userUuid);
 	
 	int getNumberOfVisits(ContactReferenceDto contactRef, VisitStatus visitStatus);
+	
+	List<DashboardVisitDto> getDashboardVisitsByContact(ContactReferenceDto contactRef, Date from, Date to);
+	
 }

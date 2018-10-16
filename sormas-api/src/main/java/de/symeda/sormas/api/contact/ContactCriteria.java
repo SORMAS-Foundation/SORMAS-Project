@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.contact;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -24,6 +25,10 @@ public class ContactCriteria implements Serializable {
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
+	private Date reportDateFrom;
+	private Date reportDateTo;
+	private Date followUpUntilFrom;
+	private Date followUpUntilTo;
 
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -114,4 +119,33 @@ public class ContactCriteria implements Serializable {
 		this.followUpStatus = followUpStatus;
 		return this;
 	}
+	
+	public ContactCriteria reportDateBetween(Date reportDateFrom, Date reportDateTo) {
+		this.reportDateFrom = reportDateFrom;
+		this.reportDateTo = reportDateTo;
+		return this;
+	}
+
+	public Date getReportDateFrom() {
+		return reportDateFrom;
+	}
+
+	public Date getReportDateTo() {
+		return reportDateTo;
+	}
+	
+	public ContactCriteria followUpUntilBetween(Date followUpUntilFrom, Date followUpUntilTo) {
+		this.followUpUntilFrom = followUpUntilFrom;
+		this.followUpUntilTo = followUpUntilTo;
+		return this;
+	}
+	
+	public Date getFollowUpUntilFrom() {
+		return followUpUntilFrom;
+	}
+	
+	public Date getFollowUpUntilTo() {
+		return followUpUntilTo;
+	}
+	
 }

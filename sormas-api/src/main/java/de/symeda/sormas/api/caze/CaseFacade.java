@@ -30,7 +30,7 @@ public interface CaseFacade {
 
 	List<CaseIndexDto> getIndexList(String userUuid, CaseCriteria caseCriteria);
 	
-	List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria);
+	List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria, int first, int max);
 	
 	CaseDataDto getCaseDataByUuid(String uuid);
     
@@ -46,7 +46,7 @@ public interface CaseFacade {
 	
 	List<String> getAllUuids(String userUuid);
 	
-	CaseDataDto transferCase(CaseReferenceDto caze, CommunityReferenceDto community, FacilityReferenceDto facility, String facilityDetails, UserReferenceDto surveillanceOfficer);
+	CaseDataDto transferCase(CaseReferenceDto caze, RegionReferenceDto region, DistrictReferenceDto district, CommunityReferenceDto community, FacilityReferenceDto facility, String facilityDetails, UserReferenceDto surveillanceOfficer);
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
 	
