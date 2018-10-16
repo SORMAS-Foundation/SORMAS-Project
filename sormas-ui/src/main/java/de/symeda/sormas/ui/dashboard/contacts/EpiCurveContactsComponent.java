@@ -37,7 +37,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 	protected PopupButton createEpiCurveModeSelector() {
 		if (epiCurveContactsMode == null) {
 			epiCurveContactsMode = EpiCurveContactsMode.FOLLOW_UP_STATUS;
-			epiCurveLabel.setValue(epiCurveContactsMode.toString() + " Curve");
+			epiCurveLabel.setValue(epiCurveContactsMode.toString() + " Chart");
 		}
 
 		PopupButton dataDropdown = new PopupButton("Data");
@@ -55,7 +55,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 		dataSelect.select(epiCurveContactsMode);
 		dataSelect.addValueChangeListener(e -> {
 			epiCurveContactsMode = (EpiCurveContactsMode) e.getProperty().getValue();
-			epiCurveLabel.setValue(epiCurveContactsMode.toString() + " Curve");
+			epiCurveLabel.setValue(epiCurveContactsMode.toString() + " Chart");
 			clearAndFillEpiCurveChart();
 		});
 		groupingLayout.addComponent(dataSelect);
@@ -244,7 +244,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 			}
 		} else if (epiCurveContactsMode == EpiCurveContactsMode.FOLLOW_UP_UNTIL) {
 			int[] followUpUntilNumbers = new int[newLabels.size()];
-// TODO month grouping too few contacts, epi week grouping not showing lost ones
+			
 			ContactCriteria contactCriteria = new ContactCriteria()
 					.caseDiseaseEquals(dashboardDataProvider.getDisease())
 					.caseRegion(dashboardDataProvider.getRegion())
@@ -263,7 +263,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 			for (Date date : followUpUntilDateCounts.keySet()) {
 				Long followUpUntilCount = followUpUntilDateCounts.get(date);
 				int filteredDatesIndex = getFilteredDatesIndexForDate(filteredDates, 0, filteredDates.size() - 1, date);
-				followUpUntilNumbers[filteredDatesIndex] = followUpUntilCount != null ? followUpUntilCount.intValue() : 0;
+				followUpUntilNumbers[filteredDatesIndex] += followUpUntilCount != null ? followUpUntilCount.intValue() : 0;
 			}
 
 			hcjs.append("series: [");

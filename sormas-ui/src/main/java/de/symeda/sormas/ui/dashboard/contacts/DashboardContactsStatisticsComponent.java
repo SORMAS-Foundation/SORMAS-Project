@@ -184,7 +184,7 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 		secondComponent = new DashboardStatisticsSubComponent();
 
 		// Header
-		secondComponent.addHeader("Follow-up Status", null, false);
+		secondComponent.addHeader("Follow-up Status", null, true);
 
 		// Content
 		secondComponent.addMainContent();
@@ -205,8 +205,11 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 	@Override
 	protected void updateSecondComponent(int visibleDiseasesCount) {
 		List<DashboardContactDto> contacts = dashboardDataProvider.getContacts();
+		contacts.removeIf(c -> c.getFollowUpStatus() == FollowUpStatus.NO_FOLLOW_UP);
 
 		int contactsCount = contacts.size();
+		secondComponent.updateCountLabel(contactsCount);
+		
 		int underFollowUpCount = (int) contacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.FOLLOW_UP).count();
 		int underFollowUpPercentage = contactsCount == 0 ? 0 : (int) ((underFollowUpCount * 100.0f) / contactsCount);
 		int followUpCompletedCount = (int) contacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.COMPLETED).count();
@@ -230,7 +233,7 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 		thirdComponent = new DashboardStatisticsSubComponent();
 
 		// Header
-		thirdComponent.addHeader("Follow-up Situation", null, true);
+		thirdComponent.addHeader("Follow-up Situation", null, false);
 
 		// Visit status of last visit
 		thirdComponent.addMainContent();
@@ -270,7 +273,6 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 		contacts.removeIf(c -> c.getFollowUpStatus() == FollowUpStatus.NO_FOLLOW_UP);
 
 		int contactsCount = contacts.size();
-		thirdComponent.updateCountLabel(contactsCount);
 
 		int cooperativeContactsCount = (int) contacts.stream().filter(c -> c.getLastVisitStatus() == VisitStatus.COOPERATIVE).count();
 		int cooperativeContactsPercentage = contactsCount == 0 ? 0 : (int) ((cooperativeContactsCount * 100.0f) / contactsCount);

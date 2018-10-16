@@ -268,6 +268,8 @@ public class ContactFacadeEjb implements ContactFacade {
 				contactPerson.get(Person.OCCUPATION_FACILITY_DETAILS));
 		
 		Predicate filter = null;
+
+		// Only use user filter if no restricting case is specified
 		if (userUuid != null 
 				&& (contactCriteria == null || contactCriteria.getCaze() == null)) {
 			User user = userService.getByUuid(userUuid);
@@ -324,6 +326,8 @@ public class ContactFacadeEjb implements ContactFacade {
 				contactOfficer.get(User.UUID), contact.get(Contact.REPORT_DATE_TIME));
 		
 		Predicate filter = null;
+		
+		// Only use user filter if no restricting case is specified
 		if (userUuid != null 
 				&& (contactCriteria == null || contactCriteria.getCaze() == null)) {
 			User user = userService.getByUuid(userUuid);
