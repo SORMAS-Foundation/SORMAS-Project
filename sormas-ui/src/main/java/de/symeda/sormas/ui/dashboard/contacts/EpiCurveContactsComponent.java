@@ -244,7 +244,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 			}
 		} else if (epiCurveContactsMode == EpiCurveContactsMode.FOLLOW_UP_UNTIL) {
 			int[] followUpUntilNumbers = new int[newLabels.size()];
-			
+
 			ContactCriteria contactCriteria = new ContactCriteria()
 					.caseDiseaseEquals(dashboardDataProvider.getDisease())
 					.caseRegion(dashboardDataProvider.getRegion())
@@ -263,7 +263,9 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 			for (Date date : followUpUntilDateCounts.keySet()) {
 				Long followUpUntilCount = followUpUntilDateCounts.get(date);
 				int filteredDatesIndex = getFilteredDatesIndexForDate(filteredDates, 0, filteredDates.size() - 1, date);
-				followUpUntilNumbers[filteredDatesIndex] += followUpUntilCount != null ? followUpUntilCount.intValue() : 0;
+				if (filteredDatesIndex >= 0) {
+					followUpUntilNumbers[filteredDatesIndex] += followUpUntilCount != null ? followUpUntilCount.intValue() : 0;
+				}
 			}
 
 			hcjs.append("series: [");
@@ -281,38 +283,35 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 	}
 
 	private int getFilteredDatesIndexForDate(List<Date> filteredDates, int startIndex, int endIndex, Date date) {
-		int middleIndex = (startIndex + endIndex) / 2;
+		if (endIndex >= 1) {
+			int middleIndex = startIndex + (endIndex - startIndex) / 2;
 
-		if (epiCurveGrouping == EpiCurveGrouping.DAY) {
-			if (filteredDates.get(middleIndex).equals(date)) {
-				return middleIndex;
-			} else if (filteredDates.get(middleIndex).before(date)) {
-				return getFilteredDatesIndexForDate(filteredDates, middleIndex, endIndex, date);
+			if (epiCurveGrouping == EpiCurveGrouping.DAY) {
+				return filteredDates.indexOf(date);
+			} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
+				if (DateHelper.isBetween(date, 
+						DateHelper.getStartOfWeek(filteredDates.get(middleIndex)), 
+						DateHelper.getEndOfWeek(filteredDates.get(middleIndex)))) {
+					return middleIndex;
+				} else if (DateHelper.getStartOfWeek(filteredDates.get(middleIndex)).after(date)) {
+					return getFilteredDatesIndexForDate(filteredDates, startIndex, middleIndex - 1, date);
+				} else {
+					return getFilteredDatesIndexForDate(filteredDates, middleIndex + 1, endIndex, date);
+				}
 			} else {
-				return getFilteredDatesIndexForDate(filteredDates, startIndex, middleIndex, date);
-			}
-		} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
-			if (DateHelper.isBetween(date, 
-					DateHelper.getStartOfWeek(filteredDates.get(middleIndex)), 
-					DateHelper.getEndOfWeek(filteredDates.get(middleIndex)))) {
-				return middleIndex;
-			} else if (DateHelper.getStartOfWeek(filteredDates.get(middleIndex)).before(date)) {
-				return getFilteredDatesIndexForDate(filteredDates, middleIndex, endIndex, date);
-			} else {
-				return getFilteredDatesIndexForDate(filteredDates, startIndex, middleIndex, date);
-			}
-		} else {
-			if (DateHelper.isBetween(date, 
-					DateHelper.getStartOfMonth(filteredDates.get(middleIndex)), 
-					DateHelper.getEndOfMonth(filteredDates.get(middleIndex)))) {
-				return middleIndex;
-			} else if (DateHelper.getStartOfMonth(filteredDates.get(middleIndex)).before(date)) {
-				return getFilteredDatesIndexForDate(filteredDates, middleIndex, endIndex, date);
-			} else {
-				return getFilteredDatesIndexForDate(filteredDates, startIndex, middleIndex, date);
+				if (DateHelper.isBetween(date, 
+						DateHelper.getStartOfMonth(filteredDates.get(middleIndex)), 
+						DateHelper.getEndOfMonth(filteredDates.get(middleIndex)))) {
+					return middleIndex;
+				} else if (DateHelper.getStartOfMonth(filteredDates.get(middleIndex)).after(date)) {
+					return getFilteredDatesIndexForDate(filteredDates, startIndex, middleIndex - 1, date);
+				} else {
+					return getFilteredDatesIndexForDate(filteredDates, middleIndex + 1, endIndex, date);
+				}
 			}
 		}
-	}
 
+		return -1;
+	}
 
 }
