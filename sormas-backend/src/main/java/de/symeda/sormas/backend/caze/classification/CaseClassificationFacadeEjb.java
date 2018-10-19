@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.caze.classification;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,7 @@ import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteria;
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteria;
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteria.ClassificationOneOfCompactCriteria;
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteria.ClassificationXOfSubCriteria;
+import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteria;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
@@ -110,6 +112,37 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		} else {
 			return null;
 		}
+	}
+	
+	@Override
+	public List<DiseaseClassificationCriteria> getAllClassificationCriteria() {
+		if (suspectCriteria.isEmpty()) {
+			buildCriteria();
+		}
+		
+		List<DiseaseClassificationCriteria> criteria = new ArrayList<>();
+		for (Disease disease : Disease.values()) {
+			criteria.add(new DiseaseClassificationCriteria(
+					disease,
+					suspectCriteria.get(disease),
+					probableCriteria.get(disease),
+					confirmedCriteria.get(disease)));
+		}
+		
+		return criteria;
+	}
+	
+	@Override
+	public DiseaseClassificationCriteria getClassificationCriteriaForDisease(Disease disease) {
+		if (suspectCriteria.isEmpty()) {
+			buildCriteria();
+		}
+		
+		return new DiseaseClassificationCriteria(
+				disease, 
+				suspectCriteria.get(disease), 
+				probableCriteria.get(disease), 
+				confirmedCriteria.get(disease));
 	}
 
 	private void buildCriteria() {

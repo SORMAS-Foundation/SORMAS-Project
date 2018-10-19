@@ -20,4 +20,8 @@ public interface CaseClassificationFacade {
 	
 	ClassificationCriteria getConfirmedCriteria(Disease disease);
 	
+	List<DiseaseClassificationCriteria> getAllClassificationCriteria();
+	
+	DiseaseClassificationCriteria getClassificationCriteriaForDisease(Disease disease);
+	
 }
