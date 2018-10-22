@@ -414,9 +414,9 @@ public class ContactService extends AbstractAdoService<Contact> {
 		return resultMap;
 	}
 	
-	public Map<Date, Long> getFollowUpUntilCountPerDate(ContactCriteria contactCriteria, User user) {
+	public int getFollowUpUntilCount(ContactCriteria contactCriteria, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Contact> contact = cq.from(getElementClass());
 		
 		Predicate filter = createUserFilter(cb, cq, contact, user);
@@ -426,18 +426,14 @@ public class ContactService extends AbstractAdoService<Contact> {
 		} else {
 			filter = criteriaFilter;
 		}
+
+		cq.select(cb.count(contact));
 		
 		if (filter != null) {
 			cq.where(filter);
 		}
 		
-		cq.groupBy(contact.get(Contact.FOLLOW_UP_UNTIL));
-		cq.multiselect(contact.get(Contact.FOLLOW_UP_UNTIL), cb.count(contact));
-		List<Object[]> results = em.createQuery(cq).getResultList();
-		
-		Map<Date, Long> resultMap = results.stream().collect(
-				Collectors.toMap(e -> DateHelper.getStartOfDay((Date) e[0]), e -> (Long) e[1]));
-		return resultMap;
+		return em.createQuery(cq).getSingleResult().intValue();
 	}
 	
 	/**

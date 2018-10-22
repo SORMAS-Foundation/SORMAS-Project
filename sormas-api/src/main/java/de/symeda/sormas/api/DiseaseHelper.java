@@ -1,5 +1,9 @@
 package de.symeda.sormas.api;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -33,6 +37,19 @@ public class DiseaseHelper {
 	public static boolean hasContactFollowUp(Disease disease, PlagueType plagueType) {
 		return disease == Disease.EVD || disease == Disease.LASSA || disease == Disease.NEW_INFLUENCA 
 				|| disease == Disease.MONKEYPOX || (disease == Disease.PLAGUE) || disease == Disease.OTHER;
+	}
+	
+	public static List<Disease> getAllDiseasesWithFollowUp() {
+		EnumSet<Disease> diseases = EnumSet.allOf(Disease.class);
+		List<Disease> diseasesWithFollowUp = new ArrayList<>();
+		
+		for (Disease disease : diseases) {
+			if (hasContactFollowUp(disease, null)) {
+				diseasesWithFollowUp.add(disease);
+			}
+		}
+		
+		return diseasesWithFollowUp;
 	}
 
 	public static int getIncubationPeriodDays(Disease disease, PlagueType plagueType) {

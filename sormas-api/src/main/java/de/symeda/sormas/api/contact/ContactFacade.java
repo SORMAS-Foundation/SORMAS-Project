@@ -52,6 +52,6 @@ public interface ContactFacade {
 	
 	Map<FollowUpStatus, Long> getNewContactCountPerFollowUpStatus(ContactCriteria contactCriteria, String userUuid);
 	
-	Map<Date, Long> getFollowUpUntilCountPerDate(ContactCriteria contactCriteria, String userUuid);
+	int getFollowUpUntilCount(ContactCriteria contactCriteria, String userUuid);
 	
 }

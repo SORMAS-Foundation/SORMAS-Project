@@ -15,7 +15,9 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
+import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -60,7 +62,12 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 		addFourthComponent();
 
 		addComponent(subComponentsLayout);
-		if (Disease.values().length > 6) {
+
+		if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
+			if (DiseaseHelper.getAllDiseasesWithFollowUp().size() > 6) {
+				addShowMoreAndLessButtons();
+			}
+		} else if (Disease.values().length > 6) {
 			addShowMoreAndLessButtons();
 		}
 	}
@@ -83,12 +90,14 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 		previousDisease = currentDisease;
 		currentDisease = disease;
 
-		if (currentDisease != null) {
-			showMoreButton.setVisible(false);
-			showLessButton.setVisible(false);
-		} else if (!showLessButton.isVisible() && !showMoreButton.isVisible()) {
-			if (!showMoreButton.isVisible() && !showLessButton.isVisible()) {
-				showMoreButton.setVisible(true);
+		if (showMoreButton != null && showLessButton != null) {
+			if (currentDisease != null) {
+				showMoreButton.setVisible(false);
+				showLessButton.setVisible(false);
+			} else if (!showLessButton.isVisible() && !showMoreButton.isVisible()) {
+				if (!showMoreButton.isVisible() && !showLessButton.isVisible()) {
+					showMoreButton.setVisible(true);
+				}
 			}
 		}
 
@@ -143,7 +152,7 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 	}
 
 	private boolean isFullMode() {
-		return showLessButton.isVisible();
+		return showLessButton != null && showLessButton.isVisible();
 	}
 
 	protected List<Map.Entry<Disease, Integer>> createSortedDiseaseList(Map<Disease, Integer> diseaseMap) {

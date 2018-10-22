@@ -431,10 +431,10 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 	
 	@Override
-	public Map<Date, Long> getFollowUpUntilCountPerDate(ContactCriteria contactCriteria, String userUuid) {
+	public int getFollowUpUntilCount(ContactCriteria contactCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		
-		return contactService.getFollowUpUntilCountPerDate(contactCriteria, user);
+		return contactService.getFollowUpUntilCount(contactCriteria, user);
 	}
 
 	public static ContactReferenceDto toReferenceDto(Contact source) {

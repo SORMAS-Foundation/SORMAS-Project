@@ -63,9 +63,14 @@ public class ContactGrid extends Grid {
 				if (DiseaseHelper.hasContactFollowUp(indexDto.getCaseDisease(), null)) {
 					int numberOfVisits = FacadeProvider.getVisitFacade().getNumberOfVisits(indexDto.toReference(), null);
 					int numberOfRequiredVisits = ContactLogic.getNumberOfRequiredVisitsSoFar(indexDto.getReportDate(), indexDto.getFollowUpUntil());
+					int numberOfMissedVisits = numberOfRequiredVisits - numberOfVisits;
+					// Set number of missed visits to 0 when more visits than expected have been done
+					if (numberOfMissedVisits < 0) {
+						numberOfMissedVisits = 0;
+					}
 					
 					return String.format(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, "numberOfVisitsFormat"),
-							numberOfVisits, numberOfRequiredVisits - numberOfVisits);
+							numberOfVisits, numberOfMissedVisits);
 				} else {
 					return "-";
 				}
