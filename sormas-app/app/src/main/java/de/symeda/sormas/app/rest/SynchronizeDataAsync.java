@@ -9,10 +9,14 @@ import com.google.android.gms.analytics.Tracker;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.Callable;
 
+import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteria;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
+import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelper;
+import de.symeda.sormas.app.backend.classification.DiseaseClassificationDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.ContactDtoHelper;
@@ -195,6 +199,11 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             weeklyReportDtoHelper.pullEntities(true);
         if (weeklyReportEntriesNeedPull)
             weeklyReportEntryDtoHelper.pullEntities(true);
+
+        // Synchronize disease classification if the table is empty
+//        if (DatabaseHelper.getDiseaseClassificationDao().isEmpty()) {
+//            pullDiseaseClassification();
+//        }
     }
 
     private void repullData() throws DaoException, ServerConnectionException, ServerCommunicationException {
@@ -383,6 +392,38 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                 }
             }
         }.execute();
+    }
+
+    private void pullDiseaseClassification() throws DaoException, ServerConnectionException, ServerCommunicationException {
+        Call<List<DiseaseClassificationCriteria>> classificationCriteriaCall = RetroProvider.getClassificationFacade().pullAllClassificationCriteria();
+
+        if (classificationCriteriaCall != null) {
+            Response<List<DiseaseClassificationCriteria>> response;
+            try {
+                response = classificationCriteriaCall.execute();
+            } catch (IOException e) {
+                throw new ServerCommunicationException(e);
+            }
+
+            if (!response.isSuccessful()) {
+                RetroProvider.throwException(response);
+            }
+
+            DiseaseClassificationDao dao = DatabaseHelper.getDiseaseClassificationDao();
+            final List<DiseaseClassificationCriteria> result = response.body();
+            if (result != null && result.size() > 0) {
+                dao.callBatchTasks(new Callable<Void>() {
+                    public Void call() throws Exception {
+                        for (DiseaseClassificationCriteria criteria : result) {
+                            DiseaseClassificationAppHelper.saveClassificationToDatabase(criteria);
+                        }
+                        return null;
+                    }
+                });
+
+                Log.d(dao.getTableName(), "Pulled and saved " + result.size());
+            }
+        }
     }
 
     public enum SyncMode {

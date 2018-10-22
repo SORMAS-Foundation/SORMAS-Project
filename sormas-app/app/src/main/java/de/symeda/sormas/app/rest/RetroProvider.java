@@ -79,6 +79,7 @@ public final class RetroProvider {
     private WeeklyReportFacadeRetro weeklyReportFacadeRetro;
     private WeeklyReportEntryFacadeRetro weeklyReportEntryFacadeRetro;
     private OutbreakFacadeRetro outbreakFacadeRetro;
+    private ClassificationFacadeRetro classificationFacadeRetro;
 
     private RetroProvider(Context context, Interceptor... additionalInterceptors) throws ServerConnectionException, ServerCommunicationException, ApiVersionException {
 
@@ -532,6 +533,17 @@ public final class RetroProvider {
             }
         }
         return instance.outbreakFacadeRetro;
+    }
+
+    public static ClassificationFacadeRetro getClassificationFacade() {
+        if (instance.classificationFacadeRetro == null) {
+            synchronized ((RetroProvider.class)) {
+                if (instance.classificationFacadeRetro == null) {
+                    instance.classificationFacadeRetro = instance.retrofit.create(ClassificationFacadeRetro.class);
+                }
+            }
+        }
+        return instance.classificationFacadeRetro;
     }
 
     public static void throwException(Response<?> response) throws ServerConnectionException, ServerCommunicationException {

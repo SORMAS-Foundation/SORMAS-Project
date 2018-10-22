@@ -14,6 +14,8 @@ import java.util.HashMap;
 
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
+import de.symeda.sormas.app.backend.classification.DiseaseClassification;
+import de.symeda.sormas.app.backend.classification.DiseaseClassificationDao;
 import de.symeda.sormas.app.backend.config.Config;
 import de.symeda.sormas.app.backend.config.ConfigDao;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -78,7 +80,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 130;
+	private static final int DATABASE_VERSION = 131;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -133,6 +135,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, Location.class);
 			TableUtils.clearTable(connectionSource, Outbreak.class);
 			TableUtils.clearTable(connectionSource, SyncLog.class);
+			TableUtils.clearTable(connectionSource, DiseaseClassification.class);
 
 			if (clearInfrastructure) {
 				TableUtils.clearTable(connectionSource, User.class);
@@ -189,6 +192,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, WeeklyReport.class);
 			TableUtils.createTable(connectionSource, WeeklyReportEntry.class);
 			TableUtils.createTable(connectionSource, Outbreak.class);
+			TableUtils.createTable(connectionSource, DiseaseClassification.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't build database", e);
 			throw new RuntimeException(e);
@@ -532,6 +536,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					currentVersion = 129;
 					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN referredToUuid varchar(36);");
 					getDao(Sample.class).executeRaw("UPDATE samples SET referredToUuid = (SELECT uuid FROM samples s2 WHERE s2.id = samples.referredTo_id);");
+				case 130:
+					currentVersion = 130;
+					getDao(DiseaseClassification.class).executeRaw("CREATE TABLE diseaseclassification (disease VARCHAR, suspectCriteria TEXT, " +
+									"probableCriteria TEXT, confirmedCriteria TEXT, changeDate BIGINT NOT NULL, creationDate BIGINT NOT NULL, " +
+									"id INTEGER PRIMARY KEY AUTOINCREMENT, localChangeDate BIGINT NOT NULL, modified SMALLINT, snapshot SMALLINT, uuid VARCHAR NOT NULL, " +
+									"UNIQUE(snapshot, uuid));");
 
 					// ATTENTION: break should only be done after last version
 					break;
@@ -573,6 +583,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, WeeklyReport.class, true);
 			TableUtils.dropTable(connectionSource, WeeklyReportEntry.class, true);
 			TableUtils.dropTable(connectionSource, Outbreak.class, true);
+			TableUtils.dropTable(connectionSource, DiseaseClassification.class, true);
 
 			if (oldVersion < 30) {
 				TableUtils.dropTable(connectionSource, Config.class, true);
@@ -646,6 +657,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new WeeklyReportEntryDao((Dao<WeeklyReportEntry, Long>) innerDao);
 				} else if (type.equals(Outbreak.class)) {
 					dao = (AbstractAdoDao<ADO>) new OutbreakDao((Dao<Outbreak, Long>) innerDao);
+				} else if (type.equals(DiseaseClassification.class)) {
+					dao = (AbstractAdoDao<ADO>) new DiseaseClassificationDao((Dao<DiseaseClassification, Long>) innerDao);
 				} else {
 					throw new UnsupportedOperationException(type.toString());
 				}
@@ -801,6 +814,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	public static OutbreakDao getOutbreakDao() {
 		return (OutbreakDao) getAdoDao(Outbreak.class);
+	}
+
+	public static DiseaseClassificationDao getDiseaseClassificationDao() {
+		return (DiseaseClassificationDao) getAdoDao(DiseaseClassification.class);
 	}
 
 	/**
