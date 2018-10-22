@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.caze;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -10,11 +11,13 @@ import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -84,7 +87,21 @@ public class CasesView extends AbstractView {
 	private DateFilterOption dateFilterOption;
 	private Date fromDate = null;
 	private Date toDate = null;
-
+	
+	// Filters
+	private ComboBox outcomeFilter;
+	private ComboBox diseaseFilter;
+	private ComboBox classificationFilter;
+	private TextField searchField;
+	private ComboBox presentConditionFilter;
+	private ComboBox regionFilter;
+	private ComboBox districtFilter;
+	private ComboBox facilityFilter;
+	private ComboBox officerFilter;
+	private ComboBox reportedByFilter;
+	private CheckBox casesWithoutGeoCoordsFilter;
+	private EpiWeekAndDateFilterComponent weekAndDateFilter;
+	
 	public CasesView() {
 		super(VIEW_NAME);
 
@@ -117,7 +134,6 @@ public class CasesView extends AbstractView {
 		}
 
 		if (LoginHelper.hasUserRight(UserRight.CASE_EXPORT)) {
-			
 			PopupButton exportButton = new PopupButton("Export"); 
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
 			VerticalLayout exportLayout = new VerticalLayout();
@@ -157,6 +173,15 @@ public class CasesView extends AbstractView {
 					},
 					"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
+			
+			// Warning if no filters have been selected
+			Label warningLabel = new Label("<b>Warning:</b> No filters have been selected. Export may take a while.", ContentMode.HTML);
+			exportLayout.addComponent(warningLabel);
+			warningLabel.setVisible(false);
+			
+			exportButton.addClickListener(e -> {
+				warningLabel.setVisible(!isAnyFilterEnabled());
+			});
 		}
 
 		if (LoginHelper.hasUserRight(UserRight.CASE_CREATE)) {
@@ -179,7 +204,7 @@ public class CasesView extends AbstractView {
 		firstFilterRowLayout.setSpacing(true);
 		firstFilterRowLayout.setWidth(100, Unit.PERCENTAGE);
 		{
-			ComboBox outcomeFilter = new ComboBox();
+			outcomeFilter = new ComboBox();
 			outcomeFilter.setWidth(140, Unit.PIXELS);
 			outcomeFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.OUTCOME));
 			outcomeFilter.addItems((Object[]) CaseOutcome.values());
@@ -188,7 +213,7 @@ public class CasesView extends AbstractView {
 			});
 			firstFilterRowLayout.addComponent(outcomeFilter);
 
-			ComboBox diseaseFilter = new ComboBox();
+			diseaseFilter = new ComboBox();
 			diseaseFilter.setWidth(140, Unit.PIXELS);
 			diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
 			diseaseFilter.addItems((Object[])Disease.values());
@@ -197,7 +222,7 @@ public class CasesView extends AbstractView {
 			});
 			firstFilterRowLayout.addComponent(diseaseFilter);
 
-			ComboBox classificationFilter = new ComboBox();
+			classificationFilter = new ComboBox();
 			classificationFilter.setWidth(140, Unit.PIXELS);
 			classificationFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
 			classificationFilter.addItems((Object[])CaseClassification.values());
@@ -206,7 +231,7 @@ public class CasesView extends AbstractView {
 			});
 			firstFilterRowLayout.addComponent(classificationFilter);
 
-			TextField searchField = new TextField();
+			searchField = new TextField();
 			searchField.setWidth(200, Unit.PIXELS);
 			searchField.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, SEARCH_FIELD));
 			searchField.addTextChangeListener(e -> {
@@ -222,7 +247,7 @@ public class CasesView extends AbstractView {
 		secondFilterRowLayout.setSpacing(true);
 		secondFilterRowLayout.setSizeUndefined();
 		{
-			ComboBox presentConditionFilter = new ComboBox();
+			presentConditionFilter = new ComboBox();
 			presentConditionFilter.setWidth(140, Unit.PIXELS);
 			presentConditionFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
 			presentConditionFilter.addItems((Object[])PresentCondition.values());
@@ -233,7 +258,7 @@ public class CasesView extends AbstractView {
 
 			UserDto user = LoginHelper.getCurrentUser();
 
-			ComboBox regionFilter = new ComboBox();
+			regionFilter = new ComboBox();
 			if (user.getRegion() == null) {
 				regionFilter.setWidth(140, Unit.PIXELS);
 				regionFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
@@ -245,7 +270,7 @@ public class CasesView extends AbstractView {
 				secondFilterRowLayout.addComponent(regionFilter);
 			}
 
-			ComboBox districtFilter = new ComboBox();
+			districtFilter = new ComboBox();
 			districtFilter.setWidth(140, Unit.PIXELS);
 			districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
 			districtFilter.setDescription("Select a district in the state");
@@ -271,7 +296,7 @@ public class CasesView extends AbstractView {
 			}
 			secondFilterRowLayout.addComponent(districtFilter);
 			
-			ComboBox facilityFilter = new ComboBox();
+			facilityFilter = new ComboBox();
 			facilityFilter.setWidth(140, Unit.PIXELS);
 			facilityFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
 			facilityFilter.setDescription("Select a facility in the LGA");
@@ -292,7 +317,7 @@ public class CasesView extends AbstractView {
 				}
 			});
 
-			ComboBox officerFilter = new ComboBox();
+			officerFilter = new ComboBox();
 			officerFilter.setWidth(140, Unit.PIXELS);
 			officerFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SURVEILLANCE_OFFICER));
 			if (user.getRegion() != null) {
@@ -303,7 +328,7 @@ public class CasesView extends AbstractView {
 			});
 			secondFilterRowLayout.addComponent(officerFilter);
 
-			ComboBox reportedByFilter = new ComboBox();
+			reportedByFilter = new ComboBox();
 			reportedByFilter.setWidth(140, Unit.PIXELS);
 			reportedByFilter.setInputPrompt("Reported By");
 			reportedByFilter.addItems((Object[]) UserRole.values());
@@ -312,7 +337,7 @@ public class CasesView extends AbstractView {
 			});
 			secondFilterRowLayout.addComponent(reportedByFilter);
 			
-			CheckBox casesWithoutGeoCoordsFilter = new CheckBox();
+			casesWithoutGeoCoordsFilter = new CheckBox();
 			CssStyles.style(casesWithoutGeoCoordsFilter, CssStyles.CHECKBOX_FILTER_INLINE);
 			casesWithoutGeoCoordsFilter.setCaption("Only cases without geo coordinates");
 			casesWithoutGeoCoordsFilter.setDescription("Only list cases that don't have address or report geo coordinates");
@@ -330,7 +355,7 @@ public class CasesView extends AbstractView {
 		{
 			Button applyButton = new Button("Apply date filter");
 			
-			EpiWeekAndDateFilterComponent weekAndDateFilter = new EpiWeekAndDateFilterComponent(applyButton, false, false, true);
+			weekAndDateFilter = new EpiWeekAndDateFilterComponent(applyButton, false, false, true);
 			weekAndDateFilter.getWeekFromFilter().setInputPrompt("New cases from epi week...");
 			weekAndDateFilter.getWeekToFilter().setInputPrompt("... to epi week");
 			weekAndDateFilter.getDateFromFilter().setInputPrompt("New cases from...");
@@ -481,6 +506,14 @@ public class CasesView extends AbstractView {
 		CssStyles.removeStyles(button, CssStyles.LINK_HIGHLIGHTED_LIGHT);
 		activeStatusButton = button;
 		updateActiveStatusButtonCaption();
+	}
+	
+	private boolean isAnyFilterEnabled() {
+		return outcomeFilter.getValue() != null || diseaseFilter.getValue() != null || classificationFilter.getValue() != null
+				|| !StringUtils.isEmpty(searchField.getValue()) || presentConditionFilter.getValue() != null
+				|| (regionFilter.isVisible() && regionFilter.getValue() != null) || (districtFilter.isVisible() && districtFilter.getValue() != null) 
+				|| facilityFilter.getValue() != null || officerFilter.getValue() != null || reportedByFilter.getValue() != null 
+				|| casesWithoutGeoCoordsFilter.getValue() == true || fromDate != null || toDate != null;
 	}
 	
 }

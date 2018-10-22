@@ -39,7 +39,7 @@ import de.symeda.sormas.ui.statistics.DatabaseExportView;
 
 public class DownloadUtil {
 
-	public static final int DETAILED_EXPORT_STEP_SIZE = 10;
+	public static final int DETAILED_EXPORT_STEP_SIZE = 200;
 	
 	private DownloadUtil() {
 

@@ -77,7 +77,7 @@ public class SampleIndexDto implements Serializable {
 		this.sampleDateTime = sampleDateTime;
 		this.shipmentDate = shipmentDate;
 		this.receivedDate = receivedDate;
-		this.lab = new FacilityReferenceDto(labUuid, FacilityHelper.buildToString(labUuid, labName));
+		this.lab = new FacilityReferenceDto(labUuid, FacilityHelper.buildFacilityString(labUuid, labName));
 		this.sampleMaterial = sampleMaterial;
 		this.specimenCondition = specimenCondition;
 		this.sampleTestResult = sampleTestResult;

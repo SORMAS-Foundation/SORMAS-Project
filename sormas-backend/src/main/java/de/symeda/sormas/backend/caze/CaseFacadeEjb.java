@@ -339,6 +339,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<CaseExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 		
 		for (CaseExportDto exportDto : resultList) {
+			// TODO: Speed up this code, e.g. by persisting symtoms, lab results, etc. as a String in the database
 			List<Date> sampleDates = sampleService.getSampleDatesForCase(exportDto.getId());
 			exportDto.setSampleTaken((sampleDates == null || sampleDates.isEmpty()) ? YesNoUnknown.NO : YesNoUnknown.YES);
 			exportDto.setSampleDates(sampleDates);

@@ -290,6 +290,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		List<ContactExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
 		for (ContactExportDto exportDto : resultList) {
+			// TODO: Speed up this code, e.g. by persisting address as a String in the database
 			exportDto.setAddress(locationService.getById(personService.getAddressIdByPersonId(exportDto.getPersonId())).toString());
 			exportDto.setNumberOfVisits(visitService.getVisitCountByContactId(exportDto.getId(), exportDto.getPersonId(), 
 					exportDto.getLastContactDate(), exportDto.getReportDate(), exportDto.getFollowUpUntil(), exportDto.getInternalDisease()));

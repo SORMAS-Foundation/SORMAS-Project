@@ -133,7 +133,7 @@ public class FacilityDto extends EntityDto {
 
 	@Override
 	public String toString() {
-		return FacilityHelper.buildToString(getUuid(), name);
+		return FacilityHelper.buildFacilityString(getUuid(), name);
 	}
 
 	public static FacilityDto build() {

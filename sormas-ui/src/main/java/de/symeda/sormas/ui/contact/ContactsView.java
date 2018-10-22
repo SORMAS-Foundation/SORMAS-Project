@@ -3,16 +3,19 @@ package de.symeda.sormas.ui.contact;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.StreamResource;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -68,7 +71,18 @@ public class ContactsView extends AbstractView {
 
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
-
+	
+	// Filters
+	private ComboBox classificationFilter;
+	private ComboBox diseaseFilter;
+	private ComboBox regionFilter;
+	private ComboBox districtFilter;
+	private ComboBox facilityFilter;
+	private ComboBox officerFilter;
+	private ComboBox followUpStatusFilter;
+	private ComboBox reportedByFilter;
+	private TextField searchField;
+	
 	public ContactsView() {
 		super(VIEW_NAME);
 
@@ -128,6 +142,15 @@ public class ContactsView extends AbstractView {
 					},
 					"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
+			
+			// Warning if no filters have been selected
+			Label warningLabel = new Label("<b>Warning:</b> No filters have been selected. Export may take a while.", ContentMode.HTML);
+			exportLayout.addComponent(warningLabel);
+			warningLabel.setVisible(false);
+			
+			exportButton.addClickListener(e -> {
+				warningLabel.setVisible(!isAnyFilterEnabled());
+			});
 		}
 
 		addComponent(gridLayout);
@@ -138,7 +161,7 @@ public class ContactsView extends AbstractView {
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
 
-		ComboBox classificationFilter = new ComboBox();
+		classificationFilter = new ComboBox();
 		classificationFilter.setWidth(140, Unit.PIXELS);
 		classificationFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CLASSIFICATION));
 		classificationFilter.addItems((Object[]) ContactClassification.values());
@@ -147,7 +170,7 @@ public class ContactsView extends AbstractView {
 		});
 		filterLayout.addComponent(classificationFilter);
 
-		ComboBox diseaseFilter = new ComboBox();
+		diseaseFilter = new ComboBox();
 		diseaseFilter.setWidth(140, Unit.PIXELS);
 		diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISEASE));
 		diseaseFilter.addItems((Object[])Disease.values());
@@ -158,7 +181,7 @@ public class ContactsView extends AbstractView {
 
 		UserDto user = LoginHelper.getCurrentUser();
 
-		ComboBox regionFilter = new ComboBox();
+		regionFilter = new ComboBox();
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(140, Unit.PIXELS);
 			regionFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_REGION_UUID));
@@ -170,7 +193,7 @@ public class ContactsView extends AbstractView {
 			filterLayout.addComponent(regionFilter);
 		}
 
-		ComboBox districtFilter = new ComboBox();
+		districtFilter = new ComboBox();
 		districtFilter.setWidth(140, Unit.PIXELS);
 		districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISTRICT_UUID));
 		districtFilter.setDescription("Select a district in the state");
@@ -197,7 +220,7 @@ public class ContactsView extends AbstractView {
 		}
 		filterLayout.addComponent(districtFilter);
 
-		ComboBox facilityFilter = new ComboBox();
+		facilityFilter = new ComboBox();
 		facilityFilter.setWidth(140, Unit.PIXELS);
 		facilityFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_HEALTH_FACILITY_UUID));
 		facilityFilter.setDescription("Select a facility in the LGA");
@@ -219,7 +242,7 @@ public class ContactsView extends AbstractView {
 			}
 		});
 
-		ComboBox officerFilter = new ComboBox();
+		officerFilter = new ComboBox();
 		officerFilter.setWidth(140, Unit.PIXELS);
 		officerFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
 		if (user.getRegion() != null) {
@@ -231,7 +254,7 @@ public class ContactsView extends AbstractView {
 		});
 		filterLayout.addComponent(officerFilter);
 
-		ComboBox followUpStatusFilter = new ComboBox();
+		followUpStatusFilter = new ComboBox();
 		followUpStatusFilter.setWidth(140, Unit.PIXELS);
 		followUpStatusFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.FOLLOW_UP_STATUS));
 		followUpStatusFilter.addItems((Object[])FollowUpStatus.values());
@@ -240,7 +263,7 @@ public class ContactsView extends AbstractView {
 		});
 		filterLayout.addComponent(followUpStatusFilter);
 
-		ComboBox reportedByFilter = new ComboBox();
+		reportedByFilter = new ComboBox();
 		reportedByFilter.setWidth(140, Unit.PIXELS);
 		reportedByFilter.setInputPrompt("Reported By");
 		reportedByFilter.addItems((Object[]) UserRole.values());
@@ -249,7 +272,7 @@ public class ContactsView extends AbstractView {
 		});
 		filterLayout.addComponent(reportedByFilter);
 
-		TextField searchField = new TextField();
+		searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, SEARCH_FIELD));
 		searchField.addTextChangeListener(e -> {
@@ -348,6 +371,13 @@ public class ContactsView extends AbstractView {
 		CssStyles.removeStyles(button, CssStyles.LINK_HIGHLIGHTED_LIGHT);
 		activeStatusButton = button;
 		updateActiveStatusButtonCaption();
+	}
+
+	private boolean isAnyFilterEnabled() {
+		return classificationFilter.getValue() != null || diseaseFilter.getValue() != null || !StringUtils.isEmpty(searchField.getValue())
+				|| (regionFilter.isVisible() && regionFilter.getValue() != null) || (districtFilter.isVisible() && districtFilter.getValue() != null) 
+				|| facilityFilter.getValue() != null || officerFilter.getValue() != null || reportedByFilter.getValue() != null 
+				|| followUpStatusFilter.getValue() != null;
 	}
 	
 	@Override

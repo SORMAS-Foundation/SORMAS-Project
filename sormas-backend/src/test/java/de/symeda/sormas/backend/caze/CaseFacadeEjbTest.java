@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.caze;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -11,6 +12,8 @@ import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -23,16 +26,21 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SampleTestResultType;
+import de.symeda.sormas.api.sample.SampleTestType;
+import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
@@ -174,13 +182,36 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 
+		cazePerson.getAddress().setCity("City");
+		getPersonFacade().savePerson(cazePerson);
+		
+		EpiDataTravelDto travel = new EpiDataTravelDto();
+		travel.setUuid(DataHelper.createUuid());
+		travel.setTravelDestination("Ghana");
+		travel.setTravelDateFrom(new Date());
+		travel.setTravelDateTo(new Date());
+		caze.getEpiData().getTravels().add(travel);
+		caze.getSymptoms().setAbdominalPain(SymptomState.YES);
+		caze = getCaseFacade().saveCase(caze);
+		
+		creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		creator.createSampleTest(caze, SampleTestType.ANTIGEN_DETECTION, SampleTestResultType.POSITIVE);
+		
 		List<CaseExportDto> results = getCaseFacade().getExportList(user.getUuid(), null, 0, 100);
 
 		// List should have one entry
 		assertEquals(1, results.size());
+		
+		// Make sure that everything that is added retrospectively (symptoms, sample dates, lab results, address, travel history) is present
+		CaseExportDto exportDto = results.get(0);
+		assertTrue(StringUtils.isNotEmpty(exportDto.getSymptoms()));
+		assertTrue(StringUtils.isNotEmpty(exportDto.getSampleDates()));
+		assertTrue(StringUtils.isNotEmpty(exportDto.getLabResults()));
+		assertTrue(StringUtils.isNotEmpty(exportDto.getAddress()));
+		assertTrue(StringUtils.isNotEmpty(exportDto.getTravelHistory()));
 	}
 
 	@Test

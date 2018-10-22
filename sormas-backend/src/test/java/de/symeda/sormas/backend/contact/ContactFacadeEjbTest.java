@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.contact;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -12,6 +13,8 @@ import java.util.List;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 
+import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -19,10 +22,12 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -30,6 +35,7 @@ import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -193,8 +199,24 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze.toReference(), new Date(), new Date());
+		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		
+		contactPerson.getAddress().setCity("City");
+		getPersonFacade().savePerson(contactPerson);
+		
+		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
+		getVisitFacade().saveVisit(visit);
+		
+		List<ContactExportDto> results = getContactFacade().getExportList(userUuid, null, 0, 100);
 		
 		// Database should contain one contact, associated visit and task
-		assertEquals(1, getContactFacade().getExportList(userUuid, null, 0, 100).size());
+		assertEquals(1, results.size());
+		
+		// Make sure that everything that is added retrospectively (address, last cooperative visit date and symptoms) is present
+		ContactExportDto exportDto = results.get(0);
+		assertTrue(StringUtils.isNotEmpty(exportDto.getAddress()));
+		assertNotNull(exportDto.getLastCooperativeVisitDate());
+		assertTrue(StringUtils.isNotEmpty(exportDto.getLastCooperativeVisitSymptoms()));
+		assertEquals(exportDto.getLastCooperativeVisitSymptomatic(), YesNoUnknown.YES);
 	}
 }

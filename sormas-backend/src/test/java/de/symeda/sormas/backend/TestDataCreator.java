@@ -29,6 +29,7 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.SampleTestType;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -147,6 +148,10 @@ public class TestDataCreator {
 		visit.setPerson(contactPerson);
 		visit.setVisitDateTime(visitDateTime);
 		visit.setVisitStatus(visitStatus);
+		
+		SymptomsDto symptoms = new SymptomsDto();
+		symptoms.setUuid(DataHelper.createUuid());
+		visit.setSymptoms(symptoms);
 		
 		visit = beanTest.getVisitFacade().saveVisit(visit);
 		
