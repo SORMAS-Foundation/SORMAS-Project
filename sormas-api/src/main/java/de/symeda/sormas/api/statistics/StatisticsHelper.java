@@ -283,7 +283,7 @@ public class StatisticsHelper {
 	}
 	
 	public static boolean isNullOrUnknown(Object value) {
-		return value == null || value.equals(UNKNOWN);
+		return value == null || value.toString().equals(UNKNOWN);
 	}
 	
 	public static class StatisticsKeyComparator implements Comparator<StatisticsGroupingKey> {

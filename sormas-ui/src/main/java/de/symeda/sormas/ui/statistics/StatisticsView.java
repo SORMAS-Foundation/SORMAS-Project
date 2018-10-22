@@ -376,7 +376,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		if (chartType != StatisticsVisualizationChartType.PIE) {
 			// If zero values are ticked, add missing captions to the list; this involves every possible value of the chosen attribute unless a filter has been
 			// set for the same attribute; in this case, only values that are part of the filter are chosen
-			if (zeroValues.getValue() == true) {
+			if (zeroValues.getValue() == true && xAxisAttribute != null) {
 				List<Object> values = StatisticsHelper.getAllAttributeValues(xAxisAttribute, xAxisSubAttribute);
 				List<StatisticsGroupingKey> filterValues = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(xAxisAttribute, xAxisSubAttribute);
 				for (Object value : values) {
