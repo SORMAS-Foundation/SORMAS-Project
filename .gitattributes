@@ -32,6 +32,7 @@ gradlew    text eol=lf
 *.json     text
 *.jsx      text
 *.less     text
+*.pom      text
 *.od       text
 *.onlydata text
 *.php      text
