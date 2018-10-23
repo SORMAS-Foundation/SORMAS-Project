@@ -255,11 +255,17 @@
 			</dependency>
 
 			<dependency>
-				<groupId>com.vaadin.tapio</groupId>
-				<artifactId>googlemaps</artifactId>
-				<version>1.3.4</version>
+			    <groupId>org.vaadin.addon</groupId>
+			    <artifactId>v-leaflet</artifactId>
+			    <version>1.0.6</version>
 			</dependency>
 
+			<dependency>
+			    <groupId>org.vaadin.addons</groupId>
+    			<artifactId>v-leaflet-markercluster</artifactId>
+				<version>1.0.5-v7</version>
+			</dependency>
+			
 			<dependency>
 				<groupId>org.vaadin.addons</groupId>
 				<artifactId>popupbutton</artifactId>
