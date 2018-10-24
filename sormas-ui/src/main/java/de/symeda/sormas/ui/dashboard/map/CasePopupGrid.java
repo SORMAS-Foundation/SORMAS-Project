@@ -115,12 +115,7 @@ public class CasePopupGrid extends Grid {
 	public void reload() {
 		getContainer().removeAllItems();
 		
-		List<CaseDataDto> cases;
-		if (facility != null) {
-			cases = dashboardMapComponent.getCasesForFacility(facility);
-		} else {
-			cases = dashboardMapComponent.getCasesWithoutGPSTag();
-		}
+		List<CaseDataDto> cases = dashboardMapComponent.getCasesForFacility(facility);
 		
         getContainer().addAll(cases);
         this.setHeightByRows(cases.size());
