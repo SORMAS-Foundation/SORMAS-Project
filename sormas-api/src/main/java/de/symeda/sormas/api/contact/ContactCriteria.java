@@ -29,6 +29,7 @@ public class ContactCriteria implements Serializable {
 	private Date reportDateTo;
 	private Date followUpUntilFrom;
 	private Date followUpUntilTo;
+	private Boolean archived;
 
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -146,6 +147,15 @@ public class ContactCriteria implements Serializable {
 	
 	public Date getFollowUpUntilTo() {
 		return followUpUntilTo;
+	}
+
+	public Boolean getArchived() {
+		return archived;
+	}
+
+	public ContactCriteria archived(Boolean archived) {
+		this.archived = archived;
+		return this;
 	}
 	
 }

@@ -54,7 +54,7 @@ public class CaseContactsView extends AbstractCaseView {
 		super(VIEW_NAME);
 		setSizeFull();
 		
-		grid = new ContactGrid();
+		grid = new ContactGrid(true);
 
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());

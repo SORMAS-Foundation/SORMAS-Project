@@ -13,6 +13,7 @@ public class EventCriteria implements Serializable {
 	private EventType eventType;
 	private Disease disease;
 	private UserRole reportingUserRole;
+	private Boolean archived;
 	
 	public EventStatus getEventStatus() {
 		return eventStatus;
@@ -40,6 +41,13 @@ public class EventCriteria implements Serializable {
 	}
 	public EventCriteria reportingUserHasRole(UserRole reportingUserRole) {
 		this.reportingUserRole = reportingUserRole;
+		return this;
+	}
+	public Boolean getArchived() {
+		return archived;
+	}
+	public EventCriteria archived(Boolean archived) {
+		this.archived = archived;
 		return this;
 	}
 	

@@ -88,6 +88,8 @@ public class CasesView extends AbstractView {
 	private Date fromDate = null;
 	private Date toDate = null;
 	
+	private boolean showArchivedCases = false;
+
 	// Filters
 	private ComboBox outcomeFilter;
 	private ComboBox diseaseFilter;
@@ -102,6 +104,10 @@ public class CasesView extends AbstractView {
 	private CheckBox casesWithoutGeoCoordsFilter;
 	private EpiWeekAndDateFilterComponent weekAndDateFilter;
 	
+	// Bulk operations
+	private MenuItem archiveItem;
+	private MenuItem dearchiveItem;
+
 	public CasesView() {
 		super(VIEW_NAME);
 
@@ -118,7 +124,7 @@ public class CasesView extends AbstractView {
 		grid.getContainer().addItemSetChangeListener(e -> {
 			updateActiveStatusButtonCaption();
 		});
-		
+
 		if (LoginHelper.hasUserRight(UserRight.CASE_IMPORT)) {
 			Button importButton = new Button("Import");
 			importButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -150,35 +156,35 @@ public class CasesView extends AbstractView {
 			basicExportButton.setIcon(FontAwesome.TABLE);
 			basicExportButton.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(basicExportButton);
-			
+
 			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), grid.getColumns(), "sormas_cases", "sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(basicExportButton);
-			
+
 			Button extendedExportButton = new Button("Detailed Export");
 			extendedExportButton.setDescription("Export the rows that are shown in the table below with an extended set of columns. This may take a while.");
 			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			extendedExportButton.setIcon(FontAwesome.FILE_TEXT);
 			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(extendedExportButton);
-			
+
 			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class,
 					(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(LoginHelper.getCurrentUser().getUuid(), grid.getFilterCriteria(), start, max), 
 					propertyId -> {
 						return I18nProperties.getPrefixFieldCaption(CaseExportDto.I18N_PREFIX, propertyId,
-							I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, propertyId,
-								I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, propertyId,
-									I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, propertyId,
-										I18nProperties.getPrefixFieldCaption(HospitalizationDto.I18N_PREFIX, propertyId)))));
+								I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, propertyId,
+										I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, propertyId,
+												I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, propertyId,
+														I18nProperties.getPrefixFieldCaption(HospitalizationDto.I18N_PREFIX, propertyId)))));
 					},
 					"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
-			
+
 			// Warning if no filters have been selected
 			Label warningLabel = new Label("<b>Warning:</b> No filters have been selected. Export may take a while.", ContentMode.HTML);
 			exportLayout.addComponent(warningLabel);
 			warningLabel.setVisible(false);
-			
+
 			exportButton.addClickListener(e -> {
 				warningLabel.setVisible(!isAnyFilterEnabled());
 			});
@@ -191,7 +197,7 @@ public class CasesView extends AbstractView {
 			createButton.addClickListener(e -> ControllerProvider.getCaseController().create());
 			addHeaderComponent(createButton);
 		}
-		
+
 		addComponent(gridLayout);
 		grid.setReloadEnabled(true);
 	}
@@ -295,7 +301,7 @@ public class CasesView extends AbstractView {
 				districtFilter.setEnabled(false);
 			}
 			secondFilterRowLayout.addComponent(districtFilter);
-			
+
 			facilityFilter = new ComboBox();
 			facilityFilter.setWidth(140, Unit.PIXELS);
 			facilityFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
@@ -336,7 +342,7 @@ public class CasesView extends AbstractView {
 				grid.setReportedByFilter((UserRole) e.getProperty().getValue());
 			});
 			secondFilterRowLayout.addComponent(reportedByFilter);
-			
+
 			casesWithoutGeoCoordsFilter = new CheckBox();
 			CssStyles.style(casesWithoutGeoCoordsFilter, CssStyles.CHECKBOX_FILTER_INLINE);
 			casesWithoutGeoCoordsFilter.setCaption("Only cases without geo coordinates");
@@ -354,7 +360,7 @@ public class CasesView extends AbstractView {
 		dateFilterRowLayout.setSizeUndefined();
 		{
 			Button applyButton = new Button("Apply date filter");
-			
+
 			weekAndDateFilter = new EpiWeekAndDateFilterComponent(applyButton, false, false, true);
 			weekAndDateFilter.getWeekFromFilter().setInputPrompt("New cases from epi week...");
 			weekAndDateFilter.getWeekToFilter().setInputPrompt("... to epi week");
@@ -398,11 +404,11 @@ public class CasesView extends AbstractView {
 	public HorizontalLayout createStatusFilterBar() {
 		HorizontalLayout statusFilterLayout = new HorizontalLayout();
 		statusFilterLayout.setSpacing(true);
-		statusFilterLayout.setSizeUndefined();
+		statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 		statusFilterLayout.addStyleName(CssStyles.VSPACE_3);
-		
+
 		statusButtons = new HashMap<>();
-		
+
 		Button statusAll = new Button("All", e -> {
 			processStatusChange(null, e.getButton());
 		});
@@ -421,42 +427,91 @@ public class CasesView extends AbstractView {
 			statusFilterLayout.addComponent(statusButton);
 			statusButtons.put(statusButton, status.toString());
 		}
-		
-		// Bulk operation dropdown
-		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
-			
-			MenuBar bulkOperationsDropdown = new MenuBar();	
-			MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
-			
-			Command changeCommand = selectedItem -> {
-				ControllerProvider.getCaseController().showBulkCaseDataEditComponent(grid.getSelectedRows());
-			};
-			bulkOperationsItem.addItem("Edit...", FontAwesome.ELLIPSIS_H, changeCommand);
-			
-			Command deleteCommand = selectedItem -> {
-				ControllerProvider.getCaseController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
-					public void run() {
-						grid.deselectAll();
+
+		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
+		actionButtonsLayout.setSpacing(true);
+		{
+			// Show archived/active cases button
+			if (LoginHelper.hasUserRight(UserRight.CASE_SEE_ARCHIVED)) {
+				Button switchArchivedActiveButton = new Button("Show archived cases");
+				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
+				switchArchivedActiveButton.addClickListener(e -> {
+					showArchivedCases = !showArchivedCases;
+					if (!showArchivedCases) {
+						switchArchivedActiveButton.setCaption("Show archived cases");
+						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
+						dearchiveItem.setVisible(false);
+						archiveItem.setVisible(true);
+						grid.getFilterCriteria().archived(false);
+						grid.reload();
+					} else {
+						switchArchivedActiveButton.setCaption("Show active cases");
+						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
+						archiveItem.setVisible(false);
+						dearchiveItem.setVisible(true);
+						grid.getFilterCriteria().archived(true);
 						grid.reload();
 					}
 				});
-			};
-			bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
-			
-			statusFilterLayout.addComponent(bulkOperationsDropdown);
-			statusFilterLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
-			statusFilterLayout.setExpandRatio(bulkOperationsDropdown, 1);
+				actionButtonsLayout.addComponent(switchArchivedActiveButton);
+			}
+
+			// Bulk operation dropdown
+			if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				MenuBar bulkOperationsDropdown = new MenuBar();	
+				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
+
+				Command changeCommand = selectedItem -> {
+					ControllerProvider.getCaseController().showBulkCaseDataEditComponent(grid.getSelectedRows());
+				};
+				bulkOperationsItem.addItem("Edit...", FontAwesome.ELLIPSIS_H, changeCommand);
+
+				Command deleteCommand = selectedItem -> {
+					ControllerProvider.getCaseController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+						public void run() {
+							grid.deselectAll();
+							grid.reload();
+						}
+					});
+				};
+				bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
+				
+				Command archiveCommand = selectedItem -> {
+					ControllerProvider.getCaseController().archiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+						public void run() {
+							grid.deselectAll();
+							grid.reload();
+						}
+					});
+				};
+				archiveItem = bulkOperationsItem.addItem("Archive", FontAwesome.ARCHIVE, archiveCommand);
+				
+				Command dearchiveCommand = selectedItem -> {
+					ControllerProvider.getCaseController().dearchiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+						public void run() {
+							grid.deselectAll();
+							grid.reload();
+						}
+					});
+				};
+				dearchiveItem = bulkOperationsItem.addItem("De-Archive", FontAwesome.ARCHIVE, dearchiveCommand);
+				dearchiveItem.setVisible(false);
+				
+				actionButtonsLayout.addComponent(bulkOperationsDropdown);
+			}
 		}
-		
+		statusFilterLayout.addComponent(actionButtonsLayout);
+		statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
+		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
+
 		return statusFilterLayout;
 	}
 
 	private void addShowMoreOrLessFiltersButtons(HorizontalLayout parentLayout) {
 		Button showMoreButton = new Button("Show More Filters", FontAwesome.CHEVRON_DOWN);
-		CssStyles.style(showMoreButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE);
+		CssStyles.style(showMoreButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 		Button showLessButton = new Button("Show Less Filters", FontAwesome.CHEVRON_UP);
-		CssStyles.style(showLessButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE);
+		CssStyles.style(showLessButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 
 		showMoreButton.addClickListener(e -> {
 			showMoreButton.setVisible(false);
@@ -474,8 +529,8 @@ public class CasesView extends AbstractView {
 
 		parentLayout.addComponent(showMoreButton);
 		parentLayout.addComponent(showLessButton);
-		parentLayout.setComponentAlignment(showMoreButton, Alignment.TOP_RIGHT);
-		parentLayout.setComponentAlignment(showLessButton, Alignment.TOP_RIGHT);
+		parentLayout.setComponentAlignment(showMoreButton, Alignment.TOP_LEFT);
+		parentLayout.setComponentAlignment(showLessButton, Alignment.TOP_LEFT);
 		parentLayout.setExpandRatio(showMoreButton, 1);
 		parentLayout.setExpandRatio(showLessButton, 1);
 		showLessButton.setVisible(false);
@@ -490,13 +545,13 @@ public class CasesView extends AbstractView {
 	public void clearSelection() {
 		grid.getSelectionModel().reset();
 	}
-	
+
 	private void updateActiveStatusButtonCaption() {
 		if (activeStatusButton != null) {
 			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getContainer().size())));
 		}
 	}
-	
+
 	private void processStatusChange(InvestigationStatus investigationStatus, Button button) {
 		grid.setInvestigationFilter(investigationStatus);
 		statusButtons.keySet().forEach(b -> {
@@ -507,7 +562,7 @@ public class CasesView extends AbstractView {
 		activeStatusButton = button;
 		updateActiveStatusButtonCaption();
 	}
-	
+
 	private boolean isAnyFilterEnabled() {
 		return outcomeFilter.getValue() != null || diseaseFilter.getValue() != null || classificationFilter.getValue() != null
 				|| !StringUtils.isEmpty(searchField.getValue()) || presentConditionFilter.getValue() != null
@@ -515,5 +570,5 @@ public class CasesView extends AbstractView {
 				|| facilityFilter.getValue() != null || officerFilter.getValue() != null || reportedByFilter.getValue() != null 
 				|| casesWithoutGeoCoordsFilter.getValue() == true || fromDate != null || toDate != null;
 	}
-	
+
 }

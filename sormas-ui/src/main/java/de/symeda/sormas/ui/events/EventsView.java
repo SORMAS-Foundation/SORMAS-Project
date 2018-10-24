@@ -45,6 +45,12 @@ public class EventsView extends AbstractView {
 
 	private VerticalLayout gridLayout;
 
+	private boolean showArchivedEvents = false;
+	
+	// Bulk operations
+	private MenuItem archiveItem;
+	private MenuItem dearchiveItem;
+
 	public EventsView() {
 		super(VIEW_NAME);
 
@@ -124,7 +130,7 @@ public class EventsView extends AbstractView {
 	public HorizontalLayout createStatusFilterBar() {
 		HorizontalLayout statusFilterLayout = new HorizontalLayout();
 		statusFilterLayout.setSpacing(true);
-		statusFilterLayout.setSizeUndefined();
+		statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 		statusFilterLayout.addStyleName(CssStyles.VSPACE_3);
 
 		statusButtons = new HashMap<>();
@@ -143,32 +149,81 @@ public class EventsView extends AbstractView {
 			statusButtons.put(statusButton, status.toString());
 		}
 
-		// Bulk operation dropdown
-		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
-
-			MenuBar bulkOperationsDropdown = new MenuBar();	
-			MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
-
-			Command changeCommand = selectedItem -> {
-				ControllerProvider.getEventController().showBulkEventDataEditComponent(grid.getSelectedRows());
-			};
-			bulkOperationsItem.addItem("Edit...", FontAwesome.ELLIPSIS_H, changeCommand);
-
-			Command deleteCommand = selectedItem -> {
-				ControllerProvider.getEventController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
-					public void run() {
-						grid.deselectAll();
+		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
+		actionButtonsLayout.setSpacing(true);
+		{
+			// Show archived/active cases button
+			if (LoginHelper.hasUserRight(UserRight.EVENT_SEE_ARCHIVED)) {
+				Button switchArchivedActiveButton = new Button("Show archived events");
+				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
+				switchArchivedActiveButton.addClickListener(e -> {
+					showArchivedEvents = !showArchivedEvents;
+					if (!showArchivedEvents) {
+						switchArchivedActiveButton.setCaption("Show archived events");
+						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
+						dearchiveItem.setVisible(false);
+						archiveItem.setVisible(true);
+						grid.getEventCriteria().archived(false);
+						grid.reload();
+					} else {
+						switchArchivedActiveButton.setCaption("Show active events");
+						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
+						archiveItem.setVisible(false);
+						dearchiveItem.setVisible(true);
+						grid.getEventCriteria().archived(true);
 						grid.reload();
 					}
 				});
-			};
-			bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
+				actionButtonsLayout.addComponent(switchArchivedActiveButton);
+			}
 
-			statusFilterLayout.addComponent(bulkOperationsDropdown);
-			statusFilterLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
-			statusFilterLayout.setExpandRatio(bulkOperationsDropdown, 1);
+			// Bulk operation dropdown
+			if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				MenuBar bulkOperationsDropdown = new MenuBar();	
+				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
+
+				Command changeCommand = selectedItem -> {
+					ControllerProvider.getEventController().showBulkEventDataEditComponent(grid.getSelectedRows());
+				};
+				bulkOperationsItem.addItem("Edit...", FontAwesome.ELLIPSIS_H, changeCommand);
+
+				Command deleteCommand = selectedItem -> {
+					ControllerProvider.getEventController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+						public void run() {
+							grid.deselectAll();
+							grid.reload();
+						}
+					});
+				};
+				bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
+				
+				Command archiveCommand = selectedItem -> {
+					ControllerProvider.getEventController().archiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+						public void run() {
+							grid.deselectAll();
+							grid.reload();
+						}
+					});
+				};
+				archiveItem = bulkOperationsItem.addItem("Archive", FontAwesome.ARCHIVE, archiveCommand);
+				
+				Command dearchiveCommand = selectedItem -> {
+					ControllerProvider.getEventController().dearchiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+						public void run() {
+							grid.deselectAll();
+							grid.reload();
+						}
+					});
+				};
+				dearchiveItem = bulkOperationsItem.addItem("De-Archive", FontAwesome.ARCHIVE, dearchiveCommand);
+				dearchiveItem.setVisible(false);
+
+				actionButtonsLayout.addComponent(bulkOperationsDropdown);
+			}
 		}
+		statusFilterLayout.addComponent(actionButtonsLayout);
+		statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
+		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 
 		activeStatusButton = statusAll;
 		return statusFilterLayout;
@@ -190,7 +245,7 @@ public class EventsView extends AbstractView {
 		activeStatusButton = button;
 		updateActiveStatusButtonCaption();
 	}
-	
+
 	@Override
 	public void enter(ViewChangeEvent event) {
 		grid.reload();

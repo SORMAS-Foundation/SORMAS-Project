@@ -34,4 +34,8 @@ public interface EventFacade {
 	void deleteEvent(EventReferenceDto eventRef, String userUuid);
 	
 	List<EventIndexDto> getIndexList(String userUuid, EventCriteria eventCriteria);
+	
+	boolean isArchived(String caseUuid);
+	
+	void archiveOrDearchiveEvent(String eventUuid, boolean archive);
 }

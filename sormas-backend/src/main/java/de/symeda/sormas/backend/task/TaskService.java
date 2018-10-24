@@ -8,25 +8,29 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
 public class TaskService extends AbstractAdoService<Task> {
-	
+
 	@EJB
 	CaseService caseService;
 	@EJB
@@ -37,22 +41,23 @@ public class TaskService extends AbstractAdoService<Task> {
 	public TaskService() {
 		super(Task.class);
 	}
-	
+
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Task,Task> taskPath, User user) {
 		// National users can access all tasks in the system
 		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)
-			|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
+				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
 			return null;
 		}
-		
+
 		// whoever created the task or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(taskPath.join(Task.CREATOR_USER, JoinType.LEFT), user);
 		filter = cb.or(filter, cb.equal(taskPath.join(Task.ASSIGNEE_USER, JoinType.LEFT), user));
-		
+
 		Predicate caseFilter = caseService.createUserFilter(cb, cq, taskPath.join(Task.CAZE, JoinType.LEFT), user);
 		if (caseFilter != null) {
 			filter = cb.or(filter, caseFilter);
@@ -65,21 +70,21 @@ public class TaskService extends AbstractAdoService<Task> {
 		if (eventFilter != null) {
 			filter = cb.or(filter, eventFilter);
 		}
-		
+
 		return filter;
 	}
-	
+
 	public long getCount(TaskCriteria taskCriteria) {
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Task> from = cq.from(getElementClass());
-		
+
 		Predicate filter = buildCriteriaFilter(taskCriteria, cb, from);
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		cq.select(cb.countDistinct(from));
 
 		long count = em.createQuery(cq).getSingleResult();
@@ -87,7 +92,7 @@ public class TaskService extends AbstractAdoService<Task> {
 	}
 
 	public List<Task> findBy(TaskCriteria taskCriteria) {
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
 		Root<Task> from = cq.from(getElementClass());
@@ -104,6 +109,11 @@ public class TaskService extends AbstractAdoService<Task> {
 
 	public Predicate buildCriteriaFilter(TaskCriteria taskCriteria, CriteriaBuilder cb, Root<Task> from) {
 		Predicate filter = null;
+		Join<Task, Case> caze = from.join(Task.CAZE, JoinType.LEFT);
+		Join<Task, Contact> contact = from.join(Task.CONTACT, JoinType.LEFT);
+		Join<Contact, Case> contactCaze = contact.join(Contact.CAZE, JoinType.LEFT);
+		Join<Task, Event> event = from.join(Task.EVENT, JoinType.LEFT);
+
 		if (taskCriteria.getTaskStatuses() != null && taskCriteria.getTaskStatuses().length > 0) {
 			if (taskCriteria.getTaskStatuses().length == 1) {
 				filter = and(cb, filter, cb.equal(from.get(Task.TASK_STATUS), taskCriteria.getTaskStatuses()[0]));
@@ -147,6 +157,42 @@ public class TaskService extends AbstractAdoService<Task> {
 			filter = cb.and(filter, cb.greaterThanOrEqualTo(from.get(Task.STATUS_CHANGE_DATE), taskCriteria.getStatusChangeDateFrom()));
 			filter = cb.and(filter, cb.lessThan(from.get(Task.STATUS_CHANGE_DATE), taskCriteria.getStatusChangeDateTo()));
 		}
+		if (taskCriteria.getArchived() != null) {
+			if (taskCriteria.getArchived() == true) {
+				filter = and(cb, filter,
+						cb.or(
+								cb.and(
+										cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE),
+										cb.equal(caze.get(Case.ARCHIVED), true)),
+								cb.and(
+										cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
+										cb.equal(contactCaze.get(Case.ARCHIVED), true)),
+								cb.and(
+										cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
+										cb.equal(event.get(Event.ARCHIVED), true))));
+			} else {
+				filter = and(cb, filter,
+						cb.or(
+								cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.GENERAL),
+								cb.and(
+										cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE),
+										cb.or(
+												cb.equal(caze.get(Case.ARCHIVED), false),
+												cb.isNull(caze.get(Case.ARCHIVED)))
+										),
+								cb.and(
+										cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
+										cb.or(
+												cb.equal(contactCaze.get(Case.ARCHIVED), false),
+												cb.isNull(contactCaze.get(Case.ARCHIVED)))
+										),
+								cb.and(
+										cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
+										cb.or(
+												cb.equal(event.get(Event.ARCHIVED), false),
+												cb.isNull(event.get(Event.ARCHIVED))))));
+			}
+		}
 		return filter;
 	}
 
@@ -155,7 +201,7 @@ public class TaskService extends AbstractAdoService<Task> {
 		Task task = new Task();
 		task.setCreatorUser(creatorUser);
 		task.setPriority(TaskPriority.NORMAL);
-    	task.setTaskStatus(TaskStatus.PENDING);
+		task.setTaskStatus(TaskStatus.PENDING);
 		return task;
 	}
 }

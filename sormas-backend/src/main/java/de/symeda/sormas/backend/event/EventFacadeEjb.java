@@ -32,6 +32,7 @@ import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
@@ -220,6 +221,30 @@ public class EventFacadeEjb implements EventFacade {
 		
 		List<EventIndexDto> resultList = em.createQuery(cq).getResultList();
 		return resultList;
+	}
+
+	@Override
+	public boolean isArchived(String eventUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Event> from = cq.from(Event.class);
+	
+		// Workaround for probable bug in Eclipse Link/Postgre that throws a NoResultException when trying to
+		// query for a true Boolean result
+		cq.where(
+				cb.and(
+						cb.equal(from.get(Event.ARCHIVED), true), 
+						cb.equal(from.get(AbstractDomainObject.UUID), eventUuid)));
+		cq.select(cb.count(from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
+	}
+	
+	@Override
+	public void archiveOrDearchiveEvent(String eventUuid, boolean archive) {
+		Event event = eventService.getByUuid(eventUuid);
+		event.setArchived(archive);
+		eventService.ensurePersisted(event);
 	}
 	
 	public Event fromDto(@NotNull EventDto source) {

@@ -48,6 +48,8 @@ public class CaseGrid extends Grid {
 	
 	public CaseGrid() {
         setSizeFull();
+        
+        caseCriteria.archived(false);
 
         if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
         	setSelectionMode(SelectionMode.MULTI);

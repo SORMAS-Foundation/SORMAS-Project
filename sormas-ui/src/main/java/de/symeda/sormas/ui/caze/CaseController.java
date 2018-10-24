@@ -359,6 +359,25 @@ public class CaseController {
 			}, I18nProperties.getFieldCaption("Case"));
 		}
 
+		// Initialize 'Archive' button
+		if (LoginHelper.hasUserRight(UserRight.CASE_ARCHIVE)) {
+			boolean archived = FacadeProvider.getCaseFacade().isArchived(cazeRef.getUuid());
+			Button archiveCaseButton = new Button();
+			archiveCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
+			if (archived) {
+				archiveCaseButton.setCaption("De-Archive");
+			} else {
+				archiveCaseButton.setCaption("Archive");
+			}
+			archiveCaseButton.addClickListener(e -> {
+				editView.commit();
+				archiveOrDearchiveCase(cazeRef.getUuid(), !archived);
+			});
+
+			editView.getButtonsPanel().addComponentAsFirst(archiveCaseButton);
+			editView.getButtonsPanel().setComponentAlignment(archiveCaseButton, Alignment.BOTTOM_LEFT);
+		}
+
 		// Initialize 'Transfer case' button
 		if (LoginHelper.hasUserRight(UserRight.CASE_TRANSFER)) {
 			Button transferCaseButton = new Button();
@@ -524,12 +543,34 @@ public class CaseController {
 		facilityChangeView.getButtonsPanel().replaceComponent(facilityChangeView.getDiscardButton(), cancelButton);
 	}
 
+	private void archiveOrDearchiveCase(String caseUuid, boolean archive) {
+		if (archive) {
+			Label contentLabel = new Label("Are you sure you want to archive this case? This will not remove it from the system or any statistics, but hide it from the normal case directory.");
+			VaadinUiUtil.showConfirmationPopup("Archive Case", contentLabel, "Yes", "No", 640, e -> {
+				if (e.booleanValue() == true) {
+					FacadeProvider.getCaseFacade().archiveOrDearchiveCase(caseUuid, true);
+					Notification.show("Case has been archived.", Type.ASSISTIVE_NOTIFICATION);
+					navigateToView(CaseDataView.VIEW_NAME, caseUuid, null);
+				}
+			});
+		} else {
+			Label contentLabel = new Label("Are you sure you want to de-archive this case? This will make it appear in the normal case directory again.");
+			VaadinUiUtil.showConfirmationPopup("De-Archive Case", contentLabel, "Yes", "No", 640, e -> {
+				if (e.booleanValue()) {
+					FacadeProvider.getCaseFacade().archiveOrDearchiveCase(caseUuid, false);
+					Notification.show("Case has been de-archived.", Type.ASSISTIVE_NOTIFICATION);
+					navigateToView(CaseDataView.VIEW_NAME, caseUuid, null);
+				}
+			});
+		}
+	}
+
 	public void openClassificationRulesPopup(CaseDataDto caze) {
 		VerticalLayout classificationRulesLayout = new VerticalLayout();
 		classificationRulesLayout.setMargin(true);
-		
+
 		DiseaseClassificationCriteria diseaseCriteria = FacadeProvider.getCaseClassificationFacade().getClassificationCriteriaForDisease(caze.getDisease());
-		
+
 		Label suspectContent = new Label();
 		suspectContent.setContentMode(ContentMode.HTML);
 		suspectContent.setWidth(100, Unit.PERCENTAGE);
@@ -568,6 +609,38 @@ public class CaseController {
 					}
 					callback.run();
 					new Notification("Cases deleted", "All selected cases have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+				}
+			});
+		}
+	}
+
+	public void archiveAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+		if (selectedRows.size() == 0) {
+			new Notification("No cases selected", "You have not selected any cases.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+		} else {
+			VaadinUiUtil.showConfirmationPopup("Confirm archiving", new Label("Are you sure you want to archive all " + selectedRows.size() + " selected cases?"), "Yes", "No", null, e -> {
+				if (e.booleanValue() == true) {
+					for (Object selectedRow : selectedRows) {
+						FacadeProvider.getCaseFacade().archiveOrDearchiveCase(((CaseIndexDto) selectedRow).getUuid(), true);
+					}
+					callback.run();
+					new Notification("Cases archived", "All selected cases have been archived.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+				}
+			});
+		}
+	}
+
+	public void dearchiveAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+		if (selectedRows.size() == 0) {
+			new Notification("No cases selected", "You have not selected any cases.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+		} else {
+			VaadinUiUtil.showConfirmationPopup("Confirm de-archiving", new Label("Are you sure you want to de-archive all " + selectedRows.size() + " selected cases?"), "Yes", "No", null, e -> {
+				if (e.booleanValue() == true) {
+					for (Object selectedRow : selectedRows) {
+						FacadeProvider.getCaseFacade().archiveOrDearchiveCase(((CaseIndexDto) selectedRow).getUuid(), false);
+					}
+					callback.run();
+					new Notification("Cases de-archived", "All selected cases have been de-archived.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
 				}
 			});
 		}

@@ -86,4 +86,9 @@ public interface CaseFacade {
 	Date getOldestCaseReceptionDate();
 	
 	Date getOldestCaseReportDate();
+	
+	boolean isArchived(String caseUuid);
+	
+	void archiveOrDearchiveCase(String caseUuid, boolean archive);
+	
 }

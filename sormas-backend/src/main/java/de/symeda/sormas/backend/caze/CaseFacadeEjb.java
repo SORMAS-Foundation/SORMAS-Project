@@ -90,6 +90,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
@@ -505,6 +506,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		onCaseChanged(existingCaseDto, caze);
 
 		return toDto(caze);
+	}
+	
+	@Override
+	public void archiveOrDearchiveCase(String caseUuid, boolean archive) {
+		Case caze = caseService.getByUuid(caseUuid);
+		caze.setArchived(archive);
+		caseService.ensurePersisted(caze);
 	}
 
 	/**
@@ -1699,6 +1707,23 @@ public class CaseFacadeEjb implements CaseFacade {
 		return em.createQuery(cq).getSingleResult();
 	}
 
+	@Override
+	public boolean isArchived(String caseUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Case> from = cq.from(Case.class);
+	
+		// Workaround for probable bug in Eclipse Link/Postgre that throws a NoResultException when trying to
+		// query for a true Boolean result
+		cq.where(
+				cb.and(
+						cb.equal(from.get(Case.ARCHIVED), true), 
+						cb.equal(from.get(AbstractDomainObject.UUID), caseUuid)));
+		cq.select(cb.count(from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
+	}
+	
 	private String buildGroupingSelectQuery(StatisticsCaseAttribute grouping, StatisticsCaseSubAttribute subGrouping,
 			String groupAlias) {
 		StringBuilder groupingSelectPartBuilder = new StringBuilder();

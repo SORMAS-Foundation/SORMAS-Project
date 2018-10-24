@@ -665,6 +665,13 @@ public class ContactService extends AbstractAdoService<Contact> {
 		if (contactCriteria.getFollowUpUntilFrom() != null && contactCriteria.getFollowUpUntilTo() != null) {
 			filter = and(cb, filter, cb.between(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilFrom(), contactCriteria.getFollowUpUntilTo()));
 		}
+		if (contactCriteria.getArchived() != null) {
+			if (contactCriteria.getArchived() == true) {
+				filter = and(cb, filter, cb.equal(caze.get(Case.ARCHIVED), true));
+			} else {
+				filter = and(cb, filter, cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED))));
+			}
+		}
 
 		return filter;
 	}

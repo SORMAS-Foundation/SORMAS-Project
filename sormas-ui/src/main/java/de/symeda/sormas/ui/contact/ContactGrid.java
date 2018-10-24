@@ -43,8 +43,12 @@ public class ContactGrid extends Grid {
 
 	private final ContactCriteria contactCriteria = new ContactCriteria();
 
-	public ContactGrid() {
+	public ContactGrid(boolean isSubList) {
 		setSizeFull();
+
+		if (!isSubList) {
+			contactCriteria.archived(false);
+		}
 
 		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setSelectionMode(SelectionMode.MULTI);
@@ -68,7 +72,7 @@ public class ContactGrid extends Grid {
 					if (numberOfMissedVisits < 0) {
 						numberOfMissedVisits = 0;
 					}
-					
+
 					return String.format(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, "numberOfVisitsFormat"),
 							numberOfVisits, numberOfMissedVisits);
 				} else {

@@ -31,6 +31,7 @@ public class CaseCriteria implements Serializable, Cloneable {
 	private NewCaseDateType newCaseDateType;
 	private PersonReferenceDto person;
 	private Boolean mustHaveNoGeoCoordinates;
+	private Boolean archived;
 
 	@Override
 	public CaseCriteria clone() {
@@ -167,4 +168,14 @@ public class CaseCriteria implements Serializable, Cloneable {
 		this.surveillanceOfficer = surveillanceOfficer;
 		return this;
 	}
+
+	public Boolean getArchived() {
+		return archived;
+	}
+
+	public CaseCriteria archived(Boolean archived) {
+		this.archived = archived;
+		return this;
+	}
+	
 }

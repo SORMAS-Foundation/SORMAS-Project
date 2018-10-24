@@ -71,7 +71,7 @@ public class ContactsView extends AbstractView {
 
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
-	
+
 	// Filters
 	private ComboBox classificationFilter;
 	private ComboBox diseaseFilter;
@@ -83,10 +83,12 @@ public class ContactsView extends AbstractView {
 	private ComboBox reportedByFilter;
 	private TextField searchField;
 	
+	private boolean showArchivedContacts = false;
+
 	public ContactsView() {
 		super(VIEW_NAME);
 
-		grid = new ContactGrid();        
+		grid = new ContactGrid(false);        
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
@@ -101,7 +103,7 @@ public class ContactsView extends AbstractView {
 		});
 
 		if (LoginHelper.hasUserRight(UserRight.CONTACT_EXPORT)) {
-			
+
 			PopupButton exportButton = new PopupButton("Export"); 
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
 			VerticalLayout exportLayout = new VerticalLayout();
@@ -111,7 +113,7 @@ public class ContactsView extends AbstractView {
 			exportLayout.setWidth(200, Unit.PIXELS);
 			exportButton.setContent(exportLayout);
 			addHeaderComponent(exportButton);
-			
+
 			Button basicExportButton = new Button("Basic Export");
 			basicExportButton.setDescription("Export the columns and rows that are shown in the table below.");
 			basicExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -122,32 +124,32 @@ public class ContactsView extends AbstractView {
 			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), grid.getColumns(), "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(basicExportButton);
-			
+
 			Button extendedExportButton = new Button("Detailed Export");
 			extendedExportButton.setDescription("Export the rows that are shown in the table below with an extended set of columns. This may take a while.");
 			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			extendedExportButton.setIcon(FontAwesome.FILE_TEXT);
 			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(extendedExportButton);
-			
+
 			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(ContactExportDto.class,
 					(Integer start, Integer max) -> FacadeProvider.getContactFacade().getExportList(LoginHelper.getCurrentUser().getUuid(), grid.getFilterCriteria(), start, max), 
 					propertyId -> {
 						return I18nProperties.getPrefixFieldCaption(ContactExportDto.I18N_PREFIX, propertyId,
-							I18nProperties.getPrefixFieldCaption(ContactDto.I18N_PREFIX, propertyId,
-								I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, propertyId,
-									I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, propertyId,
-										I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, propertyId,
-											I18nProperties.getPrefixFieldCaption(HospitalizationDto.I18N_PREFIX, propertyId))))));
+								I18nProperties.getPrefixFieldCaption(ContactDto.I18N_PREFIX, propertyId,
+										I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, propertyId,
+												I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, propertyId,
+														I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, propertyId,
+																I18nProperties.getPrefixFieldCaption(HospitalizationDto.I18N_PREFIX, propertyId))))));
 					},
 					"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
-			
+
 			// Warning if no filters have been selected
 			Label warningLabel = new Label("<b>Warning:</b> No filters have been selected. Export may take a while.", ContentMode.HTML);
 			exportLayout.addComponent(warningLabel);
 			warningLabel.setVisible(false);
-			
+
 			exportButton.addClickListener(e -> {
 				warningLabel.setVisible(!isAnyFilterEnabled());
 			});
@@ -286,7 +288,7 @@ public class ContactsView extends AbstractView {
 	public HorizontalLayout createStatusFilterBar() {
 		HorizontalLayout statusFilterLayout = new HorizontalLayout();
 		statusFilterLayout.setSpacing(true);
-		statusFilterLayout.setSizeUndefined();
+		statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 		statusFilterLayout.addStyleName(CssStyles.VSPACE_3);
 
 		statusButtons = new HashMap<>();
@@ -305,52 +307,78 @@ public class ContactsView extends AbstractView {
 			statusButtons.put(statusButton, status.toString());
 		}
 
-		// Bulk operation dropdown
-		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
-
-			MenuBar bulkOperationsDropdown = new MenuBar();	
-			MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
-
-			Command changeCommand = selectedItem -> {
-				ControllerProvider.getContactController().showBulkContactDataEditComponent(grid.getSelectedRows(), null);
-			};
-			bulkOperationsItem.addItem("Edit...", FontAwesome.ELLIPSIS_H, changeCommand);
-			
-			Command cancelFollowUpCommand = selectedItem -> {
-				ControllerProvider.getContactController().cancelFollowUpOfAllSelectedItems(grid.getSelectedRows(), new Runnable() {
-					public void run() {
-						grid.deselectAll();
+		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
+		actionButtonsLayout.setSpacing(true);
+		{
+			// Show archived/active cases button
+			if (LoginHelper.hasUserRight(UserRight.CONTACT_SEE_ARCHIVED)) {
+				Button switchArchivedActiveButton = new Button("Show archived contacts");
+				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
+				switchArchivedActiveButton.addClickListener(e -> {
+					showArchivedContacts = !showArchivedContacts;
+					if (!showArchivedContacts) {
+						switchArchivedActiveButton.setCaption("Show archived contacts");
+						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
+						grid.getFilterCriteria().archived(false);
+						grid.reload();
+					} else {
+						switchArchivedActiveButton.setCaption("Show active contacts");
+						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
+						grid.getFilterCriteria().archived(true);
 						grid.reload();
 					}
 				});
-			};
-			bulkOperationsItem.addItem("Cancel follow-up", FontAwesome.TIMES, cancelFollowUpCommand);
+				actionButtonsLayout.addComponent(switchArchivedActiveButton);
+			}
 
-			Command lostToFollowUpCommand = selectedItem -> {
-				ControllerProvider.getContactController().setAllSelectedItemsToLostToFollowUp(grid.getSelectedRows(), new Runnable() {
-					public void run() {
-						grid.deselectAll();
-						grid.reload();
-					}
-				});
-			};
-			bulkOperationsItem.addItem("Set to lost to follow-up", FontAwesome.UNLINK, lostToFollowUpCommand);
-			
-			Command deleteCommand = selectedItem -> {
-				ControllerProvider.getContactController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
-					public void run() {
-						grid.deselectAll();
-						grid.reload();
-					}
-				});
-			};
-			bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
+			// Bulk operation dropdown
+			if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
-			statusFilterLayout.addComponent(bulkOperationsDropdown);
-			statusFilterLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
-			statusFilterLayout.setExpandRatio(bulkOperationsDropdown, 1);
+				MenuBar bulkOperationsDropdown = new MenuBar();	
+				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
+
+				Command changeCommand = selectedItem -> {
+					ControllerProvider.getContactController().showBulkContactDataEditComponent(grid.getSelectedRows(), null);
+				};
+				bulkOperationsItem.addItem("Edit...", FontAwesome.ELLIPSIS_H, changeCommand);
+
+				Command cancelFollowUpCommand = selectedItem -> {
+					ControllerProvider.getContactController().cancelFollowUpOfAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+						public void run() {
+							grid.deselectAll();
+							grid.reload();
+						}
+					});
+				};
+				bulkOperationsItem.addItem("Cancel follow-up", FontAwesome.TIMES, cancelFollowUpCommand);
+
+				Command lostToFollowUpCommand = selectedItem -> {
+					ControllerProvider.getContactController().setAllSelectedItemsToLostToFollowUp(grid.getSelectedRows(), new Runnable() {
+						public void run() {
+							grid.deselectAll();
+							grid.reload();
+						}
+					});
+				};
+				bulkOperationsItem.addItem("Set to lost to follow-up", FontAwesome.UNLINK, lostToFollowUpCommand);
+
+				Command deleteCommand = selectedItem -> {
+					ControllerProvider.getContactController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+						public void run() {
+							grid.deselectAll();
+							grid.reload();
+						}
+					});
+				};
+				bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
+
+				actionButtonsLayout.addComponent(bulkOperationsDropdown);
+			}
 		}
+		statusFilterLayout.addComponent(actionButtonsLayout);
+		statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
+		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 
 		activeStatusButton = statusAll;
 		return statusFilterLayout;
@@ -379,7 +407,7 @@ public class ContactsView extends AbstractView {
 				|| facilityFilter.getValue() != null || officerFilter.getValue() != null || reportedByFilter.getValue() != null 
 				|| followUpStatusFilter.getValue() != null;
 	}
-	
+
 	@Override
 	public void enter(ViewChangeEvent event) {
 		grid.reload();

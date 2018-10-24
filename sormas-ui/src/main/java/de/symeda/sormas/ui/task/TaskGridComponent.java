@@ -37,6 +37,8 @@ public class TaskGridComponent extends VerticalLayout {
 
 	private VerticalLayout gridLayout;
 
+	private boolean showArchivedTasks = false;
+
 	public TaskGridComponent() {
 		setSizeFull();
 
@@ -111,7 +113,7 @@ public class TaskGridComponent extends VerticalLayout {
 			initializeStatusButton(officerTasks, buttonFilterLayout, "Officer tasks");
 			Button myTasks = new Button("My tasks", e -> processAssigneeFilterChange(false, true, e.getButton()));
 			initializeStatusButton(myTasks, buttonFilterLayout, "My tasks");
-			
+
 			// Default filter for lab users (that don't have any other role) is "My tasks"
 			if (LoginHelper.getCurrentUserRoles().contains(UserRole.LAB_USER) && LoginHelper.getCurrentUserRoles().size() == 1) {
 				processAssigneeFilterChange(false, true, myTasks);
@@ -122,27 +124,52 @@ public class TaskGridComponent extends VerticalLayout {
 		}
 		assigneeFilterLayout.addComponent(buttonFilterLayout);
 
-		// Bulk operation dropdown
-		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			assigneeFilterLayout.setWidth(100, Unit.PERCENTAGE);
-
-			MenuBar bulkOperationsDropdown = new MenuBar();	
-			MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
-
-			Command deleteCommand = selectedItem -> {
-				ControllerProvider.getTaskController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
-					public void run() {
-						grid.deselectAll();
+		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
+		actionButtonsLayout.setSpacing(true);
+		{
+			// Show archived/active cases button
+			if (LoginHelper.hasUserRight(UserRight.TASK_SEE_ARCHIVED)) {
+				Button switchArchivedActiveButton = new Button("Show archived tasks");
+				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
+				switchArchivedActiveButton.addClickListener(e -> {
+					showArchivedTasks = !showArchivedTasks;
+					if (!showArchivedTasks) {
+						switchArchivedActiveButton.setCaption("Show archived tasks");
+						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
+						grid.getTaskCriteria().archived(false);
+						grid.reload();
+					} else {
+						switchArchivedActiveButton.setCaption("Show active tasks");
+						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
+						grid.getTaskCriteria().archived(true);
 						grid.reload();
 					}
 				});
-			};
-			bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
+				actionButtonsLayout.addComponent(switchArchivedActiveButton);
+			}
+			// Bulk operation dropdown
+			if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				assigneeFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
-			assigneeFilterLayout.addComponent(bulkOperationsDropdown);
-			assigneeFilterLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
-			assigneeFilterLayout.setExpandRatio(bulkOperationsDropdown, 1);
+				MenuBar bulkOperationsDropdown = new MenuBar();	
+				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
+
+				Command deleteCommand = selectedItem -> {
+					ControllerProvider.getTaskController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+						public void run() {
+							grid.deselectAll();
+							grid.reload();
+						}
+					});
+				};
+				bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
+				
+				actionButtonsLayout.addComponent(bulkOperationsDropdown);
+			}
 		}
+		assigneeFilterLayout.addComponent(actionButtonsLayout);
+		assigneeFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
+		assigneeFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 
 		return assigneeFilterLayout;
 	}
@@ -256,7 +283,7 @@ public class TaskGridComponent extends VerticalLayout {
 	public void reload() {
 		grid.reload();
 	}
-	
+
 	public TaskGrid getGrid() {
 		return grid;
 	}

@@ -49,6 +49,8 @@ public class SampleGrid extends Grid {
 	public SampleGrid() {
 		setSizeFull();
 		
+		sampleCriteria.archived(false);
+		
 		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
         	setSelectionMode(SelectionMode.MULTI);
         } else {
@@ -247,6 +249,10 @@ public class SampleGrid extends Grid {
 
 	public void remove(SampleIndexDto sample) {
 		getContainer().removeItem(sample);
+	}
+
+	public SampleCriteria getSampleCriteria() {
+		return sampleCriteria;
 	}
 	
 }

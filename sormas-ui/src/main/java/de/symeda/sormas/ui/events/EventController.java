@@ -7,10 +7,14 @@ import java.util.List;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
@@ -123,6 +127,25 @@ public class EventController {
 			}, I18nProperties.getFieldCaption("Event"));
 		}
 
+		// Initialize 'Archive' button
+		if (LoginHelper.hasUserRight(UserRight.EVENT_ARCHIVE)) {
+			boolean archived = FacadeProvider.getEventFacade().isArchived(eventUuid);
+			Button archiveEventButton = new Button();
+			archiveEventButton.addStyleName(ValoTheme.BUTTON_LINK);
+			if (archived) {
+				archiveEventButton.setCaption("De-Archive");
+			} else {
+				archiveEventButton.setCaption("Archive");
+			}
+			archiveEventButton.addClickListener(e -> {
+				editView.commit();
+				archiveOrDearchiveEvent(eventUuid, !archived);
+			});
+
+			editView.getButtonsPanel().addComponentAsFirst(archiveEventButton);
+			editView.getButtonsPanel().setComponentAlignment(archiveEventButton, Alignment.BOTTOM_LEFT);
+		}
+
 		return editView;
 	}
 
@@ -134,7 +157,6 @@ public class EventController {
 		}
 
 		List<EventIndexDto> selectedEvents = new ArrayList(selectedRows);
-
 
 		// Create a temporary event in order to use the CommitDiscardWrapperComponent
 		EventDto tempEvent = new EventDto();
@@ -191,6 +213,28 @@ public class EventController {
 		return event;
 	}
 
+	private void archiveOrDearchiveEvent(String eventUuid, boolean archive) {
+		if (archive) {
+			Label contentLabel = new Label("Are you sure you want to archive this event? This will not remove it from the system or any statistics, but hide it from the normal event directory.");
+			VaadinUiUtil.showConfirmationPopup("Archive Event", contentLabel, "Yes", "No", 640, e -> {
+				if (e.booleanValue() == true) {
+					FacadeProvider.getEventFacade().archiveOrDearchiveEvent(eventUuid, true);
+					Notification.show("Event has been archived.", Type.ASSISTIVE_NOTIFICATION);
+					navigateToData(eventUuid);
+				}
+			});
+		} else {
+			Label contentLabel = new Label("Are you sure you want to de-archive this event? This will make it appear in the normal event directory again.");
+			VaadinUiUtil.showConfirmationPopup("De-Archive Event", contentLabel, "Yes", "No", 640, e -> {
+				if (e.booleanValue()) {
+					FacadeProvider.getEventFacade().archiveOrDearchiveEvent(eventUuid, false);
+					Notification.show("Event has been de-archived.", Type.ASSISTIVE_NOTIFICATION);
+					navigateToData(eventUuid);
+				}
+			});
+		}
+	}
+
 	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification("No events selected", "You have not selected any events.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
@@ -202,6 +246,39 @@ public class EventController {
 					}
 					callback.run();
 					new Notification("Events deleted", "All selected events have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+				}
+			});
+		}
+	}
+
+
+	public void archiveAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+		if (selectedRows.size() == 0) {
+			new Notification("No events selected", "You have not selected any events.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+		} else {
+			VaadinUiUtil.showConfirmationPopup("Confirm archiving", new Label("Are you sure you want to archive all " + selectedRows.size() + " selected events?"), "Yes", "No", null, e -> {
+				if (e.booleanValue() == true) {
+					for (Object selectedRow : selectedRows) {
+						FacadeProvider.getEventFacade().archiveOrDearchiveEvent(((EventIndexDto) selectedRow).getUuid(), true);
+					}
+					callback.run();
+					new Notification("Events archived", "All selected events have been archived.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+				}
+			});
+		}
+	}
+
+	public void dearchiveAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+		if (selectedRows.size() == 0) {
+			new Notification("No events selected", "You have not selected any events.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+		} else {
+			VaadinUiUtil.showConfirmationPopup("Confirm de-archiving", new Label("Are you sure you want to de-archive all " + selectedRows.size() + " selected events?"), "Yes", "No", null, e -> {
+				if (e.booleanValue() == true) {
+					for (Object selectedRow : selectedRows) {
+						FacadeProvider.getEventFacade().archiveOrDearchiveEvent(((EventIndexDto) selectedRow).getUuid(), false);
+					}
+					callback.run();
+					new Notification("Events de-archived", "All selected events have been de-archived.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
 				}
 			});
 		}
