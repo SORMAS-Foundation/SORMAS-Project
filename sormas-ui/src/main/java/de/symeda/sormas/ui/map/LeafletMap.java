@@ -101,8 +101,16 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 		callFunction("addMarkerGroup", groupId, markersJson);
 	}
 
-	public void removeMarkerGroup(String groupId) {
-		callFunction("removeMarkerGroup", groupId);
+	public void addPolygonGroup(String groupId, List<LeafletPolygon> polygons) {
+		JsonArray polygonsJson = Json.createArray();
+		for (LeafletPolygon polygon : polygons) {
+			polygonsJson.set(polygonsJson.length(), polygon.toJson());
+		}
+		callFunction("addPolygonGroup", groupId, polygonsJson);
+	}
+
+	public void removeGroup(String groupId) {
+		callFunction("removeGroup", groupId);
 	}
 
 	public interface MarkerClickListener extends Serializable {

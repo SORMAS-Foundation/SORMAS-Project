@@ -1,5 +1,7 @@
 window.de_symeda_sormas_ui_map_LeafletMap = function () {
 
+	// make sure to manually reload this after making changes, because it is being cached  
+	
 	var mapIcons = [
 		icon("red-dot"),
 		icon("red-dot-small"), 
@@ -51,8 +53,6 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 
 	this.onStateChange = function () {
 
-		// make sure to manually reload this after making changes, because it is being cached  
-
 		map.setView([this.getState().center.lat, this.getState().center.lon], this.getState().zoom);
 	};
 	
@@ -63,7 +63,8 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 //			spiderfyDistanceMultiplier: 0.5,
 //		})
 		var markerGroup = L.featureGroup()
-		.addTo(map).on("click", markerGroupClick);
+			.addTo(map)
+			.on("click", markerGroupClick);
 		markerGroup.id = groupId;
 		
 		for (i=0; i<markers.length; i++) {
@@ -75,7 +76,23 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 		}
 	}
 	
-	this.removeMarkerGroup = function(groupId) {
+	this.addPolygonGroup = function(groupId, polygons) {
+		
+		var polygonGroup = L.featureGroup()
+			.addTo(map)
+			.on("click", markerGroupClick);
+		polygonGroup.id = groupId;
+		
+		for (i=0; i<polygons.length; i++) {
+		
+			var polygon = L.polygon(polygons[i].latLons, polygons[i].options)
+				.addTo(polygonGroup);
+			polygon.bindTooltip(polygons[i].caption);
+			polygon.id = i;
+		}
+	}
+	
+	this.removeGroup = function(groupId) {
 		
 		map.eachLayer(function(layer){
 		    if (layer.id == groupId) {

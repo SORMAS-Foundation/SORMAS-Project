@@ -76,7 +76,7 @@ public class SormasUI extends UI {
     }
 
     @WebServlet(urlPatterns = "/*", name = "SormasUIServlet", asyncSupported = true)
-    @VaadinServletConfiguration(ui = SormasUI.class, productionMode = false)
+    @VaadinServletConfiguration(ui = SormasUI.class, productionMode = false)//, resourceCacheTime = 0)
     public static class SormasUIServlet extends VaadinServlet {
 
     	//private static final String VAADIN_RESOURCES = "/sormas-widgetset";

@@ -13,7 +13,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.addon.leaflet.LMarker;
-import org.vaadin.addon.leaflet.LPolygon;
 import org.vaadin.addon.leaflet.LeafletClickEvent;
 import org.vaadin.addon.leaflet.LeafletClickListener;
 import org.vaadin.addon.leaflet.shared.Point;
@@ -65,6 +64,7 @@ import de.symeda.sormas.ui.map.LeafletMap;
 import de.symeda.sormas.ui.map.LeafletMap.MarkerClickEvent;
 import de.symeda.sormas.ui.map.LeafletMap.MarkerClickListener;
 import de.symeda.sormas.ui.map.LeafletMarker;
+import de.symeda.sormas.ui.map.LeafletPolygon;
 import de.symeda.sormas.ui.map.MarkerIcon;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -82,6 +82,8 @@ public class DashboardMapComponent extends VerticalLayout implements LeafletClic
 	private static final String CASES_GROUP_ID = "cases";
 	private static final String CONTACTS_GROUP_ID = "contacts";
 	private static final String EVENTS_GROUP_ID = "events";
+	private static final String REGIONS_GROUP_ID = "regions";
+	private static final String DISTRICTS_GROUP_ID = "districts";
 
 	// Layouts and components
 	private final DashboardDataProvider dashboardDataProvider;
@@ -106,8 +108,8 @@ public class DashboardMapComponent extends VerticalLayout implements LeafletClic
 	private final List<FacilityDto> markerCaseFacilities = new ArrayList<FacilityDto>();
 	private final List<MapContactDto> markerContacts = new ArrayList<MapContactDto>();
 	private final List<DashboardEventDto> markerEvents = new ArrayList<DashboardEventDto>();
-	private final HashMap<RegionReferenceDto, LPolygon[]> regionPolygonsMap = new HashMap<RegionReferenceDto, LPolygon[]>();
-	private final HashMap<DistrictReferenceDto, LPolygon[]> districtPolygonsMap = new HashMap<DistrictReferenceDto, LPolygon[]>();
+	private final List<RegionReferenceDto> polygonRegions = new ArrayList<RegionReferenceDto>();
+	private final List<DistrictReferenceDto> polygonDistricts = new ArrayList<DistrictReferenceDto>();
 
 	// Others
 	private CaseMeasure caseMeasure = CaseMeasure.CASE_COUNT;
@@ -680,32 +682,20 @@ public class DashboardMapComponent extends VerticalLayout implements LeafletClic
 
 	private void clearRegionShapes() {
 
-		for (LPolygon[] regionPolygons : regionPolygonsMap.values()) {
-			for (LPolygon regionPolygon : regionPolygons) {
-//				atticMap.removeComponent(regionPolygon);
-			}
-		}
-		regionPolygonsMap.clear();
-
-		for (LPolygon[] districtPolygons : districtPolygonsMap.values()) {
-			for (LPolygon districtPolygon : districtPolygons) {
-//				atticMap.removeComponent(districtPolygon);
-			}
-		}
-		districtPolygonsMap.clear();
+		map.removeGroup(REGIONS_GROUP_ID);
+		map.removeGroup(DISTRICTS_GROUP_ID);
+		polygonRegions.clear();
+		polygonDistricts.clear();
 
 		emptyPopulationDistrictPresent = false;
-
-//		atticMap.removeStyleName("no-tiles");
 	}
 
 	private void showRegionsShapes(CaseMeasure caseMeasure, Date fromDate, Date toDate, Disease disease) {
 
 		clearRegionShapes();
 
-//		atticMap.addStyleName("no-tiles");
-
 		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllAsReference();
+		List<LeafletPolygon> regionPolygons = new ArrayList<LeafletPolygon>();
 
 		// draw outlines of all regions
 		for (RegionReferenceDto region : regions) {
@@ -714,20 +704,21 @@ public class DashboardMapComponent extends VerticalLayout implements LeafletClic
 			if (regionShape == null) {
 				continue;
 			}
-
-			LPolygon[] regionPolygons = new LPolygon[regionShape.length];
-			for (int part = 0; part < regionShape.length; part++) {
-				GeoLatLon[] regionShapePart = regionShape[part];
-				LPolygon polygon = new LPolygon(Arrays.stream(regionShapePart)
-						.map(c -> new Point(c.getLat(), c.getLon())).toArray(Point[]::new));
-
-				// polygon.setStrokeOpacity(0.5);
-				polygon.setFillOpacity(0d);
-				regionPolygons[part] = polygon;
-//				atticMap.addComponent(polygon);
-			}
-			regionPolygonsMap.put(region, regionPolygons);
+			
+			for (GeoLatLon[] regionShapePart : regionShape) {
+				LeafletPolygon polygon = new LeafletPolygon();
+				polygon.setCaption(region.getCaption());
+				polygon.setOptions("{\"weight\": 1, \"color\": '#444', \"fillOpacity\": 0.1}");
+				double[][] latLons = Arrays.stream(regionShapePart)
+					.map(latLon -> new double[] {latLon.getLat(), latLon.getLon()})
+					.toArray(size -> new double[size][]);
+				polygon.setLatLons(latLons);
+				regionPolygons.add(polygon);
+				polygonRegions.add(region);
+			}			
 		}
+		
+		map.addPolygonGroup(REGIONS_GROUP_ID, regionPolygons);
 
 		List<Pair<DistrictDto, BigDecimal>> measurePerDistrict = FacadeProvider.getCaseFacade()
 				.getCaseMeasurePerDistrict(fromDate, toDate, disease, caseMeasure);
@@ -763,6 +754,8 @@ public class DashboardMapComponent extends VerticalLayout implements LeafletClic
 					: null;
 		}
 
+		List<LeafletPolygon> districtPolygons = new ArrayList<LeafletPolygon>();
+		
 		// Draw relevant district fills
 		for (Pair<DistrictDto, BigDecimal> districtMeasure : measurePerDistrict) {
 
@@ -773,51 +766,48 @@ public class DashboardMapComponent extends VerticalLayout implements LeafletClic
 			if (districtShape == null) {
 				continue;
 			}
-
-			LPolygon[] districtPolygons = new LPolygon[districtShape.length];
-			for (int part = 0; part < districtShape.length; part++) {
-				GeoLatLon[] districtShapePart = districtShape[part];
-				LPolygon polygon = new LPolygon(Arrays.stream(districtShapePart)
-						.map(c -> new Point(c.getLat(), c.getLon())).toArray(Point[]::new));
-
-//				polygon.setStrokeOpacity(0);
-
-				if (districtValue.compareTo(BigDecimal.ZERO) == 0) {
-					polygon.setFillOpacity(0d);
-				} else if (districtValue.compareTo(districtValuesLowerQuartile) < 0) {
-					polygon.setFillColor("#FEDD6C");
-					polygon.setFillOpacity(0.5);
-				} else if (districtValue.compareTo(districtValuesMedian) < 0) {
-					polygon.setFillColor("#FDBF44");
-					polygon.setFillOpacity(0.5);
-				} else if (districtValue.compareTo(districtValuesUpperQuartile) < 0) {
-					polygon.setFillColor("#F47B20");
-					polygon.setFillOpacity(0.5);
-				} else {
-					polygon.setFillColor("#ED1B24");
-					polygon.setFillOpacity(0.5);
-				}
-
-				if (caseMeasure == CaseMeasure.CASE_INCIDENCE) {
-					if (district.getPopulation() == null || district.getPopulation() <= 0) {
-						// grey when region has no population data
-						emptyPopulationDistrictPresent = true;
-						polygon.setFillColor("#999999");
-						polygon.setFillOpacity(0.5);
-					}
-				}
-
-				districtPolygons[part] = polygon;
-//				map.addPolygonOverlay(polygon);
+			
+			String fillColor;
+			if (districtValue.compareTo(BigDecimal.ZERO) == 0) {
+				fillColor = "#000";
+			} else if (districtValue.compareTo(districtValuesLowerQuartile) < 0) {
+				fillColor = "#FEDD6C";
+			} else if (districtValue.compareTo(districtValuesMedian) < 0) {
+				fillColor = "#FDBF44";
+			} else if (districtValue.compareTo(districtValuesUpperQuartile) < 0) {
+				fillColor = "#F47B20";
+			} else {
+				fillColor = "#ED1B24";
 			}
-			districtPolygonsMap.put(districtRef, districtPolygons);
+
+			if (caseMeasure == CaseMeasure.CASE_INCIDENCE) {
+				if (district.getPopulation() == null || district.getPopulation() <= 0) {
+					// grey when region has no population data
+					emptyPopulationDistrictPresent = true;
+					fillColor = "#999";
+				}
+			}			
+
+			for (GeoLatLon[] districtShapePart : districtShape) {
+				LeafletPolygon polygon = new LeafletPolygon();
+				polygon.setCaption(district.getName() + ": " + districtValue);
+				polygon.setOptions("{\"stroke\": false, \"color\": '" + fillColor + "', \"fillOpacity\": 0.5}");
+				double[][] latLons = Arrays.stream(districtShapePart)
+					.map(latLon -> new double[] {latLon.getLat(), latLon.getLon()})
+					.toArray(size -> new double[size][]);
+				polygon.setLatLons(latLons);
+				districtPolygons.add(polygon);
+				polygonDistricts.add(districtRef);
+			}			
 		}
+		
+		map.addPolygonGroup(DISTRICTS_GROUP_ID, districtPolygons);
 	}
 
 	private void clearCaseMarkers() {
 
-		map.removeMarkerGroup(CASES_GROUP_ID);
-		map.removeMarkerGroup(CASE_FACILITIES_GROUP_ID);
+		map.removeGroup(CASES_GROUP_ID);
+		map.removeGroup(CASE_FACILITIES_GROUP_ID);
 
 		markerCaseFacilities.clear();
 		casesByFacility.clear();
@@ -961,7 +951,7 @@ public class DashboardMapComponent extends VerticalLayout implements LeafletClic
 	}
 
 	private void clearContactMarkers() {
-		map.removeMarkerGroup(CONTACTS_GROUP_ID);
+		map.removeGroup(CONTACTS_GROUP_ID);
 		markerContacts.clear();
 		mapContactDtos.clear();
 	}
@@ -1019,7 +1009,7 @@ public class DashboardMapComponent extends VerticalLayout implements LeafletClic
 	}
 
 	private void clearEventMarkers() {
-		map.removeMarkerGroup(EVENTS_GROUP_ID);
+		map.removeGroup(EVENTS_GROUP_ID);
 		markerEvents.clear();
 	}
 
