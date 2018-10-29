@@ -27,4 +27,7 @@ public interface CaseFacadeRetro {
 
     @GET("cases/uuids")
     Call<List<String>> pullUuids();
+
+    @GET("cases/archived/{since}")
+    Call<List<String>> pullArchivedUuidsSince(@Path("since") long since);
 }

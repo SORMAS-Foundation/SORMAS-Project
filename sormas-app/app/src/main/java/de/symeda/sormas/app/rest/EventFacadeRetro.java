@@ -24,4 +24,7 @@ public interface EventFacadeRetro {
 
     @GET("events/uuids")
     Call<List<String>> pullUuids();
+
+    @GET("events/archived/{since}")
+    Call<List<String>> pullArchivedUuidsSince(@Path("since") long since);
 }

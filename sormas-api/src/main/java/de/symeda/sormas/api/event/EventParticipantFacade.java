@@ -10,13 +10,13 @@ public interface EventParticipantFacade {
 	
 	List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid, String userUuid);
 
-	List<EventParticipantDto> getAllEventParticipantsAfter(Date date, String userUuid);
+	List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date, String userUuid);
 
 	EventParticipantDto getEventParticipantByUuid(String uuid);
 	
 	EventParticipantDto saveEventParticipant(EventParticipantDto dto);
 
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllActiveUuids(String userUuid);
 
 	List<EventParticipantDto> getByUuids(List<String> uuids);
 

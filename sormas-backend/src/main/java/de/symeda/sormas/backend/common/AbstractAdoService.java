@@ -110,7 +110,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
 
-		Predicate filter = createUserFilter(cb, cq, from, user);		
+		Predicate filter = createUserFilter(cb, cq, from, user);	
 		if (date != null) {
 			Predicate dateFilter = createDateFilter(cb, cq, from, date);
 			if (filter != null) {

@@ -38,6 +38,52 @@ public class EventService extends AbstractAdoService<Event> {
 		super(Event.class);
 	}
 
+	public List<Event> getAllActiveEventsAfter(Date date, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
+		Root<Event> from = cq.from(getElementClass());
+
+		Predicate filter = cb.or(
+				cb.equal(from.get(Event.ARCHIVED), false),
+				cb.isNull(from.get(Event.ARCHIVED)));
+
+		if (user != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			filter = cb.and(filter, userFilter);
+		}
+
+		if (date != null) {
+			Predicate dateFilter = createDateFilter(cb, cq, from, date);
+			filter = cb.and(filter, dateFilter);		
+		}
+
+		cq.where(filter);
+		cq.orderBy(cb.desc(from.get(Event.CHANGE_DATE)));
+		cq.distinct(true);
+
+		return em.createQuery(cq).getResultList();
+	}
+	
+	public List<String> getAllActiveUuids(User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Event> from = cq.from(getElementClass());
+
+		Predicate filter = cb.or(
+				cb.equal(from.get(Event.ARCHIVED), false),
+				cb.isNull(from.get(Event.ARCHIVED)));
+		
+		if (user != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			filter = cb.and(filter, userFilter);
+		}
+		
+		cq.where(filter);
+		cq.select(from.get(Event.UUID));
+		
+		return em.createQuery(cq).getResultList();
+	}
+
 	public List<Event> getAllBetween(Date fromDate, Date toDate, District district, Disease disease, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
@@ -137,6 +183,34 @@ public class EventService extends AbstractAdoService<Event> {
 		}
 
 		return result;
+	}
+
+	public List<String> getArchivedUuidsSince(User user, Date since) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Event> event = cq.from(Event.class);
+
+		Predicate filter = createUserFilter(cb, cq, event, user);
+		if (since != null) {
+			Predicate dateFilter = cb.greaterThanOrEqualTo(event.get(Event.CHANGE_DATE), since);
+			if (filter != null) {
+				filter = cb.and(filter, dateFilter);
+			} else {
+				filter = dateFilter;
+			}
+		}
+		
+		Predicate archivedFilter = cb.equal(event.get(Event.ARCHIVED), true);
+		if (filter != null) {
+			filter = cb.and(filter, archivedFilter);
+		} else {
+			filter = archivedFilter;
+		}
+
+		cq.where(filter);
+		cq.select(event.get(Event.UUID));
+		
+		return em.createQuery(cq).getResultList();
 	}
 
 	/**

@@ -56,19 +56,18 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	}
 	
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-		
+	public List<String> getAllActiveUuids(String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		
 		if (user == null) {
 			return Collections.emptyList();
 		}
 		
-		return eventParticipantService.getAllUuids(user);
+		return eventParticipantService.getAllActiveUuids(user);
 	}	
 	
 	@Override
-	public List<EventParticipantDto> getAllEventParticipantsAfter(Date date, String userUuid) {
+	public List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date, String userUuid) {
 		
 		User user = userService.getByUuid(userUuid);
 		
@@ -76,7 +75,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			return Collections.emptyList();
 		}
 		
-		return eventParticipantService.getAllAfter(date, user).stream()
+		return eventParticipantService.getAllActiveEventParticipantsAfter(date, user).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
 	}

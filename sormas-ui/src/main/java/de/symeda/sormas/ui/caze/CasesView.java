@@ -87,7 +87,7 @@ public class CasesView extends AbstractView {
 	private DateFilterOption dateFilterOption;
 	private Date fromDate = null;
 	private Date toDate = null;
-	
+
 	private boolean showArchivedCases = false;
 
 	// Filters
@@ -103,7 +103,7 @@ public class CasesView extends AbstractView {
 	private ComboBox reportedByFilter;
 	private CheckBox casesWithoutGeoCoordsFilter;
 	private EpiWeekAndDateFilterComponent weekAndDateFilter;
-	
+
 	// Bulk operations
 	private MenuItem archiveItem;
 	private MenuItem dearchiveItem;
@@ -440,15 +440,19 @@ public class CasesView extends AbstractView {
 					if (!showArchivedCases) {
 						switchArchivedActiveButton.setCaption("Show archived cases");
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
-						dearchiveItem.setVisible(false);
-						archiveItem.setVisible(true);
+						if (archiveItem != null && dearchiveItem != null) {
+							dearchiveItem.setVisible(false);
+							archiveItem.setVisible(true);
+						}
 						grid.getFilterCriteria().archived(false);
 						grid.reload();
 					} else {
 						switchArchivedActiveButton.setCaption("Show active cases");
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
-						archiveItem.setVisible(false);
-						dearchiveItem.setVisible(true);
+						if (archiveItem != null && dearchiveItem != null) {
+							archiveItem.setVisible(false);
+							dearchiveItem.setVisible(true);
+						}
 						grid.getFilterCriteria().archived(true);
 						grid.reload();
 					}
@@ -475,7 +479,7 @@ public class CasesView extends AbstractView {
 					});
 				};
 				bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
-				
+
 				Command archiveCommand = selectedItem -> {
 					ControllerProvider.getCaseController().archiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
 						public void run() {
@@ -485,7 +489,7 @@ public class CasesView extends AbstractView {
 					});
 				};
 				archiveItem = bulkOperationsItem.addItem("Archive", FontAwesome.ARCHIVE, archiveCommand);
-				
+
 				Command dearchiveCommand = selectedItem -> {
 					ControllerProvider.getCaseController().dearchiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
 						public void run() {
@@ -496,7 +500,7 @@ public class CasesView extends AbstractView {
 				};
 				dearchiveItem = bulkOperationsItem.addItem("De-Archive", FontAwesome.ARCHIVE, dearchiveCommand);
 				dearchiveItem.setVisible(false);
-				
+
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
 			}
 		}

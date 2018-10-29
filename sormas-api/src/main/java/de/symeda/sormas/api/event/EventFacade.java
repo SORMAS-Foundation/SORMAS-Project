@@ -13,7 +13,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 @Remote
 public interface EventFacade {
 	
-	List<EventDto> getAllEventsAfter(Date date, String userUuid);
+	List<EventDto> getAllActiveEventsAfter(Date date, String userUuid);
 	
 	List<EventDto> getAllEventsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid);
 	
@@ -27,7 +27,7 @@ public interface EventFacade {
 	
 	EventReferenceDto getReferenceByUuid(String uuid);
 
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllActiveUuids(String userUuid);
 
 	List<EventDto> getByUuids(List<String> uuids);
 
@@ -38,4 +38,6 @@ public interface EventFacade {
 	boolean isArchived(String caseUuid);
 	
 	void archiveOrDearchiveEvent(String eventUuid, boolean archive);
+	
+	List<String> getArchivedUuidsSince(String userUuid, Date since);
 }

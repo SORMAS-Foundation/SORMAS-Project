@@ -217,17 +217,18 @@ public class CaseFacadeEjb implements CaseFacade {
 	private ConfigFacadeEjbLocal configFacade;
 
 	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
-
+	
 	@Override
-	public List<CaseDataDto> getAllCasesAfter(Date date, String userUuid) {
-
+	public List<CaseDataDto> getAllActiveCasesAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-
+		
 		if (user == null) {
 			return Collections.emptyList();
 		}
-
-		return caseService.getAllAfter(date, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		
+		return caseService.getAllActiveCasesAfter(date, user).stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -367,15 +368,14 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-
+	public List<String> getAllActiveUuids(String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return caseService.getAllUuids(user);
+		return caseService.getAllActiveUuids(user);
 	}
 
 	@Override
@@ -755,6 +755,17 @@ public class CaseFacadeEjb implements CaseFacade {
 			taskService.delete(task);
 		}
 		caseService.delete(caze);
+	}
+	
+	@Override
+	public List<String> getArchivedUuidsSince(String userUuid, Date since) {
+		User user = userService.getByUuid(userUuid);
+
+		if (user == null) {
+			return Collections.emptyList();
+		}
+
+		return caseService.getArchivedUuidsSince(user, since);
 	}
 
 	public Case fillOrBuildEntity(@NotNull CaseDataDto source, Case target) {

@@ -40,7 +40,7 @@ public class ContactBackendTest {
     @Test
     public void shouldCreateContact() {
         assertThat(DatabaseHelper.getContactDao().queryForAll().size(), is(0));
-        TestEntityCreator.createContact();
+        TestEntityCreator.createContact(null);
 
         assertThat(DatabaseHelper.getContactDao().queryForAll().size(), is(1));
     }
@@ -49,7 +49,7 @@ public class ContactBackendTest {
     public void shouldCreateVisit() throws DaoException {
         assertThat(DatabaseHelper.getVisitDao().queryForAll().size(), is(0));
 
-        Contact contact = TestEntityCreator.createContact();
+        Contact contact = TestEntityCreator.createContact(null);
         TestEntityCreator.createVisit(contact);
 
         assertThat(DatabaseHelper.getVisitDao().queryForAll().size(), is(1));
@@ -60,7 +60,7 @@ public class ContactBackendTest {
      */
     @Test
     public void shouldMergeAsExpected() throws DaoException {
-        Contact contact = TestEntityCreator.createContact();
+        Contact contact = TestEntityCreator.createContact(null);
         Visit visit = TestEntityCreator.createVisit(contact);
 
         contact.setDescription("AppDescription");
@@ -101,7 +101,7 @@ public class ContactBackendTest {
 
     @Test
     public void shouldAcceptAsExpected() throws DaoException {
-        Contact contact = TestEntityCreator.createContact();
+        Contact contact = TestEntityCreator.createContact(null);
         assertThat(contact.isModified(), is(false));
 
         contact.setDescription("NewContactDescription");

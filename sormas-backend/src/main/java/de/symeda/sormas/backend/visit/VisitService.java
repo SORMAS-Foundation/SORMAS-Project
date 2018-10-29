@@ -24,6 +24,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.DashboardVisitDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
@@ -44,9 +45,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 		super(Visit.class);
 	}
 
-	@Override
-	public List<String> getAllUuids(User user) {
-
+	public List<String> getAllActiveUuids(User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> visitsQuery = cb.createQuery(String.class);
 		Root<Visit> visitRoot = visitsQuery.from(Visit.class);
@@ -55,7 +54,12 @@ public class VisitService extends AbstractAdoService<Visit> {
 		// get all visits of the user's contact's persons
 		Subquery<Long> contactPersonSubquery = visitsQuery.subquery(Long.class);
 		Root<Contact> contactRoot = contactPersonSubquery.from(Contact.class);
-		contactPersonSubquery.where(contactService.createUserFilter(cb, visitsQuery, contactRoot, user));
+		Join<Contact, Case> contactCase = contactRoot.join(Contact.CAZE, JoinType.LEFT);
+		contactPersonSubquery.where(cb.and(
+				contactService.createUserFilter(cb, visitsQuery, contactRoot, user), 
+				cb.or(
+						cb.equal(contactCase.get(Case.ARCHIVED), false),
+						cb.isNull(contactCase.get(Case.ARCHIVED)))));
 		contactPersonSubquery.select(contactRoot.get(Contact.PERSON).get(Person.ID));
 
 		Predicate filter = cb.in(visitRoot.get(Visit.PERSON).get(Person.ID)).value(contactPersonSubquery);
@@ -70,8 +74,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
-	public List<Visit> getAllAfter(Date date, User user) {
-
+	public List<Visit> getAllActiveVisitsAfter(Date date, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Visit> cq = cb.createQuery(getElementClass());
 		Root<Visit> visitRoot = cq.from(Visit.class);
@@ -79,7 +82,12 @@ public class VisitService extends AbstractAdoService<Visit> {
 		// get all visits of the user's contact's persons
 		Subquery<Integer> contactPersonSubquery = cq.subquery(Integer.class);
 		Root<Contact> contactRoot = contactPersonSubquery.from(Contact.class);
-		contactPersonSubquery.where(contactService.createUserFilter(cb, cq, contactRoot, user));
+		Join<Contact, Case> contactCase = contactRoot.join(Contact.CAZE, JoinType.LEFT);
+		contactPersonSubquery.where(cb.and(
+				contactService.createUserFilter(cb, cq, contactRoot, user), 
+				cb.or(
+						cb.equal(contactCase.get(Case.ARCHIVED), false),
+						cb.isNull(contactCase.get(Case.ARCHIVED)))));
 		contactPersonSubquery.select(contactRoot.get(Contact.PERSON).get(Person.ID));
 		Predicate filter = cb.in(visitRoot.get(Visit.PERSON).get(Person.ID)).value(contactPersonSubquery);
 		// date range

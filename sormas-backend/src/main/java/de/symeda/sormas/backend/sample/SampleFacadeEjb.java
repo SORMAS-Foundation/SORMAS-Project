@@ -99,26 +99,25 @@ public class SampleFacadeEjb implements SampleFacade {
 	private static final Logger logger = LoggerFactory.getLogger(SampleTestFacadeEjb.class);
 
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-
+	public List<String> getAllActiveUuids(String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return sampleService.getAllUuids(user);
+		return sampleService.getAllActiveUuids(user);
 	}	
 
 	@Override
-	public List<SampleDto> getAllAfter(Date date, String userUuid) {
+	public List<SampleDto> getAllActiveSamplesAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		if(user == null) {
 			return Collections.emptyList();
 		}
 
-		return sampleService.getAllAfter(date, user).stream()
+		return sampleService.getAllActiveSamplesAfter(date, user).stream()
 				.map(e -> toDto(e))
 				.collect(Collectors.toList());
 	}

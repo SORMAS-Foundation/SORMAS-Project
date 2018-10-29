@@ -121,7 +121,7 @@ public class TestDataCreator {
 	}
 
 	public TaskDto createTask(TaskContext context, TaskType type, TaskStatus status, CaseReferenceDto caze,
-			ContactReferenceDto contact, Date dueDate, UserReferenceDto assigneeUser) {
+			ContactReferenceDto contact, EventReferenceDto event, Date dueDate, UserReferenceDto assigneeUser) {
 		TaskDto task = new TaskDto();
 		task.setUuid(DataHelper.createUuid());
 		task.setTaskContext(context);

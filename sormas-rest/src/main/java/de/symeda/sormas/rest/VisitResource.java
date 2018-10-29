@@ -35,7 +35,7 @@ public class VisitResource {
 	public List<VisitDto> getAllVisits(@Context SecurityContext sc, @PathParam("since") long since) {
 		
 		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<VisitDto> result = FacadeProvider.getVisitFacade().getAllVisitsAfter(new Date(since), userDto.getUuid());
+		List<VisitDto> result = FacadeProvider.getVisitFacade().getAllActiveVisitsAfter(new Date(since), userDto.getUuid());
 		return result;
 	}	
 	
@@ -62,10 +62,10 @@ public class VisitResource {
 	
 	@GET
 	@Path("/uuids")
-	public List<String> getAllUuids(@Context SecurityContext sc) {
+	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
 		
 		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getVisitFacade().getAllUuids(userDto.getUuid());
+		List<String> uuids = FacadeProvider.getVisitFacade().getAllActiveUuids(userDto.getUuid());
 		return uuids;
 	}
 }

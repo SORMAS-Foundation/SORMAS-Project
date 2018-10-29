@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.task;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -40,6 +41,48 @@ public class TaskService extends AbstractAdoService<Task> {
 
 	public TaskService() {
 		super(Task.class);
+	}
+
+	public List<Task> getAllActiveTasksAfter(Date date, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
+		Root<Task> from = cq.from(getElementClass());
+
+		Predicate filter = buildActiveTasksFilter(cb, from);
+
+		if (user != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			filter = cb.and(filter, userFilter);
+		}
+
+		if (date != null) {
+			Predicate dateFilter = createDateFilter(cb, cq, from, date);
+			filter = cb.and(filter, dateFilter);		
+		}
+
+		cq.where(filter);
+		cq.orderBy(cb.desc(from.get(Task.CHANGE_DATE)));
+		cq.distinct(true);
+
+		return em.createQuery(cq).getResultList();
+	}
+	
+	public List<String> getAllActiveUuids(User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Task> from = cq.from(getElementClass());
+
+		Predicate filter = buildActiveTasksFilter(cb, from);
+		
+		if (user != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			filter = cb.and(filter, userFilter);
+		}
+		
+		cq.where(filter);
+		cq.select(from.get(Task.UUID));
+		
+		return em.createQuery(cq).getResultList();
 	}
 
 	/**
@@ -171,31 +214,40 @@ public class TaskService extends AbstractAdoService<Task> {
 										cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
 										cb.equal(event.get(Event.ARCHIVED), true))));
 			} else {
-				filter = and(cb, filter,
-						cb.or(
-								cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.GENERAL),
-								cb.and(
-										cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE),
-										cb.or(
-												cb.equal(caze.get(Case.ARCHIVED), false),
-												cb.isNull(caze.get(Case.ARCHIVED)))
-										),
-								cb.and(
-										cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
-										cb.or(
-												cb.equal(contactCaze.get(Case.ARCHIVED), false),
-												cb.isNull(contactCaze.get(Case.ARCHIVED)))
-										),
-								cb.and(
-										cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
-										cb.or(
-												cb.equal(event.get(Event.ARCHIVED), false),
-												cb.isNull(event.get(Event.ARCHIVED))))));
+				filter = and(cb, filter, buildActiveTasksFilter(cb, from));
 			}
 		}
 		return filter;
 	}
 
+	private Predicate buildActiveTasksFilter(CriteriaBuilder cb, Root<Task> from) {
+		Join<Task, Case> caze = from.join(Task.CAZE, JoinType.LEFT);
+		Join<Task, Contact> contact = from.join(Task.CONTACT, JoinType.LEFT);
+		Join<Contact, Case> contactCaze = contact.join(Contact.CAZE, JoinType.LEFT);
+		Join<Task, Event> event = from.join(Task.EVENT, JoinType.LEFT);
+
+		Predicate filter = cb.or(
+				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.GENERAL),
+				cb.and(
+						cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE),
+						cb.or(
+								cb.equal(caze.get(Case.ARCHIVED), false),
+								cb.isNull(caze.get(Case.ARCHIVED)))
+						),
+				cb.and(
+						cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
+						cb.or(
+								cb.equal(contactCaze.get(Case.ARCHIVED), false),
+								cb.isNull(contactCaze.get(Case.ARCHIVED)))
+						),
+				cb.and(
+						cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
+						cb.or(
+								cb.equal(event.get(Event.ARCHIVED), false),
+								cb.isNull(event.get(Event.ARCHIVED)))));
+
+		return filter;
+	}
 
 	public Task buildTask(User creatorUser) {
 		Task task = new Task();

@@ -107,27 +107,25 @@ public class ContactFacadeEjb implements ContactFacade {
 	private CaseFacadeEjbLocal caseFacade;
 	
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-
+	public List<String> getAllActiveUuids(String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return contactService.getAllUuids(user);
+		return contactService.getAllActiveUuids(user);
 	}	
 
 	@Override
-	public List<ContactDto> getAllContactsAfter(Date date, String userUuid) {
-
+	public List<ContactDto> getAllActiveContactsAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return contactService.getAllAfter(date, user).stream()
+		return contactService.getAllActiveContactsAfter(date, user).stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}

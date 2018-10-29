@@ -74,26 +74,25 @@ public class EventFacadeEjb implements EventFacade {
 	private DistrictService districtService;
 	
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-		
+	public List<String> getAllActiveUuids(String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		
 		if (user == null) {
 			return Collections.emptyList();
 		}
 		
-		return eventService.getAllUuids(user);
+		return eventService.getAllActiveUuids(user);
 	}	
 	
 	@Override
-	public List<EventDto> getAllEventsAfter(Date date, String userUuid) {
+	public List<EventDto> getAllActiveEventsAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		
 		if (user == null) {
 			return Collections.emptyList();
 		}
 		
-		return eventService.getAllAfter(date, user).stream()
+		return eventService.getAllActiveEventsAfter(date, user).stream()
 			.map(e -> toDto(e))
 			.collect(Collectors.toList());
 	}
@@ -245,6 +244,17 @@ public class EventFacadeEjb implements EventFacade {
 		Event event = eventService.getByUuid(eventUuid);
 		event.setArchived(archive);
 		eventService.ensurePersisted(event);
+	}
+
+	@Override
+	public List<String> getArchivedUuidsSince(String userUuid, Date since) {
+		User user = userService.getByUuid(userUuid);
+
+		if (user == null) {
+			return Collections.emptyList();
+		}
+
+		return eventService.getArchivedUuidsSince(user, since);
 	}
 	
 	public Event fromDto(@NotNull EventDto source) {

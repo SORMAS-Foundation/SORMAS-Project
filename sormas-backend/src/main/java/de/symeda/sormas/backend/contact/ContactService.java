@@ -83,6 +83,54 @@ public class ContactService extends AbstractAdoService<Contact> {
 		return resultList;
 	}
 
+	public List<Contact> getAllActiveContactsAfter(Date date, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
+		Root<Contact> from = cq.from(getElementClass());
+		Join<Contact, Case> caze = from.join(Contact.CAZE, JoinType.LEFT);
+
+		Predicate filter = cb.or(
+				cb.equal(caze.get(Case.ARCHIVED), false),
+				cb.isNull(caze.get(Case.ARCHIVED)));
+
+		if (user != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			filter = cb.and(filter, userFilter);
+		}
+
+		if (date != null) {
+			Predicate dateFilter = createDateFilter(cb, cq, from, date);
+			filter = cb.and(filter, dateFilter);		
+		}
+
+		cq.where(filter);
+		cq.orderBy(cb.desc(from.get(Contact.CHANGE_DATE)));
+		cq.distinct(true);
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<String> getAllActiveUuids(User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Contact> from = cq.from(getElementClass());
+		Join<Contact, Case> caze = from.join(Contact.CAZE, JoinType.LEFT);
+
+		Predicate filter = cb.or(
+				cb.equal(caze.get(Case.ARCHIVED), false),
+				cb.isNull(caze.get(Case.ARCHIVED)));
+		
+		if (user != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			filter = cb.and(filter, userFilter);
+		}
+		
+		cq.where(filter);
+		cq.select(from.get(Contact.UUID));
+		
+		return em.createQuery(cq).getResultList();
+	}
+
 	public List<Contact> getAllByCase(Case caze) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

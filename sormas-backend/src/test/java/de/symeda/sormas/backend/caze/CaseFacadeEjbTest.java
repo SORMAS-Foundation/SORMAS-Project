@@ -30,6 +30,7 @@ import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.SampleTestType;
@@ -90,9 +91,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		UserDto caseOfficer = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(),
 				rdcf.facility.getUuid(), "Case", "Officer", UserRole.CASE_OFFICER);
 		TaskDto pendingTask = creator.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.PENDING,
-				caze.toReference(), null, new Date(), user.toReference());
+				caze.toReference(), null, null, new Date(), user.toReference());
 		TaskDto doneTask = creator.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.DONE,
-				caze.toReference(), null, new Date(), user.toReference());
+				caze.toReference(), null, null, new Date(), user.toReference());
 
 		RDCF newRDCF = creator.createRDCF("New Region", "New District", "New Community", "New Facility");
 		getCaseFacade().transferCase(caze.toReference(),
@@ -220,7 +221,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		String userUuid = user.getUuid();
 		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Ad", "Min", UserRole.ADMIN);
 		String adminUuid = admin.getUuid();
@@ -228,26 +228,26 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze.toReference(),
+		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze.toReference(),
 				new Date(), new Date());
 		TaskDto task = creator.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.PENDING,
-				caze.toReference(), null, new Date(), user.toReference());
-		creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD,
+				caze.toReference(), null, null, new Date(), user.toReference());
+		SampleDto sample = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD,
 				rdcf.facility);
 
-		// Database should contain one case, associated contact, task and sample
-		assertEquals(1, getCaseFacade().getAllCasesAfter(null, userUuid).size());
-		assertEquals(1, getContactFacade().getAllContactsAfter(null, userUuid).size());
+		// Database should contain the created case, contact, task and sample
+		assertNotNull(getCaseFacade().getCaseDataByUuid(caze.getUuid()));
+		assertNotNull(getContactFacade().getContactByUuid(contact.getUuid()));
 		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
-		assertEquals(1, getSampleFacade().getAllAfter(null, userUuid).size());
+		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
 
 		getCaseFacade().deleteCase(caze.toReference(), adminUuid);
 
-		// Database should contain no case and associated contact, task or sample
-		assertEquals(0, getCaseFacade().getAllCasesAfter(null, userUuid).size());
-		assertEquals(0, getContactFacade().getAllContactsAfter(null, userUuid).size());
+		// Database should not contain the deleted case, contact, task and sample
+		assertNull(getCaseFacade().getCaseDataByUuid(caze.getUuid()));
+		assertNull(getContactFacade().getContactByUuid(contact.getUuid()));
 		assertNull(getTaskFacade().getByUuid(task.getUuid()));
-		assertEquals(0, getSampleFacade().getAllAfter(null, userUuid).size());
+		assertNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
 	}
 
 	@Test
@@ -339,6 +339,39 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// this should throw an exception
 		exception.expect(UnsupportedOperationException.class);
 		firstCase = getCaseFacade().saveCase(firstCase);
+	}
+	
+	@Test
+	public void testArchiveAndDearchiveCase() {
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
+				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
+				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
+		Date testStartDate = new Date();
+		
+		// getAllActiveCases and getAllUuids should return length 1
+		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).size());
+		assertEquals(1, getCaseFacade().getAllActiveUuids(user.getUuid()).size());
+		
+		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
+		
+		// getAllActiveCases and getAllUuids should return length 0
+		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).size());
+		assertEquals(0, getCaseFacade().getAllActiveUuids(user.getUuid()).size());
+		
+		// getArchivedUuidsSince should return length 1
+		assertEquals(1, getCaseFacade().getArchivedUuidsSince(user.getUuid(), testStartDate).size());
+		
+		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), false);
+
+		// getAllActiveCases and getAllUuids should return length 1
+		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).size());
+		assertEquals(1, getCaseFacade().getAllActiveUuids(user.getUuid()).size());
+
+		// getArchivedUuidsSince should return length 0
+		assertEquals(0, getCaseFacade().getArchivedUuidsSince(user.getUuid(), testStartDate).size());
 	}
 
 }

@@ -8,10 +8,13 @@ import android.util.Log;
 import com.google.android.gms.analytics.Tracker;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteria;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
@@ -19,6 +22,7 @@ import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelpe
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.ContactDtoHelper;
 import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.event.EventParticipantDtoHelper;
@@ -70,12 +74,17 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                 case Changes:
                     // infrastructure always has to be pulled - otherwise referenced data may be lost (e.g. #586)
                     pullInfrastructure();
+                    // pull and remove archived entities when the last time this has been done is more than 24 hours ago
+                    if (ConfigProvider.getLastArchivedSyncDate() == null || DateHelper.getFullDaysBetween(ConfigProvider.getLastArchivedSyncDate(), new Date()) >= 1) {
+                        pullAndRemoveArchivedUuidsSince(ConfigProvider.getLastArchivedSyncDate());
+                    }
                     synchronizeChangedData();
                     break;
                 case Complete:
                     pullMissingAndDeleteInvalidInfrastructure();
                     pullInfrastructure();
                     pullMissingAndDeleteInvalidData();
+                    pullAndRemoveArchivedUuidsSince(ConfigProvider.getLastArchivedSyncDate());
                     synchronizeChangedData();
                     break;
                 case CompleteAndRepull:
@@ -83,6 +92,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                     pullInfrastructure();
                     repullData();
                     pullMissingAndDeleteInvalidData();
+                    pullAndRemoveArchivedUuidsSince(ConfigProvider.getLastArchivedSyncDate());
                     synchronizeChangedData();
                     break;
                 default:
@@ -423,6 +433,28 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
                 Log.d(dao.getTableName(), "Pulled and saved " + result.size());
             }
+        }
+    }
+
+    private void pullAndRemoveArchivedUuidsSince(Date since) throws ServerConnectionException, ServerCommunicationException {
+        Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullArchivedUuidsSince");
+
+        try {
+            // Cases
+            List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+            for (String caseUuid : caseUuids) {
+                DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
+            }
+
+            // Events
+            List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+            for (String eventUuid : eventUuids) {
+                DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
+            }
+
+            ConfigProvider.setLastArchivedSyncDate(new Date());
+        } catch (SQLException e) {
+            Log.e(SynchronizeDataAsync.class.getSimpleName(), "pullArchivedUuidsSince failed: " + e.getMessage());
         }
     }
 

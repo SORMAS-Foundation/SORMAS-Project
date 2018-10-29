@@ -35,7 +35,7 @@ public class TaskResource {
 	public List<TaskDto> getAll(@Context SecurityContext sc, @PathParam("since") long since) {
 
 		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<TaskDto> result = FacadeProvider.getTaskFacade().getAllAfter(new Date(since), userDto.getUuid()); 
+		List<TaskDto> result = FacadeProvider.getTaskFacade().getAllActiveTasksAfter(new Date(since), userDto.getUuid()); 
 		return result;
 	}
 	
@@ -62,10 +62,10 @@ public class TaskResource {
 	
 	@GET
 	@Path("/uuids")
-	public List<String> getAllUuids(@Context SecurityContext sc) {
+	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
 		
 		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getTaskFacade().getAllUuids(userDto.getUuid());
+		List<String> uuids = FacadeProvider.getTaskFacade().getAllActiveUuids(userDto.getUuid());
 		return uuids;
 	}
 }

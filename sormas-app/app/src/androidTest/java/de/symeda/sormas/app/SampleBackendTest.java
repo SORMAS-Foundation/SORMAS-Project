@@ -41,7 +41,7 @@ public class SampleBackendTest {
     @Test
     public void shouldCreateSample() {
         assertThat(DatabaseHelper.getSampleDao().queryForAll().size(), is(0));
-        TestEntityCreator.createSample();
+        TestEntityCreator.createSample(null);
 
         assertThat(DatabaseHelper.getSampleDao().queryForAll().size(), is(1));
     }
@@ -50,7 +50,7 @@ public class SampleBackendTest {
     public void shouldCreateSampleTest() {
         assertThat(DatabaseHelper.getSampleTestDao().queryForAll().size(), is(0));
 
-        Sample sample = TestEntityCreator.createSample();
+        Sample sample = TestEntityCreator.createSample(null);
         TestEntityCreator.createSampleTest(sample);
 
         assertThat(DatabaseHelper.getSampleTestDao().queryForAll().size(), is(1));
@@ -58,7 +58,7 @@ public class SampleBackendTest {
 
     @Test
     public void shouldMergeSamplesAsExpected() throws DaoException {
-        Sample sample = TestEntityCreator.createSample();
+        Sample sample = TestEntityCreator.createSample(null);
         SampleTest sampleTest = TestEntityCreator.createSampleTest(sample);
 
         sample.setComment("AppSampleComment");
@@ -89,7 +89,7 @@ public class SampleBackendTest {
 
     @Test
     public void shouldAcceptAsExpected() throws DaoException {
-        Sample sample = TestEntityCreator.createSample();
+        Sample sample = TestEntityCreator.createSample(null);
         assertThat(sample.isModified(), is(false));
 
         sample.setComment("NewSampleComment");

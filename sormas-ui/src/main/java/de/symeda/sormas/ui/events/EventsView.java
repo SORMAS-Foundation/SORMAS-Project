@@ -46,7 +46,7 @@ public class EventsView extends AbstractView {
 	private VerticalLayout gridLayout;
 
 	private boolean showArchivedEvents = false;
-	
+
 	// Bulk operations
 	private MenuItem archiveItem;
 	private MenuItem dearchiveItem;
@@ -161,15 +161,19 @@ public class EventsView extends AbstractView {
 					if (!showArchivedEvents) {
 						switchArchivedActiveButton.setCaption("Show archived events");
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
-						dearchiveItem.setVisible(false);
-						archiveItem.setVisible(true);
+						if (archiveItem != null && dearchiveItem != null) {
+							dearchiveItem.setVisible(false);
+							archiveItem.setVisible(true);
+						}
 						grid.getEventCriteria().archived(false);
 						grid.reload();
 					} else {
 						switchArchivedActiveButton.setCaption("Show active events");
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
-						archiveItem.setVisible(false);
-						dearchiveItem.setVisible(true);
+						if (archiveItem != null && dearchiveItem != null) {
+							archiveItem.setVisible(false);
+							dearchiveItem.setVisible(true);
+						}
 						grid.getEventCriteria().archived(true);
 						grid.reload();
 					}
@@ -196,7 +200,7 @@ public class EventsView extends AbstractView {
 					});
 				};
 				bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
-				
+
 				Command archiveCommand = selectedItem -> {
 					ControllerProvider.getEventController().archiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
 						public void run() {
@@ -206,7 +210,7 @@ public class EventsView extends AbstractView {
 					});
 				};
 				archiveItem = bulkOperationsItem.addItem("Archive", FontAwesome.ARCHIVE, archiveCommand);
-				
+
 				Command dearchiveCommand = selectedItem -> {
 					ControllerProvider.getEventController().dearchiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
 						public void run() {

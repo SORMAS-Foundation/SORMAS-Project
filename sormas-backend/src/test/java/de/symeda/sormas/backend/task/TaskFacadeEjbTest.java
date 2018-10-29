@@ -9,6 +9,17 @@ import java.util.List;
 
 import org.junit.Test;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.EventType;
+import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.task.DashboardTaskDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
@@ -27,7 +38,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		creator.createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, DateHelper.addDays(new Date(), 1), user.toReference());
+		creator.createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, null, DateHelper.addDays(new Date(), 1), user.toReference());
 		
 		List<DashboardTaskDto> dashboardTaskDtos = getTaskFacade().getAllByUserForDashboard(TaskStatus.PENDING, null, null, user.getUuid());
 		
@@ -42,7 +53,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
 		String adminUuid = admin.getUuid();
-		TaskDto task = creator.createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, DateHelper.addDays(new Date(), 1), user.toReference());
+		TaskDto task = creator.createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, null, DateHelper.addDays(new Date(), 1), user.toReference());
 		
 		// Database should contain the created task
 		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
@@ -61,5 +72,43 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		
 		// Database should contain the created task
 		assertNotNull(getTaskFacade().getIndexList(user.getUuid(), null));
+	}
+	
+	@Test
+	public void testArchivedTaskNotGettingTransfered() {
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
+				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
+				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze.toReference(), new Date(), new Date());
+		LocationDto eventLocation = new LocationDto();
+		eventLocation.setDistrict(getDistrictFacade().getDistrictReferenceByUuid(rdcf.district.getUuid()));
+		EventDto event = creator.createEvent(EventType.OUTBREAK, EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE, DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, eventLocation);
+		
+		creator.createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, null, DateHelper.addDays(new Date(), 1), user.toReference());
+		creator.createTask(TaskContext.CASE, TaskType.OTHER, TaskStatus.PENDING, caze.toReference(), null, null, DateHelper.addDays(new Date(), 1), user.toReference());
+		creator.createTask(TaskContext.CONTACT, TaskType.OTHER, TaskStatus.PENDING, null, contact.toReference(), null, DateHelper.addDays(new Date(), 1), user.toReference());
+		creator.createTask(TaskContext.EVENT, TaskType.OTHER, TaskStatus.PENDING, null, null, event.toReference(), DateHelper.addDays(new Date(), 1), user.toReference());
+		
+		// getAllActiveTasks and getAllUuids should return length 4
+		assertEquals(4, getTaskFacade().getAllActiveTasksAfter(null, user.getUuid()).size());
+		assertEquals(4, getTaskFacade().getAllActiveUuids(user.getUuid()).size());
+		
+		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
+		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), true);
+		
+		// getAllActiveTasks and getAllUuids should return length 1
+		assertEquals(1, getTaskFacade().getAllActiveTasksAfter(null, user.getUuid()).size());
+		assertEquals(1, getTaskFacade().getAllActiveUuids(user.getUuid()).size());
+
+		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), false);
+		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), false);
+
+		// getAllActiveTasks and getAllUuids should return length 4
+		assertEquals(4, getTaskFacade().getAllActiveTasksAfter(null, user.getUuid()).size());
+		assertEquals(4, getTaskFacade().getAllActiveUuids(user.getUuid()).size());
 	}
 }

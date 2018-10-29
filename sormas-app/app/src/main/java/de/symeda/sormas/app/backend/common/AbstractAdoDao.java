@@ -108,6 +108,9 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
     }
 
     protected void initEmbedded(ADO ado) {
+        if (ado == null) {
+            return; // This is okay because there simply might not be a result
+        }
 
         try {
             // ignore parent property
@@ -808,6 +811,11 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
     public void deleteCascade(ADO ado) throws SQLException {
 
         try {
+            if (ado.isModified() && ado.getClass().getAnnotation(EmbeddedAdo.class) == null) {
+                // let user know if changes are lost (not for embedded entities)
+                DatabaseHelper.getSyncLogDao().createWithParentStack(ado.toString(), "Changes dropped because you have no longer access to this entity.");
+                // TODO include JSON backup
+            }
             delete(ado);
 
             // ignore parent property
@@ -854,11 +862,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                     // don't delete new entities
                     continue;
                 } else {
-                    if (invalidEntity.isModified()) {
-                        // let user know if changes are lost
-                        DatabaseHelper.getSyncLogDao().createWithParentStack(invalidEntity.toString(), "Changes dropped because you have no longer access to this entity.");
-                        // TODO include JSON backup
-                    }
                     // delete with all embedded entities
                     deleteCascade(invalidEntity);
                     deletionCounter++;

@@ -92,9 +92,11 @@ public class TestEntityCreator {
         return DatabaseHelper.getCaseDao().queryForIdWithEmbedded(caze.getId());
     }
 
-    public static Contact createContact() {
+    public static Contact createContact(Case caze) {
         Person person = createPerson("Thierry", "Henry");
-        Case caze = createCase();
+        if (caze == null) {
+            caze = createCase();
+        }
 
         Contact contact = DatabaseHelper.getContactDao().build();
         contact.setPerson(person);
@@ -139,8 +141,10 @@ public class TestEntityCreator {
         return DatabaseHelper.getEventDao().queryForIdWithEmbedded(event.getId());
     }
 
-    public static Sample createSample() {
-        Case caze = createCase();
+    public static Sample createSample(Case caze) {
+        if (caze == null) {
+            caze = createCase();
+        }
         Date sampleDateTime = DateHelper.subtractDays(new Date(), 1);
         Facility lab = DatabaseHelper.getFacilityDao().queryForAll().get(0);
         SampleMaterial material = SampleMaterial.BLOOD;
@@ -269,6 +273,28 @@ public class TestEntityCreator {
         task.setTaskType(TaskType.CASE_INVESTIGATION);
         task.setTaskStatus(taskStatus);
         task.setCaze(caze);
+        task.setAssigneeUser(user);
+
+        try {
+            DatabaseHelper.getTaskDao().saveAndSnapshot(task);
+            DatabaseHelper.getTaskDao().accept(task);
+        } catch (DaoException e) {
+            throw new RuntimeException(e);
+        }
+
+        return DatabaseHelper.getTaskDao().queryForIdWithEmbedded(task.getId());
+    }
+
+    public static Task createEventTask(Event event, TaskStatus taskStatus, User user) {
+        TaskDto taskDto = new TaskDto();
+        Task task = new TaskDtoHelper().fillOrCreateFromDto(null, taskDto);
+        task.setUuid(DataHelper.createUuid());
+        task.setCreationDate(new Date());
+        task.setChangeDate(new Date());
+        task.setTaskContext(TaskContext.CASE);
+        task.setTaskType(TaskType.CASE_INVESTIGATION);
+        task.setTaskStatus(taskStatus);
+        task.setEvent(event);
         task.setAssigneeUser(user);
 
         try {
