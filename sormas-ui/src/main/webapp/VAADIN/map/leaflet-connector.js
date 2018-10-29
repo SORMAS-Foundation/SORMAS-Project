@@ -76,7 +76,7 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 
 	this.onStateChange = function () {
 
-		map.setView([this.getState().center.lat, this.getState().center.lon], this.getState().zoom);
+		map.setView([this.getState().centerLatitude, this.getState().centerLongitude], this.getState().zoom);
 		
 		if (this.getState().tileLayerVisible) {
 			openStreetMapsLayer.addTo(map);

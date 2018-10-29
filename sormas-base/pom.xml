@@ -253,18 +253,6 @@
 				<version>${vaadin.version}</version>
 				<scope>provided</scope>
 			</dependency>
-
-			<dependency>
-			    <groupId>org.vaadin.addon</groupId>
-			    <artifactId>v-leaflet</artifactId>
-			    <version>1.0.6</version>
-			</dependency>
-
-			<dependency>
-			    <groupId>org.vaadin.addons</groupId>
-    			<artifactId>v-leaflet-markercluster</artifactId>
-				<version>1.0.5-v7</version>
-			</dependency>
 			
 			<dependency>
 				<groupId>org.vaadin.addons</groupId>

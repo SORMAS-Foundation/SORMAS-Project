@@ -16,7 +16,7 @@
 
     <inherits name="com.explicatis.ext_token_field.WidgetSet" />
 
-    <inherits name="org.vaadin.addon.leaflet.Widgetset" />
+    
 
-    <inherits name="org.vaadin.addon.leaflet.markercluster.Widgetset" />
+    
 </module>

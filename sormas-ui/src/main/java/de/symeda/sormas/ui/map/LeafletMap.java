@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vaadin.addon.leaflet.shared.Point;
 
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.StyleSheet;
@@ -47,7 +46,8 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 	public LeafletMap() {
 		setId(getDomId());
 		getState().zoom = 5;
-		getState().center = new Point(51.505, -0.09);
+		getState().centerLatitude = 51.505;
+		getState().centerLongitude = -0.09;
 		getState().tileLayerVisible = true;
 		getState().tileLayerOpacity = 1;
 
@@ -88,7 +88,8 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 	}
 
 	public void setCenter(double lat, double lon) {
-		getState().center = new Point(lat, lon);
+		getState().centerLatitude = lat;
+		getState().centerLongitude = lon;
 	}
 	
 	public void setTileLayerVisible(boolean tileLayerVisible) {

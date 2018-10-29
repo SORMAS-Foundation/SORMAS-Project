@@ -21,16 +21,6 @@
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-client-compiler</artifactId>
 		</dependency>
-		
-		<dependency>
-		    <groupId>org.vaadin.addon</groupId>
-		    <artifactId>v-leaflet</artifactId>
-		</dependency>
-		
-		<dependency>
-		    <groupId>org.vaadin.addons</groupId>
-   			<artifactId>v-leaflet-markercluster</artifactId>
-		</dependency>
 			
 		<dependency>
 		   <groupId>org.vaadin.addons</groupId>

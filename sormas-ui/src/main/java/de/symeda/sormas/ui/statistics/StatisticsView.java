@@ -9,9 +9,6 @@ import java.util.TreeMap;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.text.StringEscapeUtils;
-import org.vaadin.addon.leaflet.LMap;
-import org.vaadin.addon.leaflet.LPolygon;
-import org.vaadin.addon.leaflet.shared.Point;
 
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
@@ -58,6 +55,7 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.map.LeafletMap;
+import de.symeda.sormas.ui.map.LeafletPolygon;
 import de.symeda.sormas.ui.statistics.StatisticsFilterElement.TokenizableValue;
 import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisualizationChartType;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -612,6 +610,8 @@ public class StatisticsView extends AbstractStatisticsView {
 
 		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllAsReference();
 
+		List<LeafletPolygon> outlinePolygones = new ArrayList<LeafletPolygon>();
+
 		// draw outlines of all regions
 		for (RegionReferenceDto region : regions) {
 
@@ -620,20 +620,21 @@ public class StatisticsView extends AbstractStatisticsView {
 				continue;
 			}
 
-			LPolygon[] regionPolygons = new LPolygon[regionShape.length];
 			for (int part = 0; part < regionShape.length; part++) {
 				GeoLatLon[] regionShapePart = regionShape[part];
-				LPolygon polygon = new LPolygon(Arrays.stream(regionShapePart)
-						.map(c -> new Point(c.getLat(), c.getLon())).toArray(Point[]::new));
-
-				polygon.setCaption(region.getCaption()); // TODO #771 make caption work
-				polygon.setWeight(1);
-				polygon.setColor("#888");
-				polygon.setFillOpacity(0d);
-				regionPolygons[part] = polygon;
-				map.addComponent(polygon);
+				LeafletPolygon polygon = new LeafletPolygon();
+				polygon.setCaption(region.getCaption());
+				polygon.setOptions("{\"weight\": 1, \"color\": '#888', \"fillOpacity\": 0.02}");
+				// fillOpacity is used, so we can still hover the region
+				double[][] latLons = Arrays.stream(regionShapePart)
+						.map(latLon -> new double[] { latLon.getLat(), latLon.getLon() })
+						.toArray(size -> new double[size][]);
+				polygon.setLatLons(latLons);
+				outlinePolygones.add(polygon);
 			}
 		}
+
+		map.addPolygonGroup("outlines", outlinePolygones);
 
 		resultData.sort((a, b) -> {
 			return Long.compare((Long) a[0], (Long) b[0]);
@@ -646,12 +647,14 @@ public class StatisticsView extends AbstractStatisticsView {
 		BigDecimal valuesUpperQuartile = new BigDecimal(
 				resultData.size() > 0 ? (Long) resultData.get((int) (resultData.size() * 0.75))[0] : null);
 
+		List<LeafletPolygon> resultPolygons = new ArrayList<LeafletPolygon>();
+
 		// Draw relevant district fills
 		for (Object[] resultRow : resultData) {
 
-			ReferenceDto region = (ReferenceDto) resultRow[1];
-			String shapeUuid = region.getUuid();
-			BigDecimal shapeValue = new BigDecimal((Long) resultRow[0]);
+			ReferenceDto regionOrDistrict = (ReferenceDto) resultRow[1];
+			String shapeUuid = regionOrDistrict.getUuid();
+			BigDecimal regionOrDistrictValue = new BigDecimal((Long) resultRow[0]);
 			GeoLatLon[][] shape;
 			switch (visualizationComponent.getVisualizationMapType()) {
 			case REGIONS:
@@ -668,45 +671,34 @@ public class StatisticsView extends AbstractStatisticsView {
 				continue;
 			}
 
-			LPolygon[] shapePolygons = new LPolygon[shape.length];
 			for (int part = 0; part < shape.length; part++) {
 				GeoLatLon[] shapePart = shape[part];
-				LPolygon polygon = new LPolygon(
-						Arrays.stream(shapePart).map(c -> new Point(c.getLat(), c.getLon())).toArray(Point[]::new));
-
-				polygon.setCaption(region.getCaption()); // TODO #771 make caption work
-				polygon.setWeight(1);
-				polygon.setColor("#000");
-
-				if (shapeValue.compareTo(BigDecimal.ZERO) == 0) {
-					polygon.setFillOpacity(0d);
-				} else if (shapeValue.compareTo(valuesLowerQuartile) < 0) {
-					polygon.setFillColor("#FEDD6C");
-					polygon.setFillOpacity(0.5);
-				} else if (shapeValue.compareTo(valuesMedian) < 0) {
-					polygon.setFillColor("#FDBF44");
-					polygon.setFillOpacity(0.5);
-				} else if (shapeValue.compareTo(valuesUpperQuartile) < 0) {
-					polygon.setFillColor("#F47B20");
-					polygon.setFillOpacity(0.5);
+				String fillColor;
+				if (regionOrDistrictValue.compareTo(BigDecimal.ZERO) == 0) {
+					fillColor = "#000";
+				} else if (regionOrDistrictValue.compareTo(valuesLowerQuartile) < 0) {
+					fillColor = "#FEDD6C";
+				} else if (regionOrDistrictValue.compareTo(valuesMedian) < 0) {
+					fillColor = "#FDBF44";
+				} else if (regionOrDistrictValue.compareTo(valuesUpperQuartile) < 0) {
+					fillColor = "#F47B20";
 				} else {
-					polygon.setFillColor("#ED1B24");
-					polygon.setFillOpacity(0.5);
+					fillColor = "#ED1B24";
 				}
 
-				// if (caseMeasure == CaseMeasure.CASE_INCIDENCE) {
-				// if (district.getPopulation() == null || district.getPopulation() <= 0) {
-				// // grey when region has no population data
-				// emptyPopulationDistrictPresent = true;
-				// polygon.setFillColor("#999999");
-				// polygon.setFillOpacity(0.5);
-				// }
-				// }
-
-				shapePolygons[part] = polygon;
-				map.addComponent(polygon);
+				LeafletPolygon polygon = new LeafletPolygon();
+				polygon.setCaption(regionOrDistrict.getCaption() + "<br>" + regionOrDistrictValue);
+				polygon.setOptions("{\"stroke\": false, \"color\": '" + fillColor + "', \"fillOpacity\": 0.5}");
+				// fillOpacity is used, so we can still hover the region
+				double[][] latLons = Arrays.stream(shapePart)
+						.map(latLon -> new double[] { latLon.getLat(), latLon.getLon() })
+						.toArray(size -> new double[size][]);
+				polygon.setLatLons(latLons);
+				resultPolygons.add(polygon);
 			}
 		}
+		map.addPolygonGroup("results", resultPolygons);
+
 		mapLayout.addComponent(map);
 		mapLayout.setExpandRatio(map, 1);
 
