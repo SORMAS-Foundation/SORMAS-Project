@@ -57,6 +57,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 import de.symeda.sormas.ui.highcharts.HighChart;
+import de.symeda.sormas.ui.map.LeafletMap;
 import de.symeda.sormas.ui.statistics.StatisticsFilterElement.TokenizableValue;
 import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisualizationChartType;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -601,13 +602,11 @@ public class StatisticsView extends AbstractStatisticsView {
 		mapLayout.setWidth(100, Unit.PERCENTAGE);
 		mapLayout.setHeightUndefined();
 
-		LMap map = new LMap();
-		// map.addStyleName("no-tiles");
+		LeafletMap map = new LeafletMap();
+		map.setTileLayerOpacity(0.2f);
 		map.setWidth(100, Unit.PERCENTAGE);
 		map.setHeight(580, Unit.PIXELS);
-		map.setMinZoom(4);
-		map.setMaxZoom(16);
-		map.setZoomLevel(6);
+		map.setZoom(6);
 		GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfAllRegions();
 		map.setCenter(mapCenter.getLon(), mapCenter.getLat());
 

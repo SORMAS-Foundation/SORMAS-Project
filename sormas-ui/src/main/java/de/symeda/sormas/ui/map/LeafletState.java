@@ -14,4 +14,7 @@ public class LeafletState extends JavaScriptComponentState {
 	public int zoom;
 	
 	public Point center; 
+	
+	public boolean tileLayerVisible;
+	public float tileLayerOpacity;
 }

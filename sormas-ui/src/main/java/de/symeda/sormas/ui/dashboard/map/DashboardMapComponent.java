@@ -688,11 +688,13 @@ public class DashboardMapComponent extends VerticalLayout implements LeafletClic
 		polygonDistricts.clear();
 
 		emptyPopulationDistrictPresent = false;
+		map.setTileLayerOpacity(1);
 	}
 
 	private void showRegionsShapes(CaseMeasure caseMeasure, Date fromDate, Date toDate, Disease disease) {
 
 		clearRegionShapes();
+		map.setTileLayerOpacity(0.2f);
 
 		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllAsReference();
 		List<LeafletPolygon> regionPolygons = new ArrayList<LeafletPolygon>();
@@ -708,7 +710,8 @@ public class DashboardMapComponent extends VerticalLayout implements LeafletClic
 			for (GeoLatLon[] regionShapePart : regionShape) {
 				LeafletPolygon polygon = new LeafletPolygon();
 				polygon.setCaption(region.getCaption());
-				polygon.setOptions("{\"weight\": 1, \"color\": '#444', \"fillOpacity\": 0.1}");
+				polygon.setOptions("{\"weight\": 1, \"color\": '#444', \"fillOpacity\": 0.02}");
+				// fillOpacity is used, so we can still hover the region
 				double[][] latLons = Arrays.stream(regionShapePart)
 					.map(latLon -> new double[] {latLon.getLat(), latLon.getLon()})
 					.toArray(size -> new double[size][]);

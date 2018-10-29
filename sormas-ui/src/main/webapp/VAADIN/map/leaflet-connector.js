@@ -1,7 +1,7 @@
 window.de_symeda_sormas_ui_map_LeafletMap = function () {
 
 	// make sure to manually reload this after making changes, because it is being cached  
-	
+
 	var mapIcons = [
 		icon("red-dot"),
 		icon("red-dot-small"), 
@@ -45,15 +45,45 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 	
 	var connector = this;
 
-	var map = L.map(this.getElement()).setView([51.505, -0.09], 13);
-   
-	L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	var map = L.map(this.getElement(), { 
+		center: [51.505, -0.09], 
+		zoom: 13,
+		trackResize: true,
+		});
+	
+	// full-screen control
+	map.addControl(new L.Control.Fullscreen({
+		position: 'topright',
+	}));
+
+	// doesn't correctly work - for some reason the height is set to 100px (probably base don 100%)
+//	// print control
+//	var printControl = L.easyPrint({
+//		position: 'bottomright',
+//		sizeModes: ['Current'],
+//		filename: 'SORMAS Map Export',
+//		exportOnly: true,
+//	}).addTo(map);
+	
+	// update the map whenever the vaadin element is resized
+	this.addResizeListener(this.getElement(), function(o,b) {
+		map.invalidateSize(true);
+	});
+	
+	var openStreetMapsLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 	    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-	}).addTo(map);
+	});
 
 	this.onStateChange = function () {
 
 		map.setView([this.getState().center.lat, this.getState().center.lon], this.getState().zoom);
+		
+		if (this.getState().tileLayerVisible) {
+			openStreetMapsLayer.addTo(map);
+			openStreetMapsLayer.setOpacity(this.getState().tileLayerOpacity);
+		} else {
+			openStreetMapsLayer.remove();
+		}
 	};
 	
 	this.addMarkerGroup = function(groupId, markers) {

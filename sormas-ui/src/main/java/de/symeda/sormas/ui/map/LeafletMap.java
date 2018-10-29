@@ -24,8 +24,8 @@ import elemental.json.JsonArray;
  * 
  * @author Martin Wahnschaffe
  */
-@JavaScript({ "vaadin://map/leaflet.js", "vaadin://map/leaflet.markercluster.js", "vaadin://map/leaflet-connector.js" })
-@StyleSheet({ "vaadin://map/leaflet.css", "vaadin://map/MarkerCluster.css", "vaadin://map/MarkerCluster.Default.css" })
+@JavaScript({ "vaadin://map/leaflet.js", "vaadin://map/leaflet.fullscreen.js", "vaadin://map/leaflet-easy-print.js", "vaadin://map/leaflet.markercluster.js", "vaadin://map/leaflet-connector.js" })
+@StyleSheet({ "vaadin://map/leaflet.css", "vaadin://map/leaflet.fullscreen.css", "vaadin://map/MarkerCluster.css", "vaadin://map/MarkerCluster.Default.css" })
 public class LeafletMap extends AbstractJavaScriptComponent {
 
 	final static Logger logger = LoggerFactory.getLogger(LeafletMap.class);
@@ -48,6 +48,8 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 		setId(getDomId());
 		getState().zoom = 5;
 		getState().center = new Point(51.505, -0.09);
+		getState().tileLayerVisible = true;
+		getState().tileLayerOpacity = 1;
 
 		addFunction("onClick", new JavaScriptFunction() {
 			@Override
@@ -87,6 +89,14 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 
 	public void setCenter(double lat, double lon) {
 		getState().center = new Point(lat, lon);
+	}
+	
+	public void setTileLayerVisible(boolean tileLayerVisible) {
+		getState().tileLayerVisible = tileLayerVisible;
+	}
+
+	public void setTileLayerOpacity(float tileLayerOpacity) {
+		getState().tileLayerOpacity = tileLayerOpacity;
 	}
 
 	public void addMarkerClickListener(MarkerClickListener listener) {
