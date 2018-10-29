@@ -337,6 +337,8 @@ public class CaseService extends AbstractAdoService<Case> {
 					caze.get(Case.DISEASE),
 					facility.get(Facility.UUID),
 					person.get(Person.UUID),
+					person.get(Person.FIRST_NAME),
+					person.get(Person.LAST_NAME),
 					caze.get(Case.REPORT_LAT),
 					caze.get(Case.REPORT_LON),
 					casePersonAddress.get(Location.LATITUDE),
@@ -344,9 +346,6 @@ public class CaseService extends AbstractAdoService<Case> {
 					);
 
 			result = em.createQuery(cq).getResultList();
-			for (MapCaseDto mapCaseDto : result) {
-				mapCaseDto.setPerson(personFacade.getReferenceByUuid(mapCaseDto.getPersonUuid()));
-			}
 		} else {
 			result = Collections.emptyList();
 		}

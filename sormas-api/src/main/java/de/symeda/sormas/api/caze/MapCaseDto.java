@@ -18,7 +18,6 @@ public class MapCaseDto implements Serializable {
 	private CaseClassification caseClassification;
 	private Disease disease;
 	private String healthFacilityUuid;
-	private String personUuid;
 	private PersonReferenceDto person;
 	private Double reportLat;
 	private Double reportLon;
@@ -26,14 +25,14 @@ public class MapCaseDto implements Serializable {
 	private Double addressLon;
 
 	public MapCaseDto(String uuid, Date reportDate, CaseClassification caseClassification, Disease disease,
-			String healthFacilityUuid, String personUuid, Double reportLat, Double reportLon,
+			String healthFacilityUuid, String personUuid, String personFirstName, String personLastName, Double reportLat, Double reportLon,
 			Double addressLat, Double addressLon) {
 		this.uuid = uuid;
 		this.reportDate = reportDate;
 		this.caseClassification = caseClassification;
 		this.disease = disease;
 		this.healthFacilityUuid = healthFacilityUuid;
-		this.personUuid = personUuid;
+		this.person = new PersonReferenceDto(personUuid, personFirstName, personLastName);
 		this.reportLat = reportLat;
 		this.reportLon = reportLon;
 		this.addressLat = addressLat;
@@ -78,14 +77,6 @@ public class MapCaseDto implements Serializable {
 
 	public void setHealthFacilityUuid(String healthFacilityUuid) {
 		this.healthFacilityUuid = healthFacilityUuid;
-	}
-
-	public String getPersonUuid() {
-		return personUuid;
-	}
-
-	public void setPersonUuid(String personUuid) {
-		this.personUuid = personUuid;
 	}
 
 	public PersonReferenceDto getPerson() {
