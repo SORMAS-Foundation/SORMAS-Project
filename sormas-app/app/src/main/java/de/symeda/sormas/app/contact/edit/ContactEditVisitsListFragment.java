@@ -6,6 +6,7 @@ import android.view.View;
 
 import java.util.List;
 
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -69,7 +70,8 @@ public class ContactEditVisitsListFragment extends BaseEditFragment<FragmentForm
 
     @Override
     public boolean isShowNewAction() {
-        return ConfigProvider.getUser().hasUserRight(UserRight.VISIT_CREATE);
+        return ConfigProvider.getUser().hasUserRight(UserRight.VISIT_CREATE)
+                && getActivityRootData().getContactStatus() != ContactStatus.CONVERTED;
     }
 
     @Override

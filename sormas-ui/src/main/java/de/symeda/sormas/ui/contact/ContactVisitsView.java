@@ -15,6 +15,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -49,7 +50,7 @@ public class ContactVisitsView extends AbstractContactView {
 		gridLayout.addComponent(createTopBar());
 		gridLayout.addComponent(grid);
 		gridLayout.setExpandRatio(grid, 1);
-		
+
 		grid.getContainer().addItemSetChangeListener(e -> {
 			updateActiveStatusButtonCaption();
 		});
@@ -144,6 +145,12 @@ public class ContactVisitsView extends AbstractContactView {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		super.enter(event);
+		
+		// Hide the "New visit" button for converted contacts
+		if (FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid()).getContactStatus() == ContactStatus.CONVERTED) {
+			newButton.setVisible(false);
+		}
+		
 		grid.reload(getContactRef());
 		updateActiveStatusButtonCaption();
 	}
