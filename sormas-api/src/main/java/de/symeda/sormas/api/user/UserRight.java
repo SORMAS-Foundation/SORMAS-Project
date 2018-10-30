@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.symeda.sormas.api.I18nProperties;
+
 public enum UserRight {
 
 	CASE_CREATE(
@@ -337,9 +339,6 @@ public enum UserRight {
 			CONTACT_SUPERVISOR,
 			LAB_USER
 			),
-	TASK_ARCHIVE(
-			ADMIN
-			),
 	TASK_SEE_ARCHIVED(
 			ADMIN,
 			NATIONAL_USER,
@@ -537,5 +536,9 @@ public enum UserRight {
 
 	public Set<UserRole> getUserRoles() {
 		return userRoles;
+	}
+	
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
 	}
 }
