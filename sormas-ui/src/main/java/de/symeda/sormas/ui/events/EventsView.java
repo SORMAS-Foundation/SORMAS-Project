@@ -46,6 +46,7 @@ public class EventsView extends AbstractView {
 	private VerticalLayout gridLayout;
 
 	private boolean showArchivedEvents = false;
+	private String originalViewTitle;
 
 	// Bulk operations
 	private MenuItem archiveItem;
@@ -53,9 +54,10 @@ public class EventsView extends AbstractView {
 
 	public EventsView() {
 		super(VIEW_NAME);
+		
+		originalViewTitle = getViewTitleLabel().getValue();
 
 		grid = new EventGrid();
-
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
@@ -159,6 +161,7 @@ public class EventsView extends AbstractView {
 				switchArchivedActiveButton.addClickListener(e -> {
 					showArchivedEvents = !showArchivedEvents;
 					if (!showArchivedEvents) {
+						getViewTitleLabel().setValue(originalViewTitle);
 						switchArchivedActiveButton.setCaption("Show archived events");
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 						if (archiveItem != null && dearchiveItem != null) {
@@ -168,6 +171,7 @@ public class EventsView extends AbstractView {
 						grid.getEventCriteria().archived(false);
 						grid.reload();
 					} else {
+						getViewTitleLabel().setValue(I18nProperties.getPrefixFragment("View", viewName.replaceAll("/", ".") + ".archive"));
 						switchArchivedActiveButton.setCaption("Show active events");
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
 						if (archiveItem != null && dearchiveItem != null) {

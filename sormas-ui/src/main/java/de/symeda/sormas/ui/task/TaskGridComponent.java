@@ -9,6 +9,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -38,12 +39,16 @@ public class TaskGridComponent extends VerticalLayout {
 	private VerticalLayout gridLayout;
 
 	private boolean showArchivedTasks = false;
+	private Label viewTitleLabel;
+	private String originalViewTitle;
 
-	public TaskGridComponent() {
+	public TaskGridComponent(Label viewTitleLabel) {
 		setSizeFull();
-
+		
+		this.viewTitleLabel = viewTitleLabel;
+		originalViewTitle = viewTitleLabel.getValue();
+		
 		grid = new TaskGrid();
-
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createAssigneeFilterBar());
@@ -134,11 +139,13 @@ public class TaskGridComponent extends VerticalLayout {
 				switchArchivedActiveButton.addClickListener(e -> {
 					showArchivedTasks = !showArchivedTasks;
 					if (!showArchivedTasks) {
+						viewTitleLabel.setValue(originalViewTitle);
 						switchArchivedActiveButton.setCaption("Show archived tasks");
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 						grid.getTaskCriteria().archived(false);
 						grid.reload();
 					} else {
+						viewTitleLabel.setValue(I18nProperties.getPrefixFragment("View", TasksView.VIEW_NAME.replaceAll("/", ".") + ".archive"));
 						switchArchivedActiveButton.setCaption("Show active tasks");
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
 						grid.getTaskCriteria().archived(true);

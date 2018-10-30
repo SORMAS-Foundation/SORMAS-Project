@@ -84,9 +84,12 @@ public class ContactsView extends AbstractView {
 	private TextField searchField;
 	
 	private boolean showArchivedContacts = false;
+	private String originalViewTitle;
 
 	public ContactsView() {
 		super(VIEW_NAME);
+		
+		originalViewTitle = getViewTitleLabel().getValue();
 
 		grid = new ContactGrid(false);        
 		gridLayout = new VerticalLayout();
@@ -317,11 +320,13 @@ public class ContactsView extends AbstractView {
 				switchArchivedActiveButton.addClickListener(e -> {
 					showArchivedContacts = !showArchivedContacts;
 					if (!showArchivedContacts) {
+						getViewTitleLabel().setValue(originalViewTitle);
 						switchArchivedActiveButton.setCaption("Show archived contacts");
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 						grid.getFilterCriteria().archived(false);
 						grid.reload();
 					} else {
+						getViewTitleLabel().setValue(I18nProperties.getPrefixFragment("View", viewName.replaceAll("/", ".") + ".archive"));
 						switchArchivedActiveButton.setCaption("Show active contacts");
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
 						grid.getFilterCriteria().archived(true);

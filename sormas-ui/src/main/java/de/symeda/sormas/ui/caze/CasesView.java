@@ -89,6 +89,7 @@ public class CasesView extends AbstractView {
 	private Date toDate = null;
 
 	private boolean showArchivedCases = false;
+	private String originalViewTitle;
 
 	// Filters
 	private ComboBox outcomeFilter;
@@ -111,6 +112,8 @@ public class CasesView extends AbstractView {
 	public CasesView() {
 		super(VIEW_NAME);
 
+		originalViewTitle = getViewTitleLabel().getValue();
+		
 		grid = new CaseGrid();
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -438,6 +441,7 @@ public class CasesView extends AbstractView {
 				switchArchivedActiveButton.addClickListener(e -> {
 					showArchivedCases = !showArchivedCases;
 					if (!showArchivedCases) {
+						getViewTitleLabel().setValue(originalViewTitle);
 						switchArchivedActiveButton.setCaption("Show archived cases");
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 						if (archiveItem != null && dearchiveItem != null) {
@@ -447,6 +451,7 @@ public class CasesView extends AbstractView {
 						grid.getFilterCriteria().archived(false);
 						grid.reload();
 					} else {
+						getViewTitleLabel().setValue(I18nProperties.getPrefixFragment("View", viewName.replaceAll("/", ".") + ".archive"));
 						switchArchivedActiveButton.setCaption("Show active cases");
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
 						if (archiveItem != null && dearchiveItem != null) {
