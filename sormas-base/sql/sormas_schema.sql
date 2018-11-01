@@ -2499,9 +2499,9 @@ INSERT INTO schema_version (version_number, comment) VALUES (113, 'System case c
 
 -- 2018-10-23 Archiving for cases and events #843
 
-ALTER TABLE cases ADD COLUMN archived boolean;
-ALTER TABLE events ADD COLUMN archived boolean;
-ALTER TABLE contact_history ADD COLUMN archived boolean;
+ALTER TABLE cases ADD COLUMN archived boolean NOT NULL DEFAULT false;
+ALTER TABLE events ADD COLUMN archived boolean NOT NULL DEFAULT false;
+ALTER TABLE cases_history ADD COLUMN archived boolean;
 ALTER TABLE events_history ADD COLUMN archived boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (114, 'Archiving for cases and events #843');

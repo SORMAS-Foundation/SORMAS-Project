@@ -365,9 +365,9 @@ public class CaseController {
 			Button archiveCaseButton = new Button();
 			archiveCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
 			if (archived) {
-				archiveCaseButton.setCaption("De-Archive");
+				archiveCaseButton.setCaption(I18nProperties.getText("dearchive"));
 			} else {
-				archiveCaseButton.setCaption("Archive");
+				archiveCaseButton.setCaption(I18nProperties.getText("archive"));
 			}
 			archiveCaseButton.addClickListener(e -> {
 				editView.commit();
@@ -545,20 +545,20 @@ public class CaseController {
 
 	private void archiveOrDearchiveCase(String caseUuid, boolean archive) {
 		if (archive) {
-			Label contentLabel = new Label("Are you sure you want to archive this case? This will not remove it from the system or any statistics, but hide it from the normal case directory.");
-			VaadinUiUtil.showConfirmationPopup("Archive Case", contentLabel, "Yes", "No", 640, e -> {
+			Label contentLabel = new Label(String.format(I18nProperties.getText("archivePrompt"), I18nProperties.getText("case").toLowerCase(), I18nProperties.getText("case").toLowerCase()));
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getText("archiveCase"), contentLabel, I18nProperties.getText("yes"), I18nProperties.getText("no"), 640, e -> {
 				if (e.booleanValue() == true) {
 					FacadeProvider.getCaseFacade().archiveOrDearchiveCase(caseUuid, true);
-					Notification.show("Case has been archived.", Type.ASSISTIVE_NOTIFICATION);
+					Notification.show(String.format(I18nProperties.getText("archiveNotification"), I18nProperties.getText("case")), Type.ASSISTIVE_NOTIFICATION);
 					navigateToView(CaseDataView.VIEW_NAME, caseUuid, null);
 				}
 			});
 		} else {
-			Label contentLabel = new Label("Are you sure you want to de-archive this case? This will make it appear in the normal case directory again.");
-			VaadinUiUtil.showConfirmationPopup("De-Archive Case", contentLabel, "Yes", "No", 640, e -> {
+			Label contentLabel = new Label(String.format(I18nProperties.getText("dearchivePrompt"), I18nProperties.getText("case").toLowerCase(), I18nProperties.getText("case").toLowerCase()));
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getText("dearchiveCases"), contentLabel, I18nProperties.getText("yes"), I18nProperties.getText("no"), 640, e -> {
 				if (e.booleanValue()) {
 					FacadeProvider.getCaseFacade().archiveOrDearchiveCase(caseUuid, false);
-					Notification.show("Case has been de-archived.", Type.ASSISTIVE_NOTIFICATION);
+					Notification.show(String.format(I18nProperties.getText("dearchiveNotification"), I18nProperties.getText("case")), Type.ASSISTIVE_NOTIFICATION);
 					navigateToView(CaseDataView.VIEW_NAME, caseUuid, null);
 				}
 			});

@@ -54,7 +54,7 @@ public class EventsView extends AbstractView {
 
 	public EventsView() {
 		super(VIEW_NAME);
-		
+
 		originalViewTitle = getViewTitleLabel().getValue();
 
 		grid = new EventGrid();
@@ -155,14 +155,17 @@ public class EventsView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show archived/active cases button
-			if (LoginHelper.hasUserRight(UserRight.EVENT_SEE_ARCHIVED)) {
-				Button switchArchivedActiveButton = new Button("Show archived events");
+			if (LoginHelper.hasUserRight(UserRight.EVENT_VIEW_ARCHIVED)) {
+				Button switchArchivedActiveButton = new Button(I18nProperties.getText("showArchivedEvents"));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
+					if (!grid.getSelectedRows().isEmpty()) {
+						grid.deselectAll();
+					}
 					showArchivedEvents = !showArchivedEvents;
 					if (!showArchivedEvents) {
 						getViewTitleLabel().setValue(originalViewTitle);
-						switchArchivedActiveButton.setCaption("Show archived events");
+						switchArchivedActiveButton.setCaption(I18nProperties.getText("showArchivedEvents"));
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 						if (archiveItem != null && dearchiveItem != null) {
 							dearchiveItem.setVisible(false);
@@ -172,7 +175,7 @@ public class EventsView extends AbstractView {
 						grid.reload();
 					} else {
 						getViewTitleLabel().setValue(I18nProperties.getPrefixFragment("View", viewName.replaceAll("/", ".") + ".archive"));
-						switchArchivedActiveButton.setCaption("Show active events");
+						switchArchivedActiveButton.setCaption(I18nProperties.getText("showActiveEvents"));
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
 						if (archiveItem != null && dearchiveItem != null) {
 							archiveItem.setVisible(false);
@@ -213,7 +216,7 @@ public class EventsView extends AbstractView {
 						}
 					});
 				};
-				archiveItem = bulkOperationsItem.addItem("Archive", FontAwesome.ARCHIVE, archiveCommand);
+				archiveItem = bulkOperationsItem.addItem(I18nProperties.getText("archive"), FontAwesome.ARCHIVE, archiveCommand);
 
 				Command dearchiveCommand = selectedItem -> {
 					ControllerProvider.getEventController().dearchiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -223,7 +226,7 @@ public class EventsView extends AbstractView {
 						}
 					});
 				};
-				dearchiveItem = bulkOperationsItem.addItem("De-Archive", FontAwesome.ARCHIVE, dearchiveCommand);
+				dearchiveItem = bulkOperationsItem.addItem(I18nProperties.getText("dearchive"), FontAwesome.ARCHIVE, dearchiveCommand);
 				dearchiveItem.setVisible(false);
 
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);

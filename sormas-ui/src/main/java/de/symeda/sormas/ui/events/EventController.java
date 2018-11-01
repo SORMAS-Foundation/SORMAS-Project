@@ -133,9 +133,9 @@ public class EventController {
 			Button archiveEventButton = new Button();
 			archiveEventButton.addStyleName(ValoTheme.BUTTON_LINK);
 			if (archived) {
-				archiveEventButton.setCaption("De-Archive");
+				archiveEventButton.setCaption(I18nProperties.getText("dearchive"));
 			} else {
-				archiveEventButton.setCaption("Archive");
+				archiveEventButton.setCaption(I18nProperties.getText("archive"));
 			}
 			archiveEventButton.addClickListener(e -> {
 				editView.commit();
@@ -215,20 +215,20 @@ public class EventController {
 
 	private void archiveOrDearchiveEvent(String eventUuid, boolean archive) {
 		if (archive) {
-			Label contentLabel = new Label("Are you sure you want to archive this event? This will not remove it from the system or any statistics, but hide it from the normal event directory.");
-			VaadinUiUtil.showConfirmationPopup("Archive Event", contentLabel, "Yes", "No", 640, e -> {
+			Label contentLabel = new Label(String.format(I18nProperties.getText("archivePrompt"), I18nProperties.getText("event").toLowerCase(), I18nProperties.getText("event").toLowerCase()));
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getText("archiveEvent"), contentLabel, I18nProperties.getText("yes"), I18nProperties.getText("no"), 640, e -> {
 				if (e.booleanValue() == true) {
 					FacadeProvider.getEventFacade().archiveOrDearchiveEvent(eventUuid, true);
-					Notification.show("Event has been archived.", Type.ASSISTIVE_NOTIFICATION);
+					Notification.show(String.format(I18nProperties.getText("archiveNotification"), I18nProperties.getText("event")), Type.ASSISTIVE_NOTIFICATION);
 					navigateToData(eventUuid);
 				}
 			});
 		} else {
-			Label contentLabel = new Label("Are you sure you want to de-archive this event? This will make it appear in the normal event directory again.");
-			VaadinUiUtil.showConfirmationPopup("De-Archive Event", contentLabel, "Yes", "No", 640, e -> {
+			Label contentLabel = new Label(String.format(I18nProperties.getText("dearchivePrompt"), I18nProperties.getText("event").toLowerCase(), I18nProperties.getText("event").toLowerCase()));
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getText("dearchiveEvent"), contentLabel, I18nProperties.getText("yes"), I18nProperties.getText("no"), 640, e -> {
 				if (e.booleanValue()) {
 					FacadeProvider.getEventFacade().archiveOrDearchiveEvent(eventUuid, false);
-					Notification.show("Event has been de-archived.", Type.ASSISTIVE_NOTIFICATION);
+					Notification.show(String.format(I18nProperties.getText("dearchiveNotification"), I18nProperties.getText("event")), Type.ASSISTIVE_NOTIFICATION);
 					navigateToData(eventUuid);
 				}
 			});

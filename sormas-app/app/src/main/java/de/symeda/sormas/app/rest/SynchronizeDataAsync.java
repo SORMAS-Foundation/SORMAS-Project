@@ -84,7 +84,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                     pullMissingAndDeleteInvalidInfrastructure();
                     pullInfrastructure();
                     pullMissingAndDeleteInvalidData();
-                    pullAndRemoveArchivedUuidsSince(ConfigProvider.getLastArchivedSyncDate());
                     synchronizeChangedData();
                     break;
                 case CompleteAndRepull:
@@ -92,7 +91,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                     pullInfrastructure();
                     repullData();
                     pullMissingAndDeleteInvalidData();
-                    pullAndRemoveArchivedUuidsSince(ConfigProvider.getLastArchivedSyncDate());
                     synchronizeChangedData();
                     break;
                 default:

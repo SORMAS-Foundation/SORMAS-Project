@@ -435,14 +435,17 @@ public class CasesView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show archived/active cases button
-			if (LoginHelper.hasUserRight(UserRight.CASE_SEE_ARCHIVED)) {
-				Button switchArchivedActiveButton = new Button("Show archived cases");
+			if (LoginHelper.hasUserRight(UserRight.CASE_VIEW_ARCHIVED)) {
+				Button switchArchivedActiveButton = new Button(I18nProperties.getText("showArchivedCases"));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
+					if (!grid.getSelectedRows().isEmpty()) {
+						grid.deselectAll();
+					}
 					showArchivedCases = !showArchivedCases;
 					if (!showArchivedCases) {
 						getViewTitleLabel().setValue(originalViewTitle);
-						switchArchivedActiveButton.setCaption("Show archived cases");
+						switchArchivedActiveButton.setCaption(I18nProperties.getText("showArchivedCases"));
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 						if (archiveItem != null && dearchiveItem != null) {
 							dearchiveItem.setVisible(false);
@@ -452,7 +455,7 @@ public class CasesView extends AbstractView {
 						grid.reload();
 					} else {
 						getViewTitleLabel().setValue(I18nProperties.getPrefixFragment("View", viewName.replaceAll("/", ".") + ".archive"));
-						switchArchivedActiveButton.setCaption("Show active cases");
+						switchArchivedActiveButton.setCaption(I18nProperties.getText("showActiveCases"));
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
 						if (archiveItem != null && dearchiveItem != null) {
 							archiveItem.setVisible(false);
@@ -493,7 +496,7 @@ public class CasesView extends AbstractView {
 						}
 					});
 				};
-				archiveItem = bulkOperationsItem.addItem("Archive", FontAwesome.ARCHIVE, archiveCommand);
+				archiveItem = bulkOperationsItem.addItem(I18nProperties.getText("archive"), FontAwesome.ARCHIVE, archiveCommand);
 
 				Command dearchiveCommand = selectedItem -> {
 					ControllerProvider.getCaseController().dearchiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -503,7 +506,7 @@ public class CasesView extends AbstractView {
 						}
 					});
 				};
-				dearchiveItem = bulkOperationsItem.addItem("De-Archive", FontAwesome.ARCHIVE, dearchiveCommand);
+				dearchiveItem = bulkOperationsItem.addItem(I18nProperties.getText("dearchive"), FontAwesome.ARCHIVE, dearchiveCommand);
 				dearchiveItem.setVisible(false);
 
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);

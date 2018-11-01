@@ -97,21 +97,21 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
     public ADO queryUuidWithEmbedded(String uuid) {
         ADO result = queryUuid(uuid);
-        initEmbedded(result);
+        if (result != null) {
+            initEmbedded(result);
+        }
         return result;
     }
 
     public ADO queryForIdWithEmbedded(Long id) {
         ADO result = queryForId(id);
-        initEmbedded(result);
+        if (result != null) {
+            initEmbedded(result);
+        }
         return result;
     }
 
     protected void initEmbedded(ADO ado) {
-        if (ado == null) {
-            return; // This is okay because there simply might not be a result
-        }
-
         try {
             // ignore parent property
             EmbeddedAdo annotation = ado.getClass().getAnnotation(EmbeddedAdo.class);

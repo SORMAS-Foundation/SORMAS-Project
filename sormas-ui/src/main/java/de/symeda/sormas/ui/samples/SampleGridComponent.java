@@ -235,20 +235,20 @@ public class SampleGridComponent extends VerticalLayout {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show archived/active cases button
-			if (LoginHelper.hasUserRight(UserRight.CONTACT_SEE_ARCHIVED)) {
-				Button switchArchivedActiveButton = new Button("Show archived samples");
+			if (LoginHelper.hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
+				Button switchArchivedActiveButton = new Button(I18nProperties.getText("showArchivedSamples"));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
 					showArchivedSamples = !showArchivedSamples;
 					if (!showArchivedSamples) {
 						viewTitleLabel.setValue(originalViewTitle);
-						switchArchivedActiveButton.setCaption("Show archived samples");
+						switchArchivedActiveButton.setCaption(I18nProperties.getText("showArchivedSamples"));
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 						grid.getSampleCriteria().archived(false);
 						grid.reload();
 					} else {
 						viewTitleLabel.setValue(I18nProperties.getPrefixFragment("View", SamplesView.VIEW_NAME.replaceAll("/", ".") + ".archive"));
-						switchArchivedActiveButton.setCaption("Show active samples");
+						switchArchivedActiveButton.setCaption(I18nProperties.getText("showActiveSamples"));
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
 						grid.getSampleCriteria().archived(true);
 						grid.reload();

@@ -133,20 +133,20 @@ public class TaskGridComponent extends VerticalLayout {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show archived/active cases button
-			if (LoginHelper.hasUserRight(UserRight.TASK_SEE_ARCHIVED)) {
-				Button switchArchivedActiveButton = new Button("Show archived tasks");
+			if (LoginHelper.hasUserRight(UserRight.TASK_VIEW_ARCHIVED)) {
+				Button switchArchivedActiveButton = new Button(I18nProperties.getText("showArchivedTasks"));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
 					showArchivedTasks = !showArchivedTasks;
 					if (!showArchivedTasks) {
 						viewTitleLabel.setValue(originalViewTitle);
-						switchArchivedActiveButton.setCaption("Show archived tasks");
+						switchArchivedActiveButton.setCaption(I18nProperties.getText("showArchivedTasks"));
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 						grid.getTaskCriteria().archived(false);
 						grid.reload();
 					} else {
 						viewTitleLabel.setValue(I18nProperties.getPrefixFragment("View", TasksView.VIEW_NAME.replaceAll("/", ".") + ".archive"));
-						switchArchivedActiveButton.setCaption("Show active tasks");
+						switchArchivedActiveButton.setCaption(I18nProperties.getText("showActiveTasks"));
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
 						grid.getTaskCriteria().archived(true);
 						grid.reload();

@@ -314,20 +314,20 @@ public class ContactsView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show archived/active cases button
-			if (LoginHelper.hasUserRight(UserRight.CONTACT_SEE_ARCHIVED)) {
-				Button switchArchivedActiveButton = new Button("Show archived contacts");
+			if (LoginHelper.hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
+				Button switchArchivedActiveButton = new Button(I18nProperties.getText("showArchivedContacts"));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
 					showArchivedContacts = !showArchivedContacts;
 					if (!showArchivedContacts) {
 						getViewTitleLabel().setValue(originalViewTitle);
-						switchArchivedActiveButton.setCaption("Show archived contacts");
+						switchArchivedActiveButton.setCaption(I18nProperties.getText("showArchivedContacts"));
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 						grid.getFilterCriteria().archived(false);
 						grid.reload();
 					} else {
 						getViewTitleLabel().setValue(I18nProperties.getPrefixFragment("View", viewName.replaceAll("/", ".") + ".archive"));
-						switchArchivedActiveButton.setCaption("Show active contacts");
+						switchArchivedActiveButton.setCaption(I18nProperties.getText("showActiveContacts"));
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
 						grid.getFilterCriteria().archived(true);
 						grid.reload();
