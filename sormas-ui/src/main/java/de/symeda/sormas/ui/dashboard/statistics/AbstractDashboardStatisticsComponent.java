@@ -95,9 +95,7 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 				showMoreButton.setVisible(false);
 				showLessButton.setVisible(false);
 			} else if (!showLessButton.isVisible() && !showMoreButton.isVisible()) {
-				if (!showMoreButton.isVisible() && !showLessButton.isVisible()) {
-					showMoreButton.setVisible(true);
-				}
+				showMoreButton.setVisible(true);
 			}
 		}
 
