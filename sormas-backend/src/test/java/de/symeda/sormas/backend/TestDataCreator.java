@@ -133,6 +133,9 @@ public class TestDataCreator {
 		if (contact != null) {
 			task.setContact(contact);
 		}
+		if (event != null) {
+			task.setEvent(event);
+		}
 		task.setDueDate(dueDate);
 		task.setAssigneeUser(assigneeUser);
 		

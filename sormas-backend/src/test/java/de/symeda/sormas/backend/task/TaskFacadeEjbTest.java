@@ -93,9 +93,9 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		creator.createTask(TaskContext.CONTACT, TaskType.OTHER, TaskStatus.PENDING, null, contact.toReference(), null, DateHelper.addDays(new Date(), 1), user.toReference());
 		creator.createTask(TaskContext.EVENT, TaskType.OTHER, TaskStatus.PENDING, null, null, event.toReference(), DateHelper.addDays(new Date(), 1), user.toReference());
 		
-		// getAllActiveTasks and getAllUuids should return length 4
-		assertEquals(4, getTaskFacade().getAllActiveTasksAfter(null, user.getUuid()).size());
-		assertEquals(4, getTaskFacade().getAllActiveUuids(user.getUuid()).size());
+		// getAllActiveTasks and getAllUuids should return length 4+1 (case investigation)
+		assertEquals(5, getTaskFacade().getAllActiveTasksAfter(null, user.getUuid()).size());
+		assertEquals(5, getTaskFacade().getAllActiveUuids(user.getUuid()).size());
 		
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
 		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), true);
@@ -108,7 +108,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), false);
 
 		// getAllActiveTasks and getAllUuids should return length 4
-		assertEquals(4, getTaskFacade().getAllActiveTasksAfter(null, user.getUuid()).size());
-		assertEquals(4, getTaskFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(5, getTaskFacade().getAllActiveTasksAfter(null, user.getUuid()).size());
+		assertEquals(5, getTaskFacade().getAllActiveUuids(user.getUuid()).size());
 	}
 }
