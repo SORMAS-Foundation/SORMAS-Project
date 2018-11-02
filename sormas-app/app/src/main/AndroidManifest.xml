@@ -236,6 +236,7 @@
             android:theme="@style/ActivityWithOverflowMenuTheme"
             android:launchMode="singleTop" />
 
+        <!-- Only needed for androidTest - found no other way to manifest this -->
         <activity
             android:name=".TestBackendActivity" />
 
