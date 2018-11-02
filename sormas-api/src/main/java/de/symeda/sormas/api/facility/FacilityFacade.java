@@ -9,10 +9,6 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 
-/**
- * @author Christopher Riedel
- *
- */
 @Remote
 public interface FacilityFacade {
 
@@ -31,6 +27,8 @@ public interface FacilityFacade {
 	FacilityReferenceDto getFacilityReferenceByUuid(String uuid);
 	
 	FacilityDto getByUuid(String uuid);
+	
+	List<FacilityDto> getByUuids(List<String> uuids);
 
 	List<String> getAllUuids(String userUuid);
 

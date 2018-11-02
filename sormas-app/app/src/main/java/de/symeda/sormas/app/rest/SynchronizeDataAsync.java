@@ -339,11 +339,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new RegionDtoHelper().pullMissing(regionUuids);
         new DistrictDtoHelper().pullMissing(districtUuids);
         new CommunityDtoHelper().pullMissing(communityUuids);
-        // facilities need special handling
-        FacilityDtoHelper facilityDtoHelper = new FacilityDtoHelper();
-        if (facilityDtoHelper.isAnyMissing(facilityUuids)) {
-            facilityDtoHelper.repullEntities();
-        }
+        new FacilityDtoHelper().pullMissing(districtUuids);
         new UserDtoHelper().pullMissing(userUuids);
     }
 

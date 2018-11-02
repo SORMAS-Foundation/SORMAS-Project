@@ -15,12 +15,12 @@ import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.rest.ServerConnectionException;
-import de.symeda.sormas.app.rest.ServerCommunicationException;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.ServerCommunicationException;
+import de.symeda.sormas.app.rest.ServerConnectionException;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -46,7 +46,7 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
 
     @Override
     protected Call<List<FacilityDto>> pullByUuids(List<String> uuids) {
-        throw new UnsupportedOperationException("Use pullAllByRegionSince");
+        return RetroProvider.getFacilityFacade().pullByUuids(uuids);
     }
 
     protected Call<List<FacilityDto>> pullAllByRegionSince(Region region, long since) {
