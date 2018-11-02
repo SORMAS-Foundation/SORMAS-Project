@@ -13,9 +13,9 @@ public class LaboratoriesView extends AbstractFacilitiesView {
 	public LaboratoriesView() {
 		super(VIEW_NAME, true);
 		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			createButton.setCaption("new laboratory");
+			createButton.setCaption("New entry");
 			createButton.addClickListener(
-					e -> ControllerProvider.getInfrastructureController().createHealthFacility("Create new laboratory", true));
+					e -> ControllerProvider.getInfrastructureController().createHealthFacility(true));
 		}
 	}
 

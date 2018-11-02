@@ -40,11 +40,11 @@ public class RegionsView extends AbstractConfigurationView {
 		grid.reload();
 		
 		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			createButton = new Button("new region");
+			createButton = new Button("New entry");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
 			createButton.addClickListener(
-					e -> ControllerProvider.getInfrastructureController().createRegion("Create new region"));
+					e -> ControllerProvider.getInfrastructureController().createRegion());
 			addHeaderComponent(createButton);
 		}
 		

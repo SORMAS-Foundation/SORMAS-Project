@@ -21,9 +21,9 @@ public class InfrastructureController {
 
 	}
 
-	public void createHealthFacility(String caption, boolean laboratory) {
+	public void createHealthFacility(boolean laboratory) {
 		CommitDiscardWrapperComponent<FacilityEditForm> createComponent = getFacilityEditComponent(null, laboratory);
-		VaadinUiUtil.showModalPopupWindow(createComponent, caption);
+		VaadinUiUtil.showModalPopupWindow(createComponent, "Create entry");
 	}
 
 	public void editHealthFacility(String uuid) {
@@ -33,9 +33,9 @@ public class InfrastructureController {
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
 	}
 	
-	public void createRegion(String caption) {
+	public void createRegion() {
 		CommitDiscardWrapperComponent<RegionEditForm> createComponent = getRegionEditComponent(null);
-		VaadinUiUtil.showModalPopupWindow(createComponent, caption);
+		VaadinUiUtil.showModalPopupWindow(createComponent, "Create entry");
 	}
 	
 	public void editRegion(String uuid) {
@@ -45,9 +45,9 @@ public class InfrastructureController {
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
 	}
 	
-	public void createDistrict(String caption) {
+	public void createDistrict() {
 		CommitDiscardWrapperComponent<DistrictEditForm> createComponent = getDistrictEditComponent(null);
-		VaadinUiUtil.showModalPopupWindow(createComponent, caption);
+		VaadinUiUtil.showModalPopupWindow(createComponent, "Create entry");
 	}
 
 	public void editDistrict(String uuid) {
@@ -57,9 +57,9 @@ public class InfrastructureController {
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
 	}
 
-	public void createCommunity(String caption) {
+	public void createCommunity() {
 		CommitDiscardWrapperComponent<CommunityEditForm> createComponent = getCommunityEditComponent(null);
-		VaadinUiUtil.showModalPopupWindow(createComponent, caption);
+		VaadinUiUtil.showModalPopupWindow(createComponent, "Create entry");
 	}
 
 	public void editCommunity(String uuid) {
@@ -89,10 +89,10 @@ public class InfrastructureController {
 			public void onCommit() {
 				FacadeProvider.getFacilityFacade().saveFacility(editForm.getValue());
 				if (laboratory) {
-					Notification.show("New laboratory created", Type.ASSISTIVE_NOTIFICATION);
+					Notification.show("Entry created", Type.ASSISTIVE_NOTIFICATION);
 					SormasUI.get().getNavigator().navigateTo(LaboratoriesView.VIEW_NAME);
 				} else {
-					Notification.show("New health facility created", Type.ASSISTIVE_NOTIFICATION);
+					Notification.show("Entry created", Type.ASSISTIVE_NOTIFICATION);
 					SormasUI.get().getNavigator().navigateTo(HealthFacilitiesView.VIEW_NAME);
 				}
 			}
@@ -117,7 +117,7 @@ public class InfrastructureController {
 			@Override
 			public void onCommit() {
 				FacadeProvider.getRegionFacade().saveRegion(editForm.getValue());
-				Notification.show("New region created", Type.ASSISTIVE_NOTIFICATION);
+				Notification.show("Entry created", Type.ASSISTIVE_NOTIFICATION);
 				SormasUI.get().getNavigator().navigateTo(RegionsView.VIEW_NAME);
 			}
 		});
@@ -141,7 +141,7 @@ public class InfrastructureController {
 			@Override
 			public void onCommit() {
 				FacadeProvider.getDistrictFacade().saveDistrict(editForm.getValue());
-				Notification.show("New district created", Type.ASSISTIVE_NOTIFICATION);
+				Notification.show("Entry created", Type.ASSISTIVE_NOTIFICATION);
 				SormasUI.get().getNavigator().navigateTo(DistrictsView.VIEW_NAME);
 			}
 		});
@@ -165,7 +165,7 @@ public class InfrastructureController {
 			@Override
 			public void onCommit() {
 				FacadeProvider.getCommunityFacade().saveCommunity(editForm.getValue());
-				Notification.show("New community created", Type.ASSISTIVE_NOTIFICATION);
+				Notification.show("Entry created", Type.ASSISTIVE_NOTIFICATION);
 				SormasUI.get().getNavigator().navigateTo(CommunitiesView.VIEW_NAME);
 			}
 		});
