@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.statistics;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
@@ -601,7 +600,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		mapLayout.setHeightUndefined();
 
 		LeafletMap map = new LeafletMap();
-		map.setTileLayerOpacity(0.2f);
+		map.setTileLayerOpacity(0.5f);
 		map.setWidth(100, Unit.PERCENTAGE);
 		map.setHeight(580, Unit.PIXELS);
 		map.setZoom(6);
@@ -624,12 +623,9 @@ public class StatisticsView extends AbstractStatisticsView {
 				GeoLatLon[] regionShapePart = regionShape[part];
 				LeafletPolygon polygon = new LeafletPolygon();
 				polygon.setCaption(region.getCaption());
-				polygon.setOptions("{\"weight\": 1, \"color\": '#888', \"fillOpacity\": 0.02}");
 				// fillOpacity is used, so we can still hover the region
-				double[][] latLons = Arrays.stream(regionShapePart)
-						.map(latLon -> new double[] { latLon.getLat(), latLon.getLon() })
-						.toArray(size -> new double[size][]);
-				polygon.setLatLons(latLons);
+				polygon.setOptions("{\"weight\": 1, \"color\": '#888', \"fillOpacity\": 0.02}");
+				polygon.setLatLons(regionShapePart);
 				outlinePolygones.add(polygon);
 			}
 		}
@@ -688,12 +684,9 @@ public class StatisticsView extends AbstractStatisticsView {
 
 				LeafletPolygon polygon = new LeafletPolygon();
 				polygon.setCaption(regionOrDistrict.getCaption() + "<br>" + regionOrDistrictValue);
-				polygon.setOptions("{\"stroke\": false, \"color\": '" + fillColor + "', \"fillOpacity\": 0.5}");
 				// fillOpacity is used, so we can still hover the region
-				double[][] latLons = Arrays.stream(shapePart)
-						.map(latLon -> new double[] { latLon.getLat(), latLon.getLon() })
-						.toArray(size -> new double[size][]);
-				polygon.setLatLons(latLons);
+				polygon.setOptions("{\"stroke\": false, \"color\": '" + fillColor + "', \"fillOpacity\": 0.8}");
+				polygon.setLatLons(shapePart);
 				resultPolygons.add(polygon);
 			}
 		}

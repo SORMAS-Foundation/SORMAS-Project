@@ -1,6 +1,7 @@
 window.de_symeda_sormas_ui_map_LeafletMap = function () {
 
 	// make sure to manually reload this after making changes, because it is being cached  
+	// see https://leafletjs.com/reference-1.3.4.html
 
 	var mapIcons = [
 		icon("red-dot"),
@@ -56,7 +57,7 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 		position: 'topright',
 	}));
 
-	// doesn't correctly work - for some reason the height is set to 100px (probably base don 100%)
+	// doesn't correctly work - for some reason the height is set to 100px (probably based on 100%)
 //	// print control
 //	var printControl = L.easyPrint({
 //		position: 'bottomright',
@@ -94,7 +95,7 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 //		})
 		var markerGroup = L.featureGroup()
 			.addTo(map)
-			.on("click", markerGroupClick);
+			.on("click", featureGroupClick);
 		markerGroup.id = groupId;
 		
 		for (i=0; i<markers.length; i++) {
@@ -110,7 +111,7 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 		
 		var polygonGroup = L.featureGroup()
 			.addTo(map)
-			.on("click", markerGroupClick);
+			.on("click", featureGroupClick);
 		polygonGroup.id = groupId;
 		
 		for (i=0; i<polygons.length; i++) {
@@ -131,7 +132,8 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 		});
 	}
  	
-	function markerGroupClick(event) {
+	function featureGroupClick(event) {
+		// call to server
 		connector.onClick(event.target.id, event.layer.id);
 	}
 	

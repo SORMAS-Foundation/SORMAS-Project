@@ -77,6 +77,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 @import "components/exttokenfield.scss";
 @import "components/grid.scss";
 @import "components/label.scss";
+@import "components/leaflet.scss";
 @import "components/list.scss";
 @import "components/menu.scss";
 @import "components/notification.scss";
@@ -133,6 +134,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
   @include sormas-exttokenfield;
   @include sormas-grid;
   @include sormas-label;
+  @include sormas-leaflet;
   @include sormas-list;
   @include sormas-menu;
   @include sormas-notification;

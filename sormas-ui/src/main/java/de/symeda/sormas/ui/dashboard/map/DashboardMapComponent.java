@@ -3,7 +3,6 @@ package de.symeda.sormas.ui.dashboard.map;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -690,7 +689,7 @@ public class DashboardMapComponent extends VerticalLayout {
 	private void showRegionsShapes(CaseMeasure caseMeasure, Date fromDate, Date toDate, Disease disease) {
 
 		clearRegionShapes();
-		map.setTileLayerOpacity(0.2f);
+		map.setTileLayerOpacity(0.5f);
 
 		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllAsReference();
 		List<LeafletPolygon> regionPolygons = new ArrayList<LeafletPolygon>();
@@ -706,12 +705,9 @@ public class DashboardMapComponent extends VerticalLayout {
 			for (GeoLatLon[] regionShapePart : regionShape) {
 				LeafletPolygon polygon = new LeafletPolygon();
 				polygon.setCaption(region.getCaption());
-				polygon.setOptions("{\"weight\": 1, \"color\": '#444', \"fillOpacity\": 0.02}");
 				// fillOpacity is used, so we can still hover the region
-				double[][] latLons = Arrays.stream(regionShapePart)
-						.map(latLon -> new double[] { latLon.getLat(), latLon.getLon() })
-						.toArray(size -> new double[size][]);
-				polygon.setLatLons(latLons);
+				polygon.setOptions("{\"weight\": 1, \"color\": '#444', \"fillOpacity\": 0.02}");
+				polygon.setLatLons(regionShapePart);
 				regionPolygons.add(polygon);
 				polygonRegions.add(region);
 			}
@@ -790,11 +786,8 @@ public class DashboardMapComponent extends VerticalLayout {
 			for (GeoLatLon[] districtShapePart : districtShape) {
 				LeafletPolygon polygon = new LeafletPolygon();
 				polygon.setCaption(district.getName() + "<br>" + districtValue);
-				polygon.setOptions("{\"stroke\": false, \"color\": '" + fillColor + "', \"fillOpacity\": 0.5}");
-				double[][] latLons = Arrays.stream(districtShapePart)
-						.map(latLon -> new double[] { latLon.getLat(), latLon.getLon() })
-						.toArray(size -> new double[size][]);
-				polygon.setLatLons(latLons);
+				polygon.setOptions("{\"stroke\": false, \"color\": '" + fillColor + "', \"fillOpacity\": 0.8}");
+				polygon.setLatLons(districtShapePart);
 				districtPolygons.add(polygon);
 				polygonDistricts.add(districtRef);
 			}

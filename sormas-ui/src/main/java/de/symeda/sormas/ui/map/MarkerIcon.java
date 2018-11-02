@@ -1,6 +1,9 @@
 package de.symeda.sormas.ui.map;
 
 public enum MarkerIcon {
+
+	// make sure to update mapIcons in leaflet-connector.js when editing this
+	
 	RED_DOT("red-dot"),
 	RED_DOT_SMALL("red-dot-small"), 
 	RED_DOT_LARGE("red-dot-large"),

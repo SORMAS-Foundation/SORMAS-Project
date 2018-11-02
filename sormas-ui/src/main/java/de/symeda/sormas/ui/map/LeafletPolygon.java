@@ -1,5 +1,8 @@
 package de.symeda.sormas.ui.map;
 
+import java.util.Arrays;
+
+import de.symeda.sormas.api.region.GeoLatLon;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
@@ -26,6 +29,13 @@ public class LeafletPolygon {
 
 	public void setLatLons(double[][] latLons) {
 		this.latLons = latLons;
+	}
+	
+	public void setLatLons(GeoLatLon[] geoLatLons) {
+		double[][] latLons = Arrays.stream(geoLatLons)
+				.map(latLon -> new double[] { latLon.getLat(), latLon.getLon() })
+				.toArray(size -> new double[size][]);
+		setLatLons(latLons);
 	}
 
 	public String getOptions() {
