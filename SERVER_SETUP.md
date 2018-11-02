@@ -8,6 +8,7 @@
 * [Payara Application Server](#payara-application-server)
 * [SORMAS Domain](#sormas-domain)
 * [Apache Web Server](#apache-web-server)
+* [Postfix Mail Server](#postfix-mail-server)
 * [Creating an App for a Demo Server](DEMO_APP.md)
 
 ## Postgres Database
@@ -136,3 +137,19 @@ Here are some things that you should do to configure the apache server as proxy:
 * In case you need to update the site config while the server is running, use the following command to publish the changes without the need for a reload:
 
         apache2ctl graceful
+
+## Postfix Mail Server
+
+* Install postfix and mailutils
+
+		apt install aptitude
+		aptitude install postfix
+		-> choose "satelite system"
+		apt install mailutils
+	
+* Configure your system
+
+		nano /etc/aliases
+		-> add "root: enter-your@support-email-here.com"
+		nano /opt/domains/sormas/config/logback.xml
+		-> make sure "EMAIL_ERROR" appender is active and sends out to your email address
