@@ -14,7 +14,7 @@ public interface TaskFacade {
 
     TaskDto saveTask(TaskDto dto);
 	
-	List<TaskDto> getAllAfter(Date date, String userUuid);
+	List<TaskDto> getAllActiveTasksAfter(Date date, String userUuid);
 	
 	List<TaskDto> getAllByCase(CaseReferenceDto caseRef);
 	
@@ -38,7 +38,7 @@ public interface TaskFacade {
 
 	TaskDto getByUuid(String uuid);
 
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllActiveUuids(String userUuid);
 	
 	void deleteTask(TaskDto taskDto, String userUuid);
 

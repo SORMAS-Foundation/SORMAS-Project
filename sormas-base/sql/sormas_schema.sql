@@ -2496,3 +2496,12 @@ ALTER TABLE cases ADD COLUMN systemcaseclassification character varying(255) DEF
 ALTER TABLE cases_history ADD COLUMN systemcaseclassification character varying(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (113, 'System case classification column #61');
+
+-- 2018-10-23 Archiving for cases and events #843
+
+ALTER TABLE cases ADD COLUMN archived boolean NOT NULL DEFAULT false;
+ALTER TABLE events ADD COLUMN archived boolean NOT NULL DEFAULT false;
+ALTER TABLE cases_history ADD COLUMN archived boolean;
+ALTER TABLE events_history ADD COLUMN archived boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (114, 'Archiving for cases and events #843');

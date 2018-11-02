@@ -13,7 +13,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 @Remote
 public interface SampleFacade {
 
-	List<SampleDto> getAllAfter(Date date, String userUuid);
+	List<SampleDto> getAllActiveSamplesAfter(Date date, String userUuid);
 	
 	List<SampleDto> getAllByCase(CaseReferenceDto caseRef);
 	
@@ -29,7 +29,7 @@ public interface SampleFacade {
 	
 	SampleReferenceDto getReferredFrom(String sampleUuid);
 
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllActiveUuids(String userUuid);
 
 	List<SampleDto> getByUuids(List<String> uuids);
 	

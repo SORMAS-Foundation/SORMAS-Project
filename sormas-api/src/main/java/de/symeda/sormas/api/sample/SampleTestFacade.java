@@ -12,7 +12,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 @Remote
 public interface SampleTestFacade {
 
-	List<SampleTestDto> getAllAfter(Date date, String userUuid);
+	List<SampleTestDto> getAllActiveSampleTestsAfter(Date date, String userUuid);
 	
 	List<SampleTestDto> getAllBySample(SampleReferenceDto sampleRef);
 	
@@ -20,7 +20,7 @@ public interface SampleTestFacade {
 	
 	SampleTestDto saveSampleTest(SampleTestDto dto);
 
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllActiveUuids(String userUuid);
 
 	List<SampleTestDto> getByUuids(List<String> uuids);
 	

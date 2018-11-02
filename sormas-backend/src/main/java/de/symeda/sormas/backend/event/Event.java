@@ -55,6 +55,7 @@ public class Event extends AbstractDomainObject {
 	public static final String TASKS = "tasks";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
+	public static final String ARCHIVED = "archived";
 	
 	private EventType eventType;
 	private EventStatus eventStatus;
@@ -76,6 +77,8 @@ public class Event extends AbstractDomainObject {
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
+	
+	private boolean archived;
 
 	private List<Task> tasks;
 	
@@ -259,6 +262,15 @@ public class Event extends AbstractDomainObject {
 	}
 	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
+	}
+
+	@Column
+	public boolean isArchived() {
+		return archived;
+	}
+
+	public void setArchived(boolean archived) {
+		this.archived = archived;
 	}
 	
 	@Override

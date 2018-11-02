@@ -97,6 +97,8 @@ public class TaskGrid extends Grid implements ItemClickListener {
 
 	public TaskGrid() {
         setSizeFull();
+        
+        taskCriteria.archived(false);
 
         setCellStyleGenerator(new TaskGridCellStyleGenerator());
 		setRowStyleGenerator(new TaskGridRowStyleGenerator());
@@ -267,7 +269,9 @@ public class TaskGrid extends Grid implements ItemClickListener {
 			ControllerProvider.getTaskController().edit(task, this::reload);
 		}
 	}
-	
+
+	public TaskCriteria getTaskCriteria() {
+		return taskCriteria;
+	}
+
 }
-
-

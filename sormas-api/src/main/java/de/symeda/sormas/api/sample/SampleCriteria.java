@@ -24,6 +24,7 @@ public class SampleCriteria implements Serializable {
 	private Disease disease;
 	private SpecimenCondition specimenCondition;
 	private CaseReferenceDto caze;
+	private Boolean archived;
 
 	public RegionReferenceDto getRegion() {
 		return region;
@@ -121,6 +122,15 @@ public class SampleCriteria implements Serializable {
 
 	public SampleCriteria specimenCondition(SpecimenCondition specimenCondition) {
 		this.specimenCondition = specimenCondition;
+		return this;
+	}
+
+	public Boolean getArchived() {
+		return archived;
+	}
+
+	public SampleCriteria archived(Boolean archived) {
+		this.archived = archived;
 		return this;
 	}
 }

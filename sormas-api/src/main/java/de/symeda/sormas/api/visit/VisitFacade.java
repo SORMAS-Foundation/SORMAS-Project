@@ -11,7 +11,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 @Remote
 public interface VisitFacade {
 
-	List<VisitDto> getAllVisitsAfter(Date date, String userUuid);
+	List<VisitDto> getAllActiveVisitsAfter(Date date, String userUuid);
 
 	VisitDto getVisitByUuid(String uuid);
 
@@ -23,7 +23,7 @@ public interface VisitFacade {
 
 	List<VisitDto> getAllByContact(ContactReferenceDto contactRef);
 
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllActiveUuids(String userUuid);
 
 	List<VisitDto> getByUuids(List<String> uuids);
 	

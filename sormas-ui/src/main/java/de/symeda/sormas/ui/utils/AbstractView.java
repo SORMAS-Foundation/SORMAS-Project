@@ -17,6 +17,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
 	
     protected final String viewName;
 	private final HorizontalLayout viewHeader;
+	private final Label viewTitleLabel;
 
     protected AbstractView(String viewName) {
         this.viewName = viewName;
@@ -40,7 +41,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
 	        // note: splitting title and subtitle into labels does not work with the css
 	        String viewTitle = I18nProperties.getPrefixFragment("View", viewName.replaceAll("/", "."));
 	        String viewSubTitle = I18nProperties.getPrefixFragment("View", viewName.replaceAll("/", ".") + ".sub", "");
-	        Label viewTitleLabel = new Label(viewTitle);
+	        viewTitleLabel = new Label(viewTitle);
 	        viewTitleLabel.setSizeUndefined();
 	        CssStyles.style(viewTitleLabel, CssStyles.H1, CssStyles.VSPACE_NONE);
 	        viewTitleLayout.addComponent(viewTitleLabel);
@@ -70,4 +71,8 @@ public abstract class AbstractView extends VerticalLayout implements View {
     
     @Override
     public abstract void enter(ViewChangeEvent event);
+    
+    public Label getViewTitleLabel() {
+    	return viewTitleLabel;
+    }
 }

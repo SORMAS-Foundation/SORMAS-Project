@@ -54,6 +54,24 @@ public class SampleTestDao extends AbstractAdoDao<SampleTest> {
         }
     }
 
+
+    public List<SampleTest> queryBySample(Sample sample) {
+        if (sample.isSnapshot()) {
+            throw new IllegalArgumentException("Does not support snapshot entities");
+        }
+
+        try {
+            return queryBuilder()
+                    .orderBy(SampleTest.TEST_DATE_TIME, true)
+                    .where().eq(SampleTest.SAMPLE + "_id", sample)
+                    .and().eq(AbstractDomainObject.SNAPSHOT, false)
+                    .query();
+        } catch (SQLException e) {
+            android.util.Log.e(getTableName(), "Could not perform queryBySample on SampleTest");
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public String getTableName() {
         return SampleTest.TABLE_NAME;

@@ -10,9 +10,13 @@
 
     
 
-    <inherits name="com.vaadin.tapio.googlemaps.Widgetset" />
+    
 
     <inherits name="org.vaadin.hene.popupbutton.widgetset.PopupbuttonWidgetset" />
 
     <inherits name="com.explicatis.ext_token_field.WidgetSet" />
+
+    
+
+    
 </module>

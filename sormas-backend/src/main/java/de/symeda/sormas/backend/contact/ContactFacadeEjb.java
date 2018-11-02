@@ -107,27 +107,25 @@ public class ContactFacadeEjb implements ContactFacade {
 	private CaseFacadeEjbLocal caseFacade;
 	
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-
+	public List<String> getAllActiveUuids(String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return contactService.getAllUuids(user);
+		return contactService.getAllActiveUuids(user);
 	}	
 
 	@Override
-	public List<ContactDto> getAllContactsAfter(Date date, String userUuid) {
-
+	public List<ContactDto> getAllActiveContactsAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return contactService.getAllAfter(date, user).stream()
+		return contactService.getAllActiveContactsAfter(date, user).stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
@@ -290,6 +288,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		List<ContactExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
 		for (ContactExportDto exportDto : resultList) {
+			// TODO: Speed up this code, e.g. by persisting address as a String in the database
 			exportDto.setAddress(locationService.getById(personService.getAddressIdByPersonId(exportDto.getPersonId())).toString());
 			exportDto.setNumberOfVisits(visitService.getVisitCountByContactId(exportDto.getId(), exportDto.getPersonId(), 
 					exportDto.getLastContactDate(), exportDto.getReportDate(), exportDto.getFollowUpUntil(), exportDto.getInternalDisease()));
@@ -430,10 +429,10 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 	
 	@Override
-	public Map<Date, Long> getFollowUpUntilCountPerDate(ContactCriteria contactCriteria, String userUuid) {
+	public int getFollowUpUntilCount(ContactCriteria contactCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		
-		return contactService.getFollowUpUntilCountPerDate(contactCriteria, user);
+		return contactService.getFollowUpUntilCount(contactCriteria, user);
 	}
 
 	public static ContactReferenceDto toReferenceDto(Contact source) {

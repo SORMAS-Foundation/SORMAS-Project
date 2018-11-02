@@ -90,6 +90,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
@@ -216,17 +217,18 @@ public class CaseFacadeEjb implements CaseFacade {
 	private ConfigFacadeEjbLocal configFacade;
 
 	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
-
+	
 	@Override
-	public List<CaseDataDto> getAllCasesAfter(Date date, String userUuid) {
-
+	public List<CaseDataDto> getAllActiveCasesAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-
+		
 		if (user == null) {
 			return Collections.emptyList();
 		}
-
-		return caseService.getAllAfter(date, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		
+		return caseService.getAllActiveCasesAfter(date, user).stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -339,6 +341,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<CaseExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 		
 		for (CaseExportDto exportDto : resultList) {
+			// TODO: Speed up this code, e.g. by persisting symtoms, lab results, etc. as a String in the database
 			List<Date> sampleDates = sampleService.getSampleDatesForCase(exportDto.getId());
 			exportDto.setSampleTaken((sampleDates == null || sampleDates.isEmpty()) ? YesNoUnknown.NO : YesNoUnknown.YES);
 			exportDto.setSampleDates(sampleDates);
@@ -365,15 +368,14 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-
+	public List<String> getAllActiveUuids(String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return caseService.getAllUuids(user);
+		return caseService.getAllActiveUuids(user);
 	}
 
 	@Override
@@ -504,6 +506,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		onCaseChanged(existingCaseDto, caze);
 
 		return toDto(caze);
+	}
+	
+	@Override
+	public void archiveOrDearchiveCase(String caseUuid, boolean archive) {
+		Case caze = caseService.getByUuid(caseUuid);
+		caze.setArchived(archive);
+		caseService.ensurePersisted(caze);
 	}
 
 	/**
@@ -746,6 +755,17 @@ public class CaseFacadeEjb implements CaseFacade {
 			taskService.delete(task);
 		}
 		caseService.delete(caze);
+	}
+	
+	@Override
+	public List<String> getArchivedUuidsSince(String userUuid, Date since) {
+		User user = userService.getByUuid(userUuid);
+
+		if (user == null) {
+			return Collections.emptyList();
+		}
+
+		return caseService.getArchivedUuidsSince(user, since);
 	}
 
 	public Case fillOrBuildEntity(@NotNull CaseDataDto source, Case target) {
@@ -1698,6 +1718,23 @@ public class CaseFacadeEjb implements CaseFacade {
 		return em.createQuery(cq).getSingleResult();
 	}
 
+	@Override
+	public boolean isArchived(String caseUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Case> from = cq.from(Case.class);
+	
+		// Workaround for probable bug in Eclipse Link/Postgre that throws a NoResultException when trying to
+		// query for a true Boolean result
+		cq.where(
+				cb.and(
+						cb.equal(from.get(Case.ARCHIVED), true), 
+						cb.equal(from.get(AbstractDomainObject.UUID), caseUuid)));
+		cq.select(cb.count(from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
+	}
+	
 	private String buildGroupingSelectQuery(StatisticsCaseAttribute grouping, StatisticsCaseSubAttribute subGrouping,
 			String groupAlias) {
 		StringBuilder groupingSelectPartBuilder = new StringBuilder();

@@ -13,9 +13,9 @@ public class HealthFacilitiesView extends AbstractFacilitiesView {
 	public HealthFacilitiesView() {
 		super(VIEW_NAME, false);
 		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			createButton.setCaption("new health facility");
+			createButton.setCaption("New entry");
 			createButton.addClickListener(
-					e -> ControllerProvider.getInfrastructureController().createHealthFacility("Create new health facility", false));
+					e -> ControllerProvider.getInfrastructureController().createHealthFacility(false));
 		}
 	}
 

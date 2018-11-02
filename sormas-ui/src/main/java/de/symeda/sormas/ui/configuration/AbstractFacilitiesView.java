@@ -10,7 +10,9 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -82,7 +84,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 
 		ComboBox regionFilter = new ComboBox();
 		regionFilter.setWidth(140, Unit.PIXELS);
-		regionFilter.setCaption("Region");
+		regionFilter.setCaption(I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX, FacilityDto.REGION));
 		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 		regionFilter.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
@@ -95,7 +97,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 
 		districtFilter = new ComboBox();
 		districtFilter.setWidth(140, Unit.PIXELS);
-		districtFilter.setCaption("District");
+		districtFilter.setCaption(I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX, FacilityDto.DISTRICT));
 		districtFilter.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
 			grid.setDistrictFilter(district);
@@ -106,7 +108,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 
 		communityFilter = new ComboBox();
 		communityFilter.setWidth(140, Unit.PIXELS);
-		communityFilter.setCaption("Community");
+		communityFilter.setCaption(I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX, FacilityDto.COMMUNITY));
 		communityFilter.addValueChangeListener(e -> {
 			CommunityReferenceDto community = (CommunityReferenceDto) e.getProperty().getValue();
 			grid.setCommunityFilter(community);

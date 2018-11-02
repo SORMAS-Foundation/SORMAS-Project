@@ -136,7 +136,15 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	public FacilityDto getByUuid(String uuid) {
 		return toDto(facilityService.getByUuid(uuid));
 	}
-
+	
+	@Override
+	public List<FacilityDto> getByUuids(List<String> uuids) {
+		return facilityService.getByUuids(uuids)
+				.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
+	}
+	
 	@Override
 	public FacilityReferenceDto getFacilityReferenceByUuid(String uuid) {
 		return toReferenceDto(facilityService.getByUuid(uuid));

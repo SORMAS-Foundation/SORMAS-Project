@@ -34,6 +34,7 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -42,9 +43,14 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.report.WeeklyReport;
+import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.backend.sample.SampleTest;
+import de.symeda.sormas.app.backend.sample.SampleTestDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.util.LocationService;
 
@@ -365,5 +371,53 @@ public class CaseDao extends AbstractAdoDao<Case> {
         }
 
         return super.saveAndSnapshot(caze);
+    }
+
+    public void deleteCaseAndAllDependingEntities(String caseUuid) throws SQLException {
+        Case caze = queryUuidWithEmbedded(caseUuid);
+
+        // Cancel if case is not in local database
+        if (caze == null) {
+            return;
+        }
+
+        // Delete contacts, contact tasks and visits
+        List<Contact> contacts = DatabaseHelper.getContactDao().getByCase(caze);
+        for (Contact contact : contacts) {
+            List<Visit> visits = DatabaseHelper.getVisitDao().getByContact(contact);
+            for (Visit visit : visits) {
+                // Only delete the visit if no other contact with the same person and disease is present in the system;
+                // otherwise the visit might also be used in another contact
+                if (DatabaseHelper.getContactDao().getCountByPersonAndDisease(visit.getPerson(), visit.getDisease()) <= 1) {
+                    DatabaseHelper.getVisitDao().deleteCascade(visit);
+                }
+            }
+            List<Task> tasks = DatabaseHelper.getTaskDao().queryByContact(contact);
+            for (Task task : tasks) {
+                DatabaseHelper.getTaskDao().deleteCascade(task);
+            }
+
+            DatabaseHelper.getContactDao().deleteCascade(contact);
+        }
+
+        // Delete samples and sample tests
+        List<Sample> samples = DatabaseHelper.getSampleDao().queryByCase(caze);
+        for (Sample sample : samples) {
+            List<SampleTest> sampleTests = DatabaseHelper.getSampleTestDao().queryBySample(sample);
+            for (SampleTest sampleTest : sampleTests) {
+                DatabaseHelper.getSampleTestDao().deleteCascade(sampleTest);
+            }
+
+            DatabaseHelper.getSampleDao().deleteCascade(sample);
+        }
+
+        // Delete case tasks
+        List<Task> tasks = DatabaseHelper.getTaskDao().queryByCase(caze);
+        for (Task task : tasks) {
+            DatabaseHelper.getTaskDao().deleteCascade(task);
+        }
+
+        // Delete case
+        deleteCascade(caze);
     }
 }

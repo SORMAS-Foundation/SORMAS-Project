@@ -71,26 +71,25 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	private static final Logger logger = LoggerFactory.getLogger(SampleTestFacadeEjb.class);
 
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-
+	public List<String> getAllActiveUuids(String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return sampleTestService.getAllUuids(user);
+		return sampleTestService.getAllActiveUuids(user);
 	}	
 
 	@Override
-	public List<SampleTestDto> getAllAfter(Date date, String userUuid) {
+	public List<SampleTestDto> getAllActiveSampleTestsAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		if(user == null) {
 			return Collections.emptyList();
 		}
 
-		return sampleTestService.getAllAfter(date, user).stream()
+		return sampleTestService.getAllActiveSampleTestsAfter(date, user).stream()
 				.map(e -> toDto(e))
 				.collect(Collectors.toList());
 	}

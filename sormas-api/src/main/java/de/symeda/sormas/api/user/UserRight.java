@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.symeda.sormas.api.I18nProperties;
+
 public enum UserRight {
 
 	CASE_CREATE(
@@ -124,6 +126,17 @@ public enum UserRight {
 			CONTACT_SUPERVISOR,
 			LAB_USER
 			),
+	CASE_ARCHIVE(
+			ADMIN
+			),
+	CASE_VIEW_ARCHIVED(
+			ADMIN,
+			NATIONAL_USER,
+			NATIONAL_OBSERVER,
+			STATE_OBSERVER,
+			CASE_SUPERVISOR,
+			CONTACT_SUPERVISOR
+			),
 	SAMPLE_CREATE(
 			ADMIN,
 			NATIONAL_USER,
@@ -178,6 +191,14 @@ public enum UserRight {
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
 			LAB_USER
+			),
+	SAMPLE_VIEW_ARCHIVED(
+			ADMIN,
+			NATIONAL_USER,
+			NATIONAL_OBSERVER,
+			STATE_OBSERVER,
+			CASE_SUPERVISOR,
+			CONTACT_SUPERVISOR
 			),
 	SAMPLETEST_CREATE(
 			ADMIN,
@@ -254,6 +275,14 @@ public enum UserRight {
 			CONTACT_SUPERVISOR,
 			LAB_USER
 			),
+	CONTACT_VIEW_ARCHIVED(
+			ADMIN,
+			NATIONAL_USER,
+			NATIONAL_OBSERVER,
+			STATE_OBSERVER,
+			CASE_SUPERVISOR,
+			CONTACT_SUPERVISOR
+			),
 	VISIT_CREATE(
 			ADMIN,
 			NATIONAL_USER,
@@ -310,6 +339,14 @@ public enum UserRight {
 			CONTACT_SUPERVISOR,
 			LAB_USER
 			),
+	TASK_VIEW_ARCHIVED(
+			ADMIN,
+			NATIONAL_USER,
+			NATIONAL_OBSERVER,
+			STATE_OBSERVER,
+			CASE_SUPERVISOR,
+			CONTACT_SUPERVISOR
+			),
 	EVENT_CREATE(
 			ADMIN,
 			NATIONAL_USER,
@@ -347,6 +384,17 @@ public enum UserRight {
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
 			LAB_USER
+			),
+	EVENT_ARCHIVE(
+			ADMIN
+			),
+	EVENT_VIEW_ARCHIVED(
+			ADMIN,
+			NATIONAL_USER,
+			NATIONAL_OBSERVER,
+			STATE_OBSERVER,
+			CASE_SUPERVISOR,
+			CONTACT_SUPERVISOR
 			),
 	EVENTPARTICIPANT_CREATE(
 			ADMIN,
@@ -488,5 +536,9 @@ public enum UserRight {
 
 	public Set<UserRole> getUserRoles() {
 		return userRoles;
+	}
+	
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
 	}
 }

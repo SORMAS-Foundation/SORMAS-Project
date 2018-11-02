@@ -26,7 +26,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 @Remote
 public interface CaseFacade {
 
-	List<CaseDataDto> getAllCasesAfter(Date date, String userUuid);
+	List<CaseDataDto> getAllActiveCasesAfter(Date date, String userUuid);
 
 	List<CaseIndexDto> getIndexList(String userUuid, CaseCriteria caseCriteria);
 	
@@ -44,7 +44,7 @@ public interface CaseFacade {
 
 	CaseReferenceDto getReferenceByUuid(String uuid);
 	
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllActiveUuids(String userUuid);
 	
 	CaseDataDto transferCase(CaseReferenceDto caze, RegionReferenceDto region, DistrictReferenceDto district, CommunityReferenceDto community, FacilityReferenceDto facility, String facilityDetails, UserReferenceDto surveillanceOfficer);
 
@@ -86,4 +86,11 @@ public interface CaseFacade {
 	Date getOldestCaseReceptionDate();
 	
 	Date getOldestCaseReportDate();
+	
+	boolean isArchived(String caseUuid);
+	
+	void archiveOrDearchiveCase(String caseUuid, boolean archive);
+	
+	List<String> getArchivedUuidsSince(String userUuid, Date since);
+	
 }

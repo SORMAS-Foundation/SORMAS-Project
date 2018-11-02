@@ -81,6 +81,7 @@ public class Case extends AbstractDomainObject {
 	public static final String OUTCOME = "outcome";
 	public static final String OUTCOME_DATE = "outcomeDate";
 	public static final String CASE_AGE = "caseAge";
+	public static final String ARCHIVED = "archived";
 
 	private Person person;
 	private String description;
@@ -134,6 +135,8 @@ public class Case extends AbstractDomainObject {
 	private Date outcomeDate;
 
 	private Integer caseAge;
+	
+	private boolean archived;
 
 	private List<Task> tasks;
 
@@ -524,6 +527,15 @@ public class Case extends AbstractDomainObject {
 
 	public void setCaseAge(Integer caseAge) {
 		this.caseAge = caseAge;
+	}
+
+	@Column
+	public boolean isArchived() {
+		return archived;
+	}
+
+	public void setArchived(boolean archived) {
+		this.archived = archived;
 	}
 
 	@Enumerated(EnumType.STRING)

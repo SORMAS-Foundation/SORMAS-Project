@@ -97,18 +97,21 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
     public ADO queryUuidWithEmbedded(String uuid) {
         ADO result = queryUuid(uuid);
-        initEmbedded(result);
+        if (result != null) {
+            initEmbedded(result);
+        }
         return result;
     }
 
     public ADO queryForIdWithEmbedded(Long id) {
         ADO result = queryForId(id);
-        initEmbedded(result);
+        if (result != null) {
+            initEmbedded(result);
+        }
         return result;
     }
 
     protected void initEmbedded(ADO ado) {
-
         try {
             // ignore parent property
             EmbeddedAdo annotation = ado.getClass().getAnnotation(EmbeddedAdo.class);
@@ -808,6 +811,11 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
     public void deleteCascade(ADO ado) throws SQLException {
 
         try {
+            if (ado.isModified() && ado.getClass().getAnnotation(EmbeddedAdo.class) == null) {
+                // let user know if changes are lost (not for embedded entities)
+                DatabaseHelper.getSyncLogDao().createWithParentStack(ado.toString(), "Changes dropped because you have no longer access to this entity.");
+                // TODO include JSON backup
+            }
             delete(ado);
 
             // ignore parent property
@@ -854,11 +862,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                     // don't delete new entities
                     continue;
                 } else {
-                    if (invalidEntity.isModified()) {
-                        // let user know if changes are lost
-                        DatabaseHelper.getSyncLogDao().createWithParentStack(invalidEntity.toString(), "Changes dropped because you have no longer access to this entity.");
-                        // TODO include JSON backup
-                    }
                     // delete with all embedded entities
                     deleteCascade(invalidEntity);
                     deletionCounter++;

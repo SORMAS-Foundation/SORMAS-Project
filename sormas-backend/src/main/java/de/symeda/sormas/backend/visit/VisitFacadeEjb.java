@@ -61,29 +61,26 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	private static final Logger logger = LoggerFactory.getLogger(VisitFacadeEjb.class);
 
-
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-
+	public List<String> getAllActiveUuids(String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return visitService.getAllUuids(user);
+		return visitService.getAllActiveUuids(user);
 	}
 
 	@Override
-	public List<VisitDto> getAllVisitsAfter(Date date, String userUuid) {
-
+	public List<VisitDto> getAllActiveVisitsAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return visitService.getAllAfter(date, user).stream()
+		return visitService.getAllActiveVisitsAfter(date, user).stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}

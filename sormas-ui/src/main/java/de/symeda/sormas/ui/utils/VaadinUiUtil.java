@@ -146,6 +146,7 @@ public class VaadinUiUtil {
 		layout.setComponentAlignment(confirmationComponent, Alignment.BOTTOM_RIGHT);
 		layout.setSizeUndefined();
 		layout.setSpacing(true);
+		popupWindow.setContent(layout);
 
 		UI.getCurrent().addWindow(popupWindow);
 		return popupWindow;

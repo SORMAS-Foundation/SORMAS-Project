@@ -10,6 +10,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
+import java.sql.SQLException;
+
+import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
@@ -110,6 +113,30 @@ public class EventBackendTest {
 
         assertNull(DatabaseHelper.getEventDao().querySnapshotByUuid(event.getUuid()));
         assertThat(event.isModified(), is(false));
+    }
+
+    @Test
+    public void shouldDeleteWithDependingEntities() throws DaoException, SQLException {
+        // Assure that there are no events or depending entities in the app to start with
+        assertThat(DatabaseHelper.getEventDao().queryForAll().size(), is(0));
+        assertThat(DatabaseHelper.getEventParticipantDao().queryForAll().size(), is(0));
+        assertThat(DatabaseHelper.getTaskDao().queryForAll().size(), is(0));
+
+        Event event = TestEntityCreator.createEvent();
+        TestEntityCreator.createEventParticipant(event);
+        TestEntityCreator.createEventTask(event, TaskStatus.PENDING, event.getReportingUser());
+
+        // Assure that the event and depending entities have been successfully created
+        assertThat(DatabaseHelper.getEventDao().queryForAll().size(), is(1));
+        assertThat(DatabaseHelper.getEventParticipantDao().queryForAll().size(), is(1));
+        assertThat(DatabaseHelper.getTaskDao().queryForAll().size(), is(1));
+
+        DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(event.getUuid());
+
+        // Assure that there are no events or depending entities in the app after the deletion
+        assertThat(DatabaseHelper.getEventDao().queryForAll().size(), is(0));
+        assertThat(DatabaseHelper.getEventParticipantDao().queryForAll().size(), is(0));
+        assertThat(DatabaseHelper.getTaskDao().queryForAll().size(), is(0));
     }
 
 }

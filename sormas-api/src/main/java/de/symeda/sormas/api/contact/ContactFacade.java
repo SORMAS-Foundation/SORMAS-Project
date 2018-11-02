@@ -16,7 +16,7 @@ import de.symeda.sormas.api.visit.VisitReferenceDto;
 @Remote
 public interface ContactFacade {
 
-	List<ContactDto> getAllContactsAfter(Date date, String userUuid);
+	List<ContactDto> getAllActiveContactsAfter(Date date, String userUuid);
 	
 	List<ContactDto> getFollowUpBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid);
 	
@@ -28,7 +28,7 @@ public interface ContactFacade {
 
 	ContactReferenceDto getReferenceByUuid(String uuid);
 
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllActiveUuids(String userUuid);
 
 	void generateContactFollowUpTasks();
 
@@ -52,6 +52,6 @@ public interface ContactFacade {
 	
 	Map<FollowUpStatus, Long> getNewContactCountPerFollowUpStatus(ContactCriteria contactCriteria, String userUuid);
 	
-	Map<Date, Long> getFollowUpUntilCountPerDate(ContactCriteria contactCriteria, String userUuid);
+	int getFollowUpUntilCount(ContactCriteria contactCriteria, String userUuid);
 	
 }

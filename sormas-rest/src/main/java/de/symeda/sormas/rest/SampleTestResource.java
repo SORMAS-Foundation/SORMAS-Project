@@ -30,7 +30,7 @@ public class SampleTestResource {
 	public List<SampleTestDto> getAllSampleTests(@Context SecurityContext sc, @PathParam("since") long since) {
 
 		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<SampleTestDto> sampleTests = FacadeProvider.getSampleTestFacade().getAllAfter(new Date(since), userDto.getUuid());
+		List<SampleTestDto> sampleTests = FacadeProvider.getSampleTestFacade().getAllActiveSampleTestsAfter(new Date(since), userDto.getUuid());
 		return sampleTests;
 	}
 	
@@ -56,10 +56,10 @@ public class SampleTestResource {
 	
 	@GET
 	@Path("/uuids")
-	public List<String> getAllUuids(@Context SecurityContext sc) {
+	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
 		
 		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getSampleTestFacade().getAllUuids(userDto.getUuid());
+		List<String> uuids = FacadeProvider.getSampleTestFacade().getAllActiveUuids(userDto.getUuid());
 		return uuids;
 	}
 }

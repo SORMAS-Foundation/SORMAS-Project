@@ -35,7 +35,7 @@ public class EventParticipantResource {
 	public List<EventParticipantDto> getAllEventParticipantsAfter(@Context SecurityContext sc, @PathParam("since") long since) {
 
 		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade().getAllEventParticipantsAfter(new Date(since), userDto.getUuid());
+		List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsAfter(new Date(since), userDto.getUuid());
 		return result;
 	}
 	
@@ -61,10 +61,10 @@ public class EventParticipantResource {
 	
 	@GET
 	@Path("/uuids")
-	public List<String> getAllUuids(@Context SecurityContext sc) {
+	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
 		
 		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getEventParticipantFacade().getAllUuids(userDto.getUuid());
+		List<String> uuids = FacadeProvider.getEventParticipantFacade().getAllActiveUuids(userDto.getUuid());
 		return uuids;
 	}
 }

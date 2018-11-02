@@ -26,6 +26,7 @@ public class TaskCriteria implements Serializable {
 	private Date startDateTo;
 	private Date statusChangeDateFrom;
 	private Date statusChangeDateTo;
+	private Boolean archived;
 	
 	public TaskStatus[] getTaskStatuses() {
 		return taskStatuses;
@@ -108,6 +109,13 @@ public class TaskCriteria implements Serializable {
 	public TaskCriteria statusChangeDateBetween(Date statusChangeDateFrom, Date statusChangeDateTo) {
 		this.statusChangeDateFrom = statusChangeDateFrom;
 		this.statusChangeDateTo = statusChangeDateTo;
+		return this;
+	}
+	public Boolean getArchived() {
+		return archived;
+	}
+	public TaskCriteria archived(Boolean archived) {
+		this.archived = archived;
 		return this;
 	}
 	

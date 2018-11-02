@@ -4,6 +4,7 @@ import com.j256.ormlite.dao.Dao;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
@@ -11,6 +12,7 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.util.LocationService;
 
 public class EventDao extends AbstractAdoDao<Event> {
@@ -71,4 +73,24 @@ public class EventDao extends AbstractAdoDao<Event> {
 
         return super.saveAndSnapshot(event);
     }
+
+    public void deleteEventAndAllDependingEntities(String eventUuid) throws SQLException {
+        Event event = queryUuidWithEmbedded(eventUuid);
+
+        // Delete event tasks
+        List<Task> tasks = DatabaseHelper.getTaskDao().queryByEvent(event);
+        for (Task task : tasks) {
+            DatabaseHelper.getTaskDao().deleteCascade(task);
+        }
+
+        // Delete event participants
+        List<EventParticipant> eventParticipants = DatabaseHelper.getEventParticipantDao().getByEvent(event);
+        for (EventParticipant eventParticipant : eventParticipants) {
+            DatabaseHelper.getEventParticipantDao().deleteCascade(eventParticipant);
+        }
+
+        // Delete event
+        deleteCascade(event);
+    }
+
 }

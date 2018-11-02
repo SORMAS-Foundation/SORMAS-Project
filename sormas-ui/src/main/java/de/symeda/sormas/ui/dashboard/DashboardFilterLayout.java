@@ -20,6 +20,7 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -35,7 +36,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 
 	private AbstractDashboardView dashboardView;
 	private DashboardDataProvider dashboardDataProvider;	
-	
+
 	private Label infoLabel;
 
 	// Filters
@@ -95,7 +96,11 @@ public class DashboardFilterLayout extends HorizontalLayout {
 	private void createDiseaseFilter() {
 		diseaseFilter.setWidth(200, Unit.PIXELS);
 		diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(AbstractDashboardView.I18N_PREFIX, "disease"));
-		diseaseFilter.addItems((Object[]) Disease.values());
+		if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
+			diseaseFilter.addItems(DiseaseHelper.getAllDiseasesWithFollowUp());
+		} else {
+			diseaseFilter.addItems((Object[]) Disease.values());
+		}
 		diseaseFilter.addValueChangeListener(e -> {
 			dashboardDataProvider.setDisease((Disease) diseaseFilter.getValue());
 			dashboardView.refreshDashboard();
@@ -118,7 +123,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 			setDateFilter(DateHelper.getStartOfDay(now), DateHelper.getEndOfDay(now));
 			dashboardView.refreshDashboard();
 		});
-		
+
 		Button yesterdayButton = new Button("Yesterday");
 		initializeDateFilterButton(yesterdayButton);
 		yesterdayButton.addClickListener(e -> {
@@ -126,7 +131,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 					DateHelper.getEndOfDay(DateHelper.subtractDays(now, 1)));
 			dashboardView.refreshDashboard();
 		});
-		
+
 		Button thisWeekButton = new Button("This week");
 		initializeDateFilterButton(thisWeekButton);
 		thisWeekButton.addClickListener(e -> {
@@ -135,7 +140,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		});
 		CssStyles.style(thisWeekButton, CssStyles.LINK_HIGHLIGHTED_DARK);
 		CssStyles.removeStyles(thisWeekButton, CssStyles.LINK_HIGHLIGHTED_LIGHT);
-		
+
 		Button lastWeekButton = new Button("Last week");
 		initializeDateFilterButton(lastWeekButton);
 		lastWeekButton.addClickListener(e -> {
@@ -143,14 +148,14 @@ public class DashboardFilterLayout extends HorizontalLayout {
 					DateHelper.getEndOfWeek(DateHelper.subtractWeeks(now, 1)));
 			dashboardView.refreshDashboard();
 		});
-		
+
 		Button thisYearButton = new Button("This year");
 		initializeDateFilterButton(thisYearButton);
 		thisYearButton.addClickListener(e -> {
 			setDateFilter(DateHelper.getStartOfYear(now), DateHelper.getEndOfYear(now));
 			dashboardView.refreshDashboard();
 		});
-		
+
 		Button lastYearButton = new Button("Last year");
 		initializeDateFilterButton(lastYearButton);
 		lastYearButton.addClickListener(e -> {
@@ -158,7 +163,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 					DateHelper.getEndOfYear(DateHelper.subtractYears(now, 1)));
 			dashboardView.refreshDashboard();
 		});
-		
+
 		customButton = new PopupButton("Custom");
 		initializeDateFilterButton(customButton);
 
@@ -220,7 +225,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		customButton.setContent(customDateFilterLayout);
 
 		dateFilterLayout.addComponents(todayButton, yesterdayButton, thisWeekButton, lastWeekButton, thisYearButton, lastYearButton, customButton);
-	
+
 		infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 		infoLabel.setSizeUndefined();
 		CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
@@ -262,5 +267,5 @@ public class DashboardFilterLayout extends HorizontalLayout {
 	public void setInfoLabelText(String text) {
 		infoLabel.setDescription(text);
 	}
-	
+
 }

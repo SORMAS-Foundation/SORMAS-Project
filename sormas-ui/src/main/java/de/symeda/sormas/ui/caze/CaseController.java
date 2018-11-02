@@ -33,10 +33,8 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationCollectiveCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationCompactCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationCriteria;
+import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
+import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -63,7 +61,6 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -362,6 +359,25 @@ public class CaseController {
 			}, I18nProperties.getFieldCaption("Case"));
 		}
 
+		// Initialize 'Archive' button
+		if (LoginHelper.hasUserRight(UserRight.CASE_ARCHIVE)) {
+			boolean archived = FacadeProvider.getCaseFacade().isArchived(cazeRef.getUuid());
+			Button archiveCaseButton = new Button();
+			archiveCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
+			if (archived) {
+				archiveCaseButton.setCaption(I18nProperties.getText("dearchive"));
+			} else {
+				archiveCaseButton.setCaption(I18nProperties.getText("archive"));
+			}
+			archiveCaseButton.addClickListener(e -> {
+				editView.commit();
+				archiveOrDearchiveCase(cazeRef.getUuid(), !archived);
+			});
+
+			editView.getButtonsPanel().addComponentAsFirst(archiveCaseButton);
+			editView.getButtonsPanel().setComponentAlignment(archiveCaseButton, Alignment.BOTTOM_LEFT);
+		}
+
 		// Initialize 'Transfer case' button
 		if (LoginHelper.hasUserRight(UserRight.CASE_TRANSFER)) {
 			Button transferCaseButton = new Button();
@@ -527,48 +543,51 @@ public class CaseController {
 		facilityChangeView.getButtonsPanel().replaceComponent(facilityChangeView.getDiscardButton(), cancelButton);
 	}
 
+	private void archiveOrDearchiveCase(String caseUuid, boolean archive) {
+		if (archive) {
+			Label contentLabel = new Label(String.format(I18nProperties.getText("archivePrompt"), I18nProperties.getText("case").toLowerCase(), I18nProperties.getText("case").toLowerCase()));
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getText("archiveCase"), contentLabel, I18nProperties.getText("yes"), I18nProperties.getText("no"), 640, e -> {
+				if (e.booleanValue() == true) {
+					FacadeProvider.getCaseFacade().archiveOrDearchiveCase(caseUuid, true);
+					Notification.show(String.format(I18nProperties.getText("archiveNotification"), I18nProperties.getText("case")), Type.ASSISTIVE_NOTIFICATION);
+					navigateToView(CaseDataView.VIEW_NAME, caseUuid, null);
+				}
+			});
+		} else {
+			Label contentLabel = new Label(String.format(I18nProperties.getText("dearchivePrompt"), I18nProperties.getText("case").toLowerCase(), I18nProperties.getText("case").toLowerCase()));
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getText("dearchiveCases"), contentLabel, I18nProperties.getText("yes"), I18nProperties.getText("no"), 640, e -> {
+				if (e.booleanValue()) {
+					FacadeProvider.getCaseFacade().archiveOrDearchiveCase(caseUuid, false);
+					Notification.show(String.format(I18nProperties.getText("dearchiveNotification"), I18nProperties.getText("case")), Type.ASSISTIVE_NOTIFICATION);
+					navigateToView(CaseDataView.VIEW_NAME, caseUuid, null);
+				}
+			});
+		}
+	}
+
 	public void openClassificationRulesPopup(CaseDataDto caze) {
 		VerticalLayout classificationRulesLayout = new VerticalLayout();
 		classificationRulesLayout.setMargin(true);
 
-		ClassificationCriteria suspectCriteria = FacadeProvider.getCaseClassificationFacade().getSuspectCriteria(caze.getDisease());
-		if (suspectCriteria != null) {
-			VerticalLayout suspectCriteriaLayout = new VerticalLayout();
-			CssStyles.style(suspectCriteriaLayout, CssStyles.BACKGROUND_ROUNDED_CORNERS, CssStyles.BACKGROUND_SUSPECT_CRITERIA, CssStyles.VSPACE_3);
-			Label suspectCriteriaHeadline = new Label(I18nProperties.getText("suspectCriteria"));
-			CssStyles.style(suspectCriteriaHeadline, CssStyles.LABEL_BOLD);
-			suspectCriteriaLayout.addComponent(suspectCriteriaHeadline);
-			Label suspectCriteriaInfo = new Label(I18nProperties.getText("criteriaInfo"), ContentMode.HTML);
-			suspectCriteriaLayout.addComponent(suspectCriteriaInfo);
-			classificationRulesLayout.addComponent(suspectCriteriaLayout);
-			buildCriteriaLayout(suspectCriteriaLayout, suspectCriteria);
-		}
+		DiseaseClassificationCriteria diseaseCriteria = FacadeProvider.getCaseClassificationFacade().getClassificationCriteriaForDisease(caze.getDisease());
 
-		ClassificationCriteria probableCriteria = FacadeProvider.getCaseClassificationFacade().getProbableCriteria(caze.getDisease());
-		if (probableCriteria != null) {
-			VerticalLayout probableCriteriaLayout = new VerticalLayout();
-			CssStyles.style(probableCriteriaLayout, CssStyles.BACKGROUND_ROUNDED_CORNERS, CssStyles.BACKGROUND_PROBABLE_CRITERIA, CssStyles.VSPACE_3);
-			Label probableCriteriaHeadline = new Label(I18nProperties.getText("probableCriteria"));
-			CssStyles.style(probableCriteriaHeadline, CssStyles.LABEL_BOLD);
-			probableCriteriaLayout.addComponent(probableCriteriaHeadline);
-			Label probableCriteriaInfo = new Label(I18nProperties.getText("criteriaInfo"), ContentMode.HTML);
-			probableCriteriaLayout.addComponent(probableCriteriaInfo);
-			classificationRulesLayout.addComponent(probableCriteriaLayout);
-			buildCriteriaLayout(probableCriteriaLayout, probableCriteria);
-		}
+		Label suspectContent = new Label();
+		suspectContent.setContentMode(ContentMode.HTML);
+		suspectContent.setWidth(100, Unit.PERCENTAGE);
+		suspectContent.setValue(ClassificationHtmlRenderer.createSuspectHtmlString(diseaseCriteria));
+		classificationRulesLayout.addComponent(suspectContent);
 
-		ClassificationCriteria confirmedCriteria = FacadeProvider.getCaseClassificationFacade().getConfirmedCriteria(caze.getDisease());
-		if (confirmedCriteria != null) {
-			VerticalLayout confirmedCriteriaLayout = new VerticalLayout();
-			CssStyles.style(confirmedCriteriaLayout, CssStyles.BACKGROUND_ROUNDED_CORNERS, CssStyles.BACKGROUND_CONFIRMED_CRITERIA);
-			Label confirmedCriteriaHeadline = new Label(I18nProperties.getText("confirmedCriteria"));
-			CssStyles.style(confirmedCriteriaHeadline, CssStyles.LABEL_BOLD);
-			confirmedCriteriaLayout.addComponent(confirmedCriteriaHeadline);
-			Label confirmedCriteriaInfo = new Label(I18nProperties.getText("criteriaInfo"), ContentMode.HTML);
-			confirmedCriteriaLayout.addComponent(confirmedCriteriaInfo);
-			classificationRulesLayout.addComponent(confirmedCriteriaLayout);
-			buildCriteriaLayout(confirmedCriteriaLayout, confirmedCriteria);
-		}
+		Label probableContent = new Label();
+		probableContent.setContentMode(ContentMode.HTML);
+		probableContent.setWidth(100, Unit.PERCENTAGE);
+		probableContent.setValue(ClassificationHtmlRenderer.createProbableHtmlString(diseaseCriteria));
+		classificationRulesLayout.addComponent(probableContent);
+
+		Label confirmedContent = new Label();
+		confirmedContent.setContentMode(ContentMode.HTML);
+		confirmedContent.setWidth(100, Unit.PERCENTAGE);
+		confirmedContent.setValue(ClassificationHtmlRenderer.createConfirmedHtmlString(diseaseCriteria));
+		classificationRulesLayout.addComponent(confirmedContent);
 
 		Window popupWindow = VaadinUiUtil.showPopupWindow(classificationRulesLayout);
 		popupWindow.addCloseListener(e -> {
@@ -577,73 +596,6 @@ public class CaseController {
 		popupWindow.setWidth(860, Unit.PIXELS);
 		popupWindow.setHeight(80, Unit.PERCENTAGE);
 		popupWindow.setCaption(I18nProperties.getText("classificationRulesFor") + " " + caze.getDisease().toString());
-	}
-
-	private void buildCriteriaLayout(VerticalLayout classificationRulesLayout, ClassificationCriteria criteria) {
-		if (!(criteria instanceof ClassificationCollectiveCriteria)) {
-			// Create a layout with a single label if the criteria is not collective (i.e. has no sub criteria)
-			VerticalLayout criteriaLayout = createNewLayoutForClassificationRules();
-			criteriaLayout.addComponent(new Label(criteria.buildDescription(), ContentMode.HTML));
-			classificationRulesLayout.addComponent(criteriaLayout);
-		} else {
-			// Otherwise, create a layout and fill it by iterating over the sub criteria
-			for (ClassificationCriteria subCriteria : ((ClassificationCollectiveCriteria) criteria).getSubCriteria()) {
-				if (subCriteria instanceof ClassificationAllOfCriteria) {
-					// If the sub criteria is an AllOfCriteria, every one of its sub criteria needs its own layout
-					for (ClassificationCriteria subSubCriteria : ((ClassificationCollectiveCriteria) subCriteria).getSubCriteria()) {
-						classificationRulesLayout.addComponent(buildSubCriteriaLayout(createNewLayoutForClassificationRules(), subSubCriteria, subCriteria));
-					}
-				} else {
-					classificationRulesLayout.addComponent(buildSubCriteriaLayout(createNewLayoutForClassificationRules(), subCriteria, criteria));
-				}
-			}
-		}
-	}
-
-	private VerticalLayout buildSubCriteriaLayout(VerticalLayout criteriaLayout, ClassificationCriteria criteria, ClassificationCriteria parentCriteria) {	
-		// For non-collective criteria, only a simple label needs to be added to the layout
-		if (!(criteria instanceof ClassificationCollectiveCriteria)) {
-			criteriaLayout.addComponent(new Label(criteria.buildDescription(), ContentMode.HTML));
-			return criteriaLayout;
-		}
-
-		// Add the criteria name to the layout (e.g. "ONE OF")
-		if (!(criteria instanceof ClassificationAllOfCriteria)) {
-			criteriaLayout.addComponent(new Label(((ClassificationCollectiveCriteria) criteria).getCriteriaName(), ContentMode.HTML));
-		}
-
-		for (ClassificationCriteria subCriteria : ((ClassificationCollectiveCriteria) criteria).getSubCriteria()) {
-			if (!(subCriteria instanceof ClassificationCollectiveCriteria) || subCriteria instanceof ClassificationCompactCriteria) {
-				// For non-collective or compact collective criteria, add the label description as a list item
-				criteriaLayout.addComponent(new Label("- " + subCriteria.buildDescription(), ContentMode.HTML));
-			} else if (parentCriteria instanceof ClassificationCollectiveCriteria && !(parentCriteria instanceof ClassificationAllOfCriteria)) {
-				// For collective criteria, but not ClassificationAllOfCriteria, add a sub layout with a slightly different color to make clear
-				// that it belongs to the criteria listed before
-				VerticalLayout criteriaSubLayout = createNewSubLayoutForClassificationRules();
-				criteriaSubLayout.addComponent(new Label("<b>" + I18nProperties.getText("and").toUpperCase() + "</b>" + subCriteria.buildDescription(), ContentMode.HTML));
-				criteriaLayout.addComponent(criteriaSubLayout);
-				criteriaLayout.setComponentAlignment(criteriaSubLayout, Alignment.MIDDLE_RIGHT);
-			} else {
-				// For everything else, recursively call this method to determine how to display the sub criteria
-				buildSubCriteriaLayout(criteriaLayout, subCriteria, criteria instanceof ClassificationAllOfCriteria ? parentCriteria : criteria);
-			}
-		}
-
-		return criteriaLayout;
-	}
-
-	private VerticalLayout createNewLayoutForClassificationRules() {
-		VerticalLayout layout = new VerticalLayout();
-		CssStyles.style(layout, CssStyles.BACKGROUND_ROUNDED_CORNERS, CssStyles.BACKGROUND_CRITERIA, CssStyles.VSPACE_TOP_4);
-		return layout;
-	}
-
-	private VerticalLayout createNewSubLayoutForClassificationRules() {
-		VerticalLayout layout = new VerticalLayout();
-		layout.setWidth(95, Unit.PERCENTAGE);
-		CssStyles.style(layout, CssStyles.BACKGROUND_ROUNDED_CORNERS, CssStyles.BACKGROUND_SUB_CRITERIA, CssStyles.VSPACE_TOP_4, 
-				CssStyles.VSPACE_4, CssStyles.HSPACE_RIGHT_3);
-		return layout;
 	}
 
 	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
@@ -657,6 +609,38 @@ public class CaseController {
 					}
 					callback.run();
 					new Notification("Cases deleted", "All selected cases have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+				}
+			});
+		}
+	}
+
+	public void archiveAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+		if (selectedRows.size() == 0) {
+			new Notification("No cases selected", "You have not selected any cases.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+		} else {
+			VaadinUiUtil.showConfirmationPopup("Confirm archiving", new Label("Are you sure you want to archive all " + selectedRows.size() + " selected cases?"), "Yes", "No", null, e -> {
+				if (e.booleanValue() == true) {
+					for (Object selectedRow : selectedRows) {
+						FacadeProvider.getCaseFacade().archiveOrDearchiveCase(((CaseIndexDto) selectedRow).getUuid(), true);
+					}
+					callback.run();
+					new Notification("Cases archived", "All selected cases have been archived.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+				}
+			});
+		}
+	}
+
+	public void dearchiveAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+		if (selectedRows.size() == 0) {
+			new Notification("No cases selected", "You have not selected any cases.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+		} else {
+			VaadinUiUtil.showConfirmationPopup("Confirm de-archiving", new Label("Are you sure you want to de-archive all " + selectedRows.size() + " selected cases?"), "Yes", "No", null, e -> {
+				if (e.booleanValue() == true) {
+					for (Object selectedRow : selectedRows) {
+						FacadeProvider.getCaseFacade().archiveOrDearchiveCase(((CaseIndexDto) selectedRow).getUuid(), false);
+					}
+					callback.run();
+					new Notification("Cases de-archived", "All selected cases have been de-archived.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
 				}
 			});
 		}

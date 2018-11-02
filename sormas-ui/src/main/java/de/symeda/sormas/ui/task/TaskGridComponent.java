@@ -9,6 +9,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -37,11 +38,17 @@ public class TaskGridComponent extends VerticalLayout {
 
 	private VerticalLayout gridLayout;
 
-	public TaskGridComponent() {
+	private boolean showArchivedTasks = false;
+	private Label viewTitleLabel;
+	private String originalViewTitle;
+
+	public TaskGridComponent(Label viewTitleLabel) {
 		setSizeFull();
-
+		
+		this.viewTitleLabel = viewTitleLabel;
+		originalViewTitle = viewTitleLabel.getValue();
+		
 		grid = new TaskGrid();
-
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createAssigneeFilterBar());
@@ -111,7 +118,7 @@ public class TaskGridComponent extends VerticalLayout {
 			initializeStatusButton(officerTasks, buttonFilterLayout, "Officer tasks");
 			Button myTasks = new Button("My tasks", e -> processAssigneeFilterChange(false, true, e.getButton()));
 			initializeStatusButton(myTasks, buttonFilterLayout, "My tasks");
-			
+
 			// Default filter for lab users (that don't have any other role) is "My tasks"
 			if (LoginHelper.getCurrentUserRoles().contains(UserRole.LAB_USER) && LoginHelper.getCurrentUserRoles().size() == 1) {
 				processAssigneeFilterChange(false, true, myTasks);
@@ -122,27 +129,54 @@ public class TaskGridComponent extends VerticalLayout {
 		}
 		assigneeFilterLayout.addComponent(buttonFilterLayout);
 
-		// Bulk operation dropdown
-		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			assigneeFilterLayout.setWidth(100, Unit.PERCENTAGE);
-
-			MenuBar bulkOperationsDropdown = new MenuBar();	
-			MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
-
-			Command deleteCommand = selectedItem -> {
-				ControllerProvider.getTaskController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
-					public void run() {
-						grid.deselectAll();
+		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
+		actionButtonsLayout.setSpacing(true);
+		{
+			// Show archived/active cases button
+			if (LoginHelper.hasUserRight(UserRight.TASK_VIEW_ARCHIVED)) {
+				Button switchArchivedActiveButton = new Button(I18nProperties.getText("showArchivedTasks"));
+				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
+				switchArchivedActiveButton.addClickListener(e -> {
+					showArchivedTasks = !showArchivedTasks;
+					if (!showArchivedTasks) {
+						viewTitleLabel.setValue(originalViewTitle);
+						switchArchivedActiveButton.setCaption(I18nProperties.getText("showArchivedTasks"));
+						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
+						grid.getTaskCriteria().archived(false);
+						grid.reload();
+					} else {
+						viewTitleLabel.setValue(I18nProperties.getPrefixFragment("View", TasksView.VIEW_NAME.replaceAll("/", ".") + ".archive"));
+						switchArchivedActiveButton.setCaption(I18nProperties.getText("showActiveTasks"));
+						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
+						grid.getTaskCriteria().archived(true);
 						grid.reload();
 					}
 				});
-			};
-			bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
+				actionButtonsLayout.addComponent(switchArchivedActiveButton);
+			}
+			// Bulk operation dropdown
+			if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				assigneeFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
-			assigneeFilterLayout.addComponent(bulkOperationsDropdown);
-			assigneeFilterLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
-			assigneeFilterLayout.setExpandRatio(bulkOperationsDropdown, 1);
+				MenuBar bulkOperationsDropdown = new MenuBar();	
+				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
+
+				Command deleteCommand = selectedItem -> {
+					ControllerProvider.getTaskController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+						public void run() {
+							grid.deselectAll();
+							grid.reload();
+						}
+					});
+				};
+				bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
+				
+				actionButtonsLayout.addComponent(bulkOperationsDropdown);
+			}
 		}
+		assigneeFilterLayout.addComponent(actionButtonsLayout);
+		assigneeFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
+		assigneeFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 
 		return assigneeFilterLayout;
 	}
@@ -256,7 +290,7 @@ public class TaskGridComponent extends VerticalLayout {
 	public void reload() {
 		grid.reload();
 	}
-	
+
 	public TaskGrid getGrid() {
 		return grid;
 	}

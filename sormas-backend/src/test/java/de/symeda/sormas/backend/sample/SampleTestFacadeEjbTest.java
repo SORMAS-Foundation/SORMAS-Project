@@ -1,6 +1,8 @@
 package de.symeda.sormas.backend.sample;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.Date;
 import java.util.List;
@@ -18,6 +20,7 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.user.UserDto;
@@ -116,26 +119,57 @@ public class SampleTestFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testSampleDeletion() {
-
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		String userUuid = user.getUuid();
 		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
 		String adminUuid = admin.getUuid();
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		SampleDto sample = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
-		creator.createSampleTest(sample.toReference(), SampleTestType.MICROSCOPY, new Date(), rdcf.facility, user.toReference(), SampleTestResultType.POSITIVE, "Positive", true);
+		SampleTestDto sampleTest = creator.createSampleTest(sample.toReference(), SampleTestType.MICROSCOPY, new Date(), rdcf.facility, user.toReference(), SampleTestResultType.POSITIVE, "Positive", true);
 
-		// Database should contain one sample and sample test
-		assertEquals(1, getSampleFacade().getAllAfter(null, userUuid).size());
-		assertEquals(1, getSampleTestFacade().getAllAfter(null, userUuid).size());
+		// Database should contain the created sample and sample test
+		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
+		assertNotNull(getSampleTestFacade().getByUuid(sampleTest.getUuid()));
 
 		getSampleFacade().deleteSample(sample.toReference(), adminUuid);
 
-		// Database should contain no sample or sample test
-		assertEquals(0, getSampleFacade().getAllAfter(null, userUuid).size());
-		assertEquals(0, getSampleTestFacade().getAllAfter(null, userUuid).size());
+		// Database should not contain the deleted sample and sample test
+		assertNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
+		assertNull(getSampleTestFacade().getByUuid(sampleTest.getUuid()));
+	}
+	
+	@Test
+	public void testArchivedSampleNotGettingTransfered() {
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+		SampleDto sample = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		creator.createSampleTest(sample.toReference(), SampleTestType.MICROSCOPY, new Date(), rdcf.facility, user.toReference(), SampleTestResultType.POSITIVE, "Positive", true);
+
+		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 1
+		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null, user.getUuid()).size());
+		assertEquals(1, getSampleFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(1, getSampleTestFacade().getAllActiveSampleTestsAfter(null, user.getUuid()).size());
+		assertEquals(1, getSampleTestFacade().getAllActiveUuids(user.getUuid()).size());
+		
+		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
+		
+		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 0
+		assertEquals(0, getSampleFacade().getAllActiveSamplesAfter(null, user.getUuid()).size());
+		assertEquals(0, getSampleFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(0, getSampleTestFacade().getAllActiveSampleTestsAfter(null, user.getUuid()).size());
+		assertEquals(0, getSampleTestFacade().getAllActiveUuids(user.getUuid()).size());
+
+		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), false);
+
+		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 1
+		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null, user.getUuid()).size());
+		assertEquals(1, getSampleFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(1, getSampleTestFacade().getAllActiveSampleTestsAfter(null, user.getUuid()).size());
+		assertEquals(1, getSampleTestFacade().getAllActiveUuids(user.getUuid()).size());
 	}
 }

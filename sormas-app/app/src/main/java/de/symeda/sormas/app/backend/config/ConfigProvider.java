@@ -50,6 +50,7 @@ public final class ConfigProvider {
     private static String KEY_SERVER_REST_URL = "serverRestUrl";
     private static String KEY_ACCESS_GRANTED = "accessGranted";
     private static String LAST_NOTIFICATION_DATE = "lastNotificationDate";
+    private static String LAST_ARCHIVED_SYNC_DATE = "lastArchivedSyncDate";
     private static String CURRENT_APP_DOWNLOAD_ID = "currentAppDownloadId";
 
     public static ConfigProvider instance = null;
@@ -69,6 +70,7 @@ public final class ConfigProvider {
     private String pin;
     private User user;
     private Date lastNotificationDate;
+    private Date lastArchivedSyncDate;
     private Long currentAppDownloadId;
     private Boolean accessGranted;
 
@@ -414,15 +416,44 @@ public final class ConfigProvider {
     }
 
     public static void setLastNotificationDate(Date lastNotificationDate) {
-        if (lastNotificationDate != null && lastNotificationDate.equals(instance.lastNotificationDate))
+        if (lastNotificationDate != null && lastNotificationDate.equals(instance.lastNotificationDate)) {
             return;
+        }
 
-        boolean wasNull = instance.lastNotificationDate == null;
         instance.lastNotificationDate = lastNotificationDate;
         if (lastNotificationDate == null) {
             DatabaseHelper.getConfigDao().delete(new Config(LAST_NOTIFICATION_DATE, ""));
         } else {
             DatabaseHelper.getConfigDao().createOrUpdate(new Config(LAST_NOTIFICATION_DATE, String.valueOf(lastNotificationDate.getTime())));
+        }
+    }
+
+    public static Date getLastArchivedSyncDate() {
+        if (instance.lastArchivedSyncDate == null) {
+            synchronized (ConfigProvider.class) {
+                if (instance.lastArchivedSyncDate == null) {
+                    Config config = DatabaseHelper.getConfigDao().queryForId(LAST_ARCHIVED_SYNC_DATE);
+                    if (config != null) {
+                        instance.lastArchivedSyncDate = new Date(Long.parseLong(config.getValue()));
+                    }
+
+                }
+            }
+        }
+
+        return instance.lastArchivedSyncDate;
+    }
+
+    public static void setLastArchivedSyncDate(Date lastArchivedSyncDate) {
+        if (lastArchivedSyncDate != null && lastArchivedSyncDate.equals(instance.lastArchivedSyncDate)) {
+            return;
+        }
+
+        instance.lastArchivedSyncDate = lastArchivedSyncDate;
+        if (lastArchivedSyncDate == null) {
+            DatabaseHelper.getConfigDao().delete(new Config(LAST_ARCHIVED_SYNC_DATE, ""));
+        } else {
+            DatabaseHelper.getConfigDao().createOrUpdate(new Config(LAST_ARCHIVED_SYNC_DATE, String.valueOf(lastArchivedSyncDate.getTime())));
         }
     }
 

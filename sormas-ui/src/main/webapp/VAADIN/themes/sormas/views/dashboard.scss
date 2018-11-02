@@ -26,22 +26,13 @@
   	border-radius: 8px;
   	padding-top: 16px;
   }
-  
-  /* "hack" to hide map tiles in google maps component */
-  .googlemap.no-tiles img {
-    opacity: 0.2;
-    filter: alpha(opacity=20); /* For IE8 and earlier */
-  } 
-  .googlemap.no-tiles .gmnoprint img {
-    opacity: inherit;    
-    filter: inherit;
-  }
-  .googlemap gm-style {
-    background-color: white;
-  } 
  
   .cfr-info-button {
     margin-top: -3px;	
+  }
+ 
+  .follow-up-status-info-button {
+  	margin-top: 10px;
   }
  
   hr {

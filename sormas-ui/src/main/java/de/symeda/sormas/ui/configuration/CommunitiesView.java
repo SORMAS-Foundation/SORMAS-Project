@@ -10,6 +10,8 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.region.CommunityDto;
+import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -47,11 +49,10 @@ public class CommunitiesView extends AbstractConfigurationView {
 		grid.reload();
 
 		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			createButton = new Button("new community");
+			createButton = new Button("New entry");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
-			createButton.addClickListener(
-					e -> ControllerProvider.getInfrastructureController().createCommunity("Create new community"));
+			createButton.addClickListener(e -> ControllerProvider.getInfrastructureController().createCommunity());
 			addHeaderComponent(createButton);
 		}
 
@@ -74,7 +75,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 
 		ComboBox regionFilter = new ComboBox();
 		regionFilter.setWidth(140, Unit.PIXELS);
-		regionFilter.setCaption("Region");
+		regionFilter.setCaption(I18nProperties.getPrefixFieldCaption(DistrictDto.I18N_PREFIX, DistrictDto.REGION));
 		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 		regionFilter.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
@@ -87,7 +88,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 
 		districtFilter = new ComboBox();
 		districtFilter.setWidth(140, Unit.PIXELS);
-		districtFilter.setCaption("District");
+		districtFilter.setCaption(I18nProperties.getPrefixFieldCaption(CommunityDto.I18N_PREFIX, CommunityDto.DISTRICT));
 		districtFilter.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
 			grid.setDistrictFilter(district);

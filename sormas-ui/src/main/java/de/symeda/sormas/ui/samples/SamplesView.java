@@ -25,7 +25,7 @@ public class SamplesView extends AbstractView {
 	public SamplesView() {
     	super(VIEW_NAME);
     	
-		sampleListComponent = new SampleGridComponent();
+		sampleListComponent = new SampleGridComponent(getViewTitleLabel());
 		setSizeFull();
 		addComponent(sampleListComponent);
 		

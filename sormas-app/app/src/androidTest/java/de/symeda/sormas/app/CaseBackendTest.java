@@ -8,6 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
@@ -30,12 +31,14 @@ import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
+import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.backend.task.Task;
@@ -376,4 +379,41 @@ public class CaseBackendTest {
         Case mergedCase = DatabaseHelper.getCaseDao().queryUuidWithEmbedded(serverCase.getUuid());
         assertEquals(1, mergedCase.getEpiData().getBurials().size());
     }
+
+    @Test
+    public void shouldDeleteWithDependingEntities() throws DaoException, SQLException {
+        // Assure that there are no cases or depending entities in the app to start with
+        assertThat(DatabaseHelper.getCaseDao().queryForAll().size(), is(0));
+        assertThat(DatabaseHelper.getContactDao().queryForAll().size(), is(0));
+        assertThat(DatabaseHelper.getVisitDao().queryForAll().size(), is(0));
+        assertThat(DatabaseHelper.getSampleDao().queryForAll().size(), is(0));
+        assertThat(DatabaseHelper.getSampleTestDao().queryForAll().size(), is(0));
+        assertThat(DatabaseHelper.getTaskDao().queryForAll().size(), is(0));
+
+        Case caze = TestEntityCreator.createCase();
+        Contact contact = TestEntityCreator.createContact(caze);
+        TestEntityCreator.createVisit(contact);
+        Sample sample = TestEntityCreator.createSample(caze);
+        TestEntityCreator.createSampleTest(sample);
+        TestEntityCreator.createCaseTask(caze, TaskStatus.PENDING, caze.getReportingUser());
+
+        // Assure that the case and depending entities have been successfully created
+        assertThat(DatabaseHelper.getCaseDao().queryForAll().size(), is(1));
+        assertThat(DatabaseHelper.getContactDao().queryForAll().size(), is(1));
+        assertThat(DatabaseHelper.getVisitDao().queryForAll().size(), is(1));
+        assertThat(DatabaseHelper.getSampleDao().queryForAll().size(), is(1));
+        assertThat(DatabaseHelper.getSampleTestDao().queryForAll().size(), is(1));
+        assertThat(DatabaseHelper.getTaskDao().queryForAll().size(), is(1));
+
+        DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caze.getUuid());
+
+        // Assure that there are no cases or depending entities in the app after the deletion
+        assertThat(DatabaseHelper.getCaseDao().queryForAll().size(), is(0));
+        assertThat(DatabaseHelper.getContactDao().queryForAll().size(), is(0));
+        assertThat(DatabaseHelper.getVisitDao().queryForAll().size(), is(0));
+        assertThat(DatabaseHelper.getSampleDao().queryForAll().size(), is(0));
+        assertThat(DatabaseHelper.getSampleTestDao().queryForAll().size(), is(0));
+        assertThat(DatabaseHelper.getTaskDao().queryForAll().size(), is(0));
+    }
+
 }

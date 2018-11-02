@@ -21,7 +21,7 @@ public class TasksView extends AbstractView {
     public TasksView() {
     	super(VIEW_NAME);
     	
-        taskListComponent = new TaskGridComponent();
+        taskListComponent = new TaskGridComponent(getViewTitleLabel());
         addComponent(taskListComponent);
         
     	if (LoginHelper.hasUserRight(UserRight.TASK_CREATE)) {

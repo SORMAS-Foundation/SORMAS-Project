@@ -83,6 +83,54 @@ public class ContactService extends AbstractAdoService<Contact> {
 		return resultList;
 	}
 
+	public List<Contact> getAllActiveContactsAfter(Date date, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
+		Root<Contact> from = cq.from(getElementClass());
+		Join<Contact, Case> caze = from.join(Contact.CAZE, JoinType.LEFT);
+
+		Predicate filter = cb.or(
+				cb.equal(caze.get(Case.ARCHIVED), false),
+				cb.isNull(caze.get(Case.ARCHIVED)));
+
+		if (user != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			filter = cb.and(filter, userFilter);
+		}
+
+		if (date != null) {
+			Predicate dateFilter = createDateFilter(cb, cq, from, date);
+			filter = cb.and(filter, dateFilter);		
+		}
+
+		cq.where(filter);
+		cq.orderBy(cb.desc(from.get(Contact.CHANGE_DATE)));
+		cq.distinct(true);
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<String> getAllActiveUuids(User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Contact> from = cq.from(getElementClass());
+		Join<Contact, Case> caze = from.join(Contact.CAZE, JoinType.LEFT);
+
+		Predicate filter = cb.or(
+				cb.equal(caze.get(Case.ARCHIVED), false),
+				cb.isNull(caze.get(Case.ARCHIVED)));
+		
+		if (user != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			filter = cb.and(filter, userFilter);
+		}
+		
+		cq.where(filter);
+		cq.select(from.get(Contact.UUID));
+		
+		return em.createQuery(cq).getResultList();
+	}
+
 	public List<Contact> getAllByCase(Case caze) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -414,9 +462,9 @@ public class ContactService extends AbstractAdoService<Contact> {
 		return resultMap;
 	}
 	
-	public Map<Date, Long> getFollowUpUntilCountPerDate(ContactCriteria contactCriteria, User user) {
+	public int getFollowUpUntilCount(ContactCriteria contactCriteria, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Contact> contact = cq.from(getElementClass());
 		
 		Predicate filter = createUserFilter(cb, cq, contact, user);
@@ -426,18 +474,14 @@ public class ContactService extends AbstractAdoService<Contact> {
 		} else {
 			filter = criteriaFilter;
 		}
+
+		cq.select(cb.count(contact));
 		
 		if (filter != null) {
 			cq.where(filter);
 		}
 		
-		cq.groupBy(contact.get(Contact.FOLLOW_UP_UNTIL));
-		cq.multiselect(contact.get(Contact.FOLLOW_UP_UNTIL), cb.count(contact));
-		List<Object[]> results = em.createQuery(cq).getResultList();
-		
-		Map<Date, Long> resultMap = results.stream().collect(
-				Collectors.toMap(e -> DateHelper.getStartOfDay((Date) e[0]), e -> (Long) e[1]));
-		return resultMap;
+		return em.createQuery(cq).getSingleResult().intValue();
 	}
 	
 	/**
@@ -668,6 +712,13 @@ public class ContactService extends AbstractAdoService<Contact> {
 		}
 		if (contactCriteria.getFollowUpUntilFrom() != null && contactCriteria.getFollowUpUntilTo() != null) {
 			filter = and(cb, filter, cb.between(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilFrom(), contactCriteria.getFollowUpUntilTo()));
+		}
+		if (contactCriteria.getArchived() != null) {
+			if (contactCriteria.getArchived() == true) {
+				filter = and(cb, filter, cb.equal(caze.get(Case.ARCHIVED), true));
+			} else {
+				filter = and(cb, filter, cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED))));
+			}
 		}
 
 		return filter;

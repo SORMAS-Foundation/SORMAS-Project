@@ -12,6 +12,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -54,12 +55,18 @@ public class SampleGridComponent extends VerticalLayout {
 	private Button activeStatusButton;
 
 	private VerticalLayout gridLayout;
+	
+	private boolean showArchivedSamples;
+	private Label viewTitleLabel;
+	private String originalViewTitle;
 
-	public SampleGridComponent() {
+	public SampleGridComponent(Label viewTitleLabel) {
 		setSizeFull();
+		
+		this.viewTitleLabel = viewTitleLabel;
+		originalViewTitle = viewTitleLabel.getValue();
 
 		grid = new SampleGrid();
-
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createShipmentFilterBar());
@@ -67,7 +74,7 @@ public class SampleGridComponent extends VerticalLayout {
 		grid.getContainer().addItemSetChangeListener(e -> {
 			updateActiveStatusButtonCaption();
 		});
-		
+
 		styleGridLayout(gridLayout);
 		gridLayout.setMargin(true);
 
@@ -87,7 +94,7 @@ public class SampleGridComponent extends VerticalLayout {
 		grid.getContainer().addItemSetChangeListener(e -> {
 			updateActiveStatusButtonCaption();
 		});
-		
+
 		gridLayout.setMargin(new MarginInfo(true, false, false, false));
 		styleGridLayout(gridLayout);
 
@@ -199,7 +206,7 @@ public class SampleGridComponent extends VerticalLayout {
 	public HorizontalLayout createShipmentFilterBar() {
 		HorizontalLayout shipmentFilterLayout = new HorizontalLayout();
 		shipmentFilterLayout.setSpacing(true);
-		shipmentFilterLayout.setSizeUndefined();
+		shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
 		shipmentFilterLayout.addStyleName(CssStyles.VSPACE_3);
 
 		statusButtons = new HashMap<>();
@@ -224,27 +231,55 @@ public class SampleGridComponent extends VerticalLayout {
 
 		shipmentFilterLayout.addComponent(buttonFilterLayout);
 
-		// Bulk operation dropdown
-		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
-
-			MenuBar bulkOperationsDropdown = new MenuBar();	
-			MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
-
-			Command deleteCommand = selectedItem -> {
-				ControllerProvider.getSampleController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
-					public void run() {
-						grid.deselectAll();
+		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
+		actionButtonsLayout.setSpacing(true);
+		{
+			// Show archived/active cases button
+			if (LoginHelper.hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
+				Button switchArchivedActiveButton = new Button(I18nProperties.getText("showArchivedSamples"));
+				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
+				switchArchivedActiveButton.addClickListener(e -> {
+					showArchivedSamples = !showArchivedSamples;
+					if (!showArchivedSamples) {
+						viewTitleLabel.setValue(originalViewTitle);
+						switchArchivedActiveButton.setCaption(I18nProperties.getText("showArchivedSamples"));
+						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
+						grid.getSampleCriteria().archived(false);
+						grid.reload();
+					} else {
+						viewTitleLabel.setValue(I18nProperties.getPrefixFragment("View", SamplesView.VIEW_NAME.replaceAll("/", ".") + ".archive"));
+						switchArchivedActiveButton.setCaption(I18nProperties.getText("showActiveSamples"));
+						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
+						grid.getSampleCriteria().archived(true);
 						grid.reload();
 					}
 				});
-			};
-			bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
+				actionButtonsLayout.addComponent(switchArchivedActiveButton);
+			}
 
-			shipmentFilterLayout.addComponent(bulkOperationsDropdown);
-			shipmentFilterLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
-			shipmentFilterLayout.setExpandRatio(bulkOperationsDropdown, 1);
+			// Bulk operation dropdown
+			if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
+
+				MenuBar bulkOperationsDropdown = new MenuBar();	
+				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
+
+				Command deleteCommand = selectedItem -> {
+					ControllerProvider.getSampleController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+						public void run() {
+							grid.deselectAll();
+							grid.reload();
+						}
+					});
+				};
+				bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
+				
+				actionButtonsLayout.addComponent(bulkOperationsDropdown);
+			}
 		}
+		shipmentFilterLayout.addComponent(actionButtonsLayout);
+		shipmentFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
+		shipmentFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 
 		return shipmentFilterLayout;
 	}

@@ -35,6 +35,8 @@ public class EventGrid extends Grid {
 	
 	public EventGrid() {
 		setSizeFull();
+        
+		eventCriteria.archived(false);
 
 		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
         	setSelectionMode(SelectionMode.MULTI);
@@ -138,4 +140,9 @@ public class EventGrid extends Grid {
 		getContainer().removeAllItems();
 		getContainer().addAll(events);
 	}
+
+	public EventCriteria getEventCriteria() {
+		return eventCriteria;
+	}
+	
 }

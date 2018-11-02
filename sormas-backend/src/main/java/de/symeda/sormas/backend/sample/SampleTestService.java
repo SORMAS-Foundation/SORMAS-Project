@@ -47,6 +47,56 @@ public class SampleTestService extends AbstractAdoService<SampleTest> {
 		super.delete(sampleTest);
 	}
 	
+	public List<SampleTest> getAllActiveSampleTestsAfter(Date date, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<SampleTest> cq = cb.createQuery(getElementClass());
+		Root<SampleTest> from = cq.from(getElementClass());
+		Join<SampleTest, Sample> sample = from.join(SampleTest.SAMPLE, JoinType.LEFT);
+		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
+		
+		Predicate filter = cb.or(
+				cb.equal(caze.get(Case.ARCHIVED), false),
+				cb.isNull(caze.get(Case.ARCHIVED)));
+
+		if (user != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			filter = cb.and(filter, userFilter);
+		}
+
+		if (date != null) {
+			Predicate dateFilter = createDateFilter(cb, cq, from, date);
+			filter = cb.and(filter, dateFilter);		
+		}
+
+		cq.where(filter);
+		cq.orderBy(cb.desc(from.get(SampleTest.CHANGE_DATE)));
+		cq.distinct(true);
+
+		return em.createQuery(cq).getResultList();
+	}
+	
+	public List<String> getAllActiveUuids(User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<SampleTest> from = cq.from(getElementClass());
+		Join<SampleTest, Sample> sample = from.join(SampleTest.SAMPLE, JoinType.LEFT);
+		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
+
+		Predicate filter = cb.or(
+				cb.equal(caze.get(Case.ARCHIVED), false),
+				cb.isNull(caze.get(Case.ARCHIVED)));
+		
+		if (user != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			filter = cb.and(filter, userFilter);
+		}
+		
+		cq.where(filter);
+		cq.select(from.get(SampleTest.UUID));
+		
+		return em.createQuery(cq).getResultList();
+	}
+	
 	public List<SampleTest> getAllBySample(Sample sample) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SampleTest> cq = cb.createQuery(getElementClass());

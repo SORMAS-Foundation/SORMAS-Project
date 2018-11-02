@@ -30,7 +30,7 @@ public class SampleResource {
 	public List<SampleDto> getAllSamples(@Context SecurityContext sc, @PathParam("since") long since) {
 
 		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<SampleDto> samples = FacadeProvider.getSampleFacade().getAllAfter(new Date(since), userDto.getUuid());
+		List<SampleDto> samples = FacadeProvider.getSampleFacade().getAllActiveSamplesAfter(new Date(since), userDto.getUuid());
 		return samples;
 	}
 	
@@ -55,10 +55,10 @@ public class SampleResource {
 	
 	@GET
 	@Path("/uuids")
-	public List<String> getAllUuids(@Context SecurityContext sc) {
+	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
 		
 		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getSampleFacade().getAllUuids(userDto.getUuid());
+		List<String> uuids = FacadeProvider.getSampleFacade().getAllActiveUuids(userDto.getUuid());
 		return uuids;
 	}
 }

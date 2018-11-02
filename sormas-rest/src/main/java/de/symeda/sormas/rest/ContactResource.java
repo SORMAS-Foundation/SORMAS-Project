@@ -35,7 +35,7 @@ public class ContactResource {
 	public List<ContactDto> getAllContacts(@Context SecurityContext sc, @PathParam("since") long since) {
 		
 		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<ContactDto> contacts = FacadeProvider.getContactFacade().getAllContactsAfter(new Date(since), userDto.getUuid());
+		List<ContactDto> contacts = FacadeProvider.getContactFacade().getAllActiveContactsAfter(new Date(since), userDto.getUuid());
 		return contacts;
 	}
 	
@@ -61,10 +61,10 @@ public class ContactResource {
 	
 	@GET
 	@Path("/uuids")
-	public List<String> getAllUuids(@Context SecurityContext sc) {
+	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
 		
 		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getContactFacade().getAllUuids(userDto.getUuid());
+		List<String> uuids = FacadeProvider.getContactFacade().getAllActiveUuids(userDto.getUuid());
 		return uuids;
 	}
 }

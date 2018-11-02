@@ -8,13 +8,21 @@ import android.util.Log;
 import com.google.android.gms.analytics.Tracker;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Callable;
 
+import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteria;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
+import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelper;
+import de.symeda.sormas.app.backend.classification.DiseaseClassificationDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.ContactDtoHelper;
 import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.event.EventParticipantDtoHelper;
@@ -66,6 +74,10 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                 case Changes:
                     // infrastructure always has to be pulled - otherwise referenced data may be lost (e.g. #586)
                     pullInfrastructure();
+                    // pull and remove archived entities when the last time this has been done is more than 24 hours ago
+                    if (ConfigProvider.getLastArchivedSyncDate() == null || DateHelper.getFullDaysBetween(ConfigProvider.getLastArchivedSyncDate(), new Date()) >= 1) {
+                        pullAndRemoveArchivedUuidsSince(ConfigProvider.getLastArchivedSyncDate());
+                    }
                     synchronizeChangedData();
                     break;
                 case Complete:
@@ -195,6 +207,11 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             weeklyReportDtoHelper.pullEntities(true);
         if (weeklyReportEntriesNeedPull)
             weeklyReportEntryDtoHelper.pullEntities(true);
+
+        // Synchronize disease classification if the table is empty
+//        if (DatabaseHelper.getDiseaseClassificationDao().isEmpty()) {
+//            pullDiseaseClassification();
+//        }
     }
 
     private void repullData() throws DaoException, ServerConnectionException, ServerCommunicationException {
@@ -322,11 +339,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new RegionDtoHelper().pullMissing(regionUuids);
         new DistrictDtoHelper().pullMissing(districtUuids);
         new CommunityDtoHelper().pullMissing(communityUuids);
-        // facilities need special handling
-        FacilityDtoHelper facilityDtoHelper = new FacilityDtoHelper();
-        if (facilityDtoHelper.isAnyMissing(facilityUuids)) {
-            facilityDtoHelper.repullEntities();
-        }
+        new FacilityDtoHelper().pullMissing(districtUuids);
         new UserDtoHelper().pullMissing(userUuids);
     }
 
@@ -383,6 +396,60 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                 }
             }
         }.execute();
+    }
+
+    private void pullDiseaseClassification() throws DaoException, ServerConnectionException, ServerCommunicationException {
+        Call<List<DiseaseClassificationCriteria>> classificationCriteriaCall = RetroProvider.getClassificationFacade().pullAllClassificationCriteria();
+
+        if (classificationCriteriaCall != null) {
+            Response<List<DiseaseClassificationCriteria>> response;
+            try {
+                response = classificationCriteriaCall.execute();
+            } catch (IOException e) {
+                throw new ServerCommunicationException(e);
+            }
+
+            if (!response.isSuccessful()) {
+                RetroProvider.throwException(response);
+            }
+
+            DiseaseClassificationDao dao = DatabaseHelper.getDiseaseClassificationDao();
+            final List<DiseaseClassificationCriteria> result = response.body();
+            if (result != null && result.size() > 0) {
+                dao.callBatchTasks(new Callable<Void>() {
+                    public Void call() throws Exception {
+                        for (DiseaseClassificationCriteria criteria : result) {
+                            DiseaseClassificationAppHelper.saveClassificationToDatabase(criteria);
+                        }
+                        return null;
+                    }
+                });
+
+                Log.d(dao.getTableName(), "Pulled and saved " + result.size());
+            }
+        }
+    }
+
+    private void pullAndRemoveArchivedUuidsSince(Date since) throws ServerConnectionException, ServerCommunicationException {
+        Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullArchivedUuidsSince");
+
+        try {
+            // Cases
+            List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+            for (String caseUuid : caseUuids) {
+                DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
+            }
+
+            // Events
+            List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+            for (String eventUuid : eventUuids) {
+                DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
+            }
+
+            ConfigProvider.setLastArchivedSyncDate(new Date());
+        } catch (SQLException e) {
+            Log.e(SynchronizeDataAsync.class.getSimpleName(), "pullArchivedUuidsSince failed: " + e.getMessage());
+        }
     }
 
     public enum SyncMode {

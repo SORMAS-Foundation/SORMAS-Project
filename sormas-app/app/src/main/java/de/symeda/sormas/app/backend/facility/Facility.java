@@ -124,7 +124,7 @@ public class Facility extends AbstractDomainObject {
 
 	@Override
 	public String toString() {
-		return FacilityHelper.buildToString(getUuid(), name);
+		return FacilityHelper.buildFacilityString(getUuid(), name);
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -43,11 +44,11 @@ public class DistrictsView extends AbstractConfigurationView {
 		grid.reload();
 
 		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			createButton = new Button("new district");
+			createButton = new Button("New entry");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
 			createButton.addClickListener(
-					e -> ControllerProvider.getInfrastructureController().createDistrict("Create new district"));
+					e -> ControllerProvider.getInfrastructureController().createDistrict());
 			addHeaderComponent(createButton);
 		}
 		
@@ -70,7 +71,7 @@ public class DistrictsView extends AbstractConfigurationView {
 
 		ComboBox regionFilter = new ComboBox();
 		regionFilter.setWidth(140, Unit.PIXELS);
-		regionFilter.setCaption("Region");
+		regionFilter.setCaption(I18nProperties.getPrefixFieldCaption(DistrictDto.I18N_PREFIX, DistrictDto.REGION));
 		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 		regionFilter.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();

@@ -222,26 +222,25 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-
+	public List<String> getAllActiveUuids(String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return taskService.getAllUuids(user);
+		return taskService.getAllActiveUuids(user);
 	}
 
 	@Override
-	public List<TaskDto> getAllAfter(Date date, String userUuid) {
+	public List<TaskDto> getAllActiveTasksAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return taskService.getAllAfter(date, user).stream()
+		return taskService.getAllActiveTasksAfter(date, user).stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}

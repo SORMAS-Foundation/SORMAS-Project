@@ -1,21 +1,25 @@
 package de.symeda.sormas.app.backend.contact;
 
 import android.location.Location;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.util.LocationService;
 
 /**
@@ -38,7 +42,6 @@ public class ContactDao extends AbstractAdoDao<Contact> {
     }
 
     public List<Contact> getByCase(Case caze) {
-
         if (caze.isSnapshot()) {
             throw new IllegalArgumentException("Does not support snapshot entities");
         }
@@ -51,6 +54,27 @@ public class ContactDao extends AbstractAdoDao<Contact> {
             return qb.query();
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform getByCase on Contact");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int getCountByPersonAndDisease(@NonNull Person person, Disease disease) {
+        if (person.isSnapshot()) {
+            throw new IllegalArgumentException("Does not support snapshot entities");
+        }
+
+        try {
+            QueryBuilder qb = queryBuilder();
+            Where where = qb.where();
+            where.and(where.eq(Contact.PERSON, person),
+                    where.eq(AbstractDomainObject.SNAPSHOT, false));
+            if (disease != null) {
+                where.and(where, where.eq(Contact.CASE_DISEASE, disease));
+            }
+            qb.orderBy(Contact.LAST_CONTACT_DATE, false);
+            return (int) qb.countOf();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getCountByPersonAndDisease on Contact");
             throw new RuntimeException(e);
         }
     }

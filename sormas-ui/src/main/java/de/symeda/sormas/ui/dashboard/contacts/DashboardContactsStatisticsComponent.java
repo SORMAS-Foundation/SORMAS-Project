@@ -6,10 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.vaadin.server.FontAwesome;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -86,7 +89,7 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 
 		allContactsCountLayout = firstComponent.createCountLayout(true);
 		contactClassificationUnconfirmed = new DashboardStatisticsCountElement("Unconfirmed", CountElementStyle.MINOR);
-		contactClassificationConfirmed = new DashboardStatisticsCountElement("Confirmed", CountElementStyle.CRITICAL);
+		contactClassificationConfirmed = new DashboardStatisticsCountElement("Confirmed", CountElementStyle.PRIMARY);
 		contactClassificationNotAContact = new DashboardStatisticsCountElement("Not a contact", CountElementStyle.POSITIVE);
 		newContacts = new DashboardStatisticsCountElement("New", CountElementStyle.NEUTRAL);
 		symptomaticContacts = new DashboardStatisticsCountElement("Symptomatic", CountElementStyle.CRITICAL);
@@ -113,7 +116,7 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 
 		int contactsCount = contacts.size();
 		firstComponent.updateCountLabel(contactsCount);
-		
+
 		int newContactsCount = (int) contacts.stream()
 				.filter(
 						c -> c.getReportDate().after(dashboardDataProvider.getFromDate())
@@ -141,7 +144,7 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 			firstComponent.addComponentToContent(newContactsLarge);
 			firstComponent.addComponentToContent(symptomaticContactsLarge);
 		}
-		
+
 		if (currentDisease == null) {
 			// Remove all children of the content layout
 			firstComponent.removeAllComponentsFromContent();
@@ -152,10 +155,10 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 			contactClassificationNotAContact.updateCountLabel(contactClassificationNotAContactCount + " (" + contactClassificationNotAContactPercentage + " %)");
 			newContacts.updateCountLabel(newContactsCount);
 			symptomaticContacts.updateCountLabel(symptomaticContactsCount + " (" + symptomaticContactsPercentage + " %)");
-			
+
 			// Create a map with all diseases as keys and their respective case counts as values
 			Map<Disease, Integer> diseaseMap = new TreeMap<Disease, Integer>();
-			for (Disease disease : Disease.values()) {
+			for (Disease disease : DiseaseHelper.getAllDiseasesWithFollowUp()) {
 				diseaseMap.put(disease, (int) contacts.stream().filter(c -> c.getDisease() == disease).count());
 			}
 
@@ -184,7 +187,7 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 		secondComponent = new DashboardStatisticsSubComponent();
 
 		// Header
-		secondComponent.addHeader("Follow-up Status", null, true);
+		secondComponent.addHeader("Contact Follow-Up", null, true);
 
 		// Content
 		secondComponent.addMainContent();
@@ -209,7 +212,7 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 
 		int contactsCount = contacts.size();
 		secondComponent.updateCountLabel(contactsCount);
-		
+
 		int underFollowUpCount = (int) contacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.FOLLOW_UP).count();
 		int underFollowUpPercentage = contactsCount == 0 ? 0 : (int) ((underFollowUpCount * 100.0f) / contactsCount);
 		int followUpCompletedCount = (int) contacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.COMPLETED).count();
@@ -220,7 +223,7 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 		int lostToFollowUpPercentage = contactsCount == 0 ? 0 : (int) ((lostToFollowUpCount * 100.0f) / contactsCount);
 		int contactStatusConvertedCount = (int) contacts.stream().filter(c -> c.getContactStatus() == ContactStatus.CONVERTED).count();
 		int contactStatusConvertedPercentage = contactsCount == 0 ? 0 : (int) ((contactStatusConvertedCount * 100.0f) / contactsCount);
-		
+
 		underFollowUp.updatePercentageValueWithCount(underFollowUpCount, underFollowUpPercentage);
 		followUpCompleted.updatePercentageValueWithCount(followUpCompletedCount, followUpCompletedPercentage);
 		followUpCanceled.updatePercentageValueWithCount(followUpCanceledCount, followUpCanceledPercentage);
@@ -233,7 +236,7 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 		thirdComponent = new DashboardStatisticsSubComponent();
 
 		// Header
-		thirdComponent.addHeader("Follow-up Situation", null, false);
+		thirdComponent.addHeader("Follow-Up Situation", null, false);
 
 		// Visit status of last visit
 		thirdComponent.addMainContent();
@@ -246,6 +249,14 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 		thirdComponent.addComponentToCountLayout(visitStatusCountLayout, unavailableContacts);
 		neverVisitedContacts = new DashboardStatisticsCountElement("Never visited", CountElementStyle.MINOR);
 		thirdComponent.addComponentToCountLayout(visitStatusCountLayout, neverVisitedContacts);
+
+		Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+		infoLabel.setSizeUndefined();
+		infoLabel.setDescription("Follow-up status is calculcated by taking the status of the last visit to the respective contact. \"Never Visited\" means that "
+				+ "the contact has not yet been visited at all.");
+		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_SECONDARY, "follow-up-status-info-button");
+		thirdComponent.addComponentToCountLayout(visitStatusCountLayout, infoLabel);
+
 		thirdComponent.addComponentToContent(visitStatusCountLayout);
 
 		// Number of missed visits
@@ -327,22 +338,24 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 		fourthComponent = new DashboardStatisticsSubComponent();
 
 		// Header
-		fourthComponent.addHeader("Total Visits", null, true);
+		fourthComponent.addHeader("Visits", null, true);
 
 		// Content
 		fourthComponent.addMainContent();
-		missedVisits = new DashboardStatisticsGraphicalGrowthElement("Missed", CssStyles.SVG_FILL_CRITICAL);
-		fourthComponent.addComponentToContent(missedVisits);
 		unavailableVisits = new DashboardStatisticsGraphicalGrowthElement("Unavailable", CssStyles.SVG_FILL_MINOR);
 		fourthComponent.addComponentToContent(unavailableVisits);
 		uncooperativeVisits = new DashboardStatisticsGraphicalGrowthElement("Uncooperative", CssStyles.SVG_FILL_IMPORTANT);
 		fourthComponent.addComponentToContent(uncooperativeVisits);
 		cooperativeVisits = new DashboardStatisticsGraphicalGrowthElement("Cooperative", CssStyles.SVG_FILL_POSITIVE);
 		fourthComponent.addComponentToContent(cooperativeVisits);
-
+		Label separator = new Label("<hr/>", ContentMode.HTML);
+		CssStyles.style(separator, CssStyles.VSPACE_TOP_3, CssStyles.VSPACE_3);
+		fourthComponent.addComponentToContent(separator);
+		missedVisits = new DashboardStatisticsGraphicalGrowthElement("Missed", CssStyles.SVG_FILL_CRITICAL);
+		fourthComponent.addComponentToContent(missedVisits);
+		
 		subComponentsLayout.addComponent(fourthComponent, FOURTH_LOC);
 	}
-
 
 	@Override
 	protected void updateFourthComponent(int visibleDiseasesCount) {
@@ -350,33 +363,41 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 		List<DashboardContactDto> previousContacts = dashboardDataProvider.getPreviousContacts();
 		List<DashboardVisitDto> visits = new ArrayList<>();
 		List<DashboardVisitDto> previousVisits = new ArrayList<>();
+		int doneEssentialVisitsCount = 0;	// only visits that needed to be done, i.e. at most the amount of follow-up days
+		int previousDoneEssentialVisitsCount = 0;
 
 		VisitFacade visitFacade = FacadeProvider.getVisitFacade();
 		Date now = new Date();
 		int totalFollowUpDays = 0;
 		int previousTotalFollowUpDays = 0;
 		for (DashboardContactDto contact : contacts) {
-			visits.addAll(visitFacade.getDashboardVisitsByContact(new ContactReferenceDto(contact.getUuid()), dashboardDataProvider.getFromDate(), dashboardDataProvider.getToDate()));
+			List<DashboardVisitDto> visitsForContact = visitFacade.getDashboardVisitsByContact(new ContactReferenceDto(contact.getUuid()), dashboardDataProvider.getFromDate(), dashboardDataProvider.getToDate());
+			visits.addAll(visitsForContact);
 			if (contact.getFollowUpUntil() != null) {
-				totalFollowUpDays += Math.min(DateHelper.getDaysBetween(contact.getReportDate(), now), DateHelper.getDaysBetween(contact.getReportDate(), contact.getFollowUpUntil()));
+				int contactFollowUpDays = Math.min(DateHelper.getDaysBetween(contact.getReportDate(), now), DateHelper.getDaysBetween(contact.getReportDate(), contact.getFollowUpUntil()));
+				totalFollowUpDays += contactFollowUpDays;
+				doneEssentialVisitsCount += visitsForContact.size() > contactFollowUpDays ? contactFollowUpDays : visitsForContact.size();
 			}
 		}
+
 		for (DashboardContactDto contact : previousContacts) {
-			previousVisits.addAll(visitFacade.getDashboardVisitsByContact(new ContactReferenceDto(contact.getUuid()), dashboardDataProvider.getPreviousFromDate(), dashboardDataProvider.getPreviousToDate()));
+			List<DashboardVisitDto> visitsForContact = visitFacade.getDashboardVisitsByContact(new ContactReferenceDto(contact.getUuid()), dashboardDataProvider.getPreviousFromDate(), dashboardDataProvider.getPreviousToDate());
+			previousVisits.addAll(visitsForContact);
 			if (contact.getFollowUpUntil() != null) {
-				previousTotalFollowUpDays += Math.min(DateHelper.getDaysBetween(contact.getReportDate(), now), DateHelper.getDaysBetween(contact.getReportDate(), contact.getFollowUpUntil()));
+				int contactFollowUpDays = Math.min(DateHelper.getDaysBetween(contact.getReportDate(), now), DateHelper.getDaysBetween(contact.getReportDate(), contact.getFollowUpUntil()));
+				previousTotalFollowUpDays += contactFollowUpDays;
+				previousDoneEssentialVisitsCount += visitsForContact.size() > contactFollowUpDays ? contactFollowUpDays : visitsForContact.size();
 			}
 		}
-		
+
 		int visitsCount = visits.size();
-		int previousVisitsCount = previousVisits.size();
 		fourthComponent.updateCountLabel(visitsCount);
 
-		int missedVisitsCount = totalFollowUpDays - visitsCount;
+		int missedVisitsCount = totalFollowUpDays - doneEssentialVisitsCount;
 		int unavailableVisitsCount = (int) visits.stream().filter(v -> v.getVisitStatus() == VisitStatus.UNAVAILABLE).count();
 		int uncooperativeVisitsCount = (int) visits.stream().filter(v -> v.getVisitStatus() == VisitStatus.UNCOOPERATIVE).count();
 		int cooperativeVisitsCount = (int) visits.stream().filter(v -> v.getVisitStatus() == VisitStatus.COOPERATIVE).count();
-		int previousMissedVisitsCount = previousTotalFollowUpDays - previousVisitsCount;
+		int previousMissedVisitsCount = previousTotalFollowUpDays - previousDoneEssentialVisitsCount;
 		int previousUnavailableVisitsCount = (int) previousVisits.stream().filter(v -> v.getVisitStatus() == VisitStatus.UNAVAILABLE).count();
 		int previousUncooperativeVisitsCount = (int) previousVisits.stream().filter(v -> v.getVisitStatus() == VisitStatus.UNCOOPERATIVE).count();
 		int previousCooperativeVisitsCount = (int) previousVisits.stream().filter(v -> v.getVisitStatus() == VisitStatus.COOPERATIVE).count();
@@ -395,12 +416,12 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 		uncooperativeVisits.update(uncooperativeVisitsCount, uncooperativeVisitsPercentage, uncooperativeVisitsGrowth, false, false);
 		cooperativeVisits.update(cooperativeVisitsCount, cooperativeVisitsPercentage, cooperativeVisitsGrowth, true, false);
 	}
-	
+
 	@Override
 	protected int getFullHeight() {
 		return 430;
 	}
-	
+
 	@Override
 	protected int getNormalHeight() {
 		return 320;

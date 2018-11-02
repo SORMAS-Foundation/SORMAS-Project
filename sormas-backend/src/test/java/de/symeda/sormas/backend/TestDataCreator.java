@@ -29,6 +29,7 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.SampleTestType;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -120,7 +121,7 @@ public class TestDataCreator {
 	}
 
 	public TaskDto createTask(TaskContext context, TaskType type, TaskStatus status, CaseReferenceDto caze,
-			ContactReferenceDto contact, Date dueDate, UserReferenceDto assigneeUser) {
+			ContactReferenceDto contact, EventReferenceDto event, Date dueDate, UserReferenceDto assigneeUser) {
 		TaskDto task = new TaskDto();
 		task.setUuid(DataHelper.createUuid());
 		task.setTaskContext(context);
@@ -131,6 +132,9 @@ public class TestDataCreator {
 		}
 		if (contact != null) {
 			task.setContact(contact);
+		}
+		if (event != null) {
+			task.setEvent(event);
 		}
 		task.setDueDate(dueDate);
 		task.setAssigneeUser(assigneeUser);
@@ -147,6 +151,10 @@ public class TestDataCreator {
 		visit.setPerson(contactPerson);
 		visit.setVisitDateTime(visitDateTime);
 		visit.setVisitStatus(visitStatus);
+		
+		SymptomsDto symptoms = new SymptomsDto();
+		symptoms.setUuid(DataHelper.createUuid());
+		visit.setSymptoms(symptoms);
 		
 		visit = beanTest.getVisitFacade().saveVisit(visit);
 		
