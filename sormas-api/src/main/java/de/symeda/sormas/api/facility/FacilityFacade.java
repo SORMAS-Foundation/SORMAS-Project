@@ -8,6 +8,7 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
 public interface FacilityFacade {
@@ -32,6 +33,6 @@ public interface FacilityFacade {
 
 	List<String> getAllUuids(String userUuid);
 
-	void saveFacility(FacilityDto value);
+	void saveFacility(FacilityDto value) throws ValidationRuntimeException;
 
 }

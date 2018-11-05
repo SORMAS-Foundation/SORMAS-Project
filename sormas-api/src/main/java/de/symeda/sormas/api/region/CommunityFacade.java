@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
+
 @Remote
 public interface CommunityFacade {
 	
@@ -22,6 +24,6 @@ public interface CommunityFacade {
 	
 	List<CommunityDto> getByUuids(List<String> uuids);
 	
-	void saveCommunity(CommunityDto dto);
+	void saveCommunity(CommunityDto dto) throws ValidationRuntimeException;
 
 }

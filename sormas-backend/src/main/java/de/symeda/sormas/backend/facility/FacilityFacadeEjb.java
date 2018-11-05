@@ -216,23 +216,22 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	}
 
 	@Override
-	public void saveFacility(FacilityDto dto) {
+	public void saveFacility(FacilityDto dto) throws ValidationRuntimeException {
 		Facility facility = facilityService.getByUuid(dto.getUuid());
 
-		facility = fillOrBuildEntity(dto, facility);
-
-		if (facility.getRegion() == null) {
+		if (dto.getRegion() == null) {
 			throw new ValidationRuntimeException("You have to specify a valid region");
 		}
 		if (dto.getType() != FacilityType.LABORATORY) {
-			if (facility.getDistrict() == null) {
+			if (dto.getDistrict() == null) {
 				throw new ValidationRuntimeException("You have to specify a valid district");
 			}
-			if (facility.getCommunity() == null) {
+			if (dto.getCommunity() == null) {
 				throw new ValidationRuntimeException("You have to specify a valid community");
 			}
 		}
-
+		
+		facility = fillOrBuildEntity(dto, facility);
 		facilityService.ensurePersisted(facility);
 	}
 

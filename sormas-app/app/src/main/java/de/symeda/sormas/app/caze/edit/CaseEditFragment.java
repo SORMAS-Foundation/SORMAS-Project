@@ -91,7 +91,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
                     @Override
                     public void accept(final Case caze) {
                         final Case caseClone = (Case) caze.clone();
-                        final MoveCaseDialog moveCaseDialog = new MoveCaseDialog(BaseActivity.getActiveActivity(), caseClone);
+                        final MoveCaseDialog moveCaseDialog = new MoveCaseDialog(BaseActivity.getActiveActivity(), caze);
                         moveCaseDialog.setPositiveCallback(new Callback() {
                             @Override
                             public void call() {

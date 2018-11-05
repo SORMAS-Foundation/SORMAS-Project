@@ -112,15 +112,14 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	}
 	
 	@Override
-	public void saveCommunity(CommunityDto dto) {
+	public void saveCommunity(CommunityDto dto) throws ValidationRuntimeException {
 		Community community = communityService.getByUuid(dto.getUuid());
 		
-		community = fillOrBuildEntity(dto, community);
-		
-		if (community.getDistrict() == null) {
+		if (dto.getDistrict() == null) {
 			throw new ValidationRuntimeException("You have to specify a valid district");
 		}
-		
+
+		community = fillOrBuildEntity(dto, community);
 		communityService.ensurePersisted(community);
 	}
 	

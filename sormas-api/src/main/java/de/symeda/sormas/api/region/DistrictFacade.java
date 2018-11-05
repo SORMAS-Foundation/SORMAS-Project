@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
+
 @Remote
 public interface DistrictFacade {
 
@@ -30,6 +32,6 @@ public interface DistrictFacade {
 	
 	List<DistrictDto> getByUuids(List<String> uuids);
 	
-	void saveDistrict(DistrictDto dto);
+	void saveDistrict(DistrictDto dto) throws ValidationRuntimeException;
 	
 }

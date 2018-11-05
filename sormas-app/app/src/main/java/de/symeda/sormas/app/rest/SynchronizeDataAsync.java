@@ -387,7 +387,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new SynchronizeDataAsync(syncMode, context) {
             @Override
             protected void onPostExecute(Void aVoid) {
-
                 if (callback != null) {
                     callback.call(syncFailed, syncFailedMessage);
                 }
