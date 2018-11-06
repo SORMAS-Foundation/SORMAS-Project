@@ -31,8 +31,8 @@ public abstract class BaseLandingActivity extends BaseActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onResumeFragments() {
+        super.onResumeFragments();
         replaceFragment(buildLandingFragment());
     }
 
@@ -43,7 +43,6 @@ public abstract class BaseLandingActivity extends BaseActivity {
     }
 
     public void replaceFragment(BaseLandingFragment f) {
-        BaseFragment previousFragment = activeFragment;
         activeFragment = f;
 
         if (activeFragment != null) {

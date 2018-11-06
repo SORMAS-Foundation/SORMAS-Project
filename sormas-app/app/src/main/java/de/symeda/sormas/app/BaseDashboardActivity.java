@@ -46,8 +46,8 @@ public abstract class BaseDashboardActivity extends BaseActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onResumeFragments() {
+        super.onResumeFragments();
 
         replaceFragments(buildSummaryFragments());
     }

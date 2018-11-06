@@ -39,8 +39,8 @@ public abstract class BaseListActivity extends BaseActivity implements IUpdateSu
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onResumeFragments() {
+        super.onResumeFragments();
         replaceFragment(buildListFragment(getActivePage()));
     }
 
@@ -49,7 +49,6 @@ public abstract class BaseListActivity extends BaseActivity implements IUpdateSu
     }
 
     public void replaceFragment(BaseListFragment f) {
-        BaseListFragment previousFragment = activeFragment;
         activeFragment = f;
 
         if (activeFragment != null) {

@@ -75,11 +75,16 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
 
             @Override
             public void doInBackground(TaskResultHolder resultHolder) {
-                ActivityRootEntity result;
+                ActivityRootEntity result = null;
                 if (rootUuid != null && !rootUuid.isEmpty()) {
                     result = queryRootData(rootUuid);
-                } else {
-                    result = null;
+                }
+
+                // This should not happen; however, it still might under certain circumstances
+                // (user clicking a notification for a task they have no access to anymore); in
+                // this case, the activity should be closed.
+                if (result == null) {
+                    finish();
                 }
                 resultHolder.forItem().add(result);
             }
@@ -109,8 +114,8 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onResumeFragments() {
+        super.onResumeFragments();
 
         requestRootData(new Callback.IAction<ActivityRootEntity>() {
             @Override

@@ -84,8 +84,8 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onResumeFragments() {
+        super.onResumeFragments();
         replaceFragment(buildReportFragment());
     }
 

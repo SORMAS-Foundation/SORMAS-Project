@@ -198,7 +198,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         setupDrawer(navigationView);
     }
 
-
     protected abstract void onCreateInner(Bundle savedInstanceState);
 
     @Override

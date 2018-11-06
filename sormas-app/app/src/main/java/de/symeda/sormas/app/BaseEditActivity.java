@@ -83,8 +83,8 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onResumeFragments() {
+        super.onResumeFragments();
 
         requestRootData(new Consumer<ActivityRootEntity>() {
             @Override
@@ -120,8 +120,11 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
                 if (rootUuid != null && !rootUuid.isEmpty()) {
                     result = queryRootEntity(rootUuid);
 
+                    // This should not happen; however, it still might under certain circumstances
+                    // (user clicking a notification for a task they have no access to anymore); in
+                    // this case, the activity should be closed.
                     if (result == null) {
-                        result = buildRootEntity();
+                        finish();
                     }
                 } else {
                     result = buildRootEntity();
