@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.configuration;
+package de.symeda.sormas.ui.configuration.infrastructure;
 
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextField;

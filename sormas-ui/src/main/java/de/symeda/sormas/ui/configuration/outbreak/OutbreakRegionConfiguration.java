@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.configuration;
+package de.symeda.sormas.ui.configuration.outbreak;
 
 import java.util.HashSet;
 import java.util.Set;

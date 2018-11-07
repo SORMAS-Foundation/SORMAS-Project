@@ -7,7 +7,6 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;

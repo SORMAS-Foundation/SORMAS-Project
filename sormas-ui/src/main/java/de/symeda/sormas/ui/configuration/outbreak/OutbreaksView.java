@@ -1,9 +1,10 @@
-package de.symeda.sormas.ui.configuration;
+package de.symeda.sormas.ui.configuration.outbreak;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class OutbreaksView extends AbstractConfigurationView {

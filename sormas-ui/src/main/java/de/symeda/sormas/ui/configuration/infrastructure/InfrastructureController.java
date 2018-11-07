@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.configuration;
+package de.symeda.sormas.ui.configuration.infrastructure;
 
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;

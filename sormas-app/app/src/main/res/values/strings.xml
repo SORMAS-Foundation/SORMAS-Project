@@ -83,7 +83,7 @@
     <string name="alert_title_gps">Turn On GPS</string>
     <string name="alert_title_gps_permission">Allow GPS Access</string>
     <string name="alert_title_unsynchronized_changes">Unsynchronized Changes</string>
-    <string name="alert_unsynchronized_changes">There are unsynchronized changes on your device. If you log out now, they will be lost and you will not be able to restore them. Do you still want to log out of SORMAS?</string>
+    <string name="alert_unsynchronized_changes">There are unsynchronized changes on your device.\nIf you proceed, they will be lost and you will not be able to restore them.</string>
 
     <string name="caption_case_contacts">Case Contacts</string>
     <string name="caption_case_epidemiological_data">Epidemiological Info</string>
@@ -316,6 +316,7 @@
     <string name="sync_error">Synchronization failed. Please try again later.</string>
     <string name="synclog_server">Server: </string>
     <string name="synclog_yours">Yours: </string>
+    <string name="synclog_resync">Changed data lost during re-sync.</string>
     <string name="tag_row_item_select_or_create_person">rowItemSelectOrCreatePerson</string>
     <string name="task_comment_unknown">Comment N/A</string>
     <string name="task_date_unknown">Task Date N/A</string>

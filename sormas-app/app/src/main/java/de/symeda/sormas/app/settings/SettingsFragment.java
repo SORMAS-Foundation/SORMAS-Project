@@ -173,7 +173,6 @@ public class SettingsFragment extends BaseLandingFragment {
                 final List<Event> modifiedEvents = DatabaseHelper.getEventDao().getModifiedEntities();
                 final List<EventParticipant> modifiedEventParticipants = DatabaseHelper.getEventParticipantDao().getModifiedEntities();
                 final List<Sample> modifiedSamples = DatabaseHelper.getSampleDao().getModifiedEntities();
-                final List<Task> modifiedTasks = DatabaseHelper.getTaskDao().getModifiedEntities();
                 final List<Visit> modifiedVisits = DatabaseHelper.getVisitDao().getModifiedEntities();
 
                 getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.CompleteAndRepull,
@@ -185,49 +184,43 @@ public class SettingsFragment extends BaseLandingFragment {
                                 for (Case caze : modifiedCases) {
                                     if (DatabaseHelper.getCaseDao().queryUuidReference(caze.getUuid()) == null) {
                                         DatabaseHelper.getSyncLogDao().createWithParentStack(caze.toString(),
-                                                "Entry with changes deleted because a re-sync was done and you no longer have access to it.");
+                                                getResources().getString(R.string.synclog_resync));
                                     }
                                 }
                                 for (Contact contact : modifiedContacts) {
                                     if (DatabaseHelper.getContactDao().queryUuidReference(contact.getUuid()) == null) {
                                         DatabaseHelper.getSyncLogDao().createWithParentStack(contact.toString(),
-                                                "Entry with changes deleted because a re-sync was done and you no longer have access to it.");
+                                                getResources().getString(R.string.synclog_resync));
                                     }
                                 }
                                 for (Person person : modifiedPersons) {
                                     if (DatabaseHelper.getPersonDao().queryUuidReference(person.getUuid()) == null) {
                                         DatabaseHelper.getSyncLogDao().createWithParentStack(person.toString(),
-                                                "Entry with changes deleted because a re-sync was done and you no longer have access to it.");
+                                                getResources().getString(R.string.synclog_resync));
                                     }
                                 }
                                 for (Event event : modifiedEvents) {
                                     if (DatabaseHelper.getEventDao().queryUuidReference(event.getUuid()) == null) {
                                         DatabaseHelper.getSyncLogDao().createWithParentStack(event.toString(),
-                                                "Entry with changes deleted because a re-sync was done and you no longer have access to it.");
+                                                getResources().getString(R.string.synclog_resync));
                                     }
                                 }
                                 for (EventParticipant eventParticipant : modifiedEventParticipants) {
                                     if (DatabaseHelper.getEventParticipantDao().queryUuidReference(eventParticipant.getUuid()) == null) {
                                         DatabaseHelper.getSyncLogDao().createWithParentStack(eventParticipant.toString(),
-                                                "Entry with changes deleted because a re-sync was done and you no longer have access to it.");
+                                                getResources().getString(R.string.synclog_resync));
                                     }
                                 }
                                 for (Sample sample : modifiedSamples) {
                                     if (DatabaseHelper.getSampleDao().queryUuidReference(sample.getUuid()) == null) {
                                         DatabaseHelper.getSyncLogDao().createWithParentStack(sample.toString(),
-                                                "Entry with changes deleted because a re-sync was done and you no longer have access to it.");
-                                    }
-                                }
-                                for (Task task : modifiedTasks) {
-                                    if (DatabaseHelper.getTaskDao().queryUuidReference(task.getUuid()) == null) {
-                                        DatabaseHelper.getSyncLogDao().createWithParentStack(task.toString(),
-                                                "Entry with changes deleted because a re-sync was done and you no longer have access to it.");
+                                                getResources().getString(R.string.synclog_resync));
                                     }
                                 }
                                 for (Visit visit : modifiedVisits) {
                                     if (DatabaseHelper.getVisitDao().queryUuidReference(visit.getUuid()) == null) {
                                         DatabaseHelper.getSyncLogDao().createWithParentStack(visit.toString(),
-                                                "Entry with changes deleted because a re-sync was done and you no longer have access to it.");
+                                                getResources().getString(R.string.synclog_resync));
                                     }
                                 }
                             }

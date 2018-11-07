@@ -9,6 +9,12 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SubNavigationMenu;
+import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
+import de.symeda.sormas.ui.configuration.infrastructure.DistrictsView;
+import de.symeda.sormas.ui.configuration.infrastructure.HealthFacilitiesView;
+import de.symeda.sormas.ui.configuration.infrastructure.LaboratoriesView;
+import de.symeda.sormas.ui.configuration.infrastructure.RegionsView;
+import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
@@ -37,6 +43,10 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			menu.addView(LaboratoriesView.VIEW_NAME, I18nProperties.getPrefixFragment("View",
 					LaboratoriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
 		}
+//		if (LoginHelper.hasUserRight(UserRight.USER_RIGHTS_MANAGE)) {
+//			menu.addView(UserRightsView.VIEW_NAME, I18nProperties.getPrefixFragment("View", 
+//					UserRightsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
+//		}
 		menu.addView(OutbreaksView.VIEW_NAME,
 				I18nProperties.getPrefixFragment("View", OutbreaksView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 				params);
@@ -50,6 +60,9 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			navigator.addView(HealthFacilitiesView.VIEW_NAME, HealthFacilitiesView.class);
 			navigator.addView(LaboratoriesView.VIEW_NAME, LaboratoriesView.class);
 		}
+//		if (LoginHelper.hasUserRight(UserRight.USER_RIGHTS_MANAGE)) {
+//			navigator.addView(UserRightsView.VIEW_NAME, UserRightsView.class);
+//		}
 		navigator.addView(OutbreaksView.VIEW_NAME, OutbreaksView.class);
 	}
 

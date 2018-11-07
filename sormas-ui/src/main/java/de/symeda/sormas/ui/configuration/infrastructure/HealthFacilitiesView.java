@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.configuration;
+package de.symeda.sormas.ui.configuration.infrastructure;
 
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;

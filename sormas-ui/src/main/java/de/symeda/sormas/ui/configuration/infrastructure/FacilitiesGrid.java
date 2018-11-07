@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.configuration;
+package de.symeda.sormas.ui.configuration.infrastructure;
 
 import java.util.ArrayList;
 import java.util.List;

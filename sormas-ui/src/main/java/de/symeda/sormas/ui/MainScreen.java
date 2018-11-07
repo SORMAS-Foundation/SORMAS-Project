@@ -11,12 +11,13 @@ import com.vaadin.ui.HorizontalLayout;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.caze.CasesView;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
-import de.symeda.sormas.ui.configuration.CommunitiesView;
-import de.symeda.sormas.ui.configuration.DistrictsView;
-import de.symeda.sormas.ui.configuration.HealthFacilitiesView;
-import de.symeda.sormas.ui.configuration.LaboratoriesView;
-import de.symeda.sormas.ui.configuration.OutbreaksView;
-import de.symeda.sormas.ui.configuration.RegionsView;
+import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
+import de.symeda.sormas.ui.configuration.infrastructure.DistrictsView;
+import de.symeda.sormas.ui.configuration.infrastructure.HealthFacilitiesView;
+import de.symeda.sormas.ui.configuration.infrastructure.LaboratoriesView;
+import de.symeda.sormas.ui.configuration.infrastructure.RegionsView;
+import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
+import de.symeda.sormas.ui.configuration.userrights.UserRightsView;
 import de.symeda.sormas.ui.contact.ContactsView;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.DashboardContactsView;
@@ -64,7 +65,8 @@ public class MainScreen extends HorizontalLayout {
 							|| viewName.equals(StatisticsView.VIEW_NAME) || viewName.equals(UsersView.VIEW_NAME)
 							|| viewName.equals(OutbreaksView.VIEW_NAME) || viewName.equals(RegionsView.VIEW_NAME) 
 							|| viewName.equals(DistrictsView.VIEW_NAME) || viewName.equals(CommunitiesView.VIEW_NAME) 
-							|| viewName.equals(HealthFacilitiesView.VIEW_NAME) || viewName.equals(LaboratoriesView.VIEW_NAME)) {
+							|| viewName.equals(HealthFacilitiesView.VIEW_NAME) || viewName.equals(LaboratoriesView.VIEW_NAME)
+							|| viewName.equals(UserRightsView.VIEW_NAME)) {
 						return AccessDeniedView.class.newInstance();
 					} else {
 						return ErrorView.class.newInstance();

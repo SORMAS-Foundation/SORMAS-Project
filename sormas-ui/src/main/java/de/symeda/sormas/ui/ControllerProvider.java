@@ -1,8 +1,8 @@
 package de.symeda.sormas.ui;
 
 import de.symeda.sormas.ui.caze.CaseController;
-import de.symeda.sormas.ui.configuration.InfrastructureController;
-import de.symeda.sormas.ui.configuration.OutbreakController;
+import de.symeda.sormas.ui.configuration.infrastructure.InfrastructureController;
+import de.symeda.sormas.ui.configuration.outbreak.OutbreakController;
 import de.symeda.sormas.ui.contact.ContactController;
 import de.symeda.sormas.ui.dashboard.DashboardController;
 import de.symeda.sormas.ui.events.EventController;
