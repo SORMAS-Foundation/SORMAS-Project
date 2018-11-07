@@ -965,13 +965,21 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 //    }
 
     public boolean isAnyModified() {
-
         try {
             ADO result = queryBuilder().where().eq(AbstractDomainObject.MODIFIED, true)
                     .queryForFirst();
             return result != null;
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform isAnyModified");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<ADO> getModifiedEntities() {
+        try {
+            return queryBuilder().where().eq(AbstractDomainObject.MODIFIED, true).query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getModifiedEntities");
             throw new RuntimeException(e);
         }
     }

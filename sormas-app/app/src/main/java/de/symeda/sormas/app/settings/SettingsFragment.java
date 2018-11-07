@@ -11,11 +11,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.BaseLandingFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.report.WeeklyReport;
+import de.symeda.sormas.app.backend.report.WeeklyReportEntry;
+import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.backend.sample.SampleTest;
+import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.dialog.SyncLogDialog;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
@@ -122,6 +137,26 @@ public class SettingsFragment extends BaseLandingFragment {
     }
 
     private void repullData() {
+        if (SynchronizeDataAsync.hasAnyUnsynchronizedData()) {
+            final ConfirmationDialog unsynchronizedChangesDialog = new ConfirmationDialog(getActivity(),
+                    R.string.alert_title_unsynchronized_changes,
+                    R.string.alert_unsynchronized_changes);
+
+            unsynchronizedChangesDialog.setPositiveCallback(new Callback() {
+                @Override
+                public void call() {
+                    unsynchronizedChangesDialog.dismiss();
+                    showRepullDataConfirmationDialog();
+                }
+            });
+
+            unsynchronizedChangesDialog.show();
+        } else {
+            showRepullDataConfirmationDialog();
+        }
+    }
+
+    private void showRepullDataConfirmationDialog() {
         final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActivity(),
                 R.string.heading_confirmation_dialog,
                 R.string.heading_sub_confirmation_notification_dialog_resync);
@@ -131,8 +166,72 @@ public class SettingsFragment extends BaseLandingFragment {
             public void call() {
                 confirmationDialog.dismiss();
 
+                // Collect unsynchronized changes
+                final List<Case> modifiedCases = DatabaseHelper.getCaseDao().getModifiedEntities();
+                final List<Contact> modifiedContacts = DatabaseHelper.getContactDao().getModifiedEntities();
+                final List<Person> modifiedPersons = DatabaseHelper.getPersonDao().getModifiedEntities();
+                final List<Event> modifiedEvents = DatabaseHelper.getEventDao().getModifiedEntities();
+                final List<EventParticipant> modifiedEventParticipants = DatabaseHelper.getEventParticipantDao().getModifiedEntities();
+                final List<Sample> modifiedSamples = DatabaseHelper.getSampleDao().getModifiedEntities();
+                final List<Task> modifiedTasks = DatabaseHelper.getTaskDao().getModifiedEntities();
+                final List<Visit> modifiedVisits = DatabaseHelper.getVisitDao().getModifiedEntities();
+
                 getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.CompleteAndRepull,
-                        true, true, null, null,
+                        true, true, null,
+                        new Callback() {
+                            @Override
+                            public void call() {
+                                // Add deleted entities that had unsynchronized changes to sync log
+                                for (Case caze : modifiedCases) {
+                                    if (DatabaseHelper.getCaseDao().queryUuidReference(caze.getUuid()) == null) {
+                                        DatabaseHelper.getSyncLogDao().createWithParentStack(caze.toString(),
+                                                "Entry with changes deleted because a re-sync was done and you no longer have access to it.");
+                                    }
+                                }
+                                for (Contact contact : modifiedContacts) {
+                                    if (DatabaseHelper.getContactDao().queryUuidReference(contact.getUuid()) == null) {
+                                        DatabaseHelper.getSyncLogDao().createWithParentStack(contact.toString(),
+                                                "Entry with changes deleted because a re-sync was done and you no longer have access to it.");
+                                    }
+                                }
+                                for (Person person : modifiedPersons) {
+                                    if (DatabaseHelper.getPersonDao().queryUuidReference(person.getUuid()) == null) {
+                                        DatabaseHelper.getSyncLogDao().createWithParentStack(person.toString(),
+                                                "Entry with changes deleted because a re-sync was done and you no longer have access to it.");
+                                    }
+                                }
+                                for (Event event : modifiedEvents) {
+                                    if (DatabaseHelper.getEventDao().queryUuidReference(event.getUuid()) == null) {
+                                        DatabaseHelper.getSyncLogDao().createWithParentStack(event.toString(),
+                                                "Entry with changes deleted because a re-sync was done and you no longer have access to it.");
+                                    }
+                                }
+                                for (EventParticipant eventParticipant : modifiedEventParticipants) {
+                                    if (DatabaseHelper.getEventParticipantDao().queryUuidReference(eventParticipant.getUuid()) == null) {
+                                        DatabaseHelper.getSyncLogDao().createWithParentStack(eventParticipant.toString(),
+                                                "Entry with changes deleted because a re-sync was done and you no longer have access to it.");
+                                    }
+                                }
+                                for (Sample sample : modifiedSamples) {
+                                    if (DatabaseHelper.getSampleDao().queryUuidReference(sample.getUuid()) == null) {
+                                        DatabaseHelper.getSyncLogDao().createWithParentStack(sample.toString(),
+                                                "Entry with changes deleted because a re-sync was done and you no longer have access to it.");
+                                    }
+                                }
+                                for (Task task : modifiedTasks) {
+                                    if (DatabaseHelper.getTaskDao().queryUuidReference(task.getUuid()) == null) {
+                                        DatabaseHelper.getSyncLogDao().createWithParentStack(task.toString(),
+                                                "Entry with changes deleted because a re-sync was done and you no longer have access to it.");
+                                    }
+                                }
+                                for (Visit visit : modifiedVisits) {
+                                    if (DatabaseHelper.getVisitDao().queryUuidReference(visit.getUuid()) == null) {
+                                        DatabaseHelper.getSyncLogDao().createWithParentStack(visit.toString(),
+                                                "Entry with changes deleted because a re-sync was done and you no longer have access to it.");
+                                    }
+                                }
+                            }
+                        },
                         new Callback() {
                             @Override
                             public void call() {
