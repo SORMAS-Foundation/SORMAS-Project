@@ -378,18 +378,32 @@ public class DashboardMapComponent extends VerticalLayout {
 						caseMeasure = (CaseMeasure) event.getProperty().getValue();
 						refreshMap();
 					});
+					
+					HorizontalLayout showRegionsLayout = new HorizontalLayout();
+					{
+						CheckBox showRegionsCheckBox = new CheckBox();
+						CssStyles.style(showRegionsCheckBox, CssStyles.VSPACE_NONE);
+						showRegionsCheckBox.setCaption("Show regions");
+						showRegionsCheckBox.setValue(showRegions);
+						showRegionsCheckBox.addValueChangeListener(e -> {
+							showRegions = (boolean) e.getProperty().getValue();
+							regionMapVisualizationSelect.setEnabled(showRegions);
+							regionMapVisualizationSelect.setValue(caseMeasure);
+							refreshMap();
+						});
+						showRegionsLayout.addComponent(showRegionsCheckBox);
 
-					CheckBox showRegionsCheckBox = new CheckBox();
-					CssStyles.style(showRegionsCheckBox, CssStyles.VSPACE_NONE);
-					showRegionsCheckBox.setCaption("Show regions");
-					showRegionsCheckBox.setValue(showRegions);
-					showRegionsCheckBox.addValueChangeListener(e -> {
-						showRegions = (boolean) e.getProperty().getValue();
-						regionMapVisualizationSelect.setEnabled(showRegions);
-						regionMapVisualizationSelect.setValue(caseMeasure);
-						refreshMap();
-					});
-					layersLayout.addComponent(showRegionsCheckBox);
+						Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+						infoLabel.setDescription(
+								"\"Case incidence\" means the number of cases per 100,000 inhabitants. You can check the map key to see the thresholds that define "
+								+ "how the districts are colorized.");
+						CssStyles.style(infoLabel, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_SECONDARY,
+								CssStyles.HSPACE_LEFT_3);
+						infoLabel.setHeightUndefined();
+						showRegionsLayout.addComponent(infoLabel);
+						showRegionsLayout.setComponentAlignment(infoLabel, Alignment.TOP_CENTER);
+					}
+					layersLayout.addComponent(showRegionsLayout);
 					layersLayout.addComponent(regionMapVisualizationSelect);
 					regionMapVisualizationSelect.setEnabled(showRegions);
 				}
