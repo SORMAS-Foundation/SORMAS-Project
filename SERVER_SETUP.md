@@ -4,11 +4,15 @@
 **Note: All commands below are Linux commands. On windows systems use the corresponding commands or the windows explorer.**
 **To execute the shell script on Windows systems you can use git bash (MinGW64).**
 
+## Content
 * [Postgres Database](#postgres-database)
 * [Payara Application Server](#payara-application-server)
 * [SORMAS Domain](#sormas-domain)
 * [Apache Web Server](#apache-web-server)
 * [Postfix Mail Server](#postfix-mail-server)
+* [Troubleshooting](#troubleshooting)
+
+## Related
 * [Creating an App for a Demo Server](DEMO_APP.md)
 
 ## Postgres Database
