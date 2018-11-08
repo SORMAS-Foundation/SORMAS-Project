@@ -45,6 +45,8 @@
 			* Open sormas_schema.sql with a texteditor and copy the content to the query-tool of sormas_db (And execute the query).
 	
 ## Payara Application Server
+* Download and install the latest Java 8 JDK for your operating system: https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
+* Make sure the JAVA_HOME environment variable is set
 * Download payara 4.1.2.172 [downloadlink](http://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/4.1.2.172/payara-4.1.2.172.zip) and extract it to the directory where your servers should be located (e.g. /opt/payara-172).  
 The `/opt/payara-172/` as payara-directory can, in some linux distros, only be modified by root. For a local development environment, it may be easier to use another directory owned by logged-in user. Same for `/opt/domains/` as domain directory and `/root/deploy/sormas/$(date +%F)` as directory for the sormas deploy (both used later in this document).
 * Remove the default domains from the server:
