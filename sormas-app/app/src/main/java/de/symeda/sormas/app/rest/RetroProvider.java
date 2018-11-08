@@ -281,10 +281,10 @@ public final class RetroProvider {
     }
 
     public static void matchAppAndApiVersions() throws ServerCommunicationException, ServerConnectionException, ApiVersionException {
-        matchAppAndApiVersions(null);
+        matchAppAndApiVersions(getInfoFacade());
     }
 
-    private static void matchAppAndApiVersions(final InfoFacadeRetro localInfoFacadeRetro) throws ServerCommunicationException, ServerConnectionException, ApiVersionException {
+    private static void matchAppAndApiVersions(final InfoFacadeRetro infoFacadeRetro) throws ServerCommunicationException, ServerConnectionException, ApiVersionException {
         // Retrieve the version
         Response<String> versionResponse;
         try {
@@ -292,7 +292,7 @@ public final class RetroProvider {
 
                 @Override
                 protected Response<String> doInBackground(Void... params) {
-                    Call<String> versionCall = localInfoFacadeRetro != null ? localInfoFacadeRetro.getVersion() : getInfoFacade().getVersion();
+                    Call<String> versionCall = infoFacadeRetro.getVersion();
                     try {
                         return versionCall.execute();
                     } catch (IOException e) {
@@ -318,7 +318,7 @@ public final class RetroProvider {
 
                         @Override
                         protected Response<String> doInBackground(Void... params) {
-                            Call<String> versionCall = localInfoFacadeRetro != null ? localInfoFacadeRetro.getAppUrl(InfoProvider.get().getVersion()) : getInfoFacade().getAppUrl(InfoProvider.get().getVersion());
+                            Call<String> versionCall = infoFacadeRetro.getAppUrl(InfoProvider.get().getVersion());
                             try {
                                 return versionCall.execute();
                             } catch (IOException e) {
