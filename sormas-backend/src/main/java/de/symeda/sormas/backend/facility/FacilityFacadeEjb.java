@@ -150,6 +150,14 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		return toReferenceDto(facilityService.getByUuid(uuid));
 	}
 
+	@Override
+	public List<FacilityReferenceDto> getByName(String name, DistrictReferenceDto districtRef, CommunityReferenceDto communityRef) {
+		return facilityService.getHealthFacilitiesByName(name, districtService.getByReferenceDto(districtRef), communityService.getByReferenceDto(communityRef))
+				.stream()
+				.map(f -> toReferenceDto(f))
+				.collect(Collectors.toList());
+	}
+
 	public static FacilityReferenceDto toReferenceDto(Facility entity) {
 		if (entity == null) {
 			return null;

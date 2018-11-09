@@ -136,6 +136,11 @@ public class RegionFacadeEjb implements RegionFacade {
 		regionService.ensurePersisted(region);
 	}
 	
+	@Override
+	public List<RegionReferenceDto> getByName(String name) {
+		return regionService.getByName(name).stream().map(r -> toReferenceDto(r)).collect(Collectors.toList());
+	}
+	
 	private Region fillOrBuildEntity(@NotNull RegionDto source, Region target) {
 		if (target == null) {
 			target = new Region();

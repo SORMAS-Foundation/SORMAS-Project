@@ -28,4 +28,6 @@ public interface RegionFacade {
 	
 	void saveRegion(RegionDto dto);
 	
+	List<RegionReferenceDto> getByName(String name);
+	
 }

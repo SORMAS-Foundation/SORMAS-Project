@@ -22,6 +22,7 @@ import de.symeda.sormas.api.region.DistrictCriteria;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -146,6 +147,11 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 		district = fillOrBuildEntity(dto, district);
 		districtService.ensurePersisted(district);
+	}
+
+	@Override
+	public List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef) {
+		return districtService.getByName(name, regionService.getByReferenceDto(regionRef)).stream().map(d -> toReferenceDto(d)).collect(Collectors.toList());
 	}
 
 	public static DistrictReferenceDto toReferenceDto(District entity) {

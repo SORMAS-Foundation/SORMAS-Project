@@ -34,5 +34,7 @@ public interface FacilityFacade {
 	List<String> getAllUuids(String userUuid);
 
 	void saveFacility(FacilityDto value) throws ValidationRuntimeException;
+	
+	List<FacilityReferenceDto> getByName(String entry, DistrictReferenceDto districtRef, CommunityReferenceDto communityRef);
 
 }

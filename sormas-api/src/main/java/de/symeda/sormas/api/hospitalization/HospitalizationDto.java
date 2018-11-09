@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
@@ -22,15 +23,23 @@ public class HospitalizationDto extends EntityDto {
 	public static final String PREVIOUS_HOSPITALIZATIONS = "previousHospitalizations";
 	public static final String ADMITTED_TO_HEALTH_FACILITY = "admittedToHealthFacility";
 
+	// Fields are declared in the order they should appear in the import template
+	
 	@Outbreaks
+	private YesNoUnknown admittedToHealthFacility;
 	private Date admissionDate;
 	private Date dischargeDate;
 	private YesNoUnknown isolated;
 	private Date isolationDate;
 	private YesNoUnknown hospitalizedPreviously;
-	private YesNoUnknown admittedToHealthFacility;
 	
 	private List<PreviousHospitalizationDto> previousHospitalizations = new ArrayList<>();
+	
+	public static HospitalizationDto build() {
+		HospitalizationDto hospitalization = new HospitalizationDto();
+		hospitalization.setUuid(DataHelper.createUuid());
+		return hospitalization;
+	}
 	
 	public Date getAdmissionDate() {
 		return admissionDate;

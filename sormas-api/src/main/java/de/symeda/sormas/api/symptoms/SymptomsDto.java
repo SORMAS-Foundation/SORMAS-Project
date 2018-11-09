@@ -4,6 +4,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependantOn;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
@@ -106,6 +107,8 @@ public class SymptomsDto extends EntityDto {
 
 	public static final String SYMPTOMATIC = "symptomatic";
 
+	// Fields are declared in the order they should appear in the import template
+	
 	private Boolean symptomatic;
 	@Outbreaks
 	private Date onsetDate;
@@ -878,6 +881,12 @@ public class SymptomsDto extends EntityDto {
 	}
 	public void setMeningealSigns(SymptomState meningealSigns) {
 		this.meningealSigns = meningealSigns;
+	}
+
+	public static SymptomsDto build() {
+		SymptomsDto symptoms = new SymptomsDto();
+		symptoms.setUuid(DataHelper.createUuid());
+		return symptoms;
 	}
 	
 }

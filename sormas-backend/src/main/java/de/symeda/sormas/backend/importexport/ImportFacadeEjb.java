@@ -1,7 +1,6 @@
 package de.symeda.sormas.backend.importexport;
 
 import java.beans.IntrospectionException;
-import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,7 +9,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,38 +32,45 @@ import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.auth0.jwt.internal.org.apache.commons.lang3.text.WordUtils;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ImportIgnore;
 import de.symeda.sormas.backend.epidata.EpiDataService;
-import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.hospitalization.HospitalizationService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
-import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityService;
-import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -70,7 +79,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
-	
+
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
@@ -80,13 +89,23 @@ public class ImportFacadeEjb implements ImportFacade {
 	@EJB
 	private UserService userService;
 	@EJB
+	private UserFacadeEjbLocal userFacade;
+	@EJB
 	private RegionService regionService;
+	@EJB
+	private RegionFacadeEjbLocal regionFacade;
 	@EJB
 	private DistrictService districtService;
 	@EJB
+	private DistrictFacadeEjbLocal districtFacade;
+	@EJB
 	private CommunityService communityService;
 	@EJB
+	private CommunityFacadeEjbLocal communityFacade;
+	@EJB
 	private FacilityService facilityService;
+	@EJB
+	private FacilityFacadeEjbLocal facilityFacade;
 	@EJB
 	private PersonFacadeEjbLocal personFacade;
 	@EJB
@@ -95,12 +114,12 @@ public class ImportFacadeEjb implements ImportFacade {
 	private HospitalizationService hospitalizationService;
 	@EJB
 	private EpiDataService epiDataService;
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(ImportFacadeEjb.class);
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_template.csv";
 	private static final String ERROR_COLUMN_NAME = "Error description";
-	
+
 	@Override
 	public void generateCaseImportTemplateFile() throws IOException {				
 		// Create the export directory if it doesn't exist
@@ -113,7 +132,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		List<String> columnNames = new ArrayList<>();
 		try {
-			buildListOfFields(columnNames, Case.class, "");
+			buildListOfFields(columnNames, CaseDataDto.class, "");
 		} catch (IntrospectionException e) {
 			throw new IOException(e);
 		}
@@ -131,24 +150,7 @@ public class ImportFacadeEjb implements ImportFacade {
 		Path filePath = exportDirectory.resolve(CASE_IMPORT_TEMPLATE_FILE_NAME);
 		return filePath.toString();
 	}
-	
-	private Case buildCase() {
-		Case caze = new Case();
-    	caze.setUuid(DataHelper.createUuid());
-    	
-    	caze.setInvestigationStatus(InvestigationStatus.PENDING);
-    	caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
-    	caze.setOutcome(CaseOutcome.NO_OUTCOME);
-    	
-    	caze.setPerson(personService.createPerson());
-    	
-    	caze.setReportDate(new Date());
-    	User user = userService.getCurrentUser();
-    	caze.setReportingUser(user);
-    	
-    	return caze;
-	}
-	
+
 	@Override
 	public String importCasesFromCsvFile(String csvFilePath, String userUuid) throws IOException, InvalidColumnException {
 		File file = new File(csvFilePath);
@@ -164,7 +166,7 @@ public class ImportFacadeEjb implements ImportFacade {
 		if (errorReportFile.exists()) {
 			errorReportFile.delete();
 		}
-		
+
 		boolean hasImportError = importCasesFromCsvFile(new FileReader(csvFilePath), new FileWriter(errorReportFilePath.toString(), true), userUuid);
 		return hasImportError ? errorReportFilePath.toString() : null;
 	}
@@ -181,7 +183,7 @@ public class ImportFacadeEjb implements ImportFacade {
 			String[] headerPath = header.split("\\.");
 			headers.add(headerPath);
 		}
-		
+
 		// Write first line to the error report writer
 		List<String> columnNames = new ArrayList<>();
 		columnNames.add(ERROR_COLUMN_NAME);
@@ -189,7 +191,7 @@ public class ImportFacadeEjb implements ImportFacade {
 			columnNames.add(column);
 		}
 		errorReportCsvWriter.writeNext(columnNames.toArray(new String[columnNames.size()]));
-		
+
 		// Create a new case for each line in the .csv file
 		String[] nextLine;
 		boolean hasImportError = false;
@@ -201,7 +203,11 @@ public class ImportFacadeEjb implements ImportFacade {
 				continue;
 			}
 
-			Case newCase = buildCase();
+			PersonDto newPerson = PersonDto.build();
+			CaseDataDto newCase = CaseDataDto.build(newPerson.toReference(), null);
+			User user = userService.getCurrentUser();
+			newCase.setReportingUser(user.toReference());
+			
 			boolean caseHasImportError = false;
 			for (int i = 0; i < nextLine.length; i++) {
 				String entry = nextLine[i];
@@ -216,7 +222,7 @@ public class ImportFacadeEjb implements ImportFacade {
 				}
 
 				try {
-					insertColumnEntryIntoCase(newCase, entry, entryHeaderPath);
+					insertColumnEntryIntoCase(newCase, newPerson, entry, entryHeaderPath);
 				} catch (ImportErrorException e) {
 					hasImportError = true;
 					caseHasImportError = true;
@@ -231,10 +237,9 @@ public class ImportFacadeEjb implements ImportFacade {
 			}
 
 			if (!caseHasImportError) {
-				// It's necessary to use the save methods from the facades because of the additional logic they contain
 				try {
-					personFacade.savePerson(PersonFacadeEjbLocal.toDto(newCase.getPerson()));
-					caseFacade.saveCase(CaseFacadeEjbLocal.toDto(newCase));
+					personFacade.savePerson(newPerson);
+					caseFacade.saveCase(newCase);
 				} catch (ValidationRuntimeException e) {
 					hasImportError = true;
 					writeImportError(errorReportCsvWriter, nextLine, e.getMessage());
@@ -248,9 +253,9 @@ public class ImportFacadeEjb implements ImportFacade {
 		errorReportCsvWriter.close();
 		return hasImportError;
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	private void insertColumnEntryIntoCase(Case caze, String entry, String[] entryHeaderPath) throws InvalidColumnException, ImportErrorException {
+	private void insertColumnEntryIntoCase(CaseDataDto caze, PersonDto person, String entry, String[] entryHeaderPath) throws InvalidColumnException, ImportErrorException {
 		Object currentElement = caze;
 		for (int i = 0; i < entryHeaderPath.length; i++) {
 			String headerPathElementName = entryHeaderPath[i];
@@ -272,8 +277,8 @@ public class ImportFacadeEjb implements ImportFacade {
 						pd.getWriteMethod().invoke(currentElement, Float.parseFloat(entry));
 					} else if (propertyType.isAssignableFrom(Boolean.class)) {
 						pd.getWriteMethod().invoke(currentElement, Boolean.parseBoolean(entry));
-					} else if (propertyType.isAssignableFrom(Region.class)) {
-						List<Region> region = regionService.getByName(entry);
+					} else if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
+						List<RegionReferenceDto> region = regionFacade.getByName(entry);
 						if (region.isEmpty()) {
 							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Entry does not exist in the database");
 						} else if (region.size() > 1) {
@@ -281,8 +286,8 @@ public class ImportFacadeEjb implements ImportFacade {
 						} else {
 							pd.getWriteMethod().invoke(currentElement, region.get(0));
 						}
-					} else if (propertyType.isAssignableFrom(District.class)) {
-						List<District> district = districtService.getByName(entry, caze.getRegion());
+					} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
+						List<DistrictReferenceDto> district = districtFacade.getByName(entry, caze.getRegion());
 						if (district.isEmpty()) {
 							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Entry does not exist in the database or in the specified region");
 						} else if (district.size() > 1) {
@@ -290,8 +295,8 @@ public class ImportFacadeEjb implements ImportFacade {
 						} else {
 							pd.getWriteMethod().invoke(currentElement, district.get(0));
 						}
-					} else if (propertyType.isAssignableFrom(Community.class)) {
-						List<Community> community = communityService.getByName(entry, caze.getDistrict());
+					} else if (propertyType.isAssignableFrom(CommunityReferenceDto.class)) {
+						List<CommunityReferenceDto> community = communityFacade.getByName(entry, caze.getDistrict());
 						if (community.isEmpty()) {
 							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Entry does not exist in the database or in the specified district");
 						} else if (community.size() > 1) {
@@ -299,8 +304,8 @@ public class ImportFacadeEjb implements ImportFacade {
 						} else {
 							pd.getWriteMethod().invoke(currentElement, community.get(0));
 						}
-					} else if (propertyType.isAssignableFrom(Facility.class)) {
-						List<Facility> facility = facilityService.getHealthFacilitiesByName(entry, caze.getDistrict(), caze.getCommunity());
+					} else if (propertyType.isAssignableFrom(FacilityReferenceDto.class)) {
+						List<FacilityReferenceDto> facility = facilityFacade.getByName(entry, caze.getDistrict(), caze.getCommunity());
 						if (facility.isEmpty()) {
 							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Entry does not exist in the database or in the specified " + (caze.getCommunity() == null ? "district" : "community"));
 						} else if (facility.size() > 1 && caze.getCommunity() == null) {
@@ -310,10 +315,10 @@ public class ImportFacadeEjb implements ImportFacade {
 						} else {
 							pd.getWriteMethod().invoke(currentElement, facility.get(0));
 						}
-					} else if (propertyType.isAssignableFrom(User.class)) {
-						User user = userService.getByUserName(entry);
+					} else if (propertyType.isAssignableFrom(UserReferenceDto.class)) {
+						UserDto user = userFacade.getByUserName(entry);
 						if (user != null) {
-							pd.getWriteMethod().invoke(currentElement, user);
+							pd.getWriteMethod().invoke(currentElement, user.toReference());
 						} else {
 							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Entry does not exist in the database");
 						}
@@ -324,6 +329,10 @@ public class ImportFacadeEjb implements ImportFacade {
 					}
 				} else {
 					currentElement = new PropertyDescriptor(headerPathElementName, currentElement.getClass()).getReadMethod().invoke(currentElement);
+					// Replace PersonReferenceDto with the created person
+					if (currentElement instanceof PersonReferenceDto) {
+						currentElement = person;
+					}
 				}
 			} catch (IntrospectionException e) {
 				throw new InvalidColumnException(buildHeaderPathString(entryHeaderPath));
@@ -336,7 +345,7 @@ public class ImportFacadeEjb implements ImportFacade {
 			}
 		}
 	}
-	
+
 	private String buildHeaderPathString(String[] entryHeaderPath) {
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
@@ -358,47 +367,64 @@ public class ImportFacadeEjb implements ImportFacade {
 		nextLineAsList.addAll(Arrays.asList(nextLine));
 		errorReportWriter.writeNext(nextLineAsList.toArray(new String[nextLineAsList.size()]));
 	}
-	
+
 	private void buildListOfFields(List<String> fieldNames, Class<?> clazz, String prefix) throws IntrospectionException {
-		for (PropertyDescriptor pd : Introspector.getBeanInfo(clazz).getPropertyDescriptors()) {
-			// Fields with the @ImportIgnore annotation are ignored
-			if (pd.getReadMethod().isAnnotationPresent(ImportIgnore.class)) {
+		for (Field field : clazz.getDeclaredFields()) {
+			if (Modifier.isStatic(field.getModifiers())) {
 				continue;
 			}
+
+			Method readMethod = null;
+			try {
+				readMethod = clazz.getDeclaredMethod("get" + WordUtils.capitalize(field.getName()));
+			} catch (NoSuchMethodException e) {
+				try {
+					readMethod = clazz.getDeclaredMethod("is" + WordUtils.capitalize(field.getName()));
+				} catch (NoSuchMethodException f) {
+					continue;
+				}
+			}
+
 			// Fields without a getter or whose getters are declared in a superclass are ignored
-			if (pd.getReadMethod() == null || pd.getReadMethod().getDeclaringClass() != clazz) {
+			if (readMethod == null || readMethod.getDeclaringClass() != clazz) {
+				continue;
+			}			
+			// Fields with the @ImportIgnore annotation are ignored
+			if (readMethod.isAnnotationPresent(ImportIgnore.class)) {
 				continue;
 			}
 			// List types are ignored
-			if (Collection.class.isAssignableFrom(pd.getPropertyType())) {
+			if (Collection.class.isAssignableFrom(field.getType())) {
 				continue;
 			}
 			// Certain field types are ignored
-			if (pd.getPropertyType() == User.class) {
+			if (field.getType() == UserReferenceDto.class) {
 				continue;
 			}
-			// Other non-infrastructure entity class, recursively call this method to include fields of the sub-entity
-			if (AbstractDomainObject.class.isAssignableFrom(pd.getPropertyType()) && !isInfrastructureClass(pd.getPropertyType())) {
-				buildListOfFields(fieldNames, pd.getPropertyType(), prefix == null || prefix.isEmpty() ? pd.getName() + "." :  prefix + pd.getName() + ".");
+			// Other non-infrastructure EntityDto/ReferenceDto classes, recursively call this method to include fields of the sub-entity
+			if (EntityDto.class.isAssignableFrom(field.getType()) && !isInfrastructureClass(field.getType())) {
+				buildListOfFields(fieldNames, field.getType(), prefix == null || prefix.isEmpty() ? field.getName() + "." :  prefix + field.getName() + ".");
+			} else if (PersonReferenceDto.class.isAssignableFrom(field.getType()) && !isInfrastructureClass(field.getType())) {
+				buildListOfFields(fieldNames, PersonDto.class, prefix == null || prefix.isEmpty() ? field.getName() + "." : prefix + field.getName() + ".");
 			} else {
 				// All other field types - make sure that region, district, community and healthFacility are entered in this order
-				if (pd.getName().equals("region") && fieldNames.contains("district")) {
-					fieldNames.add(fieldNames.indexOf("district"), prefix + pd.getName());
-				} else if (pd.getName().equals("district") && fieldNames.contains("community")) {
-					fieldNames.add(fieldNames.indexOf("community"), prefix + pd.getName());
-				} else if (pd.getName().equals("community") && fieldNames.contains("healthFacility")) {
-					fieldNames.add(fieldNames.indexOf("healthFacility"), prefix + pd.getName());
-				} else {
-					fieldNames.add(prefix + pd.getName());
-				}
+				//				if (pd.getName().equals("region") && fieldNames.contains("district")) {
+				//					fieldNames.add(fieldNames.indexOf("district"), prefix + pd.getName());
+				//				} else if (pd.getName().equals("district") && fieldNames.contains("community")) {
+				//					fieldNames.add(fieldNames.indexOf("community"), prefix + pd.getName());
+				//				} else if (pd.getName().equals("community") && fieldNames.contains("healthFacility")) {
+				//					fieldNames.add(fieldNames.indexOf("healthFacility"), prefix + pd.getName());
+				//				} else {
+				fieldNames.add(prefix + field.getName());
+				//				}
 			}
 		}
 	}
-	
+
 	private boolean isInfrastructureClass(Class<?> clazz) {
-		return clazz == Region.class || clazz == District.class || clazz == Community.class || clazz == Facility.class;
+		return clazz == RegionReferenceDto.class || clazz == DistrictReferenceDto.class || clazz == CommunityReferenceDto.class || clazz == FacilityReferenceDto.class;
 	}
-	
+
 	@LocalBean
 	@Stateless
 	public static class ImportFacadeEjbLocal extends ImportFacadeEjb {

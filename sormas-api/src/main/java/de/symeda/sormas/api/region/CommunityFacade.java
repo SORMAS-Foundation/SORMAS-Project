@@ -25,5 +25,7 @@ public interface CommunityFacade {
 	List<CommunityDto> getByUuids(List<String> uuids);
 	
 	void saveCommunity(CommunityDto dto) throws ValidationRuntimeException;
+	
+	List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef);
 
 }

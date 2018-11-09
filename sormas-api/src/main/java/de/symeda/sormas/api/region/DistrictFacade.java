@@ -34,4 +34,6 @@ public interface DistrictFacade {
 	
 	void saveDistrict(DistrictDto dto) throws ValidationRuntimeException;
 	
+	List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef);
+	
 }

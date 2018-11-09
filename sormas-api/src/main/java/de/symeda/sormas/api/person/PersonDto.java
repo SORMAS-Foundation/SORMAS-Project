@@ -58,17 +58,18 @@ public class PersonDto extends EntityDto {
 	public static final String OCCUPATION_FACILITY = "occupationFacility";
 	public static final String OCCUPATION_FACILITY_DETAILS = "occupationFacilityDetails";
 
-	@Outbreaks
-	private Sex sex;
+	// Fields are declared in the order they should appear in the import template
+
 	@Outbreaks
 	@Required
 	private String firstName;
 	@Outbreaks
 	@Required
 	private String lastName;
-
+	private String nickname;
+	private String mothersMaidenName;
 	@Outbreaks
-	private PresentCondition presentCondition;
+	private Sex sex;
 	@Outbreaks
 	private Integer birthdateDD;
 	@Outbreaks
@@ -79,6 +80,8 @@ public class PersonDto extends EntityDto {
 	private Integer approximateAge;
 	@Outbreaks
 	private ApproximateAgeType approximateAgeType;
+	@Outbreaks
+	private PresentCondition presentCondition;
 	private Date deathDate;
 	private CauseOfDeath causeOfDeath;
 	private Disease causeOfDeathDisease;
@@ -93,14 +96,9 @@ public class PersonDto extends EntityDto {
 	private String burialPlaceDescription;
 	@Diseases({ Disease.EVD, Disease.OTHER })
 	private BurialConductor burialConductor;
-
-	private String nickname;
-	private String mothersMaidenName;
-
 	private String phone;
 	private String phoneOwner;
 	private LocationDto address;
-
 	private OccupationType occupationType;
 	private String occupationDetails;
 	private RegionReferenceDto occupationRegion;
@@ -360,6 +358,13 @@ public class PersonDto extends EntityDto {
 
 	public static String buildCaption(String firstName, String lastName) {
 		return DataHelper.toStringNullable(firstName) + " " + DataHelper.toStringNullable(lastName).toUpperCase();
+	}
+	
+	public static PersonDto build() {
+		PersonDto person = new PersonDto();
+		person.setUuid(DataHelper.createUuid());
+		person.setAddress(LocationDto.build());
+		return person;
 	}
 
 }

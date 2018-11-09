@@ -54,6 +54,7 @@ public class RegionService extends AbstractAdoService<Region> {
 		return em.createQuery(cq).getResultList();
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Region, Region> from, User user) {
 		// no fitler by user needed

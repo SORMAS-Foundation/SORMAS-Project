@@ -65,6 +65,7 @@ public class DistrictService extends AbstractAdoService<District> {
 		return em.createQuery(cq).getResultList();
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<District, District> from, User user) {
 		// no fitler by user needed

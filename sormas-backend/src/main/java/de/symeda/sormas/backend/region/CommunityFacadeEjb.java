@@ -22,6 +22,7 @@ import de.symeda.sormas.api.region.CommunityCriteria;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -121,6 +122,11 @@ public class CommunityFacadeEjb implements CommunityFacade {
 
 		community = fillOrBuildEntity(dto, community);
 		communityService.ensurePersisted(community);
+	}
+
+	@Override
+	public List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef) {
+		return communityService.getByName(name, districtService.getByReferenceDto(districtRef)).stream().map(c -> toReferenceDto(c)).collect(Collectors.toList());
 	}
 	
 	public static CommunityReferenceDto toReferenceDto(Community entity) {

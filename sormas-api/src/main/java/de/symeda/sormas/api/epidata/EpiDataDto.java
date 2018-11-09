@@ -6,6 +6,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
@@ -54,6 +55,8 @@ public class EpiDataDto extends EntityDto {
 	public static final String EATING_RAW_ANIMALS_IN_INFECTED_AREA = "eatingRawAnimalsInInfectedArea";
 	public static final String EATING_RAW_ANIMALS = "eatingRawAnimals";
 	public static final String EATING_RAW_ANIMALS_DETAILS = "eatingRawAnimalsDetails";
+
+	// Fields are declared in the order they should appear in the import template
 	
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private YesNoUnknown burialAttended;
@@ -74,14 +77,12 @@ public class EpiDataDto extends EntityDto {
 	private YesNoUnknown closeContactProbableCase;
 	@Diseases({Disease.DENGUE, Disease.EVD, Disease.PLAGUE, Disease.YELLOW_FEVER, Disease.OTHER})
 	private YesNoUnknown areaConfirmedCases;
-
 	@Diseases({Disease.EVD, Disease.OTHER})
 	private YesNoUnknown processingConfirmedCaseFluidUnsafe;
 	@Diseases({Disease.EVD, Disease.OTHER})
 	private YesNoUnknown percutaneousCaseBlood;
 	@Diseases({Disease.EVD, Disease.OTHER})
 	private YesNoUnknown directContactDeadUnsafe;
-
 	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
 	private YesNoUnknown processingSuspectedCaseSampleUnsafe;
 	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
@@ -100,7 +101,6 @@ public class EpiDataDto extends EntityDto {
 	private YesNoUnknown eatingRawAnimals;
 	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
 	private String eatingRawAnimalsDetails;
-		
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private YesNoUnknown rodents;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
@@ -135,7 +135,6 @@ public class EpiDataDto extends EntityDto {
 	private String placeOfLastExposure;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
 	private AnimalCondition animalCondition;
-	
 	
 	public YesNoUnknown getBurialAttended() {
 		return burialAttended;
@@ -392,6 +391,12 @@ public class EpiDataDto extends EntityDto {
 	}
 	public void setAreaConfirmedCases(YesNoUnknown areaConfirmedCases) {
 		this.areaConfirmedCases = areaConfirmedCases;
+	}
+
+	public static EpiDataDto build() {
+		EpiDataDto epiData = new EpiDataDto();
+		epiData.setUuid(DataHelper.createUuid());
+		return epiData;
 	}
 
 }
