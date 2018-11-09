@@ -192,14 +192,13 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 		// Content
 		secondComponent.addMainContent();
 		underFollowUp = new DashboardStatisticsPercentageElement("Under follow-up", CssStyles.SVG_FILL_PRIMARY);
-		underFollowUp.setDescription("The follow-up process is running");
+		underFollowUp.setDescription(FollowUpStatus.FOLLOW_UP.getDescription());
 		followUpCompleted = new DashboardStatisticsPercentageElement("Completed follow-up", CssStyles.SVG_FILL_POSITIVE);
-		followUpCompleted.setDescription("The follow-up process has been completed");
+		followUpCompleted.setDescription(FollowUpStatus.COMPLETED.getDescription());
 		followUpCanceled = new DashboardStatisticsPercentageElement("Canceled follow-up", CssStyles.SVG_FILL_IMPORTANT);
-		followUpCanceled.setDescription("The follow-up process has been canceled, e.g. because the person "
-				+ "died or the contact became irrelevant");
+		followUpCanceled.setDescription(FollowUpStatus.CANCELED.getDescription());
 		lostToFollowUp = new DashboardStatisticsPercentageElement("Lost to follow-up", CssStyles.SVG_FILL_CRITICAL);
-		lostToFollowUp.setDescription("The follow-up process could not be continued because the person was not available");
+		lostToFollowUp.setDescription(FollowUpStatus.LOST.getDescription());
 		contactStatusConverted = new DashboardStatisticsPercentageElement("Converted to case", CssStyles.SVG_FILL_NEUTRAL);
 		contactStatusConverted.setDescription("The contact has been converted to a case because it has become symptomatic");
 		secondComponent.addComponentToContent(underFollowUp);

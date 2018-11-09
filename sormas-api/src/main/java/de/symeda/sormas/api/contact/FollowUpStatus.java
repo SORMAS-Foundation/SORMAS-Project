@@ -15,6 +15,10 @@ public enum FollowUpStatus {
 	}
 	
 	public String toShortString() {
-		return I18nProperties.getEnumCaption(this, "Short");
+		return I18nProperties.getShortEnumCaption(this);
+	}
+	
+	public String getDescription() {
+		return I18nProperties.getEnumDescription(this);
 	}
 }

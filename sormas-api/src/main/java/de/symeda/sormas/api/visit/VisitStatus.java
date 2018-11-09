@@ -17,6 +17,6 @@ public enum VisitStatus {
 	}
 	
 	public String toShortString() {
-		return I18nProperties.getEnumCaption(this, "Short");
+		return I18nProperties.getShortEnumCaption(this);
 	}
 }
