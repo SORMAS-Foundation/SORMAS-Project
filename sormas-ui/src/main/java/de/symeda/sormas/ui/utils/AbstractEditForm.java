@@ -363,8 +363,8 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			}
 		}
 
-		String validationError = I18nProperties.getPrefixValidationError(getPropertyI18nPrefix(), propertyId);
-		field.setRequiredError(String.format(validationError, caption));
+		String validationError = I18nProperties.getPrefixValidationError(getPropertyI18nPrefix(), propertyId, caption);
+		field.setRequiredError(validationError);
 
 		field.setWidth(100, Unit.PERCENTAGE);
 

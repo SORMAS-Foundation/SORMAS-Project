@@ -11,6 +11,7 @@ import de.symeda.sormas.app.caze.edit.CaseNewFragment;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentContactNewLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.visit.edit.VisitValidator;
 
 public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayoutBinding, Contact, Contact> {
 
@@ -44,6 +45,8 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
     public void onLayoutBinding(FragmentContactNewLayoutBinding contentBinding) {
         contentBinding.setData(record);
         contentBinding.setContactProximityClass(ContactProximity.class);
+
+        ContactValidator.initializeValidation(record, contentBinding);
     }
 
     @Override

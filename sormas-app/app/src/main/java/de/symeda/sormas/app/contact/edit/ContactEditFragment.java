@@ -104,6 +104,9 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 
         contentBinding.setData(record);
         contentBinding.setCaze(sourceCase);
+
+        ContactValidator.initializeValidation(record, contentBinding);
+
         contentBinding.setContactProximityClass(ContactProximity.class);
     }
 
