@@ -10,15 +10,11 @@ import android.widget.TextView;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
-import de.symeda.sormas.app.core.async.AsyncTaskResult;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.enumeration.StatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.util.Bundler;
+import de.symeda.sormas.app.util.Consumer;
 
 public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomainObject> extends BaseActivity implements IUpdateSubHeadingTitle {
 
@@ -65,49 +61,25 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         rootUuid = new Bundler(savedInstanceState).getRootUuid();
     }
 
-    protected void requestRootData(final Callback.IAction<ActivityRootEntity> callback) {
+    protected void requestRootData(final Consumer<ActivityRootEntity> callback) {
 
-        getRootEntityTask = new DefaultAsyncTask(getContext()) {
-            @Override
-            public void onPreExecute() {
-                showPreloader();
-            }
+        if (rootUuid != null && !rootUuid.isEmpty()) {
+            storedRootEntity = queryRootEntity(rootUuid);
+        } else {
+            storedRootEntity = null;
+        }
 
-            @Override
-            public void doInBackground(TaskResultHolder resultHolder) {
-                ActivityRootEntity result = null;
-                if (rootUuid != null && !rootUuid.isEmpty()) {
-                    result = queryRootData(rootUuid);
-                }
+        // This should not happen; however, it still might under certain circumstances
+        // (user clicking a notification for a task they have no access to anymore); in
+        // this case, the activity should be closed.
+        if (storedRootEntity == null) {
+            finish();
+        }
 
-                // This should not happen; however, it still might under certain circumstances
-                // (user clicking a notification for a task they have no access to anymore); in
-                // this case, the activity should be closed.
-                if (result == null) {
-                    finish();
-                }
-                resultHolder.forItem().add(result);
-            }
-
-            @Override
-            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-                hidePreloader();
-
-                if (taskResult.getResultStatus().isSuccess()) {
-                    ITaskResultHolderIterator itemIterator = taskResult.getResult().forItem().iterator();
-
-                    if (itemIterator.hasNext())
-                        storedRootEntity = itemIterator.next();
-                    else
-                        storedRootEntity = null;
-
-                    callback.call(storedRootEntity);
-                }
-            }
-        }.executeOnThreadPool();
+        callback.accept(storedRootEntity);
     }
 
-    protected abstract ActivityRootEntity queryRootData(String recordUuid);
+    protected abstract ActivityRootEntity queryRootEntity(String recordUuid);
 
     protected ActivityRootEntity getStoredRootEntity() {
         return storedRootEntity;
@@ -117,9 +89,9 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
     protected void onResumeFragments() {
         super.onResumeFragments();
 
-        requestRootData(new Callback.IAction<ActivityRootEntity>() {
+        requestRootData(new Consumer<ActivityRootEntity>() {
             @Override
-            public void call(ActivityRootEntity result) {
+            public void accept(ActivityRootEntity result) {
                 replaceFragment(buildReadFragment(getActivePage(), result), false);
             }
         });
@@ -135,9 +107,9 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
     @Override
     public void updateSubHeadingTitle() {
         String subHeadingTitle = "";
-        PageMenuItem activeMenu = getActivePage();
 
         if (activeFragment != null) {
+            PageMenuItem activeMenu = getActivePage();
             subHeadingTitle = (activeMenu == null) ? activeFragment.getSubHeadingTitle() : activeMenu.getTitle();
         }
 

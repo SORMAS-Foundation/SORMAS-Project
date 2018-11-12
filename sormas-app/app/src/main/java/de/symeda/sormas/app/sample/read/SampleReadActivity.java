@@ -19,7 +19,7 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
     }
 
     @Override
-    protected Sample queryRootData(String recordUuid) {
+    protected Sample queryRootEntity(String recordUuid) {
         return DatabaseHelper.getSampleDao().queryUuid(recordUuid);
     }
 

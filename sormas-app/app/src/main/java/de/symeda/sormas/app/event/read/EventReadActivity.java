@@ -25,7 +25,7 @@ public class EventReadActivity extends BaseReadActivity<Event> {
     }
 
     @Override
-    protected Event queryRootData(String recordUuid) {
+    protected Event queryRootEntity(String recordUuid) {
         return DatabaseHelper.getEventDao().queryUuid(recordUuid);
     }
 

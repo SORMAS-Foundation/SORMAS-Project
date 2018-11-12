@@ -26,7 +26,7 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
     }
 
     @Override
-    protected Contact queryRootData(String recordUuid) {
+    protected Contact queryRootEntity(String recordUuid) {
         Contact _contact = DatabaseHelper.getContactDao().queryUuid(recordUuid);
         return _contact;
     }

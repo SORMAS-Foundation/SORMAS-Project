@@ -50,7 +50,7 @@ public class VisitReadActivity extends BaseReadActivity<Visit> {
     }
 
     @Override
-    protected Visit queryRootData(String recordUuid) {
+    protected Visit queryRootEntity(String recordUuid) {
         return DatabaseHelper.getVisitDao().queryUuid(recordUuid);
     }
 

@@ -108,58 +108,31 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
 
     protected void requestRootData(final Consumer<ActivityRootEntity> callback) {
 
-        getRootEntityTask = new DefaultAsyncTask(getContext()) {
-            @Override
-            public void onPreExecute() {
-                showPreloader();
+        boolean hadRootEntity = storedRootEntity != null;
+
+        if (rootUuid != null && !rootUuid.isEmpty()) {
+            storedRootEntity = queryRootEntity(rootUuid);
+
+        } else {
+            storedRootEntity = buildRootEntity();
+        }
+
+        // This should not happen; however, it still might under certain circumstances
+        // (user clicking a notification for a task they have no access to anymore); in
+        // this case, the activity should be closed.
+        if (storedRootEntity == null) {
+            finish();
+        } else if (!storedRootEntity.isNew()
+                && storedRootEntity.isUnreadOrChildUnread()) {
+            // TODO #704 do in background and retrieve entity again
+            // DatabaseHelper.getAdoDao(storedRootEntity.getClass()).markAsReadWithCast(storedRootEntity);
+            if (hadRootEntity) {
+                NotificationHelper.showNotification(BaseEditActivity.this, NotificationType.WARNING,
+                        String.format(getResources().getString(R.string.snackbar_entity_overridden), storedRootEntity.getEntityName()));
             }
+        }
 
-            @Override
-            public void doInBackground(TaskResultHolder resultHolder) {
-                ActivityRootEntity result;
-                if (rootUuid != null && !rootUuid.isEmpty()) {
-                    result = queryRootEntity(rootUuid);
-
-                    // This should not happen; however, it still might under certain circumstances
-                    // (user clicking a notification for a task they have no access to anymore); in
-                    // this case, the activity should be closed.
-                    if (result == null) {
-                        finish();
-                    }
-                } else {
-                    result = buildRootEntity();
-                }
-                resultHolder.forItem().add(result);
-            }
-
-            @Override
-            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-                hidePreloader();
-
-                if (taskResult.getResultStatus().isSuccess()) {
-                    ITaskResultHolderIterator itemIterator = taskResult.getResult().forItem().iterator();
-
-                    boolean hadRootEntity = storedRootEntity != null;
-                    if (itemIterator.hasNext())
-                        storedRootEntity = itemIterator.next();
-                    else
-                        storedRootEntity = null;
-
-                    if (storedRootEntity != null
-                            && !storedRootEntity.isNew()
-                            && storedRootEntity.isUnreadOrChildUnread()) {
-                        // TODO #704 do in background and retrieve entity again
-//                        DatabaseHelper.getAdoDao(storedRootEntity.getClass()).markAsReadWithCast(storedRootEntity);
-                        if (hadRootEntity) {
-                            NotificationHelper.showNotification(BaseEditActivity.this, NotificationType.WARNING,
-                                    String.format(getResources().getString(R.string.snackbar_entity_overridden), storedRootEntity.getEntityName()));
-                        }
-                    }
-
-                    callback.accept(storedRootEntity);
-                }
-            }
-        }.executeOnThreadPool();
+        callback.accept(storedRootEntity);
     }
 
     protected abstract ActivityRootEntity queryRootEntity(String recordUuid);
@@ -193,8 +166,8 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
     public void updateSubHeadingTitle() {
         String subHeadingTitle = "";
 
-        if (activeFragment != null) {
-            subHeadingTitle = (getActivePage() == null) ? activeFragment.getSubHeadingTitle() : getActivePage().getTitle();
+        if (getActiveFragment() != null) {
+            subHeadingTitle = (getActivePage() == null) ? getActiveFragment().getSubHeadingTitle() : getActivePage().getTitle();
         }
 
         setSubHeadingTitle(subHeadingTitle);

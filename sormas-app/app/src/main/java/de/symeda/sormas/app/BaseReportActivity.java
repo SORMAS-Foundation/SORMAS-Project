@@ -45,7 +45,14 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
 
     @Override
     public void updateSubHeadingTitle() {
-        setSubHeadingTitle(activeFragment.getSubHeadingTitle());
+        String subHeadingTitle = "";
+
+        if (activeFragment != null) {
+            PageMenuItem activeMenu = getActivePage();
+            subHeadingTitle = (activeMenu == null) ? activeFragment.getSubHeadingTitle() : activeMenu.getTitle();
+        }
+
+        setSubHeadingTitle(subHeadingTitle);
     }
 
     @Override
