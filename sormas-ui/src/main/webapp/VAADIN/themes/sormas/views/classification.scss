@@ -1,0 +1,55 @@
+
+@mixin sormas-classification-view {
+	
+	.classification-rules {
+		
+		.main-criteria {
+			width: 100%;
+			border-radius: 8px;
+			padding: 8px;
+			display: inline-block;		
+			
+			&.main-criteria-suspect {
+				background: rgba(255, 215, 0, 0.6);
+				margin-bottom: 16px;
+			}
+			&.main-criteria-probable {
+				background: rgba(255, 140, 0, 0.6);
+				margin-bottom: 16px;
+			}
+			&.main-criteria-confirmed {
+				background: rgba(255, 0, 0, 0.6);
+			}
+		}
+	
+		.headline {
+			font-weight: bold;
+		}
+	
+		.criteria {
+			width: 100%;
+			border-radius: 8px;
+			padding: 8px;
+			margin-top: 6px;
+			background: rgba(244, 244, 244, 0.8);
+			display: inline-block;
+		}
+	
+		.sub-criteria {
+			width: 95%;
+			margin-right: 10px;
+			margin-left: auto;
+			margin-top: 6px;
+			margin-bottom: 6px;
+			
+			.sub-criteria-content {
+				width: 100%;
+				border-radius: 8px;
+				padding: 8px;
+				background: rgba(244, 244, 244, 0.7);
+				display: inline-block;
+			}
+		}
+		
+	}
+}

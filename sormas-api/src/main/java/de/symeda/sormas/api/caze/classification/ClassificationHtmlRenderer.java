@@ -110,14 +110,10 @@ public class ClassificationHtmlRenderer {
 	 * Creates the surrounding div of a whole (suspect, probable or confirmed) criteria definition.
 	 */
 	private static String createSurroundingDiv(ClassificationCriteriaType criteriaType, String content, boolean marginBottom) {
-		return "<div class='v-slot v-slot-background-rounded-corners v-slot-background-"
-				+ criteriaType.toString() 
-				+ "-criteria v-slot-vspace-3' style='display: inline;' width='100%;'>"
-				+ "<div class='v-verticallayout v-layout v-vertical v-widget background-rounded-corners "
-				+ "v-verticallayout-background-rounded-corners background-" + criteriaType.toString() + "-criteria "
-				+ "v-verticallayout-background-" + criteriaType.toString() + "-criteria "
-				+ (marginBottom ? "vspace-3 v-verticallayout-vspace-3 " : "")
-				+ "v-has-width' style='width: 100%;'>"
+		return "<div class='classification-rules'>"
+				+ "<div class='main-criteria main-criteria-"
+				+ criteriaType.toString()
+				+ "'>"
 				+ content
 				+ "</div></div>";
 	}
@@ -126,44 +122,32 @@ public class ClassificationHtmlRenderer {
 	 * Creates a div containing the headline of a whole criteria.
 	 */
 	private static String createHeadlineDiv(String headline) {
-		return "<div class='v-slot v-slot-bold'>"
-				+ "<div class='v-label v-widget bold v-label-bold v-has-width' style='width: 100%;'>"
-				+ headline + "</div></div>";
+		return "<div class='headline'>"
+				+ headline 
+				+ "</div>";
 	}
 
 	/**
 	 * Creates a div containing an info text.
 	 */
 	private static String createInfoDiv() {
-		return "<div class='v-slot'>"
-				+ "<div class='v-label v-widget v-has-width' style='width: 100%;'>"
-				+ "... when the case meets <b>ALL</b> of the following requirements:"
-				+ "</div></div>";
+		return "... when the case meets <b>ALL</b> of the following requirements:<br/>";
 	}
 
 	/**
 	 * Creates the surrounding div of a single part of the criteria.
 	 */
 	private static String createCriteriaSurroundingDiv(String content) {
-		return "<div class='v-slot v-slot-background-rounded-corners "
-				+ "v-slot-background-criteria v-slot-vspace-top-4'>"
-				+ "<div class='v-verticallayout v-layout v-vertical v-widget background-rounded-corners "
-				+ "v-verticallayout-background-rounded-corners background-criteria v-verticallayout-background-criteria "
-				+ "vspace-top-4 v-verticallayout-vspace-top-4 v-has-width' style='width: 100%;'>"
+		return "<div class='criteria'>"
 				+ content
-				+ "</div></div>";
+				+ "</div>";
 	}
 
 	/**
 	 * Creates the surrounding div of a single sub criteria (with a slightly darker background).
 	 */
 	private static String createSubCriteriaSurroundingDiv(String content) {
-		return "<div class='v-slot v-slot-background-rounded-corners v-slot-background-sub-criteria "
-				+ "v-slot-vspace-top-4 v-slot-vspace-4 v-slot-hspace-right-3 v-align-right v-align-middle'>"
-				+ "<div class='v-verticallayout v-layout v-vertical v-widget background-rounded-corners "
-				+ "v-verticallayout-background-rounded-corners background-sub-criteria v-verticallayout-background-sub-criteria "
-				+ "vspace-top-4 v-verticallayout-vspace-top-4 vspace-4 v-verticallayout-vspace-4 hspace-right-3 "
-				+ "v-verticallayout-hspace-right-3 v-has-width' style='width: 95%;'>"
+		return "<div class='sub-criteria'><div class='sub-criteria-content'>"
 				+ content
 				+ "</div></div>";
 	}
@@ -172,10 +156,7 @@ public class ClassificationHtmlRenderer {
 	 * Creates the div for an actual criteria containing its description.
 	 */
 	private static String createCriteriaItemDiv(String text) {
-		return "<div class='v-slot'>"
-				+ "<div class='v-label v-widget v-has-width' style='width: 100%;'>"
-				+ text
-				+ "</div></div>";
+		return text + "<br/>";
 	}
 
 	private enum ClassificationCriteriaType {
