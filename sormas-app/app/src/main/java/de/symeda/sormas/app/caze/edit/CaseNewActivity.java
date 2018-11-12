@@ -31,6 +31,7 @@ import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class CaseNewActivity extends BaseEditActivity<Case> {
 
@@ -145,6 +146,12 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
     @Override
     public void saveData() {
+
+        if (saveTask != null) {
+            NotificationHelper.showNotification(this, WARNING, getString(R.string.snackbar_already_saving));
+            return; // don't save multiple times
+        }
+
         final Case caze = getStoredRootEntity();
         CaseNewFragment fragment = (CaseNewFragment) getActiveFragment();
 
@@ -171,6 +178,11 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
     }
 
     private void saveDataInner(final Case caseToSave) {
+
+        if (saveTask != null) {
+            NotificationHelper.showNotification(this, WARNING, getString(R.string.snackbar_already_saving));
+            return; // don't save multiple times
+        }
 
         saveTask = new SavingAsyncTask(getRootView(), caseToSave) {
             @Override
@@ -213,6 +225,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                     finish();
                     CaseEditActivity.startActivity(getContext(), caseToSave.getUuid(), CaseSection.PERSON_INFO);
                 }
+                saveTask = null;
             }
         }.executeOnThreadPool();
     }

@@ -22,7 +22,10 @@ import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.util.Bundler;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class TaskEditActivity extends BaseEditActivity<Task> {
 
@@ -53,6 +56,12 @@ public class TaskEditActivity extends BaseEditActivity<Task> {
 
     @Override
     public void saveData() {
+
+        if (saveTask != null) {
+            NotificationHelper.showNotification(this, WARNING, getString(R.string.snackbar_already_saving));
+            return; // don't save multiple times
+        }
+
         final Task taskToSave = getStoredRootEntity();
 
         saveTask = new SavingAsyncTask(getRootView(), taskToSave) {
@@ -72,6 +81,7 @@ public class TaskEditActivity extends BaseEditActivity<Task> {
                 } else {
                     onResume(); // reload data
                 }
+                saveTask = null;
             }
         }.executeOnThreadPool();
     }

@@ -24,6 +24,7 @@ import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class EventParticipantNewActivity extends BaseEditActivity<EventParticipant> {
 
@@ -92,6 +93,12 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
 
     @Override
     public void saveData() {
+
+        if (saveTask != null) {
+            NotificationHelper.showNotification(this, WARNING, getString(R.string.snackbar_already_saving));
+            return; // don't save multiple times
+        }
+
         final EventParticipant eventParticipantToSave = (EventParticipant) getActiveFragment().getPrimaryData();
         EventParticipantNewFragment fragment = (EventParticipantNewFragment) getActiveFragment();
 
@@ -130,6 +137,7 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
                         if (taskResult.getResultStatus().isSuccess()) {
                             EventParticipantEditActivity.startActivity(getContext(), getRootUuid(), eventUuid);
                         }
+                        saveTask = null;
                     }
                 }.executeOnThreadPool();
             }

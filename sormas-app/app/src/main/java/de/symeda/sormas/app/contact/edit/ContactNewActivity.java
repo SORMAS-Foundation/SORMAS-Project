@@ -33,6 +33,7 @@ import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class ContactNewActivity extends BaseEditActivity<Contact> {
 
@@ -120,6 +121,12 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 
     @Override
     public void saveData() {
+
+        if (saveTask != null) {
+            NotificationHelper.showNotification(this, WARNING, getString(R.string.snackbar_already_saving));
+            return; // don't save multiple times
+        }
+
         final Contact contactToSave = getStoredRootEntity();
 
         ContactNewFragment fragment = (ContactNewFragment) getActiveFragment();
@@ -166,6 +173,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
                             finish();
                             ContactEditActivity.startActivity(getContext(), contactToSave.getUuid(), ContactSection.PERSON_INFO);
                         }
+                        saveTask = null;
                     }
                 }.executeOnThreadPool();
             }

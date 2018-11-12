@@ -22,6 +22,7 @@ import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.visit.VisitSection;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class VisitNewActivity extends BaseEditActivity<Visit> {
 
@@ -89,6 +90,12 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
 
     @Override
     public void saveData() {
+
+        if (saveTask != null) {
+            NotificationHelper.showNotification(this, WARNING, getString(R.string.snackbar_already_saving));
+            return; // don't save multiple times
+        }
+
         final Visit visitToSave = getStoredRootEntity();
         VisitEditFragment fragment = (VisitEditFragment) getActiveFragment();
 
@@ -126,6 +133,7 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
                         finish(); // back to contact
                     }
                 }
+                saveTask = null;
             }
         }.executeOnThreadPool();
     }

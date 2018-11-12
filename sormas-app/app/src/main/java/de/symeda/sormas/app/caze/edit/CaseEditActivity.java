@@ -36,6 +36,7 @@ import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class CaseEditActivity extends BaseEditActivity<Case> {
 
@@ -138,6 +139,12 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     }
 
     public void saveData(final Consumer<Case> successCallback) {
+
+        if (saveTask != null) {
+            NotificationHelper.showNotification(this, WARNING, getString(R.string.snackbar_already_saving));
+            return; // don't save multiple times
+        }
+
         final Case cazeToSave = getStoredRootEntity();
 
         try {
@@ -162,8 +169,10 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
             @Override
             protected void doInBackground(TaskResultHolder resultHolder) throws DaoException {
-                DatabaseHelper.getPersonDao().saveAndSnapshot(cazeToSave.getPerson());
-                DatabaseHelper.getCaseDao().saveAndSnapshot(cazeToSave);
+                synchronized (CaseEditActivity.this) {
+                    DatabaseHelper.getPersonDao().saveAndSnapshot(cazeToSave.getPerson());
+                    DatabaseHelper.getCaseDao().saveAndSnapshot(cazeToSave);
+                }
             }
 
             @Override
@@ -175,6 +184,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                 } else {
                     onResume(); // reload data
                 }
+                saveTask = null;
             }
         }.executeOnThreadPool();
     }

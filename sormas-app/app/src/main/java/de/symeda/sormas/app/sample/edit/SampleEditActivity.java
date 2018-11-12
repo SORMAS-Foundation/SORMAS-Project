@@ -19,6 +19,7 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class SampleEditActivity extends BaseEditActivity<Sample> {
 
@@ -71,6 +72,12 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
 
     @Override
     public void saveData() {
+
+        if (saveTask != null) {
+            NotificationHelper.showNotification(this, WARNING, getString(R.string.snackbar_already_saving));
+            return; // don't save multiple times
+        }
+
         final Sample sampleToSave = getStoredRootEntity();
         SampleEditFragment fragment = (SampleEditFragment) getActiveFragment();
 
@@ -103,6 +110,7 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
                 } else {
                     onResume(); // reload data
                 }
+                saveTask = null;
             }
         }.executeOnThreadPool();
     }
