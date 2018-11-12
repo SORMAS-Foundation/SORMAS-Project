@@ -40,7 +40,7 @@ import de.symeda.sormas.ui.statistics.DatabaseExportView;
 public class DownloadUtil {
 
 	public static final int DETAILED_EXPORT_STEP_SIZE = 200;
-	
+
 	private DownloadUtil() {
 
 	}
@@ -99,6 +99,18 @@ public class DownloadUtil {
 	}
 
 	@SuppressWarnings("serial")
+	public static StreamResource createStringStreamResource(String content, String fileName, String mimeType) {
+		StreamResource streamResource = new StreamResource(new StreamSource() {
+			@Override
+			public InputStream getStream() {
+				return new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
+			}
+		}, fileName);
+		streamResource.setMIMEType(mimeType);
+		return streamResource;
+	}
+
+	@SuppressWarnings("serial")
 	public static <T> StreamResource createCsvExportStreamResource(Class<T> exportRowClass, BiFunction<Integer, Integer, List<T>> exportRowsSupplier, Function<String,String> propertyIdCaptionFunction, String exportFileName) {
 		StreamResource extendedStreamResource = new StreamResource(new StreamSource() {
 			@Override
@@ -126,7 +138,7 @@ public class DownloadUtil {
 								fieldValues[i] = propertyIdCaptionFunction.apply(propertyId);
 					}
 					writer.writeNext(fieldValues);
-					
+
 					int startIndex = 0;
 					List<T> exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
 					while (!exportRows.isEmpty()) {						

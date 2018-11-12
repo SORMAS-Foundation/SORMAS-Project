@@ -68,4 +68,8 @@ public class DiseaseClassificationCriteria implements Serializable {
 		this.changeDate = changeDate;
 	}
 	
+	public boolean hasAnyCriteria() {
+		return suspectCriteria != null || probableCriteria != null || confirmedCriteria != null;
+	}
+	
 }

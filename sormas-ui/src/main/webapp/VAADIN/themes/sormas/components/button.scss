@@ -19,8 +19,12 @@
     }
 
     &.v-button-no-padding {
-  	  padding-left: 0;
-  	  padding-right: 0;
+  	  padding: 0px;
+  	  height: auto;
+    }
+   
+    &.v-button-no-uppercase {
+      text-transform: none;
     }
  
     &.v-button-danger,

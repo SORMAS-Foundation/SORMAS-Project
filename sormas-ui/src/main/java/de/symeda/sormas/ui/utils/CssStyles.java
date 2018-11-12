@@ -97,6 +97,7 @@ public final class CssStyles {
 	public static final String BACKGROUND_SUSPECT_CRITERIA = "background-suspect-criteria";
 	public static final String BACKGROUND_PROBABLE_CRITERIA = "background-probable-criteria";
 	public static final String BACKGROUND_CONFIRMED_CRITERIA = "background-confirmed-criteria";
+	public static final String NO_BORDER = "no-border";
 	
 	// Button styles
 	public static final String VAADIN_BUTTON = "v-button";
@@ -105,6 +106,7 @@ public final class CssStyles {
 	public static final String BUTTON_SUBTLE = "subtle";
 	public static final String BUTTON_BORDER_NEUTRAL = "border-neutral";
 	public static final String BUTTON_NO_PADDING = "no-padding";
+	public static final String BUTTON_NO_UPPERCASE = "no-uppercase";
 	public static final String LINK_ACTIVE = "active";
 	public static final String LINK_HIGHLIGHTED = "link-highlighted";
 	public static final String LINK_HIGHLIGHTED_LIGHT = "link-highlighted-light";
