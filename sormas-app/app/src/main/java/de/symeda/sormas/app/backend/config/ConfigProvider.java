@@ -273,7 +273,13 @@ public final class ConfigProvider {
                 generator.generateKeyPair();
             }
 
-            KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(keyStoreAlias, null);
+            KeyStore.PrivateKeyEntry privateKeyEntry;
+            try {
+                privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(keyStoreAlias, null);
+            } catch (KeyStoreException e) {
+                // try again #866
+                privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(keyStoreAlias, null);
+            }
             RSAPublicKey publicKey = (RSAPublicKey) privateKeyEntry.getCertificate().getPublicKey();
 
             Cipher input = Cipher.getInstance("RSA/ECB/PKCS1Padding");
@@ -323,7 +329,13 @@ public final class ConfigProvider {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
             keyStore.load(null);
 
-            KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(keyStoreAlias, null);
+            KeyStore.PrivateKeyEntry privateKeyEntry;
+            try {
+                privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(keyStoreAlias, null);
+            } catch (KeyStoreException e) {
+                // try again #866
+                privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(keyStoreAlias, null);
+            }
             if (privateKeyEntry == null) {
                 return null;
             }
