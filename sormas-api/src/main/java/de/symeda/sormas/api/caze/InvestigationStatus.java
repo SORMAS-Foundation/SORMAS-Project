@@ -13,6 +13,6 @@ public enum InvestigationStatus {
 	}	
 	
 	public String toShortString() {
-		return I18nProperties.getShortEnumCaption(this);
+		return I18nProperties.getEnumCaptionShort(this);
 	}
 }

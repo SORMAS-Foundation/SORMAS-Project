@@ -34,6 +34,7 @@ public class EpiWeekCalculationTest {
 	@Test
 	public void testCalculateEpiWeekReportStartAndEnd() {
 		EpiWeek epiWeek = new EpiWeek(2017, 42);
+		@SuppressWarnings("deprecation")
 		Date now = new Date(2017, 9, 11);
 		Calendar calendar = Calendar.getInstance();
 		calendar.clear();

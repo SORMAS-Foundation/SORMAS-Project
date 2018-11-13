@@ -32,18 +32,22 @@ public class I18nProperties {
 		}
 	}
 	
-	// Retrieves the property by adding an additional string in between the class name and the property name,
-	// e.g. Disease.Short.EVD or FollowUpStatus.Desc.NO_FOLLOW_UP
+	/**
+	 * Retrieves the property by adding an additional string in between the class name and the property name,
+	 * e.g. Disease.Short.EVD or FollowUpStatus.Desc.NO_FOLLOW_UP
+	 * 
+	 * Does fallback to enum caption without addition.
+	 */
 	public static String getEnumCaption(Enum<?> value, String addition) {
 		String caption = getInstance().enumProperties.getProperty(value.getClass().getSimpleName() + "." + addition + "." + value.name());
 		if (caption != null) {
 			return caption;
 		} else {
-			return value.name();
+			return getEnumCaption(value);
 		}
 	}
 	
-	public static String getShortEnumCaption(Enum<?> value) {
+	public static String getEnumCaptionShort(Enum<?> value) {
 		return getEnumCaption(value, "Short");
 	}
 	

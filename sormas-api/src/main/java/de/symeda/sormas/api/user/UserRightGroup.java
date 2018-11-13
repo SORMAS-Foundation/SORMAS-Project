@@ -1,7 +1,5 @@
 package de.symeda.sormas.api.user;
 
-import java.util.List;
-
 import de.symeda.sormas.api.I18nProperties;
 
 public enum UserRightGroup {
@@ -16,10 +14,9 @@ public enum UserRightGroup {
 	SYSTEM_CONFIGURATION,
 	MISCELLANEOUS;
 	
-	private List<UserRight> userRights;
-	
-	public List<UserRight> getUserRights() {
-		return null;
+//	private List<UserRight> userRights;
+//	
+//	public List<UserRight> getUserRights() {
 //		if (userRights == null) {
 //			userRights = new ArrayList<>();
 //			for (UserRight userRight : UserRight.values()) {
@@ -28,9 +25,8 @@ public enum UserRightGroup {
 //				}
 //			}
 //		}
-//		
 //		return userRights;
-	}
+//	}
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

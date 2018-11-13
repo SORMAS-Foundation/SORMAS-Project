@@ -1,14 +1,15 @@
 package de.symeda.sormas.api.utils;
 
-import java.awt.Desktop;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.util.AreaReference;
 import org.apache.poi.ss.util.CellReference;
@@ -28,6 +29,8 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.location.LocationDto;
@@ -60,28 +63,30 @@ public class DataDictionaryGenerator {
 		createEntitySheet(workbook, SampleDto.class, SampleDto.I18N_PREFIX);
 		createEntitySheet(workbook, SampleTestDto.class, SampleTestDto.I18N_PREFIX);
 		createEntitySheet(workbook, TaskDto.class, TaskDto.I18N_PREFIX);
+		createEntitySheet(workbook, EventDto.class, EventDto.I18N_PREFIX);
+		createEntitySheet(workbook, EventParticipantDto.class, EventParticipantDto.I18N_PREFIX);
 		createEntitySheet(workbook, FacilityDto.class, FacilityDto.I18N_PREFIX);
-		createEntitySheet(workbook, UserDto.class, UserDto.I18N_PREFIX);
 		createEntitySheet(workbook, RegionDto.class, RegionDto.I18N_PREFIX);
 		createEntitySheet(workbook, DistrictDto.class, DistrictDto.I18N_PREFIX);
 		createEntitySheet(workbook, CommunityDto.class, CommunityDto.I18N_PREFIX);
+		createEntitySheet(workbook, UserDto.class, UserDto.I18N_PREFIX);
 
-		String filePath = "../sormas-base/doc/SormasDictionary.xlsx";
+		String filePath = "src/main/resources/SormasDictionary.xlsx";
 		try (OutputStream fileOut = new FileOutputStream(filePath)) {
 			workbook.write(fileOut);
 		}
-		Desktop.getDesktop().open(new File(filePath));
 	}
 
-	private enum Column {
-		FIELD, VALUES, CAPTION, DESCRIPTION, REQUIRED, DISEASES, OUTBREAKS,
+	private enum EntityColumn {
+		FIELD, TYPE, CAPTION, DESCRIPTION, REQUIRED, DISEASES, OUTBREAKS,
 	}
 
+	@SuppressWarnings("unchecked")
 	private XSSFSheet createEntitySheet(XSSFWorkbook workbook, Class<? extends EntityDto> entityClass,
 			String i18nPrefix) {
 		String name = I18nProperties.getFieldCaption(i18nPrefix);
 		String safeName = WorkbookUtil.createSafeSheetName(name);
-		XSSFSheet sheet = workbook.createSheet(safeName);		
+		XSSFSheet sheet = workbook.createSheet(safeName);
 
 		// Create
 		XSSFTable table = sheet.createTable();
@@ -89,25 +94,13 @@ public class DataDictionaryGenerator {
 		table.setName(safeTableName);
 		table.setDisplayName(safeTableName);
 
-		// For now, create the initial style in a low-level way
-		table.getCTTable().addNewTableStyleInfo();
-		String tableStyleName = "TableStyleMedium" + workbook.getNumberOfSheets();
-		table.getCTTable().getTableStyleInfo().setName(tableStyleName);
+		styleTable(table, 1);
 
-		// Style the table
-		XSSFTableStyleInfo style = (XSSFTableStyleInfo) table.getStyle();
-		style.setName(tableStyleName);
-		style.setFirstColumn(false);
-		style.setLastColumn(false);
-		style.setShowRowStripes(true);
-		style.setShowColumnStripes(false);
-
-		int columnCount = Column.values().length;
-
-		int rowCounter = 0;
+		int columnCount = EntityColumn.values().length;
+		int rowNumber = 0;
 		// header
-		XSSFRow headerRow = sheet.createRow(rowCounter++);
-		for (Column column : Column.values()) {
+		XSSFRow headerRow = sheet.createRow(rowNumber++);
+		for (EntityColumn column : EntityColumn.values()) {
 			table.addColumn();
 			String columnCaption = column.toString();
 			columnCaption = columnCaption.substring(0, 1) + columnCaption.substring(1).toLowerCase();
@@ -115,77 +108,77 @@ public class DataDictionaryGenerator {
 		}
 
 		// column width
-		sheet.setColumnWidth(Column.FIELD.ordinal(), 256 * 30);
-		sheet.setColumnWidth(Column.VALUES.ordinal(), 256 * 60);
-		sheet.setColumnWidth(Column.CAPTION.ordinal(), 256 * 30);
-		sheet.setColumnWidth(Column.DESCRIPTION.ordinal(), 256 * 60);
-		sheet.setColumnWidth(Column.REQUIRED.ordinal(), 256 * 10);
-		sheet.setColumnWidth(Column.DISEASES.ordinal(), 256 * 45);
-		sheet.setColumnWidth(Column.OUTBREAKS.ordinal(), 256 * 10);
-		
-		CellStyle defaultCellStyle = workbook.createCellStyle(); 
+		sheet.setColumnWidth(EntityColumn.FIELD.ordinal(), 256 * 30);
+		sheet.setColumnWidth(EntityColumn.TYPE.ordinal(), 256 * 30);
+		sheet.setColumnWidth(EntityColumn.CAPTION.ordinal(), 256 * 30);
+		sheet.setColumnWidth(EntityColumn.DESCRIPTION.ordinal(), 256 * 60);
+		sheet.setColumnWidth(EntityColumn.REQUIRED.ordinal(), 256 * 10);
+		sheet.setColumnWidth(EntityColumn.DISEASES.ordinal(), 256 * 45);
+		sheet.setColumnWidth(EntityColumn.OUTBREAKS.ordinal(), 256 * 10);
+
+		CellStyle defaultCellStyle = workbook.createCellStyle();
 		defaultCellStyle.setWrapText(true);
-		
+
+		List<Class<Enum<?>>> usedEnums = new ArrayList<Class<Enum<?>>>();
+
 		for (Field field : entityClass.getDeclaredFields()) {
 			if (java.lang.reflect.Modifier.isStatic(field.getModifiers()))
 				continue;
-			XSSFRow row = sheet.createRow(rowCounter++);
+			XSSFRow row = sheet.createRow(rowNumber++);
 
 			// field name
-			XSSFCell fieldNameCell = row.createCell(Column.FIELD.ordinal());
+			XSSFCell fieldNameCell = row.createCell(EntityColumn.FIELD.ordinal());
 			fieldNameCell.setCellValue(field.getName());
 
 			// value range
-			XSSFCell fieldValueCell = row.createCell(Column.VALUES.ordinal());
-			fieldValueCell.setCellStyle(defaultCellStyle); 
-			Class fieldType = field.getType();
+			XSSFCell fieldValueCell = row.createCell(EntityColumn.TYPE.ordinal());
+			fieldValueCell.setCellStyle(defaultCellStyle);
+			Class<?> fieldType = field.getType();
 			if (fieldType.isEnum()) {
-				// enum
-				Object[] enumValues = fieldType.getEnumConstants();
-				StringBuilder valuesString = new StringBuilder();
-				for (Object enumValue : enumValues) {
-					if (valuesString.length() > 0)
-						valuesString.append(", ");
-					valuesString.append(((Enum) enumValue).name());
+				// use enum type name - values are added below
+//				Object[] enumValues = fieldType.getEnumConstants();
+//				StringBuilder valuesString = new StringBuilder();
+//				for (Object enumValue : enumValues) {
+//					if (valuesString.length() > 0)
+//						valuesString.append(", ");
+//					valuesString.append(((Enum) enumValue).name());
+//				}
+//				fieldValueCell.setCellValue(valuesString.toString());
+				fieldValueCell.setCellValue(fieldType.getSimpleName());
+				if (!usedEnums.contains(fieldType)) {
+					usedEnums.add((Class<Enum<?>>)fieldType);
 				}
-				fieldValueCell.setCellValue(valuesString.toString());
 			} else if (EntityDto.class.isAssignableFrom(fieldType)) {
-				// entity
 				fieldValueCell.setCellValue(fieldType.getSimpleName().replaceAll("Dto", ""));
 			} else if (ReferenceDto.class.isAssignableFrom(fieldType)) {
-				// reference
 				fieldValueCell.setCellValue(fieldType.getSimpleName().replaceAll("Dto", ""));
 			} else if (String.class.isAssignableFrom(fieldType)) {
-				// string
-				fieldValueCell.setCellValue("Text");
+				fieldValueCell.setCellValue(I18nProperties.getFieldCaption("text"));
 			} else if (Date.class.isAssignableFrom(fieldType)) {
-				// date
-				fieldValueCell.setCellValue("Date");
+				fieldValueCell.setCellValue(I18nProperties.getFieldCaption("date"));
 			} else if (Number.class.isAssignableFrom(fieldType)) {
-				// date
-				fieldValueCell.setCellValue("Number");
+				fieldValueCell.setCellValue(I18nProperties.getFieldCaption("number"));
 			} else if (Boolean.class.isAssignableFrom(fieldType) || boolean.class.isAssignableFrom(fieldType)) {
-				// date
 				fieldValueCell.setCellValue(Boolean.TRUE.toString() + ", " + Boolean.FALSE.toString());
 			}
 
 			// caption
-			XSSFCell captionCell = row.createCell(Column.CAPTION.ordinal());
+			XSSFCell captionCell = row.createCell(EntityColumn.CAPTION.ordinal());
 			captionCell.setCellValue(I18nProperties.getPrefixFieldCaption(i18nPrefix, field.getName(), ""));
 
 			// description
-			XSSFCell descriptionCell = row.createCell(Column.DESCRIPTION.ordinal());
-			descriptionCell.setCellStyle(defaultCellStyle); 
+			XSSFCell descriptionCell = row.createCell(EntityColumn.DESCRIPTION.ordinal());
+			descriptionCell.setCellStyle(defaultCellStyle);
 			descriptionCell.setCellValue(I18nProperties.getPrefixFieldDescription(i18nPrefix, field.getName(), ""));
 
 			// required
-			XSSFCell requiredCell = row.createCell(Column.REQUIRED.ordinal());
+			XSSFCell requiredCell = row.createCell(EntityColumn.REQUIRED.ordinal());
 			if (field.getAnnotation(Required.class) != null)
 				requiredCell.setCellValue(true);
 
 			// diseases
-			XSSFCell diseasesCell = row.createCell(Column.DISEASES.ordinal());
-			diseasesCell.setCellStyle(defaultCellStyle); 
+			XSSFCell diseasesCell = row.createCell(EntityColumn.DISEASES.ordinal());
+			diseasesCell.setCellStyle(defaultCellStyle);
 			Diseases diseases = field.getAnnotation(Diseases.class);
 			if (diseases != null) {
 				StringBuilder diseasesString = new StringBuilder();
@@ -200,16 +193,93 @@ public class DataDictionaryGenerator {
 			}
 
 			// outbreak
-			XSSFCell outbreakCell = row.createCell(Column.OUTBREAKS.ordinal());
+			XSSFCell outbreakCell = row.createCell(EntityColumn.OUTBREAKS.ordinal());
 			if (field.getAnnotation(Outbreaks.class) != null)
 				outbreakCell.setCellValue(true);
 		}
 
 		AreaReference reference = workbook.getCreationHelper().createAreaReference(new CellReference(0, 0),
-				new CellReference(rowCounter - 1, columnCount - 1));
+				new CellReference(rowNumber - 1, columnCount - 1));
 		table.setCellReferences(reference);
 		table.getCTTable().addNewAutoFilter();
 
+		for (Class<Enum<?>> usedEnum : usedEnums) {
+			rowNumber = createEnumTable(sheet, rowNumber + 1, usedEnum);
+		}
+
 		return sheet;
+	}
+
+	private enum EnumColumn {
+		TYPE, VALUE, CAPTION, DESCRIPTION, SHORT
+	}
+
+	private int createEnumTable(XSSFSheet sheet, int startRow, Class<Enum<?>> enumType) {
+
+		// Create
+		XSSFTable table = sheet.createTable();
+		String safeTableName = (sheet.getSheetName() + enumType.getSimpleName()).replaceAll("\\s", "_");
+		table.setName(safeTableName);
+		table.setDisplayName(safeTableName);
+		styleTable(table, 2);
+
+		int columnCount = EnumColumn.values().length;
+		int rowNumber = startRow;
+
+		// header
+		XSSFRow headerRow = sheet.createRow(rowNumber++);
+		for (EnumColumn column : EnumColumn.values()) {
+			table.addColumn();
+			String columnCaption = column.toString();
+			columnCaption = columnCaption.substring(0, 1) + columnCaption.substring(1).toLowerCase();
+			headerRow.createCell(column.ordinal()).setCellValue(columnCaption);
+		}
+
+		Object[] enumValues = enumType.getEnumConstants();
+		for (Object enumValueObject : enumValues) {
+			XSSFRow row = sheet.createRow(rowNumber++);
+			XSSFCell cell;
+			Enum<?> enumValue = ((Enum<?>) enumValueObject);
+
+			cell = row.createCell(EnumColumn.TYPE.ordinal());
+			if (enumValueObject == enumValues[0]) {
+				cell.setCellValue(enumType.getSimpleName());
+			}
+
+			cell = row.createCell(EnumColumn.VALUE.ordinal());
+			cell.setCellValue(enumValue.name());
+
+			cell = row.createCell(EnumColumn.CAPTION.ordinal());
+			String caption = enumValue.toString();
+			cell.setCellValue(caption);
+
+			cell = row.createCell(EnumColumn.DESCRIPTION.ordinal());
+			String desc = I18nProperties.getEnumDescription(enumValue);
+			cell.setCellValue(DataHelper.equal(caption, desc) ? "" : desc);
+
+			cell = row.createCell(EnumColumn.SHORT.ordinal());
+			String shortCaption = I18nProperties.getEnumCaptionShort(enumValue);
+			cell.setCellValue(DataHelper.equal(caption, shortCaption) ? "" : shortCaption);
+		}
+
+		AreaReference reference = new AreaReference(new CellReference(startRow, 0),
+				new CellReference(rowNumber - 1, columnCount - 1), SpreadsheetVersion.EXCEL2007);
+		table.setCellReferences(reference);
+		table.getCTTable().addNewAutoFilter();
+
+		return rowNumber;
+	}
+
+	private void styleTable(XSSFTable table, int styleNumber) {
+		// Style the table - can this be simplified?
+		table.getCTTable().addNewTableStyleInfo();
+		String tableStyleName = "TableStyleLight" + styleNumber;
+		table.getCTTable().getTableStyleInfo().setName(tableStyleName);
+		XSSFTableStyleInfo style = (XSSFTableStyleInfo) table.getStyle();
+		style.setName(tableStyleName);
+		style.setFirstColumn(false);
+		style.setLastColumn(false);
+		style.setShowRowStripes(true);
+		style.setShowColumnStripes(false);
 	}
 }
