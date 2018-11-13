@@ -45,7 +45,7 @@ import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.visit.VisitDto;
 
-public class DataDictionaryGenerator {
+public class DataDictionaryGeneratorTest {
 
 	@Test
 	public void generateDataDictionary() throws FileNotFoundException, IOException {
