@@ -17,16 +17,35 @@
 
 package de.symeda.sormas.app.backend.classification;
 
+import android.util.Log;
+
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
 public class DiseaseClassificationDao extends AbstractAdoDao<DiseaseClassification> {
 
     public DiseaseClassificationDao(Dao<DiseaseClassification, Long> innerDao) throws SQLException {
         super(innerDao);
+    }
+
+    public DiseaseClassification getByDisease(Disease disease) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.eq(DiseaseClassification.DISEASE, disease);
+            where.and().eq(AbstractDomainObject.SNAPSHOT, false).query();
+            return (DiseaseClassification) builder.queryForFirst();
+        } catch (SQLException | IllegalArgumentException e) {
+            Log.e(getTableName(), "Could not perform getByDisease");
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

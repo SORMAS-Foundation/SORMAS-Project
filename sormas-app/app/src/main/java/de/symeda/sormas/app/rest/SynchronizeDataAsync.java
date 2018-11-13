@@ -209,9 +209,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             weeklyReportEntryDtoHelper.pullEntities(true);
 
         // Synchronize disease classification if the table is empty
-//        if (DatabaseHelper.getDiseaseClassificationDao().isEmpty()) {
-//            pullDiseaseClassification();
-//        }
+        if (DatabaseHelper.getDiseaseClassificationDao().isEmpty()) {
+            pullDiseaseClassification();
+        }
     }
 
     private void repullData() throws DaoException, ServerConnectionException, ServerCommunicationException {

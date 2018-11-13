@@ -38,6 +38,8 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -55,6 +57,8 @@ public class DiseaseClassification extends AbstractDomainObject {
 
     public static final String TABLE_NAME = "diseaseclassification";
     public static final String I18N_PREFIX = "DiseaseClassification";
+
+    public static final String DISEASE = "disease";
 
     @Enumerated(EnumType.STRING)
     private Disease disease;
@@ -108,6 +112,10 @@ public class DiseaseClassification extends AbstractDomainObject {
     @Override
     public String getI18nPrefix() {
         return I18N_PREFIX;
+    }
+
+    public boolean hasAnyCriteria() {
+        return !StringUtils.isEmpty(suspectCriteria) || !StringUtils.isEmpty(probableCriteria) || !StringUtils.isEmpty(confirmedCriteria);
     }
 
 }

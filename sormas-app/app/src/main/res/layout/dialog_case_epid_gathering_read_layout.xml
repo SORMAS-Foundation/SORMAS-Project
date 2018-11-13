@@ -13,7 +13,6 @@
         <variable name="dismissCallback" type="de.symeda.sormas.app.util.Callback" />
     </data>
 
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

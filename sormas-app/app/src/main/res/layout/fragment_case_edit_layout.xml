@@ -280,30 +280,39 @@
 
             </LinearLayout>
 
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/case_buttons_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:background="@drawable/background_full_width_border"
                 android:paddingLeft="@dimen/buttonPanelHorizontalMargin"
                 android:paddingRight="@dimen/buttonPanelHorizontalMargin"
                 android:paddingTop="@dimen/buttonPanelVerticalMargin"
                 android:paddingBottom="@dimen/buttonPanelVerticalMargin"
-                android:elevation="16dp"
-                app:userViewRight="@{UserRight.CASE_TRANSFER}">
+                android:elevation="16dp">
 
                 <de.symeda.sormas.app.component.controls.ControlButton
                     android:id="@+id/transfer_case"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
+                    android:layout_marginBottom="@dimen/controlHalfMarginBottom"
                     app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                     app:iconStart="@drawable/ic_transfer_case_24dp"
                     app:rounded="true"
+                    app:userViewRight="@{UserRight.CASE_TRANSFER}"
                     android:text="@string/action_transfer_case" />
 
-            </RelativeLayout>
+                <de.symeda.sormas.app.component.controls.ControlButton
+                    android:id="@+id/show_classification_rules"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
+                    app:iconStart="@drawable/ic_format_list_bulleted_black_24dp"
+                    app:rounded="true"
+                    android:text="@string/action_show_classification_rules" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

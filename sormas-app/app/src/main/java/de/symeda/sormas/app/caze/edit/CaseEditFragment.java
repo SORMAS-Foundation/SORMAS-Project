@@ -2,6 +2,7 @@ package de.symeda.sormas.app.caze.edit;
 
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.webkit.WebView;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -20,10 +22,15 @@ import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.classification.DiseaseClassification;
+import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelper;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
+import de.symeda.sormas.app.component.dialog.InfoDialog;
+import de.symeda.sormas.app.databinding.DialogClassificationRulesLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
@@ -80,6 +87,16 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
             }
         });
 
+        // Button panel
+        if (!DatabaseHelper.getDiseaseClassificationDao().getByDisease(record.getDisease()).hasAnyCriteria()) {
+            contentBinding.showClassificationRules.setVisibility(GONE);
+        }
+        if (!ConfigProvider.getUser().hasUserRight(UserRight.CASE_TRANSFER)) {
+            contentBinding.transferCase.setVisibility(GONE);
+        }
+        if (contentBinding.showClassificationRules.getVisibility() == GONE && contentBinding.transferCase.getVisibility() == GONE) {
+            contentBinding.caseButtonsPanel.setVisibility(GONE);
+        }
     }
 
     private void setUpButtonListeners(FragmentCaseEditLayoutBinding contentBinding) {
@@ -103,6 +120,16 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
                         moveCaseDialog.show();
                     }
                 });
+            }
+        });
+
+        contentBinding.showClassificationRules.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final InfoDialog classificationDialog = new InfoDialog(CaseEditFragment.this.getContext(), R.layout.dialog_classification_rules_layout, null);
+                WebView classificationView = ((DialogClassificationRulesLayoutBinding) classificationDialog.getBinding()).content;
+                classificationView.loadData(DiseaseClassificationAppHelper.buildDiseaseClassificationHtml(record.getDisease()), "text/html", "utf-8");
+                classificationDialog.show();
             }
         });
     }

@@ -39,6 +39,7 @@
     <string name="action_markAllAsRead">Mark all as read</string>
     <string name="action_move">Move</string>
     <string name="action_transfer_case">Transfer case</string>
+    <string name="action_show_classification_rules">View classification rules</string>
     <string name="action_new">New</string>
     <string name="action_new_case">New Case</string>
     <string name="action_new_contact">New Contact</string>

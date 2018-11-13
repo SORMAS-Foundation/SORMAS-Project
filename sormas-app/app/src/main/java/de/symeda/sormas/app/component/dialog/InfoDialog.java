@@ -18,6 +18,7 @@ public class InfoDialog extends AlertDialog.Builder {
     private Object data;
     private AlertDialog dialog;
     private Callback dismissCallback;
+    private ViewDataBinding binding;
 
     public InfoDialog(Context context, int layoutId, Object data) {
         super(context);
@@ -31,7 +32,7 @@ public class InfoDialog extends AlertDialog.Builder {
             }
         };
 
-        ViewDataBinding binding = bindLayout(context);
+        binding = bindLayout(context);
 
         if (binding != null) {
             setView(binding.getRoot());
@@ -61,6 +62,10 @@ public class InfoDialog extends AlertDialog.Builder {
             Log.e(TAG, "There is no variable 'callback' in layout " + layoutName);
         }
 
+        return binding;
+    }
+
+    public ViewDataBinding getBinding() {
         return binding;
     }
 
