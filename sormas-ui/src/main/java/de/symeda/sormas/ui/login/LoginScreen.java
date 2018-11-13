@@ -3,15 +3,19 @@ package de.symeda.sormas.ui.login;
 import java.io.Serializable;
 
 import com.vaadin.server.Page;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.LoginForm;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.UserRightsException;
 
 /**
@@ -38,8 +42,15 @@ public class LoginScreen extends CssLayout {
         // sizes
         VerticalLayout centeringLayout = new VerticalLayout();
         centeringLayout.setStyleName("centering-layout");
-        centeringLayout.addComponent(loginForm);
-        centeringLayout.setComponentAlignment(loginForm,
+        HorizontalLayout test = new HorizontalLayout();
+        test.setSpacing(true);
+        test.addComponent(loginForm);
+		Image img = new Image(null, new ThemeResource("img/sormas-logo-big.png"));
+		img.setHeight(284, Unit.PIXELS);
+		CssStyles.style(img, CssStyles.HSPACE_LEFT_1);
+		test.addComponent(img);
+		centeringLayout.addComponent(test);
+        centeringLayout.setComponentAlignment(test,
                 Alignment.MIDDLE_CENTER);
 
         // information text about logging in
