@@ -16,9 +16,13 @@ public class ClassificationXOfCriteria extends ClassificationCriteria implements
 
 	private static final long serialVersionUID = 1139711267145230378L;
 
-	private final int requiredAmount;
-	protected final List<ClassificationCriteria> classificationCriteria;
+	private int requiredAmount;
+	protected List<ClassificationCriteria> classificationCriteria;
 
+	public ClassificationXOfCriteria() {
+		
+	}
+	
 	public ClassificationXOfCriteria(int requiredAmount, ClassificationCriteria... criteria) {
 		this.requiredAmount = requiredAmount;
 		this.classificationCriteria = Arrays.asList(criteria);
@@ -85,6 +89,22 @@ public class ClassificationXOfCriteria extends ClassificationCriteria implements
 		}
 	}
 
+	public int getRequiredAmount() {
+		return requiredAmount;
+	}
+
+	public void setRequiredAmount(int requiredAmount) {
+		this.requiredAmount = requiredAmount;
+	}
+
+	public List<ClassificationCriteria> getClassificationCriteria() {
+		return classificationCriteria;
+	}
+
+	public void setClassificationCriteria(List<ClassificationCriteria> classificationCriteria) {
+		this.classificationCriteria = classificationCriteria;
+	}
+
 	/**
 	 * Has a different buildDescription method to display all sub criteria with bullet points.
 	 * Functionality is identical to ClassificationXOfCriteria.
@@ -93,6 +113,10 @@ public class ClassificationXOfCriteria extends ClassificationCriteria implements
 
 		private static final long serialVersionUID = 8374870595895910414L;
 
+		public ClassificationXOfSubCriteria() {
+			super();
+		}
+		
 		public ClassificationXOfSubCriteria(int requiredAmount, ClassificationCriteria... criteria) {
 			super(requiredAmount, criteria);
 		}
@@ -119,6 +143,10 @@ public class ClassificationXOfCriteria extends ClassificationCriteria implements
 
 		private static final long serialVersionUID = 8374870595895910414L;
 
+		public ClassificationOneOfCompactCriteria() {
+			super();
+		}
+		
 		public ClassificationOneOfCompactCriteria(ClassificationCriteria... criteria) {
 			super(1, criteria);
 		}

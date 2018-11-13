@@ -10,6 +10,10 @@ public class ClassificationEpiDataCriteria extends ClassificationCaseCriteria {
 
 	private static final long serialVersionUID = -1805242010549597591L;
 
+	public ClassificationEpiDataCriteria() {
+		super();
+	}
+	
 	public ClassificationEpiDataCriteria(String propertyId) {
 		super(propertyId, YesNoUnknown.YES);
 	}

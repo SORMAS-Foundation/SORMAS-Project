@@ -27,6 +27,18 @@ import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteria;
+import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteria;
+import de.symeda.sormas.api.caze.classification.ClassificationCriteria;
+import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteria;
+import de.symeda.sormas.api.caze.classification.ClassificationNoneOfCriteria;
+import de.symeda.sormas.api.caze.classification.ClassificationNotInStartDateRangeCriteria;
+import de.symeda.sormas.api.caze.classification.ClassificationPersonAgeCriteria;
+import de.symeda.sormas.api.caze.classification.ClassificationSampleTestCriteria;
+import de.symeda.sormas.api.caze.classification.ClassificationSampleTestPositiveResultCriteria;
+import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteria;
+import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteria;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
@@ -85,6 +97,22 @@ public final class RetroProvider {
 
         this.context = context;
 
+        RuntimeTypeAdapterFactory<ClassificationCriteria> classificationCriteriaFactory = RuntimeTypeAdapterFactory
+                .of(ClassificationCriteria.class, "type")
+                .registerSubtype(ClassificationAllOfCriteria.class, "ClassificationAllOfCriteria")
+                .registerSubtype(ClassificationCaseCriteria.class, "ClassificationCaseCriteria")
+                .registerSubtype(ClassificationNoneOfCriteria.class, "ClassificationNoneOfCriteria")
+                .registerSubtype(ClassificationPersonAgeCriteria.class, "ClassificationPersonAgeCriteria")
+                .registerSubtype(ClassificationSampleTestPositiveResultCriteria.class, "ClassificationSampleTestPositiveResultCriteria")
+                .registerSubtype(ClassificationXOfCriteria.class, "ClassificationXOfCriteria")
+                .registerSubtype(ClassificationEpiDataCriteria.class, "ClassificationEpiDataCriteria")
+                .registerSubtype(ClassificationNotInStartDateRangeCriteria.class, "ClassificationNotInStartDateRangeCriteria")
+                .registerSubtype(ClassificationSymptomsCriteria.class, "ClassificationSymptomsCriteria")
+                .registerSubtype(ClassificationSampleTestCriteria.class, "ClassificationSampleTestCriteria")
+                .registerSubtype(ClassificationXOfCriteria.ClassificationXOfSubCriteria.class, "ClassificationXOfSubCriteria")
+                .registerSubtype(ClassificationXOfCriteria.ClassificationOneOfCompactCriteria.class, "ClassificationOneOfCompactCriteria")
+                .registerSubtype(ClassificationAllOfCriteria.ClassificationAllOfCompactCriteria.class, "ClassificationAllOfCompactCriteria");
+
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
                     public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -104,6 +132,7 @@ public final class RetroProvider {
                         return new JsonPrimitive(src.getTime());
                     }
                 })
+                .registerTypeAdapterFactory(classificationCriteriaFactory)
                 .create();
 
         // Basic auth as explained in https://futurestud.io/tutorials/android-basic-authentication-with-retrofit

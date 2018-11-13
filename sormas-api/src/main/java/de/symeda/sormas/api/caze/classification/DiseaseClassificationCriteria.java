@@ -19,6 +19,10 @@ public class DiseaseClassificationCriteria implements Serializable {
 	private ClassificationCriteria confirmedCriteria;
 	private Date changeDate;
 	
+	public DiseaseClassificationCriteria() {
+		
+	}
+	
 	public DiseaseClassificationCriteria(Disease disease, ClassificationCriteria suspectCriteria,
 			ClassificationCriteria probableCriteria, ClassificationCriteria confirmedCriteria) {
 		this.disease = disease;

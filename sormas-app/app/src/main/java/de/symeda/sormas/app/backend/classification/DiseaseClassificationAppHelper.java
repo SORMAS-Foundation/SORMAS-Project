@@ -19,8 +19,11 @@ package de.symeda.sormas.app.backend.classification;
 
 import android.util.Log;
 
+import java.util.Date;
+
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteria;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
@@ -31,6 +34,8 @@ public class DiseaseClassificationAppHelper {
 
         classification.setDisease(classificationCriteria.getDisease());
         classification.setChangeDate(classificationCriteria.getChangeDate());
+        classification.setCreationDate(new Date());
+        classification.setUuid(DataHelper.createUuid());
         classification.setSuspectCriteria(ClassificationHtmlRenderer.createSuspectHtmlString(classificationCriteria));
         classification.setProbableCriteria(ClassificationHtmlRenderer.createProbableHtmlString(classificationCriteria));
         classification.setConfirmedCriteria(ClassificationHtmlRenderer.createConfirmedHtmlString(classificationCriteria));

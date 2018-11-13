@@ -15,8 +15,12 @@ public class ClassificationSampleTestCriteria extends ClassificationCaseCriteria
 
 	private static final long serialVersionUID = 856637988490366395L;
 
-	private final List<SampleTestType> testTypes;
+	private List<SampleTestType> testTypes;
 
+	public ClassificationSampleTestCriteria() {
+		super();
+	}
+	
 	public ClassificationSampleTestCriteria(String propertyId, List<SampleTestType> testTypes, Object... propertyValues) {
 		super(propertyId, propertyValues);
 		this.testTypes = testTypes;
@@ -78,6 +82,14 @@ public class ClassificationSampleTestCriteria extends ClassificationCaseCriteria
 		}
 
 		return stringBuilder.toString();
+	}
+
+	public List<SampleTestType> getTestTypes() {
+		return testTypes;
+	}
+
+	public void setTestTypes(List<SampleTestType> testTypes) {
+		this.testTypes = testTypes;
 	}
 
 }

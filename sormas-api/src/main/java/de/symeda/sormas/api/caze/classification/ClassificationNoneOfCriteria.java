@@ -17,8 +17,12 @@ public class ClassificationNoneOfCriteria extends ClassificationCriteria impleme
 
 	private static final long serialVersionUID = 2199852259112272090L;
 	
-	protected final List<ClassificationCriteria> classificationCriteria;
+	protected List<ClassificationCriteria> classificationCriteria;
 
+	public ClassificationNoneOfCriteria() {
+		
+	}
+	
 	public ClassificationNoneOfCriteria(ClassificationCriteria... criteria) {
 		this.classificationCriteria = Arrays.asList(criteria);
 	}
@@ -53,6 +57,14 @@ public class ClassificationNoneOfCriteria extends ClassificationCriteria impleme
 	@Override
 	public List<ClassificationCriteria> getSubCriteria() {
 		return classificationCriteria;
+	}
+
+	public List<ClassificationCriteria> getClassificationCriteria() {
+		return classificationCriteria;
+	}
+
+	public void setClassificationCriteria(List<ClassificationCriteria> classificationCriteria) {
+		this.classificationCriteria = classificationCriteria;
 	}
 
 }

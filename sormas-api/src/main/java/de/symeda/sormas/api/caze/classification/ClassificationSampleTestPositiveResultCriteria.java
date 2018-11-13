@@ -14,8 +14,12 @@ public class ClassificationSampleTestPositiveResultCriteria extends Classificati
 
 	private static final long serialVersionUID = 3811127784970509183L;
 	
-	protected final List<SampleTestType> sampleTestTypes;
+	protected List<SampleTestType> sampleTestTypes;
 
+	public ClassificationSampleTestPositiveResultCriteria() {
+		
+	}
+	
 	public ClassificationSampleTestPositiveResultCriteria(SampleTestType... sampleTestTypes) {
 		this.sampleTestTypes = Arrays.asList(sampleTestTypes);
 	}
@@ -48,6 +52,14 @@ public class ClassificationSampleTestPositiveResultCriteria extends Classificati
 		}
 
 		return stringBuilder.toString();
+	}
+
+	public List<SampleTestType> getSampleTestTypes() {
+		return sampleTestTypes;
+	}
+
+	public void setSampleTestTypes(List<SampleTestType> sampleTestTypes) {
+		this.sampleTestTypes = sampleTestTypes;
 	}
 
 }

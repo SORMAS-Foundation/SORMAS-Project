@@ -46,6 +46,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
 @Entity(name = DiseaseClassification.TABLE_NAME)
@@ -53,6 +54,7 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 public class DiseaseClassification extends AbstractDomainObject {
 
     public static final String TABLE_NAME = "diseaseclassification";
+    public static final String I18N_PREFIX = "DiseaseClassification";
 
     @Enumerated(EnumType.STRING)
     private Disease disease;
@@ -96,6 +98,16 @@ public class DiseaseClassification extends AbstractDomainObject {
 
     public void setConfirmedCriteria(String confirmedCriteria) {
         this.confirmedCriteria = confirmedCriteria;
+    }
+
+    @Override
+    public String toString() {
+        return "Classification for " + disease.toString();
+    }
+
+    @Override
+    public String getI18nPrefix() {
+        return I18N_PREFIX;
     }
 
 }

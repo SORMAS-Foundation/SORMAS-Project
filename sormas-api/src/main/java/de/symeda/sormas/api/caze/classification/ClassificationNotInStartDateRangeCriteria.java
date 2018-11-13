@@ -23,7 +23,11 @@ public class ClassificationNotInStartDateRangeCriteria extends ClassificationCas
 
 	private static final long serialVersionUID = -8817472226784147694L;
 	
-	private final int daysBeforeStartDate;
+	private int daysBeforeStartDate;
+	
+	public ClassificationNotInStartDateRangeCriteria() {
+		super();
+	}
 	
 	public ClassificationNotInStartDateRangeCriteria(String propertyId, int daysBeforeStartDate) {
 		super(propertyId);
@@ -57,6 +61,14 @@ public class ClassificationNotInStartDateRangeCriteria extends ClassificationCas
 		stringBuilder.append(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, propertyId));
 		stringBuilder.append(" ").append(I18nProperties.getText("notWithin")).append(" ").append(daysBeforeStartDate).append(" ").append(I18nProperties.getText("daysBeforeCaseStart"));
 		return stringBuilder.toString();
+	}
+
+	public int getDaysBeforeStartDate() {
+		return daysBeforeStartDate;
+	}
+
+	public void setDaysBeforeStartDate(int daysBeforeStartDate) {
+		this.daysBeforeStartDate = daysBeforeStartDate;
 	}
 	
 }

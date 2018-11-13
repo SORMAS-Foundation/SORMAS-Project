@@ -10,6 +10,10 @@ public class ClassificationSymptomsCriteria extends ClassificationCaseCriteria {
 
 	private static final long serialVersionUID = 6880120976447372375L;
 
+	public ClassificationSymptomsCriteria() {
+		super();
+	}
+	
 	public ClassificationSymptomsCriteria(String propertyId) {
 		super(propertyId, SymptomState.YES);
 	}

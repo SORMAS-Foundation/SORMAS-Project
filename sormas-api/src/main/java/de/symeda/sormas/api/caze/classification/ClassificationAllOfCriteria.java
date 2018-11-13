@@ -12,8 +12,12 @@ public class ClassificationAllOfCriteria extends ClassificationCriteria implemen
 
 	private static final long serialVersionUID = -6427002056924376593L;
 	
-	protected final List<ClassificationCriteria> subCriteria;
+	protected List<ClassificationCriteria> subCriteria;
 
+	public ClassificationAllOfCriteria() {
+		
+	}
+	
 	public ClassificationAllOfCriteria(ClassificationCriteria... criteria) {
 		this.subCriteria = Arrays.asList(criteria);
 	}
@@ -73,6 +77,10 @@ public class ClassificationAllOfCriteria extends ClassificationCriteria implemen
 			return stringBuilder.toString();
 		}
 	
+	}
+
+	public void setSubCriteria(List<ClassificationCriteria> subCriteria) {
+		this.subCriteria = subCriteria;
 	}
 	
 }
