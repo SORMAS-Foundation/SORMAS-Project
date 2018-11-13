@@ -9,10 +9,15 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.Date;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.util.AreaReference;
+import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.ss.util.WorkbookUtil;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFTable;
+import org.apache.poi.xssf.usermodel.XSSFTableStyleInfo;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
 
@@ -74,13 +79,36 @@ public class DataDictionaryGenerator {
 
 	private XSSFSheet createEntitySheet(XSSFWorkbook workbook, Class<? extends EntityDto> entityClass,
 			String i18nPrefix) {
-		String safeName = WorkbookUtil.createSafeSheetName(I18nProperties.getFieldCaption(i18nPrefix));
-		XSSFSheet sheet = workbook.createSheet(safeName);
+		String name = I18nProperties.getFieldCaption(i18nPrefix);
+		String safeName = WorkbookUtil.createSafeSheetName(name);
+		XSSFSheet sheet = workbook.createSheet(safeName);		
+
+		// Create
+		XSSFTable table = sheet.createTable();
+		String safeTableName = safeName.replaceAll("\\s", "_");
+		table.setName(safeTableName);
+		table.setDisplayName(safeTableName);
+
+		// For now, create the initial style in a low-level way
+		table.getCTTable().addNewTableStyleInfo();
+		String tableStyleName = "TableStyleMedium" + workbook.getNumberOfSheets();
+		table.getCTTable().getTableStyleInfo().setName(tableStyleName);
+
+		// Style the table
+		XSSFTableStyleInfo style = (XSSFTableStyleInfo) table.getStyle();
+		style.setName(tableStyleName);
+		style.setFirstColumn(false);
+		style.setLastColumn(false);
+		style.setShowRowStripes(true);
+		style.setShowColumnStripes(false);
+
+		int columnCount = Column.values().length;
 
 		int rowCounter = 0;
 		// header
-		Row headerRow = sheet.createRow(rowCounter++);
+		XSSFRow headerRow = sheet.createRow(rowCounter++);
 		for (Column column : Column.values()) {
+			table.addColumn();
 			String columnCaption = column.toString();
 			columnCaption = columnCaption.substring(0, 1) + columnCaption.substring(1).toLowerCase();
 			headerRow.createCell(column.ordinal()).setCellValue(columnCaption);
@@ -94,18 +122,22 @@ public class DataDictionaryGenerator {
 		sheet.setColumnWidth(Column.REQUIRED.ordinal(), 256 * 10);
 		sheet.setColumnWidth(Column.DISEASES.ordinal(), 256 * 45);
 		sheet.setColumnWidth(Column.OUTBREAKS.ordinal(), 256 * 10);
-
+		
+		CellStyle defaultCellStyle = workbook.createCellStyle(); 
+		defaultCellStyle.setWrapText(true);
+		
 		for (Field field : entityClass.getDeclaredFields()) {
 			if (java.lang.reflect.Modifier.isStatic(field.getModifiers()))
 				continue;
-			Row row = sheet.createRow(rowCounter++);
+			XSSFRow row = sheet.createRow(rowCounter++);
 
 			// field name
-			Cell fieldNameCell = row.createCell(Column.FIELD.ordinal());
+			XSSFCell fieldNameCell = row.createCell(Column.FIELD.ordinal());
 			fieldNameCell.setCellValue(field.getName());
 
 			// value range
-			Cell fieldValueCell = row.createCell(Column.VALUES.ordinal());
+			XSSFCell fieldValueCell = row.createCell(Column.VALUES.ordinal());
+			fieldValueCell.setCellStyle(defaultCellStyle); 
 			Class fieldType = field.getType();
 			if (fieldType.isEnum()) {
 				// enum
@@ -138,20 +170,22 @@ public class DataDictionaryGenerator {
 			}
 
 			// caption
-			Cell captionCell = row.createCell(Column.CAPTION.ordinal());
+			XSSFCell captionCell = row.createCell(Column.CAPTION.ordinal());
 			captionCell.setCellValue(I18nProperties.getPrefixFieldCaption(i18nPrefix, field.getName(), ""));
 
 			// description
-			Cell descriptionCell = row.createCell(Column.DESCRIPTION.ordinal());
+			XSSFCell descriptionCell = row.createCell(Column.DESCRIPTION.ordinal());
+			descriptionCell.setCellStyle(defaultCellStyle); 
 			descriptionCell.setCellValue(I18nProperties.getPrefixFieldDescription(i18nPrefix, field.getName(), ""));
 
 			// required
-			Cell requiredCell = row.createCell(Column.REQUIRED.ordinal());
+			XSSFCell requiredCell = row.createCell(Column.REQUIRED.ordinal());
 			if (field.getAnnotation(Required.class) != null)
 				requiredCell.setCellValue(true);
 
 			// diseases
-			Cell diseasesCell = row.createCell(Column.DISEASES.ordinal());
+			XSSFCell diseasesCell = row.createCell(Column.DISEASES.ordinal());
+			diseasesCell.setCellStyle(defaultCellStyle); 
 			Diseases diseases = field.getAnnotation(Diseases.class);
 			if (diseases != null) {
 				StringBuilder diseasesString = new StringBuilder();
@@ -166,19 +200,15 @@ public class DataDictionaryGenerator {
 			}
 
 			// outbreak
-			Cell outbreakCell = row.createCell(Column.OUTBREAKS.ordinal());
+			XSSFCell outbreakCell = row.createCell(Column.OUTBREAKS.ordinal());
 			if (field.getAnnotation(Outbreaks.class) != null)
 				outbreakCell.setCellValue(true);
 		}
 
-		// TODO make table
-//		XSSFTable table = sheet.createTable();
-//		table.addColumn();
-//		table.addColumn();
-//		table.addColumn();
-//		table.addColumn();
-//		table.addColumn();
-//		table.setCellReferences(new AreaReference(new CellReference(0, 0), new CellReference(rowCounter-1, 5), SpreadsheetVersion.EXCEL2007));
+		AreaReference reference = workbook.getCreationHelper().createAreaReference(new CellReference(0, 0),
+				new CellReference(rowCounter - 1, columnCount - 1));
+		table.setCellReferences(reference);
+		table.getCTTable().addNewAutoFilter();
 
 		return sheet;
 	}
