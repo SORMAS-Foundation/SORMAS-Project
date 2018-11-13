@@ -54,7 +54,7 @@ public class DataDictionaryGenerator {
 
 		createEntitySheet(workbook, PersonDto.class, PersonDto.I18N_PREFIX);
 		createEntitySheet(workbook, LocationDto.class, LocationDto.I18N_PREFIX);
-		createEntitySheet(workbook, CaseDataDto.class, CaseDataDto.I18N_PREFIX).setSelected(true);
+		createEntitySheet(workbook, CaseDataDto.class, CaseDataDto.I18N_PREFIX);
 		createEntitySheet(workbook, HospitalizationDto.class, HospitalizationDto.I18N_PREFIX);
 		createEntitySheet(workbook, SymptomsDto.class, SymptomsDto.I18N_PREFIX);
 		createEntitySheet(workbook, EpiDataDto.class, EpiDataDto.I18N_PREFIX);
@@ -71,7 +71,7 @@ public class DataDictionaryGenerator {
 		createEntitySheet(workbook, CommunityDto.class, CommunityDto.I18N_PREFIX);
 		createEntitySheet(workbook, UserDto.class, UserDto.I18N_PREFIX);
 
-		String filePath = "src/main/resources/SormasDictionary.xlsx";
+		String filePath = "src/main/resources/SORMAS_Data_Dictionary.xlsx";
 		try (OutputStream fileOut = new FileOutputStream(filePath)) {
 			workbook.write(fileOut);
 		}
