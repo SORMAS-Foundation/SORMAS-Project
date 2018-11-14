@@ -5,6 +5,7 @@ import java.net.URL;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.ClassResource;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.StreamResource;
@@ -39,16 +40,27 @@ public class AboutView extends VerticalLayout implements View {
 						+ InfoProvider.get().getVersion(), ContentMode.HTML), "info");
 
 		// Documents section
+		VerticalLayout documentsLayout = new VerticalLayout();
+		aboutContent.addComponent(documentsLayout, "documents");
+		
 		Button classificationDocumentButton = new Button("Case Classification Rules (HTML)");
 		CssStyles.style(classificationDocumentButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_NO_PADDING, CssStyles.BUTTON_NO_UPPERCASE);
-		aboutContent.addComponent(classificationDocumentButton, "documents");
+		documentsLayout.addComponent(classificationDocumentButton);
 
 		try {
-			StreamResource classificationResource = DownloadUtil.createStringStreamResource(ClassificationHtmlRenderer.createHtmlForDownload(new URL(((VaadinServletRequest) VaadinService.getCurrentRequest()).getHttpServletRequest().getRequestURL().toString()).getAuthority()), "classification_rules.html", "text/html");
+			String serverUrl = new URL(((VaadinServletRequest) VaadinService.getCurrentRequest()).getHttpServletRequest().getRequestURL().toString()).getAuthority();
+			StreamResource classificationResource = DownloadUtil.createStringStreamResource(
+					ClassificationHtmlRenderer.createHtmlForDownload(serverUrl), "classification_rules.html", "text/html");
 			new FileDownloader(classificationResource).extend(classificationDocumentButton);
 		} catch (MalformedURLException e) {
 
 		}
+
+		Button dataDictionaryButton = new Button("Data Dictionary (xlsx)");
+		CssStyles.style(dataDictionaryButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_NO_PADDING, CssStyles.BUTTON_NO_UPPERCASE);
+		documentsLayout.addComponent(dataDictionaryButton);
+		FileDownloader dataDictionaryDownloader = new FileDownloader(new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
+		dataDictionaryDownloader.extend(dataDictionaryButton);
 
 		setSizeFull();
 		setStyleName("about-view");

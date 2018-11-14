@@ -558,7 +558,7 @@
 				</pluginRepository>
 			</pluginRepositories>
 		</profile>
-
+		
 		<profile>
 			<!-- Profile to build also the app -->
 			<id>with-app</id>

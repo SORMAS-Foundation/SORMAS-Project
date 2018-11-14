@@ -1,4 +1,4 @@
-package de.symeda.sormas.api.utils;
+package de.symeda.sormas.api.doc;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -18,7 +18,6 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFTable;
-import org.apache.poi.xssf.usermodel.XSSFTableStyleInfo;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
 
@@ -43,9 +42,17 @@ import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.Outbreaks;
+import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.visit.VisitDto;
 
-public class DataDictionaryGeneratorTest {
+/**
+ * Intentionally named *Generator because we don't want Maven to execute this
+ * class automatically.
+ */
+public class DataDictionaryGenerator {
 
 	@Test
 	public void generateDataDictionary() throws FileNotFoundException, IOException {
@@ -71,10 +78,13 @@ public class DataDictionaryGeneratorTest {
 		createEntitySheet(workbook, CommunityDto.class, CommunityDto.I18N_PREFIX);
 		createEntitySheet(workbook, UserDto.class, UserDto.I18N_PREFIX);
 
-		String filePath = "src/main/resources/SORMAS_Data_Dictionary.xlsx";
+		XssfHelper.addAboutSheet(workbook);
+
+		String filePath = "src/main/resources/doc/SORMAS_Data_Dictionary.xlsx";
 		try (OutputStream fileOut = new FileOutputStream(filePath)) {
 			workbook.write(fileOut);
 		}
+		workbook.close();
 	}
 
 	private enum EntityColumn {
@@ -94,7 +104,7 @@ public class DataDictionaryGeneratorTest {
 		table.setName(safeTableName);
 		table.setDisplayName(safeTableName);
 
-		styleTable(table, 1);
+		XssfHelper.styleTable(table, 1);
 
 		int columnCount = EntityColumn.values().length;
 		int rowNumber = 0;
@@ -146,7 +156,7 @@ public class DataDictionaryGeneratorTest {
 //				fieldValueCell.setCellValue(valuesString.toString());
 				fieldValueCell.setCellValue(fieldType.getSimpleName());
 				if (!usedEnums.contains(fieldType)) {
-					usedEnums.add((Class<Enum<?>>)fieldType);
+					usedEnums.add((Class<Enum<?>>) fieldType);
 				}
 			} else if (EntityDto.class.isAssignableFrom(fieldType)) {
 				fieldValueCell.setCellValue(fieldType.getSimpleName().replaceAll("Dto", ""));
@@ -221,7 +231,7 @@ public class DataDictionaryGeneratorTest {
 		String safeTableName = (sheet.getSheetName() + enumType.getSimpleName()).replaceAll("\\s", "_");
 		table.setName(safeTableName);
 		table.setDisplayName(safeTableName);
-		styleTable(table, 2);
+		XssfHelper.styleTable(table, 2);
 
 		int columnCount = EnumColumn.values().length;
 		int rowNumber = startRow;
@@ -268,18 +278,5 @@ public class DataDictionaryGeneratorTest {
 		table.getCTTable().addNewAutoFilter();
 
 		return rowNumber;
-	}
-
-	private void styleTable(XSSFTable table, int styleNumber) {
-		// Style the table - can this be simplified?
-		table.getCTTable().addNewTableStyleInfo();
-		String tableStyleName = "TableStyleLight" + styleNumber;
-		table.getCTTable().getTableStyleInfo().setName(tableStyleName);
-		XSSFTableStyleInfo style = (XSSFTableStyleInfo) table.getStyle();
-		style.setName(tableStyleName);
-		style.setFirstColumn(false);
-		style.setLastColumn(false);
-		style.setShowRowStripes(true);
-		style.setShowColumnStripes(false);
 	}
 }

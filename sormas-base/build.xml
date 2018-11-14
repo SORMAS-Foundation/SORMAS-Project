@@ -40,6 +40,14 @@
 		<property name="shared.installed" value="true" />
 	</target>
 
+	<target name="generate-api-doc" description="Call the generators">
+		<artifact:mvn pom="../sormas-api/pom.xml" fork="true" mavenhome="${env.M2_HOME}" failonerror="true">
+			<sysproperty key="maven.multiModuleProjectDirectory" value="../sormas-api" />
+			<arg value="test" />
+			<arg value="-Dtest=*Generator" />
+		</artifact:mvn>
+	</target>
+
 	<target name="deploy-bundles" description="Deploy osgi bundles to development server">
 
 		<artifact:pom id="bundlesPom" file="dependencies/bundles.pom">

@@ -55,7 +55,7 @@ public class CaseImportLayout extends VerticalLayout {
 
 		Button dataDictionaryButton = new Button("Download Data Dictionary", FontAwesome.FILE_EXCEL_O);
 		CssStyles.style(dataDictionaryButton, ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_TOP_3);
-		FileDownloader dataDictionaryDownloader = new FileDownloader(new ClassResource("/SORMAS_Data_Dictionary.xlsx"));
+		FileDownloader dataDictionaryDownloader = new FileDownloader(new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
 		dataDictionaryDownloader.extend(dataDictionaryButton);
 		addComponent(dataDictionaryButton);
 		CssStyles.style(dataDictionaryButton, CssStyles.VSPACE_2);
