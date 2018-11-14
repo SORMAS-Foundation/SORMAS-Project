@@ -37,7 +37,7 @@ public class SampleTestController {
 	}
 	
 	public void create(SampleReferenceDto sampleRef, int caseSampleCount, Runnable callback) {
-		SampleTestEditForm createForm = new SampleTestEditForm(true, UserRight.SAMPLETEST_CREATE, caseSampleCount);
+		SampleTestEditForm createForm = new SampleTestEditForm(FacadeProvider.getSampleFacade().getSampleByUuid(sampleRef.getUuid()), true, UserRight.SAMPLETEST_CREATE, caseSampleCount);
 		createForm.setValue(createNewSampleTest(sampleRef));
 		final CommitDiscardWrapperComponent<SampleTestEditForm> editView = new CommitDiscardWrapperComponent<SampleTestEditForm>(createForm, createForm.getFieldGroup());
 	
@@ -58,7 +58,7 @@ public class SampleTestController {
 		// get fresh data
 		SampleTestDto newDto = stf.getByUuid(dto.getUuid());
 		
-		SampleTestEditForm form = new SampleTestEditForm(false, UserRight.SAMPLETEST_EDIT, caseSampleCount);
+		SampleTestEditForm form = new SampleTestEditForm(FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid()), false, UserRight.SAMPLETEST_EDIT, caseSampleCount);
 		form.setValue(newDto);
 		final CommitDiscardWrapperComponent<SampleTestEditForm> editView = new CommitDiscardWrapperComponent<SampleTestEditForm>(form, form.getFieldGroup());
 

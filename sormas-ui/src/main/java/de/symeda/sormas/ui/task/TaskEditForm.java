@@ -10,6 +10,7 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -25,6 +26,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -63,11 +65,10 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
     
 	@Override
 	protected void addFields() {
-
     	addField(TaskDto.CAZE, ComboBox.class);
     	addField(TaskDto.EVENT, ComboBox.class);
     	addField(TaskDto.CONTACT, ComboBox.class);
-    	addField(TaskDto.SUGGESTED_START, DateTimeField.class);
+    	DateTimeField startDate = addField(TaskDto.SUGGESTED_START, DateTimeField.class);
     	DateTimeField dueDate = addField(TaskDto.DUE_DATE, DateTimeField.class);
     	dueDate.setImmediate(true);
     	addField(TaskDto.PRIORITY, ComboBox.class);
@@ -140,6 +141,12 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	    		// fallback - just show all users
 	    		users = FacadeProvider.getUserFacade().getAllAfterAsReference(null);
 	    	}
+	    	
+	    	// Validation
+			startDate.addValidator(new DateComparisonValidator(startDate, dueDate, true, false, 
+					I18nProperties.getValidationError("beforeDate", startDate.getCaption(), dueDate.getCaption())));
+			dueDate.addValidator(new DateComparisonValidator(dueDate, startDate, false, false, 
+					I18nProperties.getValidationError("afterDate", dueDate.getCaption(), startDate.getCaption())));
 	    	
 	    	TaskController taskController = ControllerProvider.getTaskController();
     		for (UserReferenceDto user : users) {

@@ -11,6 +11,7 @@ import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -20,6 +21,7 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -50,7 +52,7 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 	protected void addFields() {
 		addField(SampleDto.SAMPLE_CODE, TextField.class);
 		addField(SampleDto.LAB_SAMPLE_ID, TextField.class);
-		addField(SampleDto.SAMPLE_DATE_TIME, DateTimeField.class);
+		DateTimeField sampleDateField = addField(SampleDto.SAMPLE_DATE_TIME, DateTimeField.class);
 		addField(SampleDto.SAMPLE_MATERIAL, ComboBox.class);
 		addField(SampleDto.SAMPLE_MATERIAL_TEXT, TextField.class);
 		ComboBox sampleSource = addField(SampleDto.SAMPLE_SOURCE, ComboBox.class);
@@ -67,6 +69,20 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.COMMENT, TextArea.class).setRows(2);
 		CheckBox shipped = addField(SampleDto.SHIPPED, CheckBox.class);
 		CheckBox received = addField(SampleDto.RECEIVED, CheckBox.class);
+
+		// Validators
+		sampleDateField.addValidator(new DateComparisonValidator(sampleDateField, shipmentDate, true, false,
+				I18nProperties.getValidationError("beforeDate", sampleDateField.getCaption(), shipmentDate.getCaption())));
+		sampleDateField.addValidator(new DateComparisonValidator(sampleDateField, receivedDate, true, false,
+				I18nProperties.getValidationError("beforeDate", sampleDateField.getCaption(), receivedDate.getCaption())));
+		shipmentDate.addValidator(new DateComparisonValidator(shipmentDate, sampleDateField, false, false,
+				I18nProperties.getValidationError("afterDate", shipmentDate.getCaption(), sampleDateField.getCaption())));
+		shipmentDate.addValidator(new DateComparisonValidator(shipmentDate, receivedDate, true, false,
+				I18nProperties.getValidationError("beforeDate", shipmentDate.getCaption(), receivedDate.getCaption())));
+		receivedDate.addValidator(new DateComparisonValidator(receivedDate, sampleDateField, false, false,
+				I18nProperties.getValidationError("afterDate", receivedDate.getCaption(), sampleDateField.getCaption())));
+		receivedDate.addValidator(new DateComparisonValidator(receivedDate, shipmentDate, false, false,
+				I18nProperties.getValidationError("afterDate", receivedDate.getCaption(), shipmentDate.getCaption())));
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.SAMPLE_MATERIAL_TEXT, SampleDto.SAMPLE_MATERIAL,
 				Arrays.asList(SampleMaterial.OTHER), true);

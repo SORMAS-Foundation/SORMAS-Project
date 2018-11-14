@@ -203,7 +203,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     		}
     	}
     	if (getValue() != null) {
-	    	dateField.addValidator(new DateRangeValidator(I18nProperties.getValidationError("beforeReportDate", dateField.getCaption()),
+	    	dateField.addValidator(new DateRangeValidator(I18nProperties.getValidationError("beforeDate", dateField.getCaption(), getField(ContactDto.REPORT_DATE_TIME).getCaption()),
 	    			null, new LocalDate(getValue().getReportDateTime()).plusDays(1).toDate(), Resolution.SECOND));
     	}
     }

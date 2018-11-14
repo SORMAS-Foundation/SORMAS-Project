@@ -17,6 +17,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -43,7 +44,6 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 
 	@Override
 	protected void addFields() {
-
 		DateField admissionDate = addField(PreviousHospitalizationDto.ADMISSION_DATE, DateField.class);
 		DateField dischargeDate = addField(PreviousHospitalizationDto.DISCHARGE_DATE, DateField.class);
 		addField(PreviousHospitalizationDto.ISOLATED, OptionGroup.class);
@@ -105,6 +105,12 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 				healthFacilityDetails.clear();
 			}
 		});
+		
+		// Validations
+		admissionDate.addValidator(new DateComparisonValidator(admissionDate, dischargeDate, true, false, 
+				I18nProperties.getValidationError("beforeDate", admissionDate.getCaption(), dischargeDate.getCaption())));
+		dischargeDate.addValidator(new DateComparisonValidator(dischargeDate, admissionDate, false, false, 
+				I18nProperties.getValidationError("afterDate", dischargeDate.getCaption(), admissionDate.getCaption())));
 
 		FieldHelper.addSoftRequiredStyle(admissionDate, dischargeDate, facilityCommunity, healthFacilityDetails);
 		setRequired(true,

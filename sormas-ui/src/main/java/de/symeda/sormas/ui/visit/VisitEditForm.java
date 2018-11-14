@@ -66,7 +66,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
     	addField(VisitDto.VISIT_STATUS, OptionGroup.class);
     	addField(VisitDto.VISIT_REMARKS, TextField.class);
     	
-    	symptomsForm = new SymptomsForm(disease, person, SymptomsContext.VISIT, UserRight.VISIT_EDIT, null);
+    	symptomsForm = new SymptomsForm(null, disease, person, SymptomsContext.VISIT, UserRight.VISIT_EDIT, null);
 		getFieldGroup().bind(symptomsForm, VisitDto.SYMPTOMS);
 		getContent().addComponent(symptomsForm, VisitDto.SYMPTOMS);
     	

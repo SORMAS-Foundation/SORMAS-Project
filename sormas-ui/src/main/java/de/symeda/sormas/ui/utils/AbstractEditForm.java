@@ -359,7 +359,9 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 					getPropertyI18nPrefix(), propertyId, abstractField.getDescription()));
 
 			if (hideValidationUntilNextCommit) {
-				abstractField.setValidationVisible(false);
+				if (!abstractField.isInvalidCommitted()) {
+					abstractField.setValidationVisible(false);
+				}
 			}
 		}
 
@@ -439,14 +441,18 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		for (Field<?> field : getFieldGroup().getFields()) {
 			if (field instanceof AbstractField) {
 				AbstractField<?> abstractField = (AbstractField<?>)field;
-				abstractField.setValidationVisible(false);
+				if (!abstractField.isInvalidCommitted()) {
+					abstractField.setValidationVisible(false);
+				}
 			}
 		}
 
 		for (Field<?> field : customFields) {
 			if (field instanceof AbstractField) {
 				AbstractField<?> abstractField = (AbstractField<?>)field;
-				abstractField.setValidationVisible(false);
+				if (!abstractField.isInvalidCommitted()) {
+					abstractField.setValidationVisible(false);
+				}
 			}
 		}
 	}

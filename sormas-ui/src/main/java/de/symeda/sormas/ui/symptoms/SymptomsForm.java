@@ -25,6 +25,8 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -35,6 +37,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -87,6 +90,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 									SymptomsDto.PATIENT_ILL_LOCATION, SymptomsDto.SYMPTOMS_COMMENTS))
 					);
 
+	private final CaseDataDto caze;
 	private final Disease disease;
 	private final PersonDto person;
 	private final SymptomsContext symptomsContext;
@@ -97,10 +101,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private List<String> lesionsLocationFieldIds;
 	private List<String> monkeypoxImageFieldIds;
 
-	public SymptomsForm(Disease disease, PersonDto person, SymptomsContext symptomsContext, UserRight editOrCreateUserRight, ViewMode viewMode) {
+	public SymptomsForm(CaseDataDto caze, Disease disease, PersonDto person, SymptomsContext symptomsContext, UserRight editOrCreateUserRight, ViewMode viewMode) {
 		// TODO add user right parameter
 		super(SymptomsDto.class, SymptomsDto.I18N_PREFIX, editOrCreateUserRight);
-        hideValidationUntilNextCommit();
+		this.caze = caze;
 		this.disease = disease;
 		this.person = person;
 		this.symptomsContext = symptomsContext;
@@ -108,7 +112,11 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		if (disease == null || symptomsContext == null) {
 			throw new IllegalArgumentException("disease and symptoms context cannot be null");
 		}
+		if (symptomsContext == SymptomsContext.CASE && caze == null) {
+			throw new IllegalArgumentException("case cannot be null when symptoms context is case");
+		}
 		addFields();
+		hideValidationUntilNextCommit();
 	}
 
 	@Override
@@ -119,8 +127,13 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 
 		// Add fields
-		
-		addField(SymptomsDto.ONSET_DATE);
+
+		DateField onsetDateField = addField(SymptomsDto.ONSET_DATE, DateField.class);
+		if (symptomsContext == SymptomsContext.CASE) {
+			onsetDateField.addValidator(new DateComparisonValidator(onsetDateField, caze.getHospitalization().getAdmissionDate(), true, false, 
+					I18nProperties.getValidationError("beforeDateSoft", onsetDateField.getCaption(), I18nProperties.getPrefixFieldCaption(HospitalizationDto.I18N_PREFIX, HospitalizationDto.ADMISSION_DATE))));
+			onsetDateField.setInvalidCommitted(true);
+		}
 		ComboBox temperature = addField(SymptomsDto.TEMPERATURE, ComboBox.class);
 		for (Float temperatureValue : SymptomsHelper.getTemperatureValues()) {
 			temperature.addItem(temperatureValue);
@@ -147,7 +160,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		addField(SymptomsDto.LESIONS_ONSET_DATE, DateField.class);
 
 		ComboBox onsetSymptom = addField(SymptomsDto.ONSET_SYMPTOM, ComboBox.class);
-		
+
 		monkeypoxImageFieldIds = Arrays.asList(SymptomsDto.LESIONS_RESEMBLE_IMG1, SymptomsDto.LESIONS_RESEMBLE_IMG2, SymptomsDto.LESIONS_RESEMBLE_IMG3, SymptomsDto.LESIONS_RESEMBLE_IMG4);
 		for (String propertyId : monkeypoxImageFieldIds) {
 			@SuppressWarnings("rawtypes")
@@ -156,9 +169,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 
 		// Set initial visibilities
-		
+
 		initializeVisibilitiesAndAllowedVisibilities(disease, viewMode);
-		
+
 		// Initialize lists
 
 		conditionalBleedingSymptomFieldIds = Arrays.asList(SymptomsDto.GUMS_BLEEDING, SymptomsDto.INJECTION_SITE_BLEEDING, SymptomsDto.NOSE_BLEEDING, 
@@ -181,7 +194,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.BLACKENING_DEATH_OF_TISSUE, SymptomsDto.BUBOES_GROIN_ARMPIT_NECK, SymptomsDto.BULGING_FONTANELLE);
 
 		// Set visibilities
-		
+
 		FieldHelper.setVisibleWhen(getFieldGroup(), 
 				conditionalBleedingSymptomFieldIds,
 				SymptomsDto.UNEXPLAINED_BLEEDING,
@@ -201,7 +214,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				lesionsFieldIds, 
 				SymptomsDto.LESIONS, 
 				Arrays.asList(SymptomState.YES), true);
-		
+
 		FieldHelper.setVisibleWhen(getFieldGroup(), 
 				lesionsLocationFieldIds, 
 				SymptomsDto.LESIONS, 
@@ -211,16 +224,16 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.LESIONS_ONSET_DATE, 
 				SymptomsDto.LESIONS, 
 				Arrays.asList(SymptomState.YES), true);
-		
+
 		FieldHelper.addSoftRequiredStyle(getField(SymptomsDto.LESIONS_ONSET_DATE));
-		
+
 		boolean isInfant = person != null && person.getApproximateAge() != null
 				&& ((person.getApproximateAge() <= 12 && person.getApproximateAgeType() == ApproximateAgeType.MONTHS)
 						|| person.getApproximateAge() <= 1);
 		if (!isInfant) {
 			getFieldGroup().getField(SymptomsDto.BULGING_FONTANELLE).setVisible(false);
 		}
-		
+
 		// Handle visibility of lesions locations caption
 		Label lesionsLocationsCaption = new Label("Localisation of the lesions");
 		CssStyles.style(lesionsLocationsCaption, CssStyles.VSPACE_3);
@@ -229,7 +242,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		getFieldGroup().getField(SymptomsDto.LESIONS).addValueChangeListener(e -> {
 			getContent().getComponent(LESIONS_LOCATIONS_LOC).setVisible(e.getProperty().getValue() == SymptomState.YES);
 		});
-		
+
 		if (disease == Disease.MONKEYPOX) {
 			setUpMonkeypoxVisibilities();
 		}
@@ -336,7 +349,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			}
 		});
 	}	
-	
+
 	@Override
 	public void setValue(SymptomsDto newFieldValue) throws ReadOnlyException, ConversionException {
 

@@ -4,6 +4,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextField;
 
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -29,8 +30,10 @@ public class EpiDataTravelEditForm extends AbstractEditForm<EpiDataTravelDto> {
 	protected void addFields() {
 		DateField travelDateFrom = addField(EpiDataTravelDto.TRAVEL_DATE_FROM, DateField.class);
 		DateField travelDateTo = addField(EpiDataTravelDto.TRAVEL_DATE_TO, DateField.class);
-		travelDateFrom.addValidator(new DateComparisonValidator(travelDateFrom, travelDateTo, true, true, "The " + travelDateFrom.getCaption() + " can not be later than the " + travelDateTo.getCaption() + "."));
-		travelDateTo.addValidator(new DateComparisonValidator(travelDateTo, travelDateFrom, false, true, "The " + travelDateTo.getCaption() + " can not be earlier than the " + travelDateFrom.getCaption() + "."));
+		travelDateFrom.addValidator(new DateComparisonValidator(travelDateFrom, travelDateTo, true, true, 
+				I18nProperties.getValidationError("beforeDate", travelDateFrom.getCaption(), travelDateTo.getCaption())));
+		travelDateTo.addValidator(new DateComparisonValidator(travelDateTo, travelDateFrom, false, true, 
+				I18nProperties.getValidationError("afterDate", travelDateFrom.getCaption(), travelDateTo.getCaption())));
 		addField(EpiDataTravelDto.TRAVEL_TYPE, ComboBox.class);
 		addField(EpiDataTravelDto.TRAVEL_DESTINATION, TextField.class);
 		

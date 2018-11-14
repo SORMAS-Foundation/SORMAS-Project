@@ -8,11 +8,14 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -27,14 +30,17 @@ public class SampleTestEditForm extends AbstractEditForm<SampleTestDto> {
 			LayoutUtil.fluidRowLocs(SampleTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, "") +
 			LayoutUtil.fluidRowLocs(SampleTestDto.TEST_RESULT_TEXT);
 
+	private final SampleDto sample;
 	private int caseSampleCount;
 	
-	public SampleTestEditForm(boolean create, UserRight editOrCreateUserRight, int caseSampleCount) {
+	public SampleTestEditForm(SampleDto sample, boolean create, UserRight editOrCreateUserRight, int caseSampleCount) {
 		super(SampleTestDto.class, SampleTestDto.I18N_PREFIX, editOrCreateUserRight);
 		
+		this.sample = sample;
 		this.caseSampleCount = caseSampleCount;
         setWidth(600, Unit.PIXELS);
         
+        addFields();
         if (create) {
         	hideValidationUntilNextCommit();
         }
@@ -42,9 +48,15 @@ public class SampleTestEditForm extends AbstractEditForm<SampleTestDto> {
 	
 	@Override
 	protected void addFields() {
+		if (sample == null) {
+			return;
+		}
+		
 		ComboBox testTypeField = addField(SampleTestDto.TEST_TYPE, ComboBox.class);
 		addField(SampleTestDto.TEST_TYPE_TEXT, TextField.class);
-		addField(SampleTestDto.TEST_DATE_TIME, DateTimeField.class);
+		DateTimeField sampleTestDateField = addField(SampleTestDto.TEST_DATE_TIME, DateTimeField.class);
+		sampleTestDateField.addValidator(new DateComparisonValidator(sampleTestDateField, sample.getSampleDateTime(), false, false,
+				I18nProperties.getValidationError("afterDate", sampleTestDateField.getCaption(), I18nProperties.getPrefixFieldCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME))));
 		ComboBox lab = addField(SampleTestDto.LAB, ComboBox.class);
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(true));
 		
