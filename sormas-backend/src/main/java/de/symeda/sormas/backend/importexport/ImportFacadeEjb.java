@@ -131,12 +131,7 @@ public class ImportFacadeEjb implements ImportFacade {
 		}
 
 		List<String> columnNames = new ArrayList<>();
-		try {
-			buildListOfFields(columnNames, CaseDataDto.class, "");
-		} catch (IntrospectionException e) {
-			throw new IOException(e);
-		}
-
+		buildListOfFields(columnNames, CaseDataDto.class, "");
 		Path filePath = Paths.get(getCaseImportTemplateFilePath());
 		CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator());
 		writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
@@ -207,7 +202,7 @@ public class ImportFacadeEjb implements ImportFacade {
 			CaseDataDto newCase = CaseDataDto.build(newPerson.toReference(), null);
 			User user = userService.getCurrentUser();
 			newCase.setReportingUser(user.toReference());
-			
+
 			boolean caseHasImportError = false;
 			for (int i = 0; i < nextLine.length; i++) {
 				String entry = nextLine[i];
@@ -261,7 +256,13 @@ public class ImportFacadeEjb implements ImportFacade {
 			String headerPathElementName = entryHeaderPath[i];
 
 			try {
-				if (i == entryHeaderPath.length - 1) {
+				if (i != entryHeaderPath.length - 1) {
+					currentElement = new PropertyDescriptor(headerPathElementName, currentElement.getClass()).getReadMethod().invoke(currentElement);
+					// Replace PersonReferenceDto with the created person
+					if (currentElement instanceof PersonReferenceDto) {
+						currentElement = person;
+					}
+				} else {
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());
 					Class<?> propertyType = pd.getPropertyType();
 
@@ -327,12 +328,6 @@ public class ImportFacadeEjb implements ImportFacade {
 					} else {
 						throw new UnsupportedOperationException ("Property type " + propertyType.getName() + " not allowed when importing cases.");
 					}
-				} else {
-					currentElement = new PropertyDescriptor(headerPathElementName, currentElement.getClass()).getReadMethod().invoke(currentElement);
-					// Replace PersonReferenceDto with the created person
-					if (currentElement instanceof PersonReferenceDto) {
-						currentElement = person;
-					}
 				}
 			} catch (IntrospectionException e) {
 				throw new InvalidColumnException(buildHeaderPathString(entryHeaderPath));
@@ -368,7 +363,13 @@ public class ImportFacadeEjb implements ImportFacade {
 		errorReportWriter.writeNext(nextLineAsList.toArray(new String[nextLineAsList.size()]));
 	}
 
-	private void buildListOfFields(List<String> fieldNames, Class<?> clazz, String prefix) throws IntrospectionException {
+	/**
+	 * Builds a list of all fields in the case and its relevant sub entities. IMPORTANT: The order
+	 * is not guaranteed; at the time of writing, clazz.getDeclaredFields() seems to return the
+	 * fields in the order of declaration (which is what we need here), but that could change
+	 * in the future.
+	 */
+	private void buildListOfFields(List<String> resultFieldNames, Class<?> clazz, String prefix) {
 		for (Field field : clazz.getDeclaredFields()) {
 			if (Modifier.isStatic(field.getModifiers())) {
 				continue;
@@ -403,20 +404,11 @@ public class ImportFacadeEjb implements ImportFacade {
 			}
 			// Other non-infrastructure EntityDto/ReferenceDto classes, recursively call this method to include fields of the sub-entity
 			if (EntityDto.class.isAssignableFrom(field.getType()) && !isInfrastructureClass(field.getType())) {
-				buildListOfFields(fieldNames, field.getType(), prefix == null || prefix.isEmpty() ? field.getName() + "." :  prefix + field.getName() + ".");
+				buildListOfFields(resultFieldNames, field.getType(), prefix == null || prefix.isEmpty() ? field.getName() + "." :  prefix + field.getName() + ".");
 			} else if (PersonReferenceDto.class.isAssignableFrom(field.getType()) && !isInfrastructureClass(field.getType())) {
-				buildListOfFields(fieldNames, PersonDto.class, prefix == null || prefix.isEmpty() ? field.getName() + "." : prefix + field.getName() + ".");
+				buildListOfFields(resultFieldNames, PersonDto.class, prefix == null || prefix.isEmpty() ? field.getName() + "." : prefix + field.getName() + ".");
 			} else {
-				// All other field types - make sure that region, district, community and healthFacility are entered in this order
-				//				if (pd.getName().equals("region") && fieldNames.contains("district")) {
-				//					fieldNames.add(fieldNames.indexOf("district"), prefix + pd.getName());
-				//				} else if (pd.getName().equals("district") && fieldNames.contains("community")) {
-				//					fieldNames.add(fieldNames.indexOf("community"), prefix + pd.getName());
-				//				} else if (pd.getName().equals("community") && fieldNames.contains("healthFacility")) {
-				//					fieldNames.add(fieldNames.indexOf("healthFacility"), prefix + pd.getName());
-				//				} else {
-				fieldNames.add(prefix + field.getName());
-				//				}
+				resultFieldNames.add(prefix + field.getName());
 			}
 		}
 	}
