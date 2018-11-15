@@ -62,6 +62,8 @@ SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutBinding, Sampl
     @Override
     public void onLayoutBinding(FragmentSampleNewLayoutBinding contentBinding) {
         contentBinding.setData(record);
+
+        SampleValidator.initializeSampleValidation(contentBinding);
     }
 
     @Override

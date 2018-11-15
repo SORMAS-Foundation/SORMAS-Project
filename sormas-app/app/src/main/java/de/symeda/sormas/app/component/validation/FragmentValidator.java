@@ -38,7 +38,7 @@ public class FragmentValidator {
                 ControlPropertyEditField field = (ControlPropertyEditField) child;
                 field.setErrorIfEmpty();
 
-                if (!field.isHasError() && field.getValidationCallback() != null) {
+                if (field.getValidationCallback() != null) {
                     field.getValidationCallback().call();
                 }
 

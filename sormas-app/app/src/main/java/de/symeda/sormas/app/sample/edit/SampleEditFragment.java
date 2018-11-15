@@ -108,6 +108,8 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         contentBinding.setData(record);
         contentBinding.setSampleTest(mostRecentTest);
         contentBinding.setReferredSample(referredSample);
+
+        SampleValidator.initializeSampleValidation(contentBinding);
     }
 
     @Override

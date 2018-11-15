@@ -117,15 +117,18 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
     }
 
     public void enableWarningState(int messageResourceId) {
+        String message = "";
+        if (messageResourceId != -1) {
+            message = getResources().getString(messageResourceId);
+        }
+
+        enableWarningState(message);
+    }
+
+    public void enableWarningState(String message) {
         // Error has priority over warning
         if (hasError) {
             return;
-        }
-
-        String message = "";
-
-        if (messageResourceId != -1) {
-            message = getResources().getString(messageResourceId);
         }
 
         this.hasWarning = true;

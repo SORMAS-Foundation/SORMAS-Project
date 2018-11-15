@@ -82,7 +82,7 @@ public class EpiDataBurialDialog extends AbstractDialog {
         this.contentBinding.epiDataBurialBurialDateFrom.initializeDateField(getFragmentManager());
         this.contentBinding.epiDataBurialBurialDateTo.initializeDateField(getFragmentManager());
 
-        CaseValidator.initializeEpiDataBurialValidation(getContext(), contentBinding);
+        CaseValidator.initializeEpiDataBurialValidation(contentBinding);
 
         setUpControlListeners();
 

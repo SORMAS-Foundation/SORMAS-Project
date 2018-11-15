@@ -4,10 +4,15 @@ import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.joda.time.DateTimeComparator;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -92,7 +97,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
     }
 
     @Override
-    public void onLayoutBinding(FragmentSymptomsEditLayoutBinding contentBinding) {
+    public void onLayoutBinding(final FragmentSymptomsEditLayoutBinding contentBinding) {
         setupCallback();
 
         contentBinding.setData(record);
@@ -100,7 +105,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
         contentBinding.setClearAllCallback(clearAllCallback);
         contentBinding.setSetClearedToNoCallback(setClearedToNoCallback);
 
-        SymptomsValidator.initializeSymptomsValidation(contentBinding);
+        SymptomsValidator.initializeSymptomsValidation(contentBinding, ado);
 
         if (ado instanceof Visit) {
             makeAllSymptomsRequired();

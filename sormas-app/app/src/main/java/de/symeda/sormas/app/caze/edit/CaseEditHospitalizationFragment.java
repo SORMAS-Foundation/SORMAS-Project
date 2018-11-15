@@ -4,6 +4,12 @@ import android.content.res.Resources;
 import android.databinding.ObservableArrayList;
 import android.view.View;
 
+import org.joda.time.DateTimeComparator;
+
+import java.util.Date;
+
+import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -159,6 +165,8 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
                 verifyPrevHospitalizationStatus();
             }
         });
+
+        CaseValidator.initializeHospitalizationValidation(contentBinding, caze);
 
         contentBinding.setData(record);
         contentBinding.setCaze(caze);

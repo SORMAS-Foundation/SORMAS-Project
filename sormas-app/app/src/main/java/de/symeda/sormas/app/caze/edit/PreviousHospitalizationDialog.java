@@ -71,6 +71,8 @@ public class PreviousHospitalizationDialog extends AbstractDialog {
                 contentBinding.casePreviousHospitalizationDistrict, initialDistricts,
                 contentBinding.casePreviousHospitalizationCommunity, initialCommunities,
                 contentBinding.casePreviousHospitalizationHealthFacility, initialFacilities);
+
+        CaseValidator.initializePreviousHospitalizationValidation(contentBinding);
     }
 
     @Override

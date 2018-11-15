@@ -4,24 +4,19 @@ import android.content.Context;
 import android.databinding.ViewDataBinding;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.View;
 
 import com.android.databinding.library.baseAdapters.BR;
-
-import java.util.List;
 
 import de.symeda.sormas.api.epidata.TravelType;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
-import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.dialog.AbstractDialog;
-import de.symeda.sormas.app.core.Callback;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogCaseEpidTravelEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.component.validation.FragmentValidator;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -58,7 +53,7 @@ public class EpiDataTravelDialog extends AbstractDialog {
         contentBinding.epiDataTravelTravelDateFrom.initializeDateField(getFragmentManager());
         contentBinding.epiDataTravelTravelDateTo.initializeDateField(getFragmentManager());
 
-        CaseValidator.initializeEpiDataTravelValidation(getContext(), contentBinding);
+        CaseValidator.initializeEpiDataTravelValidation(contentBinding);
 
         if (data.getId() == null) {
             setLiveValidationDisabled(true);
