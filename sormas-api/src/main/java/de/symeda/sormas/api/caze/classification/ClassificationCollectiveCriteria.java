@@ -9,6 +9,6 @@ import java.util.List;
 public interface ClassificationCollectiveCriteria {
 
 	public String getCriteriaName();
-	public List<ClassificationCriteria> getSubCriteria();
+	public List<ClassificationCriteriaDto> getSubCriteria();
 	
 }

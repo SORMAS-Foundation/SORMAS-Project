@@ -21,14 +21,14 @@ import de.symeda.sormas.api.sample.SampleTestDto;
  */
 @JsonTypeInfo(use=Id.NAME, include=As.PROPERTY)
 @JsonSubTypes({
-	@JsonSubTypes.Type(value = ClassificationAllOfCriteria.class, name = "ClassificationAllOfCriteria"),
-	@JsonSubTypes.Type(value = ClassificationCaseCriteria.class, name = "ClassificationCaseCriteria"),
-	@JsonSubTypes.Type(value = ClassificationNoneOfCriteria.class, name = "ClassificationNoneOfCrieria"),
-	@JsonSubTypes.Type(value = ClassificationPersonAgeCriteria.class, name = "ClassificationPersonAgeCriteria"),
-	@JsonSubTypes.Type(value = ClassificationSampleTestPositiveResultCriteria.class, name = "ClassificationSampleTestPositiveResultCriteria"),
-	@JsonSubTypes.Type(value = ClassificationXOfCriteria.class, name = "ClassificationXOfCriteria"),
+	@JsonSubTypes.Type(value = ClassificationAllOfCriteriaDto.class, name = "ClassificationAllOfCriteriaDto"),
+	@JsonSubTypes.Type(value = ClassificationCaseCriteriaDto.class, name = "ClassificationCaseCriteriaDto"),
+	@JsonSubTypes.Type(value = ClassificationNoneOfCriteriaDto.class, name = "ClassificationNoneOfCrieriaDto"),
+	@JsonSubTypes.Type(value = ClassificationPersonAgeCriteriaDto.class, name = "ClassificationPersonAgeCriteriaDto"),
+	@JsonSubTypes.Type(value = ClassificationSampleTestPositiveResultCriteriaDto.class, name = "ClassificationSampleTestPositiveResultCriteriaDto"),
+	@JsonSubTypes.Type(value = ClassificationXOfCriteriaDto.class, name = "ClassificationXOfCriteriaDto"),
 })
-public abstract class ClassificationCriteria implements Serializable {
+public abstract class ClassificationCriteriaDto implements Serializable {
 	
 	protected String type = getClass().getSimpleName(); 
 	

@@ -13,7 +13,6 @@ import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
-import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -22,7 +21,6 @@ import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.classification.DiseaseClassification;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -88,7 +86,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         });
 
         // Button panel
-        if (!DatabaseHelper.getDiseaseClassificationDao().getByDisease(record.getDisease()).hasAnyCriteria()) {
+        if (!DatabaseHelper.getDiseaseClassificationCriteriaDao().getByDisease(record.getDisease()).hasAnyCriteria()) {
             contentBinding.showClassificationRules.setVisibility(GONE);
         }
         if (!ConfigProvider.getUser().hasUserRight(UserRight.CASE_TRANSFER)) {

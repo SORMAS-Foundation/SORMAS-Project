@@ -6,7 +6,7 @@ import java.util.GregorianCalendar;
 
 import de.symeda.sormas.api.Disease;
 
-public class DiseaseClassificationCriteria implements Serializable {
+public class DiseaseClassificationCriteriaDto implements Serializable {
 
 	private static final long serialVersionUID = 8800921617332187938L;
 
@@ -14,17 +14,17 @@ public class DiseaseClassificationCriteria implements Serializable {
 	private static final Date CHANGE_DATE = new GregorianCalendar(2017, 9, 17).getTime();
 	
 	private Disease disease;
-	private ClassificationCriteria suspectCriteria;
-	private ClassificationCriteria probableCriteria;
-	private ClassificationCriteria confirmedCriteria;
+	private ClassificationCriteriaDto suspectCriteria;
+	private ClassificationCriteriaDto probableCriteria;
+	private ClassificationCriteriaDto confirmedCriteria;
 	private Date changeDate;
 	
-	public DiseaseClassificationCriteria() {
+	public DiseaseClassificationCriteriaDto() {
 		
 	}
 	
-	public DiseaseClassificationCriteria(Disease disease, ClassificationCriteria suspectCriteria,
-			ClassificationCriteria probableCriteria, ClassificationCriteria confirmedCriteria) {
+	public DiseaseClassificationCriteriaDto(Disease disease, ClassificationCriteriaDto suspectCriteria,
+			ClassificationCriteriaDto probableCriteria, ClassificationCriteriaDto confirmedCriteria) {
 		this.disease = disease;
 		this.suspectCriteria = suspectCriteria;
 		this.probableCriteria = probableCriteria;
@@ -40,27 +40,27 @@ public class DiseaseClassificationCriteria implements Serializable {
 		this.disease = disease;
 	}
 
-	public ClassificationCriteria getSuspectCriteria() {
+	public ClassificationCriteriaDto getSuspectCriteria() {
 		return suspectCriteria;
 	}
 
-	public void setSuspectCriteria(ClassificationCriteria suspectCriteria) {
+	public void setSuspectCriteria(ClassificationCriteriaDto suspectCriteria) {
 		this.suspectCriteria = suspectCriteria;
 	}
 
-	public ClassificationCriteria getProbableCriteria() {
+	public ClassificationCriteriaDto getProbableCriteria() {
 		return probableCriteria;
 	}
 
-	public void setProbableCriteria(ClassificationCriteria probableCriteria) {
+	public void setProbableCriteria(ClassificationCriteriaDto probableCriteria) {
 		this.probableCriteria = probableCriteria;
 	}
 
-	public ClassificationCriteria getConfirmedCriteria() {
+	public ClassificationCriteriaDto getConfirmedCriteria() {
 		return confirmedCriteria;
 	}
 
-	public void setConfirmedCriteria(ClassificationCriteria confirmedCriteria) {
+	public void setConfirmedCriteria(ClassificationCriteriaDto confirmedCriteria) {
 		this.confirmedCriteria = confirmedCriteria;
 	}
 

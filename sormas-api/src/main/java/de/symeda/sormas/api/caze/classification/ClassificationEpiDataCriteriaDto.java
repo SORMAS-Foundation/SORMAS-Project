@@ -6,19 +6,19 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
-public class ClassificationEpiDataCriteria extends ClassificationCaseCriteria {
+public class ClassificationEpiDataCriteriaDto extends ClassificationCaseCriteriaDto {
 
 	private static final long serialVersionUID = -1805242010549597591L;
 
-	public ClassificationEpiDataCriteria() {
+	public ClassificationEpiDataCriteriaDto() {
 		super();
 	}
 	
-	public ClassificationEpiDataCriteria(String propertyId) {
+	public ClassificationEpiDataCriteriaDto(String propertyId) {
 		super(propertyId, YesNoUnknown.YES);
 	}
 
-	public ClassificationEpiDataCriteria(String propertyId, Object... propertyValues) {
+	public ClassificationEpiDataCriteriaDto(String propertyId, Object... propertyValues) {
 		super(propertyId, propertyValues);
 	}
 	

@@ -13,23 +13,23 @@ import de.symeda.sormas.api.sample.SampleTestDto;
  * criteria to be applicable. This is used e.g. to make sure that certain sample test types have returned
  * a negative result in order to rule out specific diseases.
  */
-public class ClassificationNoneOfCriteria extends ClassificationCriteria implements ClassificationCollectiveCriteria {
+public class ClassificationNoneOfCriteriaDto extends ClassificationCriteriaDto implements ClassificationCollectiveCriteria {
 
 	private static final long serialVersionUID = 2199852259112272090L;
 	
-	protected List<ClassificationCriteria> classificationCriteria;
+	protected List<ClassificationCriteriaDto> classificationCriteria;
 
-	public ClassificationNoneOfCriteria() {
+	public ClassificationNoneOfCriteriaDto() {
 		
 	}
 	
-	public ClassificationNoneOfCriteria(ClassificationCriteria... criteria) {
+	public ClassificationNoneOfCriteriaDto(ClassificationCriteriaDto... criteria) {
 		this.classificationCriteria = Arrays.asList(criteria);
 	}
 
 	@Override
 	public boolean eval(CaseDataDto caze, PersonDto person, List<SampleTestDto> sampleTests) {
-		for (ClassificationCriteria classificationCriteria : classificationCriteria) {
+		for (ClassificationCriteriaDto classificationCriteria : classificationCriteria) {
 			if (classificationCriteria.eval(caze, person, sampleTests)) {
 				return false;
 			}
@@ -55,15 +55,15 @@ public class ClassificationNoneOfCriteria extends ClassificationCriteria impleme
 	}
 	
 	@Override
-	public List<ClassificationCriteria> getSubCriteria() {
+	public List<ClassificationCriteriaDto> getSubCriteria() {
 		return classificationCriteria;
 	}
 
-	public List<ClassificationCriteria> getClassificationCriteria() {
+	public List<ClassificationCriteriaDto> getClassificationCriteria() {
 		return classificationCriteria;
 	}
 
-	public void setClassificationCriteria(List<ClassificationCriteria> classificationCriteria) {
+	public void setClassificationCriteria(List<ClassificationCriteriaDto> classificationCriteria) {
 		this.classificationCriteria = classificationCriteria;
 	}
 

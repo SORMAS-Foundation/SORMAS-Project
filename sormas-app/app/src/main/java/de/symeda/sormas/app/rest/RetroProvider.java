@@ -1,13 +1,11 @@
 package de.symeda.sormas.app.rest;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.ViewStructure;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -27,18 +25,17 @@ import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationNoneOfCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationNotInStartDateRangeCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationPersonAgeCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationSampleTestCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationSampleTestPositiveResultCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteria;
+import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationNoneOfCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationNotInStartDateRangeCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationPersonAgeCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationSampleTestCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationSampleTestPositiveResultCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
@@ -97,21 +94,21 @@ public final class RetroProvider {
 
         this.context = context;
 
-        RuntimeTypeAdapterFactory<ClassificationCriteria> classificationCriteriaFactory = RuntimeTypeAdapterFactory
-                .of(ClassificationCriteria.class, "type")
-                .registerSubtype(ClassificationAllOfCriteria.class, "ClassificationAllOfCriteria")
-                .registerSubtype(ClassificationCaseCriteria.class, "ClassificationCaseCriteria")
-                .registerSubtype(ClassificationNoneOfCriteria.class, "ClassificationNoneOfCriteria")
-                .registerSubtype(ClassificationPersonAgeCriteria.class, "ClassificationPersonAgeCriteria")
-                .registerSubtype(ClassificationSampleTestPositiveResultCriteria.class, "ClassificationSampleTestPositiveResultCriteria")
-                .registerSubtype(ClassificationXOfCriteria.class, "ClassificationXOfCriteria")
-                .registerSubtype(ClassificationEpiDataCriteria.class, "ClassificationEpiDataCriteria")
-                .registerSubtype(ClassificationNotInStartDateRangeCriteria.class, "ClassificationNotInStartDateRangeCriteria")
-                .registerSubtype(ClassificationSymptomsCriteria.class, "ClassificationSymptomsCriteria")
-                .registerSubtype(ClassificationSampleTestCriteria.class, "ClassificationSampleTestCriteria")
-                .registerSubtype(ClassificationXOfCriteria.ClassificationXOfSubCriteria.class, "ClassificationXOfSubCriteria")
-                .registerSubtype(ClassificationXOfCriteria.ClassificationOneOfCompactCriteria.class, "ClassificationOneOfCompactCriteria")
-                .registerSubtype(ClassificationAllOfCriteria.ClassificationAllOfCompactCriteria.class, "ClassificationAllOfCompactCriteria");
+        RuntimeTypeAdapterFactory<ClassificationCriteriaDto> classificationCriteriaFactory = RuntimeTypeAdapterFactory
+                .of(ClassificationCriteriaDto.class, "type")
+                .registerSubtype(ClassificationAllOfCriteriaDto.class, "ClassificationAllOfCriteriaDto")
+                .registerSubtype(ClassificationCaseCriteriaDto.class, "ClassificationCaseCriteriaDto")
+                .registerSubtype(ClassificationNoneOfCriteriaDto.class, "ClassificationNoneOfCriteriaDto")
+                .registerSubtype(ClassificationPersonAgeCriteriaDto.class, "ClassificationPersonAgeCriteriaDto")
+                .registerSubtype(ClassificationSampleTestPositiveResultCriteriaDto.class, "ClassificationSampleTestPositiveResultCriteriaDto")
+                .registerSubtype(ClassificationXOfCriteriaDto.class, "ClassificationXOfCriteriaDto")
+                .registerSubtype(ClassificationEpiDataCriteriaDto.class, "ClassificationEpiDataCriteriaDto")
+                .registerSubtype(ClassificationNotInStartDateRangeCriteriaDto.class, "ClassificationNotInStartDateRangeCriteriaDto")
+                .registerSubtype(ClassificationSymptomsCriteriaDto.class, "ClassificationSymptomsCriteriaDto")
+                .registerSubtype(ClassificationSampleTestCriteriaDto.class, "ClassificationSampleTestCriteriaDto")
+                .registerSubtype(ClassificationXOfCriteriaDto.ClassificationXOfSubCriteriaDto.class, "ClassificationXOfSubCriteriaDto")
+                .registerSubtype(ClassificationXOfCriteriaDto.ClassificationOneOfCompactCriteriaDto.class, "ClassificationOneOfCompactCriteriaDto")
+                .registerSubtype(ClassificationAllOfCriteriaDto.ClassificationAllOfCompactCriteriaDto.class, "ClassificationAllOfCompactCriteriaDto");
 
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {

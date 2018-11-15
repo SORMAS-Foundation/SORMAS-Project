@@ -14,14 +14,14 @@ public interface CaseClassificationFacade {
 	
 	CaseClassification getClassification(CaseDataDto caze, List<SampleTestDto> sampleTests);
 	
-	ClassificationCriteria getSuspectCriteria(Disease disease);
+	ClassificationCriteriaDto getSuspectCriteria(Disease disease);
 
-	ClassificationCriteria getProbableCriteria(Disease disease);
+	ClassificationCriteriaDto getProbableCriteria(Disease disease);
 	
-	ClassificationCriteria getConfirmedCriteria(Disease disease);
+	ClassificationCriteriaDto getConfirmedCriteria(Disease disease);
 	
-	List<DiseaseClassificationCriteria> getAllClassificationCriteria();
+	List<DiseaseClassificationCriteriaDto> getAllClassificationCriteria();
 	
-	DiseaseClassificationCriteria getClassificationCriteriaForDisease(Disease disease);
+	DiseaseClassificationCriteriaDto getClassificationCriteriaForDisease(Disease disease);
 	
 }

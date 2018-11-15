@@ -11,17 +11,17 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestType;
 
-public class ClassificationSampleTestCriteria extends ClassificationCaseCriteria {
+public class ClassificationSampleTestCriteriaDto extends ClassificationCaseCriteriaDto {
 
 	private static final long serialVersionUID = 856637988490366395L;
 
 	private List<SampleTestType> testTypes;
 
-	public ClassificationSampleTestCriteria() {
+	public ClassificationSampleTestCriteriaDto() {
 		super();
 	}
 	
-	public ClassificationSampleTestCriteria(String propertyId, List<SampleTestType> testTypes, Object... propertyValues) {
+	public ClassificationSampleTestCriteriaDto(String propertyId, List<SampleTestType> testTypes, Object... propertyValues) {
 		super(propertyId, propertyValues);
 		this.testTypes = testTypes;
 	}

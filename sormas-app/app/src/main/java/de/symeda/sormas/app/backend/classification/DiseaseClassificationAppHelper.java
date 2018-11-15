@@ -23,26 +23,26 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
-import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteria;
+import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
 public class DiseaseClassificationAppHelper {
 
-    public static void saveClassificationToDatabase(DiseaseClassificationCriteria classificationCriteria) {
-        DiseaseClassification classification = new DiseaseClassification();
+    public static void saveClassificationToDatabase(DiseaseClassificationCriteriaDto classificationCriteriaDto) {
+        DiseaseClassificationCriteria classificationCriteria = new DiseaseClassificationCriteria();
 
-        classification.setDisease(classificationCriteria.getDisease());
-        classification.setChangeDate(classificationCriteria.getChangeDate());
-        classification.setCreationDate(new Date());
-        classification.setUuid(DataHelper.createUuid());
-        classification.setSuspectCriteria(ClassificationHtmlRenderer.createSuspectHtmlString(classificationCriteria));
-        classification.setProbableCriteria(ClassificationHtmlRenderer.createProbableHtmlString(classificationCriteria));
-        classification.setConfirmedCriteria(ClassificationHtmlRenderer.createConfirmedHtmlString(classificationCriteria));
+        classificationCriteria.setDisease(classificationCriteriaDto.getDisease());
+        classificationCriteria.setChangeDate(classificationCriteriaDto.getChangeDate());
+        classificationCriteria.setCreationDate(new Date());
+        classificationCriteria.setUuid(DataHelper.createUuid());
+        classificationCriteria.setSuspectCriteria(ClassificationHtmlRenderer.createSuspectHtmlString(classificationCriteriaDto));
+        classificationCriteria.setProbableCriteria(ClassificationHtmlRenderer.createProbableHtmlString(classificationCriteriaDto));
+        classificationCriteria.setConfirmedCriteria(ClassificationHtmlRenderer.createConfirmedHtmlString(classificationCriteriaDto));
 
         try {
-            DatabaseHelper.getDiseaseClassificationDao().saveAndSnapshot(classification);
+            DatabaseHelper.getDiseaseClassificationCriteriaDao().saveAndSnapshot(classificationCriteria);
         } catch (DaoException e) {
             Log.e(DiseaseClassificationAppHelper.class.getName(), "Could not save disease classification to database");
         }
@@ -99,11 +99,11 @@ public class DiseaseClassificationAppHelper {
                 "  display: inline-block;\r\n" +
                 "}</style></header><body>");
 
-        DiseaseClassification diseaseClassification = DatabaseHelper.getDiseaseClassificationDao().getByDisease(disease);
-        if (diseaseClassification.hasAnyCriteria()) {
-            html.append(diseaseClassification.getSuspectCriteria());
-            html.append(diseaseClassification.getProbableCriteria());
-            html.append(diseaseClassification.getConfirmedCriteria());
+        DiseaseClassificationCriteria diseaseClassificationCriteria = DatabaseHelper.getDiseaseClassificationCriteriaDao().getByDisease(disease);
+        if (diseaseClassificationCriteria.hasAnyCriteria()) {
+            html.append(diseaseClassificationCriteria.getSuspectCriteria());
+            html.append(diseaseClassificationCriteria.getProbableCriteria());
+            html.append(diseaseClassificationCriteria.getConfirmedCriteria());
         }
 
         html.append("</body></html>");

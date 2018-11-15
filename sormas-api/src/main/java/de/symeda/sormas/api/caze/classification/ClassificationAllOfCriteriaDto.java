@@ -8,24 +8,24 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 
-public class ClassificationAllOfCriteria extends ClassificationCriteria implements ClassificationCollectiveCriteria {
+public class ClassificationAllOfCriteriaDto extends ClassificationCriteriaDto implements ClassificationCollectiveCriteria {
 
 	private static final long serialVersionUID = -6427002056924376593L;
 	
-	protected List<ClassificationCriteria> subCriteria;
+	protected List<ClassificationCriteriaDto> subCriteria;
 
-	public ClassificationAllOfCriteria() {
+	public ClassificationAllOfCriteriaDto() {
 		
 	}
 	
-	public ClassificationAllOfCriteria(ClassificationCriteria... criteria) {
+	public ClassificationAllOfCriteriaDto(ClassificationCriteriaDto... criteria) {
 		this.subCriteria = Arrays.asList(criteria);
 	}
 
 	@Override
 	public boolean eval(CaseDataDto caze, PersonDto person, List<SampleTestDto> sampleTests) {
-		for (ClassificationCriteria classificationCriteria : subCriteria) {
-			if (!classificationCriteria.eval(caze, person, sampleTests))
+		for (ClassificationCriteriaDto classificationCriteriaDto : subCriteria) {
+			if (!classificationCriteriaDto.eval(caze, person, sampleTests))
 				return false;
 		}
 		
@@ -43,7 +43,7 @@ public class ClassificationAllOfCriteria extends ClassificationCriteria implemen
 	}
 	
 	@Override
-	public List<ClassificationCriteria> getSubCriteria() {
+	public List<ClassificationCriteriaDto> getSubCriteria() {
 		return subCriteria;
 	}
 	
@@ -51,11 +51,11 @@ public class ClassificationAllOfCriteria extends ClassificationCriteria implemen
 	 * Has a different buildDescription method to display all sub criteria in one line, with the sub criteria separated
 	 * by an "AND". Functionality is identical to ClassificationAllOfCriteria.
 	 */
-	public static class ClassificationAllOfCompactCriteria extends ClassificationAllOfCriteria implements ClassificationCompactCriteria {
+	public static class ClassificationAllOfCompactCriteriaDto extends ClassificationAllOfCriteriaDto implements ClassificationCompactCriteria {
 		
 		private static final long serialVersionUID = 3761118522728690578L;
 
-		public ClassificationAllOfCompactCriteria(ClassificationCriteria... criteria) {
+		public ClassificationAllOfCompactCriteriaDto(ClassificationCriteriaDto... criteria) {
 			super(criteria);
 		}
 
@@ -79,7 +79,7 @@ public class ClassificationAllOfCriteria extends ClassificationCriteria implemen
 	
 	}
 
-	public void setSubCriteria(List<ClassificationCriteria> subCriteria) {
+	public void setSubCriteria(List<ClassificationCriteriaDto> subCriteria) {
 		this.subCriteria = subCriteria;
 	}
 	

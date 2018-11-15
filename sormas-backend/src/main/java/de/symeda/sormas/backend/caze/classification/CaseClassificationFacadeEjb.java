@@ -16,21 +16,21 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
-import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteria.ClassificationAllOfCompactCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationNoneOfCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationNotInStartDateRangeCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationPersonAgeCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationSampleTestCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationSampleTestPositiveResultCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteria.ClassificationOneOfCompactCriteria;
-import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteria.ClassificationXOfSubCriteria;
-import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteria;
+import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto.ClassificationAllOfCompactCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationNoneOfCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationNotInStartDateRangeCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationPersonAgeCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationSampleTestCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationSampleTestPositiveResultCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto.ClassificationOneOfCompactCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto.ClassificationXOfSubCriteriaDto;
+import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
@@ -51,9 +51,9 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	private PersonFacadeEjbLocal personFacade;
 	
 	/** local cache */
-	private Map<Disease, ClassificationCriteria> suspectCriteria = new HashMap<>();
-	private Map<Disease, ClassificationCriteria> probableCriteria = new HashMap<>();
-	private Map<Disease, ClassificationCriteria> confirmedCriteria = new HashMap<>();
+	private Map<Disease, ClassificationCriteriaDto> suspectCriteria = new HashMap<>();
+	private Map<Disease, ClassificationCriteriaDto> probableCriteria = new HashMap<>();
+	private Map<Disease, ClassificationCriteriaDto> confirmedCriteria = new HashMap<>();
 
 	@Override
 	public CaseClassification getClassification(CaseDataDto caze, List<SampleTestDto> sampleTests) {
@@ -76,7 +76,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	}
 	
 	@Override
-	public ClassificationCriteria getSuspectCriteria(Disease disease) {
+	public ClassificationCriteriaDto getSuspectCriteria(Disease disease) {
 		if (suspectCriteria.isEmpty()) {
 			buildCriteria();
 		}
@@ -89,7 +89,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	}
 
 	@Override
-	public ClassificationCriteria getProbableCriteria(Disease disease) {
+	public ClassificationCriteriaDto getProbableCriteria(Disease disease) {
 		if (suspectCriteria.isEmpty()) {
 			buildCriteria();
 		}
@@ -102,7 +102,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	}
 
 	@Override
-	public ClassificationCriteria getConfirmedCriteria(Disease disease) {
+	public ClassificationCriteriaDto getConfirmedCriteria(Disease disease) {
 		if (suspectCriteria.isEmpty()) {
 			buildCriteria();
 		}
@@ -115,14 +115,14 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	}
 	
 	@Override
-	public List<DiseaseClassificationCriteria> getAllClassificationCriteria() {
+	public List<DiseaseClassificationCriteriaDto> getAllClassificationCriteria() {
 		if (suspectCriteria.isEmpty()) {
 			buildCriteria();
 		}
 		
-		List<DiseaseClassificationCriteria> criteria = new ArrayList<>();
+		List<DiseaseClassificationCriteriaDto> criteria = new ArrayList<>();
 		for (Disease disease : Disease.values()) {
-			criteria.add(new DiseaseClassificationCriteria(
+			criteria.add(new DiseaseClassificationCriteriaDto(
 					disease,
 					suspectCriteria.get(disease),
 					probableCriteria.get(disease),
@@ -133,12 +133,12 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	}
 	
 	@Override
-	public DiseaseClassificationCriteria getClassificationCriteriaForDisease(Disease disease) {
+	public DiseaseClassificationCriteriaDto getClassificationCriteriaForDisease(Disease disease) {
 		if (suspectCriteria.isEmpty()) {
 			buildCriteria();
 		}
 		
-		return new DiseaseClassificationCriteria(
+		return new DiseaseClassificationCriteriaDto(
 				disease, 
 				suspectCriteria.get(disease), 
 				probableCriteria.get(disease), 
@@ -146,7 +146,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	}
 
 	private void buildCriteria() {
-		ClassificationCriteria suspect, probable, confirmed;
+		ClassificationCriteriaDto suspect, probable, confirmed;
 
 		// EVD
 		suspect = allOf(
@@ -362,8 +362,8 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		addCriteria(Disease.PLAGUE, suspect, probable, confirmed);
 	}
 
-	private void addCriteria(Disease disease, ClassificationCriteria suspect, ClassificationCriteria probable,
-			ClassificationCriteria confirmed) {
+	private void addCriteria(Disease disease, ClassificationCriteriaDto suspect, ClassificationCriteriaDto probable,
+			ClassificationCriteriaDto confirmed) {
 		if (suspect != null) {
 			suspectCriteria.put(disease, suspect);
 		}
@@ -375,56 +375,56 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		}
 	}
 
-	private static ClassificationAllOfCriteria allOf(ClassificationCriteria... criteria) {
-		return new ClassificationAllOfCriteria(criteria);
+	private static ClassificationAllOfCriteriaDto allOf(ClassificationCriteriaDto... criteria) {
+		return new ClassificationAllOfCriteriaDto(criteria);
 	}
 	
-	private static ClassificationAllOfCompactCriteria allOfCompact(ClassificationCriteria... criteria) {
-		return new ClassificationAllOfCompactCriteria(criteria);
+	private static ClassificationAllOfCompactCriteriaDto allOfCompact(ClassificationCriteriaDto... criteria) {
+		return new ClassificationAllOfCompactCriteriaDto(criteria);
 	}
 	
-	private static ClassificationXOfCriteria xOf(int requiredAmount, ClassificationCriteria... criteria) {
-		return new ClassificationXOfCriteria(requiredAmount, criteria);
+	private static ClassificationXOfCriteriaDto xOf(int requiredAmount, ClassificationCriteriaDto... criteria) {
+		return new ClassificationXOfCriteriaDto(requiredAmount, criteria);
 	}
 	
-	private static ClassificationXOfSubCriteria xOfSub(int requiredAmount, ClassificationCriteria... criteria) {
-		return new ClassificationXOfSubCriteria(requiredAmount, criteria);
+	private static ClassificationXOfSubCriteriaDto xOfSub(int requiredAmount, ClassificationCriteriaDto... criteria) {
+		return new ClassificationXOfSubCriteriaDto(requiredAmount, criteria);
 	}
 	
-	private static ClassificationOneOfCompactCriteria oneOfCompact(ClassificationCriteria... criteria) {
-		return new ClassificationOneOfCompactCriteria(criteria);
+	private static ClassificationOneOfCompactCriteriaDto oneOfCompact(ClassificationCriteriaDto... criteria) {
+		return new ClassificationOneOfCompactCriteriaDto(criteria);
 	}
 
-	private static ClassificationNoneOfCriteria noneOf(ClassificationCriteria... criteria) {
-		return new ClassificationNoneOfCriteria(criteria);
+	private static ClassificationNoneOfCriteriaDto noneOf(ClassificationCriteriaDto... criteria) {
+		return new ClassificationNoneOfCriteriaDto(criteria);
 	}
 	
-	private static ClassificationCaseCriteria caseData(String propertyId, Object... propertyValues) {
-		return new ClassificationCaseCriteria(propertyId, propertyValues);
+	private static ClassificationCaseCriteriaDto caseData(String propertyId, Object... propertyValues) {
+		return new ClassificationCaseCriteriaDto(propertyId, propertyValues);
 	}
 
-	private static ClassificationSymptomsCriteria symptom(String propertyId) {
-		return new ClassificationSymptomsCriteria(propertyId);
+	private static ClassificationSymptomsCriteriaDto symptom(String propertyId) {
+		return new ClassificationSymptomsCriteriaDto(propertyId);
 	}
 
-	private static ClassificationEpiDataCriteria epiData(String propertyId) {
-		return new ClassificationEpiDataCriteria(propertyId);
+	private static ClassificationEpiDataCriteriaDto epiData(String propertyId) {
+		return new ClassificationEpiDataCriteriaDto(propertyId);
 	}
 
-	private static ClassificationSampleTestCriteria sampleTest(String propertyId, List<SampleTestType> testTypes, Object... propertyValues) {
-		return new ClassificationSampleTestCriteria(propertyId, testTypes, propertyValues);
+	private static ClassificationSampleTestCriteriaDto sampleTest(String propertyId, List<SampleTestType> testTypes, Object... propertyValues) {
+		return new ClassificationSampleTestCriteriaDto(propertyId, testTypes, propertyValues);
 	}
 
-	private static ClassificationSampleTestPositiveResultCriteria positiveTestResult(SampleTestType... sampleTestTypes) {
-		return new ClassificationSampleTestPositiveResultCriteria(sampleTestTypes);
+	private static ClassificationSampleTestPositiveResultCriteriaDto positiveTestResult(SampleTestType... sampleTestTypes) {
+		return new ClassificationSampleTestPositiveResultCriteriaDto(sampleTestTypes);
 	}
 
-	private static ClassificationNotInStartDateRangeCriteria notInStartDateRange(String propertyId, int daysBeforeStartDate) {
-		return new ClassificationNotInStartDateRangeCriteria(propertyId, daysBeforeStartDate);
+	private static ClassificationNotInStartDateRangeCriteriaDto notInStartDateRange(String propertyId, int daysBeforeStartDate) {
+		return new ClassificationNotInStartDateRangeCriteriaDto(propertyId, daysBeforeStartDate);
 	}
 
-	private static ClassificationPersonAgeCriteria personAge(Integer lowerThreshold, Integer upperThreshold, ApproximateAgeType ageType) {
-		return new ClassificationPersonAgeCriteria(lowerThreshold, upperThreshold, ageType);
+	private static ClassificationPersonAgeCriteriaDto personAge(Integer lowerThreshold, Integer upperThreshold, ApproximateAgeType ageType) {
+		return new ClassificationPersonAgeCriteriaDto(lowerThreshold, upperThreshold, ageType);
 	}
 	
 	@LocalBean

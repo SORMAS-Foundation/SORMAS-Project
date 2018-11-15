@@ -6,19 +6,19 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 
-public class ClassificationSymptomsCriteria extends ClassificationCaseCriteria {
+public class ClassificationSymptomsCriteriaDto extends ClassificationCaseCriteriaDto {
 
 	private static final long serialVersionUID = 6880120976447372375L;
 
-	public ClassificationSymptomsCriteria() {
+	public ClassificationSymptomsCriteriaDto() {
 		super();
 	}
 	
-	public ClassificationSymptomsCriteria(String propertyId) {
+	public ClassificationSymptomsCriteriaDto(String propertyId) {
 		super(propertyId, SymptomState.YES);
 	}
 
-	public ClassificationSymptomsCriteria(String propertyId, Object... propertyValues) {
+	public ClassificationSymptomsCriteriaDto(String propertyId, Object... propertyValues) {
 		super(propertyId, propertyValues);
 	}
 

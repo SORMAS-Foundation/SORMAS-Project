@@ -12,18 +12,18 @@ import de.symeda.sormas.api.sample.SampleTestDto;
  * A criteria determining that a specific number of sub criteria need to be true in order for the whole criteria
  * to be applicable. The exact number is specified in the constructor.
  */
-public class ClassificationXOfCriteria extends ClassificationCriteria implements ClassificationCollectiveCriteria {
+public class ClassificationXOfCriteriaDto extends ClassificationCriteriaDto implements ClassificationCollectiveCriteria {
 
 	private static final long serialVersionUID = 1139711267145230378L;
 
 	private int requiredAmount;
-	protected List<ClassificationCriteria> classificationCriteria;
+	protected List<ClassificationCriteriaDto> classificationCriteria;
 
-	public ClassificationXOfCriteria() {
+	public ClassificationXOfCriteriaDto() {
 		
 	}
 	
-	public ClassificationXOfCriteria(int requiredAmount, ClassificationCriteria... criteria) {
+	public ClassificationXOfCriteriaDto(int requiredAmount, ClassificationCriteriaDto... criteria) {
 		this.requiredAmount = requiredAmount;
 		this.classificationCriteria = Arrays.asList(criteria);
 	}
@@ -31,7 +31,7 @@ public class ClassificationXOfCriteria extends ClassificationCriteria implements
 	@Override
 	public boolean eval(CaseDataDto caze, PersonDto person, List<SampleTestDto> sampleTests) {
 		int amount = 0;
-		for (ClassificationCriteria classificationCriteria : classificationCriteria) {
+		for (ClassificationCriteriaDto classificationCriteria : classificationCriteria) {
 			if (classificationCriteria.eval(caze, person, sampleTests)) {
 				amount++;
 				if (amount >= requiredAmount) {
@@ -54,7 +54,7 @@ public class ClassificationXOfCriteria extends ClassificationCriteria implements
 	}
 
 	@Override
-	public List<ClassificationCriteria> getSubCriteria() {
+	public List<ClassificationCriteriaDto> getSubCriteria() {
 		return classificationCriteria;
 	}
 
@@ -97,11 +97,11 @@ public class ClassificationXOfCriteria extends ClassificationCriteria implements
 		this.requiredAmount = requiredAmount;
 	}
 
-	public List<ClassificationCriteria> getClassificationCriteria() {
+	public List<ClassificationCriteriaDto> getClassificationCriteria() {
 		return classificationCriteria;
 	}
 
-	public void setClassificationCriteria(List<ClassificationCriteria> classificationCriteria) {
+	public void setClassificationCriteria(List<ClassificationCriteriaDto> classificationCriteria) {
 		this.classificationCriteria = classificationCriteria;
 	}
 
@@ -109,15 +109,15 @@ public class ClassificationXOfCriteria extends ClassificationCriteria implements
 	 * Has a different buildDescription method to display all sub criteria with bullet points.
 	 * Functionality is identical to ClassificationXOfCriteria.
 	 */
-	public static class ClassificationXOfSubCriteria extends ClassificationXOfCriteria {
+	public static class ClassificationXOfSubCriteriaDto extends ClassificationXOfCriteriaDto {
 
 		private static final long serialVersionUID = 8374870595895910414L;
 
-		public ClassificationXOfSubCriteria() {
+		public ClassificationXOfSubCriteriaDto() {
 			super();
 		}
 		
-		public ClassificationXOfSubCriteria(int requiredAmount, ClassificationCriteria... criteria) {
+		public ClassificationXOfSubCriteriaDto(int requiredAmount, ClassificationCriteriaDto... criteria) {
 			super(requiredAmount, criteria);
 		}
 
@@ -139,15 +139,15 @@ public class ClassificationXOfCriteria extends ClassificationCriteria implements
 	 * Has a different buildDescription method to display all sub criteria in one line, separated by commas and
 	 * an "OR" for the last criteria. Functionality is identical to ClassificationXOfCriteria.
 	 */
-	public static class ClassificationOneOfCompactCriteria extends ClassificationXOfCriteria implements ClassificationCompactCriteria {
+	public static class ClassificationOneOfCompactCriteriaDto extends ClassificationXOfCriteriaDto implements ClassificationCompactCriteria {
 
 		private static final long serialVersionUID = 8374870595895910414L;
 
-		public ClassificationOneOfCompactCriteria() {
+		public ClassificationOneOfCompactCriteriaDto() {
 			super();
 		}
 		
-		public ClassificationOneOfCompactCriteria(ClassificationCriteria... criteria) {
+		public ClassificationOneOfCompactCriteriaDto(ClassificationCriteriaDto... criteria) {
 			super(1, criteria);
 		}
 

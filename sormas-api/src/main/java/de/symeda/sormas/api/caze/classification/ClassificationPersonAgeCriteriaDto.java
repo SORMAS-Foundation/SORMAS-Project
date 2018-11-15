@@ -8,7 +8,7 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 
-public class ClassificationPersonAgeCriteria extends ClassificationCriteria {
+public class ClassificationPersonAgeCriteriaDto extends ClassificationCriteriaDto {
 	
 	private static final long serialVersionUID = 7306888279187764644L;
 	
@@ -16,11 +16,11 @@ public class ClassificationPersonAgeCriteria extends ClassificationCriteria {
 	protected Integer upperThreshold;
 	protected ApproximateAgeType ageType;
 	
-	public ClassificationPersonAgeCriteria() {
+	public ClassificationPersonAgeCriteriaDto() {
 		
 	}
 	
-	public ClassificationPersonAgeCriteria(Integer lowerThreshold, Integer upperThreshold, ApproximateAgeType ageType) {
+	public ClassificationPersonAgeCriteriaDto(Integer lowerThreshold, Integer upperThreshold, ApproximateAgeType ageType) {
 		this.lowerThreshold = lowerThreshold;
 		this.upperThreshold = upperThreshold;
 		this.ageType = ageType;

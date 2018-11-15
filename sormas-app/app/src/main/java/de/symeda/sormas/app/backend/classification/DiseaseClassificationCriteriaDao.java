@@ -29,19 +29,19 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
-public class DiseaseClassificationDao extends AbstractAdoDao<DiseaseClassification> {
+public class DiseaseClassificationCriteriaDao extends AbstractAdoDao<DiseaseClassificationCriteria> {
 
-    public DiseaseClassificationDao(Dao<DiseaseClassification, Long> innerDao) throws SQLException {
+    public DiseaseClassificationCriteriaDao(Dao<DiseaseClassificationCriteria, Long> innerDao) throws SQLException {
         super(innerDao);
     }
 
-    public DiseaseClassification getByDisease(Disease disease) {
+    public DiseaseClassificationCriteria getByDisease(Disease disease) {
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
-            where.eq(DiseaseClassification.DISEASE, disease);
+            where.eq(DiseaseClassificationCriteria.DISEASE, disease);
             where.and().eq(AbstractDomainObject.SNAPSHOT, false).query();
-            return (DiseaseClassification) builder.queryForFirst();
+            return (DiseaseClassificationCriteria) builder.queryForFirst();
         } catch (SQLException | IllegalArgumentException e) {
             Log.e(getTableName(), "Could not perform getByDisease");
             throw new RuntimeException(e);
@@ -49,13 +49,13 @@ public class DiseaseClassificationDao extends AbstractAdoDao<DiseaseClassificati
     }
 
     @Override
-    protected Class<DiseaseClassification> getAdoClass() {
-        return DiseaseClassification.class;
+    protected Class<DiseaseClassificationCriteria> getAdoClass() {
+        return DiseaseClassificationCriteria.class;
     }
 
     @Override
     public String getTableName() {
-        return DiseaseClassification.TABLE_NAME;
+        return DiseaseClassificationCriteria.TABLE_NAME;
     }
 
 }

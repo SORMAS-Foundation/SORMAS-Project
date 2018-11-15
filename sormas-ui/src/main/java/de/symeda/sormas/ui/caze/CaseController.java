@@ -34,7 +34,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
-import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteria;
+import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -569,7 +569,7 @@ public class CaseController {
 		VerticalLayout classificationRulesLayout = new VerticalLayout();
 		classificationRulesLayout.setMargin(true);
 
-		DiseaseClassificationCriteria diseaseCriteria = FacadeProvider.getCaseClassificationFacade().getClassificationCriteriaForDisease(caze.getDisease());
+		DiseaseClassificationCriteriaDto diseaseCriteria = FacadeProvider.getCaseClassificationFacade().getClassificationCriteriaForDisease(caze.getDisease());
 
 		Label suspectContent = new Label();
 		suspectContent.setContentMode(ContentMode.HTML);

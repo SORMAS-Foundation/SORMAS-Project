@@ -10,17 +10,17 @@ import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.SampleTestType;
 
-public class ClassificationSampleTestPositiveResultCriteria extends ClassificationCriteria {
+public class ClassificationSampleTestPositiveResultCriteriaDto extends ClassificationCriteriaDto {
 
 	private static final long serialVersionUID = 3811127784970509183L;
 	
 	protected List<SampleTestType> sampleTestTypes;
 
-	public ClassificationSampleTestPositiveResultCriteria() {
+	public ClassificationSampleTestPositiveResultCriteriaDto() {
 		
 	}
 	
-	public ClassificationSampleTestPositiveResultCriteria(SampleTestType... sampleTestTypes) {
+	public ClassificationSampleTestPositiveResultCriteriaDto(SampleTestType... sampleTestTypes) {
 		this.sampleTestTypes = Arrays.asList(sampleTestTypes);
 	}
 

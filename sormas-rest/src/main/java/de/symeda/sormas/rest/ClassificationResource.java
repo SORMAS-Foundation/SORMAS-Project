@@ -11,7 +11,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteria;
+import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 
 @Path("/classification")
 @Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
@@ -20,7 +20,7 @@ public class ClassificationResource {
 
 	@GET
 	@Path("/all")
-	public List<DiseaseClassificationCriteria> getAllClassificationCriteria(@Context SecurityContext sc) {
+	public List<DiseaseClassificationCriteriaDto> getAllClassificationCriteria(@Context SecurityContext sc) {
 		return FacadeProvider.getCaseClassificationFacade().getAllClassificationCriteria();
 	}
 	

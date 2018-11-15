@@ -13,13 +13,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteria;
+import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelper;
-import de.symeda.sormas.app.backend.classification.DiseaseClassificationDao;
+import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteriaDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -209,7 +209,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             weeklyReportEntryDtoHelper.pullEntities(true);
 
         // Synchronize disease classification if the table is empty
-        if (DatabaseHelper.getDiseaseClassificationDao().isEmpty()) {
+        if (DatabaseHelper.getDiseaseClassificationCriteriaDao().isEmpty()) {
             pullDiseaseClassification();
         }
     }
@@ -398,10 +398,10 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
     }
 
     private void pullDiseaseClassification() throws DaoException, ServerConnectionException, ServerCommunicationException {
-        Call<List<DiseaseClassificationCriteria>> classificationCriteriaCall = RetroProvider.getClassificationFacade().pullAllClassificationCriteria();
+        Call<List<DiseaseClassificationCriteriaDto>> classificationCriteriaCall = RetroProvider.getClassificationFacade().pullAllClassificationCriteria();
 
         if (classificationCriteriaCall != null) {
-            Response<List<DiseaseClassificationCriteria>> response;
+            Response<List<DiseaseClassificationCriteriaDto>> response;
             try {
                 response = classificationCriteriaCall.execute();
             } catch (IOException e) {
@@ -412,12 +412,12 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                 RetroProvider.throwException(response);
             }
 
-            DiseaseClassificationDao dao = DatabaseHelper.getDiseaseClassificationDao();
-            final List<DiseaseClassificationCriteria> result = response.body();
+            DiseaseClassificationCriteriaDao dao = DatabaseHelper.getDiseaseClassificationCriteriaDao();
+            final List<DiseaseClassificationCriteriaDto> result = response.body();
             if (result != null && result.size() > 0) {
                 dao.callBatchTasks(new Callable<Void>() {
                     public Void call() throws Exception {
-                        for (DiseaseClassificationCriteria criteria : result) {
+                        for (DiseaseClassificationCriteriaDto criteria : result) {
                             DiseaseClassificationAppHelper.saveClassificationToDatabase(criteria);
                         }
                         return null;

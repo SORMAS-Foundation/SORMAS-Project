@@ -19,17 +19,17 @@ import de.symeda.sormas.api.utils.DateHelper;
  * of this date types is available. The number of days before the case start date will usually be the
  * incubation period of the respective disease.
  */
-public class ClassificationNotInStartDateRangeCriteria extends ClassificationCaseCriteria {
+public class ClassificationNotInStartDateRangeCriteriaDto extends ClassificationCaseCriteriaDto {
 
 	private static final long serialVersionUID = -8817472226784147694L;
 	
 	private int daysBeforeStartDate;
 	
-	public ClassificationNotInStartDateRangeCriteria() {
+	public ClassificationNotInStartDateRangeCriteriaDto() {
 		super();
 	}
 	
-	public ClassificationNotInStartDateRangeCriteria(String propertyId, int daysBeforeStartDate) {
+	public ClassificationNotInStartDateRangeCriteriaDto(String propertyId, int daysBeforeStartDate) {
 		super(propertyId);
 		this.daysBeforeStartDate = daysBeforeStartDate;
 	}

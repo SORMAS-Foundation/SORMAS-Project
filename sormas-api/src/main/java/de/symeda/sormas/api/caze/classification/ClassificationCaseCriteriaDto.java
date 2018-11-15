@@ -6,9 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.I18nProperties;
@@ -17,25 +14,24 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
-@JsonTypeInfo(use=Id.NAME, include=As.WRAPPER_OBJECT)
 @JsonSubTypes({
-	@JsonSubTypes.Type(value = ClassificationEpiDataCriteria.class, name = "ClassificationEpiDataCriteria"),
-	@JsonSubTypes.Type(value = ClassificationNotInStartDateRangeCriteria.class, name = "ClassificationNotInStartDateRangeCriteria"),
-	@JsonSubTypes.Type(value = ClassificationSampleTestCriteria.class, name = "ClassificationSampleTestCriteria"),
-	@JsonSubTypes.Type(value = ClassificationSymptomsCriteria.class, name = "ClassificationSymptomsCriteria"),
+	@JsonSubTypes.Type(value = ClassificationEpiDataCriteriaDto.class, name = "ClassificationEpiDataCriteriaDto"),
+	@JsonSubTypes.Type(value = ClassificationNotInStartDateRangeCriteriaDto.class, name = "ClassificationNotInStartDateRangeCriteriaDto"),
+	@JsonSubTypes.Type(value = ClassificationSampleTestCriteriaDto.class, name = "ClassificationSampleTestCriteriaDto"),
+	@JsonSubTypes.Type(value = ClassificationSymptomsCriteriaDto.class, name = "ClassificationSymptomsCriteriaDto"),
 })
-public class ClassificationCaseCriteria extends ClassificationCriteria {
+public class ClassificationCaseCriteriaDto extends ClassificationCriteriaDto {
 
 	private static final long serialVersionUID = 2640725590302569043L;
 
 	protected String propertyId;
 	protected List<Object> propertyValues;
 
-	public ClassificationCaseCriteria() {
+	public ClassificationCaseCriteriaDto() {
 		
 	}
 	
-	public ClassificationCaseCriteria(String propertyId, Object... propertyValues) {
+	public ClassificationCaseCriteriaDto(String propertyId, Object... propertyValues) {
 		this.propertyId = propertyId;
 		this.propertyValues = Arrays.asList(propertyValues);
 	}

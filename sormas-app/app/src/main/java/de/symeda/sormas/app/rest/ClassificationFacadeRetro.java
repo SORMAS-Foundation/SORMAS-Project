@@ -19,13 +19,13 @@ package de.symeda.sormas.app.rest;
 
 import java.util.List;
 
-import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteria;
+import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import retrofit2.Call;
 import retrofit2.http.GET;
 
 public interface ClassificationFacadeRetro {
 
     @GET("classification/all")
-    Call<List<DiseaseClassificationCriteria>> pullAllClassificationCriteria();
+    Call<List<DiseaseClassificationCriteriaDto>> pullAllClassificationCriteria();
 
 }

@@ -34,13 +34,9 @@
 
 package de.symeda.sormas.app.backend.classification;
 
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -48,28 +44,39 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
-@Entity(name = DiseaseClassification.TABLE_NAME)
-@DatabaseTable(tableName = DiseaseClassification.TABLE_NAME)
-public class DiseaseClassification extends AbstractDomainObject {
+@Entity(name = DiseaseClassificationCriteria.TABLE_NAME)
+@DatabaseTable(tableName = DiseaseClassificationCriteria.TABLE_NAME)
+public class DiseaseClassificationCriteria extends AbstractDomainObject {
 
-    public static final String TABLE_NAME = "diseaseclassification";
-    public static final String I18N_PREFIX = "DiseaseClassification";
+    public static final String TABLE_NAME = "diseaseClassificationCriteria";
+    public static final String I18N_PREFIX = "DiseaseClassificationCriteria";
 
     public static final String DISEASE = "disease";
 
     @Enumerated(EnumType.STRING)
     private Disease disease;
 
-    @Column(length = 2147483647)
+    /**
+     * Contains HTML that can be used to build a visual representation of the
+     * suspect criteria used to classify a case with this disease.
+     */
+    @Column
     private String suspectCriteria;
 
-    @Column(length = 2147483647)
+    /**
+     * Contains HTML that can be used to build a visual representation of the
+     * probable criteria used to classify a case with this disease.
+     */
+    @Column
     private String probableCriteria;
 
-    @Column(length = 2147483647)
+    /**
+     * Contains HTML that can be used to build a visual representation of the
+     * confirmed criteria used to classify a case with this disease.
+     */
+    @Column
     private String confirmedCriteria;
 
     public Disease getDisease() {
