@@ -289,7 +289,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		for (ContactExportDto exportDto : resultList) {
 			// TODO: Speed up this code, e.g. by persisting address as a String in the database
-			exportDto.setAddress(locationService.getById(personService.getAddressIdByPersonId(exportDto.getPersonId())).toString());
+			exportDto.setAddress(personService.getAddressByPersonId(exportDto.getPersonId()).toString());
 			exportDto.setNumberOfVisits(visitService.getVisitCountByContactId(exportDto.getId(), exportDto.getPersonId(), 
 					exportDto.getLastContactDate(), exportDto.getReportDate(), exportDto.getFollowUpUntil(), exportDto.getInternalDisease()));
 			Visit lastCooperativeVisit = visitService.getLastVisitByContactId(exportDto.getId(), exportDto.getPersonId(), 

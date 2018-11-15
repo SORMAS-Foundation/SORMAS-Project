@@ -221,10 +221,14 @@ public class SampleService extends AbstractAdoService<Sample> {
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Date> getSampleDatesForCase(long caseId) {
-		return em.createNativeQuery("SELECT " + Sample.SAMPLE_DATE_TIME + " FROM " + Sample.TABLE_NAME + " WHERE "
-				+ Sample.ASSOCIATED_CASE + "_id = " + caseId).getResultList();
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Date> cq = cb.createQuery(Date.class);
+		Root<Sample> sample = cq.from(getElementClass());
+		cq.where(cb.equal(sample.get(Sample.ASSOCIATED_CASE).get(Case.ID), caseId));
+		cq.select(sample.get(Sample.SAMPLE_DATE_TIME));
+		List<Date> result = em.createQuery(cq).getResultList();
+		return result;
 	}
 
 	/**

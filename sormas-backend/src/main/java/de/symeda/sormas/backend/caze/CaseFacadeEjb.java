@@ -353,7 +353,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			exportDto.setSampleDates(sampleDates);
 			exportDto.setLabResults(sampleTestService.getSampleTestResultsForCase(exportDto.getId()));
 			exportDto.setSymptoms(symptomsService.getById(exportDto.getSymptomsId()).toHumanString(false));
-			exportDto.setAddress(locationService.getById(personService.getAddressIdByPersonId(exportDto.getPersonId())).toString());
+			exportDto.setAddress(personService.getAddressByPersonId(exportDto.getPersonId()).toString());
 			
 			// Build travel history - done here to avoid transforming EpiDataTravel to EpiDataTravelDto
 			List<EpiDataTravel> travels = epiDataTravelService.getAllByEpiDataId(exportDto.getEpiDataId());
