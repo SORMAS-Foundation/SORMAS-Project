@@ -58,7 +58,11 @@ public class ConfirmationInputDialog extends AbstractDialog {
         ((ControlTextEditField) getRoot().findViewById(R.id.confirmation_input)).addValueChangedListener(new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
-                getPositiveButton().setEnabled(field.getValue().equals(wordToType));
+                if (field.getValue() != null) {
+                    getPositiveButton().setEnabled(wordToType.toLowerCase().equals(field.getValue().toString().toLowerCase()));
+                } else {
+                    getPositiveButton().setEnabled(false);
+                }
             }
         });
     }
