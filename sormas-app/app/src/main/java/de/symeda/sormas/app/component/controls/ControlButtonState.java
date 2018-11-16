@@ -4,6 +4,7 @@ public enum ControlButtonState {
 
     NORMAL,
     FOCUSED,
-    PRESSED;
+    PRESSED,
+    DISABLED;
 
 }

@@ -32,6 +32,7 @@ import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
+import de.symeda.sormas.app.component.dialog.ConfirmationInputDialog;
 import de.symeda.sormas.app.component.dialog.SyncLogDialog;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
 import de.symeda.sormas.app.databinding.FragmentSettingsLayoutBinding;
@@ -138,9 +139,9 @@ public class SettingsFragment extends BaseLandingFragment {
 
     private void repullData() {
         if (SynchronizeDataAsync.hasAnyUnsynchronizedData()) {
-            final ConfirmationDialog unsynchronizedChangesDialog = new ConfirmationDialog(getActivity(),
+            final ConfirmationInputDialog unsynchronizedChangesDialog = new ConfirmationInputDialog(getActivity(),
                     R.string.alert_title_unsynchronized_changes,
-                    R.string.alert_unsynchronized_changes);
+                    R.string.confirmation_unsynchronized_changes, getString(R.string.confirmation_resync));
 
             unsynchronizedChangesDialog.setPositiveCallback(new Callback() {
                 @Override

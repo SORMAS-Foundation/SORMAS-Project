@@ -99,11 +99,13 @@ public class ControlButton extends android.support.v7.widget.AppCompatButton {
         GradientDrawable normalDrawable = buttonType.getDrawable(ControlButtonState.NORMAL, rounded, resources);
         GradientDrawable focusedDrawable = buttonType.getDrawable(ControlButtonState.FOCUSED, rounded, resources);
         GradientDrawable pressedDrawable = buttonType.getDrawable(ControlButtonState.PRESSED, rounded, resources);
+        GradientDrawable disabledDrawable = buttonType.getDrawable(ControlButtonState.DISABLED, rounded, resources);
 
         StateListDrawable stateDrawable = new StateDrawableBuilder()
                 .setNormalDrawable(normalDrawable)
                 .setFocusedDrawable(focusedDrawable)
                 .setPressedDrawable(pressedDrawable)
+                .setDisabledDrawable(disabledDrawable)
                 .build();
 
         if (iconStart != null) {

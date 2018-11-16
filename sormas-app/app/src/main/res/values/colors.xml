@@ -94,51 +94,61 @@
     <color name="primaryButton">@color/blue</color>
     <color name="primaryButtonPressed">@color/lightBlue</color>
     <color name="primaryButtonFocused">@color/lightBlue</color>
+    <color name="primaryButtonDisabled">@color/lightBlue10</color>
 
     <color name="secondaryButtonText">@color/whiteOpaque</color>
     <color name="secondaryButton">@color/lightBlue</color>
     <color name="secondaryButtonPressed">@color/lightBlue50</color>
     <color name="secondaryButtonFocused">@color/lightBlue50</color>
+    <color name="secondaryButtonDisabled">@color/lightBlue10</color>
 
     <color name="successButtonText">@color/whiteOpaque</color>
     <color name="successButton">@color/green</color>
     <color name="successButtonPressed">@color/green50</color>
     <color name="successButtonFocused">@color/green50</color>
+    <color name="successButtonDisabled">@color/green10</color>
 
     <color name="dangerButtonText">@color/whiteOpaque</color>
     <color name="dangerButton">@color/watchOut</color>
     <color name="dangerButtonPressed">@color/red50</color>
     <color name="dangerButtonFocused">@color/red50</color>
+    <color name="dangerButtonDisabled">@color/red10</color>
 
     <color name="warningButtonText">@color/whiteOpaque</color>
     <color name="warningButton">@color/orange</color>
     <color name="warningButtonPressed">@color/lightOrange</color>
     <color name="warningButtonFocused">@color/lightOrange</color>
+    <color name="warningButtonDisabled">@color/orange10</color>
 
     <color name="primaryInverseButtonText">@color/blue</color>
     <color name="primaryInverseButton">@color/whiteOpaque</color>
     <color name="primaryInverseButtonPressed">@color/lighterBlue</color>
     <color name="primaryInverseButtonFocused">@color/lighterBlue</color>
+    <color name="primaryInverseButtonDisabled">@color/lightBlue10</color>
 
     <color name="secondaryInverseButtonText">@color/lightBlue</color>
     <color name="secondaryInverseButton">@color/whiteOpaque</color>
     <color name="secondaryInverseButtonPressed">@color/lightBlue10</color>
     <color name="secondaryInverseButtonFocused">@color/lightBlue10</color>
+    <color name="secondaryInverseButtonDisabled">@color/lightBlue10</color>
 
     <color name="warningInverseButtonText">@color/orange</color>
     <color name="warningInverseButton">@color/whiteOpaque</color>
     <color name="warningInverseButtonPressed">@color/orange10</color>
     <color name="warningInverseButtonFocused">@color/orange10</color>
+    <color name="warningInverseButtonDisabled">@color/orange10</color>
 
     <color name="dangerInverseButtonText">@color/red</color>
     <color name="dangerInverseButton">@color/whiteOpaque</color>
     <color name="dangerInverseButtonPressed">@color/red10</color>
     <color name="dangerInverseButtonFocused">@color/red10</color>
+    <color name="dangerInverseButtonDisabled">@color/red10</color>
 
     <color name="successInverseButtonText">@color/green</color>
     <color name="successInverseButton">@color/whiteOpaque</color>
     <color name="successInverseButtonPressed">@color/green10</color>
     <color name="successInverseButtonFocused">@color/green10</color>
+    <color name="successInverseButtonDisabled">@color/green10</color>
 
 
     <color name="toolbarActionButton">@color/whiteTransparent</color>

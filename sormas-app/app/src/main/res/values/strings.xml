@@ -114,6 +114,9 @@
     <string name="caption_visit_symptoms">Symptom Information</string>
     <string name="caption_smallpox_vaccination_scar_img">Smallpox Vaccination Scar</string>
 
+    <string name="confirmation_resync">SYNC</string>
+    <string name="confirmation_unsynchronized_changes">There are unsynchronized changes on your device.\nIf you proceed, they will be lost and you will not be able to restore them. Type the word SYNC into the text field below to continue.</string>
+
     <string name="case_uuid_unknown">Case ID N/A</string>
     <string name="cases_confirmed_unknown">Cases Confirmed Unknown</string>
     <string name="contact_class_unknown">Classification N/A</string>

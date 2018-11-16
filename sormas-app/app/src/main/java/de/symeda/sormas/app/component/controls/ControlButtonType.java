@@ -8,47 +8,49 @@ import de.symeda.sormas.app.R;
 public enum ControlButtonType {
 
     PRIMARY(ControlButtonSubType.NORMAL, R.color.primaryButton, R.color.dangerButtonFocused,
-            R.color.dangerButtonPressed, R.color.primaryButtonText),
+            R.color.primaryButtonPressed, R.color.primaryButtonDisabled, R.color.primaryButtonText),
     SECONDARY(ControlButtonSubType.NORMAL, R.color.secondaryButton, R.color.secondaryButtonFocused,
-            R.color.secondaryButtonPressed, R.color.secondaryButtonText),
+            R.color.secondaryButtonPressed, R.color.secondaryButtonDisabled, R.color.secondaryButtonText),
     SUCCESS(ControlButtonSubType.NORMAL, R.color.successButton, R.color.successButtonFocused,
-            R.color.successButtonPressed, R.color.successButtonText),
+            R.color.successButtonPressed, R.color.successButtonDisabled, R.color.successButtonText),
     WARNING(ControlButtonSubType.NORMAL, R.color.warningButton, R.color.warningButtonFocused,
-            R.color.warningButtonPressed, R.color.warningButtonText),
+            R.color.warningButtonPressed, R.color.warningButtonDisabled, R.color.warningButtonText),
     DANGER(ControlButtonSubType.NORMAL, R.color.dangerButton, R.color.dangerButtonFocused,
-            R.color.dangerButtonPressed, R.color.dangerButtonText),
+            R.color.dangerButtonPressed, R.color.dangerButtonDisabled, R.color.dangerButtonText),
     INVERSE_PRIMARY(ControlButtonSubType.INVERSE, R.color.primaryInverseButton, R.color.primaryInverseButtonFocused,
-            R.color.primaryInverseButtonPressed, R.color.primaryInverseButtonText),
+            R.color.primaryInverseButtonPressed, R.color.primaryInverseButtonDisabled, R.color.primaryInverseButtonText),
     INVERSE_SECONDARY(ControlButtonSubType.INVERSE, R.color.secondaryInverseButton, R.color.secondaryInverseButtonFocused,
-            R.color.secondaryInverseButtonPressed, R.color.secondaryInverseButtonText),
+            R.color.secondaryInverseButtonPressed, R.color.secondaryInverseButtonDisabled, R.color.secondaryInverseButtonText),
     INVERSE_SUCCESS(ControlButtonSubType.INVERSE, R.color.successInverseButton, R.color.successInverseButtonFocused,
-            R.color.successInverseButtonPressed, R.color.successInverseButtonText),
+            R.color.successInverseButtonPressed, R.color.successInverseButtonDisabled, R.color.successInverseButtonText),
     INVERSE_WARNING(ControlButtonSubType.INVERSE, R.color.warningInverseButton, R.color.warningInverseButtonFocused,
-            R.color.warningInverseButtonPressed, R.color.warningInverseButtonText),
+            R.color.warningInverseButtonPressed, R.color.warningInverseButtonDisabled, R.color.warningInverseButtonText),
     INVERSE_DANGER(ControlButtonSubType.INVERSE, R.color.dangerInverseButton, R.color.dangerInverseButtonFocused,
-            R.color.dangerInverseButtonPressed, R.color.dangerInverseButtonText),
+            R.color.dangerInverseButtonPressed, R.color.dangerInverseButtonDisabled, R.color.dangerInverseButtonText),
     LINE_PRIMARY(ControlButtonSubType.LINE, R.color.primaryButton, R.color.primaryButtonFocused,
-            R.color.primaryButtonPressed, R.color.primaryLineButtonText),
+            R.color.primaryButtonPressed, R.color.primaryButtonDisabled, R.color.primaryLineButtonText),
     LINE_SECONDARY(ControlButtonSubType.LINE, R.color.secondaryButton, R.color.secondaryButtonFocused,
-            R.color.secondaryButtonPressed, R.color.secondaryLineButtonText),
+            R.color.secondaryButtonPressed, R.color.secondaryButtonDisabled, R.color.secondaryLineButtonText),
     LINE_SUCCESS(ControlButtonSubType.LINE, R.color.successButton, R.color.successButtonFocused,
-            R.color.successButtonPressed, R.color.successLineButtonText),
+            R.color.successButtonPressed, R.color.successButtonDisabled, R.color.successLineButtonText),
     LINE_WARNING(ControlButtonSubType.LINE, R.color.warningButton, R.color.warningButtonFocused,
-            R.color.warningButtonPressed, R.color.warningLineButtonText),
+            R.color.warningButtonPressed, R.color.warningButtonDisabled, R.color.warningLineButtonText),
     LINE_DANGER(ControlButtonSubType.LINE, R.color.dangerButton, R.color.dangerButtonFocused,
-            R.color.dangerButtonPressed, R.color.dangerLineButtonText);
+            R.color.dangerButtonPressed, R.color.dangerButtonDisabled, R.color.dangerLineButtonText);
 
     private ControlButtonSubType subType;
     private int buttonColorNormal;
     private int buttonColorFocused;
     private int buttonColorPressed;
+    private int buttonColorDisabled;
     private int textColor;
 
-    ControlButtonType(ControlButtonSubType subType, int buttonColorNormal, int buttonColorFocused, int buttonColorPressed, int textColor) {
+    ControlButtonType(ControlButtonSubType subType, int buttonColorNormal, int buttonColorFocused, int buttonColorPressed, int buttonColorDisabled, int textColor) {
         this.subType = subType;
         this.buttonColorNormal = buttonColorNormal;
         this.buttonColorFocused = buttonColorFocused;
         this.buttonColorPressed = buttonColorPressed;
+        this.buttonColorDisabled = buttonColorDisabled;
         this.textColor = textColor;
     }
 
@@ -64,6 +66,8 @@ public enum ControlButtonType {
                 return buttonColorFocused;
             case PRESSED:
                 return buttonColorPressed;
+            case DISABLED:
+                return buttonColorDisabled;
             default:
                 throw new IllegalArgumentException(buttonState.toString());
         }
