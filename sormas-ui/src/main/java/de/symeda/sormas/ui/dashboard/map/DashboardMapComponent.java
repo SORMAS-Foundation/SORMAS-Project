@@ -395,7 +395,7 @@ public class DashboardMapComponent extends VerticalLayout {
 
 						Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 						infoLabel.setDescription(
-								"\"Case incidence\" means the number of cases per 100,000 inhabitants. You can check the map key to see the thresholds that define "
+								"\"Case incidence ratio\" means the number of cases per 100,000 inhabitants. You can check the map key to see the thresholds that define "
 										+ "how the districts are colorized.");
 						CssStyles.style(infoLabel, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_SECONDARY,
 								CssStyles.HSPACE_LEFT_3);
