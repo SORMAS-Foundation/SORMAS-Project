@@ -121,12 +121,15 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 					return (T) new LocationEditForm(editOrCreateUserRight);
 				} 
 				else if (DateTimeField.class.isAssignableFrom(fieldType)) {
-					return (T) new DateTimeField();
+					DateTimeField field = new DateTimeField();
+					field.setConverter(new SormasConverterFactory().createDateConverter(Date.class));
+					return (T) field;
 				} 
 				else if (DateField.class.isAssignableFrom(fieldType)) {
 					DateField field = super.createField(type, DateField.class);
 					field.setDateFormat(DateHelper.getLocalDatePattern());
 					field.setLenient(true);
+					field.setConverter(new SormasConverterFactory().createDateConverter(Date.class));
 					return (T) field;
 				}
 				else if (PreviousHospitalizationsField.class.isAssignableFrom(fieldType)) {
@@ -146,6 +149,8 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 					if (Date.class.isAssignableFrom(type)) {
 						DateField field = super.createField(type, DateField.class);
 						field.setDateFormat(DateHelper.getLocalDatePattern());
+						field.setLenient(true);
+						field.setConverter(new SormasConverterFactory().createDateConverter(Date.class));
 						return (T) field;
 					}
 					else if (ReferenceDto.class.isAssignableFrom(type)) {

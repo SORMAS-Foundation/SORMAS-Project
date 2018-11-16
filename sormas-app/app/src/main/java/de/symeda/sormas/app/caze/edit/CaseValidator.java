@@ -105,7 +105,7 @@ final class CaseValidator {
             @Override
             public void onChange(ControlPropertyField field) {
                 Date value = (Date) field.getValue();
-                if (DateTimeComparator.getDateOnlyInstance().compare(value, caze.getSymptoms().getOnsetDate()) <= 0) {
+                if (caze.getSymptoms().getOnsetDate() != null && DateTimeComparator.getDateOnlyInstance().compare(value, caze.getSymptoms().getOnsetDate()) <= 0) {
                     contentBinding.caseHospitalizationAdmissionDate.enableWarningState(
                             I18nProperties.getValidationError("afterDateSoft", contentBinding.caseHospitalizationAdmissionDate.getCaption(),
                                     I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE)));

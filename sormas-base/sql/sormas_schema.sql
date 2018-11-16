@@ -2505,3 +2505,9 @@ ALTER TABLE cases_history ADD COLUMN archived boolean;
 ALTER TABLE events_history ADD COLUMN archived boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (114, 'Archiving for cases and events #843');
+
+-- 2018-11-16 Change dates with year 18 to 2018 #792
+
+UPDATE cases SET receptiondate = receptiondate + interval '2000 years' WHERE EXTRACT(year FROM receptiondate) = 18;
+UPDATE cases SET investigateddate = investigateddate + interval '2000 years' WHERE EXTRACT(year FROM investigateddate) = 18;
+UPDATE symptoms SET onsetdate = onsetdate + interval '2000 years' WHERE EXTRACT(year FROM onsetdate) = 18;
