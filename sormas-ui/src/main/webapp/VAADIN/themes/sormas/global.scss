@@ -3,7 +3,7 @@
 	
   .v-caption {
     text-transform: uppercase;
-	display: block;
+	/*display: block; #792 unclear why this was needed */
     padding-bottom: 0.1em;
     
     &.v-caption-caption-hidden {
