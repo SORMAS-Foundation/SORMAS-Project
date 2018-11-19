@@ -59,7 +59,7 @@ public class ConfirmationInputDialog extends AbstractDialog {
             @Override
             public void onChange(ControlPropertyField field) {
                 if (field.getValue() != null) {
-                    getPositiveButton().setEnabled(wordToType.toLowerCase().equals(field.getValue().toString().toLowerCase()));
+                    getPositiveButton().setEnabled(wordToType.compareToIgnoreCase(field.getValue().toString()) == 0);
                 } else {
                     getPositiveButton().setEnabled(false);
                 }
