@@ -93,47 +93,47 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 	
 	this.addMarkerGroup = function(groupId, markers) {
 
-		var markerGroup = L.markerClusterGroup({
-			//maxClusterRadius: 20,
-			
-			iconCreateFunction: function(cluster) {
-				children = cluster.getAllChildMarkers();
-				count = 0;
-				anyContact = false;
-				anyEvent = false;
-				anyRed = false;
-				anyOrange = false;
-				anyYellow = false;
-				for (i=0; i<children.length; i++) {
-					count += children[i].number;
-					if (!anyContact && children[i].__parent._group.id == "contacts")
-						anyContact = true;
-					if (!anyEvent && children[i].__parent._group.id == "events")
-						anyEvent = true;
-					if (!anyRed && children[i].options.icon.options.iconUrl.includes("red"))
-						anyRed = true;
-					if (!anyRed && !anyOrange && children[i].options.icon.options.iconUrl.includes("orange"))
-						anyOrange = true;
-					if (!anyRed && !anyOrange && !anyYellow && children[i].options.icon.options.iconUrl.includes("yellow"))
-						anyYellow = true;
-				}
-				
-				var c = ' marker-cluster-';
-				if (anyRed) {
-					c += 'red';
-				} else if (anyYellow) {
-					c += 'yellow';
-				} else if (anyOrange) {
-					c += 'orange';
-				} else {
-					c += 'grey';
-				}
-
-				classNameVal = anyEvent ? 'marker-cluster light-box' : (anyContact ? 'marker-cluster' : 'marker-cluster box');
-				return new L.DivIcon({ html: '<div><span>' + count + '</span></div>', className: classNameVal + c, iconSize: new L.Point(40, 40) });				
-			}			
-		})
-		//var markerGroup = L.featureGroup()
+//		var markerGroup = L.markerClusterGroup({
+//			//maxClusterRadius: 20,
+//			
+//			iconCreateFunction: function(cluster) {
+//				children = cluster.getAllChildMarkers();
+//				count = 0;
+//				anyContact = false;
+//				anyEvent = false;
+//				anyRed = false;
+//				anyOrange = false;
+//				anyYellow = false;
+//				for (i=0; i<children.length; i++) {
+//					count += children[i].number;
+//					if (!anyContact && children[i].__parent._group.id == "contacts")
+//						anyContact = true;
+//					if (!anyEvent && children[i].__parent._group.id == "events")
+//						anyEvent = true;
+//					if (!anyRed && children[i].options.icon.options.iconUrl.includes("red"))
+//						anyRed = true;
+//					if (!anyRed && !anyOrange && children[i].options.icon.options.iconUrl.includes("orange"))
+//						anyOrange = true;
+//					if (!anyRed && !anyOrange && !anyYellow && children[i].options.icon.options.iconUrl.includes("yellow"))
+//						anyYellow = true;
+//				}
+//				
+//				var c = ' marker-cluster-';
+//				if (anyRed) {
+//					c += 'red';
+//				} else if (anyYellow) {
+//					c += 'yellow';
+//				} else if (anyOrange) {
+//					c += 'orange';
+//				} else {
+//					c += 'grey';
+//				}
+//
+//				classNameVal = anyEvent ? 'marker-cluster light-box' : (anyContact ? 'marker-cluster' : 'marker-cluster box');
+//				return new L.DivIcon({ html: '<div><span>' + count + '</span></div>', className: classNameVal + c, iconSize: new L.Point(40, 40) });				
+//			}			
+//		})
+		var markerGroup = L.featureGroup()
 			.addTo(map)
 			.on("click", featureGroupClick);
 		markerGroup.id = groupId;
