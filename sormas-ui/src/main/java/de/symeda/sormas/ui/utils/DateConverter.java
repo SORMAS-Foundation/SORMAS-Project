@@ -5,12 +5,14 @@ import java.util.Locale;
 
 import com.vaadin.data.util.converter.Converter;
 
+import de.symeda.sormas.api.utils.DateHelper;
+
 @SuppressWarnings("serial")
 public class DateConverter implements Converter<Date, Date> {
 	 
 		@Override
 		public Date convertToModel(Date value, Class<? extends Date> targetType, Locale locale) throws ConversionException {
-			return TemporalCalculator.toCorrectCentury(value);
+			return DateHelper.toCorrectCentury(value);
 		}
 	 
 		@Override

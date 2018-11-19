@@ -39,4 +39,24 @@ public class DateHelperTest {
 		assertEquals(new Integer(2019), epiWeek.getYear());
 	}
 	
+	@Test
+	public void testTwoDigitDateTransformationToCurrentCentury() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(2018, 1, 0);
+		Date referenceDate = calendar.getTime();
+		
+		calendar.set(18, 1, 0);
+		Date date = calendar.getTime();
+		
+		assertEquals(referenceDate, DateHelper.toCorrectCentury(date, referenceDate));
+		
+		calendar.set(87, 1, 0);
+		date = calendar.getTime();
+		
+		Date correctCenturyDate = DateHelper.toCorrectCentury(date, referenceDate);
+		calendar.setTime(correctCenturyDate);
+		
+		assertEquals(calendar.get(Calendar.YEAR), 1987);
+	}
+	
 }

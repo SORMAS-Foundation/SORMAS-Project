@@ -2511,3 +2511,5 @@ INSERT INTO schema_version (version_number, comment) VALUES (114, 'Archiving for
 UPDATE cases SET receptiondate = receptiondate + interval '2000 years' WHERE EXTRACT(year FROM receptiondate) = 18;
 UPDATE cases SET investigateddate = investigateddate + interval '2000 years' WHERE EXTRACT(year FROM investigateddate) = 18;
 UPDATE symptoms SET onsetdate = onsetdate + interval '2000 years' WHERE EXTRACT(year FROM onsetdate) = 18;
+
+INSERT INTO schema_version (version_number, comment) VALUES (115, 'Change dates with year 18 to 2018 #792');
