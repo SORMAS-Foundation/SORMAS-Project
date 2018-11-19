@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.Date;
 import java.util.Locale;
 
 import com.vaadin.data.util.converter.Converter;
@@ -8,6 +9,9 @@ import com.vaadin.data.util.converter.StringToEnumConverter;
 
 @SuppressWarnings("serial")
 public final class SormasDefaultConverterFactory extends DefaultConverterFactory {
+
+	private static final DateConverter DATE_CONVERTER = new DateConverter();
+	
 	@Override
 	protected Converter<String, ?> createStringConverter(Class<?> sourceType) {
 		
@@ -27,6 +31,15 @@ public final class SormasDefaultConverterFactory extends DefaultConverterFactory
 	        };
 		}
 		return super.createStringConverter(sourceType);
+	}
+	
+	@Override
+	protected Converter<Date, ?> createDateConverter(Class<?> sourceType) {
+		if (Date.class == sourceType) {
+			return DATE_CONVERTER;
+		}
+ 
+		return super.createDateConverter(sourceType);
 	}
 	
     public static String enumToString(Enum<?> value, Locale locale) {
