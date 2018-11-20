@@ -19,3 +19,6 @@ deploy
 *.jks
 /sormas-app/keystore.properties
 /sormas-app/java_pid21052.hprof
+
+*.properties
+*.example
