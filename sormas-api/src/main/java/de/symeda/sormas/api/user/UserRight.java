@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.api.user;
 
 import static de.symeda.sormas.api.user.UserRole.ADMIN;
@@ -5,12 +22,12 @@ import static de.symeda.sormas.api.user.UserRole.CASE_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.CASE_SUPERVISOR;
 import static de.symeda.sormas.api.user.UserRole.CONTACT_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.CONTACT_SUPERVISOR;
+import static de.symeda.sormas.api.user.UserRole.EVENT_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.INFORMANT;
 import static de.symeda.sormas.api.user.UserRole.LAB_USER;
 import static de.symeda.sormas.api.user.UserRole.NATIONAL_OBSERVER;
-import static de.symeda.sormas.api.user.UserRole.STATE_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.NATIONAL_USER;
-import static de.symeda.sormas.api.user.UserRole.EVENT_OFFICER;
+import static de.symeda.sormas.api.user.UserRole.STATE_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_SUPERVISOR;
 
@@ -18,8 +35,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
-import de.symeda.sormas.api.I18nProperties;
 
 public enum UserRight {
 
@@ -495,6 +510,9 @@ public enum UserRight {
 			STATE_OBSERVER,
 			SURVEILLANCE_SUPERVISOR
 			),
+	USER_RIGHTS_MANAGE(
+			ADMIN
+			),
 	DASHBOARD_VIEW(
 			ADMIN,
 			NATIONAL_USER,
@@ -536,9 +554,5 @@ public enum UserRight {
 
 	public Set<UserRole> getUserRoles() {
 		return userRoles;
-	}
-	
-	public String toString() {
-		return I18nProperties.getEnumCaption(this);
 	}
 }

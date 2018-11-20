@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
 import java.io.ByteArrayOutputStream;
@@ -44,20 +61,27 @@ public class CaseImportLayout extends VerticalLayout {
 		setMargin(true);
 		
 		// Step 1: Download SORMAS Import Guide
-		String headline = "Download and read the SORMAS Import Guide";
+		String headline = "Download and read the SORMAS Import Guide and the Data Dictionary";
 		String infoText = "If this is your first time importing data into SORMAS, we strongly recommend to read the import guide first.";
-		Resource buttonIcon = FontAwesome.DOWNLOAD;
+		Resource buttonIcon = FontAwesome.FILE_PDF_O;
 		String buttonCaption = "Download Import Guide";
 		CaseImportLayoutComponent importGuideComponent = new CaseImportLayoutComponent(1, headline, infoText, buttonIcon, buttonCaption);
 		FileDownloader importGuideDownloader = new FileDownloader(new ClassResource("/SORMAS_Import_Guide.pdf"));
 		importGuideDownloader.extend(importGuideComponent.getButton());
-		CssStyles.style(importGuideComponent, CssStyles.VSPACE_2);
 		addComponent(importGuideComponent);
+
+		Button dataDictionaryButton = new Button("Download Data Dictionary", FontAwesome.FILE_EXCEL_O);
+		CssStyles.style(dataDictionaryButton, ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_TOP_3);
+		FileDownloader dataDictionaryDownloader = new FileDownloader(new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
+		dataDictionaryDownloader.extend(dataDictionaryButton);
+		addComponent(dataDictionaryButton);
+		CssStyles.style(dataDictionaryButton, CssStyles.VSPACE_2);
 		
 		// Step 2: Download case import template
 		headline = "Download the case import template";
 		infoText = "You can use this template .csv file to bring your data into a format SORMAS can read. Please do this every time you import data,"
 				+ " never use a file you have downloaded before.";
+		buttonIcon = FontAwesome.DOWNLOAD;
 		buttonCaption = "Download Case Import Template";
 		CaseImportLayoutComponent importTemplateComponent = new CaseImportLayoutComponent(2, headline, infoText, buttonIcon, buttonCaption);
 		String templateFilePath = FacadeProvider.getImportFacade().getCaseImportTemplateFilePath().toString();
@@ -77,7 +101,7 @@ public class CaseImportLayout extends VerticalLayout {
 		CaseImportUploader receiver = new CaseImportUploader();
 		Upload upload = new Upload("", receiver);
 		upload.setButtonCaption("Upload Case List");
-		CssStyles.style(upload, ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_2);
+		CssStyles.style(upload, CssStyles.VSPACE_2);
 		upload.addSucceededListener(receiver);
 		addComponent(upload);
 		

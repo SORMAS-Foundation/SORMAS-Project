@@ -1,3 +1,21 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.app;
 
 import android.os.AsyncTask;
@@ -10,15 +28,11 @@ import android.widget.TextView;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
-import de.symeda.sormas.app.core.async.AsyncTaskResult;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.enumeration.StatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.util.Bundler;
+import de.symeda.sormas.app.util.Consumer;
 
 public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomainObject> extends BaseActivity implements IUpdateSubHeadingTitle {
 
@@ -65,56 +79,37 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         rootUuid = new Bundler(savedInstanceState).getRootUuid();
     }
 
-    protected void requestRootData(final Callback.IAction<ActivityRootEntity> callback) {
+    protected void requestRootData(final Consumer<ActivityRootEntity> callback) {
 
-        getRootEntityTask = new DefaultAsyncTask(getContext()) {
-            @Override
-            public void onPreExecute() {
-                showPreloader();
-            }
+        if (rootUuid != null && !rootUuid.isEmpty()) {
+            storedRootEntity = queryRootEntity(rootUuid);
+        } else {
+            storedRootEntity = null;
+        }
 
-            @Override
-            public void doInBackground(TaskResultHolder resultHolder) {
-                ActivityRootEntity result;
-                if (rootUuid != null && !rootUuid.isEmpty()) {
-                    result = queryRootData(rootUuid);
-                } else {
-                    result = null;
-                }
-                resultHolder.forItem().add(result);
-            }
+        // This should not happen; however, it still might under certain circumstances
+        // (user clicking a notification for a task they have no access to anymore); in
+        // this case, the activity should be closed.
+        if (storedRootEntity == null) {
+            finish();
+        }
 
-            @Override
-            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-                hidePreloader();
-
-                if (taskResult.getResultStatus().isSuccess()) {
-                    ITaskResultHolderIterator itemIterator = taskResult.getResult().forItem().iterator();
-
-                    if (itemIterator.hasNext())
-                        storedRootEntity = itemIterator.next();
-                    else
-                        storedRootEntity = null;
-
-                    callback.call(storedRootEntity);
-                }
-            }
-        }.executeOnThreadPool();
+        callback.accept(storedRootEntity);
     }
 
-    protected abstract ActivityRootEntity queryRootData(String recordUuid);
+    protected abstract ActivityRootEntity queryRootEntity(String recordUuid);
 
     protected ActivityRootEntity getStoredRootEntity() {
         return storedRootEntity;
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onResumeFragments() {
+        super.onResumeFragments();
 
-        requestRootData(new Callback.IAction<ActivityRootEntity>() {
+        requestRootData(new Consumer<ActivityRootEntity>() {
             @Override
-            public void call(ActivityRootEntity result) {
+            public void accept(ActivityRootEntity result) {
                 replaceFragment(buildReadFragment(getActivePage(), result), false);
             }
         });
@@ -130,9 +125,9 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
     @Override
     public void updateSubHeadingTitle() {
         String subHeadingTitle = "";
-        PageMenuItem activeMenu = getActivePage();
 
         if (activeFragment != null) {
+            PageMenuItem activeMenu = getActivePage();
             subHeadingTitle = (activeMenu == null) ? activeFragment.getSubHeadingTitle() : activeMenu.getTitle();
         }
 

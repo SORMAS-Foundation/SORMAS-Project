@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.ui.hospitalization;
 
 import com.vaadin.ui.ComboBox;
@@ -17,6 +34,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -43,7 +61,6 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 
 	@Override
 	protected void addFields() {
-
 		DateField admissionDate = addField(PreviousHospitalizationDto.ADMISSION_DATE, DateField.class);
 		DateField dischargeDate = addField(PreviousHospitalizationDto.DISCHARGE_DATE, DateField.class);
 		addField(PreviousHospitalizationDto.ISOLATED, OptionGroup.class);
@@ -105,6 +122,12 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 				healthFacilityDetails.clear();
 			}
 		});
+		
+		// Validations
+		admissionDate.addValidator(new DateComparisonValidator(admissionDate, dischargeDate, true, false, 
+				I18nProperties.getValidationError("beforeDate", admissionDate.getCaption(), dischargeDate.getCaption())));
+		dischargeDate.addValidator(new DateComparisonValidator(dischargeDate, admissionDate, false, false, 
+				I18nProperties.getValidationError("afterDate", dischargeDate.getCaption(), admissionDate.getCaption())));
 
 		FieldHelper.addSoftRequiredStyle(admissionDate, dischargeDate, facilityCommunity, healthFacilityDetails);
 		setRequired(true,

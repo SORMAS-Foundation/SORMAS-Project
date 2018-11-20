@@ -58,7 +58,7 @@ For information on what libs are used see pom.xml in sormas-base project: https:
         * ``Remove everything until after the INSERT with the read schema version``
         * ``Surround the remaining with BEGIN; and COMMIT;``
     * Update the Database schema: ``sudo -u postgres psql sormas_db < sql/sormas_schema.sql``
-* If something goes wrong, restorte the database using ``pg_restore -U sormas_user -Fc -d sormas_db < sormas_db_....``
+* If something goes wrong, restore the database using ``pg_restore -U sormas_user -Fc -d sormas_db < sormas_db_....``
 
 ## Web Applications
 * ``service payara-sormas start``
@@ -75,3 +75,19 @@ For information on what libs are used see pom.xml in sormas-base project: https:
 * Try to login at https://localhost:6081/sormas-ui (or the webadress of the server). 
   If it doesn't work: restart the server
 * Update the mobile app with the new apk file 
+
+## Login
+
+These are the default users for demo systems. Make sure to deactivate them or change the password on productive systems:
+
+### Admin
+name: admin
+pw: sadmin
+
+### Surveillance Supervisor (web UI)
+name: SunkSesa
+pw: Sunkanmi
+
+### Surveillance Officer (mobile app)
+name: SanaObas
+pw: Sanaa

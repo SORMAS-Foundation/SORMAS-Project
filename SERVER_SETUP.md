@@ -4,11 +4,15 @@
 **Note: All commands below are Linux commands. On windows systems use the corresponding commands or the windows explorer.**
 **To execute the shell script on Windows systems you can use git bash (MinGW64).**
 
+## Content
 * [Postgres Database](#postgres-database)
 * [Payara Application Server](#payara-application-server)
 * [SORMAS Domain](#sormas-domain)
 * [Apache Web Server](#apache-web-server)
 * [Postfix Mail Server](#postfix-mail-server)
+* [Troubleshooting](#troubleshooting)
+
+## Related
 * [Creating an App for a Demo Server](DEMO_APP.md)
 
 ## Postgres Database
@@ -45,6 +49,8 @@
 			* Open sormas_schema.sql with a texteditor and copy the content to the query-tool of sormas_db (And execute the query).
 	
 ## Payara Application Server
+* Download and install the latest Java 8 JDK for your operating system: https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
+* Make sure the JAVA_HOME environment variable is set
 * Download payara 4.1.2.172 [downloadlink](http://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/4.1.2.172/payara-4.1.2.172.zip) and extract it to the directory where your servers should be located (e.g. /opt/payara-172).  
 The `/opt/payara-172/` as payara-directory can, in some linux distros, only be modified by root. For a local development environment, it may be easier to use another directory owned by logged-in user. Same for `/opt/domains/` as domain directory and `/root/deploy/sormas/$(date +%F)` as directory for the sormas deploy (both used later in this document).
 * Remove the default domains from the server:
@@ -153,3 +159,10 @@ Here are some things that you should do to configure the apache server as proxy:
 		-> add "root: enter-your@support-email-here.com"
 		nano /opt/domains/sormas/config/logback.xml
 		-> make sure "EMAIL_ERROR" appender is active and sends out to your email address
+
+## Troubleshooting
+
+### Problem: Login fails
+
+1. Check that the users table does have a corresponding entry. If not, the database initialization that is done when deploying sormas-ear.ear probably had an error.
+2. Have a look into the server log. If you find `Web Login Failed: com.sun.enterprise.security.auth.login.common.LoginException: Login failed: No LoginModules configured for fileRealm` the domain was probably not correctly set up (see [SORMAS Domain](#sormas-domain)). Likely the flexiblejdbcrealm-deploy-1.2-all.jar was not copied to the domains /lib directory.

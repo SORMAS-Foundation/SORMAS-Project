@@ -1,3 +1,21 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.app.backend.common;
 
 import android.content.Context;
@@ -14,8 +32,8 @@ import java.util.HashMap;
 
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
-import de.symeda.sormas.app.backend.classification.DiseaseClassification;
-import de.symeda.sormas.app.backend.classification.DiseaseClassificationDao;
+import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteria;
+import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteriaDao;
 import de.symeda.sormas.app.backend.config.Config;
 import de.symeda.sormas.app.backend.config.ConfigDao;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -135,7 +153,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, Location.class);
 			TableUtils.clearTable(connectionSource, Outbreak.class);
 			TableUtils.clearTable(connectionSource, SyncLog.class);
-			TableUtils.clearTable(connectionSource, DiseaseClassification.class);
+			TableUtils.clearTable(connectionSource, DiseaseClassificationCriteria.class);
 
 			if (clearInfrastructure) {
 				TableUtils.clearTable(connectionSource, User.class);
@@ -192,7 +210,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, WeeklyReport.class);
 			TableUtils.createTable(connectionSource, WeeklyReportEntry.class);
 			TableUtils.createTable(connectionSource, Outbreak.class);
-			TableUtils.createTable(connectionSource, DiseaseClassification.class);
+			TableUtils.createTable(connectionSource, DiseaseClassificationCriteria.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't build database", e);
 			throw new RuntimeException(e);
@@ -538,7 +556,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Sample.class).executeRaw("UPDATE samples SET referredToUuid = (SELECT uuid FROM samples s2 WHERE s2.id = samples.referredTo_id);");
 				case 130:
 					currentVersion = 130;
-					getDao(DiseaseClassification.class).executeRaw("CREATE TABLE diseaseclassification (disease VARCHAR, suspectCriteria TEXT, " +
+					getDao(DiseaseClassificationCriteria.class).executeRaw("CREATE TABLE diseaseClassificationCriteria (disease VARCHAR, suspectCriteria TEXT, " +
 									"probableCriteria TEXT, confirmedCriteria TEXT, changeDate BIGINT NOT NULL, creationDate BIGINT NOT NULL, " +
 									"id INTEGER PRIMARY KEY AUTOINCREMENT, localChangeDate BIGINT NOT NULL, modified SMALLINT, snapshot SMALLINT, uuid VARCHAR NOT NULL, " +
 									"UNIQUE(snapshot, uuid));");
@@ -583,7 +601,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, WeeklyReport.class, true);
 			TableUtils.dropTable(connectionSource, WeeklyReportEntry.class, true);
 			TableUtils.dropTable(connectionSource, Outbreak.class, true);
-			TableUtils.dropTable(connectionSource, DiseaseClassification.class, true);
+			TableUtils.dropTable(connectionSource, DiseaseClassificationCriteria.class, true);
 
 			if (oldVersion < 30) {
 				TableUtils.dropTable(connectionSource, Config.class, true);
@@ -657,8 +675,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new WeeklyReportEntryDao((Dao<WeeklyReportEntry, Long>) innerDao);
 				} else if (type.equals(Outbreak.class)) {
 					dao = (AbstractAdoDao<ADO>) new OutbreakDao((Dao<Outbreak, Long>) innerDao);
-				} else if (type.equals(DiseaseClassification.class)) {
-					dao = (AbstractAdoDao<ADO>) new DiseaseClassificationDao((Dao<DiseaseClassification, Long>) innerDao);
+				} else if (type.equals(DiseaseClassificationCriteria.class)) {
+					dao = (AbstractAdoDao<ADO>) new DiseaseClassificationCriteriaDao((Dao<DiseaseClassificationCriteria, Long>) innerDao);
 				} else {
 					throw new UnsupportedOperationException(type.toString());
 				}
@@ -816,8 +834,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return (OutbreakDao) getAdoDao(Outbreak.class);
 	}
 
-	public static DiseaseClassificationDao getDiseaseClassificationDao() {
-		return (DiseaseClassificationDao) getAdoDao(DiseaseClassification.class);
+	public static DiseaseClassificationCriteriaDao getDiseaseClassificationCriteriaDao() {
+		return (DiseaseClassificationCriteriaDao) getAdoDao(DiseaseClassificationCriteria.class);
 	}
 
 	/**

@@ -1,3 +1,21 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.app.caze.edit;
 
 import android.content.Context;
@@ -36,6 +54,7 @@ import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class CaseEditActivity extends BaseEditActivity<Case> {
 
@@ -138,6 +157,12 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     }
 
     public void saveData(final Consumer<Case> successCallback) {
+
+        if (saveTask != null) {
+            NotificationHelper.showNotification(this, WARNING, getString(R.string.snackbar_already_saving));
+            return; // don't save multiple times
+        }
+
         final Case cazeToSave = getStoredRootEntity();
 
         try {
@@ -162,8 +187,10 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
             @Override
             protected void doInBackground(TaskResultHolder resultHolder) throws DaoException {
-                DatabaseHelper.getPersonDao().saveAndSnapshot(cazeToSave.getPerson());
-                DatabaseHelper.getCaseDao().saveAndSnapshot(cazeToSave);
+                synchronized (CaseEditActivity.this) {
+                    DatabaseHelper.getPersonDao().saveAndSnapshot(cazeToSave.getPerson());
+                    DatabaseHelper.getCaseDao().saveAndSnapshot(cazeToSave);
+                }
             }
 
             @Override
@@ -175,6 +202,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                 } else {
                     onResume(); // reload data
                 }
+                saveTask = null;
             }
         }.executeOnThreadPool();
     }

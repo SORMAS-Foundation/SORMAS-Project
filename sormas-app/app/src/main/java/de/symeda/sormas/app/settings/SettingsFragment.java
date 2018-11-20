@@ -1,3 +1,21 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.app.settings;
 
 import android.app.AlertDialog;
@@ -11,12 +29,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.BaseLandingFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.report.WeeklyReport;
+import de.symeda.sormas.app.backend.report.WeeklyReportEntry;
+import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.backend.sample.SampleTest;
+import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
+import de.symeda.sormas.app.component.dialog.ConfirmationInputDialog;
 import de.symeda.sormas.app.component.dialog.SyncLogDialog;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
 import de.symeda.sormas.app.databinding.FragmentSettingsLayoutBinding;
@@ -122,6 +156,26 @@ public class SettingsFragment extends BaseLandingFragment {
     }
 
     private void repullData() {
+        if (SynchronizeDataAsync.hasAnyUnsynchronizedData()) {
+            final ConfirmationInputDialog unsynchronizedChangesDialog = new ConfirmationInputDialog(getActivity(),
+                    R.string.alert_title_unsynchronized_changes,
+                    R.string.confirmation_unsynchronized_changes, getString(R.string.confirmation_resync));
+
+            unsynchronizedChangesDialog.setPositiveCallback(new Callback() {
+                @Override
+                public void call() {
+                    unsynchronizedChangesDialog.dismiss();
+                    showRepullDataConfirmationDialog();
+                }
+            });
+
+            unsynchronizedChangesDialog.show();
+        } else {
+            showRepullDataConfirmationDialog();
+        }
+    }
+
+    private void showRepullDataConfirmationDialog() {
         final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActivity(),
                 R.string.heading_confirmation_dialog,
                 R.string.heading_sub_confirmation_notification_dialog_resync);
@@ -131,8 +185,65 @@ public class SettingsFragment extends BaseLandingFragment {
             public void call() {
                 confirmationDialog.dismiss();
 
+                // Collect unsynchronized changes
+                final List<Case> modifiedCases = DatabaseHelper.getCaseDao().getModifiedEntities();
+                final List<Contact> modifiedContacts = DatabaseHelper.getContactDao().getModifiedEntities();
+                final List<Person> modifiedPersons = DatabaseHelper.getPersonDao().getModifiedEntities();
+                final List<Event> modifiedEvents = DatabaseHelper.getEventDao().getModifiedEntities();
+                final List<EventParticipant> modifiedEventParticipants = DatabaseHelper.getEventParticipantDao().getModifiedEntities();
+                final List<Sample> modifiedSamples = DatabaseHelper.getSampleDao().getModifiedEntities();
+                final List<Visit> modifiedVisits = DatabaseHelper.getVisitDao().getModifiedEntities();
+
                 getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.CompleteAndRepull,
-                        true, true, null, null,
+                        true, true, null,
+                        new Callback() {
+                            @Override
+                            public void call() {
+                                // Add deleted entities that had unsynchronized changes to sync log
+                                for (Case caze : modifiedCases) {
+                                    if (DatabaseHelper.getCaseDao().queryUuidReference(caze.getUuid()) == null) {
+                                        DatabaseHelper.getSyncLogDao().createWithParentStack(caze.toString(),
+                                                getResources().getString(R.string.synclog_resync));
+                                    }
+                                }
+                                for (Contact contact : modifiedContacts) {
+                                    if (DatabaseHelper.getContactDao().queryUuidReference(contact.getUuid()) == null) {
+                                        DatabaseHelper.getSyncLogDao().createWithParentStack(contact.toString(),
+                                                getResources().getString(R.string.synclog_resync));
+                                    }
+                                }
+                                for (Person person : modifiedPersons) {
+                                    if (DatabaseHelper.getPersonDao().queryUuidReference(person.getUuid()) == null) {
+                                        DatabaseHelper.getSyncLogDao().createWithParentStack(person.toString(),
+                                                getResources().getString(R.string.synclog_resync));
+                                    }
+                                }
+                                for (Event event : modifiedEvents) {
+                                    if (DatabaseHelper.getEventDao().queryUuidReference(event.getUuid()) == null) {
+                                        DatabaseHelper.getSyncLogDao().createWithParentStack(event.toString(),
+                                                getResources().getString(R.string.synclog_resync));
+                                    }
+                                }
+                                for (EventParticipant eventParticipant : modifiedEventParticipants) {
+                                    if (DatabaseHelper.getEventParticipantDao().queryUuidReference(eventParticipant.getUuid()) == null) {
+                                        DatabaseHelper.getSyncLogDao().createWithParentStack(eventParticipant.toString(),
+                                                getResources().getString(R.string.synclog_resync));
+                                    }
+                                }
+                                for (Sample sample : modifiedSamples) {
+                                    if (DatabaseHelper.getSampleDao().queryUuidReference(sample.getUuid()) == null) {
+                                        DatabaseHelper.getSyncLogDao().createWithParentStack(sample.toString(),
+                                                getResources().getString(R.string.synclog_resync));
+                                    }
+                                }
+                                for (Visit visit : modifiedVisits) {
+                                    if (DatabaseHelper.getVisitDao().queryUuidReference(visit.getUuid()) == null) {
+                                        DatabaseHelper.getSyncLogDao().createWithParentStack(visit.toString(),
+                                                getResources().getString(R.string.synclog_resync));
+                                    }
+                                }
+                            }
+                        },
                         new Callback() {
                             @Override
                             public void call() {

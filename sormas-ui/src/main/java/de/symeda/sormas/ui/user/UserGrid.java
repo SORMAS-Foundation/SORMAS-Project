@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
 import java.util.Collection;
@@ -88,13 +105,15 @@ public class UserGrid extends Grid {
     	getContainer().removeContainerFilters(UserDto.USER_NAME);
     	getContainer().removeContainerFilters(UserDto.USER_EMAIL);
     	getContainer().removeContainerFilters(UserDto.PHONE);
+    	getContainer().removeContainerFilters(UserDto.UUID);
         if (filterString.length() > 0) {
             SimpleStringFilter nameFilter = new SimpleStringFilter(UserDto.NAME, filterString, true, false);
             SimpleStringFilter userNameFilter = new SimpleStringFilter(UserDto.USER_NAME, filterString, true, false);
             SimpleStringFilter emailFilter = new SimpleStringFilter(UserDto.USER_EMAIL, filterString, true, false);
             SimpleStringFilter phoneFilter = new SimpleStringFilter(UserDto.PHONE, filterString, true, false);
+            SimpleStringFilter uuidFilter = new SimpleStringFilter(UserDto.UUID, filterString, true, false);
             getContainer().addContainerFilter(
-            		new Or(nameFilter, userNameFilter, emailFilter, phoneFilter));
+            		new Or(nameFilter, userNameFilter, emailFilter, phoneFilter, uuidFilter));
         }
     }
 

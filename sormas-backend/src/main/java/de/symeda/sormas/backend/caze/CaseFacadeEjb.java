@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
 import java.math.BigDecimal;
@@ -108,6 +125,7 @@ import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
@@ -121,6 +139,7 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
+import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
@@ -178,7 +197,11 @@ public class CaseFacadeEjb implements CaseFacade {
 	@EJB
 	private DistrictService districtService;
 	@EJB
+	private CommunityFacadeEjbLocal communityFacade;
+	@EJB
 	private CommunityService communityService;
+	@EJB
+	private FacilityFacadeEjbLocal facilityFacade;
 	@EJB
 	private TaskService taskService;
 	@EJB
@@ -347,7 +370,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			exportDto.setSampleDates(sampleDates);
 			exportDto.setLabResults(sampleTestService.getSampleTestResultsForCase(exportDto.getId()));
 			exportDto.setSymptoms(symptomsService.getById(exportDto.getSymptomsId()).toHumanString(false));
-			exportDto.setAddress(locationService.getById(personService.getAddressIdByPersonId(exportDto.getPersonId())).toString());
+			exportDto.setAddress(personService.getAddressByPersonId(exportDto.getPersonId()).toString());
 			
 			// Build travel history - done here to avoid transforming EpiDataTravel to EpiDataTravelDto
 			List<EpiDataTravel> travels = epiDataTravelService.getAllByEpiDataId(exportDto.getEpiDataId());
@@ -454,55 +477,53 @@ public class CaseFacadeEjb implements CaseFacade {
 		CaseDataDto existingCaseDto = toDto(caseService.getByUuid(dto.getUuid()));
 
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
-
-		caze = fillOrBuildEntity(dto, caze);
-
+		
 		// Check whether any required field that does not have a not null constraint in
 		// the database is empty
-		if (caze.getRegion() == null) {
+		if (dto.getRegion() == null) {
 			throw new ValidationRuntimeException("You have to specify a valid region");
 		}
-		if (caze.getDistrict() == null) {
+		if (dto.getDistrict() == null) {
 			throw new ValidationRuntimeException("You have to specify a valid district");
 		}
-		if (caze.getHealthFacility() == null) {
+		if (dto.getHealthFacility() == null) {
 			throw new ValidationRuntimeException("You have to specify a valid health facility");
 		}
-		if (caze.getDisease() == null) {
+		if (dto.getDisease() == null) {
 			throw new ValidationRuntimeException("You have to specify a valid disease");
 		}
 		// Check whether there are any infrastructure errors
-		if (!caze.getDistrict().getRegion().equals(caze.getRegion())) {
+		if (!districtFacade.getDistrictByUuid(dto.getDistrict().getUuid()).getRegion().equals(dto.getRegion())) {
 			throw new ValidationRuntimeException(
 					"Could not find a database entry for the specified district in the specified region");
 		}
-		if (caze.getCommunity() != null && !caze.getCommunity().getDistrict().equals(caze.getDistrict())) {
+		if (dto.getCommunity() != null && !communityFacade.getByUuid(dto.getCommunity().getUuid()).getDistrict().equals(dto.getDistrict())) {
 			throw new ValidationRuntimeException(
 					"Could not find a database entry for the specified community in the specified district");
 		}
-		if (caze.getCommunity() == null && caze.getHealthFacility().getDistrict() != null
-				&& !caze.getHealthFacility().getDistrict().equals(caze.getDistrict())) {
+		if (dto.getCommunity() == null && facilityFacade.getByUuid(dto.getHealthFacility().getUuid()).getDistrict() != null
+				&& !facilityFacade.getByUuid(dto.getHealthFacility().getUuid()).getDistrict().equals(dto.getDistrict())) {
 			throw new ValidationRuntimeException(
 					"Could not find a database entry for the specified health facility in the specified district");
 		}
-		if (caze.getCommunity() != null && caze.getHealthFacility().getCommunity() != null
-				&& !caze.getCommunity().equals(caze.getHealthFacility().getCommunity())) {
+		if (dto.getCommunity() != null && facilityFacade.getByUuid(dto.getHealthFacility().getUuid()).getCommunity() != null
+				&& !dto.getCommunity().equals(facilityFacade.getByUuid(dto.getHealthFacility().getUuid()).getCommunity())) {
 			throw new ValidationRuntimeException(
 					"Could not find a database entry for the specified health facility in the specified community");
 		}
-		if (caze.getHealthFacility().getRegion() != null
-				&& !caze.getRegion().equals(caze.getHealthFacility().getRegion())) {
+		if (facilityFacade.getByUuid(dto.getHealthFacility().getUuid()).getRegion() != null
+				&& !dto.getRegion().equals(facilityFacade.getByUuid(dto.getHealthFacility().getUuid()).getRegion())) {
 			throw new ValidationRuntimeException(
 					"Could not find a database entry for the specified health facility in the specified region");
 		}
-		if (caze.getHealthFacility().getRegion() != null
-				&& !caze.getRegion().equals(caze.getHealthFacility().getRegion())) {
+		if (facilityFacade.getByUuid(dto.getHealthFacility().getUuid()).getRegion() != null
+				&& !dto.getRegion().equals(facilityFacade.getByUuid(dto.getHealthFacility().getUuid()).getRegion())) {
 			throw new ValidationRuntimeException(
 					"Could not find a database entry for the specified health facility in the specified region");
 		}
-
+		
+		caze = fillOrBuildEntity(dto, caze);
 		caseService.ensurePersisted(caze);
-
 		onCaseChanged(existingCaseDto, caze);
 
 		return toDto(caze);

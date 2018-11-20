@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
 import java.util.Date;
@@ -62,24 +79,8 @@ public class CaseDataDto extends EntityDto {
 	public static final String OUTCOME = "outcome";
 	public static final String OUTCOME_DATE = "outcomeDate";
 
-	@Outbreaks
-	@Required
-	private UserReferenceDto reportingUser;
-	@Outbreaks
-	@Required
-	private Date reportDate;
+	// Fields are declared in the order they should appear in the import template
 
-	@Required
-	private PersonReferenceDto person;
-	@Outbreaks
-	@Required
-	private CaseClassification caseClassification;
-	@Outbreaks
-	private UserReferenceDto classificationUser;
-	@Outbreaks
-	private Date classificationDate;
-	@Outbreaks
-	private String classificationComment;
 	@Outbreaks
 	@Required
 	private Disease disease;
@@ -91,17 +92,36 @@ public class CaseDataDto extends EntityDto {
 	@Diseases({ Disease.DENGUE })
 	@Outbreaks
 	private DengueFeverType dengueFeverType;
+	@Required
+	private PersonReferenceDto person;
+	@Outbreaks
+	private String epidNumber;
+	@Outbreaks
+	@Required
+	private Date reportDate;
+	@Outbreaks
+	@Required
+	private UserReferenceDto reportingUser;
+	@Outbreaks
+	private Date receptionDate;
+	@Outbreaks
+	@Required
+	private CaseClassification caseClassification;
+	@Outbreaks
+	private UserReferenceDto classificationUser;
+	@Outbreaks
+	private Date classificationDate;
+	@Outbreaks
+	private String classificationComment;
 	@Outbreaks
 	@Required
 	private InvestigationStatus investigationStatus;
 	@Outbreaks
 	private Date investigatedDate;
 	@Outbreaks
-	private Date receptionDate;
-
-	private HospitalizationDto hospitalization;
-	private EpiDataDto epiData;
-
+	private CaseOutcome outcome;
+	@Outbreaks
+	private Date outcomeDate;
 	@Outbreaks
 	@Required
 	private RegionReferenceDto region;
@@ -115,11 +135,7 @@ public class CaseDataDto extends EntityDto {
 	private FacilityReferenceDto healthFacility;
 	@Outbreaks
 	private String healthFacilityDetails;
-
-	private SymptomsDto symptoms;
-
 	private YesNoUnknown pregnant;
-
 	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.OTHER })
 	@Outbreaks
 	private Vaccination vaccination;
@@ -135,28 +151,24 @@ public class CaseDataDto extends EntityDto {
 	private YesNoUnknown smallpoxVaccinationScar;
 	@Diseases({ Disease.MONKEYPOX })
 	private YesNoUnknown smallpoxVaccinationReceived;
-
-	@Outbreaks
-	private String epidNumber;
-
 	@Outbreaks
 	private UserReferenceDto surveillanceOfficer;
 	@Deprecated
 	private UserReferenceDto caseOfficer;
-
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
-
-	@Outbreaks
-	private CaseOutcome outcome;
-	@Outbreaks
-	private Date outcomeDate;
+	private HospitalizationDto hospitalization;
+	private SymptomsDto symptoms;
+	private EpiDataDto epiData;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();
 		caze.setUuid(DataHelper.createUuid());
 		caze.setPerson(person);
+		caze.setHospitalization(HospitalizationDto.build());
+		caze.setEpiData(EpiDataDto.build());
+		caze.setSymptoms(SymptomsDto.build());
 		caze.setDisease(disease);
 		caze.setInvestigationStatus(InvestigationStatus.PENDING);
 		caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
@@ -466,4 +478,5 @@ public class CaseDataDto extends EntityDto {
 	public CaseReferenceDto toReference() {
 		return new CaseReferenceDto(getUuid(), CaseReferenceDto.buildCaption(getUuid(), getPerson().getCaption()));
 	}
+	
 }

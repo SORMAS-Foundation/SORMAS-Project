@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
 import java.util.Arrays;
@@ -15,6 +32,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -28,13 +46,14 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
 public class SampleEditForm extends AbstractEditForm<SampleDto> {
-	
+
 	private static final String REPORT_INFORMATION_LOC = "reportInformationLoc";
 
 	private static final String HTML_LAYOUT = 
@@ -46,7 +65,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_SOURCE, ""),
 					LayoutUtil.fluidRowLocs(SampleDto.SUGGESTED_TYPE_OF_TEST, ""),
 					LayoutUtil.fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS)
-			) +
+					) +
 			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.SHIPPED) +
 			LayoutUtil.fluidRowLocs(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS) +
 			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.RECEIVED) +
@@ -63,7 +82,8 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 	protected void addFields() {
 		addField(SampleDto.SAMPLE_CODE, TextField.class);
 		addField(SampleDto.LAB_SAMPLE_ID, TextField.class);
-		addField(SampleDto.SAMPLE_DATE_TIME, DateTimeField.class);
+		DateTimeField sampleDateField = addField(SampleDto.SAMPLE_DATE_TIME, DateTimeField.class);
+		sampleDateField.setInvalidCommitted(false);
 		addField(SampleDto.SAMPLE_MATERIAL, ComboBox.class);
 		addField(SampleDto.SAMPLE_MATERIAL_TEXT, TextField.class);
 		ComboBox sampleSource = addField(SampleDto.SAMPLE_SOURCE, ComboBox.class);
@@ -81,6 +101,20 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		CheckBox shipped = addField(SampleDto.SHIPPED, CheckBox.class);
 		CheckBox received = addField(SampleDto.RECEIVED, CheckBox.class);
 
+		// Validators
+		sampleDateField.addValidator(new DateComparisonValidator(sampleDateField, shipmentDate, true, false,
+				I18nProperties.getValidationError("beforeDate", sampleDateField.getCaption(), shipmentDate.getCaption())));
+		sampleDateField.addValidator(new DateComparisonValidator(sampleDateField, receivedDate, true, false,
+				I18nProperties.getValidationError("beforeDate", sampleDateField.getCaption(), receivedDate.getCaption())));
+		shipmentDate.addValidator(new DateComparisonValidator(shipmentDate, sampleDateField, false, false,
+				I18nProperties.getValidationError("afterDate", shipmentDate.getCaption(), sampleDateField.getCaption())));
+		shipmentDate.addValidator(new DateComparisonValidator(shipmentDate, receivedDate, true, false,
+				I18nProperties.getValidationError("beforeDate", shipmentDate.getCaption(), receivedDate.getCaption())));
+		receivedDate.addValidator(new DateComparisonValidator(receivedDate, sampleDateField, false, false,
+				I18nProperties.getValidationError("afterDate", receivedDate.getCaption(), sampleDateField.getCaption())));
+		receivedDate.addValidator(new DateComparisonValidator(receivedDate, shipmentDate, false, false,
+				I18nProperties.getValidationError("afterDate", receivedDate.getCaption(), shipmentDate.getCaption())));
+
 		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.SAMPLE_MATERIAL_TEXT, SampleDto.SAMPLE_MATERIAL, Arrays.asList(SampleMaterial.OTHER), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.NO_TEST_POSSIBLE_REASON, SampleDto.SPECIMEN_CONDITION, Arrays.asList(SpecimenCondition.NOT_ADEQUATE), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SAMPLE_MATERIAL, Arrays.asList(SampleDto.SAMPLE_MATERIAL_TEXT), Arrays.asList(SampleMaterial.OTHER));
@@ -88,7 +122,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 
 		addValueChangeListener(e -> {
 			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getAssociatedCase().getUuid());
-			
+
 			FieldHelper.setRequiredWhen(getFieldGroup(), received, Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.SPECIMEN_CONDITION), Arrays.asList(true));
 			FieldHelper.setEnabledWhen(getFieldGroup(), received, Arrays.asList(true), Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID, SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON), true);
 
@@ -119,7 +153,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 					}
 				}
 			});
-			
+
 			received.addValueChangeListener(event -> {
 				if ((boolean) event.getProperty().getValue() == true) {
 					if (receivedDate.getValue() == null) {
@@ -127,15 +161,15 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 					}
 				}
 			});
-			
+
 			// Initialize referral and report information
 			VerticalLayout reportInfoLayout = new VerticalLayout();
-			
+
 			String reportInfoText = "Reported on " + DateHelper.formatLocalDateTime(getValue().getReportDateTime()) + " by " + getValue().getReportingUser().toString();
 			Label reportInfoLabel = new Label(reportInfoText);
 			reportInfoLabel.setEnabled(false);
 			reportInfoLayout.addComponent(reportInfoLabel);
-			
+
 			SampleReferenceDto referredFromRef = FacadeProvider.getSampleFacade().getReferredFrom(getValue().getUuid());
 			if (referredFromRef != null) {
 				SampleDto referredFrom = FacadeProvider.getSampleFacade().getSampleByUuid(referredFromRef.getUuid());
@@ -145,7 +179,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 				referredButton.addClickListener(s -> ControllerProvider.getSampleController().navigateToData(referredFrom.getUuid()));
 				reportInfoLayout.addComponent(referredButton);
 			}
-			
+
 			getContent().addComponent(reportInfoLayout, REPORT_INFORMATION_LOC);
 		});
 

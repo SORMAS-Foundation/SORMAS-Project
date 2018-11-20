@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
 import java.util.ArrayList;
@@ -10,6 +27,7 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -25,6 +43,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -63,11 +82,10 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
     
 	@Override
 	protected void addFields() {
-
     	addField(TaskDto.CAZE, ComboBox.class);
     	addField(TaskDto.EVENT, ComboBox.class);
     	addField(TaskDto.CONTACT, ComboBox.class);
-    	addField(TaskDto.SUGGESTED_START, DateTimeField.class);
+    	DateTimeField startDate = addField(TaskDto.SUGGESTED_START, DateTimeField.class);
     	DateTimeField dueDate = addField(TaskDto.DUE_DATE, DateTimeField.class);
     	dueDate.setImmediate(true);
     	addField(TaskDto.PRIORITY, ComboBox.class);
@@ -140,6 +158,12 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	    		// fallback - just show all users
 	    		users = FacadeProvider.getUserFacade().getAllAfterAsReference(null);
 	    	}
+	    	
+	    	// Validation
+			startDate.addValidator(new DateComparisonValidator(startDate, dueDate, true, false, 
+					I18nProperties.getValidationError("beforeDate", startDate.getCaption(), dueDate.getCaption())));
+			dueDate.addValidator(new DateComparisonValidator(dueDate, startDate, false, false, 
+					I18nProperties.getValidationError("afterDate", dueDate.getCaption(), startDate.getCaption())));
 	    	
 	    	TaskController taskController = ControllerProvider.getTaskController();
     		for (UserReferenceDto user : users) {

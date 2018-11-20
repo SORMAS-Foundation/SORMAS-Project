@@ -1,13 +1,29 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.app.rest;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.ViewStructure;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -27,6 +43,17 @@ import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationNoneOfCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationNotInStartDateRangeCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationPersonAgeCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationSampleTestCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationSampleTestPositiveResultCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
@@ -85,6 +112,22 @@ public final class RetroProvider {
 
         this.context = context;
 
+        RuntimeTypeAdapterFactory<ClassificationCriteriaDto> classificationCriteriaFactory = RuntimeTypeAdapterFactory
+                .of(ClassificationCriteriaDto.class, "type")
+                .registerSubtype(ClassificationAllOfCriteriaDto.class, "ClassificationAllOfCriteriaDto")
+                .registerSubtype(ClassificationCaseCriteriaDto.class, "ClassificationCaseCriteriaDto")
+                .registerSubtype(ClassificationNoneOfCriteriaDto.class, "ClassificationNoneOfCriteriaDto")
+                .registerSubtype(ClassificationPersonAgeCriteriaDto.class, "ClassificationPersonAgeCriteriaDto")
+                .registerSubtype(ClassificationSampleTestPositiveResultCriteriaDto.class, "ClassificationSampleTestPositiveResultCriteriaDto")
+                .registerSubtype(ClassificationXOfCriteriaDto.class, "ClassificationXOfCriteriaDto")
+                .registerSubtype(ClassificationEpiDataCriteriaDto.class, "ClassificationEpiDataCriteriaDto")
+                .registerSubtype(ClassificationNotInStartDateRangeCriteriaDto.class, "ClassificationNotInStartDateRangeCriteriaDto")
+                .registerSubtype(ClassificationSymptomsCriteriaDto.class, "ClassificationSymptomsCriteriaDto")
+                .registerSubtype(ClassificationSampleTestCriteriaDto.class, "ClassificationSampleTestCriteriaDto")
+                .registerSubtype(ClassificationXOfCriteriaDto.ClassificationXOfSubCriteriaDto.class, "ClassificationXOfSubCriteriaDto")
+                .registerSubtype(ClassificationXOfCriteriaDto.ClassificationOneOfCompactCriteriaDto.class, "ClassificationOneOfCompactCriteriaDto")
+                .registerSubtype(ClassificationAllOfCriteriaDto.ClassificationAllOfCompactCriteriaDto.class, "ClassificationAllOfCompactCriteriaDto");
+
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
                     public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -104,6 +147,7 @@ public final class RetroProvider {
                         return new JsonPrimitive(src.getTime());
                     }
                 })
+                .registerTypeAdapterFactory(classificationCriteriaFactory)
                 .create();
 
         // Basic auth as explained in https://futurestud.io/tutorials/android-basic-authentication-with-retrofit
@@ -281,10 +325,10 @@ public final class RetroProvider {
     }
 
     public static void matchAppAndApiVersions() throws ServerCommunicationException, ServerConnectionException, ApiVersionException {
-        matchAppAndApiVersions(null);
+        matchAppAndApiVersions(getInfoFacade());
     }
 
-    private static void matchAppAndApiVersions(final InfoFacadeRetro localInfoFacadeRetro) throws ServerCommunicationException, ServerConnectionException, ApiVersionException {
+    private static void matchAppAndApiVersions(final InfoFacadeRetro infoFacadeRetro) throws ServerCommunicationException, ServerConnectionException, ApiVersionException {
         // Retrieve the version
         Response<String> versionResponse;
         try {
@@ -292,7 +336,7 @@ public final class RetroProvider {
 
                 @Override
                 protected Response<String> doInBackground(Void... params) {
-                    Call<String> versionCall = localInfoFacadeRetro != null ? localInfoFacadeRetro.getVersion() : getInfoFacade().getVersion();
+                    Call<String> versionCall = infoFacadeRetro.getVersion();
                     try {
                         return versionCall.execute();
                     } catch (IOException e) {
@@ -318,7 +362,7 @@ public final class RetroProvider {
 
                         @Override
                         protected Response<String> doInBackground(Void... params) {
-                            Call<String> versionCall = localInfoFacadeRetro != null ? localInfoFacadeRetro.getAppUrl(InfoProvider.get().getVersion()) : getInfoFacade().getAppUrl(InfoProvider.get().getVersion());
+                            Call<String> versionCall = infoFacadeRetro.getAppUrl(InfoProvider.get().getVersion());
                             try {
                                 return versionCall.execute();
                             } catch (IOException e) {

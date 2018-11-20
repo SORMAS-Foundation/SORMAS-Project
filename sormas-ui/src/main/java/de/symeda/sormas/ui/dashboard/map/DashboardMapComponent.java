@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.map;
 
 import java.math.BigDecimal;
@@ -379,17 +396,31 @@ public class DashboardMapComponent extends VerticalLayout {
 						refreshMap();
 					});
 
-					CheckBox showRegionsCheckBox = new CheckBox();
-					CssStyles.style(showRegionsCheckBox, CssStyles.VSPACE_NONE);
-					showRegionsCheckBox.setCaption("Show regions");
-					showRegionsCheckBox.setValue(showRegions);
-					showRegionsCheckBox.addValueChangeListener(e -> {
-						showRegions = (boolean) e.getProperty().getValue();
-						regionMapVisualizationSelect.setEnabled(showRegions);
-						regionMapVisualizationSelect.setValue(caseMeasure);
-						refreshMap();
-					});
-					layersLayout.addComponent(showRegionsCheckBox);
+					HorizontalLayout showRegionsLayout = new HorizontalLayout();
+					{
+						CheckBox showRegionsCheckBox = new CheckBox();
+						CssStyles.style(showRegionsCheckBox, CssStyles.VSPACE_NONE);
+						showRegionsCheckBox.setCaption("Show regions");
+						showRegionsCheckBox.setValue(showRegions);
+						showRegionsCheckBox.addValueChangeListener(e -> {
+							showRegions = (boolean) e.getProperty().getValue();
+							regionMapVisualizationSelect.setEnabled(showRegions);
+							regionMapVisualizationSelect.setValue(caseMeasure);
+							refreshMap();
+						});
+						showRegionsLayout.addComponent(showRegionsCheckBox);
+
+						Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+						infoLabel.setDescription(
+								"\"Case incidence ratio\" means the number of cases per 100,000 inhabitants. You can check the map key to see the thresholds that define "
+										+ "how the districts are colorized.");
+						CssStyles.style(infoLabel, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_SECONDARY,
+								CssStyles.HSPACE_LEFT_3);
+						infoLabel.setHeightUndefined();
+						showRegionsLayout.addComponent(infoLabel);
+						showRegionsLayout.setComponentAlignment(infoLabel, Alignment.TOP_CENTER);
+					}
+					layersLayout.addComponent(showRegionsLayout);
 					layersLayout.addComponent(regionMapVisualizationSelect);
 					regionMapVisualizationSelect.setEnabled(showRegions);
 				}
@@ -799,7 +830,7 @@ public class DashboardMapComponent extends VerticalLayout {
 	private void clearCaseMarkers() {
 
 		map.removeGroup(CASES_GROUP_ID);
-		map.removeGroup(CASE_FACILITIES_GROUP_ID);
+//		map.removeGroup(CASE_FACILITIES_GROUP_ID);
 
 		markerCaseFacilities.clear();
 		casesByFacility.clear();
@@ -813,7 +844,7 @@ public class DashboardMapComponent extends VerticalLayout {
 
 		fillCaseLists(cases);
 
-		List<LeafletMarker> facilityMarkers = new ArrayList<LeafletMarker>();
+		List<LeafletMarker> caseMarkers = new ArrayList<LeafletMarker>();
 
 		for (FacilityReferenceDto facilityReference : casesByFacility.keySet()) {
 			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(facilityReference.getUuid());
@@ -877,11 +908,12 @@ public class DashboardMapComponent extends VerticalLayout {
 			LeafletMarker leafletMarker = new LeafletMarker();
 			leafletMarker.setLatLon(facility.getLatitude(), facility.getLongitude());
 			leafletMarker.setIcon(icon);
-			facilityMarkers.add(leafletMarker);
+			leafletMarker.setMarkerCount(numberOfCases);
+			caseMarkers.add(leafletMarker);
 		}
-		map.addMarkerGroup(CASE_FACILITIES_GROUP_ID, facilityMarkers);
 
-		List<LeafletMarker> caseMarkers = new ArrayList<LeafletMarker>();
+//		map.addMarkerGroup(CASE_FACILITIES_GROUP_ID, caseMarkers);
+//		List<LeafletMarker> caseMarkers = new ArrayList<LeafletMarker>();
 
 		for (MapCaseDto caze : mapCaseDtos) {
 			LeafletMarker marker = new LeafletMarker();
@@ -1041,23 +1073,25 @@ public class DashboardMapComponent extends VerticalLayout {
 	private void onMarkerClicked(String groupId, int markerIndex) {
 
 		switch (groupId) {
-		case CASE_FACILITIES_GROUP_ID: {
-			FacilityDto facility = markerCaseFacilities.get(markerIndex);
-			VerticalLayout layout = new VerticalLayout();
-			Window window = VaadinUiUtil.showPopupWindow(layout);
-			CasePopupGrid caseGrid = new CasePopupGrid(window, new FacilityReferenceDto(facility.getUuid()),
-					DashboardMapComponent.this);
-			caseGrid.setHeightMode(HeightMode.ROW);
-			layout.addComponent(caseGrid);
-			layout.setMargin(true);
-			window.setCaption("Cases in " + facility.toString());
+		case CASES_GROUP_ID://CASE_FACILITIES_GROUP_ID:
 
-		}
-			break;
-		case CASES_GROUP_ID: {
-			MapCaseDto caze = mapCaseDtos.get(markerIndex);
-			ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
-		}
+			if (markerIndex < markerCaseFacilities.size()) {
+				FacilityDto facility = markerCaseFacilities.get(markerIndex);
+				VerticalLayout layout = new VerticalLayout();
+				Window window = VaadinUiUtil.showPopupWindow(layout);
+				CasePopupGrid caseGrid = new CasePopupGrid(window, new FacilityReferenceDto(facility.getUuid()),
+						DashboardMapComponent.this);
+				caseGrid.setHeightMode(HeightMode.ROW);
+				layout.addComponent(caseGrid);
+				layout.setMargin(true);
+				window.setCaption("Cases in " + facility.toString());
+			} else {
+//			break;
+//		case CASES_GROUP_ID: {
+				markerIndex -= markerCaseFacilities.size();
+				MapCaseDto caze = mapCaseDtos.get(markerIndex);
+				ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
+			}
 			break;
 		case CONTACTS_GROUP_ID: {
 			MapContactDto contact = markerContacts.get(markerIndex);

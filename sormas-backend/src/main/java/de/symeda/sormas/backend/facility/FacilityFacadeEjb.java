@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.backend.facility;
 
 import java.util.Collections;
@@ -150,6 +167,14 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		return toReferenceDto(facilityService.getByUuid(uuid));
 	}
 
+	@Override
+	public List<FacilityReferenceDto> getByName(String name, DistrictReferenceDto districtRef, CommunityReferenceDto communityRef) {
+		return facilityService.getHealthFacilitiesByName(name, districtService.getByReferenceDto(districtRef), communityService.getByReferenceDto(communityRef))
+				.stream()
+				.map(f -> toReferenceDto(f))
+				.collect(Collectors.toList());
+	}
+
 	public static FacilityReferenceDto toReferenceDto(Facility entity) {
 		if (entity == null) {
 			return null;
@@ -216,23 +241,22 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	}
 
 	@Override
-	public void saveFacility(FacilityDto dto) {
+	public void saveFacility(FacilityDto dto) throws ValidationRuntimeException {
 		Facility facility = facilityService.getByUuid(dto.getUuid());
 
-		facility = fillOrBuildEntity(dto, facility);
-
-		if (facility.getRegion() == null) {
+		if (dto.getRegion() == null) {
 			throw new ValidationRuntimeException("You have to specify a valid region");
 		}
 		if (dto.getType() != FacilityType.LABORATORY) {
-			if (facility.getDistrict() == null) {
+			if (dto.getDistrict() == null) {
 				throw new ValidationRuntimeException("You have to specify a valid district");
 			}
-			if (facility.getCommunity() == null) {
+			if (dto.getCommunity() == null) {
 				throw new ValidationRuntimeException("You have to specify a valid community");
 			}
 		}
-
+		
+		facility = fillOrBuildEntity(dto, facility);
 		facilityService.ensurePersisted(facility);
 	}
 

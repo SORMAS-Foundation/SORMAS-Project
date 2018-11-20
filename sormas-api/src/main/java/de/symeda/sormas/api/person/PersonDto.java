@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.api.person;
 
 import java.util.Date;
@@ -58,17 +75,18 @@ public class PersonDto extends EntityDto {
 	public static final String OCCUPATION_FACILITY = "occupationFacility";
 	public static final String OCCUPATION_FACILITY_DETAILS = "occupationFacilityDetails";
 
-	@Outbreaks
-	private Sex sex;
+	// Fields are declared in the order they should appear in the import template
+
 	@Outbreaks
 	@Required
 	private String firstName;
 	@Outbreaks
 	@Required
 	private String lastName;
-
+	private String nickname;
+	private String mothersMaidenName;
 	@Outbreaks
-	private PresentCondition presentCondition;
+	private Sex sex;
 	@Outbreaks
 	private Integer birthdateDD;
 	@Outbreaks
@@ -79,6 +97,8 @@ public class PersonDto extends EntityDto {
 	private Integer approximateAge;
 	@Outbreaks
 	private ApproximateAgeType approximateAgeType;
+	@Outbreaks
+	private PresentCondition presentCondition;
 	private Date deathDate;
 	private CauseOfDeath causeOfDeath;
 	private Disease causeOfDeathDisease;
@@ -93,14 +113,9 @@ public class PersonDto extends EntityDto {
 	private String burialPlaceDescription;
 	@Diseases({ Disease.EVD, Disease.OTHER })
 	private BurialConductor burialConductor;
-
-	private String nickname;
-	private String mothersMaidenName;
-
 	private String phone;
 	private String phoneOwner;
 	private LocationDto address;
-
 	private OccupationType occupationType;
 	private String occupationDetails;
 	private RegionReferenceDto occupationRegion;
@@ -360,6 +375,13 @@ public class PersonDto extends EntityDto {
 
 	public static String buildCaption(String firstName, String lastName) {
 		return DataHelper.toStringNullable(firstName) + " " + DataHelper.toStringNullable(lastName).toUpperCase();
+	}
+	
+	public static PersonDto build() {
+		PersonDto person = new PersonDto();
+		person.setUuid(DataHelper.createUuid());
+		person.setAddress(LocationDto.build());
+		return person;
 	}
 
 }

@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
 import java.util.ArrayList;
@@ -121,12 +138,15 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 					return (T) new LocationEditForm(editOrCreateUserRight);
 				} 
 				else if (DateTimeField.class.isAssignableFrom(fieldType)) {
-					return (T) new DateTimeField();
+					DateTimeField field = new DateTimeField();
+					field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
+					return (T) field;
 				} 
 				else if (DateField.class.isAssignableFrom(fieldType)) {
 					DateField field = super.createField(type, DateField.class);
 					field.setDateFormat(DateHelper.getLocalDatePattern());
 					field.setLenient(true);
+					field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
 					return (T) field;
 				}
 				else if (PreviousHospitalizationsField.class.isAssignableFrom(fieldType)) {
@@ -146,6 +166,8 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 					if (Date.class.isAssignableFrom(type)) {
 						DateField field = super.createField(type, DateField.class);
 						field.setDateFormat(DateHelper.getLocalDatePattern());
+						field.setLenient(true);
+						field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
 						return (T) field;
 					}
 					else if (ReferenceDto.class.isAssignableFrom(type)) {
@@ -359,12 +381,14 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 					getPropertyI18nPrefix(), propertyId, abstractField.getDescription()));
 
 			if (hideValidationUntilNextCommit) {
-				abstractField.setValidationVisible(false);
+				if (!abstractField.isInvalidCommitted()) {
+					abstractField.setValidationVisible(false);
+				}
 			}
 		}
 
-		String validationError = I18nProperties.getPrefixValidationError(getPropertyI18nPrefix(), propertyId);
-		field.setRequiredError(String.format(validationError, caption));
+		String validationError = I18nProperties.getPrefixValidationError(getPropertyI18nPrefix(), propertyId, caption);
+		field.setRequiredError(validationError);
 
 		field.setWidth(100, Unit.PERCENTAGE);
 
@@ -439,14 +463,18 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		for (Field<?> field : getFieldGroup().getFields()) {
 			if (field instanceof AbstractField) {
 				AbstractField<?> abstractField = (AbstractField<?>)field;
-				abstractField.setValidationVisible(false);
+				if (!abstractField.isInvalidCommitted()) {
+					abstractField.setValidationVisible(false);
+				}
 			}
 		}
 
 		for (Field<?> field : customFields) {
 			if (field instanceof AbstractField) {
 				AbstractField<?> abstractField = (AbstractField<?>)field;
-				abstractField.setValidationVisible(false);
+				if (!abstractField.isInvalidCommitted()) {
+					abstractField.setValidationVisible(false);
+				}
 			}
 		}
 	}

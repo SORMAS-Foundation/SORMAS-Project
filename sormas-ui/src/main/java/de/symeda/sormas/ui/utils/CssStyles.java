@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
 import java.util.Arrays;
@@ -97,6 +114,7 @@ public final class CssStyles {
 	public static final String BACKGROUND_SUSPECT_CRITERIA = "background-suspect-criteria";
 	public static final String BACKGROUND_PROBABLE_CRITERIA = "background-probable-criteria";
 	public static final String BACKGROUND_CONFIRMED_CRITERIA = "background-confirmed-criteria";
+	public static final String NO_BORDER = "no-border";
 	
 	// Button styles
 	public static final String VAADIN_BUTTON = "v-button";
@@ -105,6 +123,7 @@ public final class CssStyles {
 	public static final String BUTTON_SUBTLE = "subtle";
 	public static final String BUTTON_BORDER_NEUTRAL = "border-neutral";
 	public static final String BUTTON_NO_PADDING = "no-padding";
+	public static final String BUTTON_NO_UPPERCASE = "no-uppercase";
 	public static final String LINK_ACTIVE = "active";
 	public static final String LINK_HIGHLIGHTED = "link-highlighted";
 	public static final String LINK_HIGHLIGHTED_LIGHT = "link-highlighted-light";

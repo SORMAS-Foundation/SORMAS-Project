@@ -12,3 +12,46 @@
 	-o-transition: -o-stroke-dashoffset 0.3s ease-out, -o-stroke-opacity 0.3s ease-in;
 	transition: stroke-dashoffset 0.3s ease-out, stroke-opacity 0.3s ease-in;
 }
+
+.marker-cluster-red {
+	background-color: rgba(231, 76, 60, 0.6);
+	}
+.marker-cluster-red div {
+	background-color: rgba(229, 166, 160, 0.6);
+	}
+
+.marker-cluster-orange {
+	background-color: rgba(255, 150, 0, 0.6);
+	}
+.marker-cluster-orange div {
+	background-color: rgba(255, 223, 178, 0.6);
+	}
+
+.marker-cluster-yellow {
+	background-color: rgba(255, 209, 0, 0.6);
+	}
+.marker-cluster-yellow div {
+	background-color: rgba(255, 240, 176, 0.6);
+	}
+	
+.marker-cluster-grey {
+	background-color: rgba(177, 177, 177, 0.6);
+	}
+.marker-cluster-grey div {
+	background-color: rgba(219, 219, 219, 0.6);
+	}
+	
+
+.marker-cluster.light-box {
+	border-radius: 10px;
+}
+.marker-cluster.light-box div {
+	border-radius: 8px;
+}
+
+.marker-cluster.box {
+	border-radius: 2px;
+}
+.marker-cluster.box div {
+	border-radius: 1px;
+}

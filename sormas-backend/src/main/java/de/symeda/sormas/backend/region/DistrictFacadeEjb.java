@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.backend.region;
 
 import java.util.Collections;
@@ -18,13 +35,12 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.region.DistrictCriteria;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -139,16 +155,20 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	}
 	
 	@Override
-	public void saveDistrict(DistrictDto dto) {
+	public void saveDistrict(DistrictDto dto) throws ValidationRuntimeException {
 		District district = districtService.getByUuid(dto.getUuid());
 		
-		district = fillOrBuildEntity(dto, district);
-		
-		if (district.getRegion() == null) {
+		if (dto.getRegion() == null) {
 			throw new ValidationRuntimeException("You have to specify a valid region");
 		}
-		
+
+		district = fillOrBuildEntity(dto, district);
 		districtService.ensurePersisted(district);
+	}
+
+	@Override
+	public List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef) {
+		return districtService.getByName(name, regionService.getByReferenceDto(regionRef)).stream().map(d -> toReferenceDto(d)).collect(Collectors.toList());
 	}
 
 	public static DistrictReferenceDto toReferenceDto(District entity) {

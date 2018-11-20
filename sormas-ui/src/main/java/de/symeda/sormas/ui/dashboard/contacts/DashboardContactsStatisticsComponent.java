@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.contacts;
 
 import java.util.ArrayList;
@@ -192,10 +209,15 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 		// Content
 		secondComponent.addMainContent();
 		underFollowUp = new DashboardStatisticsPercentageElement("Under follow-up", CssStyles.SVG_FILL_PRIMARY);
+		underFollowUp.setDescription(FollowUpStatus.FOLLOW_UP.getDescription());
 		followUpCompleted = new DashboardStatisticsPercentageElement("Completed follow-up", CssStyles.SVG_FILL_POSITIVE);
+		followUpCompleted.setDescription(FollowUpStatus.COMPLETED.getDescription());
 		followUpCanceled = new DashboardStatisticsPercentageElement("Canceled follow-up", CssStyles.SVG_FILL_IMPORTANT);
+		followUpCanceled.setDescription(FollowUpStatus.CANCELED.getDescription());
 		lostToFollowUp = new DashboardStatisticsPercentageElement("Lost to follow-up", CssStyles.SVG_FILL_CRITICAL);
+		lostToFollowUp.setDescription(FollowUpStatus.LOST.getDescription());
 		contactStatusConverted = new DashboardStatisticsPercentageElement("Converted to case", CssStyles.SVG_FILL_NEUTRAL);
+		contactStatusConverted.setDescription("The contact has been converted to a case because it has become symptomatic");
 		secondComponent.addComponentToContent(underFollowUp);
 		secondComponent.addComponentToContent(followUpCompleted);
 		secondComponent.addComponentToContent(followUpCanceled);

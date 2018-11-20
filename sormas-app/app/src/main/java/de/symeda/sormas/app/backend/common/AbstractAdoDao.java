@@ -1,3 +1,21 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.app.backend.common;
 
 import android.util.Log;
@@ -965,13 +983,21 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 //    }
 
     public boolean isAnyModified() {
-
         try {
             ADO result = queryBuilder().where().eq(AbstractDomainObject.MODIFIED, true)
                     .queryForFirst();
             return result != null;
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform isAnyModified");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<ADO> getModifiedEntities() {
+        try {
+            return queryBuilder().where().eq(AbstractDomainObject.MODIFIED, true).query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getModifiedEntities");
             throw new RuntimeException(e);
         }
     }
@@ -1047,7 +1073,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 //        try {
         int resultRowCount = dao.create(data);
         if (resultRowCount < 1)
-            throw new SQLException("Database entry was not created. Go back and try again.\n" + data.toString());
+            throw new SQLException("Database entry was not created. Go back and try again.\n" +
+                    "Type: " + data.getClass().getSimpleName() + ", UUID: " + data.getUuid());
 //        } catch (SQLException e) {
 //            throw new RuntimeException(e);
 //        }
@@ -1061,7 +1088,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             return;
         int resultRowCount = dao.update(data);
         if (resultRowCount < 1) {
-            throw new SQLException("Database entry was not updated - update all entered fields and save again.\n" + data.toString());
+            throw new SQLException("Database entry was not updated - update all entered fields and save again.\n" +
+                    "Type: " + data.getClass().getSimpleName() + ", UUID: " + data.getUuid());
         }
     }
 
@@ -1086,7 +1114,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 //        try {
         int resultRowCount = dao.delete(data);
         if (resultRowCount < 1)
-            throw new SQLException("Database entry was not deleted - go back and try again.\n" + data.toString());
+            throw new SQLException("Database entry was not deleted - go back and try again.\n" +
+                    "Type: " + data.getClass().getSimpleName() + ", UUID: " + data.getUuid());
 //        } catch (SQLException e) {
 //            throw new RuntimeException(e);
 //        }

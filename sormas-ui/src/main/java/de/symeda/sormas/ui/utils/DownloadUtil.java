@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
 import java.io.BufferedInputStream;
@@ -40,7 +57,7 @@ import de.symeda.sormas.ui.statistics.DatabaseExportView;
 public class DownloadUtil {
 
 	public static final int DETAILED_EXPORT_STEP_SIZE = 200;
-	
+
 	private DownloadUtil() {
 
 	}
@@ -99,6 +116,18 @@ public class DownloadUtil {
 	}
 
 	@SuppressWarnings("serial")
+	public static StreamResource createStringStreamResource(String content, String fileName, String mimeType) {
+		StreamResource streamResource = new StreamResource(new StreamSource() {
+			@Override
+			public InputStream getStream() {
+				return new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
+			}
+		}, fileName);
+		streamResource.setMIMEType(mimeType);
+		return streamResource;
+	}
+
+	@SuppressWarnings("serial")
 	public static <T> StreamResource createCsvExportStreamResource(Class<T> exportRowClass, BiFunction<Integer, Integer, List<T>> exportRowsSupplier, Function<String,String> propertyIdCaptionFunction, String exportFileName) {
 		StreamResource extendedStreamResource = new StreamResource(new StreamSource() {
 			@Override
@@ -126,7 +155,7 @@ public class DownloadUtil {
 								fieldValues[i] = propertyIdCaptionFunction.apply(propertyId);
 					}
 					writer.writeNext(fieldValues);
-					
+
 					int startIndex = 0;
 					List<T> exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
 					while (!exportRows.isEmpty()) {						

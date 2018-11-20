@@ -37,6 +37,7 @@ The project consists of the following modules:
 * TODO: Reporting an issue
 * TODO: Code of conduct
 * [Setting up your local environment](DEVELOPMENT_ENVIRONMENT.md)
+* [Adding license headers](ADDING_LICENSE.md)
 
 ### Developers
 1. Use the Eclipse code formatter (Ctrl+Shift+F).  

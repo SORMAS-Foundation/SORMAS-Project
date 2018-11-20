@@ -1,6 +1,29 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.api.caze.classification;
 
+import java.util.Date;
+
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.InfoProvider;
 
 /**
  * Provides methods that create HTML Strings to visualize the automatic classification rules.
@@ -9,9 +32,9 @@ public class ClassificationHtmlRenderer {
 
 	private ClassificationHtmlRenderer() { }
 
-	public static String createSuspectHtmlString(DiseaseClassificationCriteria criteria) {
+	public static String createSuspectHtmlString(DiseaseClassificationCriteriaDto criteria) {
 		StringBuilder sb = new StringBuilder();
-		ClassificationCriteria suspectCriteria = criteria.getSuspectCriteria();
+		ClassificationCriteriaDto suspectCriteria = criteria.getSuspectCriteria();
 		if (suspectCriteria != null) {
 			StringBuilder suspectSb = new StringBuilder();
 			suspectSb.append(createHeadlineDiv("Suspect Classification"));
@@ -19,13 +42,13 @@ public class ClassificationHtmlRenderer {
 			suspectSb.append(buildCriteriaDiv(suspectCriteria));
 			sb.append(createSurroundingDiv(ClassificationCriteriaType.SUSPECT, suspectSb.toString(), true));
 		}
-		
+
 		return sb.toString();
 	}
-	
-	public static String createProbableHtmlString(DiseaseClassificationCriteria criteria) {
+
+	public static String createProbableHtmlString(DiseaseClassificationCriteriaDto criteria) {
 		StringBuilder sb = new StringBuilder();
-		ClassificationCriteria probableCriteria = criteria.getProbableCriteria();
+		ClassificationCriteriaDto probableCriteria = criteria.getProbableCriteria();
 		if (probableCriteria != null) {
 			StringBuilder probableSb = new StringBuilder();
 			probableSb.append(createHeadlineDiv("Probable Classification"));
@@ -33,13 +56,13 @@ public class ClassificationHtmlRenderer {
 			probableSb.append(buildCriteriaDiv(probableCriteria));
 			sb.append(createSurroundingDiv(ClassificationCriteriaType.PROBABLE, probableSb.toString(), true));
 		}
-		
+
 		return sb.toString();
 	}
 
-	public static String createConfirmedHtmlString(DiseaseClassificationCriteria criteria) {
+	public static String createConfirmedHtmlString(DiseaseClassificationCriteriaDto criteria) {
 		StringBuilder sb = new StringBuilder();
-		ClassificationCriteria confirmedCriteria = criteria.getConfirmedCriteria();
+		ClassificationCriteriaDto confirmedCriteria = criteria.getConfirmedCriteria();
 		if (confirmedCriteria != null) {
 			StringBuilder confirmedSb = new StringBuilder();
 			confirmedSb.append(createHeadlineDiv("Confirmed Classification"));
@@ -47,11 +70,80 @@ public class ClassificationHtmlRenderer {
 			confirmedSb.append(buildCriteriaDiv(confirmedCriteria));
 			sb.append(createSurroundingDiv(ClassificationCriteriaType.CONFIRMED, confirmedSb.toString(), false));
 		}
-		
+
 		return sb.toString();
 	}
 
-	private static String buildCriteriaDiv(ClassificationCriteria criteria) {
+	public static String createHtmlForDownload(String sormasServerUrl) {
+		StringBuilder html = new StringBuilder();
+		html.append("<html><header><style>");
+
+		// Add style definitions
+		html.append("body {\r\n" +
+				" font-family: verdana;\r\n" +
+				"}\r\n" +
+				".classification-rules .main-criteria {\r\n" + 
+				"  font-size: 0.8em;\r\n" +
+				"  width: 75%;\r\n" + 
+				"  border-radius: 8px;\r\n" + 
+				"  margin: auto;\r\n" +
+				"  padding: 8px;\r\n" + 
+				"}\r\n" + 
+				".classification-rules .main-criteria.main-criteria-suspect {\r\n" + 
+				"  background: rgba(255, 215, 0, 0.6);\r\n" + 
+				"  margin-bottom: 16px;\r\n" + 
+				"}\r\n" + 
+				".classification-rules .main-criteria.main-criteria-probable {\r\n" + 
+				"  background: rgba(255, 140, 0, 0.6);\r\n" + 
+				"  margin-bottom: 16px;\r\n" + 
+				"}\r\n" + 
+				".classification-rules .main-criteria.main-criteria-confirmed {\r\n" + 
+				"  background: rgba(255, 0, 0, 0.6);\r\n" + 
+				"}\r\n" + 
+				".classification-rules .headline {\r\n" + 
+				"  font-weight: bold;\r\n" + 
+				"}\r\n" + 
+				".classification-rules .criteria {\r\n" + 
+				"  width: calc(100% - 16px);\r\n" + 
+				"  border-radius: 8px;\r\n" + 
+				"  padding: 8px;\r\n" + 
+				"  margin-top: 6px;\r\n" + 
+				"  background: rgba(244, 244, 244, 0.8);\r\n" + 
+				"  display: inline-block;\r\n" + 
+				"}\r\n" + 
+				".classification-rules .sub-criteria {\r\n" + 
+				"  width: 95%;\r\n" + 
+				"  margin-right: 10px;\r\n" + 
+				"  margin-left: auto;\r\n" + 
+				"  margin-top: 6px;\r\n" + 
+				"  margin-bottom: 6px;\r\n" + 
+				"}\r\n" + 
+				".classification-rules .sub-criteria .sub-criteria-content {\r\n" + 
+				"  width: calc(100% - 8px);\r\n" + 
+				"  border-radius: 8px;\r\n" + 
+				"  padding: 8px;\r\n" + 
+				"  background: rgba(244, 244, 244, 0.7);\r\n" + 
+				"  display: inline-block;\r\n" + 
+				"}</style></header><body>");
+
+		html.append("<h1 style=\"text-align: center; color: #005A9C;\">SORMAS Case Classification Rules</h1>");
+		html.append("<h4 style=\"text-align: center;\">Generated for SORMAS ").append(InfoProvider.get().getVersion()).append(" on ").append(sormasServerUrl).append(" at ").append(DateHelper.formatLocalShortDateTime(new Date())).append("</h4>");
+		
+		for (Disease disease : Disease.values()) {
+			DiseaseClassificationCriteriaDto diseaseCriteria = FacadeProvider.getCaseClassificationFacade().getClassificationCriteriaForDisease(disease);
+			if (diseaseCriteria.hasAnyCriteria()) {
+				html.append("<h2 style=\"text-align: center; color: #005A9C;\">" + disease.toString() + "</h2>");
+				html.append(createSuspectHtmlString(diseaseCriteria));
+				html.append(createProbableHtmlString(diseaseCriteria));
+				html.append(createConfirmedHtmlString(diseaseCriteria));
+			}
+		}
+		html.append("</body></html>");
+
+		return html.toString();
+	}
+
+	private static String buildCriteriaDiv(ClassificationCriteriaDto criteria) {
 		StringBuilder sb = new StringBuilder();
 
 		if (!(criteria instanceof ClassificationCollectiveCriteria)) {
@@ -60,10 +152,10 @@ public class ClassificationHtmlRenderer {
 			sb.append(createCriteriaSurroundingDiv(itemDiv));
 		} else {
 			// Otherwise, create a div and fill it by iterating over the sub criteria
-			for (ClassificationCriteria subCriteria : ((ClassificationCollectiveCriteria) criteria).getSubCriteria()) {
-				if (subCriteria instanceof ClassificationAllOfCriteria) {
+			for (ClassificationCriteriaDto subCriteria : ((ClassificationCollectiveCriteria) criteria).getSubCriteria()) {
+				if (subCriteria instanceof ClassificationAllOfCriteriaDto) {
 					// If the sub criteria is an AllOfCriteria, every one of its sub criteria needs its own div
-					for (ClassificationCriteria subSubCriteria : ((ClassificationCollectiveCriteria) subCriteria).getSubCriteria()) {
+					for (ClassificationCriteriaDto subSubCriteria : ((ClassificationCollectiveCriteria) subCriteria).getSubCriteria()) {
 						sb.append(createCriteriaSurroundingDiv(buildSubCriteriaDiv(new StringBuilder(), subSubCriteria, subCriteria)));
 					}
 				} else {
@@ -75,7 +167,7 @@ public class ClassificationHtmlRenderer {
 		return sb.toString();
 	}
 
-	private static String buildSubCriteriaDiv(StringBuilder subCriteriaSb, ClassificationCriteria criteria, ClassificationCriteria parentCriteria) {
+	private static String buildSubCriteriaDiv(StringBuilder subCriteriaSb, ClassificationCriteriaDto criteria, ClassificationCriteriaDto parentCriteria) {
 		// For non-collective criteria, only a simple div needs to be added
 		if (!(criteria instanceof ClassificationCollectiveCriteria)) {
 			subCriteriaSb.append(createCriteriaItemDiv(criteria.buildDescription()));
@@ -83,22 +175,22 @@ public class ClassificationHtmlRenderer {
 		}
 
 		// Add the criteria name to the div (e.g. "ONE OF")
-		if (!(criteria instanceof ClassificationAllOfCriteria)) {
+		if (!(criteria instanceof ClassificationAllOfCriteriaDto)) {
 			subCriteriaSb.append(createCriteriaItemDiv(((ClassificationCollectiveCriteria) criteria).getCriteriaName()));
 		}
 
-		for (ClassificationCriteria subCriteria : ((ClassificationCollectiveCriteria) criteria).getSubCriteria()) {
+		for (ClassificationCriteriaDto subCriteria : ((ClassificationCollectiveCriteria) criteria).getSubCriteria()) {
 			if (!(subCriteria instanceof ClassificationCollectiveCriteria) || subCriteria instanceof ClassificationCompactCriteria) {
 				// For non-collective or compact collective criteria, add the description as a list item
 				subCriteriaSb.append("- " + subCriteria.buildDescription()+ "</br>");
-			} else if (parentCriteria instanceof ClassificationCollectiveCriteria && !(parentCriteria instanceof ClassificationAllOfCriteria)) {
+			} else if (parentCriteria instanceof ClassificationCollectiveCriteria && !(parentCriteria instanceof ClassificationAllOfCriteriaDto)) {
 				// For collective criteria, but not ClassificationAllOfCriteria, add a sub div with a slightly different color to make clear
 				// that it belongs to the criteria listed before
 				String itemDiv = createCriteriaItemDiv("<b>" + I18nProperties.getText("and").toUpperCase() + "</b>" + subCriteria.buildDescription());
 				subCriteriaSb.append(createSubCriteriaSurroundingDiv(itemDiv));
 			} else {
 				// For everything else, recursively call this method to determine how to display the sub criteria
-				buildSubCriteriaDiv(subCriteriaSb, subCriteria, criteria instanceof ClassificationAllOfCriteria ? parentCriteria : criteria);
+				buildSubCriteriaDiv(subCriteriaSb, subCriteria, criteria instanceof ClassificationAllOfCriteriaDto ? parentCriteria : criteria);
 			}
 		}
 
@@ -110,14 +202,10 @@ public class ClassificationHtmlRenderer {
 	 * Creates the surrounding div of a whole (suspect, probable or confirmed) criteria definition.
 	 */
 	private static String createSurroundingDiv(ClassificationCriteriaType criteriaType, String content, boolean marginBottom) {
-		return "<div class='v-slot v-slot-background-rounded-corners v-slot-background-"
-				+ criteriaType.toString() 
-				+ "-criteria v-slot-vspace-3' style='display: inline;' width='100%;'>"
-				+ "<div class='v-verticallayout v-layout v-vertical v-widget background-rounded-corners "
-				+ "v-verticallayout-background-rounded-corners background-" + criteriaType.toString() + "-criteria "
-				+ "v-verticallayout-background-" + criteriaType.toString() + "-criteria "
-				+ (marginBottom ? "vspace-3 v-verticallayout-vspace-3 " : "")
-				+ "v-has-width' style='width: 100%;'>"
+		return "<div class='classification-rules'>"
+				+ "<div class='main-criteria main-criteria-"
+				+ criteriaType.toString()
+				+ "'>"
 				+ content
 				+ "</div></div>";
 	}
@@ -126,44 +214,32 @@ public class ClassificationHtmlRenderer {
 	 * Creates a div containing the headline of a whole criteria.
 	 */
 	private static String createHeadlineDiv(String headline) {
-		return "<div class='v-slot v-slot-bold'>"
-				+ "<div class='v-label v-widget bold v-label-bold v-has-width' style='width: 100%;'>"
-				+ headline + "</div></div>";
+		return "<div class='headline'>"
+				+ headline 
+				+ "</div>";
 	}
 
 	/**
 	 * Creates a div containing an info text.
 	 */
 	private static String createInfoDiv() {
-		return "<div class='v-slot'>"
-				+ "<div class='v-label v-widget v-has-width' style='width: 100%;'>"
-				+ "... when the case meets <b>ALL</b> of the following requirements:"
-				+ "</div></div>";
+		return "... when the case meets <b>ALL</b> of the following requirements:<br/>";
 	}
 
 	/**
 	 * Creates the surrounding div of a single part of the criteria.
 	 */
 	private static String createCriteriaSurroundingDiv(String content) {
-		return "<div class='v-slot v-slot-background-rounded-corners "
-				+ "v-slot-background-criteria v-slot-vspace-top-4'>"
-				+ "<div class='v-verticallayout v-layout v-vertical v-widget background-rounded-corners "
-				+ "v-verticallayout-background-rounded-corners background-criteria v-verticallayout-background-criteria "
-				+ "vspace-top-4 v-verticallayout-vspace-top-4 v-has-width' style='width: 100%;'>"
+		return "<div class='criteria'>"
 				+ content
-				+ "</div></div>";
+				+ "</div>";
 	}
 
 	/**
 	 * Creates the surrounding div of a single sub criteria (with a slightly darker background).
 	 */
 	private static String createSubCriteriaSurroundingDiv(String content) {
-		return "<div class='v-slot v-slot-background-rounded-corners v-slot-background-sub-criteria "
-				+ "v-slot-vspace-top-4 v-slot-vspace-4 v-slot-hspace-right-3 v-align-right v-align-middle'>"
-				+ "<div class='v-verticallayout v-layout v-vertical v-widget background-rounded-corners "
-				+ "v-verticallayout-background-rounded-corners background-sub-criteria v-verticallayout-background-sub-criteria "
-				+ "vspace-top-4 v-verticallayout-vspace-top-4 vspace-4 v-verticallayout-vspace-4 hspace-right-3 "
-				+ "v-verticallayout-hspace-right-3 v-has-width' style='width: 95%;'>"
+		return "<div class='sub-criteria'><div class='sub-criteria-content'>"
 				+ content
 				+ "</div></div>";
 	}
@@ -172,10 +248,7 @@ public class ClassificationHtmlRenderer {
 	 * Creates the div for an actual criteria containing its description.
 	 */
 	private static String createCriteriaItemDiv(String text) {
-		return "<div class='v-slot'>"
-				+ "<div class='v-label v-widget v-has-width' style='width: 100%;'>"
-				+ text
-				+ "</div></div>";
+		return text + "<br/>";
 	}
 
 	private enum ClassificationCriteriaType {

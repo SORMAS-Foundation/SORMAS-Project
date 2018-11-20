@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.ui;
 
 import com.vaadin.navigator.Navigator;
@@ -11,12 +28,13 @@ import com.vaadin.ui.HorizontalLayout;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.caze.CasesView;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
-import de.symeda.sormas.ui.configuration.CommunitiesView;
-import de.symeda.sormas.ui.configuration.DistrictsView;
-import de.symeda.sormas.ui.configuration.HealthFacilitiesView;
-import de.symeda.sormas.ui.configuration.LaboratoriesView;
-import de.symeda.sormas.ui.configuration.OutbreaksView;
-import de.symeda.sormas.ui.configuration.RegionsView;
+import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
+import de.symeda.sormas.ui.configuration.infrastructure.DistrictsView;
+import de.symeda.sormas.ui.configuration.infrastructure.HealthFacilitiesView;
+import de.symeda.sormas.ui.configuration.infrastructure.LaboratoriesView;
+import de.symeda.sormas.ui.configuration.infrastructure.RegionsView;
+import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
+import de.symeda.sormas.ui.configuration.userrights.UserRightsView;
 import de.symeda.sormas.ui.contact.ContactsView;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.DashboardContactsView;
@@ -64,7 +82,8 @@ public class MainScreen extends HorizontalLayout {
 							|| viewName.equals(StatisticsView.VIEW_NAME) || viewName.equals(UsersView.VIEW_NAME)
 							|| viewName.equals(OutbreaksView.VIEW_NAME) || viewName.equals(RegionsView.VIEW_NAME) 
 							|| viewName.equals(DistrictsView.VIEW_NAME) || viewName.equals(CommunitiesView.VIEW_NAME) 
-							|| viewName.equals(HealthFacilitiesView.VIEW_NAME) || viewName.equals(LaboratoriesView.VIEW_NAME)) {
+							|| viewName.equals(HealthFacilitiesView.VIEW_NAME) || viewName.equals(LaboratoriesView.VIEW_NAME)
+							|| viewName.equals(UserRightsView.VIEW_NAME)) {
 						return AccessDeniedView.class.newInstance();
 					} else {
 						return ErrorView.class.newInstance();

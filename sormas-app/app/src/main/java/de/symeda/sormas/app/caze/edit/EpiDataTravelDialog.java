@@ -1,27 +1,40 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.app.caze.edit;
 
 import android.content.Context;
 import android.databinding.ViewDataBinding;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.View;
 
 import com.android.databinding.library.baseAdapters.BR;
-
-import java.util.List;
 
 import de.symeda.sormas.api.epidata.TravelType;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
-import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.dialog.AbstractDialog;
-import de.symeda.sormas.app.core.Callback;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogCaseEpidTravelEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.component.validation.FragmentValidator;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -58,7 +71,7 @@ public class EpiDataTravelDialog extends AbstractDialog {
         contentBinding.epiDataTravelTravelDateFrom.initializeDateField(getFragmentManager());
         contentBinding.epiDataTravelTravelDateTo.initializeDateField(getFragmentManager());
 
-        CaseValidator.initializeEpiDataTravelValidation(getContext(), contentBinding);
+        CaseValidator.initializeEpiDataTravelValidation(contentBinding);
 
         if (data.getId() == null) {
             setLiveValidationDisabled(true);

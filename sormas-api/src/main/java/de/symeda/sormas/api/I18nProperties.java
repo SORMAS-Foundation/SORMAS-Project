@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.api;
 
 import java.io.IOException;
@@ -32,16 +49,27 @@ public class I18nProperties {
 		}
 	}
 	
-	// Retrieves the property by adding an additional string in between the class name and the property name,
-	// e.g. Disease.Short.EVD
-	@SuppressWarnings("rawtypes")
-	public static String getEnumCaption(Enum value, String addition) {
+	/**
+	 * Retrieves the property by adding an additional string in between the class name and the property name,
+	 * e.g. Disease.Short.EVD or FollowUpStatus.Desc.NO_FOLLOW_UP
+	 * 
+	 * Does fallback to enum caption without addition.
+	 */
+	public static String getEnumCaption(Enum<?> value, String addition) {
 		String caption = getInstance().enumProperties.getProperty(value.getClass().getSimpleName() + "." + addition + "." + value.name());
 		if (caption != null) {
 			return caption;
 		} else {
-			return value.name();
+			return getEnumCaption(value);
 		}
+	}
+	
+	public static String getEnumCaptionShort(Enum<?> value) {
+		return getEnumCaption(value, "Short");
+	}
+	
+	public static String getEnumDescription(Enum<?> value) {
+		return getEnumCaption(value, "Desc");
 	}
 	
 	/**
@@ -128,33 +156,34 @@ public class I18nProperties {
 		return result;
 	}
 	
-	/**
-	 * Uses <param>key</param> as default value
-	 */
-	public static String getValidationError(String key) {
-		return getValidationError(key, getValidationError("default", "%s required"));
-	}
-
-	public static String getValidationError(String key, String defaultValue) {
-		return getInstance().validationErrorProperties.getProperty(key, defaultValue);
-	}
-
-	/**
-	 * Uses <param>key</param> as default value
-	 */
-	public static String getPrefixValidationError(String prefix, String key) {
-		return getPrefixValidationError(prefix, key, getValidationError("default", "%s required"));
+	public static String getRequiredError(String fieldCaption) {
+		return getValidationError("required", fieldCaption);
 	}
 	
-	public static String getPrefixValidationError(String prefix, String key, String defaultValue) {
+	/**
+	 * Uses <param>key</param> as default value
+	 */
+	public static String getValidationError(String key, Object ...formatArgs) {
+		String result = getInstance().validationErrorProperties.getProperty(key, null);
+		if (result != null) {
+			return String.format(result, formatArgs);
+		} else if (formatArgs.length > 0) {
+			return formatArgs[0].toString();
+		} else {
+			return "";
+		}
+	}
+
+	public static String getPrefixValidationError(String prefix, String key, Object ...formatArgs) {
 		String result = null;
 		if (prefix != null) {
 			result = getInstance().validationErrorProperties.getProperty(prefix+"."+key);
+			if (result != null) {
+				return String.format(result, result);
+			}
 		}
-		if (result == null) {
-			result = getValidationError(key, defaultValue);
-		}
-		return result;
+		
+		return getValidationError(key, formatArgs);
 	}
 	
 	public static String getMessage(String property) {

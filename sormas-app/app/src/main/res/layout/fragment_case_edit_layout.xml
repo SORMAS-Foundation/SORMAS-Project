@@ -1,4 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -280,30 +298,39 @@
 
             </LinearLayout>
 
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/case_buttons_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:background="@drawable/background_full_width_border"
                 android:paddingLeft="@dimen/buttonPanelHorizontalMargin"
                 android:paddingRight="@dimen/buttonPanelHorizontalMargin"
                 android:paddingTop="@dimen/buttonPanelVerticalMargin"
                 android:paddingBottom="@dimen/buttonPanelVerticalMargin"
-                android:elevation="16dp"
-                app:userViewRight="@{UserRight.CASE_TRANSFER}">
+                android:elevation="16dp">
 
                 <de.symeda.sormas.app.component.controls.ControlButton
                     android:id="@+id/transfer_case"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
+                    android:layout_marginBottom="@dimen/controlHalfMarginBottom"
                     app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                     app:iconStart="@drawable/ic_transfer_case_24dp"
                     app:rounded="true"
+                    app:userViewRight="@{UserRight.CASE_TRANSFER}"
                     android:text="@string/action_transfer_case" />
 
-            </RelativeLayout>
+                <de.symeda.sormas.app.component.controls.ControlButton
+                    android:id="@+id/show_classification_rules"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
+                    app:iconStart="@drawable/ic_format_list_bulleted_black_24dp"
+                    app:rounded="true"
+                    android:text="@string/action_show_classification_rules" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

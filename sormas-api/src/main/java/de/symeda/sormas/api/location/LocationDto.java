@@ -1,9 +1,27 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.api.location;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class LocationDto extends EntityDto {
 
@@ -20,15 +38,13 @@ public class LocationDto extends EntityDto {
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
 	public static final String LAT_LON_ACCURACY = "latLonAccuracy";
-	
-	private String address;
-	private String details;
-	private String city;
-	
+
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
-	
+	private String address;
+	private String details;
+	private String city;
 	private Double latitude;
 	private Double longitude;
 	private Float latLonAccuracy;
@@ -110,5 +126,11 @@ public class LocationDto extends EntityDto {
 	}
 	public void setLatLonAccuracy(Float latLonAccuracy) {
 		this.latLonAccuracy = latLonAccuracy;
+	}
+	
+	public static LocationDto build() {
+		LocationDto location = new LocationDto();
+		location.setUuid(DataHelper.createUuid());
+		return location;
 	}
 }

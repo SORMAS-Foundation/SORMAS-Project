@@ -1,7 +1,26 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.app.caze.read;
 
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebView;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.Vaccination;
@@ -10,6 +29,10 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelper;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.component.dialog.InfoDialog;
+import de.symeda.sormas.app.databinding.DialogClassificationRulesLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseReadLayoutBinding;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
@@ -40,6 +63,23 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
         if (record.getPerson().getSex() != Sex.FEMALE) {
             contentBinding.caseDataPregnant.setVisibility(GONE);
         }
+
+        // Button panel
+        if (!DatabaseHelper.getDiseaseClassificationCriteriaDao().getByDisease(record.getDisease()).hasAnyCriteria()) {
+            contentBinding.caseButtonsPanel.setVisibility(GONE);
+        }
+    }
+
+    private void setUpControlListeners(FragmentCaseReadLayoutBinding contentBinding) {
+        contentBinding.showClassificationRules.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final InfoDialog classificationDialog = new InfoDialog(CaseReadFragment.this.getContext(), R.layout.dialog_classification_rules_layout, null);
+                WebView classificationView = ((DialogClassificationRulesLayoutBinding) classificationDialog.getBinding()).content;
+                classificationView.loadData(DiseaseClassificationAppHelper.buildDiseaseClassificationHtml(record.getDisease()), "text/html", "utf-8");
+                classificationDialog.show();
+            }
+        });
     }
 
     // Overrides
@@ -51,6 +91,8 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 
     @Override
     public void onLayoutBinding(FragmentCaseReadLayoutBinding contentBinding) {
+        setUpControlListeners(contentBinding);
+
         contentBinding.setData(record);
     }
 
