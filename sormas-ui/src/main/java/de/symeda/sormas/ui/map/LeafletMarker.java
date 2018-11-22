@@ -27,7 +27,6 @@ public class LeafletMarker {
 	private MarkerIcon icon;
 	private int markerCount = 1;
 
-
 	/**
 	 * lat & lon is less precise to save bandwidth
 	 */

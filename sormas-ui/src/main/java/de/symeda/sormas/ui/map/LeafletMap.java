@@ -41,7 +41,7 @@ import elemental.json.JsonArray;
  * @author Martin Wahnschaffe
  */
 @JavaScript({ "vaadin://map/leaflet.js", "vaadin://map/leaflet.fullscreen.js", "vaadin://map/leaflet-easy-print.js", "vaadin://map/leaflet.markercluster.js", "vaadin://map/leaflet-connector.js" })
-@StyleSheet({ "vaadin://map/leaflet.css", "vaadin://map/leaflet.fullscreen.css", "vaadin://map/MarkerCluster.css", "vaadin://map/MarkerCluster.Default.css" })
+@StyleSheet({ "vaadin://map/leaflet.css", "vaadin://map/leaflet.fullscreen.css", "vaadin://map/MarkerCluster.css" })
 public class LeafletMap extends AbstractJavaScriptComponent {
 
 	final static Logger logger = LoggerFactory.getLogger(LeafletMap.class);
@@ -117,10 +117,6 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 		getState().tileLayerOpacity = tileLayerOpacity;
 	}
 
-	public void addMarkerClickListener(MarkerClickListener listener) {
-		addListener(MarkerClickEvent.class, listener, MarkerClickListener.MARKER_CLICK_METHOD);
-	}
-
 	public void addMarkerGroup(String groupId, List<LeafletMarker> markers) {
 		JsonArray markersJson = Json.createArray();
 		for (LeafletMarker marker : markers) {
@@ -139,6 +135,10 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 
 	public void removeGroup(String groupId) {
 		callFunction("removeGroup", groupId);
+	}
+
+	public void addMarkerClickListener(MarkerClickListener listener) {
+		addListener(MarkerClickEvent.class, listener, MarkerClickListener.MARKER_CLICK_METHOD);
 	}
 
 	public interface MarkerClickListener extends Serializable {
