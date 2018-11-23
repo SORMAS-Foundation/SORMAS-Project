@@ -21,44 +21,19 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 	// see https://leafletjs.com/reference-1.3.4.html
 
 	var mapIcons = [
-		icon("red-dot"),
-		icon("red-dot-small"), 
-		icon("red-dot-large"),
-		icon("red-dot-very-large"),
-		icon("red-house"),
-		icon("red-house-small"),
-		icon("red-house-large"),
-		icon("red-house-very-large"),
-		icon("red-contact"),
-		icon("yellow-dot"), 
-		icon("yellow-dot-small"), 
-		icon("yellow-dot-large"),
-		icon("yellow-dot-very-large"),
-		icon("yellow-house"),
-		icon("yellow-house-small"),
-		icon("yellow-house-large"),
-		icon("yellow-house-very-large"), 
-		icon("orange-dot"),
-		icon("orange-dot-small"), 
-		icon("orange-dot-large"),
-		icon("orange-dot-very-large"),
-		icon("orange-house"),
-		icon("orange-house-small"), 
-		icon("orange-house-large"),
-		icon("orange-house-very-large"),
-		icon("orange-contact"), 
-		icon("grey-dot"),
-		icon("grey-dot-small"), 
-		icon("grey-dot-large"), 
-		icon("grey-dot-very-large"),
-		icon("grey-house"), 
-		icon("grey-house-small"), 
-		icon("grey-house-large"),
-		icon("grey-house-very-large"), 
-		icon("grey-contact"), 
-		icon("green-contact"),
-		icon("outbreak"), 
-		icon("rumor")
+		"case confirmed",
+		"case suspect", 
+		"case probable",
+		"case unclassified",
+		"facility confirmed",
+		"facility suspect",
+		"facility probable",
+		"facility unclassified",
+		"contact long-overdue",
+		"contact overdue",
+		"contact ok",
+		"event outbreak",
+		"event rumor",	
 		];
 	
 	var connector = this;
@@ -92,7 +67,7 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 //	    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 //	});
 	
-	var openStreetMapsLayer = L.tileLayer("http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
+	var openStreetMapsLayer = L.tileLayer("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
 		attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors. Tiles courtesy of Humanitarian OpenStreetMap Team'
 	});
 
@@ -110,59 +85,49 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 	
 	this.addMarkerGroup = function(groupId, markers) {
 
-//		var markerGroup = L.markerClusterGroup({
-//			//maxClusterRadius: 20,
-//			
-//			iconCreateFunction: function(cluster) {
-//				children = cluster.getAllChildMarkers();
-//				count = 0;
-//				anyContact = false;
-//				anyEvent = false;
-//				anyRed = false;
-//				anyOrange = false;
-//				anyYellow = false;
-//				for (i=0; i<children.length; i++) {
-//					count += children[i].number;
-//					if (!anyContact && children[i].__parent._group.id == "contacts")
-//						anyContact = true;
-//					if (!anyEvent && children[i].__parent._group.id == "events")
-//						anyEvent = true;
-//					if (!anyRed && children[i].options.icon.options.iconUrl.includes("red"))
-//						anyRed = true;
-//					if (!anyRed && !anyOrange && children[i].options.icon.options.iconUrl.includes("orange"))
-//						anyOrange = true;
-//					if (!anyRed && !anyOrange && !anyYellow && children[i].options.icon.options.iconUrl.includes("yellow"))
-//						anyYellow = true;
-//				}
-//				
-//				var c = ' marker-cluster-';
-//				if (anyRed) {
-//					c += 'red';
-//				} else if (anyYellow) {
-//					c += 'yellow';
-//				} else if (anyOrange) {
-//					c += 'orange';
-//				} else {
-//					c += 'grey';
-//				}
-//
-//				classNameVal = anyEvent ? 'marker-cluster light-box' : (anyContact ? 'marker-cluster' : 'marker-cluster box');
-//				return new L.DivIcon({ html: '<div><span>' + count + '</span></div>', className: classNameVal + c, iconSize: new L.Point(40, 40) });				
-//			}			
-//		})
-		var markerGroup = L.featureGroup()
+		var markerGroup = L.markerClusterGroup({
+			//maxClusterRadius: 20,
+			
+			iconCreateFunction: function(cluster) {
+				children = cluster.getAllChildMarkers();
+				count = 0;
+				anyContact = false;
+				anyEvent = false;
+				var minIconIndex = mapIcons.length;
+				for (i=0; i<children.length; i++) {
+					count += children[i].count;
+					if (children[i].iconIndex < minIconIndex)
+						minIconIndex = children[i].iconIndex;
+				}
+
+				var size = 20 + 5 * Math.min(Math.ceil((count-1)/10), 4);
+
+				return new L.DivIcon({ 
+					html: count > 1 ? '<div><span>' + count + '</span></div>' : '<div></div>', 
+							className: 'marker cluster ' + mapIcons[minIconIndex], 
+							iconSize: new L.Point(size,size) });
+			}			
+		})
+//		var markerGroup = L.featureGroup()
 			.addTo(map)
 			.on("click", featureGroupClick);
 		markerGroup.id = groupId;
 		
-		for (i=0; i<markers.length; i++) {
+		for (iter=0; iter<markers.length; iter++) {
 		
-			var marker = L.marker([markers[i][0], markers[i][1]], {
-				icon: mapIcons[markers[i][2]]
+			var marker = markers[iter];
+			var count = marker[3];
+			var size = 20 + 5 * Math.min(Math.ceil((count-1)/10), 4);
+			var leafletMarker = L.marker([marker[0], marker[1]], {
+				icon: new L.DivIcon({ 
+					html: count > 1 ? '<div><span>' + marker[3] + '</span></div>' : '&nbsp;', 
+					className: 'marker ' + mapIcons[marker[2]], 
+					iconSize: new L.Point(size,size) }),
 			});
-			marker.id = i;
-			marker.number = markers[i][3];
-			marker.addTo(markerGroup);
+			leafletMarker.id = iter;
+			leafletMarker.iconIndex = marker[2];
+			leafletMarker.count = count;
+			leafletMarker.addTo(markerGroup);
 		}
 	}
 	
@@ -195,11 +160,10 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 		// call to server
 		connector.onClick(event.target.id, event.layer.id);
 	}
-	
 
-	function icon(name) {
-		return L.icon({
-			iconUrl: 'VAADIN/map/icons/' + name + ".png",
-		});
-	}	
+//	function icon(name) {
+//		return L.icon({
+//			iconUrl: 'VAADIN/map/icons/' + name + ".png",
+//		});
+//	}	
 }

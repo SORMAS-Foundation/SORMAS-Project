@@ -53,4 +53,8 @@
         <role-name>STATE_OBSERVER</role-name>
         <group-name>STATE_OBSERVER</group-name>
     </security-role-mapping>
+    <security-role-mapping>
+        <role-name>DISTRICT_OBSERVER</role-name>
+        <group-name>DISTRICT_OBSERVER</group-name>
+    </security-role-mapping>
 </glassfish-web-app>

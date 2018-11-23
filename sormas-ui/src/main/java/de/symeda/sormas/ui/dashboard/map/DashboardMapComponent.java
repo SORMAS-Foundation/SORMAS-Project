@@ -86,11 +86,7 @@ public class DashboardMapComponent extends VerticalLayout {
 
 	final static Logger logger = LoggerFactory.getLogger(DashboardMapComponent.class);
 
-	private static final int MARKER_NORMAL_SIZE = 2;
-	private static final int MARKER_LARGE_SIZE = 3;
-	private static final int MARKER_VERY_LARGE_SIZE = 4;
-
-	private static final String CASE_FACILITIES_GROUP_ID = "facilities";
+//	private static final String CASE_FACILITIES_GROUP_ID = "facilities";
 	private static final String CASES_GROUP_ID = "cases";
 	private static final String CONTACTS_GROUP_ID = "contacts";
 	private static final String EVENTS_GROUP_ID = "events";
@@ -117,7 +113,7 @@ public class DashboardMapComponent extends VerticalLayout {
 	private List<MapContactDto> mapContactDtos = new ArrayList<>();
 
 	// Markers
-	private final List<FacilityDto> markerCaseFacilities = new ArrayList<FacilityDto>();
+	private final List<FacilityReferenceDto> markerCaseFacilities = new ArrayList<FacilityReferenceDto>();
 	private final List<MapContactDto> markerContacts = new ArrayList<MapContactDto>();
 	private final List<DashboardEventDto> markerEvents = new ArrayList<DashboardEventDto>();
 	private final List<RegionReferenceDto> polygonRegions = new ArrayList<RegionReferenceDto>();
@@ -480,19 +476,19 @@ public class DashboardMapComponent extends VerticalLayout {
 
 				HorizontalLayout facilitiesKeyLayout = new HorizontalLayout();
 				{
-					facilitiesKeyLayout.setSpacing(false);
-					HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.GREY_HOUSE_SMALL,
-							"Only Not Yet Classified Cases");
-					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-					facilitiesKeyLayout.addComponent(legendEntry);
-					legendEntry = buildMarkerLegendEntry(MarkerIcon.YELLOW_HOUSE_SMALL, "> 1 Suspect Cases");
-					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-					facilitiesKeyLayout.addComponent(legendEntry);
-					legendEntry = buildMarkerLegendEntry(MarkerIcon.ORANGE_HOUSE_SMALL, "> 1 Probable Cases");
-					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-					facilitiesKeyLayout.addComponent(legendEntry);
-					legendEntry = buildMarkerLegendEntry(MarkerIcon.RED_HOUSE_SMALL, "> 1 Confirmed Cases");
-					facilitiesKeyLayout.addComponent(legendEntry);
+//					facilitiesKeyLayout.setSpacing(false);
+//					HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.GREY_HOUSE_SMALL,
+//							"Only Not Yet Classified Cases");
+//					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+//					facilitiesKeyLayout.addComponent(legendEntry);
+//					legendEntry = buildMarkerLegendEntry(MarkerIcon.YELLOW_HOUSE_SMALL, "> 1 Suspect Cases");
+//					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+//					facilitiesKeyLayout.addComponent(legendEntry);
+//					legendEntry = buildMarkerLegendEntry(MarkerIcon.ORANGE_HOUSE_SMALL, "> 1 Probable Cases");
+//					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+//					facilitiesKeyLayout.addComponent(legendEntry);
+//					legendEntry = buildMarkerLegendEntry(MarkerIcon.RED_HOUSE_SMALL, "> 1 Confirmed Cases");
+//					facilitiesKeyLayout.addComponent(legendEntry);
 				}
 				legendLayout.addComponent(facilitiesKeyLayout);
 			}
@@ -508,18 +504,18 @@ public class DashboardMapComponent extends VerticalLayout {
 
 			HorizontalLayout casesKeyLayout = new HorizontalLayout();
 			{
-				casesKeyLayout.setSpacing(false);
-				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.GREY_DOT_SMALL, "Not Yet Classified");
-				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-				casesKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.YELLOW_DOT_SMALL, "Suspect");
-				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-				casesKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.ORANGE_DOT_SMALL, "Probable");
-				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-				casesKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.RED_DOT_SMALL, "Confirmed");
-				casesKeyLayout.addComponent(legendEntry);
+//				casesKeyLayout.setSpacing(false);
+//				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.GREY_DOT_SMALL, "Not Yet Classified");
+//				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+//				casesKeyLayout.addComponent(legendEntry);
+//				legendEntry = buildMarkerLegendEntry(MarkerIcon.YELLOW_DOT_SMALL, "Suspect");
+//				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+//				casesKeyLayout.addComponent(legendEntry);
+//				legendEntry = buildMarkerLegendEntry(MarkerIcon.ORANGE_DOT_SMALL, "Probable");
+//				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+//				casesKeyLayout.addComponent(legendEntry);
+//				legendEntry = buildMarkerLegendEntry(MarkerIcon.RED_DOT_SMALL, "Confirmed");
+//				casesKeyLayout.addComponent(legendEntry);
 			}
 			legendLayout.addComponent(casesKeyLayout);
 		}
@@ -536,15 +532,15 @@ public class DashboardMapComponent extends VerticalLayout {
 
 			HorizontalLayout contactsKeyLayout = new HorizontalLayout();
 			{
-				contactsKeyLayout.setSpacing(false);
-				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.GREEN_CONTACT, "Last Visit < 24h");
-				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-				contactsKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.ORANGE_CONTACT, "Last Visit < 48h");
-				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-				contactsKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.RED_CONTACT, "Last Visit > 48h or No Visit");
-				contactsKeyLayout.addComponent(legendEntry);
+//				contactsKeyLayout.setSpacing(false);
+//				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.GREEN_CONTACT, "Last Visit < 24h");
+//				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+//				contactsKeyLayout.addComponent(legendEntry);
+//				legendEntry = buildMarkerLegendEntry(MarkerIcon.ORANGE_CONTACT, "Last Visit < 48h");
+//				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+//				contactsKeyLayout.addComponent(legendEntry);
+//				legendEntry = buildMarkerLegendEntry(MarkerIcon.RED_CONTACT, "Last Visit > 48h or No Visit");
+//				contactsKeyLayout.addComponent(legendEntry);
 			}
 			legendLayout.addComponent(contactsKeyLayout);
 		}
@@ -561,12 +557,12 @@ public class DashboardMapComponent extends VerticalLayout {
 
 			HorizontalLayout eventsKeyLayout = new HorizontalLayout();
 			{
-				eventsKeyLayout.setSpacing(false);
-				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.OUTBREAK, "Outbreak");
-				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-				eventsKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.RUMOR, "Rumor");
-				eventsKeyLayout.addComponent(legendEntry);
+//				eventsKeyLayout.setSpacing(false);
+//				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.OUTBREAK, "Outbreak");
+//				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+//				eventsKeyLayout.addComponent(legendEntry);
+//				legendEntry = buildMarkerLegendEntry(MarkerIcon.RUMOR, "Rumor");
+//				eventsKeyLayout.addComponent(legendEntry);
 			}
 			legendLayout.addComponent(eventsKeyLayout);
 		}
@@ -588,9 +584,9 @@ public class DashboardMapComponent extends VerticalLayout {
 		return legendLayout;
 	}
 
-	public static HorizontalLayout buildMarkerLegendEntry(MarkerIcon icon, String labelCaption) {
-		return buildLegendEntry(icon.getExternalUrl(), labelCaption);
-	}
+//	public static HorizontalLayout buildMarkerLegendEntry(MarkerIcon icon, String labelCaption) {
+//		return buildLegendEntry(icon.getExternalUrl(), labelCaption);
+//	}
 
 	public static HorizontalLayout buildMapIconLegendEntry(String iconName, String labelCaption) {
 		return buildLegendEntry("VAADIN/map/icons/" + iconName + ".png", labelCaption);
@@ -847,66 +843,34 @@ public class DashboardMapComponent extends VerticalLayout {
 		List<LeafletMarker> caseMarkers = new ArrayList<LeafletMarker>();
 
 		for (FacilityReferenceDto facilityReference : casesByFacility.keySet()) {
-			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(facilityReference.getUuid());
 
-			if (facility.getLatitude() == null || facility.getLongitude() == null) {
-				continue;
-			}
-
-			MarkerIcon icon;
-
+			List<MapCaseDto> casesList = casesByFacility.get(facilityReference);
 			// colorize the icon by the "strongest" classification type (order as in enum)
 			// and set its size depending
 			// on the number of cases
-			int numberOfCases = casesByFacility.get(facilityReference).size();
+			int numberOfCases = casesList.size();
 			Set<CaseClassification> classificationSet = new HashSet<>();
-			for (MapCaseDto caze : casesByFacility.get(facilityReference)) {
+			for (MapCaseDto caze : casesList) {
 				classificationSet.add(caze.getCaseClassification());
 			}
 
+			MarkerIcon icon;
 			if (classificationSet.contains(CaseClassification.CONFIRMED)) {
-				if (numberOfCases >= MARKER_VERY_LARGE_SIZE)
-					icon = MarkerIcon.RED_HOUSE_VERY_LARGE;
-				else if (numberOfCases >= MARKER_LARGE_SIZE)
-					icon = MarkerIcon.RED_HOUSE_LARGE;
-				else if (numberOfCases >= MARKER_NORMAL_SIZE)
-					icon = MarkerIcon.RED_HOUSE;
-				else
-					icon = MarkerIcon.RED_HOUSE_SMALL;
+				icon = MarkerIcon.FACILITY_CONFIRMED;
 			} else if (classificationSet.contains(CaseClassification.PROBABLE)) {
-				if (numberOfCases >= MARKER_VERY_LARGE_SIZE)
-					icon = MarkerIcon.ORANGE_HOUSE_VERY_LARGE;
-				else if (numberOfCases >= MARKER_LARGE_SIZE)
-					icon = MarkerIcon.ORANGE_HOUSE_LARGE;
-				else if (numberOfCases >= MARKER_NORMAL_SIZE)
-					icon = MarkerIcon.ORANGE_HOUSE;
-				else
-					icon = MarkerIcon.ORANGE_HOUSE_SMALL;
+				icon = MarkerIcon.FACILITY_PROBABLE;
 			} else if (classificationSet.contains(CaseClassification.SUSPECT)) {
-				if (numberOfCases >= MARKER_VERY_LARGE_SIZE)
-					icon = MarkerIcon.YELLOW_HOUSE_VERY_LARGE;
-				else if (numberOfCases >= MARKER_LARGE_SIZE)
-					icon = MarkerIcon.YELLOW_HOUSE_LARGE;
-				else if (numberOfCases >= MARKER_NORMAL_SIZE)
-					icon = MarkerIcon.YELLOW_HOUSE;
-				else
-					icon = MarkerIcon.YELLOW_HOUSE_SMALL;
+				icon = MarkerIcon.FACILITY_SUSPECT;
 			} else {
-				if (numberOfCases >= MARKER_VERY_LARGE_SIZE)
-					icon = MarkerIcon.GREY_HOUSE_VERY_LARGE;
-				else if (numberOfCases >= MARKER_LARGE_SIZE)
-					icon = MarkerIcon.GREY_HOUSE_LARGE;
-				else if (numberOfCases >= MARKER_NORMAL_SIZE)
-					icon = MarkerIcon.GREY_HOUSE;
-				else
-					icon = MarkerIcon.GREY_HOUSE_SMALL;
+				icon = MarkerIcon.FACILITY_UNCLASSIFIED;
 			}
 
 			// create and place the marker
-			markerCaseFacilities.add(facility);
+			markerCaseFacilities.add(facilityReference);
 
+			MapCaseDto firstCase = casesList.get(0);
 			LeafletMarker leafletMarker = new LeafletMarker();
-			leafletMarker.setLatLon(facility.getLatitude(), facility.getLongitude());
+			leafletMarker.setLatLon(firstCase.getHealthFacilityLat(), firstCase.getHealthFacilityLon());
 			leafletMarker.setIcon(icon);
 			leafletMarker.setMarkerCount(numberOfCases);
 			caseMarkers.add(leafletMarker);
@@ -918,13 +882,13 @@ public class DashboardMapComponent extends VerticalLayout {
 		for (MapCaseDto caze : mapCaseDtos) {
 			LeafletMarker marker = new LeafletMarker();
 			if (caze.getCaseClassification() == CaseClassification.CONFIRMED) {
-				marker.setIcon(MarkerIcon.RED_DOT_SMALL);
+				marker.setIcon(MarkerIcon.CASE_CONFIRMED);
 			} else if (caze.getCaseClassification() == CaseClassification.PROBABLE) {
-				marker.setIcon(MarkerIcon.ORANGE_DOT_SMALL);
+				marker.setIcon(MarkerIcon.CASE_PROBABLE);
 			} else if (caze.getCaseClassification() == CaseClassification.SUSPECT) {
-				marker.setIcon(MarkerIcon.YELLOW_DOT_SMALL);
+				marker.setIcon(MarkerIcon.CASE_SUSPECT);
 			} else {
-				marker.setIcon(MarkerIcon.GREY_DOT_SMALL);
+				marker.setIcon(MarkerIcon.CASE_UNCLASSIFIED);
 			}
 
 			if (caze.getAddressLat() != null && caze.getAddressLon() != null) {
@@ -944,23 +908,34 @@ public class DashboardMapComponent extends VerticalLayout {
 			CaseClassification classification = caze.getCaseClassification();
 			if (classification == null || classification == CaseClassification.NO_CASE)
 				continue;
-			if (caze.getAddressLat() == null || caze.getAddressLon() == null) {
-				if (caze.getReportLat() == null || caze.getReportLon() == null) {
-					continue;
-				}
-			}
+			boolean hasCaseGps = (caze.getAddressLat() != null && caze.getAddressLon() != null) 
+					 || (caze.getReportLat() != null || caze.getReportLon() != null);
+			boolean hasFacilityGps = caze.getHealthFacilityLat() != null && caze.getHealthFacilityLon() != null;
+			if (!hasCaseGps && !hasFacilityGps) {
+				continue; // no gps at all
+			}			
 
 			if (mapCaseDisplayMode == MapCaseDisplayMode.CASES) {
+				if (!hasCaseGps) {
+					continue; 
+				}
 				mapCaseDtos.add(caze);
 			} else {
 				if (caze.getHealthFacilityUuid().equals(FacilityDto.NONE_FACILITY_UUID)
-						|| caze.getHealthFacilityUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
+						|| caze.getHealthFacilityUuid().equals(FacilityDto.OTHER_FACILITY_UUID)
+						|| !hasFacilityGps) {
 					if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES_OR_ADDRESS) {
+						if (!hasCaseGps) {
+							continue;
+						}
 						mapCaseDtos.add(caze);
 					} else {
 						continue;
 					}
 				} else {
+					if (!hasFacilityGps) {
+						continue;
+					}
 					FacilityReferenceDto facility = new FacilityReferenceDto();
 					facility.setUuid(caze.getHealthFacilityUuid());
 					if (casesByFacility.get(facility) == null) {
@@ -1009,14 +984,14 @@ public class DashboardMapComponent extends VerticalLayout {
 			if (lastVisitDateTime != null) {
 				// 1000 ms = 1 second; 3600 seconds = 1 hour
 				if (currentTime - lastVisitDateTime.getTime() >= 1000 * 3600 * 48) {
-					icon = MarkerIcon.RED_CONTACT;
+					icon = MarkerIcon.CONTACT_LONG_OVERDUE;
 				} else if (currentTime - lastVisitDateTime.getTime() >= 1000 * 3600 * 24) {
-					icon = MarkerIcon.ORANGE_CONTACT;
+					icon = MarkerIcon.CONTACT_OVERDUE;
 				} else {
-					icon = MarkerIcon.GREEN_CONTACT;
+					icon = MarkerIcon.CONTACT_OK;
 				}
 			} else {
-				icon = MarkerIcon.RED_CONTACT;
+				icon = MarkerIcon.CONTACT_LONG_OVERDUE;
 			}
 
 			LeafletMarker marker = new LeafletMarker();
@@ -1046,9 +1021,9 @@ public class DashboardMapComponent extends VerticalLayout {
 		for (DashboardEventDto event : events) {
 			MarkerIcon icon;
 			if (event.getEventType() == EventType.OUTBREAK) {
-				icon = MarkerIcon.OUTBREAK;
+				icon = MarkerIcon.EVENT_OUTBREAK;
 			} else {
-				icon = MarkerIcon.RUMOR;
+				icon = MarkerIcon.EVENT_RUMOR;
 			}
 
 			LeafletMarker marker = new LeafletMarker();
@@ -1073,18 +1048,18 @@ public class DashboardMapComponent extends VerticalLayout {
 	private void onMarkerClicked(String groupId, int markerIndex) {
 
 		switch (groupId) {
-		case CASES_GROUP_ID://CASE_FACILITIES_GROUP_ID:
+		case CASES_GROUP_ID:// CASE_FACILITIES_GROUP_ID:
 
 			if (markerIndex < markerCaseFacilities.size()) {
-				FacilityDto facility = markerCaseFacilities.get(markerIndex);
+				FacilityReferenceDto facility = markerCaseFacilities.get(markerIndex);
 				VerticalLayout layout = new VerticalLayout();
 				Window window = VaadinUiUtil.showPopupWindow(layout);
-				CasePopupGrid caseGrid = new CasePopupGrid(window, new FacilityReferenceDto(facility.getUuid()),
-						DashboardMapComponent.this);
+				CasePopupGrid caseGrid = new CasePopupGrid(window, facility, DashboardMapComponent.this);
 				caseGrid.setHeightMode(HeightMode.ROW);
 				layout.addComponent(caseGrid);
 				layout.setMargin(true);
-				window.setCaption("Cases in " + facility.toString());
+				FacilityDto facilityDto = FacadeProvider.getFacilityFacade().getByUuid(facility.getUuid());
+				window.setCaption("Cases in " + facilityDto.toString());
 			} else {
 //			break;
 //		case CASES_GROUP_ID: {

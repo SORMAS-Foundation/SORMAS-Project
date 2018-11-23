@@ -352,10 +352,12 @@ public class CaseService extends AbstractAdoService<Case> {
 					caze.get(Case.REPORT_DATE),
 					caze.get(Case.CASE_CLASSIFICATION),
 					caze.get(Case.DISEASE),
-					facility.get(Facility.UUID),
 					person.get(Person.UUID),
 					person.get(Person.FIRST_NAME),
 					person.get(Person.LAST_NAME),
+					facility.get(Facility.UUID),
+					facility.get(Facility.LATITUDE),
+					facility.get(Facility.LONGITUDE),
 					caze.get(Case.REPORT_LAT),
 					caze.get(Case.REPORT_LON),
 					casePersonAddress.get(Location.LATITUDE),
@@ -518,6 +520,7 @@ public class CaseService extends AbstractAdoService<Case> {
 			case SURVEILLANCE_OFFICER:
 			case CONTACT_OFFICER:
 			case CASE_OFFICER:
+			case DISTRICT_OBSERVER:
 				// officers see all cases of their district
 				if (user.getDistrict() != null) {
 					filter = cb.or(filter, cb.equal(casePath.get(Case.DISTRICT), user.getDistrict()));

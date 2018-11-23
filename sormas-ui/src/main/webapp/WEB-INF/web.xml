@@ -35,6 +35,9 @@
     <security-role>
     	<role-name>STATE_OBSERVER</role-name>
     </security-role>
+    <security-role>
+    	<role-name>DISTRICT_OBSERVER</role-name>
+    </security-role>
 
 	<!-- security check is done in LoginScreen.login
 	<security-constraint>

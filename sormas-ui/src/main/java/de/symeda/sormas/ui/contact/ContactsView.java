@@ -224,7 +224,7 @@ public class ContactsView extends AbstractView {
 			grid.setDistrictFilter(district);
 		});
 
-		if (user.getRegion() != null) {
+		if (user.getRegion() != null && user.getDistrict() == null) {	
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
 			districtFilter.setEnabled(true);
 		} else {
