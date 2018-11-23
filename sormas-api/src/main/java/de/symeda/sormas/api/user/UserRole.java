@@ -46,7 +46,8 @@ public enum UserRole {
 	EVENT_OFFICER(true, false),	
 	LAB_USER(false, false),
 	NATIONAL_OBSERVER(false, false),
-	STATE_OBSERVER(false, false)
+	STATE_OBSERVER(false, false),
+	DISTRICT_OBSERVER(false, false)
 	;
 	
 	public static final String _SYSTEM = "SYSTEM";
@@ -124,6 +125,7 @@ public enum UserRole {
 			collection.add(LAB_USER);
 			collection.add(NATIONAL_OBSERVER);
 			collection.add(STATE_OBSERVER);
+			collection.add(DISTRICT_OBSERVER);
 			break;
 		case SURVEILLANCE_SUPERVISOR:
 			collection.add(SURVEILLANCE_OFFICER);
@@ -167,6 +169,8 @@ public enum UserRole {
 		case NATIONAL_OBSERVER:
 			return Arrays.asList(ADMIN);
 		case STATE_OBSERVER:
+			return Collections.emptyList();
+		case DISTRICT_OBSERVER:
 			return Collections.emptyList();
 		case CASE_SUPERVISOR:
 		case CONTACT_SUPERVISOR:

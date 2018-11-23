@@ -96,7 +96,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		}
 
 		// District filter
-		if (LoginHelper.getCurrentUser().getRegion() != null) {
+		if (LoginHelper.getCurrentUser().getRegion() != null && LoginHelper.getCurrentUser().getDistrict() == null) {
 			districtFilter.setWidth(200, Unit.PIXELS);
 			districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(AbstractDashboardView.I18N_PREFIX, "district"));
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(LoginHelper.getCurrentUser().getRegion().getUuid()));

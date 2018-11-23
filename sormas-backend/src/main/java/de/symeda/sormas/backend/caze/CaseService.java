@@ -520,6 +520,7 @@ public class CaseService extends AbstractAdoService<Case> {
 			case SURVEILLANCE_OFFICER:
 			case CONTACT_OFFICER:
 			case CASE_OFFICER:
+			case DISTRICT_OBSERVER:
 				// officers see all cases of their district
 				if (user.getDistrict() != null) {
 					filter = cb.or(filter, cb.equal(casePath.get(Case.DISTRICT), user.getDistrict()));
