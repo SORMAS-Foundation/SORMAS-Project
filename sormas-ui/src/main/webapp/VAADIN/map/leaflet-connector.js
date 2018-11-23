@@ -113,20 +113,21 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 			.on("click", featureGroupClick);
 		markerGroup.id = groupId;
 		
-		for (i=0; i<markers.length; i++) {
+		for (iter=0; iter<markers.length; iter++) {
 		
-			var count = markers[i][3];
+			var marker = markers[iter];
+			var count = marker[3];
 			var size = 20 + 5 * Math.min(Math.ceil((count-1)/10), 4);
-			var marker = L.marker([markers[i][0], markers[i][1]], {
+			var leafletMarker = L.marker([marker[0], marker[1]], {
 				icon: new L.DivIcon({ 
-					html: count > 1 ? '<div><span>' + markers[i][3] + '</span></div>' : '&nbsp;', 
-					className: 'marker ' + mapIcons[markers[i][2]], 
+					html: count > 1 ? '<div><span>' + marker[3] + '</span></div>' : '&nbsp;', 
+					className: 'marker ' + mapIcons[marker[2]], 
 					iconSize: new L.Point(size,size) }),
 			});
-			marker.id = i;
-			marker.iconIndex = markers[i][2];
-			marker.count = count;
-			marker.addTo(markerGroup);
+			leafletMarker.id = iter;
+			leafletMarker.iconIndex = marker[2];
+			leafletMarker.count = count;
+			leafletMarker.addTo(markerGroup);
 		}
 	}
 	

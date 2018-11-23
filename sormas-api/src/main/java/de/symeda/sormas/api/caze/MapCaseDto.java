@@ -34,22 +34,27 @@ public class MapCaseDto implements Serializable {
 	private Date reportDate;
 	private CaseClassification caseClassification;
 	private Disease disease;
-	private String healthFacilityUuid;
 	private PersonReferenceDto person;
+	private String healthFacilityUuid;
+	private Double healthFacilityLat;
+	private Double healthFacilityLon;
 	private Double reportLat;
 	private Double reportLon;
 	private Double addressLat;
 	private Double addressLon;
 
 	public MapCaseDto(String uuid, Date reportDate, CaseClassification caseClassification, Disease disease,
-			String healthFacilityUuid, String personUuid, String personFirstName, String personLastName, Double reportLat, Double reportLon,
-			Double addressLat, Double addressLon) {
+			String personUuid, String personFirstName, String personLastName, 
+			String healthFacilityUuid, Double healthFacilityLat, Double healthFacilityLon,
+			Double reportLat, Double reportLon, Double addressLat, Double addressLon) {
 		this.uuid = uuid;
 		this.reportDate = reportDate;
 		this.caseClassification = caseClassification;
 		this.disease = disease;
-		this.healthFacilityUuid = healthFacilityUuid;
 		this.person = new PersonReferenceDto(personUuid, personFirstName, personLastName);
+		this.healthFacilityUuid = healthFacilityUuid;
+		this.setHealthFacilityLat(healthFacilityLat);
+		this.setHealthFacilityLon(healthFacilityLon);
 		this.reportLat = reportLat;
 		this.reportLon = reportLon;
 		this.addressLat = addressLat;
@@ -139,6 +144,22 @@ public class MapCaseDto implements Serializable {
 	@Override
 	public String toString() {
 		return person.toString() + " (" + DataHelper.getShortUuid(uuid) + ")";
+	}
+
+	public Double getHealthFacilityLat() {
+		return healthFacilityLat;
+	}
+
+	public void setHealthFacilityLat(Double healthFacilityLat) {
+		this.healthFacilityLat = healthFacilityLat;
+	}
+
+	public Double getHealthFacilityLon() {
+		return healthFacilityLon;
+	}
+
+	public void setHealthFacilityLon(Double healthFacilityLon) {
+		this.healthFacilityLon = healthFacilityLon;
 	}
 
 }

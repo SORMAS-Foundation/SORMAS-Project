@@ -113,7 +113,7 @@ public class DashboardMapComponent extends VerticalLayout {
 	private List<MapContactDto> mapContactDtos = new ArrayList<>();
 
 	// Markers
-	private final List<FacilityDto> markerCaseFacilities = new ArrayList<FacilityDto>();
+	private final List<FacilityReferenceDto> markerCaseFacilities = new ArrayList<FacilityReferenceDto>();
 	private final List<MapContactDto> markerContacts = new ArrayList<MapContactDto>();
 	private final List<DashboardEventDto> markerEvents = new ArrayList<DashboardEventDto>();
 	private final List<RegionReferenceDto> polygonRegions = new ArrayList<RegionReferenceDto>();
@@ -843,23 +843,18 @@ public class DashboardMapComponent extends VerticalLayout {
 		List<LeafletMarker> caseMarkers = new ArrayList<LeafletMarker>();
 
 		for (FacilityReferenceDto facilityReference : casesByFacility.keySet()) {
-			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(facilityReference.getUuid());
 
-			if (facility.getLatitude() == null || facility.getLongitude() == null) {
-				continue;
-			}
-
-			MarkerIcon icon;
-
+			List<MapCaseDto> casesList = casesByFacility.get(facilityReference);
 			// colorize the icon by the "strongest" classification type (order as in enum)
 			// and set its size depending
 			// on the number of cases
-			int numberOfCases = casesByFacility.get(facilityReference).size();
+			int numberOfCases = casesList.size();
 			Set<CaseClassification> classificationSet = new HashSet<>();
-			for (MapCaseDto caze : casesByFacility.get(facilityReference)) {
+			for (MapCaseDto caze : casesList) {
 				classificationSet.add(caze.getCaseClassification());
 			}
 
+			MarkerIcon icon;
 			if (classificationSet.contains(CaseClassification.CONFIRMED)) {
 				icon = MarkerIcon.FACILITY_CONFIRMED;
 			} else if (classificationSet.contains(CaseClassification.PROBABLE)) {
@@ -871,10 +866,11 @@ public class DashboardMapComponent extends VerticalLayout {
 			}
 
 			// create and place the marker
-			markerCaseFacilities.add(facility);
+			markerCaseFacilities.add(facilityReference);
 
+			MapCaseDto firstCase = casesList.get(0);
 			LeafletMarker leafletMarker = new LeafletMarker();
-			leafletMarker.setLatLon(facility.getLatitude(), facility.getLongitude());
+			leafletMarker.setLatLon(firstCase.getHealthFacilityLat(), firstCase.getHealthFacilityLon());
 			leafletMarker.setIcon(icon);
 			leafletMarker.setMarkerCount(numberOfCases);
 			caseMarkers.add(leafletMarker);
@@ -912,23 +908,34 @@ public class DashboardMapComponent extends VerticalLayout {
 			CaseClassification classification = caze.getCaseClassification();
 			if (classification == null || classification == CaseClassification.NO_CASE)
 				continue;
-			if (caze.getAddressLat() == null || caze.getAddressLon() == null) {
-				if (caze.getReportLat() == null || caze.getReportLon() == null) {
-					continue;
-				}
-			}
+			boolean hasCaseGps = (caze.getAddressLat() != null && caze.getAddressLon() != null) 
+					 || (caze.getReportLat() != null || caze.getReportLon() != null);
+			boolean hasFacilityGps = caze.getHealthFacilityLat() != null && caze.getHealthFacilityLon() != null;
+			if (!hasCaseGps && !hasFacilityGps) {
+				continue; // no gps at all
+			}			
 
 			if (mapCaseDisplayMode == MapCaseDisplayMode.CASES) {
+				if (!hasCaseGps) {
+					continue; 
+				}
 				mapCaseDtos.add(caze);
 			} else {
 				if (caze.getHealthFacilityUuid().equals(FacilityDto.NONE_FACILITY_UUID)
-						|| caze.getHealthFacilityUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
+						|| caze.getHealthFacilityUuid().equals(FacilityDto.OTHER_FACILITY_UUID)
+						|| !hasFacilityGps) {
 					if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES_OR_ADDRESS) {
+						if (!hasCaseGps) {
+							continue;
+						}
 						mapCaseDtos.add(caze);
 					} else {
 						continue;
 					}
 				} else {
+					if (!hasFacilityGps) {
+						continue;
+					}
 					FacilityReferenceDto facility = new FacilityReferenceDto();
 					facility.setUuid(caze.getHealthFacilityUuid());
 					if (casesByFacility.get(facility) == null) {
@@ -1044,15 +1051,15 @@ public class DashboardMapComponent extends VerticalLayout {
 		case CASES_GROUP_ID:// CASE_FACILITIES_GROUP_ID:
 
 			if (markerIndex < markerCaseFacilities.size()) {
-				FacilityDto facility = markerCaseFacilities.get(markerIndex);
+				FacilityReferenceDto facility = markerCaseFacilities.get(markerIndex);
 				VerticalLayout layout = new VerticalLayout();
 				Window window = VaadinUiUtil.showPopupWindow(layout);
-				CasePopupGrid caseGrid = new CasePopupGrid(window, new FacilityReferenceDto(facility.getUuid()),
-						DashboardMapComponent.this);
+				CasePopupGrid caseGrid = new CasePopupGrid(window, facility, DashboardMapComponent.this);
 				caseGrid.setHeightMode(HeightMode.ROW);
 				layout.addComponent(caseGrid);
 				layout.setMargin(true);
-				window.setCaption("Cases in " + facility.toString());
+				FacilityDto facilityDto = FacadeProvider.getFacilityFacade().getByUuid(facility.getUuid());
+				window.setCaption("Cases in " + facilityDto.toString());
 			} else {
 //			break;
 //		case CASES_GROUP_ID: {
