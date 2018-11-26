@@ -124,8 +124,8 @@ import de.symeda.sormas.backend.epidata.EpiDataTravelService;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
@@ -240,15 +240,15 @@ public class CaseFacadeEjb implements CaseFacade {
 	private ConfigFacadeEjbLocal configFacade;
 
 	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
-	
+
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		
+
 		if (user == null) {
 			return Collections.emptyList();
 		}
-		
+
 		return caseService.getAllActiveCasesAfter(date, user).stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
@@ -346,7 +346,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				epiData.get(EpiData.RODENTS),
 				epiData.get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE),
 				symptoms.get(Symptoms.ONSET_DATE));
-				
+
 		User user = userService.getByUuid(userUuid);
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
 
@@ -358,11 +358,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		cq.orderBy(cb.desc(caze.get(Case.REPORT_DATE)));
 
 		List<CaseExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		
+
 		for (CaseExportDto exportDto : resultList) {
 			// TODO: Speed up this code, e.g. by persisting symtoms, lab results, etc. as a String in the database
 			List<Date> sampleDates = sampleService.getSampleDatesForCase(exportDto.getId());
@@ -371,7 +371,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			exportDto.setLabResults(sampleTestService.getSampleTestResultsForCase(exportDto.getId()));
 			exportDto.setSymptoms(symptomsService.getById(exportDto.getSymptomsId()).toHumanString(false));
 			exportDto.setAddress(personService.getAddressByPersonId(exportDto.getPersonId()).toString());
-			
+
 			// Build travel history - done here to avoid transforming EpiDataTravel to EpiDataTravelDto
 			List<EpiDataTravel> travels = epiDataTravelService.getAllByEpiDataId(exportDto.getEpiDataId());
 			StringBuilder travelHistoryBuilder = new StringBuilder();
@@ -386,7 +386,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 			exportDto.setTravelHistory(travelHistoryBuilder.toString());
 		}
-		
+
 		return resultList;
 	}
 
@@ -436,11 +436,37 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		return toDto(caseService.getLatestCaseByPerson(person, user));
 	}
-	
+
+	@Override
+	public CaseDataDto getMatchingCaseForImport(CaseDataDto importCaze, PersonReferenceDto existingPerson, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		Date newCaseDate = CaseLogic.getStartDate(importCaze.getSymptoms().getOnsetDate(), importCaze.getReceptionDate(), importCaze.getReportDate());
+
+		CaseCriteria criteria = new CaseCriteria()
+				.personEquals(existingPerson)
+				.diseaseEquals(importCaze.getDisease())
+				.archived(false)
+				.newCaseDateBetween(DateHelper.subtractMonths(newCaseDate, 2), DateHelper.addMonths(newCaseDate, 2), null);
+
+		List<Case> matchingCases = caseService.findBy(criteria, user).stream().sorted(new Comparator<Case>() {
+			@Override
+			public int compare(Case c1, Case c2) {
+				return CaseLogic.getStartDate(c1.getSymptoms().getOnsetDate(), c1.getReceptionDate(), c1.getReportDate()).compareTo(
+						CaseLogic.getStartDate(c2.getSymptoms().getOnsetDate(), c2.getReceptionDate(), c2.getReportDate()));
+			}
+		}).collect(Collectors.toList());
+
+		if (!matchingCases.isEmpty()) {
+			return toDto(matchingCases.get(0));
+		} else {
+			return null;
+		}
+	}
+
 	@Override
 	public List<CaseDataDto> getAllCasesOfPerson(String personUuid, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		
+
 		return caseService.findBy(new CaseCriteria().personEquals(new PersonReferenceDto(personUuid)), user)
 				.stream()
 				.map(c -> toDto(c))
@@ -477,7 +503,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		CaseDataDto existingCaseDto = toDto(caseService.getByUuid(dto.getUuid()));
 
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
-		
+
 		// Check whether any required field that does not have a not null constraint in
 		// the database is empty
 		if (dto.getRegion() == null) {
@@ -521,14 +547,14 @@ public class CaseFacadeEjb implements CaseFacade {
 			throw new ValidationRuntimeException(
 					"Could not find a database entry for the specified health facility in the specified region");
 		}
-		
+
 		caze = fillOrBuildEntity(dto, caze);
 		caseService.ensurePersisted(caze);
 		onCaseChanged(existingCaseDto, caze);
 
 		return toDto(caze);
 	}
-	
+
 	@Override
 	public void archiveOrDearchiveCase(String caseUuid, boolean archive) {
 		Case caze = caseService.getByUuid(caseUuid);
@@ -777,7 +803,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 		caseService.delete(caze);
 	}
-	
+
 	@Override
 	public List<String> getArchivedUuidsSince(String userUuid, Date since) {
 		User user = userService.getByUuid(userUuid);
@@ -1744,7 +1770,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Case> from = cq.from(Case.class);
-	
+
 		// Workaround for probable bug in Eclipse Link/Postgre that throws a NoResultException when trying to
 		// query for a true Boolean result
 		cq.where(
@@ -1755,7 +1781,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		long count = em.createQuery(cq).getSingleResult();
 		return count > 0;
 	}
-	
+
 	private String buildGroupingSelectQuery(StatisticsCaseAttribute grouping, StatisticsCaseSubAttribute subGrouping,
 			String groupAlias) {
 		StringBuilder groupingSelectPartBuilder = new StringBuilder();

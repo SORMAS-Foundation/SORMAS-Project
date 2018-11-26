@@ -48,7 +48,6 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 	
 	@Override
 	protected Component initContent() {
-		
 		VerticalLayout layout = new VerticalLayout();
 		layout.setSpacing(true);
 		layout.setSizeUndefined();
@@ -155,7 +154,6 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 	
 	@Override
 	protected PersonIndexDto getInternalValue() {
-		
 		if (personGrid != null) {
 			PersonIndexDto value = (PersonIndexDto)personGrid.getSelectedRow();
 			return value;

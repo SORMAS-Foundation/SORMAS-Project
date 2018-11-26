@@ -214,7 +214,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		Root<Person> lgaRoot = lgaQuery.from(Person.class);
 		Join<Person, Location> address = lgaRoot.join(Person.ADDRESS);
 
-		lgaQuery.multiselect(lgaRoot.get(Person.FIRST_NAME), lgaRoot.get(Person.LAST_NAME), lgaRoot.get(Person.ID));
+		lgaQuery.multiselect(lgaRoot.get(Person.FIRST_NAME), lgaRoot.get(Person.LAST_NAME), lgaRoot.get(Person.UUID));
 
 		Predicate lgaFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
 		lgaQuery.where(lgaFilter);
@@ -226,7 +226,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		Join<Case, Person> casePersonsJoin = casePersonsRoot.join(Case.PERSON, JoinType.LEFT);
 
 		casePersonsQuery.multiselect(casePersonsJoin.get(Person.FIRST_NAME), casePersonsJoin.get(Person.LAST_NAME),
-				casePersonsJoin.get(Person.ID));
+				casePersonsJoin.get(Person.UUID));
 
 		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot, user);
 		if (casePersonsFilter != null) {
@@ -241,7 +241,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		Join<Contact, Person> contactPersonsJoin = contactPersonsRoot.join(Contact.PERSON, JoinType.LEFT);
 
 		contactPersonsQuery.multiselect(contactPersonsJoin.get(Person.FIRST_NAME),
-				contactPersonsJoin.get(Person.LAST_NAME), contactPersonsJoin.get(Person.ID));
+				contactPersonsJoin.get(Person.LAST_NAME), contactPersonsJoin.get(Person.UUID));
 
 		Predicate contactPersonsFilter = contactService.createUserFilter(cb, contactPersonsQuery, contactPersonsRoot,
 				user);
@@ -257,7 +257,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		Join<EventParticipant, Person> eventPersonsJoin = eventPersonsRoot.join(EventParticipant.PERSON, JoinType.LEFT);
 
 		eventPersonsQuery.multiselect(eventPersonsJoin.get(Person.FIRST_NAME), eventPersonsJoin.get(Person.LAST_NAME),
-				eventPersonsJoin.get(Person.ID));
+				eventPersonsJoin.get(Person.UUID));
 
 		Predicate eventPersonsFilter = eventParticipantService.createUserFilter(cb, eventPersonsQuery, eventPersonsRoot,
 				user);

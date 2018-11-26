@@ -25,12 +25,12 @@ public class PersonNameDto implements Serializable {
 	
 	private String firstName;
 	private String lastName;
-	private Long id;
+	private String uuid;
 	
-	public PersonNameDto(String firstName, String lastName, Long id) {
+	public PersonNameDto(String firstName, String lastName, String uuid) {
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.id = id;
+		this.uuid = uuid;
 	}
 
 	public String getFirstName() {
@@ -48,20 +48,20 @@ public class PersonNameDto implements Serializable {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-
-	public Long getId() {
-		return id;
+	
+	public String getUuid() {
+		return uuid;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
 		return result;
 	}
 
@@ -74,10 +74,10 @@ public class PersonNameDto implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		PersonNameDto other = (PersonNameDto) obj;
-		if (id == null) {
-			if (other.id != null)
+		if (uuid == null) {
+			if (other.uuid != null)
 				return false;
-		} else if (!id.equals(other.id))
+		} else if (!uuid.equals(other.uuid))
 			return false;
 		return true;
 	}
