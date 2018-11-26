@@ -34,6 +34,17 @@ public enum MarkerIcon {
 	CONTACT_OK,
 	EVENT_OUTBREAK,
 	EVENT_RUMOR,	
+	;
+	
+	private final String cssClasses;
+	
+	MarkerIcon() {
+		cssClasses = this.name().toLowerCase().replaceAll("_", " ");
+	}
+	
+	public String getHtmlElement(String size) {
+		return "<div class='marker " + cssClasses + "' style='width:" + size + "; height:" + size + "'></div>";
+	}
 	
 
 //	public String getThemeUrl() {

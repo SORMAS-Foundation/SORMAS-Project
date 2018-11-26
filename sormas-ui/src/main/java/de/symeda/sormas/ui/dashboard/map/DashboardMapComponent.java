@@ -34,6 +34,7 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -457,7 +458,7 @@ public class DashboardMapComponent extends VerticalLayout {
 		legendLayout.setSizeUndefined();
 
 		// Disable map key dropdown if no layers have been selected
-		if (showCases || showContacts || showRegions) {
+		if (showCases || showContacts || showEvents || showRegions) {
 			legendDropdown.setEnabled(true);
 		} else {
 			legendDropdown.setEnabled(false);
@@ -476,19 +477,19 @@ public class DashboardMapComponent extends VerticalLayout {
 
 				HorizontalLayout facilitiesKeyLayout = new HorizontalLayout();
 				{
-//					facilitiesKeyLayout.setSpacing(false);
-//					HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.GREY_HOUSE_SMALL,
-//							"Only Not Yet Classified Cases");
-//					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-//					facilitiesKeyLayout.addComponent(legendEntry);
-//					legendEntry = buildMarkerLegendEntry(MarkerIcon.YELLOW_HOUSE_SMALL, "> 1 Suspect Cases");
-//					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-//					facilitiesKeyLayout.addComponent(legendEntry);
-//					legendEntry = buildMarkerLegendEntry(MarkerIcon.ORANGE_HOUSE_SMALL, "> 1 Probable Cases");
-//					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-//					facilitiesKeyLayout.addComponent(legendEntry);
-//					legendEntry = buildMarkerLegendEntry(MarkerIcon.RED_HOUSE_SMALL, "> 1 Confirmed Cases");
-//					facilitiesKeyLayout.addComponent(legendEntry);
+					facilitiesKeyLayout.setSpacing(false);
+					HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.FACILITY_UNCLASSIFIED,
+							"Only Not Yet Classified Cases");
+					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+					facilitiesKeyLayout.addComponent(legendEntry);
+					legendEntry = buildMarkerLegendEntry(MarkerIcon.FACILITY_SUSPECT, "> 1 Suspect Cases");
+					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+					facilitiesKeyLayout.addComponent(legendEntry);
+					legendEntry = buildMarkerLegendEntry(MarkerIcon.FACILITY_PROBABLE, "> 1 Probable Cases");
+					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+					facilitiesKeyLayout.addComponent(legendEntry);
+					legendEntry = buildMarkerLegendEntry(MarkerIcon.FACILITY_CONFIRMED, "> 1 Confirmed Cases");
+					facilitiesKeyLayout.addComponent(legendEntry);
 				}
 				legendLayout.addComponent(facilitiesKeyLayout);
 			}
@@ -504,18 +505,18 @@ public class DashboardMapComponent extends VerticalLayout {
 
 			HorizontalLayout casesKeyLayout = new HorizontalLayout();
 			{
-//				casesKeyLayout.setSpacing(false);
-//				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.GREY_DOT_SMALL, "Not Yet Classified");
-//				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-//				casesKeyLayout.addComponent(legendEntry);
-//				legendEntry = buildMarkerLegendEntry(MarkerIcon.YELLOW_DOT_SMALL, "Suspect");
-//				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-//				casesKeyLayout.addComponent(legendEntry);
-//				legendEntry = buildMarkerLegendEntry(MarkerIcon.ORANGE_DOT_SMALL, "Probable");
-//				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-//				casesKeyLayout.addComponent(legendEntry);
-//				legendEntry = buildMarkerLegendEntry(MarkerIcon.RED_DOT_SMALL, "Confirmed");
-//				casesKeyLayout.addComponent(legendEntry);
+				casesKeyLayout.setSpacing(false);
+				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.CASE_UNCLASSIFIED, "Not Yet Classified");
+				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+				casesKeyLayout.addComponent(legendEntry);
+				legendEntry = buildMarkerLegendEntry(MarkerIcon.CASE_SUSPECT, "Suspect");
+				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+				casesKeyLayout.addComponent(legendEntry);
+				legendEntry = buildMarkerLegendEntry(MarkerIcon.CASE_PROBABLE, "Probable");
+				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+				casesKeyLayout.addComponent(legendEntry);
+				legendEntry = buildMarkerLegendEntry(MarkerIcon.CASE_CONFIRMED, "Confirmed");
+				casesKeyLayout.addComponent(legendEntry);
 			}
 			legendLayout.addComponent(casesKeyLayout);
 		}
@@ -532,15 +533,15 @@ public class DashboardMapComponent extends VerticalLayout {
 
 			HorizontalLayout contactsKeyLayout = new HorizontalLayout();
 			{
-//				contactsKeyLayout.setSpacing(false);
-//				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.GREEN_CONTACT, "Last Visit < 24h");
-//				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-//				contactsKeyLayout.addComponent(legendEntry);
-//				legendEntry = buildMarkerLegendEntry(MarkerIcon.ORANGE_CONTACT, "Last Visit < 48h");
-//				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-//				contactsKeyLayout.addComponent(legendEntry);
-//				legendEntry = buildMarkerLegendEntry(MarkerIcon.RED_CONTACT, "Last Visit > 48h or No Visit");
-//				contactsKeyLayout.addComponent(legendEntry);
+				contactsKeyLayout.setSpacing(false);
+				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_OK, "Last Visit < 24h");
+				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+				contactsKeyLayout.addComponent(legendEntry);
+				legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_OVERDUE, "Last Visit < 48h");
+				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+				contactsKeyLayout.addComponent(legendEntry);
+				legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_LONG_OVERDUE, "Last Visit > 48h or No Visit");
+				contactsKeyLayout.addComponent(legendEntry);
 			}
 			legendLayout.addComponent(contactsKeyLayout);
 		}
@@ -557,12 +558,12 @@ public class DashboardMapComponent extends VerticalLayout {
 
 			HorizontalLayout eventsKeyLayout = new HorizontalLayout();
 			{
-//				eventsKeyLayout.setSpacing(false);
-//				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.OUTBREAK, "Outbreak");
-//				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-//				eventsKeyLayout.addComponent(legendEntry);
-//				legendEntry = buildMarkerLegendEntry(MarkerIcon.RUMOR, "Rumor");
-//				eventsKeyLayout.addComponent(legendEntry);
+				eventsKeyLayout.setSpacing(false);
+				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_OUTBREAK, "Outbreak");
+				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+				eventsKeyLayout.addComponent(legendEntry);
+				legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_RUMOR, "Rumor");
+				eventsKeyLayout.addComponent(legendEntry);
 			}
 			legendLayout.addComponent(eventsKeyLayout);
 		}
@@ -584,22 +585,22 @@ public class DashboardMapComponent extends VerticalLayout {
 		return legendLayout;
 	}
 
-//	public static HorizontalLayout buildMarkerLegendEntry(MarkerIcon icon, String labelCaption) {
-//		return buildLegendEntry(icon.getExternalUrl(), labelCaption);
-//	}
-
-	public static HorizontalLayout buildMapIconLegendEntry(String iconName, String labelCaption) {
-		return buildLegendEntry("VAADIN/map/icons/" + iconName + ".png", labelCaption);
+	public static HorizontalLayout buildMarkerLegendEntry(MarkerIcon icon, String labelCaption) {
+		return buildLegendEntry(new Label(icon.getHtmlElement("16px"), ContentMode.HTML), labelCaption);
 	}
 
-	private static HorizontalLayout buildLegendEntry(String externalUrl, String labelCaption) {
+	public static HorizontalLayout buildMapIconLegendEntry(String iconName, String labelCaption) {
+		Image icon = new Image(null, new ExternalResource("VAADIN/map/marker/" + iconName + ".png"));
+		icon.setWidth(12.375f, Unit.PIXELS);
+		icon.setHeight(16.875f, Unit.PIXELS);
+		return buildLegendEntry(icon, labelCaption);
+	}
+
+	private static HorizontalLayout buildLegendEntry(AbstractComponent icon, String labelCaption) {
 		HorizontalLayout entry = new HorizontalLayout();
 		entry.setSizeUndefined();
-		Image iconImage = new Image(null, new ExternalResource(externalUrl));
-		CssStyles.style(iconImage, CssStyles.HSPACE_RIGHT_4);
-		iconImage.setWidth(12.375f, Unit.PIXELS);
-		iconImage.setHeight(16.875f, Unit.PIXELS);
-		entry.addComponent(iconImage);
+		CssStyles.style(icon, CssStyles.HSPACE_RIGHT_4);
+		entry.addComponent(icon);
 		Label label = new Label(labelCaption);
 		label.setSizeUndefined();
 		label.addStyleName(ValoTheme.LABEL_SMALL);
