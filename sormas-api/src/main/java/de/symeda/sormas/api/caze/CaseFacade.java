@@ -64,7 +64,8 @@ public interface CaseFacade {
 	
 	List<String> getAllActiveUuids(String userUuid);
 	
-	CaseDataDto transferCase(CaseReferenceDto caze, RegionReferenceDto region, DistrictReferenceDto district, CommunityReferenceDto community, FacilityReferenceDto facility, String facilityDetails, UserReferenceDto surveillanceOfficer);
+	CaseDataDto transferCase(CaseReferenceDto caze, RegionReferenceDto region, DistrictReferenceDto district, CommunityReferenceDto community, FacilityReferenceDto facility, 
+			String facilityDetails, UserReferenceDto surveillanceOfficer);
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
 	

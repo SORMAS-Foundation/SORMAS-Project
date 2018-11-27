@@ -264,6 +264,10 @@ public class CaseImportLayout extends VerticalLayout {
 							});
 							selectOrCreateComponent.getButtonsPanel().addComponentAsFirst(skipButton);
 
+							personSelect.setSelectionChangeCallback((commitAllowed) -> {
+								selectOrCreateComponent.getCommitButton().setEnabled(commitAllowed);
+							});
+
 							VaadinUiUtil.showModalPopupWindow(selectOrCreateComponent, "Pick or create person");
 						}});
 				};

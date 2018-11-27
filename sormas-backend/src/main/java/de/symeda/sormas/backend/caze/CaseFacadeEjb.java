@@ -731,8 +731,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		// Create a new previous hospitalization object if a new facility is set and
-		// reset the
-		// current hospitalization
+		// reset the current hospitalization
 		if (!caze.getHealthFacility().getUuid().equals(facility.getUuid())) {
 			caze.getHospitalization().getPreviousHospitalizations()
 			.add(previousHospitalizationService.buildPreviousHospitalizationFromHospitalization(caze));
@@ -752,8 +751,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		caseService.ensurePersisted(caze);
 
 		// Assign all tasks associated with this case to the new officer or, if none has
-		// been selected,
-		// to the region supervisor
+		// been selected, to the region supervisor
 		for (Task task : caze.getTasks()) {
 			if (task.getTaskStatus() != TaskStatus.PENDING) {
 				continue;

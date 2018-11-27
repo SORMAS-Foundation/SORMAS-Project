@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
+import java.util.function.Consumer;
+
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
@@ -45,6 +47,7 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 	private PersonGrid personGrid;
 	private OptionGroup selectPerson;
 	private OptionGroup createNewPerson;
+	private Consumer<Boolean> selectionChangeCallback;
 	
 	@Override
 	protected Component initContent() {
@@ -86,6 +89,9 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 			if (e.getProperty().getValue() != null) {
 				createNewPerson.setValue(null);
 				personGrid.setEnabled(true);
+				if (selectionChangeCallback != null) {
+					selectionChangeCallback.accept(personGrid.getSelectedRow() != null);
+				}
 			}
 		});
 		layout.addComponent(selectPerson);
@@ -98,6 +104,12 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 			}
 		});
 		layout.addComponent(personGrid);
+
+		personGrid.addSelectionListener(e -> {
+			if (selectionChangeCallback != null) {
+				selectionChangeCallback.accept(!e.getSelected().isEmpty());
+			}
+		});
 		
 		createNewPerson = new OptionGroup(null);
 		createNewPerson.addItem(CREATE_PERSON);
@@ -108,6 +120,9 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 				selectPerson.setValue(null);
 				personGrid.select(null);
 				personGrid.setEnabled(false);
+				if (selectionChangeCallback != null) {
+					selectionChangeCallback.accept(true);
+				}
 			}
 		});
 		layout.addComponent(createNewPerson);
@@ -191,5 +206,12 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 			initPersonGrid();
 		}
 		return personGrid.getContainerDataSource().size() > 0;
+	}
+	
+	/**
+	 * Callback is executed with 'true' when a grid entry or "Create new person" is selected.
+	 */
+	public void setSelectionChangeCallback(Consumer<Boolean> callback) {
+		this.selectionChangeCallback = callback;
 	}
 }

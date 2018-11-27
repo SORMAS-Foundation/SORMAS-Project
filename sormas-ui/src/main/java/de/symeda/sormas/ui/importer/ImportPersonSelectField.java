@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.importer;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
@@ -8,12 +9,13 @@ import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
@@ -29,7 +31,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 
 	public static final String I18N_PREFIX = "CaseImport";
-	
+
 	public static final String CREATE_PERSON = "createPerson";
 	public static final String SELECT_PERSON = "selectPerson";
 
@@ -37,6 +39,8 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 	private CaseDataDto importedCase;
 	private PersonDto importedPerson;
 	private UserReferenceDto currentUser;
+
+	private Consumer<Boolean> selectionChangeCallback;
 
 	// Components
 	private PersonGrid personGrid;
@@ -57,90 +61,37 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 		if (importedCase == null || importedPerson == null) {
 			return null;
 		}
-		
+
 		VerticalLayout layout = new VerticalLayout();
-		layout.setSpacing(true);
 		layout.setSizeUndefined();
 		layout.setWidth(100, Unit.PERCENTAGE);
 
 		// Info label
-		
+
 		Label infoLabel = new Label(I18nProperties.getText("importSimilarityInfo"));
-		layout.addComponentAsFirst(infoLabel);
+		CssStyles.style(infoLabel, CssStyles.VSPACE_3);
+		layout.addComponent(infoLabel);
 
 		// Imported case info
-		
+		VerticalLayout outerCaseInfoLayout = new VerticalLayout();
+		outerCaseInfoLayout.setWidth(100, Unit.PERCENTAGE);
+		CssStyles.style(outerCaseInfoLayout, CssStyles.BACKGROUND_ROUNDED_CORNERS, CssStyles.BACKGROUND_SUB_CRITERIA, CssStyles.VSPACE_3, "v-scrollable");
+
+		Label importedCaseLabel = new Label(I18nProperties.getText("importedCaseInfo"));
+		CssStyles.style(importedCaseLabel, CssStyles.LABEL_BOLD, CssStyles.VSPACE_4);
+		outerCaseInfoLayout.addComponent(importedCaseLabel);
+
 		HorizontalLayout caseInfoLayout = new HorizontalLayout();
 		caseInfoLayout.setSpacing(true);
+		caseInfoLayout.setSizeUndefined();
 		{
-			TextField firstNameField = new TextField();
-			firstNameField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
-			firstNameField.setValue(importedPerson.getFirstName());
-			firstNameField.setReadOnly(true);
-			caseInfoLayout.addComponent(firstNameField);
-
-			TextField lastNameField = new TextField();
-			lastNameField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
-			lastNameField.setValue(importedPerson.getLastName());
-			lastNameField.setReadOnly(true);
-			caseInfoLayout.addComponent(lastNameField);
-
-			TextField nicknameField = new TextField();
-			nicknameField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.NICKNAME));
-			nicknameField.setValue(importedPerson.getNickname());
-			nicknameField.setReadOnly(true);
-			caseInfoLayout.addComponent(nicknameField);
-
-			TextField ageField = new TextField();
-			ageField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.APPROXIMATE_AGE));
-			ageField.setValue(PersonHelper.buildAgeString(importedPerson.getApproximateAge(), importedPerson.getApproximateAgeType()));
-			ageField.setReadOnly(true);
-			caseInfoLayout.addComponent(ageField);
-
-			TextField sexField = new TextField();
-			sexField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
-			sexField.setValue(importedPerson.getSex() != null ? importedPerson.getSex().toString() : "");
-			sexField.setReadOnly(true);
-			caseInfoLayout.addComponent(sexField);
-
-			TextField presentConditionField = new TextField();
-			presentConditionField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
-			presentConditionField.setValue(importedPerson.getPresentCondition() != null ? importedPerson.getPresentCondition().toString() : null);
-			presentConditionField.setReadOnly(true);
-			caseInfoLayout.addComponent(presentConditionField);
-
-			TextField regionField = new TextField();
-			regionField.setCaption(I18nProperties.getPrefixFieldCaption(LocationDto.I18N_PREFIX, LocationDto.REGION));
-			regionField.setValue(importedPerson.getAddress().getRegion() != null ? importedPerson.getAddress().getRegion().toString() : "");
-			regionField.setReadOnly(true);
-			caseInfoLayout.addComponent(regionField);
-
-			TextField districtField = new TextField();
-			districtField.setCaption(I18nProperties.getPrefixFieldCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT));
-			districtField.setValue(importedPerson.getAddress().getDistrict() != null ? importedPerson.getAddress().getDistrict().toString() : "");
-			districtField.setReadOnly(true);
-			caseInfoLayout.addComponent(districtField);
-
-			TextField communityField = new TextField();
-			communityField.setCaption(I18nProperties.getPrefixFieldCaption(LocationDto.I18N_PREFIX, LocationDto.COMMUNITY));
-			communityField.setValue(importedPerson.getAddress().getCommunity() != null ? importedPerson.getAddress().getCommunity().toString() : "");
-			communityField.setReadOnly(true);
-			caseInfoLayout.addComponent(communityField);
-
-			TextField cityField = new TextField();
-			cityField.setCaption(I18nProperties.getPrefixFieldCaption(LocationDto.I18N_PREFIX, LocationDto.CITY));
-			cityField.setValue(importedPerson.getAddress().getCity());
-			cityField.setReadOnly(true);
-			caseInfoLayout.addComponent(cityField);
-
-			TextField diseaseField = new TextField();
+			Label diseaseField = new Label();
 			diseaseField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
-			diseaseField.setValue(importedCase.getDisease().toString());
-			diseaseField.setReadOnly(true);
+			diseaseField.setValue(DiseaseHelper.toString(importedCase.getDisease(), importedCase.getDiseaseDetails()));
+			diseaseField.setWidthUndefined();
 			caseInfoLayout.addComponent(diseaseField);
 
-			TextField caseDateField = new TextField();
-
+			Label caseDateField = new Label();
 			if (importedCase.getSymptoms().getOnsetDate() != null) {
 				caseDateField.setCaption(I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
 				caseDateField.setValue(DateHelper.formatLocalShortDate(importedCase.getSymptoms().getOnsetDate()));
@@ -151,13 +102,115 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 				caseDateField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORT_DATE));
 				caseDateField.setValue(DateHelper.formatLocalShortDate(importedCase.getReportDate()));
 			}
-			caseDateField.setReadOnly(true);
+			caseDateField.setWidthUndefined();
 			caseInfoLayout.addComponent(caseDateField);
-		}
-		layout.addComponent(caseInfoLayout);
-		
-		// Person selection/creation
 
+			Label regionField = new Label();
+			regionField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
+			regionField.setValue(importedCase.getRegion().toString());
+			regionField.setWidthUndefined();
+			caseInfoLayout.addComponent(regionField);
+
+			Label districtField = new Label();
+			districtField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
+			districtField.setValue(importedCase.getDistrict().toString());
+			districtField.setWidthUndefined();
+			caseInfoLayout.addComponent(districtField);
+
+			Label communityField = new Label();
+			communityField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.COMMUNITY));
+			communityField.setValue(importedCase.getCommunity().toString());
+			communityField.setWidthUndefined();
+			caseInfoLayout.addComponent(communityField);
+
+			Label facilityField = new Label();
+			facilityField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
+			facilityField.setValue(FacilityHelper.buildFacilityString(null, importedCase.getHealthFacility().toString(), importedCase.getHealthFacilityDetails()));
+			facilityField.setWidthUndefined();
+			caseInfoLayout.addComponent(facilityField);
+		}
+
+		outerCaseInfoLayout.addComponent(caseInfoLayout);
+		layout.addComponent(outerCaseInfoLayout);
+
+		// Imported person info
+		VerticalLayout outerPersonInfoLayout = new VerticalLayout();
+		outerPersonInfoLayout.setWidth(100, Unit.PERCENTAGE);
+		CssStyles.style(outerPersonInfoLayout, CssStyles.BACKGROUND_ROUNDED_CORNERS, CssStyles.BACKGROUND_SUB_CRITERIA, CssStyles.VSPACE_3, "v-scrollable");
+
+		Label importedPersonLabel = new Label(I18nProperties.getText("importedPersonInfo"));
+		CssStyles.style(importedPersonLabel, CssStyles.LABEL_BOLD, CssStyles.VSPACE_4);
+		outerPersonInfoLayout.addComponent(importedPersonLabel);
+
+		HorizontalLayout personInfoLayout = new HorizontalLayout();
+		personInfoLayout.setSpacing(true);
+		personInfoLayout.setSizeUndefined();
+		{
+			Label firstNameField = new Label();
+			firstNameField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
+			firstNameField.setValue(importedPerson.getFirstName());
+			firstNameField.setWidthUndefined();
+			personInfoLayout.addComponent(firstNameField);
+
+			Label lastNameField = new Label();
+			lastNameField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
+			lastNameField.setValue(importedPerson.getLastName());
+			lastNameField.setWidthUndefined();
+			personInfoLayout.addComponent(lastNameField);
+
+			Label nicknameField = new Label();
+			nicknameField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.NICKNAME));
+			nicknameField.setValue(importedPerson.getNickname());
+			nicknameField.setWidthUndefined();
+			personInfoLayout.addComponent(nicknameField);
+
+			Label ageField = new Label();
+			ageField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.APPROXIMATE_AGE));
+			ageField.setValue(PersonHelper.buildAgeString(importedPerson.getApproximateAge(), importedPerson.getApproximateAgeType()));
+			ageField.setWidthUndefined();
+			personInfoLayout.addComponent(ageField);
+
+			Label sexField = new Label();
+			sexField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
+			sexField.setValue(importedPerson.getSex() != null ? importedPerson.getSex().toString() : "");
+			sexField.setWidthUndefined();
+			personInfoLayout.addComponent(sexField);
+
+			Label presentConditionField = new Label();
+			presentConditionField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
+			presentConditionField.setValue(importedPerson.getPresentCondition() != null ? importedPerson.getPresentCondition().toString() : null);
+			presentConditionField.setWidthUndefined();
+			personInfoLayout.addComponent(presentConditionField);
+
+			Label regionField = new Label();
+			regionField.setCaption(I18nProperties.getPrefixFieldCaption(LocationDto.I18N_PREFIX, LocationDto.REGION));
+			regionField.setValue(importedPerson.getAddress().getRegion() != null ? importedPerson.getAddress().getRegion().toString() : "");
+			regionField.setWidthUndefined();
+			personInfoLayout.addComponent(regionField);
+
+			Label districtField = new Label();
+			districtField.setCaption(I18nProperties.getPrefixFieldCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT));
+			districtField.setValue(importedPerson.getAddress().getDistrict() != null ? importedPerson.getAddress().getDistrict().toString() : "");
+			districtField.setWidthUndefined();
+			personInfoLayout.addComponent(districtField);
+
+			Label communityField = new Label();
+			communityField.setCaption(I18nProperties.getPrefixFieldCaption(LocationDto.I18N_PREFIX, LocationDto.COMMUNITY));
+			communityField.setValue(importedPerson.getAddress().getCommunity() != null ? importedPerson.getAddress().getCommunity().toString() : "");
+			communityField.setWidthUndefined();
+			personInfoLayout.addComponent(communityField);
+
+			Label cityField = new Label();
+			cityField.setCaption(I18nProperties.getPrefixFieldCaption(LocationDto.I18N_PREFIX, LocationDto.CITY));
+			cityField.setValue(importedPerson.getAddress().getCity());
+			cityField.setWidthUndefined();
+			personInfoLayout.addComponent(cityField);
+		}
+
+		outerPersonInfoLayout.addComponent(personInfoLayout);
+		layout.addComponent(outerPersonInfoLayout);
+
+		// Person selection/creation
 		selectPerson = new OptionGroup(null);
 		selectPerson.addItem(SELECT_PERSON);
 		selectPerson.setItemCaption(SELECT_PERSON, I18nProperties.getFragment("Person.select"));
@@ -167,12 +220,16 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 				createNewPerson.setValue(null);
 				personGrid.setEnabled(true);
 				mergeCheckBox.setEnabled(true);
+				if (selectionChangeCallback != null) {
+					selectionChangeCallback.accept(personGrid.getSelectedRow() != null);
+				}
 			}
 		});
 		layout.addComponent(selectPerson);
-		
+
 		mergeCheckBox = new CheckBox();
 		mergeCheckBox.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, "mergeCase"));
+		CssStyles.style(mergeCheckBox, CssStyles.VSPACE_3);
 		layout.addComponent(mergeCheckBox);
 
 		initPersonGrid();
@@ -182,7 +239,14 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 				createNewPerson.setValue(null);
 			}
 		});
+		CssStyles.style(personGrid, CssStyles.VSPACE_3);
 		layout.addComponent(personGrid);
+
+		personGrid.addSelectionListener(e -> {
+			if (selectionChangeCallback != null) {
+				selectionChangeCallback.accept(!e.getSelected().isEmpty());
+			}
+		});
 
 		createNewPerson = new OptionGroup(null);
 		createNewPerson.addItem(CREATE_PERSON);
@@ -194,12 +258,16 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 				personGrid.select(null);
 				personGrid.setEnabled(false);
 				mergeCheckBox.setEnabled(false);
+				if (selectionChangeCallback != null) {
+					selectionChangeCallback.accept(true);
+				}
 			}
 		});
 		layout.addComponent(createNewPerson);
 
 		// Set field values based on internal value
 		setInternalValue(super.getInternalValue());
+
 
 		return layout;
 	}
@@ -213,8 +281,7 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 	public void selectBestMatch() {
 		if (personGrid.getContainerDataSource().size() == 1) {
 			setInternalValue((PersonIndexDto) personGrid.getContainerDataSource().firstItemId());
-		}
-		else {
+		} else {
 			setInternalValue(null);
 		}
 	}
@@ -223,19 +290,19 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 	public Class<? extends PersonIndexDto> getType() {
 		return PersonIndexDto.class;
 	}
-	
+
 	public CaseDataDto getSelectedMatchingCase() {
 		if (selectPerson == null || mergeCheckBox.getValue() == null || getValue().getCaseUuid() == null) {
 			return null;
 		}
-		
+
 		return FacadeProvider.getCaseFacade().getCaseDataByUuid(getInternalValue().getCaseUuid());
 	}
-	
+
 	public boolean isUsePerson() {
-		return selectPerson.getValue().equals(SELECT_PERSON);
+		return SELECT_PERSON.equals(selectPerson.getValue());
 	}
-	
+
 	public boolean isMergeCase() {
 		return mergeCheckBox.getValue();
 	}
@@ -261,6 +328,13 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 		}
 
 		return super.getInternalValue();
+	}
+
+	/**
+	 * Callback is executed with 'true' when a grid entry or "Create new person" is selected.
+	 */
+	public void setSelectionChangeCallback(Consumer<Boolean> callback) {
+		this.selectionChangeCallback = callback;
 	}
 
 }
