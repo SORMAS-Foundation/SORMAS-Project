@@ -120,17 +120,30 @@ public class CaseController {
 	}
 
 	public void navigateToCase(String caseUuid) {
-		navigateToView(CaseDataView.VIEW_NAME, caseUuid, null);
+		navigateToView(CaseDataView.VIEW_NAME, caseUuid, null, false);
+	}
+
+	public void navigateToCase(String caseUuid, boolean openTab) {
+		navigateToView(CaseDataView.VIEW_NAME, caseUuid, null, openTab);
 	}
 
 	public void navigateToView(String viewName, String caseUuid, ViewMode viewMode) {
+		navigateToView(viewName, caseUuid, viewMode, false);
+	}
+	
+	public void navigateToView(String viewName, String caseUuid, ViewMode viewMode, boolean openTab) {
 
 		String navigationState = viewName + "/" + caseUuid;
 		if (viewMode == ViewMode.FULL) {
 			// pass full view mode as param so it's also used for other views when switching
 			navigationState	+= "/" + AbstractCaseView.VIEW_MODE_URL_PREFIX + "=" + viewMode.toString();
 		}
-		SormasUI.get().getNavigator().navigateTo(navigationState);	
+		
+		if (openTab) {
+			SormasUI.get().getPage().open(SormasUI.get().getPage().getLocation().getRawPath() + "#!" + navigationState, "_blank", false);
+		} else {
+			SormasUI.get().getNavigator().navigateTo(navigationState);
+		}		
 	}
 
 	public Link createLinkToData(String caseUuid, String caption) {

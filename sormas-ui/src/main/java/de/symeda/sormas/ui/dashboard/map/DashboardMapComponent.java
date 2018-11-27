@@ -87,7 +87,6 @@ public class DashboardMapComponent extends VerticalLayout {
 
 	final static Logger logger = LoggerFactory.getLogger(DashboardMapComponent.class);
 
-//	private static final String CASE_FACILITIES_GROUP_ID = "facilities";
 	private static final String CASES_GROUP_ID = "cases";
 	private static final String CONTACTS_GROUP_ID = "contacts";
 	private static final String EVENTS_GROUP_ID = "events";
@@ -122,7 +121,7 @@ public class DashboardMapComponent extends VerticalLayout {
 
 	// Others
 	private CaseMeasure caseMeasure = CaseMeasure.CASE_COUNT;
-	private MapCaseDisplayMode mapCaseDisplayMode = MapCaseDisplayMode.CASES;
+	private MapCaseDisplayMode mapCaseDisplayMode = MapCaseDisplayMode.HEALTH_FACILITY_OR_CASE_ADDRESS;
 	private BigDecimal districtValuesLowerQuartile;
 	private BigDecimal districtValuesMedian;
 	private BigDecimal districtValuesUpperQuartile;
@@ -254,28 +253,6 @@ public class DashboardMapComponent extends VerticalLayout {
 		mapHeaderLayout.addComponent(mapLabel);
 		mapHeaderLayout.setComponentAlignment(mapLabel, Alignment.BOTTOM_LEFT);
 		mapHeaderLayout.setExpandRatio(mapLabel, 1);
-
-//		Button testButton = new NativeButton("Test");
-//		testButton.addClickListener(new ClickListener() {
-//
-//			@Override
-//			public void buttonClick(ClickEvent event) {
-//
-//				// add some random markers
-//				Random random = new Random();
-//				GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfAllRegions();
-//				List<LeafletMarker> markers = new ArrayList<LeafletMarker>();
-//				for (int i = 0; i < 2000; i++) {
-//					LeafletMarker marker = new LeafletMarker();
-//					marker.setLatLon(mapCenter.getLat() + 0.2 * random.nextDouble() - 0.1,
-//							mapCenter.getLon() + 0.2 * random.nextDouble() - 0.1);
-//					marker.setIcon(MarkerIcon.RED_DOT);
-//					markers.add(marker);
-//				}
-//				map.addMarkerGroup("test", markers);
-//			}
-//		});
-//		mapHeaderLayout.addComponent(testButton);
 
 		// Map key dropdown button
 		legendDropdown = new PopupButton("Map Key");
@@ -469,8 +446,8 @@ public class DashboardMapComponent extends VerticalLayout {
 
 		// Cases
 		if (showCases) {
-			if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES
-					|| mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES_OR_ADDRESS) {
+			if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITY
+					|| mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITY_OR_CASE_ADDRESS) {
 				Label facilitiesKeyLabel = new Label("Health Facilities");
 				CssStyles.style(facilitiesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 				legendLayout.addComponent(facilitiesKeyLabel);
@@ -495,8 +472,8 @@ public class DashboardMapComponent extends VerticalLayout {
 			}
 
 			Label casesKeyLabel = new Label("Cases");
-			if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES
-					|| mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES_OR_ADDRESS) {
+			if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITY
+					|| mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITY_OR_CASE_ADDRESS) {
 				CssStyles.style(casesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_3);
 			} else {
 				CssStyles.style(casesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
@@ -559,10 +536,10 @@ public class DashboardMapComponent extends VerticalLayout {
 			HorizontalLayout eventsKeyLayout = new HorizontalLayout();
 			{
 				eventsKeyLayout.setSpacing(false);
-				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_OUTBREAK, "Outbreak");
+				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_RUMOR, EventType.RUMOR.toString());
 				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
 				eventsKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_RUMOR, "Rumor");
+				legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_OUTBREAK, EventType.OUTBREAK.toString());
 				eventsKeyLayout.addComponent(legendEntry);
 			}
 			legendLayout.addComponent(eventsKeyLayout);
@@ -827,8 +804,6 @@ public class DashboardMapComponent extends VerticalLayout {
 	private void clearCaseMarkers() {
 
 		map.removeGroup(CASES_GROUP_ID);
-//		map.removeGroup(CASE_FACILITIES_GROUP_ID);
-
 		markerCaseFacilities.clear();
 		casesByFacility.clear();
 		mapCaseDtos.clear();
@@ -877,9 +852,6 @@ public class DashboardMapComponent extends VerticalLayout {
 			caseMarkers.add(leafletMarker);
 		}
 
-//		map.addMarkerGroup(CASE_FACILITIES_GROUP_ID, caseMarkers);
-//		List<LeafletMarker> caseMarkers = new ArrayList<LeafletMarker>();
-
 		for (MapCaseDto caze : mapCaseDtos) {
 			LeafletMarker marker = new LeafletMarker();
 			if (caze.getCaseClassification() == CaseClassification.CONFIRMED) {
@@ -916,7 +888,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				continue; // no gps at all
 			}			
 
-			if (mapCaseDisplayMode == MapCaseDisplayMode.CASES) {
+			if (mapCaseDisplayMode == MapCaseDisplayMode.CASE_ADDRESS) {
 				if (!hasCaseGps) {
 					continue; 
 				}
@@ -925,7 +897,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				if (caze.getHealthFacilityUuid().equals(FacilityDto.NONE_FACILITY_UUID)
 						|| caze.getHealthFacilityUuid().equals(FacilityDto.OTHER_FACILITY_UUID)
 						|| !hasFacilityGps) {
-					if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES_OR_ADDRESS) {
+					if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITY_OR_CASE_ADDRESS) {
 						if (!hasCaseGps) {
 							continue;
 						}
@@ -1049,7 +1021,7 @@ public class DashboardMapComponent extends VerticalLayout {
 	private void onMarkerClicked(String groupId, int markerIndex) {
 
 		switch (groupId) {
-		case CASES_GROUP_ID:// CASE_FACILITIES_GROUP_ID:
+		case CASES_GROUP_ID:
 
 			if (markerIndex < markerCaseFacilities.size()) {
 				FacilityReferenceDto facility = markerCaseFacilities.get(markerIndex);
@@ -1062,21 +1034,19 @@ public class DashboardMapComponent extends VerticalLayout {
 				FacilityDto facilityDto = FacadeProvider.getFacilityFacade().getByUuid(facility.getUuid());
 				window.setCaption("Cases in " + facilityDto.toString());
 			} else {
-//			break;
-//		case CASES_GROUP_ID: {
 				markerIndex -= markerCaseFacilities.size();
 				MapCaseDto caze = mapCaseDtos.get(markerIndex);
-				ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
+				ControllerProvider.getCaseController().navigateToCase(caze.getUuid(), true);
 			}
 			break;
 		case CONTACTS_GROUP_ID: {
 			MapContactDto contact = markerContacts.get(markerIndex);
-			ControllerProvider.getContactController().navigateToData(contact.getUuid());
+			ControllerProvider.getContactController().navigateToData(contact.getUuid(), true);
 		}
 			break;
 		case EVENTS_GROUP_ID: {
 			DashboardEventDto event = markerEvents.get(markerIndex);
-			ControllerProvider.getEventController().navigateToData(event.getUuid());
+			ControllerProvider.getEventController().navigateToData(event.getUuid(), true);
 		}
 			break;
 		}

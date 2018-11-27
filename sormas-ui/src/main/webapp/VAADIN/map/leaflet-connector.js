@@ -87,6 +87,11 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 	
 	this.addMarkerGroup = function(groupId, markers) {
 
+		// check prerequisites for clustering icon logic
+		if (mapIcons[4].indexOf("facility") != 0
+				|| mapIcons[7].indexOf("facility") != 0)
+			throw "mapIcons indices 4 to 7 are supposed to be facilities";
+		
 		var markerGroup = L.markerClusterGroup({
 
 			/** define how marker clusters are rendered **/
@@ -96,8 +101,15 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 				var minIconIndex = mapIcons.length;
 				for (i=0; i<children.length; i++) {
 					count += children[i].count;
-					if (children[i].iconIndex < minIconIndex)
-						minIconIndex = children[i].iconIndex;
+					var iconIndex = children[i].iconIndex;
+					
+					// facilities are clustered as cases (see check above)
+					if (iconIndex >= 4 && iconIndex <= 7)
+						iconIndex -= 4;
+					
+					// use "most important" icon == smallest index
+					if (iconIndex < minIconIndex)
+						minIconIndex = iconIndex;
 				}
 
 				var size = 20 + 5 * Math.min(Math.ceil((count-1)/10), 4);

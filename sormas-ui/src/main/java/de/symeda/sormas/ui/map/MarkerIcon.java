@@ -37,10 +37,13 @@ public enum MarkerIcon {
 	EVENT_RUMOR,	
 	;
 	
+	/**
+	 * E.g. "contact long-overdue"
+	 */
 	private final String cssClasses;
 	
 	MarkerIcon() {
-		cssClasses = this.name().toLowerCase().replaceAll("_", " ");
+		cssClasses = this.name().toLowerCase().replaceFirst("_", " ").replaceAll("_", "-");
 	}
 	
 	public String getHtmlElement(String size) {
