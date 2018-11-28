@@ -72,14 +72,12 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.facility.FacilityHelper;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
@@ -124,8 +122,8 @@ import de.symeda.sormas.backend.epidata.EpiDataTravelService;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
@@ -240,15 +238,15 @@ public class CaseFacadeEjb implements CaseFacade {
 	private ConfigFacadeEjbLocal configFacade;
 
 	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
-	
+
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		
+
 		if (user == null) {
 			return Collections.emptyList();
 		}
-		
+
 		return caseService.getAllActiveCasesAfter(date, user).stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
@@ -346,7 +344,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				epiData.get(EpiData.RODENTS),
 				epiData.get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE),
 				symptoms.get(Symptoms.ONSET_DATE));
-				
+
 		User user = userService.getByUuid(userUuid);
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
 
@@ -358,11 +356,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		cq.orderBy(cb.desc(caze.get(Case.REPORT_DATE)));
 
 		List<CaseExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		
+
 		for (CaseExportDto exportDto : resultList) {
 			// TODO: Speed up this code, e.g. by persisting symtoms, lab results, etc. as a String in the database
 			List<Date> sampleDates = sampleService.getSampleDatesForCase(exportDto.getId());
@@ -371,7 +369,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			exportDto.setLabResults(sampleTestService.getSampleTestResultsForCase(exportDto.getId()));
 			exportDto.setSymptoms(symptomsService.getById(exportDto.getSymptomsId()).toHumanString(false));
 			exportDto.setAddress(personService.getAddressByPersonId(exportDto.getPersonId()).toString());
-			
+
 			// Build travel history - done here to avoid transforming EpiDataTravel to EpiDataTravelDto
 			List<EpiDataTravel> travels = epiDataTravelService.getAllByEpiDataId(exportDto.getEpiDataId());
 			StringBuilder travelHistoryBuilder = new StringBuilder();
@@ -386,7 +384,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 			exportDto.setTravelHistory(travelHistoryBuilder.toString());
 		}
-		
+
 		return resultList;
 	}
 
@@ -436,11 +434,37 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		return toDto(caseService.getLatestCaseByPerson(person, user));
 	}
-	
+
+	@Override
+	public CaseDataDto getMatchingCaseForImport(CaseDataDto importCaze, PersonReferenceDto existingPerson, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		Date newCaseDate = CaseLogic.getStartDate(importCaze.getSymptoms().getOnsetDate(), importCaze.getReceptionDate(), importCaze.getReportDate());
+
+		CaseCriteria criteria = new CaseCriteria()
+				.personEquals(existingPerson)
+				.diseaseEquals(importCaze.getDisease())
+				.archived(false)
+				.newCaseDateBetween(DateHelper.subtractMonths(newCaseDate, 2), DateHelper.addMonths(newCaseDate, 2), null);
+
+		List<Case> matchingCases = caseService.findBy(criteria, user).stream().sorted(new Comparator<Case>() {
+			@Override
+			public int compare(Case c1, Case c2) {
+				return CaseLogic.getStartDate(c1.getSymptoms().getOnsetDate(), c1.getReceptionDate(), c1.getReportDate()).compareTo(
+						CaseLogic.getStartDate(c2.getSymptoms().getOnsetDate(), c2.getReceptionDate(), c2.getReportDate()));
+			}
+		}).collect(Collectors.toList());
+
+		if (!matchingCases.isEmpty()) {
+			return toDto(matchingCases.get(0));
+		} else {
+			return null;
+		}
+	}
+
 	@Override
 	public List<CaseDataDto> getAllCasesOfPerson(String personUuid, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		
+
 		return caseService.findBy(new CaseCriteria().personEquals(new PersonReferenceDto(personUuid)), user)
 				.stream()
 				.map(c -> toDto(c))
@@ -477,7 +501,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		CaseDataDto existingCaseDto = toDto(caseService.getByUuid(dto.getUuid()));
 
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
-		
+
 		// Check whether any required field that does not have a not null constraint in
 		// the database is empty
 		if (dto.getRegion() == null) {
@@ -521,14 +545,14 @@ public class CaseFacadeEjb implements CaseFacade {
 			throw new ValidationRuntimeException(
 					"Could not find a database entry for the specified health facility in the specified region");
 		}
-		
+
 		caze = fillOrBuildEntity(dto, caze);
 		caseService.ensurePersisted(caze);
 		onCaseChanged(existingCaseDto, caze);
 
 		return toDto(caze);
 	}
-	
+
 	@Override
 	public void archiveOrDearchiveCase(String caseUuid, boolean archive) {
 		Case caze = caseService.getByUuid(caseUuid);
@@ -584,6 +608,30 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 
+		// Re-assign the Tasks associated with this Case to the new Officer (if selected) or the Region Supervisor.
+		if (existingCase != null && !newCase.getHealthFacility().getUuid().equals(existingCase.getHealthFacility().getUuid())) {
+			for (Task task : newCase.getTasks()) {
+				if (task.getTaskStatus() != TaskStatus.PENDING) {
+					continue;
+				}
+
+				if (newCase.getSurveillanceOfficer() != null) {
+					task.setAssigneeUser(newCase.getSurveillanceOfficer());
+				} else {
+					List<User> supervisors = userService.getAllByRegionAndUserRoles(newCase.getRegion(),
+							UserRole.SURVEILLANCE_SUPERVISOR);
+					if (supervisors.size() >= 1) {
+						task.setAssigneeUser(supervisors.get(0));
+					} else {
+						task.setAssigneeUser(null);
+					}
+				}
+
+				taskService.ensurePersisted(task);
+			}
+		}
+		
+		
 		// Create a task to search for other cases for new Plague cases
 		if (existingCase == null && newCase.getDisease() == Disease.PLAGUE) {
 			createActiveSearchForOtherCasesTask(newCase);
@@ -690,67 +738,29 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
+	/**
+	 * Updates the Hospitalization of the given Case when its Health Facility has changed
+	 * and adds a PreviousHospitalization with the information of the current Hospitalization.
+	 * DOES NOT update or save the existing Case in the database, only manipulates the 
+	 * Case delivered as a parameter.
+	 */
 	@Override
-	public CaseDataDto transferCase(CaseReferenceDto cazeRef, RegionReferenceDto regionDto, DistrictReferenceDto districtDto,
-			CommunityReferenceDto communityDto,	FacilityReferenceDto facilityDto, String facilityDetails, UserReferenceDto officerDto) {
-		Case caze = fillOrBuildEntity(getCaseDataByUuid(cazeRef.getUuid()), caseService.getByUuid(cazeRef.getUuid()));
-
-		Community community = communityDto != null ? communityService.getByUuid(communityDto.getUuid()) : null;
-		Facility facility = facilityService.getByUuid(facilityDto.getUuid());
-		District district = districtService.getByUuid(districtDto.getUuid());
-		Region region = regionService.getByUuid(regionDto.getUuid());
-		User officer = null;
-		if (officerDto != null) {
-			officer = userService.getByUuid(officerDto.getUuid());
-		}
-
-		// Create a new previous hospitalization object if a new facility is set and
-		// reset the
-		// current hospitalization
-		if (!caze.getHealthFacility().getUuid().equals(facility.getUuid())) {
+	public CaseDataDto updateHospitalization(CaseDataDto caze) {
+		Case existingCase = caseService.getByUuid(caze.getUuid());
+		
+		// Only update Hospitalization when Health Facility has been changed
+		if (!existingCase.getHealthFacility().getUuid().equals(caze.getHealthFacility().getUuid())) {
 			caze.getHospitalization().getPreviousHospitalizations()
-			.add(previousHospitalizationService.buildPreviousHospitalizationFromHospitalization(caze));
+			.add(HospitalizationFacadeEjbLocal.toDto(previousHospitalizationService.buildPreviousHospitalizationFromHospitalization(existingCase)));
 			caze.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
 			caze.getHospitalization().setAdmissionDate(new Date());
 			caze.getHospitalization().setDischargeDate(null);
 			caze.getHospitalization().setIsolated(null);
 		}
-
-		caze.setRegion(region);
-		caze.setDistrict(district);
-		caze.setCommunity(community);
-		caze.setHealthFacility(facility);
-		caze.setHealthFacilityDetails(facilityDetails);
-		caze.setSurveillanceOfficer(officer);
-
-		caseService.ensurePersisted(caze);
-
-		// Assign all tasks associated with this case to the new officer or, if none has
-		// been selected,
-		// to the region supervisor
-		for (Task task : caze.getTasks()) {
-			if (task.getTaskStatus() != TaskStatus.PENDING) {
-				continue;
-			}
-
-			if (officer != null) {
-				task.setAssigneeUser(officer);
-			} else {
-				List<User> supervisors = userService.getAllByRegionAndUserRoles(region,
-						UserRole.SURVEILLANCE_SUPERVISOR);
-				if (supervisors.size() >= 1) {
-					task.setAssigneeUser(supervisors.get(0));
-				} else {
-					task.setAssigneeUser(null);
-				}
-			}
-
-			taskService.ensurePersisted(task);
-		}
-
-		return toDto(caze);
+		
+		return caze;
 	}
-
+	
 	@Override
 	public void deleteCase(CaseReferenceDto caseRef, String userUuid) {
 		User user = userService.getByUuid(userUuid);
@@ -777,7 +787,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 		caseService.delete(caze);
 	}
-	
+
 	@Override
 	public List<String> getArchivedUuidsSince(String userUuid, Date since) {
 		User user = userService.getByUuid(userUuid);
@@ -1744,7 +1754,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Case> from = cq.from(Case.class);
-	
+
 		// Workaround for probable bug in Eclipse Link/Postgre that throws a NoResultException when trying to
 		// query for a true Boolean result
 		cq.where(
@@ -1755,7 +1765,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		long count = em.createQuery(cq).getSingleResult();
 		return count > 0;
 	}
-	
+
 	private String buildGroupingSelectQuery(StatisticsCaseAttribute grouping, StatisticsCaseSubAttribute subGrouping,
 			String groupAlias) {
 		StringBuilder groupingSelectPartBuilder = new StringBuilder();

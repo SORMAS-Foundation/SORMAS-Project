@@ -1,0 +1,13 @@
+
+@mixin sormas-progressbar {
+
+	.v-progressbar {
+		&.v-progressbar-indeterminate {
+			&.v-progressbar-indeterminate-large {
+				width: 35px !important;
+				height: 35px !important;
+			}
+		}
+	}
+	
+}

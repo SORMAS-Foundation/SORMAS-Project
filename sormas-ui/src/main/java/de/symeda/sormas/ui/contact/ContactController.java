@@ -79,8 +79,16 @@ public class ContactController {
 	}
 
 	public void navigateToData(String contactUuid) {
+		navigateToData(contactUuid, false);
+	}
+
+	public void navigateToData(String contactUuid, boolean openTab) {
 		String navigationState = ContactDataView.VIEW_NAME + "/" + contactUuid;
-		SormasUI.get().getNavigator().navigateTo(navigationState);	
+		if (openTab) {
+			SormasUI.get().getPage().open(SormasUI.get().getPage().getLocation().getRawPath() + "#!" + navigationState, "_blank", false);
+		} else {
+			SormasUI.get().getNavigator().navigateTo(navigationState);
+		}		
 	}
 
 	public void editData(String contactUuid) {

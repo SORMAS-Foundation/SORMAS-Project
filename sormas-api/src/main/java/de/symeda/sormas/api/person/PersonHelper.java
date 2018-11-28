@@ -26,6 +26,15 @@ public class PersonHelper {
 	
 	private final static double SIMILARITY_THRESHOLD = 0.65;
 	private final static double LOWER_THRESHOLD = 0.33;
+
+	/**
+	 * Calculates a modified Levenshtein distance between both names and returns true
+	 * if the similarity is high enough to consider them a possible match.
+	 */
+	public static boolean areNamesSimilar(PersonNameDto firstPerson, String secondPersonFirstName, String secondPersonLastName) {
+		return areNamesSimilar(firstPerson.getFirstName() + " " + firstPerson.getLastName(), 
+				secondPersonFirstName + " " + secondPersonLastName);
+	}
 	
 	/**
 	 * Calculates a modified Levenshtein distance between both names and returns true

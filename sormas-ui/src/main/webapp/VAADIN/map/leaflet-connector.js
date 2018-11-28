@@ -20,6 +20,8 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 	// make sure to manually reload this after making changes, because it is being cached  
 	// see https://leafletjs.com/reference-1.3.4.html
 
+	// these mapIcons have to match the MarkerIcon java enum
+	// clustering always falls back to the lowest icon index
 	var mapIcons = [
 		"case confirmed",
 		"case suspect", 
@@ -85,27 +87,39 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 	
 	this.addMarkerGroup = function(groupId, markers) {
 
+		// check prerequisites for clustering icon logic
+		if (mapIcons[4].indexOf("facility") != 0
+				|| mapIcons[7].indexOf("facility") != 0)
+			throw "mapIcons indices 4 to 7 are supposed to be facilities";
+		
 		var markerGroup = L.markerClusterGroup({
-			//maxClusterRadius: 20,
-			
+
+			/** define how marker clusters are rendered **/
 			iconCreateFunction: function(cluster) {
 				children = cluster.getAllChildMarkers();
 				count = 0;
-				anyContact = false;
-				anyEvent = false;
 				var minIconIndex = mapIcons.length;
 				for (i=0; i<children.length; i++) {
 					count += children[i].count;
-					if (children[i].iconIndex < minIconIndex)
-						minIconIndex = children[i].iconIndex;
+					var iconIndex = children[i].iconIndex;
+					
+					// facilities are clustered as cases (see check above)
+					if (iconIndex >= 4 && iconIndex <= 7)
+						iconIndex -= 4;
+					
+					// use "most important" icon == smallest index
+					if (iconIndex < minIconIndex)
+						minIconIndex = iconIndex;
 				}
 
 				var size = 20 + 5 * Math.min(Math.ceil((count-1)/10), 4);
 
-				return new L.DivIcon({ 
+				var icon = new L.DivIcon({ 
 					html: count > 1 ? '<div><span>' + count + '</span></div>' : '<div></div>', 
 							className: 'marker cluster ' + mapIcons[minIconIndex], 
 							iconSize: new L.Point(size,size) });
+				icon.cluster = cluster;
+				return icon;
 			}			
 		})
 //		var markerGroup = L.featureGroup()
@@ -160,10 +174,4 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 		// call to server
 		connector.onClick(event.target.id, event.layer.id);
 	}
-
-//	function icon(name) {
-//		return L.icon({
-//			iconUrl: 'VAADIN/map/icons/' + name + ".png",
-//		});
-//	}	
 }

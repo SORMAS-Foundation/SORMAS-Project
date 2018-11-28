@@ -101,6 +101,10 @@ public class PersonController {
 				}
 			});
 
+			personSelect.setSelectionChangeCallback((commitAllowed) -> {
+				selectOrCreateComponent.getCommitButton().setEnabled(commitAllowed);
+			});
+
 			VaadinUiUtil.showModalPopupWindow(selectOrCreateComponent, "Pick or create person");
 		} else {
 			create(personSelect.getFirstName(), personSelect.getLastName(), resultConsumer);

@@ -45,7 +45,7 @@ public interface PersonFacade {
 
 	List<PersonDto> getByUuids(List<String> uuids);
 	
-	PersonIndexDto getIndexDto(Long id);
+	PersonIndexDto getIndexDto(String uuid);
 	
 	PersonDto buildPerson();
 }

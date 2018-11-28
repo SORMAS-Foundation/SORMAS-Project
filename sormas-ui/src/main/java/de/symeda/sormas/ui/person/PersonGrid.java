@@ -35,22 +35,48 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonNameDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.login.LoginHelper;
 
 @SuppressWarnings("serial")
 public class PersonGrid extends Grid {
 
-	public static final String LAST_DISEASE_LOC = "lastDiseaseLoc";
-	
+	public static final String CASE_LOC = "caseLoc";
+
 	private final List<PersonNameDto> persons;
 
+	private CaseDataDto associatedCase;
+	private UserReferenceDto currentUser;
+
+	/**
+	 * Initializes the person grid with a fixed list of similar persons and a fixed first and
+	 * last name. The "last disease" column is replaced with a "matching case" column that includes 
+	 * a link to a possible case that matches the associated case and respective person.
+	 */
+	public PersonGrid(List<PersonNameDto> persons, CaseDataDto associatedCase, PersonDto associatedPerson, UserReferenceDto currentUser) {
+		this.persons = persons;
+		this.associatedCase = associatedCase;
+		this.currentUser = currentUser;
+		buildGrid();
+		reload(associatedPerson.getFirstName(), associatedPerson.getLastName());
+	}
+
+	/**
+	 * Initializes the person grid with variable first and last names, dynamically retrieving
+	 * the list of person names.
+	 */
 	public PersonGrid(String firstName, String lastName) {
 		persons = FacadeProvider.getPersonFacade().getNameDtos(LoginHelper.getCurrentUserAsReference());
-		
+		buildGrid();
+		reload(firstName, lastName);
+	}
+
+	private void buildGrid() {
 		setSizeFull();
 		setSelectionMode(SelectionMode.SINGLE);
 		setHeightMode(HeightMode.ROW);
@@ -59,14 +85,14 @@ public class PersonGrid extends Grid {
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		setContainerDataSource(generatedContainer);
 
-		generatedContainer.addGeneratedProperty(LAST_DISEASE_LOC, new PropertyValueGenerator<String>() {
+		generatedContainer.addGeneratedProperty(CASE_LOC, new PropertyValueGenerator<String>() {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				PersonIndexDto person = (PersonIndexDto) itemId;
-				if (person.getLastDisease() != null) {
+				if (person.getCaseDisease() != null) {
 					return "<a href='" + Page.getCurrent().getLocation() + "/data/" + 
-							person.getLastCaseUuid() + "' target='_blank'>" + person.getLastDisease().toShortString() + 
-							" (" + DateHelper.formatLocalShortDate(person.getLastDiseaseStartDate()) + ")</a>";
+							person.getCaseUuid() + "' target='_blank'>" + person.getCaseDisease().toShortString() + 
+							" (" + DateHelper.formatLocalShortDate(person.getCaseDiseaseStartDate()) + ")</a>";
 				} else {
 					return "";
 				}
@@ -80,7 +106,7 @@ public class PersonGrid extends Grid {
 		setColumns(PersonIndexDto.FIRST_NAME, PersonIndexDto.LAST_NAME, PersonIndexDto.NICKNAME, 
 				PersonIndexDto.APPROXIMATE_AGE, PersonIndexDto.SEX, PersonIndexDto.PRESENT_CONDITION,
 				PersonIndexDto.DISTRICT_NAME, PersonIndexDto.COMMUNITY_NAME, PersonIndexDto.CITY,
-				LAST_DISEASE_LOC);
+				CASE_LOC);
 
 		for (Column column : getColumns()) {
 			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
@@ -89,9 +115,9 @@ public class PersonGrid extends Grid {
 
 		getColumn(PersonIndexDto.FIRST_NAME).setMinimumWidth(150);
 		getColumn(PersonIndexDto.LAST_NAME).setMinimumWidth(150);
-		getColumn(LAST_DISEASE_LOC).setRenderer(new HtmlRenderer());
-
-		reload(firstName, lastName);
+		getColumn(CASE_LOC).setRenderer(new HtmlRenderer());
+		getColumn(CASE_LOC).setHeaderCaption(I18nProperties.getPrefixFieldCaption(PersonIndexDto.I18N_PREFIX, 
+				associatedCase == null ? "lastDisease" : "matchingCase"));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -104,13 +130,20 @@ public class PersonGrid extends Grid {
 		List<PersonIndexDto> entries = new ArrayList<>();
 		for (PersonNameDto person : persons) {
 			if (PersonHelper.areNamesSimilar(firstName + " " + lastName, person.getFirstName() + " " + person.getLastName())) {
-				PersonIndexDto indexDto = FacadeProvider.getPersonFacade().getIndexDto(person.getId());
-				CaseDataDto lastCase = FacadeProvider.getCaseFacade().getLatestCaseByPerson(indexDto.getUuid(), LoginHelper.getCurrentUserAsReference().getUuid());
-				if (lastCase != null) {
-					indexDto.setLastDisease(lastCase.getDisease());
-					indexDto.setLastDiseaseStartDate(CaseLogic.getStartDate(lastCase.getSymptoms().getOnsetDate(), lastCase.getReceptionDate(), lastCase.getReportDate()));
-					indexDto.setLastCaseUuid(lastCase.getUuid());
+				PersonIndexDto indexDto = FacadeProvider.getPersonFacade().getIndexDto(person.getUuid());
+				CaseDataDto caze = null;
+				if (associatedCase == null) {
+					caze = FacadeProvider.getCaseFacade().getLatestCaseByPerson(indexDto.getUuid(), LoginHelper.getCurrentUserAsReference().getUuid());
+				} else {
+					caze = FacadeProvider.getCaseFacade().getMatchingCaseForImport(associatedCase, indexDto.toReference(), currentUser.getUuid());
 				}
+
+				if (caze != null) {
+					indexDto.setCaseDisease(caze.getDisease());
+					indexDto.setCaseDiseaseStartDate(CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReceptionDate(), caze.getReportDate()));
+					indexDto.setCaseUuid(caze.getUuid());
+				}
+
 				entries.add(indexDto);
 			}
 		}
@@ -138,6 +171,7 @@ public class PersonGrid extends Grid {
 	public void remove(PersonIndexDto entry) {
 		getContainer().removeItem(entry);
 	}
+
 }
 
 

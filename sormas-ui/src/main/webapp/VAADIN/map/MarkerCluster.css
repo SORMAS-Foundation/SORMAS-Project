@@ -33,7 +33,7 @@
 
 .marker.case.confirmed,
 .marker.contact.long-overdue {
-	background-color: rgba(231, 76, 60, 0.6);
+	background-color: rgba(216, 49, 43, 0.8);
 }
 .marker.case.confirmed div,
 .marker.contact.long-overdue div {
@@ -41,7 +41,7 @@
 }
 
 .marker.case.probable {
-	background-color: rgba(245, 126, 23, 0.6);
+	background-color: rgba(204, 103, 20, 0.8);
 }
 .marker.case.probable div {
 	background-color: rgba(250, 190, 146, 0.8);
@@ -49,7 +49,7 @@
 
 .marker.case.suspect,
 .marker.contact.overdue {
-	background-color: rgba(245, 200, 23, 0.6);
+	background-color: rgba(204, 173, 20, 0.8);
 }
 .marker.case.suspect div,
 .marker.contact.overdue div {
@@ -57,14 +57,14 @@
 }
 
 .marker.case.unclassified {
-	background-color: rgba(150, 150, 150, 0.6);
+	background-color: rgba(127, 127, 127, 0.8);
 }
 .marker.case.unclassified div {
 	background-color: rgba(203, 203, 203, 0.8);
 }
 
 .marker.contact.ok {
-	background-color: rgba(95, 213, 86, 0.6);
+	background-color: rgba(76, 165, 67, 0.8);
 }
 .marker.contact.ok div {
 	background-color: rgba(175, 227, 168, 0.8);
@@ -87,7 +87,7 @@
 }
 
 .marker.event {
-	margin: -10px;
+	margin: -25% 0;
 }
 .marker.event.outbreak {
 	background-image: url("marker/event-outbreak.png");
