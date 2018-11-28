@@ -72,14 +72,12 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.facility.FacilityHelper;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
@@ -610,6 +608,30 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 
+		// Re-assign the Tasks associated with this Case to the new Officer (if selected) or the Region Supervisor.
+		if (existingCase != null && !newCase.getHealthFacility().getUuid().equals(existingCase.getHealthFacility().getUuid())) {
+			for (Task task : newCase.getTasks()) {
+				if (task.getTaskStatus() != TaskStatus.PENDING) {
+					continue;
+				}
+
+				if (newCase.getSurveillanceOfficer() != null) {
+					task.setAssigneeUser(newCase.getSurveillanceOfficer());
+				} else {
+					List<User> supervisors = userService.getAllByRegionAndUserRoles(newCase.getRegion(),
+							UserRole.SURVEILLANCE_SUPERVISOR);
+					if (supervisors.size() >= 1) {
+						task.setAssigneeUser(supervisors.get(0));
+					} else {
+						task.setAssigneeUser(null);
+					}
+				}
+
+				taskService.ensurePersisted(task);
+			}
+		}
+		
+		
 		// Create a task to search for other cases for new Plague cases
 		if (existingCase == null && newCase.getDisease() == Disease.PLAGUE) {
 			createActiveSearchForOtherCasesTask(newCase);
@@ -716,65 +738,29 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
+	/**
+	 * Updates the Hospitalization of the given Case when its Health Facility has changed
+	 * and adds a PreviousHospitalization with the information of the current Hospitalization.
+	 * DOES NOT update or save the existing Case in the database, only manipulates the 
+	 * Case delivered as a parameter.
+	 */
 	@Override
-	public CaseDataDto transferCase(CaseReferenceDto cazeRef, RegionReferenceDto regionDto, DistrictReferenceDto districtDto,
-			CommunityReferenceDto communityDto,	FacilityReferenceDto facilityDto, String facilityDetails, UserReferenceDto officerDto) {
-		Case caze = fillOrBuildEntity(getCaseDataByUuid(cazeRef.getUuid()), caseService.getByUuid(cazeRef.getUuid()));
-
-		Community community = communityDto != null ? communityService.getByUuid(communityDto.getUuid()) : null;
-		Facility facility = facilityService.getByUuid(facilityDto.getUuid());
-		District district = districtService.getByUuid(districtDto.getUuid());
-		Region region = regionService.getByUuid(regionDto.getUuid());
-		User officer = null;
-		if (officerDto != null) {
-			officer = userService.getByUuid(officerDto.getUuid());
-		}
-
-		// Create a new previous hospitalization object if a new facility is set and
-		// reset the current hospitalization
-		if (!caze.getHealthFacility().getUuid().equals(facility.getUuid())) {
+	public CaseDataDto updateHospitalization(CaseDataDto caze) {
+		Case existingCase = caseService.getByUuid(caze.getUuid());
+		
+		// Only update Hospitalization when Health Facility has been changed
+		if (!existingCase.getHealthFacility().getUuid().equals(caze.getHealthFacility().getUuid())) {
 			caze.getHospitalization().getPreviousHospitalizations()
-			.add(previousHospitalizationService.buildPreviousHospitalizationFromHospitalization(caze));
+			.add(HospitalizationFacadeEjbLocal.toDto(previousHospitalizationService.buildPreviousHospitalizationFromHospitalization(existingCase)));
 			caze.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
 			caze.getHospitalization().setAdmissionDate(new Date());
 			caze.getHospitalization().setDischargeDate(null);
 			caze.getHospitalization().setIsolated(null);
 		}
-
-		caze.setRegion(region);
-		caze.setDistrict(district);
-		caze.setCommunity(community);
-		caze.setHealthFacility(facility);
-		caze.setHealthFacilityDetails(facilityDetails);
-		caze.setSurveillanceOfficer(officer);
-
-		caseService.ensurePersisted(caze);
-
-		// Assign all tasks associated with this case to the new officer or, if none has
-		// been selected, to the region supervisor
-		for (Task task : caze.getTasks()) {
-			if (task.getTaskStatus() != TaskStatus.PENDING) {
-				continue;
-			}
-
-			if (officer != null) {
-				task.setAssigneeUser(officer);
-			} else {
-				List<User> supervisors = userService.getAllByRegionAndUserRoles(region,
-						UserRole.SURVEILLANCE_SUPERVISOR);
-				if (supervisors.size() >= 1) {
-					task.setAssigneeUser(supervisors.get(0));
-				} else {
-					task.setAssigneeUser(null);
-				}
-			}
-
-			taskService.ensurePersisted(task);
-		}
-
-		return toDto(caze);
+		
+		return caze;
 	}
-
+	
 	@Override
 	public void deleteCase(CaseReferenceDto caseRef, String userUuid) {
 		User user = userService.getByUuid(userUuid);

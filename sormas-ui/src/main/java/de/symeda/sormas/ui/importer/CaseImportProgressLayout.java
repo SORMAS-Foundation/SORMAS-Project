@@ -1,9 +1,13 @@
 package de.symeda.sormas.ui.importer;
 
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.ProgressBar;
 import com.vaadin.ui.UI;
@@ -14,13 +18,24 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
 public class CaseImportProgressLayout extends VerticalLayout {
-
+	
 	// Components
 	private ProgressBar progressBar;
 	private Label processedCasesLabel;
 	private Label importedCasesLabel;
 	private Label importErrorsLabel;
 	private Label importSkipsLabel;
+	private Button closeCancelButton;
+	private HorizontalLayout infoLayout;
+	private Label infoLabel;
+	
+	private ProgressBar progressCircle;
+	private Image errorIcon;
+	private Image successIcon;
+	private Image warningIcon;
+	private Component currentInfoComponent;
+	
+	private ClickListener cancelListener;
 	
 	// Counts
 	private int processedCasesCount;
@@ -35,10 +50,19 @@ public class CaseImportProgressLayout extends VerticalLayout {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(true);
 
-		// Info text
-		Label infoLabel = new Label(String.format(I18nProperties.getText("importInfo"), totalCasesCount), ContentMode.HTML);
+		// Info text and icon/progress circle
+		infoLayout = new HorizontalLayout();
+		infoLayout.setWidth(100, Unit.PERCENTAGE);
+		infoLayout.setSpacing(true);
+		initializeInfoComponents();
+		currentInfoComponent = progressCircle;
+		infoLayout.addComponent(currentInfoComponent);
+		infoLabel = new Label(String.format(I18nProperties.getText("importInfo"), totalCasesCount), ContentMode.HTML);
 		infoLabel.setContentMode(ContentMode.HTML);
-		addComponent(infoLabel);
+		infoLayout.addComponent(infoLabel);
+		infoLayout.setExpandRatio(infoLabel, 1);
+		
+		addComponent(infoLayout);
 		
 		// Progress bar
 		progressBar = new ProgressBar(0.0f);
@@ -65,13 +89,30 @@ public class CaseImportProgressLayout extends VerticalLayout {
 		setComponentAlignment(progressInfoLayout, Alignment.TOP_RIGHT);
 		
 		// Cancel button
-		Button cancelButton = new Button("Cancel");
-		CssStyles.style(cancelButton, CssStyles.VSPACE_TOP_2);
-		cancelButton.addClickListener(e -> {
+		closeCancelButton = new Button("Cancel");
+		CssStyles.style(closeCancelButton, CssStyles.VSPACE_TOP_2);
+		cancelListener = e -> {
 			cancelCallback.run();
-		});
-		addComponent(cancelButton);
-		setComponentAlignment(cancelButton, Alignment.MIDDLE_RIGHT);
+		};
+		closeCancelButton.addClickListener(cancelListener);
+		addComponent(closeCancelButton);
+		setComponentAlignment(closeCancelButton, Alignment.MIDDLE_RIGHT);
+	}
+	
+	private void initializeInfoComponents() {
+		progressCircle = new ProgressBar();
+		progressCircle.setIndeterminate(true);
+		CssStyles.style(progressCircle, "v-progressbar-indeterminate-large");
+		
+		errorIcon = new Image(null, new ThemeResource("img/error-icon.png"));
+		errorIcon.setHeight(35, Unit.PIXELS);
+		errorIcon.setWidth(35, Unit.PIXELS);
+		successIcon = new Image(null, new ThemeResource("img/success-icon.png"));
+		successIcon.setHeight(35, Unit.PIXELS);
+		successIcon.setWidth(35, Unit.PIXELS);
+		warningIcon = new Image(null, new ThemeResource("img/warning-icon.png"));
+		warningIcon.setHeight(35, Unit.PIXELS);
+		warningIcon.setWidth(35, Unit.PIXELS);
 	}
 	
 	public void updateProgress(CaseImportResult result) {		
@@ -93,6 +134,36 @@ public class CaseImportProgressLayout extends VerticalLayout {
 				progressBar.setValue((float) processedCasesCount / (float) totalCasesCount);
 			}
 		});
+	}
+	
+	public void makeClosable(Runnable closeCallback) {
+		closeCancelButton.setCaption("Close");
+		closeCancelButton.removeClickListener(cancelListener);
+		closeCancelButton.addClickListener(e -> {
+			closeCallback.run();
+		});
+	}
+	
+	public void setInfoLabelText(String text) {
+		infoLabel.setValue(text);
+	}
+	
+	public void displayErrorIcon() {
+		infoLayout.removeComponent(currentInfoComponent);
+		currentInfoComponent = errorIcon;
+		infoLayout.addComponentAsFirst(currentInfoComponent);
+	}
+	
+	public void displaySuccessIcon() {
+		infoLayout.removeComponent(currentInfoComponent);
+		currentInfoComponent = successIcon;
+		infoLayout.addComponentAsFirst(currentInfoComponent);
+	}
+	
+	public void displayWarningIcon() {
+		infoLayout.removeComponent(currentInfoComponent);
+		currentInfoComponent = warningIcon;
+		infoLayout.addComponentAsFirst(currentInfoComponent);
 	}
 	
 }

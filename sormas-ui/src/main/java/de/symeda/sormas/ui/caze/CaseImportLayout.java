@@ -29,6 +29,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import com.vaadin.server.ClassResource;
+import com.vaadin.server.Extension;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
@@ -132,9 +133,6 @@ public class CaseImportLayout extends VerticalLayout {
 		CaseImportLayoutComponent errorReportComponent = new CaseImportLayoutComponent(4, headline, infoText, buttonIcon, buttonCaption);
 		downloadErrorReportButton = errorReportComponent.getButton();
 		errorReportComponent.getButton().setEnabled(false);
-		errorReportComponent.getButton().addClickListener(e -> {
-
-		});
 		addComponent(errorReportComponent);
 	}
 
@@ -206,6 +204,12 @@ public class CaseImportLayout extends VerticalLayout {
 		public void uploadSucceeded(SucceededEvent event) {
 			if (file == null) {
 				return;
+			}
+
+			// Remove file downloader extension from "Download Error Report" button
+			for (int i = 0; i < downloadErrorReportButton.getExtensions().size(); i++) {
+				Extension ext = downloadErrorReportButton.getExtensions().iterator().next();
+				downloadErrorReportButton.removeExtension(ext);
 			}
 
 			UserReferenceDto currentUser = LoginHelper.getCurrentUserAsReference();
@@ -286,54 +290,74 @@ public class CaseImportLayout extends VerticalLayout {
 				popup.setClosable(false);
 				currentUI.addWindow(popup);
 
-				currentUI.setPollInterval(50);
 				class ImportThread extends Thread {
 					@Override
 					public void run() {
 						try {
+							currentUI.setPollInterval(50);
+
 							ImportResultStatus importResult = caseImporter.importAllCases(similarityCallback, caseImportedCallback);
 							String errorReportFilePath = caseImporter.getErrorReportFilePath();
 
 							currentUI.access(new Runnable() {
 								@Override
 								public void run() {
-									popup.close();
+									popup.setClosable(true);
+									progressLayout.makeClosable(() -> {
+										popup.close();
+									});
 
-									Notification notification = null;
 									if (importResult == ImportResultStatus.COMPLETED) {
-										notification = new Notification("Import successful", "All cases have been imported. You can now close this window.", Type.HUMANIZED_MESSAGE, false);
+										progressLayout.displaySuccessIcon();
+										progressLayout.setInfoLabelText("<b>Import successful!</b><br/>All cases have been imported. You can now close this window and the \"Import Cases\" dialog.");
 									} else if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS) {
-										notification = new Notification("Import successful", "The import has been successful, but some of the cases could not be imported due to malformed data. Please download the error report below.", Type.WARNING_MESSAGE, false);
+										progressLayout.displayWarningIcon();
+										progressLayout.setInfoLabelText("<b>Import partially successful!</b><br/>The import has been successful, but some of the cases could not be imported due to malformed data. Please close this window and download the error report in the \"Import Cases\" dialog.");
 									} else if (importResult == ImportResultStatus.CANCELED) {
-										notification = new Notification("Import canceled", "The import has been canceled. All already processed cases have been successfully imported.", Type.WARNING_MESSAGE, false);
+										progressLayout.displaySuccessIcon();
+										progressLayout.setInfoLabelText("<b>Import canceled!</b><br/>The import has been canceled. All already processed cases have been successfully imported. You can now close this window and the \"Import Cases\" dialog.");
 									} else {
-										notification = new Notification("Import canceled", "The import has been canceled. Some of the already processed cases could not be imported due to malformed data. Please download the error report below.", Type.WARNING_MESSAGE, false);
+										progressLayout.displayWarningIcon();
+										progressLayout.setInfoLabelText("<b>Import canceled!</b><br/>The import has been canceled. Some of the already processed cases could not be imported due to malformed data. Please close this window and download the error report in the \"Import Cases\" dialog.");
 									}								
 
-									notification.setDelayMsec(-1);
-									notification.show(Page.getCurrent());
+									popup.addCloseListener(e -> {
+										if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS || importResult == ImportResultStatus.CANCELED_WITH_ERRORS) {
+											StreamResource streamResource = DownloadUtil.createFileStreamResource(errorReportFilePath, "sormas_import_error_report.csv", "text/csv",
+													"Error report not available", "The error report file is not available. Please contact an admin and tell them about this issue.");
+											FileDownloader fileDownloader = new FileDownloader(streamResource);
+											fileDownloader.extend(downloadErrorReportButton);
+											downloadErrorReportButton.setEnabled(true);
+										}
+									});
 
-									if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS || importResult == ImportResultStatus.CANCELED_WITH_ERRORS) {
-										StreamResource streamResource = DownloadUtil.createFileStreamResource(errorReportFilePath, "sormas_import_error_report.csv", "text/csv",
-												"Error report not available", "The error report file is not available. Please contact an admin and tell them about this issue.");
-										FileDownloader fileDownloader = new FileDownloader(streamResource);
-										fileDownloader.extend(downloadErrorReportButton);
-										downloadErrorReportButton.setEnabled(true);
-									}
+									currentUI.setPollInterval(-1);
 								}
 							});
 						} catch (IOException e) {
 							currentUI.access(new Runnable() {
 								@Override
 								public void run() {
-									new Notification("Import failed", "The import failed due to a critical error. Please contact your admin and inform them about this issue.", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+									popup.setClosable(true);
+									progressLayout.makeClosable(() -> {
+										popup.close();
+									});
+									progressLayout.displayErrorIcon();
+									progressLayout.setInfoLabelText("<b>Import failed!</b><br/>The import failed due to a critical error. Please contact your admin and inform them about this issue.");
+									currentUI.setPollInterval(-1);
 								}
 							});
 						} catch (InvalidColumnException e) {
 							currentUI.access(new Runnable() {
 								@Override
 								public void run() {
-									new Notification("Invalid column", "The column \"" + e.getColumnName() + "\" is not part of the case or one of its connected entities. Please remove it from the .csv file and upload it again.", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+									popup.setClosable(true);
+									progressLayout.makeClosable(() -> {
+										popup.close();
+									});
+									progressLayout.displayErrorIcon();
+									progressLayout.setInfoLabelText("<b>Invalid column!</b><br/>The column \"" + e.getColumnName() + "\" is not part of the case or one of its connected entities. Please remove it from the .csv file and upload it again.");
+									currentUI.setPollInterval(-1);
 								}
 							});
 						}
