@@ -46,6 +46,7 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
@@ -235,6 +236,9 @@ public class CaseService extends AbstractAdoService<Case> {
 		return resultList;
 	}	
 
+	/**
+	 * @param to will automatically be set to the end of the day
+	 */
 	public List<DashboardCaseDto> getNewCasesForDashboard(Region region, District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardCaseDto> cq = cb.createQuery(DashboardCaseDto.class);
@@ -631,9 +635,14 @@ public class CaseService extends AbstractAdoService<Case> {
 		}
 	}
 
+	/**
+	 * @param toDate will automatically be set to the end of the day
+	 */
 	public Predicate createNewCaseFilter(CriteriaBuilder cb, Root<Case> caze, Date fromDate, Date toDate, NewCaseDateType newCaseDateType) {
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 
+		toDate = DateHelper.getEndOfDay(toDate);
+		
 		Predicate onsetDateFilter = cb.between(symptoms.get(Symptoms.ONSET_DATE), fromDate, toDate);
 		Predicate receptionDateFilter = cb.between(caze.get(Case.RECEPTION_DATE), fromDate, toDate);
 		Predicate reportDateFilter = cb.between(caze.get(Case.REPORT_DATE), fromDate, toDate);
