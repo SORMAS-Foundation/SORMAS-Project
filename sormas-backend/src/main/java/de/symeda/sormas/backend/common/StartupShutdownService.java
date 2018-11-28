@@ -103,6 +103,8 @@ public class StartupShutdownService {
 		
 		String countryName = configFacade.getCountryName();
 		
+		de.symeda.sormas.api.I18nProperties.setLocale(configFacade.getCountryLocale());
+		
 		importAdministrativeDivisions(countryName);
 		
 		facilityService.importFacilities(countryName);

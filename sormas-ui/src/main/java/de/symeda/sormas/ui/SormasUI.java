@@ -33,6 +33,7 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.login.LoginScreen;
 import de.symeda.sormas.ui.login.LoginScreen.LoginListener;
@@ -51,12 +52,14 @@ import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
 @Theme("sormas")
 @Widgetset("de.symeda.sormas.SormasWidgetset")
 public class SormasUI extends UI {
-
+	
     @Override
     protected void init(VaadinRequest vaadinRequest) {
-		
+
     	setErrorHandler(SormasErrorHandler.get());
         setLocale(vaadinRequest.getLocale());
+        
+		de.symeda.sormas.api.I18nProperties.setLocale(FacadeProvider.getConfigFacade().getCountryLocale());
 
 		Responsive.makeResponsive(this);
         
