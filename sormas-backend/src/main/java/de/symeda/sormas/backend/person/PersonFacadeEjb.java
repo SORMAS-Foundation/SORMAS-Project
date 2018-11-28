@@ -266,8 +266,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public PersonIndexDto getIndexDto(Long id) {
-		Person person = personService.getById(id);
+	public PersonIndexDto getIndexDto(String uuid) {
+		Person person = personService.getByUuid(uuid);
 		return toIndexDto(person);
 	}
 
@@ -339,6 +339,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		PersonIndexDto dto = new PersonIndexDto(entity.getUuid(), entity.getSex(), entity.getFirstName(), entity.getLastName(), 
 				entity.getPresentCondition(), entity.getBirthdateDD(), entity.getBirthdateMM(), entity.getBirthdateYYYY(),
 				entity.getApproximateAge(), entity.getApproximateAgeType(), entity.getDeathDate(), entity.getNickname(),
+				entity.getAddress().getRegion() != null ? entity.getAddress().getRegion().getName() : null,
 				entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null, 
 						entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null, 
 								entity.getAddress().getCity());

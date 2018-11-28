@@ -39,6 +39,7 @@ public class PreviousHospitalizationService extends AbstractAdoService<PreviousH
 		super(PreviousHospitalization.class);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, 
 			From<PreviousHospitalization, PreviousHospitalization> from, User user) {

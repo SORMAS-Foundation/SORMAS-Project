@@ -47,36 +47,37 @@ public class ImportFacadeEjbTest extends AbstractBeanTest {
 
 	private static final int EXPECTED_NUMBER_OF_LINES = 5;
 	
-	@Test
-	public void testCaseImport() throws IOException, InvalidColumnException {
-		when(MockProducer.getSessionContext().getCallerPrincipal()).thenReturn(new Principal() {
-            @Override
-            public String getName() {
-                return "admin";
-            }
-        });
-		
-		RDCF rdcf = creator.createRDCF("Abia", "Osisioma Ngwa", "Community", "Amavo Ukwu Health Post");
-		District district = creator.createDistrict("Bende", rdcf.region);
-		creator.createFacility("Akoli Health Centre", rdcf.region, district, null);
-		UserDto user = creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
-		
-		InputStream inputStream = ImportFacadeEjbTest.class.getResourceAsStream("/sormas_import_test.csv");
-	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		OutputStreamWriter osw = new OutputStreamWriter(baos, StandardCharsets.UTF_8.name());
-		
-		getImportFacade().importCasesFromCsvFile(new InputStreamReader(inputStream), osw, user.getUuid());
-		
-		BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(baos.toByteArray()));
-		InputStreamReader reader = new InputStreamReader(bis);
-		CSVReader csvReader = CSVUtils.createCSVReader(reader, getConfigFacade().getCsvSeparator());
-		
-		int numberOfLines = 0;
-		while (csvReader.readNext() != null) {
-			numberOfLines++;
-		}
-		
-		// The .csv file should have six lines including the header, one of which should import correctly
-		assertEquals(EXPECTED_NUMBER_OF_LINES, numberOfLines);
-	}
+	// TODO move to ui package
+//	@Test
+//	public void testCaseImport() throws IOException, InvalidColumnException {
+//		when(MockProducer.getSessionContext().getCallerPrincipal()).thenReturn(new Principal() {
+//            @Override
+//            public String getName() {
+//                return "admin";
+//            }
+//        });
+//		
+//		RDCF rdcf = creator.createRDCF("Abia", "Osisioma Ngwa", "Community", "Amavo Ukwu Health Post");
+//		District district = creator.createDistrict("Bende", rdcf.region);
+//		creator.createFacility("Akoli Health Centre", rdcf.region, district, null);
+//		UserDto user = creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
+//		
+//		InputStream inputStream = ImportFacadeEjbTest.class.getResourceAsStream("/sormas_import_test.csv");
+//	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//		OutputStreamWriter osw = new OutputStreamWriter(baos, StandardCharsets.UTF_8.name());
+//		
+//		getImportFacade().importCasesFromCsvFile(new InputStreamReader(inputStream), osw, user.getUuid());
+//		
+//		BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(baos.toByteArray()));
+//		InputStreamReader reader = new InputStreamReader(bis);
+//		CSVReader csvReader = CSVUtils.createCSVReader(reader, getConfigFacade().getCsvSeparator());
+//		
+//		int numberOfLines = 0;
+//		while (csvReader.readNext() != null) {
+//			numberOfLines++;
+//		}
+//		
+//		// The .csv file should have six lines including the header, one of which should import correctly
+//		assertEquals(EXPECTED_NUMBER_OF_LINES, numberOfLines);
+//	}
 }

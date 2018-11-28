@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.map;
 public enum MarkerIcon {
 
 	// make sure to update mapIcons in leaflet-connector.js when editing this
+	// clustering always falls back to the lowest icon index
 	
 	CASE_CONFIRMED,
 	CASE_SUSPECT,
@@ -34,13 +35,18 @@ public enum MarkerIcon {
 	CONTACT_OK,
 	EVENT_OUTBREAK,
 	EVENT_RUMOR,	
+	;
 	
-
-//	public String getThemeUrl() {
-//		return "icons/" + imgName + ".png";
-//	};
-//	
-//	public String getExternalUrl() {
-//		return "VAADIN/map/icons/" + imgName + ".png";
-//	};
+	/**
+	 * E.g. "contact long-overdue"
+	 */
+	private final String cssClasses;
+	
+	MarkerIcon() {
+		cssClasses = this.name().toLowerCase().replaceFirst("_", " ").replaceAll("_", "-");
+	}
+	
+	public String getHtmlElement(String size) {
+		return "<div class='marker " + cssClasses + "' style='width:" + size + "; height:" + size + "'></div>";
+	}
 }

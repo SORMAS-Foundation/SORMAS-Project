@@ -34,6 +34,7 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -86,7 +87,6 @@ public class DashboardMapComponent extends VerticalLayout {
 
 	final static Logger logger = LoggerFactory.getLogger(DashboardMapComponent.class);
 
-//	private static final String CASE_FACILITIES_GROUP_ID = "facilities";
 	private static final String CASES_GROUP_ID = "cases";
 	private static final String CONTACTS_GROUP_ID = "contacts";
 	private static final String EVENTS_GROUP_ID = "events";
@@ -121,7 +121,7 @@ public class DashboardMapComponent extends VerticalLayout {
 
 	// Others
 	private CaseMeasure caseMeasure = CaseMeasure.CASE_COUNT;
-	private MapCaseDisplayMode mapCaseDisplayMode = MapCaseDisplayMode.CASES;
+	private MapCaseDisplayMode mapCaseDisplayMode = MapCaseDisplayMode.HEALTH_FACILITY_OR_CASE_ADDRESS;
 	private BigDecimal districtValuesLowerQuartile;
 	private BigDecimal districtValuesMedian;
 	private BigDecimal districtValuesUpperQuartile;
@@ -253,28 +253,6 @@ public class DashboardMapComponent extends VerticalLayout {
 		mapHeaderLayout.addComponent(mapLabel);
 		mapHeaderLayout.setComponentAlignment(mapLabel, Alignment.BOTTOM_LEFT);
 		mapHeaderLayout.setExpandRatio(mapLabel, 1);
-
-//		Button testButton = new NativeButton("Test");
-//		testButton.addClickListener(new ClickListener() {
-//
-//			@Override
-//			public void buttonClick(ClickEvent event) {
-//
-//				// add some random markers
-//				Random random = new Random();
-//				GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfAllRegions();
-//				List<LeafletMarker> markers = new ArrayList<LeafletMarker>();
-//				for (int i = 0; i < 2000; i++) {
-//					LeafletMarker marker = new LeafletMarker();
-//					marker.setLatLon(mapCenter.getLat() + 0.2 * random.nextDouble() - 0.1,
-//							mapCenter.getLon() + 0.2 * random.nextDouble() - 0.1);
-//					marker.setIcon(MarkerIcon.RED_DOT);
-//					markers.add(marker);
-//				}
-//				map.addMarkerGroup("test", markers);
-//			}
-//		});
-//		mapHeaderLayout.addComponent(testButton);
 
 		// Map key dropdown button
 		legendDropdown = new PopupButton("Map Key");
@@ -457,7 +435,7 @@ public class DashboardMapComponent extends VerticalLayout {
 		legendLayout.setSizeUndefined();
 
 		// Disable map key dropdown if no layers have been selected
-		if (showCases || showContacts || showRegions) {
+		if (showCases || showContacts || showEvents || showRegions) {
 			legendDropdown.setEnabled(true);
 		} else {
 			legendDropdown.setEnabled(false);
@@ -468,34 +446,34 @@ public class DashboardMapComponent extends VerticalLayout {
 
 		// Cases
 		if (showCases) {
-			if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES
-					|| mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES_OR_ADDRESS) {
+			if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITY
+					|| mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITY_OR_CASE_ADDRESS) {
 				Label facilitiesKeyLabel = new Label("Health Facilities");
 				CssStyles.style(facilitiesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 				legendLayout.addComponent(facilitiesKeyLabel);
 
 				HorizontalLayout facilitiesKeyLayout = new HorizontalLayout();
 				{
-//					facilitiesKeyLayout.setSpacing(false);
-//					HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.GREY_HOUSE_SMALL,
-//							"Only Not Yet Classified Cases");
-//					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-//					facilitiesKeyLayout.addComponent(legendEntry);
-//					legendEntry = buildMarkerLegendEntry(MarkerIcon.YELLOW_HOUSE_SMALL, "> 1 Suspect Cases");
-//					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-//					facilitiesKeyLayout.addComponent(legendEntry);
-//					legendEntry = buildMarkerLegendEntry(MarkerIcon.ORANGE_HOUSE_SMALL, "> 1 Probable Cases");
-//					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-//					facilitiesKeyLayout.addComponent(legendEntry);
-//					legendEntry = buildMarkerLegendEntry(MarkerIcon.RED_HOUSE_SMALL, "> 1 Confirmed Cases");
-//					facilitiesKeyLayout.addComponent(legendEntry);
+					facilitiesKeyLayout.setSpacing(false);
+					HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.FACILITY_UNCLASSIFIED,
+							"Only Not Yet Classified Cases");
+					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+					facilitiesKeyLayout.addComponent(legendEntry);
+					legendEntry = buildMarkerLegendEntry(MarkerIcon.FACILITY_SUSPECT, "> 1 Suspect Cases");
+					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+					facilitiesKeyLayout.addComponent(legendEntry);
+					legendEntry = buildMarkerLegendEntry(MarkerIcon.FACILITY_PROBABLE, "> 1 Probable Cases");
+					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+					facilitiesKeyLayout.addComponent(legendEntry);
+					legendEntry = buildMarkerLegendEntry(MarkerIcon.FACILITY_CONFIRMED, "> 1 Confirmed Cases");
+					facilitiesKeyLayout.addComponent(legendEntry);
 				}
 				legendLayout.addComponent(facilitiesKeyLayout);
 			}
 
 			Label casesKeyLabel = new Label("Cases");
-			if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES
-					|| mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES_OR_ADDRESS) {
+			if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITY
+					|| mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITY_OR_CASE_ADDRESS) {
 				CssStyles.style(casesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_3);
 			} else {
 				CssStyles.style(casesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
@@ -504,18 +482,18 @@ public class DashboardMapComponent extends VerticalLayout {
 
 			HorizontalLayout casesKeyLayout = new HorizontalLayout();
 			{
-//				casesKeyLayout.setSpacing(false);
-//				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.GREY_DOT_SMALL, "Not Yet Classified");
-//				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-//				casesKeyLayout.addComponent(legendEntry);
-//				legendEntry = buildMarkerLegendEntry(MarkerIcon.YELLOW_DOT_SMALL, "Suspect");
-//				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-//				casesKeyLayout.addComponent(legendEntry);
-//				legendEntry = buildMarkerLegendEntry(MarkerIcon.ORANGE_DOT_SMALL, "Probable");
-//				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-//				casesKeyLayout.addComponent(legendEntry);
-//				legendEntry = buildMarkerLegendEntry(MarkerIcon.RED_DOT_SMALL, "Confirmed");
-//				casesKeyLayout.addComponent(legendEntry);
+				casesKeyLayout.setSpacing(false);
+				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.CASE_UNCLASSIFIED, "Not Yet Classified");
+				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+				casesKeyLayout.addComponent(legendEntry);
+				legendEntry = buildMarkerLegendEntry(MarkerIcon.CASE_SUSPECT, "Suspect");
+				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+				casesKeyLayout.addComponent(legendEntry);
+				legendEntry = buildMarkerLegendEntry(MarkerIcon.CASE_PROBABLE, "Probable");
+				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+				casesKeyLayout.addComponent(legendEntry);
+				legendEntry = buildMarkerLegendEntry(MarkerIcon.CASE_CONFIRMED, "Confirmed");
+				casesKeyLayout.addComponent(legendEntry);
 			}
 			legendLayout.addComponent(casesKeyLayout);
 		}
@@ -532,15 +510,15 @@ public class DashboardMapComponent extends VerticalLayout {
 
 			HorizontalLayout contactsKeyLayout = new HorizontalLayout();
 			{
-//				contactsKeyLayout.setSpacing(false);
-//				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.GREEN_CONTACT, "Last Visit < 24h");
-//				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-//				contactsKeyLayout.addComponent(legendEntry);
-//				legendEntry = buildMarkerLegendEntry(MarkerIcon.ORANGE_CONTACT, "Last Visit < 48h");
-//				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-//				contactsKeyLayout.addComponent(legendEntry);
-//				legendEntry = buildMarkerLegendEntry(MarkerIcon.RED_CONTACT, "Last Visit > 48h or No Visit");
-//				contactsKeyLayout.addComponent(legendEntry);
+				contactsKeyLayout.setSpacing(false);
+				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_OK, "Last Visit < 24h");
+				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+				contactsKeyLayout.addComponent(legendEntry);
+				legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_OVERDUE, "Last Visit < 48h");
+				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+				contactsKeyLayout.addComponent(legendEntry);
+				legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_LONG_OVERDUE, "Last Visit > 48h or No Visit");
+				contactsKeyLayout.addComponent(legendEntry);
 			}
 			legendLayout.addComponent(contactsKeyLayout);
 		}
@@ -557,12 +535,12 @@ public class DashboardMapComponent extends VerticalLayout {
 
 			HorizontalLayout eventsKeyLayout = new HorizontalLayout();
 			{
-//				eventsKeyLayout.setSpacing(false);
-//				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.OUTBREAK, "Outbreak");
-//				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-//				eventsKeyLayout.addComponent(legendEntry);
-//				legendEntry = buildMarkerLegendEntry(MarkerIcon.RUMOR, "Rumor");
-//				eventsKeyLayout.addComponent(legendEntry);
+				eventsKeyLayout.setSpacing(false);
+				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_RUMOR, EventType.RUMOR.toString());
+				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+				eventsKeyLayout.addComponent(legendEntry);
+				legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_OUTBREAK, EventType.OUTBREAK.toString());
+				eventsKeyLayout.addComponent(legendEntry);
 			}
 			legendLayout.addComponent(eventsKeyLayout);
 		}
@@ -584,22 +562,22 @@ public class DashboardMapComponent extends VerticalLayout {
 		return legendLayout;
 	}
 
-//	public static HorizontalLayout buildMarkerLegendEntry(MarkerIcon icon, String labelCaption) {
-//		return buildLegendEntry(icon.getExternalUrl(), labelCaption);
-//	}
-
-	public static HorizontalLayout buildMapIconLegendEntry(String iconName, String labelCaption) {
-		return buildLegendEntry("VAADIN/map/icons/" + iconName + ".png", labelCaption);
+	public static HorizontalLayout buildMarkerLegendEntry(MarkerIcon icon, String labelCaption) {
+		return buildLegendEntry(new Label(icon.getHtmlElement("16px"), ContentMode.HTML), labelCaption);
 	}
 
-	private static HorizontalLayout buildLegendEntry(String externalUrl, String labelCaption) {
+	public static HorizontalLayout buildMapIconLegendEntry(String iconName, String labelCaption) {
+		Image icon = new Image(null, new ExternalResource("VAADIN/map/marker/" + iconName + ".png"));
+		icon.setWidth(12.375f, Unit.PIXELS);
+		icon.setHeight(16.875f, Unit.PIXELS);
+		return buildLegendEntry(icon, labelCaption);
+	}
+
+	private static HorizontalLayout buildLegendEntry(AbstractComponent icon, String labelCaption) {
 		HorizontalLayout entry = new HorizontalLayout();
 		entry.setSizeUndefined();
-		Image iconImage = new Image(null, new ExternalResource(externalUrl));
-		CssStyles.style(iconImage, CssStyles.HSPACE_RIGHT_4);
-		iconImage.setWidth(12.375f, Unit.PIXELS);
-		iconImage.setHeight(16.875f, Unit.PIXELS);
-		entry.addComponent(iconImage);
+		CssStyles.style(icon, CssStyles.HSPACE_RIGHT_4);
+		entry.addComponent(icon);
 		Label label = new Label(labelCaption);
 		label.setSizeUndefined();
 		label.addStyleName(ValoTheme.LABEL_SMALL);
@@ -826,8 +804,6 @@ public class DashboardMapComponent extends VerticalLayout {
 	private void clearCaseMarkers() {
 
 		map.removeGroup(CASES_GROUP_ID);
-//		map.removeGroup(CASE_FACILITIES_GROUP_ID);
-
 		markerCaseFacilities.clear();
 		casesByFacility.clear();
 		mapCaseDtos.clear();
@@ -876,9 +852,6 @@ public class DashboardMapComponent extends VerticalLayout {
 			caseMarkers.add(leafletMarker);
 		}
 
-//		map.addMarkerGroup(CASE_FACILITIES_GROUP_ID, caseMarkers);
-//		List<LeafletMarker> caseMarkers = new ArrayList<LeafletMarker>();
-
 		for (MapCaseDto caze : mapCaseDtos) {
 			LeafletMarker marker = new LeafletMarker();
 			if (caze.getCaseClassification() == CaseClassification.CONFIRMED) {
@@ -915,7 +888,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				continue; // no gps at all
 			}			
 
-			if (mapCaseDisplayMode == MapCaseDisplayMode.CASES) {
+			if (mapCaseDisplayMode == MapCaseDisplayMode.CASE_ADDRESS) {
 				if (!hasCaseGps) {
 					continue; 
 				}
@@ -924,7 +897,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				if (caze.getHealthFacilityUuid().equals(FacilityDto.NONE_FACILITY_UUID)
 						|| caze.getHealthFacilityUuid().equals(FacilityDto.OTHER_FACILITY_UUID)
 						|| !hasFacilityGps) {
-					if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES_OR_ADDRESS) {
+					if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITY_OR_CASE_ADDRESS) {
 						if (!hasCaseGps) {
 							continue;
 						}
@@ -1048,7 +1021,7 @@ public class DashboardMapComponent extends VerticalLayout {
 	private void onMarkerClicked(String groupId, int markerIndex) {
 
 		switch (groupId) {
-		case CASES_GROUP_ID:// CASE_FACILITIES_GROUP_ID:
+		case CASES_GROUP_ID:
 
 			if (markerIndex < markerCaseFacilities.size()) {
 				FacilityReferenceDto facility = markerCaseFacilities.get(markerIndex);
@@ -1061,21 +1034,19 @@ public class DashboardMapComponent extends VerticalLayout {
 				FacilityDto facilityDto = FacadeProvider.getFacilityFacade().getByUuid(facility.getUuid());
 				window.setCaption("Cases in " + facilityDto.toString());
 			} else {
-//			break;
-//		case CASES_GROUP_ID: {
 				markerIndex -= markerCaseFacilities.size();
 				MapCaseDto caze = mapCaseDtos.get(markerIndex);
-				ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
+				ControllerProvider.getCaseController().navigateToCase(caze.getUuid(), true);
 			}
 			break;
 		case CONTACTS_GROUP_ID: {
 			MapContactDto contact = markerContacts.get(markerIndex);
-			ControllerProvider.getContactController().navigateToData(contact.getUuid());
+			ControllerProvider.getContactController().navigateToData(contact.getUuid(), true);
 		}
 			break;
 		case EVENTS_GROUP_ID: {
 			DashboardEventDto event = markerEvents.get(markerIndex);
-			ControllerProvider.getEventController().navigateToData(event.getUuid());
+			ControllerProvider.getEventController().navigateToData(event.getUuid(), true);
 		}
 			break;
 		}

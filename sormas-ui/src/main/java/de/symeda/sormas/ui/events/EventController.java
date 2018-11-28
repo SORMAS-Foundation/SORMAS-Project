@@ -71,8 +71,16 @@ public class EventController {
 	}
 
 	public void navigateToData(String eventUuid) {
+		navigateToData(eventUuid, false);
+	}
+	
+	public void navigateToData(String eventUuid, boolean openTab) {
 		String navigationState = EventDataView.VIEW_NAME + "/" + eventUuid;
-		SormasUI.get().getNavigator().navigateTo(navigationState);
+		if (openTab) {
+			SormasUI.get().getPage().open(SormasUI.get().getPage().getLocation().getRawPath() + "#!" + navigationState, "_blank", false);
+		} else {
+			SormasUI.get().getNavigator().navigateTo(navigationState);
+		}	
 	}
 
 	public void navigateToParticipants(String eventUuid) {
