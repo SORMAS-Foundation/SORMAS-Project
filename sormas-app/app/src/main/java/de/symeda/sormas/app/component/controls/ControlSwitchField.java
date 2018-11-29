@@ -105,6 +105,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
     @SuppressWarnings("unchecked")
     public void setEnumClass(Class<? extends Enum> c) {
         if (!DataHelper.equal(c, enumClass)) {
+            suppressListeners = true;
             removeAllItems();
 
             List<Item> items = DataUtils.getEnumItems(c, false);
@@ -115,6 +116,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
             }
 
             enumClass = c;
+            suppressListeners = false;
         }
     }
 
@@ -280,7 +282,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
                     onValueChanged();
                 }
 
-                if (onCheckedChangeListener != null) {
+                if (onCheckedChangeListener != null && !suppressListeners) {
                     onCheckedChangeListener.onCheckedChanged(radioGroup, i);
                 }
             }
