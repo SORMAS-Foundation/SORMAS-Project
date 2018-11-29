@@ -271,8 +271,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		cq.multiselect(caze.get(Case.UUID), caze.get(Case.EPID_NUMBER), person.get(Person.FIRST_NAME),
 				person.get(Person.LAST_NAME), caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS),
 				caze.get(Case.CASE_CLASSIFICATION), caze.get(Case.INVESTIGATION_STATUS),
-				person.get(Person.PRESENT_CONDITION), caze.get(Case.REPORT_DATE), region.get(Region.UUID),
-				district.get(District.UUID), district.get(District.NAME), facility.get(Facility.UUID),
+				person.get(Person.PRESENT_CONDITION), caze.get(Case.REPORT_DATE), caze.get(AbstractDomainObject.CREATION_DATE),
+				region.get(Region.UUID), district.get(District.UUID), district.get(District.NAME), facility.get(Facility.UUID),
 				facility.get(Facility.NAME), caze.get(Case.HEALTH_FACILITY_DETAILS), surveillanceOfficer.get(User.UUID),
 				caze.get(Case.OUTCOME));
 
@@ -449,8 +449,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<Case> matchingCases = caseService.findBy(criteria, user).stream().sorted(new Comparator<Case>() {
 			@Override
 			public int compare(Case c1, Case c2) {
-				return CaseLogic.getStartDate(c1.getSymptoms().getOnsetDate(), c1.getReceptionDate(), c1.getReportDate()).compareTo(
-						CaseLogic.getStartDate(c2.getSymptoms().getOnsetDate(), c2.getReceptionDate(), c2.getReportDate()));
+				return CaseLogic.getStartDate(c2.getSymptoms().getOnsetDate(), c2.getReceptionDate(), c2.getReportDate()).compareTo(
+						CaseLogic.getStartDate(c1.getSymptoms().getOnsetDate(), c1.getReceptionDate(), c1.getReportDate()));
 			}
 		}).collect(Collectors.toList());
 
@@ -502,55 +502,60 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 
-		// Check whether any required field that does not have a not null constraint in
-		// the database is empty
-		if (dto.getRegion() == null) {
-			throw new ValidationRuntimeException("You have to specify a valid region");
-		}
-		if (dto.getDistrict() == null) {
-			throw new ValidationRuntimeException("You have to specify a valid district");
-		}
-		if (dto.getHealthFacility() == null) {
-			throw new ValidationRuntimeException("You have to specify a valid health facility");
-		}
-		if (dto.getDisease() == null) {
-			throw new ValidationRuntimeException("You have to specify a valid disease");
-		}
-		// Check whether there are any infrastructure errors
-		if (!districtFacade.getDistrictByUuid(dto.getDistrict().getUuid()).getRegion().equals(dto.getRegion())) {
-			throw new ValidationRuntimeException(
-					"Could not find a database entry for the specified district in the specified region");
-		}
-		if (dto.getCommunity() != null && !communityFacade.getByUuid(dto.getCommunity().getUuid()).getDistrict().equals(dto.getDistrict())) {
-			throw new ValidationRuntimeException(
-					"Could not find a database entry for the specified community in the specified district");
-		}
-		if (dto.getCommunity() == null && facilityFacade.getByUuid(dto.getHealthFacility().getUuid()).getDistrict() != null
-				&& !facilityFacade.getByUuid(dto.getHealthFacility().getUuid()).getDistrict().equals(dto.getDistrict())) {
-			throw new ValidationRuntimeException(
-					"Could not find a database entry for the specified health facility in the specified district");
-		}
-		if (dto.getCommunity() != null && facilityFacade.getByUuid(dto.getHealthFacility().getUuid()).getCommunity() != null
-				&& !dto.getCommunity().equals(facilityFacade.getByUuid(dto.getHealthFacility().getUuid()).getCommunity())) {
-			throw new ValidationRuntimeException(
-					"Could not find a database entry for the specified health facility in the specified community");
-		}
-		if (facilityFacade.getByUuid(dto.getHealthFacility().getUuid()).getRegion() != null
-				&& !dto.getRegion().equals(facilityFacade.getByUuid(dto.getHealthFacility().getUuid()).getRegion())) {
-			throw new ValidationRuntimeException(
-					"Could not find a database entry for the specified health facility in the specified region");
-		}
-		if (facilityFacade.getByUuid(dto.getHealthFacility().getUuid()).getRegion() != null
-				&& !dto.getRegion().equals(facilityFacade.getByUuid(dto.getHealthFacility().getUuid()).getRegion())) {
-			throw new ValidationRuntimeException(
-					"Could not find a database entry for the specified health facility in the specified region");
-		}
+		validate(dto);
 
 		caze = fillOrBuildEntity(dto, caze);
 		caseService.ensurePersisted(caze);
 		onCaseChanged(existingCaseDto, caze);
 
 		return toDto(caze);
+	}
+	
+	@Override
+	public void validate(CaseDataDto caze) throws ValidationRuntimeException {
+		// Check whether any required field that does not have a not null constraint in
+		// the database is empty
+		if (caze.getRegion() == null) {
+			throw new ValidationRuntimeException("You have to specify a valid region");
+		}
+		if (caze.getDistrict() == null) {
+			throw new ValidationRuntimeException("You have to specify a valid district");
+		}
+		if (caze.getHealthFacility() == null) {
+			throw new ValidationRuntimeException("You have to specify a valid health facility");
+		}
+		if (caze.getDisease() == null) {
+			throw new ValidationRuntimeException("You have to specify a valid disease");
+		}
+		// Check whether there are any infrastructure errors
+		if (!districtFacade.getDistrictByUuid(caze.getDistrict().getUuid()).getRegion().equals(caze.getRegion())) {
+			throw new ValidationRuntimeException(
+					"Could not find a database entry for the specified district in the specified region");
+		}
+		if (caze.getCommunity() != null && !communityFacade.getByUuid(caze.getCommunity().getUuid()).getDistrict().equals(caze.getDistrict())) {
+			throw new ValidationRuntimeException(
+					"Could not find a database entry for the specified community in the specified district");
+		}
+		if (caze.getCommunity() == null && facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getDistrict() != null
+				&& !facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getDistrict().equals(caze.getDistrict())) {
+			throw new ValidationRuntimeException(
+					"Could not find a database entry for the specified health facility in the specified district");
+		}
+		if (caze.getCommunity() != null && facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getCommunity() != null
+				&& !caze.getCommunity().equals(facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getCommunity())) {
+			throw new ValidationRuntimeException(
+					"Could not find a database entry for the specified health facility in the specified community");
+		}
+		if (facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getRegion() != null
+				&& !caze.getRegion().equals(facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getRegion())) {
+			throw new ValidationRuntimeException(
+					"Could not find a database entry for the specified health facility in the specified region");
+		}
+		if (facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getRegion() != null
+				&& !caze.getRegion().equals(facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getRegion())) {
+			throw new ValidationRuntimeException(
+					"Could not find a database entry for the specified health facility in the specified region");
+		}
 	}
 
 	@Override
@@ -745,7 +750,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	 * Case delivered as a parameter.
 	 */
 	@Override
-	public CaseDataDto updateHospitalization(CaseDataDto caze) {
+	public CaseDataDto saveAndTransferCase(CaseDataDto caze) {
 		Case existingCase = caseService.getByUuid(caze.getUuid());
 		
 		// Only update Hospitalization when Health Facility has been changed
@@ -758,7 +763,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			caze.getHospitalization().setIsolated(null);
 		}
 		
-		return caze;
+		return saveCase(caze);
 	}
 	
 	@Override
