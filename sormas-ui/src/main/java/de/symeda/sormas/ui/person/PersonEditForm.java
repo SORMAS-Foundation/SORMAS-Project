@@ -53,6 +53,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -142,22 +143,22 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.NICKNAME, TextField.class);
 		addField(PersonDto.MOTHERS_MAIDEN_NAME, TextField.class);
 		ComboBox presentCondition = addField(PersonDto.PRESENT_CONDITION, ComboBox.class);
-		ComboBox days = addField(PersonDto.BIRTH_DATE_DD, ComboBox.class);
+		ComboBox birthDateDay = addField(PersonDto.BIRTH_DATE_DD, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
-		days.setNullSelectionAllowed(true);
-		days.addItems(DateHelper.getDaysInMonth());
-		ComboBox months = addField(PersonDto.BIRTH_DATE_MM, ComboBox.class);
+		birthDateDay.setNullSelectionAllowed(true);
+		birthDateDay.addItems(DateHelper.getDaysInMonth());
+		ComboBox birthDateMonth = addField(PersonDto.BIRTH_DATE_MM, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
-		months.setNullSelectionAllowed(true);
-		months.addItems(DateHelper.getMonthsInYear());
-		months.setPageLength(12);
-		setItemCaptionsForMonths(months);
-		ComboBox years = addField(PersonDto.BIRTH_DATE_YYYY, ComboBox.class);
-		years.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, "birthdate"));
+		birthDateMonth.setNullSelectionAllowed(true);
+		birthDateMonth.addItems(DateHelper.getMonthsInYear());
+		birthDateMonth.setPageLength(12);
+		setItemCaptionsForMonths(birthDateMonth);
+		ComboBox birthDateYear = addField(PersonDto.BIRTH_DATE_YYYY, ComboBox.class);
+		birthDateYear.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, "birthdate"));
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
-		years.setNullSelectionAllowed(true);
-		years.addItems(DateHelper.getYearsToNow());
-		years.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
+		birthDateYear.setNullSelectionAllowed(true);
+		birthDateYear.addItems(DateHelper.getYearsToNow());
+		birthDateYear.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		DateField deathDate = addField(PersonDto.DEATH_DATE, DateField.class);
 		addField(PersonDto.APPROXIMATE_AGE, TextField.class);
 		addField(PersonDto.APPROXIMATE_AGE_TYPE, ComboBox.class);
@@ -293,6 +294,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			fillDeathAndBurialFields(deathPlaceType, deathPlaceDesc, burialPlaceDesc);
 		});
 
+		deathDate.addValidator(new DateComparisonValidator(deathDate, this::calcBirthDateValue, false, false, 
+				I18nProperties.getValidationError("afterDate", deathDate.getCaption(), birthDateYear.getCaption())));
+		burialDate.addValidator(new DateComparisonValidator(burialDate, deathDate, false, false, 
+				I18nProperties.getValidationError("afterDate", burialDate.getCaption(), deathDate.getCaption())));
 	}
 
 	@Override
@@ -310,17 +315,25 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		getFieldGroup().getField(PersonDto.APPROXIMATE_AGE_TYPE).setReadOnly(readonly);
 	}
 
-
-	private void updateApproximateAge() {
+	private Date calcBirthDateValue() {
 		if (getFieldGroup().getField(PersonDto.BIRTH_DATE_YYYY).getValue() != null) {
-			Calendar birthdate = new GregorianCalendar();
-			birthdate.set(
+			Calendar birthDateCalendar = new GregorianCalendar();
+			birthDateCalendar.set(
 					(Integer)getFieldGroup().getField(PersonDto.BIRTH_DATE_YYYY).getValue(), 
 					getFieldGroup().getField(PersonDto.BIRTH_DATE_MM).getValue()!=null?(Integer) getFieldGroup().getField(PersonDto.BIRTH_DATE_MM).getValue()-1:0, 
 							getFieldGroup().getField(PersonDto.BIRTH_DATE_DD).getValue()!=null?(Integer) getFieldGroup().getField(PersonDto.BIRTH_DATE_DD).getValue():1);
+			return birthDateCalendar.getTime();
+		}
+		return null;
+	}
+
+	private void updateApproximateAge() {
+		
+		Date birthDate = calcBirthDateValue();
+		
+		if (birthDate != null) {
 			Pair<Integer, ApproximateAgeType> pair = ApproximateAgeHelper.getApproximateAge(
-					(Date) birthdate.getTime(),
-					(Date) getFieldGroup().getField(PersonDto.DEATH_DATE).getValue()
+					birthDate, (Date) getFieldGroup().getField(PersonDto.DEATH_DATE).getValue()
 					);
 
 			TextField approximateAgeField = (TextField)getFieldGroup().getField(PersonDto.APPROXIMATE_AGE);
