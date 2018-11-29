@@ -1,45 +1,61 @@
 package de.symeda.sormas.ui.importer;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
+import static org.mockito.Mockito.when;
 
+import java.security.Principal;
+
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
-import com.opencsv.CSVReader;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinServletRequest;
+import com.vaadin.util.CurrentInstance;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator.RDCF;
-import de.symeda.sormas.backend.region.District;
 
+@RunWith(MockitoJUnitRunner.class)
 public class CaseImporterTest extends AbstractBeanTest {
 
+	@Mock
+	private VaadinServletRequest request;
+
+	@Before
+	public void initUI() throws Exception {
+
+		creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
+
+		when(request.getUserPrincipal()).thenReturn(new Principal() {
+			@Override
+			public String getName() {
+				return "admin";
+			}
+		});
+
+		CurrentInstance.setInheritable(VaadinRequest.class, request);
+
+		// TODO init UI
+	}
+
 	private static final int EXPECTED_NUMBER_OF_LINES = 5;
-	
+
 	@Test
 	public void testImportAllCases() {
-//		when(MockProducer.getSessionContext().getCallerPrincipal()).thenReturn(new Principal() {
-//            @Override
-//            public String getName() {
-//                return "admin";
-//            }
-//        });
-		
+
 		RDCF rdcf = creator.createRDCF("Abia", "Osisioma Ngwa", "Community", "Amavo Ukwu Health Post");
-		District district = creator.createDistrict("Bende", rdcf.region);
-		creator.createFacility("Akoli Health Centre", rdcf.region, district, null);
+		DistrictDto district = creator.createDistrict("Bende", rdcf.region.toReference());
+		creator.createFacility("Akoli Health Centre", rdcf.region.toReference(), district.toReference(), null);
 		UserDto user = creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
-		
+
 		FacadeProvider.getCaseFacade().getAllActiveCasesAfter(null, user.getUuid());
-		
+
 //		InputStream inputStream = ImportFacadeEjbTest.class.getResourceAsStream("/sormas_import_test.csv");
 //	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
 //		OutputStreamWriter osw = new OutputStreamWriter(baos, StandardCharsets.UTF_8.name());
