@@ -40,6 +40,7 @@ public class CaseIndexDto implements Serializable {
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String PRESENT_CONDITION = "presentCondition";
 	public static final String REPORT_DATE = "reportDate";
+	public static final String CREATION_DATE = "creationDate";
 	public static final String REGION_UUID = "regionUuid";
 	public static final String DISTRICT_UUID = "districtUuid";
 	public static final String DISTRICT_NAME = "districtName";
@@ -58,6 +59,7 @@ public class CaseIndexDto implements Serializable {
 	private InvestigationStatus investigationStatus;
 	private PresentCondition presentCondition;
 	private Date reportDate;
+	private Date creationDate;
 	private String regionUuid;
 	private String districtUuid;
 	private String districtName;
@@ -68,7 +70,7 @@ public class CaseIndexDto implements Serializable {
 	
 	public CaseIndexDto(String uuid, String epidNumber, String personFirstName, String personLastName, Disease disease,
 			String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
-			PresentCondition presentCondition, Date reportDate, String regionUuid, 
+			PresentCondition presentCondition, Date reportDate, Date creationDate, String regionUuid, 
 			String districtUuid, String districtName, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 			String surveillanceOfficerUuid, CaseOutcome outcome) {
 		this.uuid = uuid;
@@ -81,6 +83,7 @@ public class CaseIndexDto implements Serializable {
 		this.investigationStatus = investigationStatus;
 		this.presentCondition = presentCondition;
 		this.reportDate = reportDate;
+		this.creationDate = creationDate;
 		this.regionUuid = regionUuid;
 		this.districtUuid = districtUuid;
 		this.districtName = districtName;
@@ -141,6 +144,12 @@ public class CaseIndexDto implements Serializable {
 	}
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
+	}
+	public Date getCreationDate() {
+		return creationDate;
+	}
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
 	}
 	public String getRegionUuid() {
 		return regionUuid;

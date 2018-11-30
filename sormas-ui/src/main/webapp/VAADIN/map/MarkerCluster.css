@@ -1,5 +1,105 @@
-.leaflet-cluster-anim .leaflet-marker-icon, .leaflet-cluster-anim .leaflet-marker-shadow {
-	-webkit-transition: -webkit-transform 0.3s ease-out, opacity 0.3s ease-in;
+.marker {
+	background-size: contain;
+	background-repeat: no-repeat;
+ 	background-position: center;
+}
+.marker div {
+	height: 80%;
+	margin: 10%;
+	padding-top: 40%;
+	text-align: center;
+}
+.marker span {
+	display: inline-block;
+	font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+	line-height: 14px;
+	margin-top: -7px;
+	vertical-align: top;
+}
+
+.marker.case {
+	border-radius: 20px;
+}
+.marker.case div {
+	border-radius: 20px;
+}
+
+.marker.contact {
+	border-radius: 2px;
+}
+.marker.contact div {
+	border-radius: 1px;
+}
+
+.marker.case.confirmed,
+.marker.contact.long-overdue {
+	background-color: rgba(216, 49, 43, 0.8);
+}
+.marker.case.confirmed div,
+.marker.contact.long-overdue div {
+	background-color: rgba(229, 166, 160, 0.8);
+}
+
+.marker.case.probable {
+	background-color: rgba(204, 103, 20, 0.8);
+}
+.marker.case.probable div {
+	background-color: rgba(250, 190, 146, 0.8);
+}
+
+.marker.case.suspect,
+.marker.contact.overdue {
+	background-color: rgba(204, 173, 20, 0.8);
+}
+.marker.case.suspect div,
+.marker.contact.overdue div {
+	background-color: rgba(250, 225, 146, 0.8);
+}
+
+.marker.case.unclassified {
+	background-color: rgba(127, 127, 127, 0.8);
+}
+.marker.case.unclassified div {
+	background-color: rgba(203, 203, 203, 0.8);
+}
+
+.marker.contact.ok {
+	background-color: rgba(76, 165, 67, 0.8);
+}
+.marker.contact.ok div {
+	background-color: rgba(175, 227, 168, 0.8);
+}
+
+.marker.facility {
+	background-color: none;
+}
+.marker.facility.confirmed {
+	background-image: url("marker/facility-confirmed.png");
+}
+.marker.facility.suspect {
+	background-image: url("marker/facility-suspect.png");
+}
+.marker.facility.probable {
+	background-image: url("marker/facility-probable.png");
+}
+.marker.facility.unclassified {
+	background-image: url("marker/facility-unclassified.png");
+}
+
+.marker.event {
+	margin: -25% 0;
+}
+.marker.event.outbreak {
+	background-image: url("marker/event-outbreak.png");
+}
+.marker.event.rumor {
+	background-image: url("marker/event-rumor.png");
+}
+
+.leaflet-cluster-anim .leaflet-marker-icon, .leaflet-cluster-anim .leaflet-marker-shadow
+	{
+	-webkit-transition: -webkit-transform 0.3s ease-out, opacity 0.3s
+		ease-in;
 	-moz-transition: -moz-transform 0.3s ease-out, opacity 0.3s ease-in;
 	-o-transition: -o-transform 0.3s ease-out, opacity 0.3s ease-in;
 	transition: transform 0.3s ease-out, opacity 0.3s ease-in;
@@ -7,51 +107,11 @@
 
 .leaflet-cluster-spider-leg {
 	/* stroke-dashoffset (duration and function) should match with leaflet-marker-icon transform in order to track it exactly */
-	-webkit-transition: -webkit-stroke-dashoffset 0.3s ease-out, -webkit-stroke-opacity 0.3s ease-in;
-	-moz-transition: -moz-stroke-dashoffset 0.3s ease-out, -moz-stroke-opacity 0.3s ease-in;
-	-o-transition: -o-stroke-dashoffset 0.3s ease-out, -o-stroke-opacity 0.3s ease-in;
+	-webkit-transition: -webkit-stroke-dashoffset 0.3s ease-out,
+		-webkit-stroke-opacity 0.3s ease-in;
+	-moz-transition: -moz-stroke-dashoffset 0.3s ease-out,
+		-moz-stroke-opacity 0.3s ease-in;
+	-o-transition: -o-stroke-dashoffset 0.3s ease-out, -o-stroke-opacity
+		0.3s ease-in;
 	transition: stroke-dashoffset 0.3s ease-out, stroke-opacity 0.3s ease-in;
-}
-
-.marker-cluster-red {
-	background-color: rgba(231, 76, 60, 0.6);
-	}
-.marker-cluster-red div {
-	background-color: rgba(229, 166, 160, 0.6);
-	}
-
-.marker-cluster-orange {
-	background-color: rgba(255, 150, 0, 0.6);
-	}
-.marker-cluster-orange div {
-	background-color: rgba(255, 223, 178, 0.6);
-	}
-
-.marker-cluster-yellow {
-	background-color: rgba(255, 209, 0, 0.6);
-	}
-.marker-cluster-yellow div {
-	background-color: rgba(255, 240, 176, 0.6);
-	}
-	
-.marker-cluster-grey {
-	background-color: rgba(177, 177, 177, 0.6);
-	}
-.marker-cluster-grey div {
-	background-color: rgba(219, 219, 219, 0.6);
-	}
-	
-
-.marker-cluster.light-box {
-	border-radius: 10px;
-}
-.marker-cluster.light-box div {
-	border-radius: 8px;
-}
-
-.marker-cluster.box {
-	border-radius: 2px;
-}
-.marker-cluster.box div {
-	border-radius: 1px;
 }

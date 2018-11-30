@@ -108,10 +108,16 @@ public class CaseGrid extends Grid {
         		CaseIndexDto.CASE_CLASSIFICATION, CaseIndexDto.OUTCOME, CaseIndexDto.INVESTIGATION_STATUS, 
         		CaseIndexDto.PERSON_FIRST_NAME, CaseIndexDto.PERSON_LAST_NAME, 
         		CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME,
-        		CaseIndexDto.REPORT_DATE, NUMBER_OF_PENDING_TASKS);
+        		CaseIndexDto.REPORT_DATE, CaseIndexDto.CREATION_DATE, NUMBER_OF_PENDING_TASKS);
 
         getColumn(CaseIndexDto.UUID).setRenderer(new UuidRenderer());
         getColumn(CaseIndexDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+        
+        if (LoginHelper.hasUserRight(UserRight.CASE_IMPORT)) {
+            getColumn(CaseIndexDto.CREATION_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+        } else {
+        	removeColumn(CaseIndexDto.CREATION_DATE);
+        }
  
         for (Column column : getColumns()) {
         	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
@@ -196,6 +202,7 @@ public class CaseGrid extends Grid {
 		getContainer().removeContainerFilters(CaseIndexDto.PERSON_LAST_NAME);
     	getContainer().removeContainerFilters(CaseIndexDto.EPID_NUMBER);
     	getContainer().removeContainerFilters(CaseIndexDto.REPORT_DATE);
+    	getContainer().removeContainerFilters(CaseIndexDto.CREATION_DATE);
 
     	if (text != null && !text.isEmpty()) {
     		List<Filter> orFilters = new ArrayList<Filter>();
@@ -207,6 +214,7 @@ public class CaseGrid extends Grid {
     			orFilters.add(new SimpleStringFilter(CaseIndexDto.EPID_NUMBER, word, true, false));
     		}
     		orFilters.add(new DateFilter(CaseIndexDto.REPORT_DATE, text));
+    		orFilters.add(new DateFilter(CaseIndexDto.CREATION_DATE, text));
             getContainer().addContainerFilter(new Or(orFilters.stream().toArray(Filter[]::new)));
 		}
 	}

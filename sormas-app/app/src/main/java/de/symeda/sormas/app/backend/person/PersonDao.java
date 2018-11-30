@@ -58,13 +58,13 @@ public class PersonDao extends AbstractAdoDao<Person> {
     public List<PersonNameDto> getPersonNameDtos() {
         try {
             GenericRawResults<Object[]> rawResults = queryRaw("select " + Person.FIRST_NAME +
-                    ", " + Person.LAST_NAME + ", " + Person.ID + " from " +
+                    ", " + Person.LAST_NAME + ", " + Person.UUID + " from " +
                     Person.TABLE_NAME + " where " + Person.TABLE_NAME + "." + AbstractDomainObject.SNAPSHOT + " = 0;",
-                    new DataType[]{DataType.STRING, DataType.STRING, DataType.LONG});
+                    new DataType[]{DataType.STRING, DataType.STRING, DataType.STRING});
             List<Object[]> results = rawResults.getResults();
             List<PersonNameDto> personNames = new ArrayList<>();
             for (Object[] result : results) {
-                PersonNameDto personName = new PersonNameDto((String) result[0], (String) result[1], (Long) result[2]);
+                PersonNameDto personName = new PersonNameDto((String) result[0], (String) result[1], (String) result[2]);
                 personNames.add(personName);
             }
 

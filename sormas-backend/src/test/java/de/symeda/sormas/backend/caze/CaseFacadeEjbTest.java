@@ -44,9 +44,13 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleTestResultType;
@@ -113,12 +117,13 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				caze.toReference(), null, null, new Date(), user.toReference());
 
 		RDCF newRDCF = creator.createRDCF("New Region", "New District", "New Community", "New Facility");
-		getCaseFacade().transferCase(caze.toReference(),
-				getRegionFacade().getRegionReferenceByUuid(newRDCF.region.getUuid()),
-				getDistrictFacade().getDistrictReferenceByUuid(newRDCF.district.getUuid()),
-				getCommunityFacade().getCommunityReferenceByUuid(newRDCF.community.getUuid()),
-				getFacilityFacade().getFacilityReferenceByUuid(newRDCF.facility.getUuid()),
-				caze.getHealthFacilityDetails(), caseOfficer.toReference());
+		
+		caze.setRegion(new RegionReferenceDto(newRDCF.region.getUuid()));
+		caze.setDistrict(new DistrictReferenceDto(newRDCF.district.getUuid()));
+		caze.setCommunity(new CommunityReferenceDto(newRDCF.community.getUuid()));
+		caze.setHealthFacility(new FacilityReferenceDto(newRDCF.facility.getUuid()));
+		caze.setSurveillanceOfficer(caseOfficer.toReference());
+		caze = getCaseFacade().saveAndTransferCase(caze);
 
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		pendingTask = getTaskFacade().getByUuid(pendingTask.getUuid());

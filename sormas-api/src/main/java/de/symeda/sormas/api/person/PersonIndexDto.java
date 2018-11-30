@@ -40,12 +40,13 @@ public class PersonIndexDto implements Serializable {
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String APPROXIMATE_AGE_TYPE = "approximateAgeType";
 	public static final String NICKNAME = "nickname";
+	public static final String REGION_NAME = "regionName";
 	public static final String DISTRICT_NAME = "districtName";
 	public static final String COMMUNITY_NAME = "communityName";
 	public static final String CITY = "city";
-	public static final String LAST_DISEASE = "lastDisease";
-	public static final String LAST_DISEASE_START_DATE = "lastDiseaseStartDate";
-	public static final String LAST_CASE_UUID = "lastCaseUuid";
+	public static final String CASE_DISEASE = "caseDisease";
+	public static final String CASE_DISEASE_START_DATE = "caseDiseaseStartDate";
+	public static final String CASE_UUID = "caseUuid";
 	
 	private String uuid;
 	private Sex sex;
@@ -59,16 +60,17 @@ public class PersonIndexDto implements Serializable {
 	private ApproximateAgeType approximateAgeType;
 	private Date deathDate;
 	private String nickname;
+	private String regionName;
 	private String districtName;
 	private String communityName;
 	private String city;
-	private Disease lastDisease;
-	private Date lastDiseaseStartDate;
-	private String lastCaseUuid;
+	private Disease caseDisease;
+	private Date caseDiseaseStartDate;
+	private String caseUuid;
 
 	public PersonIndexDto(String uuid, Sex sex, String firstName, String lastName, PresentCondition presentCondition,
 			Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Integer approximateAge, 
-			ApproximateAgeType approximateAgeType, Date deathDate, String nickname, String districtName,
+			ApproximateAgeType approximateAgeType, Date deathDate, String nickname, String regionName, String districtName,
 			String communityName, String city) {
 		this.uuid = uuid;
 		this.sex = sex;
@@ -80,6 +82,7 @@ public class PersonIndexDto implements Serializable {
 		this.birthdateYYYY = birthdateYYYY;
 		this.deathDate = deathDate;
 		this.nickname = nickname;
+		this.regionName = regionName;
 		this.districtName = districtName;
 		this.communityName = communityName;
 		this.city = city;
@@ -201,6 +204,14 @@ public class PersonIndexDto implements Serializable {
 		this.nickname = nickname;
 	}
 
+	public String getRegionName() {
+		return regionName;
+	}
+
+	public void setRegionName(String regionName) {
+		this.regionName = regionName;
+	}
+
 	public String getDistrictName() {
 		return districtName;
 	}
@@ -225,28 +236,28 @@ public class PersonIndexDto implements Serializable {
 		this.city = city;
 	}
 
-	public Disease getLastDisease() {
-		return lastDisease;
+	public Disease getCaseDisease() {
+		return caseDisease;
 	}
 
-	public void setLastDisease(Disease lastDisease) {
-		this.lastDisease = lastDisease;
+	public void setCaseDisease(Disease caseDisease) {
+		this.caseDisease = caseDisease;
 	}
 
-	public Date getLastDiseaseStartDate() {
-		return lastDiseaseStartDate;
+	public Date getCaseDiseaseStartDate() {
+		return caseDiseaseStartDate;
 	}
 
-	public void setLastDiseaseStartDate(Date lastDiseaseStartDate) {
-		this.lastDiseaseStartDate = lastDiseaseStartDate;
+	public void setCaseDiseaseStartDate(Date caseDiseaseStartDate) {
+		this.caseDiseaseStartDate = caseDiseaseStartDate;
 	}
 
-	public String getLastCaseUuid() {
-		return lastCaseUuid;
+	public String getCaseUuid() {
+		return caseUuid;
 	}
 
-	public void setLastCaseUuid(String lastCaseUuid) {
-		this.lastCaseUuid = lastCaseUuid;
+	public void setCaseUuid(String caseUuid) {
+		this.caseUuid = caseUuid;
 	}
 	
 }

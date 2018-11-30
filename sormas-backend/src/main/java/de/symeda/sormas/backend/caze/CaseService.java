@@ -46,6 +46,7 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
@@ -151,15 +152,19 @@ public class CaseService extends AbstractAdoService<Case> {
 		Predicate filter = cb.or(
 				cb.equal(from.get(Case.ARCHIVED), false),
 				cb.isNull(from.get(Case.ARCHIVED)));
-		
+
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
-			filter = cb.and(filter, userFilter);
+			if (userFilter != null) {
+				filter = cb.and(filter, userFilter);
+			}
 		}
 
 		if (date != null) {
 			Predicate dateFilter = createDateFilter(cb, cq, from, date);
-			filter = cb.and(filter, dateFilter);		
+			if (dateFilter != null) {
+				filter = cb.and(filter, dateFilter);	
+			}
 		}
 
 		cq.where(filter);
@@ -168,7 +173,7 @@ public class CaseService extends AbstractAdoService<Case> {
 
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	public List<String> getAllActiveUuids(User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -177,15 +182,15 @@ public class CaseService extends AbstractAdoService<Case> {
 		Predicate filter = cb.or(
 				cb.equal(from.get(Case.ARCHIVED), false),
 				cb.isNull(from.get(Case.ARCHIVED)));
-		
+
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
 			filter = cb.and(filter, userFilter);
 		}
-		
+
 		cq.where(filter);
 		cq.select(from.get(Case.UUID));
-		
+
 		return em.createQuery(cq).getResultList();
 	}
 
@@ -235,6 +240,9 @@ public class CaseService extends AbstractAdoService<Case> {
 		return resultList;
 	}	
 
+	/**
+	 * @param to will automatically be set to the end of the day
+	 */
 	public List<DashboardCaseDto> getNewCasesForDashboard(Region region, District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardCaseDto> cq = cb.createQuery(DashboardCaseDto.class);
@@ -352,10 +360,12 @@ public class CaseService extends AbstractAdoService<Case> {
 					caze.get(Case.REPORT_DATE),
 					caze.get(Case.CASE_CLASSIFICATION),
 					caze.get(Case.DISEASE),
-					facility.get(Facility.UUID),
 					person.get(Person.UUID),
 					person.get(Person.FIRST_NAME),
 					person.get(Person.LAST_NAME),
+					facility.get(Facility.UUID),
+					facility.get(Facility.LATITUDE),
+					facility.get(Facility.LONGITUDE),
 					caze.get(Case.REPORT_LAT),
 					caze.get(Case.REPORT_LON),
 					casePersonAddress.get(Location.LATITUDE),
@@ -470,7 +480,7 @@ public class CaseService extends AbstractAdoService<Case> {
 				filter = dateFilter;
 			}
 		}
-		
+
 		Predicate archivedFilter = cb.equal(caze.get(Case.ARCHIVED), true);
 		if (filter != null) {
 			filter = cb.and(filter, archivedFilter);
@@ -629,8 +639,13 @@ public class CaseService extends AbstractAdoService<Case> {
 		}
 	}
 
+	/**
+	 * @param toDate will automatically be set to the end of the day
+	 */
 	public Predicate createNewCaseFilter(CriteriaBuilder cb, Root<Case> caze, Date fromDate, Date toDate, NewCaseDateType newCaseDateType) {
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
+
+		toDate = DateHelper.getEndOfDay(toDate);
 
 		Predicate onsetDateFilter = cb.between(symptoms.get(Symptoms.ONSET_DATE), fromDate, toDate);
 		Predicate receptionDateFilter = cb.between(caze.get(Case.RECEPTION_DATE), fromDate, toDate);

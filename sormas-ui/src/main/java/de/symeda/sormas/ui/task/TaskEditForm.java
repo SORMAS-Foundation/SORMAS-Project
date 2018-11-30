@@ -180,7 +180,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			boolean creating = value.getCreationDate() == null;
 	
 			UserDto user = LoginHelper.getCurrentUser();
-			boolean creator = user.equals(value.getCreatorUser());
+			boolean creator = user.getUuid().equals(value.getCreatorUser().getUuid());
 			boolean supervisor = UserRole.isSupervisor(user.getUserRoles());
 			boolean assignee = user.equals(getFieldGroup().getField(TaskDto.ASSIGNEE_USER).getValue());
 			

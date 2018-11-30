@@ -41,8 +41,8 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	
-	private static final String FIRST_NAME = "firstName";
-	private static final String LAST_NAME = "lastName";
+	public static final String FIRST_NAME = "firstName";
+	public static final String LAST_NAME = "lastName";
 	public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
 
     private static final String HTML_LAYOUT = 

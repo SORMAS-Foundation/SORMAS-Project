@@ -25,6 +25,7 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
 public interface PersonFacade {
@@ -39,13 +40,15 @@ public interface PersonFacade {
     
     PersonDto getPersonByUuid(String uuid);
 
-    PersonDto savePerson(PersonDto dto);
+    PersonDto savePerson(PersonDto dto) throws ValidationRuntimeException;
 
+    void validate(PersonDto dto) throws ValidationRuntimeException;
+    
 	List<String> getAllUuids(String userUuid);
 
 	List<PersonDto> getByUuids(List<String> uuids);
 	
-	PersonIndexDto getIndexDto(Long id);
+	PersonIndexDto getIndexDto(String uuid);
 	
 	PersonDto buildPerson();
 }

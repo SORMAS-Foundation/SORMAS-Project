@@ -498,7 +498,6 @@ VerticalLayout implements Buffered {
 
 	@Override
 	public void discard() {
-
 		if (fieldGroups != null) {
 			for (FieldGroup fieldGroup : fieldGroups) {
 				fieldGroup.discard();

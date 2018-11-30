@@ -120,17 +120,30 @@ public class CaseController {
 	}
 
 	public void navigateToCase(String caseUuid) {
-		navigateToView(CaseDataView.VIEW_NAME, caseUuid, null);
+		navigateToView(CaseDataView.VIEW_NAME, caseUuid, null, false);
+	}
+
+	public void navigateToCase(String caseUuid, boolean openTab) {
+		navigateToView(CaseDataView.VIEW_NAME, caseUuid, null, openTab);
 	}
 
 	public void navigateToView(String viewName, String caseUuid, ViewMode viewMode) {
+		navigateToView(viewName, caseUuid, viewMode, false);
+	}
+	
+	public void navigateToView(String viewName, String caseUuid, ViewMode viewMode, boolean openTab) {
 
 		String navigationState = viewName + "/" + caseUuid;
 		if (viewMode == ViewMode.FULL) {
 			// pass full view mode as param so it's also used for other views when switching
 			navigationState	+= "/" + AbstractCaseView.VIEW_MODE_URL_PREFIX + "=" + viewMode.toString();
 		}
-		SormasUI.get().getNavigator().navigateTo(navigationState);	
+		
+		if (openTab) {
+			SormasUI.get().getPage().open(SormasUI.get().getPage().getLocation().getRawPath() + "#!" + navigationState, "_blank", false);
+		} else {
+			SormasUI.get().getNavigator().navigateTo(navigationState);
+		}		
 	}
 
 	public Link createLinkToData(String caseUuid, String caption) {
@@ -544,7 +557,7 @@ public class CaseController {
 			public void onCommit() {
 				if (!facilityChangeForm.getFieldGroup().isModified()) {
 					CaseDataDto dto = facilityChangeForm.getValue();
-					FacadeProvider.getCaseFacade().transferCase(FacadeProvider.getCaseFacade().getReferenceByUuid(dto.getUuid()), dto.getRegion(), dto.getDistrict(), dto.getCommunity(), dto.getHealthFacility(), dto.getHealthFacilityDetails(), dto.getSurveillanceOfficer());
+					FacadeProvider.getCaseFacade().saveAndTransferCase(dto);
 					popupWindow.close();
 					Notification.show("Case has been transfered to another health facility.", Type.WARNING_MESSAGE);
 					navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null);

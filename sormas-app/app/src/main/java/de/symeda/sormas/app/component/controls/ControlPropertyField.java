@@ -64,6 +64,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 
     // Other fields
 
+    protected boolean suppressListeners = false;
     private ArrayList<ValueChangeListener> valueChangedListeners;
 
     // Constructors
@@ -144,7 +145,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
     }
 
     protected void onValueChanged() {
-        if (valueChangedListeners != null) {
+        if (valueChangedListeners != null && !suppressListeners) {
             for (ValueChangeListener valueChangedListener : valueChangedListeners) {
                 valueChangedListener.onChange(this);
             }

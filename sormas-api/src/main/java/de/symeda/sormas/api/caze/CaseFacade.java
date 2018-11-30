@@ -26,16 +26,15 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
-import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
+import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -56,6 +55,8 @@ public interface CaseFacade {
 	 * is saved or there is an infrastructure error (e.g. the district of the case does not belong in the region of the case).
 	 */
     CaseDataDto saveCase(CaseDataDto dto) throws ValidationRuntimeException;
+    
+    void validate(CaseDataDto dto) throws ValidationRuntimeException;
 
 	List<CaseReferenceDto> getSelectableCases(UserReferenceDto user);
 
@@ -63,7 +64,7 @@ public interface CaseFacade {
 	
 	List<String> getAllActiveUuids(String userUuid);
 	
-	CaseDataDto transferCase(CaseReferenceDto caze, RegionReferenceDto region, DistrictReferenceDto district, CommunityReferenceDto community, FacilityReferenceDto facility, String facilityDetails, UserReferenceDto surveillanceOfficer);
+	CaseDataDto saveAndTransferCase(CaseDataDto caze);
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
 	
@@ -90,6 +91,8 @@ public interface CaseFacade {
 	List<Pair<DistrictDto, BigDecimal>> getCaseMeasurePerDistrict(Date onsetFromDate, Date onsetToDate, Disease disease, CaseMeasure caseMeasure);
 
 	CaseDataDto getLatestCaseByPerson(String personUuid, String userUuid);
+	
+	CaseDataDto getMatchingCaseForImport(CaseDataDto importCaze, PersonReferenceDto existingPerson, String userUuid);
 	
 	List<CaseDataDto> getAllCasesOfPerson(String personUuid, String userUuid);
 	
