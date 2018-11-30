@@ -21,8 +21,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.function.BiConsumer;
@@ -215,11 +218,28 @@ public class CaseImportLayout extends VerticalLayout {
 			for (int i = 0; i < downloadErrorReportButton.getExtensions().size(); i++) {
 				Extension ext = downloadErrorReportButton.getExtensions().iterator().next();
 				downloadErrorReportButton.removeExtension(ext);
-			}
+			}			
 
 			try {
-				final CaseImporter caseImporter = new CaseImporter(file.getPath(), currentUser);
-				final CaseImportProgressLayout progressLayout = new CaseImportProgressLayout(caseImporter.getNumberOfCases(), new Runnable() {
+				// Read file and create readers
+				File csvFile = new File(file.getPath());
+				if (!csvFile.exists()) {
+					throw new FileNotFoundException("Cases .csv file does not exist");
+				}
+				
+				// Generate the error report file
+				Path exportDirectory = Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath());
+				Path errorReportFilePath = exportDirectory.resolve(ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" 
+						+ DataHelper.getShortUuid(currentUser.getUuid()) + "_" 
+						+ DateHelper.formatDateForExport(new Date()) + ".csv");
+				// If the error report file already exists, delete it
+				File errorReportFile = new File(errorReportFilePath.toString());
+				if (errorReportFile.exists()) {
+					errorReportFile.delete();
+				}
+
+				final CaseImporter caseImporter = new CaseImporter(new FileReader(csvFile.getPath()), new FileWriter(errorReportFilePath.toString(), true), currentUser);
+				final CaseImportProgressLayout progressLayout = new CaseImportProgressLayout(caseImporter.getNumberOfCases(new FileReader(csvFile.getPath())), new Runnable() {
 					@Override
 					public void run() {
 						caseImporter.cancelImport();
@@ -244,7 +264,7 @@ public class CaseImportLayout extends VerticalLayout {
 				popup.setClosable(false);
 				currentUI.addWindow(popup);
 
-				ImportThread importThread = new ImportThread(caseImporter, similarityCallback, caseImportedCallback, popup, progressLayout);
+				ImportThread importThread = new ImportThread(caseImporter, similarityCallback, caseImportedCallback, popup, progressLayout, errorReportFile.getPath());
 				importThread.start();
 			} catch (IOException e) {
 				new Notification("Import failed", "The import failed due to a critical error. Please contact your admin and inform them about this issue.", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
@@ -311,14 +331,16 @@ public class CaseImportLayout extends VerticalLayout {
 		private Consumer<CaseImportResult> caseImportedCallback;
 		private Window popup;
 		private CaseImportProgressLayout progressLayout;
+		private String errorReportFilePath;
 		
 		public ImportThread(CaseImporter caseImporter, BiConsumer<ImportSimilarityInput, Consumer<ImportSimilarityResult>> similarityCallback,
-				Consumer<CaseImportResult> caseImportedCallback, Window popup, CaseImportProgressLayout progressLayout) {
+				Consumer<CaseImportResult> caseImportedCallback, Window popup, CaseImportProgressLayout progressLayout, String errorReportFilePath) {
 			this.caseImporter = caseImporter;
 			this.similarityCallback = similarityCallback;
 			this.caseImportedCallback = caseImportedCallback;
 			this.popup = popup;
 			this.progressLayout = progressLayout;
+			this.errorReportFilePath = errorReportFilePath;
 		}
 		
 		@Override
@@ -327,7 +349,6 @@ public class CaseImportLayout extends VerticalLayout {
 				currentUI.setPollInterval(50);
 
 				ImportResultStatus importResult = caseImporter.importAllCases(similarityCallback, caseImportedCallback);
-				String errorReportFilePath = caseImporter.getErrorReportFilePath();
 
 				currentUI.access(new Runnable() {
 					@Override

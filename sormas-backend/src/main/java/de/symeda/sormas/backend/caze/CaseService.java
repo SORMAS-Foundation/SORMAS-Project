@@ -152,15 +152,19 @@ public class CaseService extends AbstractAdoService<Case> {
 		Predicate filter = cb.or(
 				cb.equal(from.get(Case.ARCHIVED), false),
 				cb.isNull(from.get(Case.ARCHIVED)));
-		
+
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
-			filter = cb.and(filter, userFilter);
+			if (userFilter != null) {
+				filter = cb.and(filter, userFilter);
+			}
 		}
 
 		if (date != null) {
 			Predicate dateFilter = createDateFilter(cb, cq, from, date);
-			filter = cb.and(filter, dateFilter);		
+			if (dateFilter != null) {
+				filter = cb.and(filter, dateFilter);	
+			}
 		}
 
 		cq.where(filter);
@@ -169,7 +173,7 @@ public class CaseService extends AbstractAdoService<Case> {
 
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	public List<String> getAllActiveUuids(User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -178,15 +182,15 @@ public class CaseService extends AbstractAdoService<Case> {
 		Predicate filter = cb.or(
 				cb.equal(from.get(Case.ARCHIVED), false),
 				cb.isNull(from.get(Case.ARCHIVED)));
-		
+
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
 			filter = cb.and(filter, userFilter);
 		}
-		
+
 		cq.where(filter);
 		cq.select(from.get(Case.UUID));
-		
+
 		return em.createQuery(cq).getResultList();
 	}
 
@@ -476,7 +480,7 @@ public class CaseService extends AbstractAdoService<Case> {
 				filter = dateFilter;
 			}
 		}
-		
+
 		Predicate archivedFilter = cb.equal(caze.get(Case.ARCHIVED), true);
 		if (filter != null) {
 			filter = cb.and(filter, archivedFilter);
@@ -642,7 +646,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 
 		toDate = DateHelper.getEndOfDay(toDate);
-		
+
 		Predicate onsetDateFilter = cb.between(symptoms.get(Symptoms.ONSET_DATE), fromDate, toDate);
 		Predicate receptionDateFilter = cb.between(caze.get(Case.RECEPTION_DATE), fromDate, toDate);
 		Predicate reportDateFilter = cb.between(caze.get(Case.REPORT_DATE), fromDate, toDate);
