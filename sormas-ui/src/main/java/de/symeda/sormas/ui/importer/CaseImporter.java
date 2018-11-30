@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -81,7 +80,6 @@ public class CaseImporter {
 
 	private Consumer<CaseImportResult> caseImportedCallback;
 	private BiConsumer<ImportSimilarityInput, Consumer<ImportSimilarityResult>> similarityCallback;
-	private BiFunction<CaseDataDto, PersonDto, PersonDto> importSuccessfulCallback;
 	private Integer numberOfCases;
 
 	private CSVReader csvReader;
@@ -97,12 +95,6 @@ public class CaseImporter {
 	public CaseImporter(InputStreamReader csvInputReader, OutputStreamWriter errorReportWriter, UserReferenceDto currentUser) throws IOException {
 		this.currentUser = currentUser;
 		personNames = FacadeProvider.getPersonFacade().getNameDtos(currentUser);
-		importSuccessfulCallback = (caze, person) -> {
-			PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(person);
-			caze.setPerson(savedPerson.toReference());
-			FacadeProvider.getCaseFacade().saveCase(caze);
-			return savedPerson;
-		};
 
 		csvReader = CSVUtils.createCSVReader(csvInputReader, FacadeProvider.getConfigFacade().getCsvSeparator());
 		errorReportCsvWriter = CSVUtils.createCSVWriter(errorReportWriter, FacadeProvider.getConfigFacade().getCsvSeparator());
@@ -266,7 +258,9 @@ public class CaseImporter {
 						cancelAfterCurrentImport = true;
 						return;
 					} else {
-						PersonDto savedPerson = importSuccessfulCallback.apply(newCase, newPerson);
+						PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson);
+						newCase.setPerson(savedPerson.toReference());
+						FacadeProvider.getCaseFacade().saveCase(newCase);
 						if (consumer.result == null || !consumer.result.isUseCase() || !consumer.result.isUsePerson()) {
 							personNames.add(new PersonNameDto(newPerson.getFirstName(), newPerson.getLastName(), savedPerson.getUuid()));
 						}
@@ -418,11 +412,9 @@ public class CaseImporter {
 				throw new ImportErrorException(entry, buildHeaderPathString(entryHeaderPath));
 			} catch (ParseException e) {
 				throw new ImportErrorException("Invalid date in column " + buildHeaderPathString(entryHeaderPath) + "; Allowed date formats are dd/MM/yyyy, dd.MM.yyyy and dd-MM-yyyy");
+			} catch (ImportErrorException e) {
+				throw e;
 			} catch (Exception e) {
-				if (e instanceof ImportErrorException || e instanceof InvalidColumnException) {
-					throw e;
-				}
-
 				logger.error("Unexpected error when trying to import a case: " + e.getMessage());
 				throw new ImportErrorException("Unexpected error when trying to import this case. Please send your error report file to an administrator and remove this case from your import file.");
 			}

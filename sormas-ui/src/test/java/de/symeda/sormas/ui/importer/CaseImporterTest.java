@@ -70,7 +70,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		assertEquals(5, FacadeProvider.getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).size());
 		assertEquals(5, FacadeProvider.getPersonFacade().getPersonsAfter(null, user.getUuid()).size());
 
-		// Successful import of 4 cases, failed import of 1 case
+		// Failed import of 5 cases because of errors
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_errors.csv").getFile());
 		caseImporter = new CaseImporter(new FileReader(csvFile.getPath()), createPseudoOutputStream(), user);
 		importResult = caseImporter.importAllCases((input, resultCallback) -> {
