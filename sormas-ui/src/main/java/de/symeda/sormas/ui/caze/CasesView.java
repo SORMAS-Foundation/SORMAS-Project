@@ -304,7 +304,7 @@ public class CasesView extends AbstractView {
 				grid.setDistrictFilter(((DistrictReferenceDto)e.getProperty().getValue()));
 			});
 
-			if (user.getRegion() != null) {
+			if (user.getRegion() != null && user.getDistrict() == null) {
 				districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
 				districtFilter.setEnabled(true);
 			} else {

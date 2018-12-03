@@ -262,6 +262,7 @@ public class EventService extends AbstractAdoService<Event> {
 			case SURVEILLANCE_OFFICER:
 			case CONTACT_OFFICER:
 			case CASE_OFFICER:
+			case DISTRICT_OBSERVER:
 				// officers see all events of their district
 				if (user.getDistrict() != null) {
 					filter = cb.or(filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.DISTRICT), user.getDistrict()));
