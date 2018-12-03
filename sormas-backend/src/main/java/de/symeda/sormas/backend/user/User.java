@@ -175,14 +175,10 @@ public class User extends AbstractDomainObject {
 		this.region = region;
 	}
 	
-	/**
-	 * TODO we need a main user role
-	 * @return
-	 */
 	@ElementCollection(fetch=FetchType.LAZY)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(
-	        name="userroles",
+	        name="users_userroles",
 	        joinColumns=@JoinColumn(name="user_id", referencedColumnName=User.ID, nullable = false),
 	        uniqueConstraints=@UniqueConstraint(columnNames={"user_id", "userrole"})
 	  )

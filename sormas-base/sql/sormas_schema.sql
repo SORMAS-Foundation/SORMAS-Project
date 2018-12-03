@@ -2522,3 +2522,14 @@ ALTER TABLE users ADD COLUMN community_id bigint;
 ALTER TABLE users ADD CONSTRAINT fk_users_community_id FOREIGN KEY (community_id) REFERENCES community (id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (116, 'Community informant user role #872');
+
+-- 2018-12-03 Rename useroles to user_userroles #830
+
+DROP TRIGGER versioning_trigger ON userroles;
+ALTER TABLE userroles RENAME TO users_userroles;
+ALTER TABLE userroles_history RENAME TO users_userroles_history;
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON users_userroles
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'users_userroles_history', true);
+
+INSERT INTO schema_version (version_number, comment) VALUES (117, 'Rename useroles to users_userroles #830');
