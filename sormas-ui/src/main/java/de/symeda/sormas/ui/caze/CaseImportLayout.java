@@ -59,6 +59,7 @@ import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.importer.CaseImportProgressLayout;
 import de.symeda.sormas.ui.importer.CaseImportResult;
 import de.symeda.sormas.ui.importer.CaseImporter;
@@ -66,7 +67,6 @@ import de.symeda.sormas.ui.importer.ImportPersonSelectField;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.ImportSimilarityInput;
 import de.symeda.sormas.ui.importer.ImportSimilarityResult;
-import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
@@ -82,7 +82,7 @@ public class CaseImportLayout extends VerticalLayout {
 	private final UI currentUI;
 
 	public CaseImportLayout() {
-		currentUser = LoginHelper.getCurrentUserAsReference();
+		currentUser = CurrentUser.getCurrent().getUserReference();
 		currentUI = UI.getCurrent();
 		
 		setMargin(true);
@@ -194,7 +194,7 @@ public class CaseImportLayout extends VerticalLayout {
 
 			FileOutputStream fos = null;
 			try {
-				String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + "_case_import_" + DateHelper.formatDateForExport(new Date()) + "_" + DataHelper.getShortUuid(LoginHelper.getCurrentUser().getUuid()) + ".csv";
+				String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + "_case_import_" + DateHelper.formatDateForExport(new Date()) + "_" + DataHelper.getShortUuid(CurrentUser.getCurrent().getUuid()) + ".csv";
 				file = new File(Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath()).resolve(newFileName).toString());
 				fos = new FileOutputStream(file);
 			} catch (FileNotFoundException e) {

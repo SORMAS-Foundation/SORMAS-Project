@@ -103,8 +103,7 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	
 	public OutbreakDto saveOutbreak(OutbreakDto outbreakDto) {
 		Outbreak outbreak = fromDto(outbreakDto);
-		outbreakService.ensurePersisted(outbreak);
-		
+		outbreakService.ensurePersisted(outbreak);		
 		return toDto(outbreak);
 	}
 	

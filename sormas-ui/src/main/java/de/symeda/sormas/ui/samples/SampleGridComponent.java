@@ -55,7 +55,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -123,7 +123,7 @@ public class SampleGridComponent extends VerticalLayout {
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
 
-		UserDto user = LoginHelper.getCurrentUser();
+		UserDto user = CurrentUser.getCurrent().getUser();
 
 		ComboBox testResultFilter = new ComboBox();
 		testResultFilter.setWidth(140, Unit.PIXELS);
@@ -252,7 +252,7 @@ public class SampleGridComponent extends VerticalLayout {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show archived/active cases button
-			if (LoginHelper.hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
+			if (CurrentUser.getCurrent().hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
 				Button switchArchivedActiveButton = new Button(I18nProperties.getText("showArchivedSamples"));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
@@ -275,7 +275,7 @@ public class SampleGridComponent extends VerticalLayout {
 			}
 
 			// Bulk operation dropdown
-			if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 				MenuBar bulkOperationsDropdown = new MenuBar();	
@@ -329,7 +329,7 @@ public class SampleGridComponent extends VerticalLayout {
 		shipmentFilterLayout.addComponent(buttonFilterLayout);
 
 		// Bulk operation dropdown
-		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 			MenuBar bulkOperationsDropdown = new MenuBar();	
@@ -350,7 +350,7 @@ public class SampleGridComponent extends VerticalLayout {
 			shipmentFilterLayout.setExpandRatio(bulkOperationsDropdown, 1);
 		}
 
-		if (LoginHelper.hasUserRight(UserRight.SAMPLE_EXPORT)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.SAMPLE_EXPORT)) {
 			Button exportButton = new Button("Export");
 			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
@@ -361,12 +361,12 @@ public class SampleGridComponent extends VerticalLayout {
 
 			shipmentFilterLayout.addComponent(exportButton);
 			shipmentFilterLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
-			if (!LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (!CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				shipmentFilterLayout.setExpandRatio(exportButton, 1);
 			}
 		}
 
-		if (LoginHelper.hasUserRight(UserRight.SAMPLE_CREATE)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
 			Button createButton = new Button("New sample");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);

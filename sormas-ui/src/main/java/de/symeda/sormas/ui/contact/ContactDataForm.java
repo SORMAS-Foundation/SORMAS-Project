@@ -49,7 +49,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -127,7 +127,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	    	}
     	    	else if (getValue().getContactClassification() == ContactClassification.CONFIRMED) {
     	    		// only when confirmed
-    	    		if (LoginHelper.hasUserRight(UserRight.CONTACT_CONVERT)) {
+    	    		if (CurrentUser.getCurrent().hasUserRight(UserRight.CONTACT_CONVERT)) {
 	    		    	Button toCaseButton = new Button("Create a case for this contact person");
 	    				toCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
 	    				
@@ -159,7 +159,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		Field<FollowUpStatus> statusField = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
 		boolean followUpVisible = getValue() != null && statusField.isVisible();
-		if (followUpVisible && LoginHelper.hasUserRight(UserRight.CONTACT_EDIT)) {
+		if (followUpVisible && CurrentUser.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
 			FollowUpStatus followUpStatus = statusField.getValue();
 			if (followUpStatus == FollowUpStatus.FOLLOW_UP) {
 				

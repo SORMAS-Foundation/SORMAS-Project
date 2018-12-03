@@ -41,7 +41,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
@@ -81,11 +81,11 @@ public class VisitController {
         	}
         });
         
-        if (LoginHelper.getCurrentUserRoles().contains(UserRole.ADMIN)) {
+        if (CurrentUser.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getVisitFacade().deleteVisit(referenceDto, LoginHelper.getCurrentUserAsReference().getUuid());
+					FacadeProvider.getVisitFacade().deleteVisit(referenceDto, CurrentUser.getCurrent().getUuid());
 					UI.getCurrent().removeWindow(window);
         			if (doneConsumer != null) {
         				doneConsumer.accept(referenceDto);
@@ -137,7 +137,7 @@ public class VisitController {
     	visit.setSymptoms(symptoms);
     	
     	visit.setVisitDateTime(new Date());
-    	UserReferenceDto userReference = LoginHelper.getCurrentUserAsReference();
+    	UserReferenceDto userReference = CurrentUser.getCurrent().getUserReference();
     	visit.setVisitUser(userReference);
     	
     	return visit;
@@ -150,7 +150,7 @@ public class VisitController {
 			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected visits?", new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getVisitFacade().deleteVisit(new VisitReferenceDto(((VisitDto) selectedRow).getUuid()), LoginHelper.getCurrentUser().getUuid());
+						FacadeProvider.getVisitFacade().deleteVisit(new VisitReferenceDto(((VisitDto) selectedRow).getUuid()), CurrentUser.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification("Visits deleted", "All selected visits have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());

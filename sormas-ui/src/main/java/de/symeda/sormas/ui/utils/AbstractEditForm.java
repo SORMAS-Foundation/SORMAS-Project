@@ -56,12 +56,12 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
 import de.symeda.sormas.ui.epidata.EpiDataGatheringsField;
 import de.symeda.sormas.ui.epidata.EpiDataTravelsField;
 import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
-import de.symeda.sormas.ui.login.LoginHelper;
 
 @SuppressWarnings("serial")
 public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomField<DTO> implements CommitHandler {// implements DtoEditForm<DTO> {
@@ -193,7 +193,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			addFields();
 		}
 
-		if (editOrCreateUserRight != null && !LoginHelper.hasUserRight(editOrCreateUserRight)) {
+		if (editOrCreateUserRight != null && !CurrentUser.getCurrent().hasUserRight(editOrCreateUserRight)) {
 			getFieldGroup().setReadOnly(true);
 		}
 	}

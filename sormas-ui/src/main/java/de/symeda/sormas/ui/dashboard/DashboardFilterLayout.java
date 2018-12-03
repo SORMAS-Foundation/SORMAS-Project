@@ -44,7 +44,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 
@@ -82,7 +82,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 
 	private void createRegionAndDistrictFilter() {
 		// Region filter
-		if (LoginHelper.getCurrentUser().getRegion() == null) {
+		if (CurrentUser.getCurrent().getUser().getRegion() == null) {
 			regionFilter.setWidth(200, Unit.PIXELS);
 			regionFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(AbstractDashboardView.I18N_PREFIX, "region"));
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
@@ -96,10 +96,10 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		}
 
 		// District filter
-		if (LoginHelper.getCurrentUser().getRegion() != null && LoginHelper.getCurrentUser().getDistrict() == null) {
+		if (CurrentUser.getCurrent().getUser().getRegion() != null && && CurrentUser.getCurrent().getUser().getDistrict() == null) {
 			districtFilter.setWidth(200, Unit.PIXELS);
 			districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(AbstractDashboardView.I18N_PREFIX, "district"));
-			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(LoginHelper.getCurrentUser().getRegion().getUuid()));
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(CurrentUser.getCurrent().getUser().getRegion().getUuid()));
 			districtFilter.addValueChangeListener(e -> {
 				dashboardDataProvider.setDistrict((DistrictReferenceDto) districtFilter.getValue());
 				dashboardView.refreshDashboard();

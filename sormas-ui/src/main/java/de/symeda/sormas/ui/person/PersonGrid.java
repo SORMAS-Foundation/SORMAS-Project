@@ -41,7 +41,7 @@ import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 
 @SuppressWarnings("serial")
 public class PersonGrid extends Grid {
@@ -71,7 +71,7 @@ public class PersonGrid extends Grid {
 	 * the list of person names.
 	 */
 	public PersonGrid(String firstName, String lastName) {
-		persons = FacadeProvider.getPersonFacade().getNameDtos(LoginHelper.getCurrentUserAsReference());
+		persons = FacadeProvider.getPersonFacade().getNameDtos(CurrentUser.getCurrent().getUserReference());
 		buildGrid();
 		reload(firstName, lastName);
 	}
@@ -133,7 +133,7 @@ public class PersonGrid extends Grid {
 				PersonIndexDto indexDto = FacadeProvider.getPersonFacade().getIndexDto(person.getUuid());
 				CaseDataDto caze = null;
 				if (associatedCase == null) {
-					caze = FacadeProvider.getCaseFacade().getLatestCaseByPerson(indexDto.getUuid(), LoginHelper.getCurrentUserAsReference().getUuid());
+					caze = FacadeProvider.getCaseFacade().getLatestCaseByPerson(indexDto.getUuid(), CurrentUser.getCurrent().getUserReference().getUuid());
 				} else {
 					caze = FacadeProvider.getCaseFacade().getMatchingCaseForImport(associatedCase, indexDto.toReference(), currentUser.getUuid());
 				}

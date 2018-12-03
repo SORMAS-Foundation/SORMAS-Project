@@ -541,17 +541,17 @@ public enum UserRight {
 			CONTACT_SUPERVISOR
 			);
 
-	private final Set<UserRole> userRoles;
+	private final Set<UserRole> defaultUserRoles;
 
-	private UserRight(UserRole... userRoles) {
-		this.userRoles = Collections.unmodifiableSet(new HashSet<UserRole>(Arrays.asList(userRoles)));
+	private UserRight(UserRole... defaultUserRoles) {
+		this.defaultUserRoles = Collections.unmodifiableSet(new HashSet<UserRole>(Arrays.asList(defaultUserRoles)));
 	}
 
-	public boolean isForRole(UserRole userRole) {
-		return userRoles.contains(userRole);
+	public boolean isDefaultForRole(UserRole userRole) {
+		return defaultUserRoles.contains(userRole);
 	}
 
-	public Set<UserRole> getUserRoles() {
-		return userRoles;
+	public Set<UserRole> getDefaultUserRoles() {
+		return defaultUserRoles;
 	}
 }

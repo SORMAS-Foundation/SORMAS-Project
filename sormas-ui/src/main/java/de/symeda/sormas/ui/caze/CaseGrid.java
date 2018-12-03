@@ -50,7 +50,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.utils.DateFilter;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
@@ -68,7 +68,7 @@ public class CaseGrid extends Grid {
         
         caseCriteria.archived(false);
 
-        if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+        if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
         	setSelectionMode(SelectionMode.MULTI);
         } else {
         	setSelectionMode(SelectionMode.NONE);
@@ -113,7 +113,7 @@ public class CaseGrid extends Grid {
         getColumn(CaseIndexDto.UUID).setRenderer(new UuidRenderer());
         getColumn(CaseIndexDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
         
-        if (LoginHelper.hasUserRight(UserRight.CASE_IMPORT)) {
+        if (CurrentUser.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
             getColumn(CaseIndexDto.CREATION_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
         } else {
         	removeColumn(CaseIndexDto.CREATION_DATE);
@@ -232,7 +232,7 @@ public class CaseGrid extends Grid {
     public void reload() {
     	if (reloadEnabled) {
 	    	List<CaseIndexDto> cases = FacadeProvider.getCaseFacade().getIndexList(
-	    			LoginHelper.getCurrentUser().getUuid(), 
+	    			CurrentUser.getCurrent().getUuid(), 
 	    			caseCriteria);
 	
 	    	getContainer().removeAllItems();

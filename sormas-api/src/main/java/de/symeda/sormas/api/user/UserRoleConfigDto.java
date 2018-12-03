@@ -15,25 +15,37 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.configuration.infrastructure;
+package de.symeda.sormas.api.user;
 
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import java.util.Set;
 
-public class HealthFacilitiesView extends AbstractFacilitiesView {
+import de.symeda.sormas.api.EntityDto;
 
-	private static final long serialVersionUID = -7708098278141028591L;
+public class UserRoleConfigDto extends EntityDto {
 
-	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/healthFacilities";
+	private static final long serialVersionUID = -547459523041494446L;
 
-	public HealthFacilitiesView() {
-		super(VIEW_NAME, false);
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			createButton.setCaption("New entry");
-			createButton.addClickListener(
-					e -> ControllerProvider.getInfrastructureController().createHealthFacility(false));
-		}
+	public static final String I18N_PREFIX = "UserRole";
+
+	public static final String USER_ROLE = "userRole";
+	public static final String USER_RIGHTS = "userRights";
+
+	private UserRole userRole;
+	private Set<UserRight> userRights;
+
+	public UserRole getUserRole() {
+		return userRole;
 	}
 
+	public void setUserRole(UserRole userRole) {
+		this.userRole = userRole;
+	}
+
+	public Set<UserRight> getUserRights() {
+		return userRights;
+	}
+
+	public void setUserRights(Set<UserRight> userRights) {
+		this.userRights = userRights;
+	}
 }

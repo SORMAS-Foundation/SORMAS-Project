@@ -40,7 +40,6 @@ import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.DashboardContactsView;
 import de.symeda.sormas.ui.dashboard.surveillance.DashboardSurveillanceView;
 import de.symeda.sormas.ui.events.EventsView;
-import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.reports.ReportsView;
 import de.symeda.sormas.ui.samples.SamplesView;
 import de.symeda.sormas.ui.statistics.AbstractStatisticsView;
@@ -95,44 +94,44 @@ public class MainScreen extends HorizontalLayout {
 		});
 
 		menu = new Menu(navigator);
-		if (LoginHelper.hasUserRight(UserRight.DASHBOARD_VIEW)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.DASHBOARD_VIEW)) {
 			ControllerProvider.getDashboardController().registerViews(navigator);
 		}
-		if (LoginHelper.hasUserRight(UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
 			menu.addView(DashboardSurveillanceView.class, AbstractDashboardView.ROOT_VIEW_NAME, "Dashboard", FontAwesome.DASHBOARD);
-		} else if (LoginHelper.hasUserRight(UserRight.DASHBOARD_CONTACT_ACCESS)) {
+		} else if (CurrentUser.getCurrent().hasUserRight(UserRight.DASHBOARD_CONTACT_ACCESS)) {
 			menu.addView(DashboardContactsView.class, AbstractDashboardView.ROOT_VIEW_NAME, "Dashboard", FontAwesome.DASHBOARD);
 		}
-		if (LoginHelper.hasUserRight(UserRight.TASK_VIEW)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
 			menu.addView(TasksView.class, TasksView.VIEW_NAME, "Tasks", FontAwesome.TASKS);
 		}
-		if (LoginHelper.hasUserRight(UserRight.CASE_VIEW)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 			ControllerProvider.getCaseController().registerViews(navigator);
 			menu.addView(CasesView.class, CasesView.VIEW_NAME, "Cases", FontAwesome.EDIT);
 		}
-		if (LoginHelper.hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 			ControllerProvider.getContactController().registerViews(navigator);
 			menu.addView(ContactsView.class, ContactsView.VIEW_NAME, "Contacts", FontAwesome.HAND_PAPER_O);
 		}
-		if (LoginHelper.hasUserRight(UserRight.EVENT_VIEW)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
 			ControllerProvider.getEventController().registerViews(navigator);
 			menu.addView(EventsView.class, EventsView.VIEW_NAME, "Events", FontAwesome.PHONE);
 		}
-		if (LoginHelper.hasUserRight(UserRight.SAMPLE_VIEW)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
 			ControllerProvider.getSampleController().registerViews(navigator);
 			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, "Samples", FontAwesome.DATABASE);
 		}
-		if (LoginHelper.hasUserRight(UserRight.WEEKLYREPORT_VIEW)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.WEEKLYREPORT_VIEW)) {
 			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, "Reports", FontAwesome.FILE_TEXT);
 		}
 		ControllerProvider.getStatisticsController().registerViews(navigator);
 		menu.addView(StatisticsView.class, AbstractStatisticsView.ROOT_VIEW_NAME, "Statistics", FontAwesome.BAR_CHART);
-		if (LoginHelper.hasUserRight(UserRight.USER_VIEW)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.USER_VIEW)) {
 			menu.addView(UsersView.class, UsersView.VIEW_NAME, "Users", FontAwesome.USERS);
 		}
-		if (LoginHelper.hasUserRight(UserRight.CONFIGURATION_ACCESS)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.CONFIGURATION_ACCESS)) {
 			AbstractConfigurationView.registerViews(navigator);
-			if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
+			if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
 				menu.addView(RegionsView.class, AbstractConfigurationView.ROOT_VIEW_NAME, "Configuration", FontAwesome.COGS);
 			} else {
 				menu.addView(OutbreaksView.class, AbstractConfigurationView.ROOT_VIEW_NAME, "Configuration", FontAwesome.COGS);

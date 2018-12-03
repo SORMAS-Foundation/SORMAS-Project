@@ -27,10 +27,6 @@ import de.symeda.sormas.api.utils.ValidationException;
 
 /**
  * These are also used as user groups in the server realm
- * 
- * TODO (longterm) make entities
- *  
- * @author Martin Wahnschaffe
  */
 public enum UserRole {
 
@@ -69,7 +65,7 @@ public enum UserRole {
 	
 	private final boolean supervisor;
 	private final boolean officer;
-	private HashSet<UserRight> userRights = null;
+	private HashSet<UserRight> defaultUserRights = null;
 	
 	private UserRole(boolean supervisor, boolean officer) {
 		this.supervisor = supervisor;
@@ -92,22 +88,20 @@ public enum UserRole {
 		return officer;
 	}
 	
-	private void initUserRights() {
-		
-		userRights = new HashSet<UserRight>();
-
-		for (UserRight userRight : UserRight.values()) {
-			if (userRight.isForRole(this)) {
-				userRights.add(userRight);
+	public HashSet<UserRight> getDefaultUserRights() {
+		if (defaultUserRights == null) {
+			defaultUserRights = new HashSet<UserRight>();
+			for (UserRight userRight : UserRight.values()) {
+				if (userRight.isDefaultForRole(this)) {
+					getDefaultUserRights().add(userRight);
+				}
 			}
 		}
+		return defaultUserRights;
 	}
-	
-	public boolean hasRight(UserRight userRight) {
-		if (userRights == null) {
-			initUserRights();
-		}
-		return userRights.contains(userRight);
+		
+	public boolean hasDefaultRight(UserRight userRight) {
+		return getDefaultUserRights().contains(userRight);
 	}
 	
 	public void addAssignableRoles(Collection<UserRole> collection) {

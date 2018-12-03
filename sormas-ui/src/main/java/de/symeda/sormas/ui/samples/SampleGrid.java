@@ -49,7 +49,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -68,7 +68,7 @@ public class SampleGrid extends Grid {
 		
 		sampleCriteria.archived(false);
 		
-		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
         	setSelectionMode(SelectionMode.MULTI);
         } else {
         	setSelectionMode(SelectionMode.NONE);
@@ -135,7 +135,7 @@ public class SampleGrid extends Grid {
 	       	}
 		});
 		
-		if(LoginHelper.getCurrentUser().getUserRoles().contains(UserRole.LAB_USER)) {
+		if(CurrentUser.getCurrent().hasUserRole(UserRole.LAB_USER)) {
 			removeColumn(SampleIndexDto.SHIPMENT_DATE);
 		} else {
 			removeColumn(SampleIndexDto.RECEIVED_DATE);
@@ -238,7 +238,7 @@ public class SampleGrid extends Grid {
 	
 	public void reload() {
     	List<SampleIndexDto> samples = FacadeProvider.getSampleFacade().getIndexList(
-    			LoginHelper.getCurrentUser().getUuid(), 
+    			CurrentUser.getCurrent().getUuid(), 
     			sampleCriteria);
     	
 		getContainer().removeAllItems();

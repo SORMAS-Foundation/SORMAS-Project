@@ -38,7 +38,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -54,7 +54,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		setSizeFull();
 		setSelectionMode(SelectionMode.NONE);		
 
-		user = LoginHelper.getCurrentUser();
+		user = CurrentUser.getCurrent().getUser();
 
 		addColumn(REGION, RegionReferenceDto.class).setMaximumWidth(200);
 		
@@ -79,8 +79,8 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 					public String convertToPresentation(OutbreakRegionConfiguration value,
 							Class<? extends String> targetType, Locale locale) throws ConversionException {
 		        		
-		        		boolean styleAsButton = LoginHelper.hasUserRight(UserRight.OUTBREAK_CONFIGURE_ALL) || 
-		        				(LoginHelper.hasUserRight(UserRight.OUTBREAK_CONFIGURE_RESTRICTED) && LoginHelper.getCurrentUser().getRegion().equals(value.getRegion()));
+		        		boolean styleAsButton = CurrentUser.getCurrent().hasUserRight(UserRight.OUTBREAK_CONFIGURE_ALL) || 
+		        				(CurrentUser.getCurrent().hasUserRight(UserRight.OUTBREAK_CONFIGURE_RESTRICTED) && CurrentUser.getCurrent().getUser().getRegion().equals(value.getRegion()));
 		        		boolean moreThanHalfOfDistricts = value.getAffectedDistricts().size( )>= value.getTotalDistricts() / 2.0f;
 	
 	        			String styles;
@@ -211,9 +211,9 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		// Open the outbreak configuration window for the clicked row when
 		// a) the user is allowed to configure all existing outbreaks or
 		// b) the user is allowed to configure outbreaks in his assigned region and has clicked the respective row
-		if (LoginHelper.hasUserRight(UserRight.OUTBREAK_CONFIGURE_ALL)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.OUTBREAK_CONFIGURE_ALL)) {
 			ControllerProvider.getOutbreakController().openOutbreakConfigurationWindow((Disease) event.getPropertyId(), (OutbreakRegionConfiguration) clickedItem.getItemProperty((Disease) event.getPropertyId()).getValue());
-		} else if (LoginHelper.hasUserRight(UserRight.OUTBREAK_CONFIGURE_RESTRICTED)) {
+		} else if (CurrentUser.getCurrent().hasUserRight(UserRight.OUTBREAK_CONFIGURE_RESTRICTED)) {
 			if (user.getRegion().equals(clickedItem.getItemProperty(REGION).getValue())) {
 				ControllerProvider.getOutbreakController().openOutbreakConfigurationWindow((Disease) event.getPropertyId(), (OutbreakRegionConfiguration) clickedItem.getItemProperty((Disease) event.getPropertyId()).getValue());
 			}

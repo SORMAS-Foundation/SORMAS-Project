@@ -15,25 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.configuration.infrastructure;
+package de.symeda.sormas.api.user;
 
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
-public class HealthFacilitiesView extends AbstractFacilitiesView {
+import javax.ejb.Remote;
 
-	private static final long serialVersionUID = -7708098278141028591L;
+@Remote
+public interface UserRoleConfigFacade {
 
-	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/healthFacilities";
+	List<UserRoleConfigDto> getAllAfter(Date date);
 
-	public HealthFacilitiesView() {
-		super(VIEW_NAME, false);
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			createButton.setCaption("New entry");
-			createButton.addClickListener(
-					e -> ControllerProvider.getInfrastructureController().createHealthFacility(false));
-		}
-	}
+    List<UserRoleConfigDto> getAll();
+    
+    UserRoleConfigDto getByUuid(String uuid);
+    
+    UserRoleConfigDto saveUserRoleConfig(UserRoleConfigDto dto);
 
+	void deleteUserRoleConfig(UserRoleConfigDto dto);
+
+	/**
+	 * Will fallback to default user rights for each role that has no configuration defined
+	 */
+	Set<UserRight> getEffectiveUserRights(UserRole... userRoles);
 }

@@ -33,7 +33,7 @@ import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -119,7 +119,7 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 	private void updatePrevHospHint(OptionGroup hospitalizedPreviouslyField, PreviousHospitalizationsField previousHospitalizationsField) {
 		YesNoUnknown value = (YesNoUnknown) hospitalizedPreviouslyField.getValue();
 		Collection<PreviousHospitalizationDto> previousHospitalizations = previousHospitalizationsField.getValue();
-		if (LoginHelper.hasUserRight(UserRight.CASE_EDIT) && value == YesNoUnknown.YES && (previousHospitalizations == null || previousHospitalizations.size() == 0)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.CASE_EDIT) && value == YesNoUnknown.YES && (previousHospitalizations == null || previousHospitalizations.size() == 0)) {
 			hospitalizedPreviouslyField.setComponentError(new UserError("Please add an entry to the list below if there is any data available to you."));
 		} else {
 			hospitalizedPreviouslyField.setComponentError(null);

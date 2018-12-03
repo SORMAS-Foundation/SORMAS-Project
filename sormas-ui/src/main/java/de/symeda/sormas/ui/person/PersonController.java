@@ -38,9 +38,9 @@ import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.events.EventParticipantsView;
-import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -150,7 +150,7 @@ public class PersonController {
 		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(editForm, editForm.getFieldGroup());
 		CaseFacade caseFacade = FacadeProvider.getCaseFacade();
 		
-		List<CaseDataDto> personCases = caseFacade.getAllCasesOfPerson(editForm.getValue().getUuid(), LoginHelper.getCurrentUserAsReference().getUuid());
+		List<CaseDataDto> personCases = caseFacade.getAllCasesOfPerson(editForm.getValue().getUuid(), CurrentUser.getCurrent().getUserReference().getUuid());
 		
 		editView.addCommitListener(new CommitListener() {
 			@Override

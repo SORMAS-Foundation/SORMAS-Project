@@ -119,7 +119,7 @@ public class UserRightsGenerator {
 			// Add styled cells for all user roles
 			for (UserRole userRole : UserRole.values()) {
 				Cell roleRightCell = row.createCell(userRole.ordinal() + 2);
-				if (userRole.hasRight(userRight)) {
+				if (userRole.hasDefaultRight(userRight)) {
 					roleRightCell.setCellStyle(authorizedStyle);
 					roleRightCell.setCellValue("Yes");
 				} else {

@@ -28,8 +28,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
@@ -80,7 +80,7 @@ public class OutbreakController {
 		OutbreakDto outbreak = new OutbreakDto();
 		outbreak.setDistrict(district);
 		outbreak.setDisease(disease);
-		outbreak.setReportingUser(LoginHelper.getCurrentUserAsReference());
+		outbreak.setReportingUser(CurrentUser.getCurrent().getUserReference());
 		outbreak.setReportDate(new Date());
 		
 		return outbreak;

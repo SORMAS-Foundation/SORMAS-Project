@@ -1,24 +1,6 @@
-/*******************************************************************************
- * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
 package de.symeda.sormas.ui.login;
 
 import java.security.Principal;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 
@@ -26,19 +8,16 @@ import com.vaadin.server.Page;
 import com.vaadin.server.VaadinServletService;
 import com.vaadin.server.VaadinSession;
 
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.utils.UserRightsException;
 
+public final class LoginHelper {
 
-/**
- * @author Martin Wahnschaffe
- */
-public class LoginHelper {
-
+    public static boolean isUserSignedIn() {
+    	Principal principal = VaadinServletService.getCurrentServletRequest().getUserPrincipal();
+    	return principal != null;
+    }
+    
     public static boolean login(String username, String password) throws UserRightsException {
 
         if (username == null || username.isEmpty())
@@ -70,75 +49,4 @@ public class LoginHelper {
         
         return true;
     }
-    
-    public static boolean isUserSignedIn() {
-    	Principal principal = VaadinServletService.getCurrentServletRequest().getUserPrincipal();
-    	return principal != null;
-    }
-    
-    /**
-     * If this doesn't work as expected make sure the needed roles exist in the web.xml
-     */
-	public static boolean isUserInRole(UserRole userRole) {
-		return VaadinServletService.getCurrentServletRequest().isUserInRole(userRole.name());
-	}
-
-	public static boolean hasUserRight(UserRight userRight) {
-		// TODO cache user on login to make this faster?
-		for (UserRole userRole : userRight.getUserRoles()) {
-			if (isUserInRole(userRole)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-    public static String getCurrentUserName() {
-    	
-		Principal activeUserPrincipal = VaadinServletService.getCurrentServletRequest().getUserPrincipal();
-		if (activeUserPrincipal != null) {
-			return activeUserPrincipal.getName();
-		}
-		return null;
-    }
-    
-    public static UserDto getCurrentUser() {
-    	String userName = getCurrentUserName();
-    	if (userName != null) {
-    		return FacadeProvider.getUserFacade().getByUserName(userName);
-    	}
-    	return null;
-    }
-    
-    public static Set<UserRole> getCurrentUserRoles() {
-    	return getCurrentUser() != null ? getCurrentUser().getUserRoles() : null;
-    }
-    
-    public static UserReferenceDto getCurrentUserAsReference() {
-    	String userName = getCurrentUserName();
-    	if (userName != null) {
-    		return FacadeProvider.getUserFacade().getByUserNameAsReference(userName);
-    	}
-    	return null;
-    }
-    
-	public static boolean isCurrentUser(UserDto user) {
-
-		return isCurrentUser(user.getUserEmail());
-	}
-
-	public static boolean isCurrentUser(String userName) {
-
-		Principal activeUserPrincipal = VaadinServletService.getCurrentServletRequest().getUserPrincipal();
-		return isCurrentUser(userName, activeUserPrincipal);
-	}
-
-	private static boolean isCurrentUser(String userName, Principal activeUserPrincipal) {
-
-		if (activeUserPrincipal == null) {
-			return false;
-		} else {
-			return activeUserPrincipal.getName().equalsIgnoreCase(userName);
-		}
-	}
 }

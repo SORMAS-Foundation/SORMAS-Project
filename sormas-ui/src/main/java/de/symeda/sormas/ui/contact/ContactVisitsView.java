@@ -35,7 +35,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.visit.VisitGrid;
@@ -104,7 +104,7 @@ public class ContactVisitsView extends AbstractContactView {
 		topLayout.setExpandRatio(topLayout.getComponent(topLayout.getComponentCount()-1), 1);
 
 		// Bulk operation dropdown
-		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
 			MenuBar bulkOperationsDropdown = new MenuBar();	
@@ -125,7 +125,7 @@ public class ContactVisitsView extends AbstractContactView {
 			topLayout.setExpandRatio(bulkOperationsDropdown, 1);
 		}
 
-		if (LoginHelper.hasUserRight(UserRight.VISIT_CREATE)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.VISIT_CREATE)) {
 			newButton = new Button("New visit");
 			newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			newButton.setIcon(FontAwesome.PLUS_CIRCLE);

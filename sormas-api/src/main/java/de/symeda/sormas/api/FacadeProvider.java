@@ -43,6 +43,7 @@ import de.symeda.sormas.api.sample.SampleTestFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.user.UserFacade;
+import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 
 public class FacadeProvider {
@@ -126,6 +127,10 @@ public class FacadeProvider {
 
 	public static UserFacade getUserFacade() {
 		return get().lookupEjbRemote(UserFacade.class);
+	}
+
+	public static UserRoleConfigFacade getUserRoleConfigFacade() {
+		return get().lookupEjbRemote(UserRoleConfigFacade.class);
 	}
 
 	public static HospitalizationFacade getHospitalizationFacade() {

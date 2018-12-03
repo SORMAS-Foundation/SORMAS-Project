@@ -43,7 +43,7 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -129,7 +129,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			if (caze.getDisease() != Disease.NEW_INFLUENCA) {
 				sampleSource.setVisible(false);
 			}
-			if ((LoginHelper.getCurrentUser().getUuid().equals(getValue().getReportingUser().getUuid()))) {
+			if ((CurrentUser.getCurrent().getUuid().equals(getValue().getReportingUser().getUuid()))) {
 				FieldHelper.setEnabledWhen(getFieldGroup(), shipped, Arrays.asList(true), Arrays.asList(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS), true);
 				FieldHelper.setRequiredWhen(getFieldGroup(), shipped, Arrays.asList(SampleDto.SHIPMENT_DATE), Arrays.asList(true));
 				setRequired(true, SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_MATERIAL, SampleDto.LAB);

@@ -25,6 +25,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.SubNavigationMenu;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.DistrictsView;
@@ -32,7 +33,6 @@ import de.symeda.sormas.ui.configuration.infrastructure.HealthFacilitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.LaboratoriesView;
 import de.symeda.sormas.ui.configuration.infrastructure.RegionsView;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
-import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
 public abstract class AbstractConfigurationView extends AbstractSubNavigationView {
@@ -48,7 +48,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 	@Override
 	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		menu.removeAllViews();
-		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
 			menu.addView(RegionsView.VIEW_NAME, I18nProperties.getPrefixFragment("View",
 					RegionsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
 			menu.addView(DistrictsView.VIEW_NAME, I18nProperties.getPrefixFragment("View",
@@ -70,7 +70,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 	}
 
 	public static void registerViews(Navigator navigator) {
-		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
 			navigator.addView(RegionsView.VIEW_NAME, RegionsView.class);
 			navigator.addView(DistrictsView.VIEW_NAME, DistrictsView.class);
 			navigator.addView(CommunitiesView.VIEW_NAME, CommunitiesView.class);

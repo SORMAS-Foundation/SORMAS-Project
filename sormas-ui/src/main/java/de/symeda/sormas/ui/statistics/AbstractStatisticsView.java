@@ -21,8 +21,8 @@ import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.SubNavigationMenu;
-import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
 @SuppressWarnings("serial")
@@ -40,7 +40,7 @@ public class AbstractStatisticsView extends AbstractSubNavigationView {
 	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		menu.removeAllViews();
 		menu.addView(StatisticsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(I18N_PREFIX, StatisticsView.VIEW_NAME), params);
-		if (LoginHelper.hasUserRight(UserRight.DATABASE_EXPORT_ACCESS)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.DATABASE_EXPORT_ACCESS)) {
 			menu.addView(DatabaseExportView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(I18N_PREFIX, "database-export"), params);
 		}
 	

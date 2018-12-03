@@ -34,10 +34,10 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
-import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
@@ -154,7 +154,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 				}
 
 				Map<ContactClassification, Long> contactCounts = FacadeProvider.getContactFacade()
-						.getNewContactCountPerClassification(contactCriteria, LoginHelper.getCurrentUser().getUuid());
+						.getNewContactCountPerClassification(contactCriteria, CurrentUser.getCurrent().getUuid());
 
 				Long unconfirmedCount = contactCounts.get(ContactClassification.UNCONFIRMED);
 				Long confirmedCount = contactCounts.get(ContactClassification.CONFIRMED);
@@ -202,9 +202,9 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 				}
 
 				Map<FollowUpStatus, Long> contactCounts = FacadeProvider.getContactFacade()
-						.getNewContactCountPerFollowUpStatus(contactCriteria, LoginHelper.getCurrentUser().getUuid());
+						.getNewContactCountPerFollowUpStatus(contactCriteria, CurrentUser.getCurrent().getUuid());
 				Map<ContactStatus, Long> contactStatusCounts = FacadeProvider.getContactFacade()
-						.getNewContactCountPerStatus(contactCriteria, LoginHelper.getCurrentUser().getUuid());
+						.getNewContactCountPerStatus(contactCriteria, CurrentUser.getCurrent().getUuid());
 
 				Long underFollowUpCount = contactCounts.get(FollowUpStatus.FOLLOW_UP);
 				Long lostToFollowUpCount = contactCounts.get(FollowUpStatus.LOST);
@@ -278,7 +278,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 					contactCriteria.followUpUntilBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date));
 				}
 
-				followUpUntilNumbers[i] = FacadeProvider.getContactFacade().getFollowUpUntilCount(contactCriteria, LoginHelper.getCurrentUser().getUuid());
+				followUpUntilNumbers[i] = FacadeProvider.getContactFacade().getFollowUpUntilCount(contactCriteria, CurrentUser.getCurrent().getUuid());
 			}
 
 			hcjs.append("series: [");

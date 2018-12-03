@@ -35,7 +35,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -53,7 +53,7 @@ public class VisitGrid extends Grid {
 	public VisitGrid() {
 		setSizeFull();
 
-		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
         	setSelectionMode(SelectionMode.MULTI);
         } else {
         	setSelectionMode(SelectionMode.NONE);

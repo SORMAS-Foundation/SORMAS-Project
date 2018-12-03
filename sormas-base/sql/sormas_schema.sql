@@ -2533,3 +2533,41 @@ BEFORE INSERT OR UPDATE OR DELETE ON users_userroles
 FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'users_userroles_history', true);
 
 INSERT INTO schema_version (version_number, comment) VALUES (117, 'Rename useroles to users_userroles #830');
+
+-- 2018-12-03 User role configuration #830
+
+CREATE TABLE userrolesconfig (
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	userrole varchar(255) not null unique,
+	sys_period tstzrange NOT NULL,
+	primary key(id)
+);
+ALTER TABLE userrolesconfig OWNER TO sormas_user;
+
+CREATE TABLE userrolesconfig_history (LIKE userrolesconfig);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON userrolesconfig
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userrolesconfig_history', true);
+ALTER TABLE userrolesconfig_history OWNER TO sormas_user;
+
+CREATE TABLE userroles_userrights (
+    userrole character varying(255) NOT NULL,
+    userright character varying(255) NOT NULL,
+	sys_period tstzrange NOT NULL
+);
+ALTER TABLE userroles_userrights OWNER TO sormas_user;
+
+ALTER TABLE ONLY userroles_userrights
+    ADD CONSTRAINT unq_userroles_userrights_0 UNIQUE (userrole, userright);
+
+ALTER TABLE ONLY userroles_userrights
+    ADD CONSTRAINT fk_userroles_userrights_user_id FOREIGN KEY (userrole) REFERENCES userrolesconfig(userrole);
+
+CREATE TABLE userroles_userrights_history (LIKE userroles_userrights);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON userroles_userrights
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userroles_userrights_history', true);
+ALTER TABLE userroles_userrights_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (118, 'User role configuration #830');

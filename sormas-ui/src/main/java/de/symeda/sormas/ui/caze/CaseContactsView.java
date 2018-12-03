@@ -46,8 +46,8 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.contact.ContactGrid;
-import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -150,7 +150,7 @@ public class CaseContactsView extends AbstractCaseView {
 		statusFilterLayout.setExpandRatio(statusFilterLayout.getComponent(statusFilterLayout.getComponentCount()-1), 1);
 
 		// Bulk operation dropdown
-		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 			MenuBar bulkOperationsDropdown = new MenuBar();	
@@ -196,7 +196,7 @@ public class CaseContactsView extends AbstractCaseView {
 			statusFilterLayout.setExpandRatio(bulkOperationsDropdown, 1);
 		}
 
-		if (LoginHelper.hasUserRight(UserRight.CONTACT_EXPORT)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
 			Button exportButton = new Button("Export");
 			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
@@ -207,12 +207,12 @@ public class CaseContactsView extends AbstractCaseView {
 
 			statusFilterLayout.addComponent(exportButton);
 			statusFilterLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
-			if (!LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (!CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				statusFilterLayout.setExpandRatio(exportButton, 1);
 			}
 		}
 
-		if (LoginHelper.hasUserRight(UserRight.CONTACT_CREATE)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
 			newButton = new Button("New contact");
 			newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			newButton.setIcon(FontAwesome.PLUS_CIRCLE);

@@ -226,7 +226,7 @@ public class User extends AbstractDomainObject {
 			throw new IllegalArgumentException("userRight parameter can not be null");
 		}
 
-		for (UserRole userRole : userRight.getUserRoles()) {
+		for (UserRole userRole : userRight.getDefaultUserRoles()) {
 			if (hasUserRole(userRole)) {
 				return true;
 			}
