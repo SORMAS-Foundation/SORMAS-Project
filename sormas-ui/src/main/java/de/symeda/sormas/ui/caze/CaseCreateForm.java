@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.caze;
 import java.util.Arrays;
 
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 
@@ -46,7 +47,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
 
     private static final String HTML_LAYOUT = 
-			LayoutUtil.fluidRowLocs(CaseDataDto.DISEASE) +
+			LayoutUtil.fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.DISEASE) +
 			LayoutUtil.fluidRow(LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.DENGUE_FEVER_TYPE)) +
 			LayoutUtil.fluidRowLocs(FIRST_NAME, LAST_NAME) +
 			LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
@@ -64,7 +65,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
     @Override
 	protected void addFields() {
-    	
+    	addField(CaseDataDto.REPORT_DATE, DateField.class);
     	addField(CaseDataDto.DISEASE, ComboBox.class);
     	addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
     	OptionGroup plagueType = addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
@@ -101,7 +102,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     	});
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 
-    	setRequired(true, FIRST_NAME, LAST_NAME, CaseDataDto.DISEASE, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY);
+    	setRequired(true, CaseDataDto.REPORT_DATE, FIRST_NAME, LAST_NAME, CaseDataDto.DISEASE, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY);
 		FieldHelper.addSoftRequiredStyle(plagueType, community, facilityDetails);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DISEASE_DETAILS), CaseDataDto.DISEASE, Arrays.asList(Disease.OTHER), true);

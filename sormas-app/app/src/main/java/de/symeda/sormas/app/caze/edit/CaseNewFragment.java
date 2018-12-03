@@ -98,6 +98,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         contentBinding.caseDataDisease.initializeSpinner(diseaseList);
         contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
         contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
+        contentBinding.caseDataReportDate.initializeDateField(getFragmentManager());
     }
 
     @Override
