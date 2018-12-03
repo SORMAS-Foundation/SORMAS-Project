@@ -32,6 +32,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
+import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -49,6 +51,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -196,16 +199,28 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public PersonDto savePerson(PersonDto source) {
+	public PersonDto savePerson(PersonDto source) throws ValidationRuntimeException {
 		Person person = personService.getByUuid(source.getUuid());
 		PersonDto existingPerson = toDto(person);
 
+		validate(source);
+		
 		person = fillOrBuildEntity(source, person);
 		personService.ensurePersisted(person);
 
 		onPersonChanged(existingPerson, person);
 
 		return toDto(person);
+	}
+	
+	@Override
+	public void validate(PersonDto source) throws ValidationRuntimeException {
+		if (StringUtils.isEmpty(source.getFirstName())) {
+			throw new ValidationRuntimeException("You have to specify a first name");
+		}
+		if (StringUtils.isEmpty(source.getLastName())) {
+			throw new ValidationRuntimeException("You have to specify a last name");
+		}
 	}
 
 	public void onPersonChanged(PersonDto existingPerson, Person newPerson) {

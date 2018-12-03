@@ -18,108 +18,70 @@
 package de.symeda.sormas.ui.utils;
 
 import java.util.Date;
+import java.util.function.Supplier;
 
 import org.joda.time.DateTimeComparator;
 
 import com.vaadin.data.validator.AbstractValidator;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.Field;
 
 /**
- * Compares two date fields. Returns an error if earlierOrSame is true and the value passed to the isValidValue
- * method is not earlier or the same date as the value of the fieldToCompare or if earlierOrSame is false and
- * the date value is not later or the same date as the value of the fieldToCompare.
+ * Compares the value of a date field to a supplied reference date.
+ * Returns an error if earlierOrSame is true and the value is later as the reference date or vice versa.
  */
 @SuppressWarnings("serial")
 public class DateComparisonValidator extends AbstractValidator<Date> {
 	
-	private DateField dateFieldToValidate;
-	private DateField dateFieldToCompare;
-	private DateTimeField dateTimeFieldToValidate;
-	private DateTimeField dateTimeFieldToCompare;
-	private Date dateToCompare;
+	private Field<Date> dateField;
+	private Supplier<Date> referenceDateSupplier;
 	private boolean earlierOrSame;
 	private boolean changeInvalidCommitted;
-	
-	public DateComparisonValidator(DateField fieldToValidate, DateField fieldToCompare, boolean earlierOrSame, boolean changeInvalidCommitted, String errorMessage) {
+
+	public DateComparisonValidator(Field<Date> dateField, Supplier<Date> referenceDateSupplier, boolean earlierOrSame, boolean changeInvalidCommitted, String errorMessage) {
 		super(errorMessage);
-		this.dateFieldToValidate = fieldToValidate;
-		this.dateFieldToCompare = fieldToCompare;
-		this.earlierOrSame = earlierOrSame;
-		this.changeInvalidCommitted = changeInvalidCommitted;
-	}
-	
-	public DateComparisonValidator(DateField fieldToValidate, DateTimeField fieldToCompare, boolean earlierOrSame, boolean changeInvalidCommitted, String errorMessage) {
-		super(errorMessage);
-		this.dateFieldToValidate = fieldToValidate;
-		this.dateTimeFieldToCompare = fieldToCompare;
-		this.earlierOrSame = earlierOrSame;
-		this.changeInvalidCommitted = changeInvalidCommitted;
-	}
-	
-	public DateComparisonValidator(DateField fieldToValidate, Date dateToCompare, boolean earlierOrSame, boolean changeInvalidCommitted, String errorMessage) {
-		super(errorMessage);
-		this.dateFieldToValidate = fieldToValidate;
-		this.dateToCompare = dateToCompare;
+		this.dateField = dateField;
+		this.referenceDateSupplier = referenceDateSupplier;
 		this.earlierOrSame = earlierOrSame;
 		this.changeInvalidCommitted = changeInvalidCommitted;
 	}
 
-	public DateComparisonValidator(DateTimeField fieldToValidate, DateTimeField fieldToCompare, boolean earlierOrSame, boolean changeInvalidCommitted, String errorMessage) {
-		super(errorMessage);
-		this.dateTimeFieldToValidate = fieldToValidate;
-		this.dateTimeFieldToCompare = fieldToCompare;
-		this.earlierOrSame = earlierOrSame;
-		this.changeInvalidCommitted = changeInvalidCommitted;
+	public DateComparisonValidator(Field<Date> dateField, Field<Date> referenceField, boolean earlierOrSame, boolean changeInvalidCommitted, String errorMessage) {
+		this(dateField, () -> referenceField.getValue(), earlierOrSame, changeInvalidCommitted, errorMessage);
+	}
+	
+	public DateComparisonValidator(Field<Date> dateField, Date referenceDate, boolean earlierOrSame, boolean changeInvalidCommitted, String errorMessage) {
+		this(dateField, () -> referenceDate, earlierOrSame, changeInvalidCommitted, errorMessage);
 	}
 
-	public DateComparisonValidator(DateTimeField fieldToValidate, DateField fieldToCompare, boolean earlierOrSame, boolean changeInvalidCommitted, String errorMessage) {
-		super(errorMessage);
-		this.dateTimeFieldToValidate = fieldToValidate;
-		this.dateFieldToCompare = fieldToCompare;
-		this.earlierOrSame = earlierOrSame;
-		this.changeInvalidCommitted = changeInvalidCommitted;
-	}
-	
-	public DateComparisonValidator(DateTimeField fieldToValidate, Date dateToCompare, boolean earlierOrSame, boolean changeInvalidCommitted, String errorMessage) {
-		super(errorMessage);
-		this.dateTimeFieldToValidate = fieldToValidate;
-		this.dateToCompare = dateToCompare;
-		this.earlierOrSame = earlierOrSame;
-		this.changeInvalidCommitted = changeInvalidCommitted;
-	}
-	
 	@Override
 	protected boolean isValidValue(Date date) {
-		Field<Date> validationField = dateFieldToValidate != null ? dateFieldToValidate : dateTimeFieldToValidate;
-		Field<Date> comparisonField = dateFieldToCompare != null ? dateFieldToCompare : dateTimeFieldToCompare;
-		Date comparisonDate = comparisonField != null ? comparisonField.getValue() : dateToCompare;
+		Date referenceDate = referenceDateSupplier.get();
 		
-		if (date == null || comparisonDate == null) {
+		if (date == null || referenceDate == null) {
 			return true;
 		}
 		
 		if (earlierOrSame) {
-			if (DateTimeComparator.getDateOnlyInstance().compare(date, comparisonDate) <= 0) {
+			if (DateTimeComparator.getDateOnlyInstance().compare(date, referenceDate) <= 0) {
 				if (changeInvalidCommitted) {
-					validationField.setInvalidCommitted(true);
+					dateField.setInvalidCommitted(true);
 				}
 				return true;
 			} else {
 				if (changeInvalidCommitted) {
-					validationField.setInvalidCommitted(false);
+					dateField.setInvalidCommitted(false);
 				}
 				return false;
 			}
 		} else {
-			if(DateTimeComparator.getDateOnlyInstance().compare(date, comparisonDate) >= 0) {
+			if(DateTimeComparator.getDateOnlyInstance().compare(date, referenceDate) >= 0) {
 				if (changeInvalidCommitted) {
-					validationField.setInvalidCommitted(true);
+					dateField.setInvalidCommitted(true);
 				}
 				return true;
 			} else {
 				if (changeInvalidCommitted) {
-					validationField.setInvalidCommitted(false);
+					dateField.setInvalidCommitted(false);
 				}
 				return false;
 			}

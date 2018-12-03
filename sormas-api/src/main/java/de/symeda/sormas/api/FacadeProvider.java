@@ -53,7 +53,7 @@ public class FacadeProvider {
 
 	private static FacadeProvider instance;
 
-	private FacadeProvider() {
+	protected FacadeProvider() {
 		try {
 			ic = new InitialContext();
 		} catch (NamingException e) {

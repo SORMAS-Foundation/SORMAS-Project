@@ -55,6 +55,8 @@ public interface CaseFacade {
 	 * is saved or there is an infrastructure error (e.g. the district of the case does not belong in the region of the case).
 	 */
     CaseDataDto saveCase(CaseDataDto dto) throws ValidationRuntimeException;
+    
+    void validate(CaseDataDto dto) throws ValidationRuntimeException;
 
 	List<CaseReferenceDto> getSelectableCases(UserReferenceDto user);
 
@@ -62,7 +64,7 @@ public interface CaseFacade {
 	
 	List<String> getAllActiveUuids(String userUuid);
 	
-	CaseDataDto updateHospitalization(CaseDataDto caze);
+	CaseDataDto saveAndTransferCase(CaseDataDto caze);
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
 	

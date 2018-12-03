@@ -143,7 +143,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         });
     }
 
-    private static void updateApproximateAgeField(FragmentPersonEditLayoutBinding contentBinding) {
+    public static Date calculateBirthDateValue(FragmentPersonEditLayoutBinding contentBinding) {
         Integer birthYear = (Integer) contentBinding.personBirthdateYYYY.getValue();
 
         if (birthYear != null) {
@@ -154,14 +154,25 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
             Integer birthMonth = (Integer) contentBinding.personBirthdateMM.getValue();
 
             Calendar birthDate = new GregorianCalendar();
-            birthDate.set(birthYear, birthMonth != null ? birthMonth - 1 : 0, birthDay != null ? birthDay : 1);
+            birthDate.set(birthYear, birthMonth != null ? birthMonth : 0, birthDay != null ? birthDay : 1);
+            return birthDate.getTime();
+        }
+        return null;
+    }
+
+    private static void updateApproximateAgeField(FragmentPersonEditLayoutBinding contentBinding) {
+
+        Date birthDate = calculateBirthDateValue(contentBinding);
+        if (birthDate != null) {
+            contentBinding.personApproximateAge.setEnabled(false);
+            contentBinding.personApproximateAgeType.setEnabled(false);
 
             Date to = new Date();
             if (contentBinding.personDeathDate != null) {
                 to = contentBinding.personDeathDate.getValue();
             }
 
-            DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = ApproximateAgeType.ApproximateAgeHelper.getApproximateAge(birthDate.getTime(), to);
+            DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = ApproximateAgeType.ApproximateAgeHelper.getApproximateAge(birthDate, to);
             ApproximateAgeType ageType = approximateAge.getElement1();
             contentBinding.personApproximateAge.setValue(String.valueOf(approximateAge.getElement0()));
             contentBinding.personApproximateAgeType.setValue(ageType);
@@ -296,6 +307,8 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
     public void onLayoutBinding(FragmentPersonEditLayoutBinding contentBinding) {
         contentBinding.setData(record);
         contentBinding.setPresentConditionClass(PresentCondition.class);
+
+        PersonValidator.initializePersonValidation(contentBinding);
     }
 
     @Override

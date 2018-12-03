@@ -54,8 +54,8 @@ import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
 public class SormasUI extends UI {
 	
     @Override
-    protected void init(VaadinRequest vaadinRequest) {
-
+    public void init(VaadinRequest vaadinRequest) {
+		
     	setErrorHandler(SormasErrorHandler.get());
         setLocale(vaadinRequest.getLocale());
         

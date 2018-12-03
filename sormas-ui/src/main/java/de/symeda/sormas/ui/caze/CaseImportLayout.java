@@ -21,8 +21,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.function.BiConsumer;
@@ -75,8 +78,13 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class CaseImportLayout extends VerticalLayout {
 
 	private Button downloadErrorReportButton;
+	private final UserReferenceDto currentUser;
+	private final UI currentUI;
 
 	public CaseImportLayout() {
+		currentUser = LoginHelper.getCurrentUserAsReference();
+		currentUI = UI.getCurrent();
+		
 		setMargin(true);
 
 		// Step 1: Download SORMAS Import Guide
@@ -206,18 +214,32 @@ public class CaseImportLayout extends VerticalLayout {
 				return;
 			}
 
-			// Remove file downloader extension from "Download Error Report" button
+			// Remove FileDownloader extension from "Download Error Report" button
 			for (int i = 0; i < downloadErrorReportButton.getExtensions().size(); i++) {
 				Extension ext = downloadErrorReportButton.getExtensions().iterator().next();
 				downloadErrorReportButton.removeExtension(ext);
-			}
-
-			UserReferenceDto currentUser = LoginHelper.getCurrentUserAsReference();
-			UI currentUI = UI.getCurrent();
+			}			
 
 			try {
-				final CaseImporter caseImporter = new CaseImporter(file.getPath(), currentUser);
-				final CaseImportProgressLayout progressLayout = new CaseImportProgressLayout(caseImporter.getNumberOfCases(), new Runnable() {
+				// Read file and create readers
+				File csvFile = new File(file.getPath());
+				if (!csvFile.exists()) {
+					throw new FileNotFoundException("Cases .csv file does not exist");
+				}
+				
+				// Generate the error report file
+				Path exportDirectory = Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath());
+				Path errorReportFilePath = exportDirectory.resolve(ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" 
+						+ DataHelper.getShortUuid(currentUser.getUuid()) + "_" 
+						+ DateHelper.formatDateForExport(new Date()) + ".csv");
+				// If the error report file already exists, delete it
+				File errorReportFile = new File(errorReportFilePath.toString());
+				if (errorReportFile.exists()) {
+					errorReportFile.delete();
+				}
+
+				final CaseImporter caseImporter = new CaseImporter(new FileReader(csvFile.getPath()), new FileWriter(errorReportFilePath.toString(), true), currentUser);
+				final CaseImportProgressLayout progressLayout = new CaseImportProgressLayout(caseImporter.getNumberOfCases(new FileReader(csvFile.getPath())), new Runnable() {
 					@Override
 					public void run() {
 						caseImporter.cancelImport();
@@ -225,55 +247,7 @@ public class CaseImportLayout extends VerticalLayout {
 				});
 
 				BiConsumer<ImportSimilarityInput, Consumer<ImportSimilarityResult>> similarityCallback = (input, resultConsumer) -> {
-					currentUI.accessSynchronously(new Runnable() {
-						@Override
-						public void run() {
-							ImportPersonSelectField personSelect = new ImportPersonSelectField(input.getPersons(), input.getCaze(), input.getPerson(), currentUser);
-							personSelect.setWidth(1024, Unit.PIXELS);
-							personSelect.selectBestMatch();
-
-							final CommitDiscardWrapperComponent<ImportPersonSelectField> selectOrCreateComponent =
-									new CommitDiscardWrapperComponent<>(personSelect);
-
-							selectOrCreateComponent.addCommitListener(new CommitListener() {
-								@Override
-								public void onCommit() {
-									PersonIndexDto person = personSelect.getValue();
-									if (person != null) {
-										resultConsumer.accept(new ImportSimilarityResult(person, personSelect.getSelectedMatchingCase(), 
-												personSelect.isUsePerson(), personSelect.isMergeCase(), false, false));
-									} else {
-										resultConsumer.accept(new ImportSimilarityResult(null, null, false, false, false, false));
-									}
-								}});
-
-							DiscardListener discardListener = new DiscardListener() {
-								@Override
-								public void onDiscard() {
-									resultConsumer.accept(new ImportSimilarityResult(null, null, false, false, false, true));
-								}
-							};
-							selectOrCreateComponent.addDiscardListener(discardListener);
-
-							Button skipButton = new Button(I18nProperties.getText("skip"));
-							skipButton.addClickListener(e -> {
-								currentUI.accessSynchronously(new Runnable() {
-									@Override
-									public void run() {
-										selectOrCreateComponent.removeDiscardListener(discardListener);
-										selectOrCreateComponent.discard();
-										resultConsumer.accept(new ImportSimilarityResult(null, null, false, false, true, false));
-									}
-								});
-							});
-							selectOrCreateComponent.getButtonsPanel().addComponentAsFirst(skipButton);
-
-							personSelect.setSelectionChangeCallback((commitAllowed) -> {
-								selectOrCreateComponent.getCommitButton().setEnabled(commitAllowed);
-							});
-
-							VaadinUiUtil.showModalPopupWindow(selectOrCreateComponent, "Pick or create person");
-						}});
+					handleSimilarityCallback(input, resultConsumer);
 				};
 
 				Consumer<CaseImportResult> caseImportedCallback = new Consumer<CaseImportResult>() {
@@ -290,83 +264,153 @@ public class CaseImportLayout extends VerticalLayout {
 				popup.setClosable(false);
 				currentUI.addWindow(popup);
 
-				class ImportThread extends Thread {
-					@Override
-					public void run() {
-						try {
-							currentUI.setPollInterval(50);
-
-							ImportResultStatus importResult = caseImporter.importAllCases(similarityCallback, caseImportedCallback);
-							String errorReportFilePath = caseImporter.getErrorReportFilePath();
-
-							currentUI.access(new Runnable() {
-								@Override
-								public void run() {
-									popup.setClosable(true);
-									progressLayout.makeClosable(() -> {
-										popup.close();
-									});
-
-									if (importResult == ImportResultStatus.COMPLETED) {
-										progressLayout.displaySuccessIcon();
-										progressLayout.setInfoLabelText("<b>Import successful!</b><br/>All cases have been imported. You can now close this window and the \"Import Cases\" dialog.");
-									} else if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS) {
-										progressLayout.displayWarningIcon();
-										progressLayout.setInfoLabelText("<b>Import partially successful!</b><br/>The import has been successful, but some of the cases could not be imported due to malformed data. Please close this window and download the error report in the \"Import Cases\" dialog.");
-									} else if (importResult == ImportResultStatus.CANCELED) {
-										progressLayout.displaySuccessIcon();
-										progressLayout.setInfoLabelText("<b>Import canceled!</b><br/>The import has been canceled. All already processed cases have been successfully imported. You can now close this window and the \"Import Cases\" dialog.");
-									} else {
-										progressLayout.displayWarningIcon();
-										progressLayout.setInfoLabelText("<b>Import canceled!</b><br/>The import has been canceled. Some of the already processed cases could not be imported due to malformed data. Please close this window and download the error report in the \"Import Cases\" dialog.");
-									}								
-
-									popup.addCloseListener(e -> {
-										if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS || importResult == ImportResultStatus.CANCELED_WITH_ERRORS) {
-											StreamResource streamResource = DownloadUtil.createFileStreamResource(errorReportFilePath, "sormas_import_error_report.csv", "text/csv",
-													"Error report not available", "The error report file is not available. Please contact an admin and tell them about this issue.");
-											FileDownloader fileDownloader = new FileDownloader(streamResource);
-											fileDownloader.extend(downloadErrorReportButton);
-											downloadErrorReportButton.setEnabled(true);
-										}
-									});
-
-									currentUI.setPollInterval(-1);
-								}
-							});
-						} catch (IOException e) {
-							currentUI.access(new Runnable() {
-								@Override
-								public void run() {
-									popup.setClosable(true);
-									progressLayout.makeClosable(() -> {
-										popup.close();
-									});
-									progressLayout.displayErrorIcon();
-									progressLayout.setInfoLabelText("<b>Import failed!</b><br/>The import failed due to a critical error. Please contact your admin and inform them about this issue.");
-									currentUI.setPollInterval(-1);
-								}
-							});
-						} catch (InvalidColumnException e) {
-							currentUI.access(new Runnable() {
-								@Override
-								public void run() {
-									popup.setClosable(true);
-									progressLayout.makeClosable(() -> {
-										popup.close();
-									});
-									progressLayout.displayErrorIcon();
-									progressLayout.setInfoLabelText("<b>Invalid column!</b><br/>The column \"" + e.getColumnName() + "\" is not part of the case or one of its connected entities. Please remove it from the .csv file and upload it again.");
-									currentUI.setPollInterval(-1);
-								}
-							});
-						}
-					}
-				};
-
-				new ImportThread().start();
+				ImportThread importThread = new ImportThread(caseImporter, similarityCallback, caseImportedCallback, popup, progressLayout, errorReportFile.getPath());
+				importThread.start();
 			} catch (IOException e) {
 				new Notification("Import failed", "The import failed due to a critical error. Please contact your admin and inform them about this issue.", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+			}
+		}
+	}
+	
+	private void handleSimilarityCallback(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {
+		currentUI.accessSynchronously(new Runnable() {
+			@Override
+			public void run() {
+				ImportPersonSelectField personSelect = new ImportPersonSelectField(input.getPersons(), input.getCaze(), input.getPerson(), currentUser);
+				personSelect.setWidth(1024, Unit.PIXELS);
+				personSelect.selectBestMatch();
+
+				final CommitDiscardWrapperComponent<ImportPersonSelectField> selectOrCreateComponent =
+						new CommitDiscardWrapperComponent<>(personSelect);
+
+				selectOrCreateComponent.addCommitListener(new CommitListener() {
+					@Override
+					public void onCommit() {
+						PersonIndexDto person = personSelect.getValue();
+						if (person != null) {
+							resultConsumer.accept(new ImportSimilarityResult(person, personSelect.getSelectedMatchingCase(), 
+									personSelect.isUsePerson(), personSelect.isMergeCase(), false, false));
+						} else {
+							resultConsumer.accept(new ImportSimilarityResult(null, null, false, false, false, false));
+						}
+					}});
+
+				DiscardListener discardListener = new DiscardListener() {
+					@Override
+					public void onDiscard() {
+						resultConsumer.accept(new ImportSimilarityResult(null, null, false, false, false, true));
+					}
+				};
+				selectOrCreateComponent.addDiscardListener(discardListener);
+				selectOrCreateComponent.getDiscardButton().setCaption(I18nProperties.getText("cancel"));
+
+				Button skipButton = new Button(I18nProperties.getText("skip"));
+				skipButton.addClickListener(e -> {
+					currentUI.accessSynchronously(new Runnable() {
+						@Override
+						public void run() {
+							selectOrCreateComponent.removeDiscardListener(discardListener);
+							selectOrCreateComponent.discard();
+							resultConsumer.accept(new ImportSimilarityResult(null, null, false, false, true, false));
+						}
+					});
+				});
+				selectOrCreateComponent.getButtonsPanel().addComponentAsFirst(skipButton);
+
+				personSelect.setSelectionChangeCallback((commitAllowed) -> {
+					selectOrCreateComponent.getCommitButton().setEnabled(commitAllowed);
+				});
+
+				VaadinUiUtil.showModalPopupWindow(selectOrCreateComponent, "Pick or create person");
+			}});
+	}
+	
+	private class ImportThread extends Thread {
+		private CaseImporter caseImporter;
+		private BiConsumer<ImportSimilarityInput, Consumer<ImportSimilarityResult>> similarityCallback;
+		private Consumer<CaseImportResult> caseImportedCallback;
+		private Window popup;
+		private CaseImportProgressLayout progressLayout;
+		private String errorReportFilePath;
+		
+		public ImportThread(CaseImporter caseImporter, BiConsumer<ImportSimilarityInput, Consumer<ImportSimilarityResult>> similarityCallback,
+				Consumer<CaseImportResult> caseImportedCallback, Window popup, CaseImportProgressLayout progressLayout, String errorReportFilePath) {
+			this.caseImporter = caseImporter;
+			this.similarityCallback = similarityCallback;
+			this.caseImportedCallback = caseImportedCallback;
+			this.popup = popup;
+			this.progressLayout = progressLayout;
+			this.errorReportFilePath = errorReportFilePath;
+		}
+		
+		@Override
+		public void run() {
+			try {
+				currentUI.setPollInterval(50);
+
+				ImportResultStatus importResult = caseImporter.importAllCases(similarityCallback, caseImportedCallback);
+
+				currentUI.access(new Runnable() {
+					@Override
+					public void run() {
+						popup.setClosable(true);
+						progressLayout.makeClosable(() -> {
+							popup.close();
+						});
+
+						if (importResult == ImportResultStatus.COMPLETED) {
+							progressLayout.displaySuccessIcon();
+							progressLayout.setInfoLabelText("<b>Import successful!</b><br/>All cases have been imported. You can now close this window and the \"Import Cases\" dialog.");
+						} else if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS) {
+							progressLayout.displayWarningIcon();
+							progressLayout.setInfoLabelText("<b>Import partially successful!</b><br/>The import has been successful, but some of the cases could not be imported due to malformed data. Please close this window and download the error report in the \"Import Cases\" dialog.");
+						} else if (importResult == ImportResultStatus.CANCELED) {
+							progressLayout.displaySuccessIcon();
+							progressLayout.setInfoLabelText("<b>Import canceled!</b><br/>The import has been canceled. All already processed cases have been successfully imported. You can now close this window and the \"Import Cases\" dialog.");
+						} else {
+							progressLayout.displayWarningIcon();
+							progressLayout.setInfoLabelText("<b>Import canceled!</b><br/>The import has been canceled. Some of the already processed cases could not be imported due to malformed data. Please close this window and download the error report in the \"Import Cases\" dialog.");
+						}								
+
+						popup.addCloseListener(e -> {
+							if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS || importResult == ImportResultStatus.CANCELED_WITH_ERRORS) {
+								StreamResource streamResource = DownloadUtil.createFileStreamResource(errorReportFilePath, "sormas_import_error_report.csv", "text/csv",
+										"Error report not available", "The error report file is not available. Please contact an admin and tell them about this issue.");
+								FileDownloader fileDownloader = new FileDownloader(streamResource);
+								fileDownloader.extend(downloadErrorReportButton);
+								downloadErrorReportButton.setEnabled(true);
+							}
+						});
+
+						currentUI.setPollInterval(-1);
+					}
+				});
+			} catch (IOException | InterruptedException e) {
+				currentUI.access(new Runnable() {
+					@Override
+					public void run() {
+						popup.setClosable(true);
+						progressLayout.makeClosable(() -> {
+							popup.close();
+						});
+						progressLayout.displayErrorIcon();
+						progressLayout.setInfoLabelText("<b>Import failed!</b><br/>The import failed due to a critical error. Please contact your admin and inform them about this issue.");
+						currentUI.setPollInterval(-1);
+					}
+				});
+			} catch (InvalidColumnException e) {
+				currentUI.access(new Runnable() {
+					@Override
+					public void run() {
+						popup.setClosable(true);
+						progressLayout.makeClosable(() -> {
+							popup.close();
+						});
+						progressLayout.displayErrorIcon();
+						progressLayout.setInfoLabelText("<b>Invalid column!</b><br/>The column \"" + e.getColumnName() + "\" is not part of the case or one of its connected entities. Please remove it from the .csv file and upload it again.");
+						currentUI.setPollInterval(-1);
+					}
+				});
 			}
 		}
 	}

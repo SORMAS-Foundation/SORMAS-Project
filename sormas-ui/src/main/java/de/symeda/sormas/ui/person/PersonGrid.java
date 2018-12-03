@@ -55,10 +55,10 @@ public class PersonGrid extends Grid {
 
 	/**
 	 * Initializes the person grid with a fixed list of similar persons and a fixed first and
-	 * last name. The "last disease" column is replaced with a "matching case" column that includes 
-	 * a link to a possible case that matches the associated case and respective person.
+	 * last name. This is intended to be used when importing cases because the list of similar persons
+	 * does not change and a potential matching case is displayed.
 	 */
-	public PersonGrid(List<PersonNameDto> persons, CaseDataDto associatedCase, PersonDto associatedPerson, UserReferenceDto currentUser) {
+	public PersonGrid(List<PersonNameDto> persons, PersonDto associatedPerson, CaseDataDto associatedCase, UserReferenceDto currentUser) {
 		this.persons = persons;
 		this.associatedCase = associatedCase;
 		this.currentUser = currentUser;

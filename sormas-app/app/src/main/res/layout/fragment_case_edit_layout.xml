@@ -98,6 +98,12 @@
 
                 </LinearLayout>
 
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/caseData_reportDate"
+                    app:value="@={data.reportDate}"
+                    app:required="true"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <ImageView style="@style/FullHorizontalDividerStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
@@ -147,23 +153,6 @@
                     android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseData_reportDate"
-                        app:value="@{data.reportDate}"
-                        style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseData_reportingUser"
-                        app:value="@{data.reportingUser}"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/caseData_classificationDate"
                         app:value="@{data.classificationDate}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
@@ -179,6 +168,11 @@
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_reportingUser"
+                    app:value="@{data.reportingUser}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <ImageView style="@style/FullHorizontalDividerStyle" />
 

@@ -123,8 +123,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze.setCommunity(new CommunityReferenceDto(newRDCF.community.getUuid()));
 		caze.setHealthFacility(new FacilityReferenceDto(newRDCF.facility.getUuid()));
 		caze.setSurveillanceOfficer(caseOfficer.toReference());
-		caze = getCaseFacade().updateHospitalization(caze);
-		caze = getCaseFacade().saveCase(caze);
+		caze = getCaseFacade().saveAndTransferCase(caze);
 
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		pendingTask = getTaskFacade().getByUuid(pendingTask.getUuid());
