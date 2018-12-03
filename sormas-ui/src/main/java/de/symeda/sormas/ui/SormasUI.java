@@ -33,7 +33,6 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.ui.CurrentUser.HasCurrentUser;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.login.LoginScreen;
@@ -53,50 +52,48 @@ import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
 @Theme("sormas")
 @Widgetset("de.symeda.sormas.SormasWidgetset")
 public class SormasUI extends UI implements HasCurrentUser {
-	
+
 	private final CurrentUser currentUser = new CurrentUser();
-	
-    @Override
-    public void init(VaadinRequest vaadinRequest) {
-		
-    	setErrorHandler(SormasErrorHandler.get());
-        setLocale(vaadinRequest.getLocale());
-        
-		de.symeda.sormas.api.I18nProperties.setLocale(FacadeProvider.getConfigFacade().getCountryLocale());
+
+	@Override
+	public void init(VaadinRequest vaadinRequest) {
+
+		setErrorHandler(SormasErrorHandler.get());
+		setLocale(vaadinRequest.getLocale());
 
 		Responsive.makeResponsive(this);
-        
-        VaadinSession.getCurrent().setConverterFactory(new SormasDefaultConverterFactory());
-        
-        getPage().setTitle("SORMAS");
-        
-        // XXX
-        //LoginHelper.login("SunkSesa", "Sunkanmi");
-        
-        if (!LoginHelper.isUserSignedIn()) {
-        	
-            setContent(new LoginScreen(new LoginListener() {
-                @Override
-                public void loginSuccessful() {
-                    initMainScreen();
-                    // open view
-                    getNavigator().navigateTo(getNavigator().getState());
-                }
-            }));
-            
-        } else {
-            initMainScreen();
-        }
-    }
 
-    protected void initMainScreen() {
-        addStyleName(ValoTheme.UI_WITH_MENU);
-        setContent(new MainScreen(SormasUI.this));
-    }
+		VaadinSession.getCurrent().setConverterFactory(new SormasDefaultConverterFactory());
 
-    public static SormasUI get() {
-        return (SormasUI) UI.getCurrent();
-    }
+		getPage().setTitle("SORMAS");
+
+		// XXX
+		// LoginHelper.login("SunkSesa", "Sunkanmi");
+
+		if (!LoginHelper.isUserSignedIn()) {
+
+			setContent(new LoginScreen(new LoginListener() {
+				@Override
+				public void loginSuccessful() {
+					initMainScreen();
+					// open view
+					getNavigator().navigateTo(getNavigator().getState());
+				}
+			}));
+
+		} else {
+			initMainScreen();
+		}
+	}
+
+	protected void initMainScreen() {
+		addStyleName(ValoTheme.UI_WITH_MENU);
+		setContent(new MainScreen(SormasUI.this));
+	}
+
+	public static SormasUI get() {
+		return (SormasUI) UI.getCurrent();
+	}
 
 	@Override
 	public CurrentUser getCurrentUser() {
@@ -104,17 +101,18 @@ public class SormasUI extends UI implements HasCurrentUser {
 	}
 
 	@WebServlet(urlPatterns = "/*", name = "SormasUIServlet", asyncSupported = true)
-    @VaadinServletConfiguration(ui = SormasUI.class, productionMode = false)//, resourceCacheTime = 0)
-    public static class SormasUIServlet extends VaadinServlet {
+	@VaadinServletConfiguration(ui = SormasUI.class, productionMode = false) // , resourceCacheTime = 0)
+	public static class SormasUIServlet extends VaadinServlet {
 
-    	//private static final String VAADIN_RESOURCES = "/sormas-widgetset";
+		// private static final String VAADIN_RESOURCES = "/sormas-widgetset";
 
-    	@Override
-    	protected DeploymentConfiguration createDeploymentConfiguration(Properties initParameters) {
+		@Override
+		protected DeploymentConfiguration createDeploymentConfiguration(Properties initParameters) {
 
-    		//initParameters.setProperty(Constants.PARAMETER_VAADIN_RESOURCES, VAADIN_RESOURCES);
-    		
-    		return super.createDeploymentConfiguration(initParameters);
-    	}
-    }
+			// initParameters.setProperty(Constants.PARAMETER_VAADIN_RESOURCES,
+			// VAADIN_RESOURCES);
+
+			return super.createDeploymentConfiguration(initParameters);
+		}
+	}
 }

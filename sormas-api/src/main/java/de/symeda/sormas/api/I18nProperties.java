@@ -17,10 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api;
 
-//import java.io.IOException;
-//import java.io.InputStream;
 import java.util.Locale;
-//import java.util.Properties;
 
 public class I18nProperties {
 
@@ -229,16 +226,5 @@ public class I18nProperties {
 	
 	public static ResourceBundle loadProperties(String propertiesGroup) {
 		return new ResourceBundle(java.util.ResourceBundle.getBundle(propertiesGroup, getLocale()));
-		
-//		try (InputStream inputStream = I18nProperties.class.getResourceAsStream(fileName)) {
-//			Properties properties = new Properties();
-//			properties.load(inputStream);
-//			return properties;
-//		} catch (IOException e) {
-//			throw new RuntimeException(e);
-//			// TODO logging
-//			//logger.error("Could not read file " + fileName, e);
-//		}
-//		//return null;
 	}
 }
