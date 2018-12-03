@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
+import java.util.Locale;
 import java.util.Properties;
 
 import javax.annotation.Resource;
@@ -39,6 +40,7 @@ import de.symeda.sormas.api.utils.VersionHelper;
 public class ConfigFacadeEjb implements ConfigFacade {
 
 	public static final String COUNTRY_NAME = "country.name";
+	public static final String COUNTRY_LOCALE = "country.locale";
 	
 	public static final String VERSION_PLACEHOLER = "%version";
 	
@@ -80,6 +82,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getCountryName() {
 		return getProperty(COUNTRY_NAME, "nigeria");
+	}
+
+	@Override
+	public String getCountryLocale() {
+		return getProperty(COUNTRY_LOCALE, Locale.getDefault().toString());
 	}
 
 	@Override
