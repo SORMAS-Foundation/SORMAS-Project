@@ -30,7 +30,9 @@ public interface UserRoleConfigFacade {
 
     List<UserRoleConfigDto> getAll();
     
-    UserRoleConfigDto getByUuid(String uuid);
+	List<String> getAllUuids(String userUuid);
+
+	UserRoleConfigDto getByUuid(String uuid);
     
     UserRoleConfigDto saveUserRoleConfig(UserRoleConfigDto dto);
 

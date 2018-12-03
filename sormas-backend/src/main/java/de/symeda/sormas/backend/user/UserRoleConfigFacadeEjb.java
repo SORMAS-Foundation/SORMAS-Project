@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.user;
 
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -39,6 +40,8 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 
 	@EJB
 	private UserRoleConfigService userRoleConfigService;
+	@EJB
+	private UserService userService;
 
 	@Override
 	public List<UserRoleConfigDto> getAllAfter(Date date) {
@@ -48,6 +51,18 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 	@Override
 	public List<UserRoleConfigDto> getAll() {
 		return userRoleConfigService.getAll().stream().map(c -> toDto(c)).collect(Collectors.toList());
+	}	
+	
+	@Override
+	public List<String> getAllUuids(String userUuid) {
+		
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return userRoleConfigService.getAllUuids(user);
 	}
 
 	@Override
