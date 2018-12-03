@@ -15,8 +15,12 @@
         <group-name>SURVEILLANCE_OFFICER</group-name>
     </security-role-mapping>
     <security-role-mapping>
-        <role-name>INFORMANT</role-name>
-        <group-name>INFORMANT</group-name>
+        <role-name>HOSPITAL_INFORMANT</role-name>
+        <group-name>HOSPITAL_INFORMANT</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>COMMUNITY_INFORMANT</role-name>
+        <group-name>COMMUNITY_INFORMANT</group-name>
     </security-role-mapping>
     <security-role-mapping>
         <role-name>CASE_SUPERVISOR</role-name>

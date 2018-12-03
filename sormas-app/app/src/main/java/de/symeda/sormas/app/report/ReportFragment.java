@@ -92,7 +92,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
     protected String getSubHeadingTitle() {
         Resources r = getResources();
         String defaultValue = r.getString(R.string.hint_report_not_submitted);
-        boolean isInformant = ConfigProvider.getUser().hasUserRole(UserRole.INFORMANT);
+        boolean isInformant = ConfigProvider.getUser().hasUserRole(UserRole.HOSPITAL_INFORMANT);
         if (DataHelper.isNullOrEmpty(mReportDate)) {
             if (isInformant) {
                 return defaultValue;
@@ -266,7 +266,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
         final User user = ConfigProvider.getUser();
         if (epiWeek == null) {
             setVisibilityForNoData();
-        } else if (user.hasUserRole(UserRole.INFORMANT)) {
+        } else if (user.hasUserRole(UserRole.HOSPITAL_INFORMANT)) {
             WeeklyReport weeklyReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(epiWeek, user);
 
             if (EpiWeekFilterOption.THIS_WEEK.equals(filterOption)) {
@@ -352,7 +352,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
         if (ConfigProvider.getUser() == null)
             return;
 
-        if (ConfigProvider.getUser().hasUserRole(UserRole.INFORMANT)) {
+        if (ConfigProvider.getUser().hasUserRole(UserRole.HOSPITAL_INFORMANT)) {
             loadReportTask = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
@@ -473,7 +473,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                 }
 
                 // get data for unconfirmed
-                List<User> informants = DatabaseHelper.getUserDao().getByDistrictAndRole(ConfigProvider.getUser().getDistrict(), UserRole.INFORMANT, User.HEALTH_FACILITY + "_id");
+                List<User> informants = DatabaseHelper.getUserDao().getByDistrictAndRole(ConfigProvider.getUser().getDistrict(), UserRole.HOSPITAL_INFORMANT, User.HEALTH_FACILITY + "_id");
                 for (User informant : informants) {
                     if (doneInformants.contains(informant))
                         continue;

@@ -157,7 +157,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
         if (user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
             caze.setSurveillanceOfficer(user);
-        } else if (user.hasUserRole(UserRole.INFORMANT)) {
+        } else if (user.hasUserRole(UserRole.HOSPITAL_INFORMANT) || user.hasUserRole(UserRole.COMMUNITY_INFORMANT)) {
             caze.setSurveillanceOfficer(user.getAssociatedOfficer());
         }
 
@@ -178,9 +178,14 @@ public class CaseDao extends AbstractAdoDao<Case> {
         User currentUser = ConfigProvider.getUser();
         caze.setRegion(currentUser.getRegion());
         caze.setDistrict(currentUser.getDistrict());
-        caze.setHealthFacility(currentUser.getHealthFacility());
-        if (caze.getHealthFacility() != null) {
-            caze.setCommunity(caze.getHealthFacility().getCommunity());
+
+        if (currentUser.getCommunity() != null) {
+            caze.setCommunity(currentUser.getCommunity());
+        } else {
+            caze.setHealthFacility(currentUser.getHealthFacility());
+            if (caze.getHealthFacility() != null) {
+                caze.setCommunity(caze.getHealthFacility().getCommunity());
+            }
         }
 
         return caze;
@@ -285,7 +290,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
      * Returns the number of cases with the given disease reported by the current user over the course of the given epi week.
      */
     public int getNumberOfCasesForEpiWeekAndDisease(EpiWeek epiWeek, Disease disease, User informant) {
-        if (!informant.hasUserRole(UserRole.INFORMANT)) {
+        if (!(informant.hasUserRole(UserRole.HOSPITAL_INFORMANT) || informant.hasUserRole(UserRole.COMMUNITY_INFORMANT))) {
             throw new UnsupportedOperationException("Can only retrieve the number of reported cases by epi week and disease for Informants.");
         }
 

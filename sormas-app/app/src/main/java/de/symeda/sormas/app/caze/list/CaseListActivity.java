@@ -89,7 +89,7 @@ public class CaseListActivity extends BaseListActivity {
     public void goToNewView() {
         EpiWeek lastEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
         User user = ConfigProvider.getUser();
-        if (user.hasUserRole(UserRole.INFORMANT)
+        if (user.hasUserRole(UserRole.HOSPITAL_INFORMANT)
                 && DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(lastEpiWeek, ConfigProvider.getUser()) == null) {
 
             final MissingWeeklyReportDialog confirmationDialog = new MissingWeeklyReportDialog(this);

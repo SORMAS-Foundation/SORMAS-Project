@@ -267,7 +267,8 @@ public class EventService extends AbstractAdoService<Event> {
 					filter = cb.or(filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.DISTRICT), user.getDistrict()));
 				}
 				break;
-			case INFORMANT:
+			case HOSPITAL_INFORMANT:
+			case COMMUNITY_INFORMANT:
 				// informants dont see events
 				break;
 			default:

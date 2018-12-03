@@ -8,7 +8,8 @@
     	<!-- user roles that have access map to USER -->
         <role-name>USER</role-name>
         <group-name>SURVEILLANCE_OFFICER</group-name>
-        <group-name>INFORMANT</group-name>
+        <group-name>HOSPITAL_INFORMANT</group-name>
+        <group-name>COMMUNITY_INFORMANT</group-name>
         <group-name>CASE_OFFICER</group-name>
         <group-name>CONTACT_OFFICER</group-name>
     </security-role-mapping>
@@ -17,8 +18,12 @@
         <group-name>SURVEILLANCE_OFFICER</group-name>
     </security-role-mapping>
     <security-role-mapping>
-        <role-name>INFORMANT</role-name>
-        <group-name>INFORMANT</group-name>
+        <role-name>HOSPITAL_INFORMANT</role-name>
+        <group-name>HOSPITAL_INFORMANT</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>COMMUNITY_INFORMANT</role-name>
+        <group-name>COMMUNITY_INFORMANT</group-name>
     </security-role-mapping>
     <security-role-mapping>
         <role-name>CASE_OFFICER</role-name>

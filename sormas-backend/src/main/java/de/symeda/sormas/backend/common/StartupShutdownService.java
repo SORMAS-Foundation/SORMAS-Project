@@ -161,7 +161,7 @@ public class StartupShutdownService {
 			surveillanceOfficer.setDistrict(district);
 			userService.persist(surveillanceOfficer);
 	
-			User informant = MockDataGenerator.createUser(UserRole.INFORMANT, "Sangodele", "Ibori", "Sango");
+			User informant = MockDataGenerator.createUser(UserRole.HOSPITAL_INFORMANT, "Sangodele", "Ibori", "Sango");
 			informant.setRegion(region);
 			informant.setDistrict(district);
 			informant.setHealthFacility(facility);

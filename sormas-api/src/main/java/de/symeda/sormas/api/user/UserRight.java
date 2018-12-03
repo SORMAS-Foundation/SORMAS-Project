@@ -17,19 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
-import static de.symeda.sormas.api.user.UserRole.ADMIN;
-import static de.symeda.sormas.api.user.UserRole.CASE_OFFICER;
-import static de.symeda.sormas.api.user.UserRole.CASE_SUPERVISOR;
-import static de.symeda.sormas.api.user.UserRole.CONTACT_OFFICER;
-import static de.symeda.sormas.api.user.UserRole.CONTACT_SUPERVISOR;
-import static de.symeda.sormas.api.user.UserRole.EVENT_OFFICER;
-import static de.symeda.sormas.api.user.UserRole.INFORMANT;
-import static de.symeda.sormas.api.user.UserRole.LAB_USER;
-import static de.symeda.sormas.api.user.UserRole.NATIONAL_OBSERVER;
-import static de.symeda.sormas.api.user.UserRole.NATIONAL_USER;
-import static de.symeda.sormas.api.user.UserRole.STATE_OBSERVER;
-import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_OFFICER;
-import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_SUPERVISOR;
+import static de.symeda.sormas.api.user.UserRole.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,7 +35,8 @@ public enum UserRight {
 			CASE_OFFICER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER,
-			INFORMANT,
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT,
 			LAB_USER,
 			EVENT_OFFICER
 			),
@@ -62,7 +51,8 @@ public enum UserRight {
 			CASE_OFFICER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER,
-			INFORMANT,
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT,
 			LAB_USER,
 			EVENT_OFFICER
 			),
@@ -75,7 +65,8 @@ public enum UserRight {
 			CASE_OFFICER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER,
-			INFORMANT,
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT,
 			LAB_USER,
 			EVENT_OFFICER
 			),
@@ -159,7 +150,8 @@ public enum UserRight {
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR,
 			CASE_OFFICER,
-			INFORMANT,
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT,
 			LAB_USER
 			),
 	SAMPLE_VIEW(
@@ -173,7 +165,8 @@ public enum UserRight {
 			CASE_OFFICER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER,
-			INFORMANT,
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT,
 			LAB_USER,
 			EVENT_OFFICER
 			),
@@ -184,7 +177,8 @@ public enum UserRight {
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR,
 			CASE_OFFICER,
-			INFORMANT,
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT,
 			LAB_USER
 			),
 	SAMPLE_DELETE(
@@ -329,7 +323,8 @@ public enum UserRight {
 			CASE_OFFICER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER,
-			INFORMANT,
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT,
 			LAB_USER,
 			EVENT_OFFICER
 			),
@@ -342,7 +337,8 @@ public enum UserRight {
 			CASE_OFFICER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER,
-			INFORMANT,
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT,
 			LAB_USER,
 			EVENT_OFFICER
 			),
@@ -380,7 +376,8 @@ public enum UserRight {
 			CASE_OFFICER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER,
-			INFORMANT,
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT,
 			EVENT_OFFICER
 			),
 	EVENT_EDIT(
@@ -426,7 +423,8 @@ public enum UserRight {
 			EVENT_OFFICER
 			),
 	WEEKLYREPORT_CREATE(
-			INFORMANT
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT
 			),
 	WEEKLYREPORT_VIEW(
 			ADMIN,
@@ -437,7 +435,8 @@ public enum UserRight {
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
-			INFORMANT
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT
 			),
 	USER_CREATE(
 			ADMIN

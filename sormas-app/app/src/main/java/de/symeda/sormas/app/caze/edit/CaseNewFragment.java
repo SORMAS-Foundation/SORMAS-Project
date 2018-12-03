@@ -111,12 +111,18 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         contentBinding.caseDataDistrict.setRequired(false);
 
         User user = ConfigProvider.getUser();
-        if (user.hasUserRole(UserRole.INFORMANT) && user.getHealthFacility() != null) {
-            // Informants are not allowed to create cases in another health facility
+        if (user.hasUserRole(UserRole.HOSPITAL_INFORMANT) && user.getHealthFacility() != null) {
+            // Hospital Informants are not allowed to create cases in another health facility
             contentBinding.caseDataCommunity.setEnabled(false);
             contentBinding.caseDataCommunity.setRequired(false);
             contentBinding.caseDataHealthFacility.setEnabled(false);
             contentBinding.caseDataHealthFacility.setRequired(false);
+        }
+
+        if (user.hasUserRole(UserRole.COMMUNITY_INFORMANT) && user.getCommunity() != null) {
+            // Community Informants are not allowed to create cases in another community
+            contentBinding.caseDataCommunity.setEnabled(false);
+            contentBinding.caseDataCommunity.setRequired(false);
         }
 
         // Disable first and last name and disease fields when case is created from contact

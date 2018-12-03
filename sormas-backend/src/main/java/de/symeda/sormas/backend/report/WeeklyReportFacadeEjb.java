@@ -272,7 +272,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	
 	@RolesAllowed(UserRole._SYSTEM)
 	public void generateSubmitWeeklyReportTasks() {
-		List<User> informants = userService.getAllByRegionAndUserRoles(null, UserRole.INFORMANT);
+		List<User> informants = userService.getAllByRegionAndUserRoles(null, UserRole.HOSPITAL_INFORMANT);
 		EpiWeek prevEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
 		
 		for (User user : informants) {

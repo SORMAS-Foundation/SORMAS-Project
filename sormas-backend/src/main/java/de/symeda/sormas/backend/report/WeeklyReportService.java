@@ -122,7 +122,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 					+ "LEFT JOIN ("
 						+ "SELECT * FROM weeklyreport WHERE year = " + epiWeek.getYear() + " AND epiweek = " + epiWeek.getWeek() 
 					+ ") as wr ON wr.informant_id = users.id "
-					+ "WHERE userroles.userrole = 'INFORMANT' "
+					+ "WHERE userroles.userrole = 'HOSPITAL_INFORMANT' "
 					+ "GROUP BY facility.id"
 				+ ") as inner_query "
 				+ "GROUP BY region_id;");
@@ -168,7 +168,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 					+ "LEFT JOIN ("
 						+ "SELECT * FROM weeklyreport WHERE year = " + epiWeek.getYear() + " AND epiweek = " + epiWeek.getWeek() 
 					+ ") as wr ON wr.informant_id = users.id "
-					+ "WHERE userroles.userrole = 'INFORMANT' "
+					+ "WHERE userroles.userrole = 'HOSPITAL_INFORMANT' "
 						+ "AND facility.region_id = " + region.getId() + " "
 					+ "GROUP BY facility.id"
 				+ ") as inner_query "

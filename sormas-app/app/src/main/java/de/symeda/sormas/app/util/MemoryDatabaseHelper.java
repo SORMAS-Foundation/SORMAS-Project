@@ -1861,7 +1861,8 @@ class UserRoleGenerator extends BaseDataGenerator {
         pool.add(UserRole.NATIONAL_USER);
         pool.add(UserRole.SURVEILLANCE_SUPERVISOR);
         pool.add(UserRole.SURVEILLANCE_OFFICER);
-        pool.add(UserRole.INFORMANT);
+        pool.add(UserRole.HOSPITAL_INFORMANT);
+        pool.add(UserRole.COMMUNITY_INFORMANT);
         pool.add(UserRole.CASE_SUPERVISOR);
         pool.add(UserRole.CASE_OFFICER);
         pool.add(UserRole.CONTACT_SUPERVISOR);

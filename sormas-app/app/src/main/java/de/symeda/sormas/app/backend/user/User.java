@@ -45,6 +45,7 @@ import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.hospitalization.HospitalizationDao;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 
@@ -66,6 +67,7 @@ public class User extends AbstractDomainObject {
 	public static final String ADDRESS = "address";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String USER_ROLES_JSON = "userRole";
 
@@ -86,8 +88,10 @@ public class User extends AbstractDomainObject {
 	private Location address;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Region region;
-	@DatabaseField(foreign = true,  foreignAutoRefresh = true)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private District district;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Community community;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Facility healthFacility;
 
@@ -161,6 +165,13 @@ public class User extends AbstractDomainObject {
 	}
 	public void setDistrict(District district) {
 		this.district = district;
+	}
+
+	public Community getCommunity() {
+		return community;
+	}
+	public void setCommunity(Community community) {
+		this.community = community;
 	}
 
 	public Facility getHealthFacility() {

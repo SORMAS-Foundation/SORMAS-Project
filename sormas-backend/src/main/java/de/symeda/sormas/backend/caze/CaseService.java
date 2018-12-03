@@ -533,10 +533,16 @@ public class CaseService extends AbstractAdoService<Case> {
 					filter = cb.or(filter, cb.equal(casePath.get(Case.DISTRICT), user.getDistrict()));
 				}
 				break;
-			case INFORMANT:
-				// informants see all cases of their facility
+			case HOSPITAL_INFORMANT:
+				// hospital informants see all cases of their facility
 				if (user.getHealthFacility() != null) {
 					filter = cb.or(filter, cb.equal(casePath.get(Case.HEALTH_FACILITY), user.getHealthFacility()));
+				}
+				break;
+			case COMMUNITY_INFORMANT:
+				// community informants see all cases of their community
+				if (user.getCommunity() != null) {
+					filter = cb.or(filter, cb.equal(casePath.get(Case.COMMUNITY), user.getCommunity()));
 				}
 				break;
 			case LAB_USER:

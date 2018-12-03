@@ -149,7 +149,7 @@ public class UserService extends AbstractAdoService<User> {
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
 		
-		buildDistrictQuery(cb, cq, from, district, false, UserRole.INFORMANT);
+		buildDistrictQuery(cb, cq, from, district, false, UserRole.HOSPITAL_INFORMANT);
 		
 		Join<User, Facility> joinFacility = from.join(User.HEALTH_FACILITY, JoinType.LEFT);
 		cq.orderBy(cb.asc(joinFacility.get(Facility.NAME)));

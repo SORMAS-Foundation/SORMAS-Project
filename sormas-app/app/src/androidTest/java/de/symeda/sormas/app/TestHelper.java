@@ -117,7 +117,7 @@ public class TestHelper {
         informant.setAktiv(true);
         informant.setFirstName("Info");
         informant.setLastName("User");
-        informant.setUserRoles(new HashSet(Arrays.asList(UserRole.INFORMANT)));
+        informant.setUserRoles(new HashSet(Arrays.asList(UserRole.HOSPITAL_INFORMANT)));
         informant.setCreationDate(new Date());
         informant.setChangeDate(new Date());
         informant.setUuid(INFORMANT_USER_UUID);

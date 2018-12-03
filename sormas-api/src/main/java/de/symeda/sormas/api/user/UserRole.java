@@ -38,7 +38,8 @@ public enum UserRole {
 	NATIONAL_USER(false, false),	
 	SURVEILLANCE_SUPERVISOR(true, false),	
 	SURVEILLANCE_OFFICER(false, true),	
-	INFORMANT(false, false),	
+	HOSPITAL_INFORMANT(false, false),	
+	COMMUNITY_INFORMANT(false, false),
 	CASE_SUPERVISOR(true, false),	
 	CASE_OFFICER(false, true),	
 	CONTACT_SUPERVISOR(true, false),	
@@ -55,7 +56,8 @@ public enum UserRole {
 	public static final String _NATIONAL_USER = NATIONAL_USER.name();
 	public static final String _SURVEILLANCE_SUPERVISOR = SURVEILLANCE_SUPERVISOR.name();
 	public static final String _SURVEILLANCE_OFFICER = SURVEILLANCE_OFFICER.name();
-	public static final String _INFORMANT = INFORMANT.name();
+	public static final String _HOSPITAL_INFORMANT = HOSPITAL_INFORMANT.name();
+	public static final String _COMMUNITY_INFORMANT = COMMUNITY_INFORMANT.name();
 	public static final String _CASE_SUPERVISOR = CASE_SUPERVISOR.name();
 	public static final String _CASE_OFFICER = CASE_OFFICER.name();
 	public static final String _CONTACT_SUPERVISOR = CONTACT_SUPERVISOR.name();
@@ -127,7 +129,8 @@ public enum UserRole {
 			break;
 		case SURVEILLANCE_SUPERVISOR:
 			collection.add(SURVEILLANCE_OFFICER);
-			collection.add(INFORMANT);
+			collection.add(HOSPITAL_INFORMANT);
+			collection.add(COMMUNITY_INFORMANT);
 			break;
 		case CASE_SUPERVISOR:
 			collection.add(CASE_OFFICER);
@@ -187,8 +190,10 @@ public enum UserRole {
 			return Arrays.asList(
 					SURVEILLANCE_OFFICER, CASE_OFFICER, CONTACT_OFFICER
 					);
-		case INFORMANT:
-			return Arrays.asList(INFORMANT);
+		case HOSPITAL_INFORMANT:
+			return Arrays.asList(HOSPITAL_INFORMANT);
+		case COMMUNITY_INFORMANT:
+			return Arrays.asList(COMMUNITY_INFORMANT);
 		default:
 			throw new UnsupportedOperationException("getCombinableRoles not implemented for user role: " + this);
 		}
@@ -217,7 +222,7 @@ public enum UserRole {
 	}
 	
 	public static boolean isInformant(Collection<UserRole> roles) {
-		return roles.contains(UserRole.INFORMANT);
+		return roles.contains(UserRole.HOSPITAL_INFORMANT) || roles.contains(UserRole.COMMUNITY_INFORMANT);
 	}
 	
 	public static boolean isLabUser(Collection<UserRole> roles) {
