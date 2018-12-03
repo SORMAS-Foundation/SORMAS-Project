@@ -2517,6 +2517,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (115, 'Change dates 
 -- 2018-12-03 Community Informant user role #872
 
 UPDATE userroles SET userrole = REPLACE(userrole, 'INFORMANT', 'HOSPITAL_INFORMANT');
+UPDATE userroles_history SET userrole = REPLACE(userrole, 'INFORMANT', 'HOSPITAL_INFORMANT');
 ALTER TABLE users ADD COLUMN community_id bigint;
 ALTER TABLE users ADD CONSTRAINT fk_users_community_id FOREIGN KEY (community_id) REFERENCES community (id);
 

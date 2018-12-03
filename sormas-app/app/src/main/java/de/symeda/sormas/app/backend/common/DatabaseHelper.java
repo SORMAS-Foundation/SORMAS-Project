@@ -563,6 +563,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				case 131:
 					currentVersion = 131;
 					getDao(User.class).executeRaw("ALTER TABLE users ADD COLUMN community_id bigint REFERENCES community(id);");
+					getDao(User.class).executeRaw("UPDATE users SET userRole = replace(userRole, 'INFORMANT', 'HOSPITAL_INFORMANT');");
 
 					// ATTENTION: break should only be done after last version
 					break;
