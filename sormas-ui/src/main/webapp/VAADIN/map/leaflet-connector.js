@@ -94,6 +94,8 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 		
 		var markerGroup = L.markerClusterGroup({
 
+			maxClusterRadius: 15,
+			
 			/** define how marker clusters are rendered **/
 			iconCreateFunction: function(cluster) {
 				children = cluster.getAllChildMarkers();

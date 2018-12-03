@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>sormas-base</artifactId>
 		<groupId>de.symeda.sormas</groupId>
-		<version>1.9.0-SNAPSHOT</version>
+		<version>1.10.0-SNAPSHOT</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -11,6 +11,10 @@
 	<artifactId>sormas-ui</artifactId>
 	<name>${project.artifactId}</name>
 	<packaging>war</packaging>
+
+	<properties>    
+		<m2e.jpa.activation>false</m2e.jpa.activation>
+	</properties>
 
 	<dependencies>
 
@@ -33,7 +37,7 @@
 			<artifactId>sormas-widgetset</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-server</artifactId>
@@ -54,15 +58,44 @@
 		</dependency>
 
 		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+		</dependency>
+
+		<!-- Testing -->
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>sormas-backend</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>org.eclipse.persistence.jpa</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>info.novatec</groupId>
+			<artifactId>bean-test</artifactId>
+		</dependency>
+		
 	</dependencies>
 
 	<build>

@@ -395,7 +395,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		return field;
 	}
 
-	protected Field<?> getField(String fieldOrPropertyId) {
+	public Field<?> getField(String fieldOrPropertyId) {
 		Field<?> field = getFieldGroup().getField(fieldOrPropertyId);
 		if (field == null) {
 			// try to get the field from the layout

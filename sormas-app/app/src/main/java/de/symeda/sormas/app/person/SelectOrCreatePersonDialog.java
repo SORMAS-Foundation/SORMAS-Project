@@ -132,7 +132,7 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
         for (PersonNameDto existingPerson : existingPersons) {
             if (PersonHelper.areNamesSimilar(person.getFirstName() + " " + person.getLastName(),
                     existingPerson.getFirstName() + " " + existingPerson.getLastName())) {
-                Person similarPerson = DatabaseHelper.getPersonDao().queryForId(existingPerson.getId());
+                Person similarPerson = DatabaseHelper.getPersonDao().queryUuid(existingPerson.getUuid());
                 similarPersons.add(similarPerson);
             }
         }

@@ -229,6 +229,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         contentBinding.caseDataVaccinationInfoSource.initializeSpinner(vaccinationInfoSourceList);
 
         // Initialize ControlDateFields
+        contentBinding.caseDataReportDate.initializeDateField(getFragmentManager());
         contentBinding.caseDataOutcomeDate.initializeDateField(getFragmentManager());
         contentBinding.caseDataVaccinationDate.initializeDateField(getFragmentManager());
 

@@ -35,8 +35,6 @@ import de.symeda.sormas.ui.utils.UserRightsException;
 
 
 /**
- * Helper to retr
- * 
  * @author Martin Wahnschaffe
  */
 public class LoginHelper {

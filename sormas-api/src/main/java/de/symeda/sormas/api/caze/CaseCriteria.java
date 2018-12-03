@@ -84,6 +84,9 @@ public class CaseCriteria implements Serializable, Cloneable {
 		return this;
 	}
 	
+	/**
+	 * @param newCaseDateTo will automatically be set to the end of the day
+	 */
 	public CaseCriteria newCaseDateBetween(Date newCaseDateFrom, Date newCaseDateTo, NewCaseDateType newCaseDateType) {
 		this.newCaseDateFrom = newCaseDateFrom;
 		this.newCaseDateTo = newCaseDateTo;

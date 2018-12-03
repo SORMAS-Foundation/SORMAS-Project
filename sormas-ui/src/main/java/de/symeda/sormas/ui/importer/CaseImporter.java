@@ -1,15 +1,28 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.ui.importer;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,13 +31,16 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
@@ -36,67 +52,69 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVUtils;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
+/**
+ * These are the steps performed by the case importer:
+ * 
+ * 1) Read the CSV file from the passed file path and open an error report file
+ * 2) Read the header row from the CSV and build a list of properties based on its columns
+ * 3) Read the next line from the CSV and fill a case with its contents by using reflection;
+ *    Validate the case afterwards
+ * 	  - If an error is thrown doing this, the import of this case is canceled and the case gets
+ *   	added to the error report file
+ * 4) Check the database for similar persons and, if at least one is found, execute the 
+ *    similarityCallback received by the calling class.
+ *    - The import will wait for the similarityCallback to be resolved before it is continued
+ * 5) Based on the results of the similarityCallback, an existing person and/or case might
+ *    be overridden by the data in the CSV file
+ * 6) Save the person and case to the database (unless the case was skipped or the import
+ *    was canceled)
+ * 7) Repeat from step 3 until all cases have been handled
+ */
 public class CaseImporter {
 
 	private static final String ERROR_COLUMN_NAME = "Error description";
+	private static final Logger logger = LoggerFactory.getLogger(CaseImporter.class);
 
 	private Consumer<CaseImportResult> caseImportedCallback;
 	private BiConsumer<ImportSimilarityInput, Consumer<ImportSimilarityResult>> similarityCallback;
 	private Integer numberOfCases;
 
-	private String csvFilePath;
 	private CSVReader csvReader;
 	private CSVWriter errorReportCsvWriter;
-	private Path errorReportFilePath;
 
 	private boolean cancelAfterCurrentImport;
 	private boolean hasImportError;
 
+	private UserReferenceDto currentUser;
+
 	private List<PersonNameDto> personNames;
 
-	public CaseImporter(String csvFilePath, UserReferenceDto currentUser) throws IOException {
-		this.csvFilePath = csvFilePath;
+	public CaseImporter(InputStreamReader csvInputReader, OutputStreamWriter errorReportWriter, UserReferenceDto currentUser) throws IOException {
+		this.currentUser = currentUser;
 		personNames = FacadeProvider.getPersonFacade().getNameDtos(currentUser);
 
-		// Read file and create readers
-		File file = new File(csvFilePath);
-		if (!file.exists()) {
-			throw new FileNotFoundException("Cases .csv file does not exist");
-		}
-
-		// Generate the error report file
-		Path exportDirectory = Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath());
-		errorReportFilePath = exportDirectory.resolve(ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" 
-				+ DataHelper.getShortUuid(currentUser.getUuid()) + "_" 
-				+ DateHelper.formatDateForExport(new Date()) + ".csv");
-		// If the error report file already exists, delete it
-		File errorReportFile = new File(errorReportFilePath.toString());
-		if (errorReportFile.exists()) {
-			errorReportFile.delete();
-		}
-
-		csvReader = CSVUtils.createCSVReader(new FileReader(csvFilePath), FacadeProvider.getConfigFacade().getCsvSeparator());
-		errorReportCsvWriter = CSVUtils.createCSVWriter(new FileWriter(errorReportFilePath.toString(), true), FacadeProvider.getConfigFacade().getCsvSeparator());
+		csvReader = CSVUtils.createCSVReader(csvInputReader, FacadeProvider.getConfigFacade().getCsvSeparator());
+		errorReportCsvWriter = CSVUtils.createCSVWriter(errorReportWriter, FacadeProvider.getConfigFacade().getCsvSeparator());
 	}
 
-	public int getNumberOfCases() throws IOException {
+	public int getNumberOfCases(InputStreamReader csvInputReader) throws IOException {
 		if (numberOfCases != null) {
 			return numberOfCases;
 		}
 
+		CSVReader caseCountReader = CSVUtils.createCSVReader(csvInputReader, FacadeProvider.getConfigFacade().getCsvSeparator());
+
 		// Initialize with -1 because first line is not a case
 		numberOfCases = -1;
-		while (csvReader.readNext() != null) {
+		while (caseCountReader.readNext() != null) {
 			numberOfCases++;
 		}
 
 		// Re-create the CSV reader
-		csvReader.close();
-		csvReader = CSVUtils.createCSVReader(new FileReader(csvFilePath), FacadeProvider.getConfigFacade().getCsvSeparator());
+		caseCountReader.close();
 
 		return numberOfCases;
 	}
@@ -105,7 +123,7 @@ public class CaseImporter {
 	 * Imports all cases without errors and adds those with errors to the error file. The path to this file is returned.
 	 * Cases that are potential duplicates are handled by calling the similarityCallback.
 	 */
-	public ImportResultStatus importAllCases(BiConsumer<ImportSimilarityInput, Consumer<ImportSimilarityResult>> similarityCallback, Consumer<CaseImportResult> caseImportedCallback) throws IOException, InvalidColumnException {
+	public ImportResultStatus importAllCases(BiConsumer<ImportSimilarityInput, Consumer<ImportSimilarityResult>> similarityCallback, Consumer<CaseImportResult> caseImportedCallback) throws IOException, InvalidColumnException, InterruptedException {
 		this.similarityCallback = similarityCallback;
 		this.caseImportedCallback = caseImportedCallback;
 
@@ -149,11 +167,7 @@ public class CaseImporter {
 		cancelAfterCurrentImport = true;
 	}
 
-	public String getErrorReportFilePath() {
-		return errorReportFilePath != null ? errorReportFilePath.toString() : null;
-	}
-
-	private void readNextLineFromCsv(String[] headersLine, List<String[]> headers) throws IOException, InvalidColumnException {
+	private void readNextLineFromCsv(String[] headersLine, List<String[]> headers) throws IOException, InvalidColumnException, InterruptedException {
 		if (cancelAfterCurrentImport) {
 			return;
 		}
@@ -164,7 +178,7 @@ public class CaseImporter {
 		}
 	}
 
-	private void importCaseFromCsvLine(String[] nextLine, String[] headersLine, List<String[]> headers) throws IOException, InvalidColumnException {
+	private void importCaseFromCsvLine(String[] nextLine, String[] headersLine, List<String[]> headers) throws IOException, InvalidColumnException, InterruptedException {
 		// Check whether the new line has the same length as the header line
 		if (nextLine.length > headersLine.length) {
 			hasImportError = true;
@@ -174,41 +188,25 @@ public class CaseImporter {
 
 		PersonDto newPerson = PersonDto.build();
 		CaseDataDto newCase = CaseDataDto.build(newPerson.toReference(), null);
-		UserDto user = FacadeProvider.getUserFacade().getCurrentUser();
-		newCase.setReportingUser(user.toReference());
+		newCase.setReportingUser(currentUser);
 
-		boolean caseHasImportError = false;
-		for (int i = 0; i < nextLine.length; i++) {
-			String entry = nextLine[i];
-			if (entry == null || entry.isEmpty()) {
-				continue;
-			}
+		boolean caseHasImportError = insertRowIntoCase(newCase, newPerson, nextLine, headers, false);
 
-			String[] entryHeaderPath = headers.get(i);
-			// Error description column is ignored
-			if (entryHeaderPath[0].equals(ERROR_COLUMN_NAME)) {
-				continue;
-			}
-
+		if (!caseHasImportError) {
 			try {
-				insertColumnEntryIntoCase(newCase, newPerson, entry, entryHeaderPath);
-			} catch (ImportErrorException e) {
+				FacadeProvider.getPersonFacade().validate(newPerson);
+				FacadeProvider.getCaseFacade().validate(newCase);
+			} catch (ValidationRuntimeException e) {
 				hasImportError = true;
 				caseHasImportError = true;
 				writeImportError(errorReportCsvWriter, nextLine, e.getMessage());
-				break;
-			} catch (InvalidColumnException e) {
-				csvReader.close();
-				errorReportCsvWriter.flush();
-				errorReportCsvWriter.close();
-				throw e;
 			}
 		}
 
 		if (!caseHasImportError) {
 			try {
 				ImportConsumer consumer = new ImportConsumer();
-				Object LOCK = new Object();
+				ImportLock LOCK = new ImportLock();
 				synchronized(LOCK) {
 					for (PersonNameDto personName : personNames) {
 						if (PersonHelper.areNamesSimilar(personName, newPerson.getFirstName(), newPerson.getLastName())) {
@@ -223,27 +221,35 @@ public class CaseImporter {
 										});
 
 								try {
-									LOCK.wait();
+									if (!LOCK.wasNotified) {
+										LOCK.wait();
+									}
 								} catch (InterruptedException e) {
-									e.printStackTrace();
+									logger.error("InterruptedException when trying to perform LOCK.wait() in case import: " + e.getMessage());
+									throw e;
 								}
 
 								if (consumer.result != null && !(consumer.result.isSkip() || consumer.result.isCancelImport())) {
-									if (consumer.result.isUseCase()) {
+									if (consumer.result.isUseCase() && consumer.result.getMatchingCase() != null) {
 										newCase = consumer.result.getMatchingCase();
 										newPerson = FacadeProvider.getPersonFacade().getPersonByUuid(newCase.getPerson().getUuid());
+										caseHasImportError = insertRowIntoCase(newCase, newPerson, nextLine, headers, true);
 									} else if (consumer.result.isUsePerson()) {
 										newPerson = FacadeProvider.getPersonFacade().getPersonByUuid(consumer.result.getMatchingPerson().getUuid());
+										caseHasImportError = insertRowIntoCase(newCase, newPerson, nextLine, headers, true);
 									}
 								}
-
 							}
 
 							break;
 						}
 					}
 
-					if (consumer.result != null && consumer.result.isSkip()) {
+					if (caseHasImportError) {
+						// In case insertRowIntoCase when matching person/case has thrown an unexpected error
+						caseImportedCallback.accept(CaseImportResult.ERROR);
+						readNextLineFromCsv(headersLine, headers);
+					} else if (consumer.result != null && consumer.result.isSkip()) {
 						// Reset the import result
 						consumer.result = null;
 						caseImportedCallback.accept(CaseImportResult.SKIPPED);
@@ -274,6 +280,41 @@ public class CaseImporter {
 			caseImportedCallback.accept(CaseImportResult.ERROR);
 			readNextLineFromCsv(headersLine, headers);
 		}
+	}
+
+	private boolean insertRowIntoCase(CaseDataDto caze, PersonDto person, String[] row, List<String[]> headers, boolean ignoreEmptyEntries) throws IOException, InvalidColumnException {
+		boolean caseHasImportError = false;
+
+		for (int i = 0; i < row.length; i++) {
+			String entry = row[i];
+			if (entry == null || entry.isEmpty()) {
+				continue;
+			}
+
+			String[] entryHeaderPath = headers.get(i);
+			// Error description column is ignored
+			if (entryHeaderPath[0].equals(ERROR_COLUMN_NAME)) {
+				continue;
+			}
+
+			try {
+				if (!(ignoreEmptyEntries && (StringUtils.isEmpty(entry)))) {
+					insertColumnEntryIntoCase(caze, person, entry, entryHeaderPath);
+				}
+			} catch (ImportErrorException e) {
+				hasImportError = true;
+				caseHasImportError = true;
+				writeImportError(errorReportCsvWriter, row, e.getMessage());
+				break;
+			} catch (InvalidColumnException e) {
+				csvReader.close();
+				errorReportCsvWriter.flush();
+				errorReportCsvWriter.close();
+				throw e;
+			}
+		}
+
+		return caseHasImportError;
 	}
 
 	private void writeImportError(CSVWriter errorReportWriter, String[] nextLine, String message) throws IOException {
@@ -371,6 +412,11 @@ public class CaseImporter {
 				throw new ImportErrorException(entry, buildHeaderPathString(entryHeaderPath));
 			} catch (ParseException e) {
 				throw new ImportErrorException("Invalid date in column " + buildHeaderPathString(entryHeaderPath) + "; Allowed date formats are dd/MM/yyyy, dd.MM.yyyy and dd-MM-yyyy");
+			} catch (ImportErrorException e) {
+				throw e;
+			} catch (Exception e) {
+				logger.error("Unexpected error when trying to import a case: " + e.getMessage());
+				throw new ImportErrorException("Unexpected error when trying to import this case. Please send your error report file to an administrator and remove this case from your import file.");
 			}
 		}
 	}
@@ -393,12 +439,17 @@ public class CaseImporter {
 	private class ImportConsumer {
 		protected ImportSimilarityResult result;
 
-		private void onImportResult(ImportSimilarityResult result, Object LOCK) {
+		private void onImportResult(ImportSimilarityResult result, ImportLock LOCK) {
 			this.result = result;
 			synchronized(LOCK) {
 				LOCK.notify();
+				LOCK.wasNotified = true;
 			}
 		}
+	}
+
+	private class ImportLock {
+		protected boolean wasNotified = false;
 	}
 
 }

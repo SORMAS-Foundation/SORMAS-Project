@@ -557,8 +557,7 @@ public class CaseController {
 			public void onCommit() {
 				if (!facilityChangeForm.getFieldGroup().isModified()) {
 					CaseDataDto dto = facilityChangeForm.getValue();
-					FacadeProvider.getCaseFacade().updateHospitalization(dto);
-					FacadeProvider.getCaseFacade().saveCase(dto);
+					FacadeProvider.getCaseFacade().saveAndTransferCase(dto);
 					popupWindow.close();
 					Notification.show("Case has been transfered to another health facility.", Type.WARNING_MESSAGE);
 					navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null);
