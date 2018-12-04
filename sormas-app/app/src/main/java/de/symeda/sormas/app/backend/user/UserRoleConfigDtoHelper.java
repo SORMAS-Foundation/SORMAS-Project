@@ -16,53 +16,63 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.backend.outbreak;
+package de.symeda.sormas.app.backend.user;
 
+import android.util.Log;
+
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import de.symeda.sormas.api.outbreak.OutbreakDto;
+import de.symeda.sormas.api.user.UserRoleConfigDto;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.outbreak.Outbreak;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.ServerCommunicationException;
+import de.symeda.sormas.app.rest.ServerConnectionException;
 import retrofit2.Call;
+import retrofit2.Response;
 
-public class OutbreakDtoHelper extends AdoDtoHelper<Outbreak, OutbreakDto> {
+public class UserRoleConfigDtoHelper extends AdoDtoHelper<UserRoleConfig, UserRoleConfigDto> {
 
     @Override
-    protected Class<Outbreak> getAdoClass() {
-        return Outbreak.class;
+    protected Class<UserRoleConfig> getAdoClass() {
+        return UserRoleConfig.class;
     }
 
     @Override
-    protected Class<OutbreakDto> getDtoClass() {
+    protected Class<UserRoleConfigDto> getDtoClass() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected Call<List<OutbreakDto>> pullAllSince(long since) {
-        return RetroProvider.getOutbreakFacade().pullAllSince(since);
+    protected Call<List<UserRoleConfigDto>> pullAllSince(long since) {
+        return RetroProvider.getUserRoleConfigFacade().pullAllSince(since);
     }
 
     @Override
-    protected Call<List<OutbreakDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<UserRoleConfigDto>> pullByUuids(List<String> uuids) {
         throw new UnsupportedOperationException("Entity is read-only");
     }
 
     @Override
-    protected Call<Integer> pushAll(List<OutbreakDto> communityDtos) {
+    protected Call<Integer> pushAll(List<UserRoleConfigDto> communityDtos) {
         throw new UnsupportedOperationException("Entity is read-onl");
     }
 
     @Override
-    public void fillInnerFromDto(Outbreak target, OutbreakDto source) {
-        target.setDisease(source.getDisease());
-        target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
-        target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
-        target.setReportDate(source.getReportDate());
+    public void fillInnerFromDto(UserRoleConfig target, UserRoleConfigDto source) {
+        target.setUserRole(source.getUserRole());
+        target.setUserRights(source.getUserRights());
     }
 
     @Override
-    public void fillInnerFromAdo(OutbreakDto target, Outbreak source) {
+    public void fillInnerFromAdo(UserRoleConfigDto target, UserRoleConfig source) {
         throw new UnsupportedOperationException("Entity is read-only");
     }
 }

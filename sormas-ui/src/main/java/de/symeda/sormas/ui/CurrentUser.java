@@ -43,7 +43,7 @@ public class CurrentUser {
 	public Set<UserRight> getUserRights() {
 		if (userRights == null) {
 			userRights = FacadeProvider.getUserRoleConfigFacade()
-					.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[] {}));
+					.getEffectiveUserRights(getUser().getUserRoles().toArray(new UserRole[] {}));
 		}
 		return userRights;
 	}

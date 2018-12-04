@@ -109,7 +109,6 @@ public class CaseListActivity extends BaseListActivity {
 
     @Override
     public boolean isEntryCreateAllowed() {
-        User user = ConfigProvider.getUser();
-        return user.hasUserRight(UserRight.CASE_CREATE);
+        return ConfigProvider.hasUserRight(UserRight.CASE_CREATE);
     }
 }

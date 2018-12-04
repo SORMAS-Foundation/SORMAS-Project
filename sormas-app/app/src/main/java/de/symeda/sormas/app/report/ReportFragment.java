@@ -322,7 +322,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
         contentBinding.noWeeklyReportHint.setVisibility(View.GONE);
         contentBinding.noWeeklyReportData.setVisibility(View.GONE);
 
-        if (showButtons && !ConfigProvider.getUser().hasUserRight(UserRight.WEEKLYREPORT_CREATE)) {
+        if (showButtons && !ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE)) {
             showButtons = false;
         }
         contentBinding.addMissingCase.setVisibility(showButtons ? View.VISIBLE : View.GONE);

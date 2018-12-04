@@ -85,6 +85,8 @@ import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDao;
+import de.symeda.sormas.app.backend.user.UserRoleConfig;
+import de.symeda.sormas.app.backend.user.UserRoleConfigDao;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.backend.visit.VisitDao;
 
@@ -157,6 +159,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			if (clearInfrastructure) {
 				TableUtils.clearTable(connectionSource, User.class);
+				TableUtils.clearTable(connectionSource, UserRoleConfig.class);
 				TableUtils.clearTable(connectionSource, Facility.class);
 				TableUtils.clearTable(connectionSource, Community.class);
 				TableUtils.clearTable(connectionSource, District.class);
@@ -189,6 +192,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, District.class);
 			TableUtils.createTable(connectionSource, Community.class);
 			TableUtils.createTable(connectionSource, Facility.class);
+			TableUtils.createTable(connectionSource, UserRoleConfig.class);
 			TableUtils.createTable(connectionSource, User.class);
 			TableUtils.createTable(connectionSource, Person.class);
 			TableUtils.createTable(connectionSource, Case.class);
@@ -567,6 +571,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 					// ATTENTION: break should only be done after last version
 					break;
+				case 132:
+					currentVersion = 132;
+					getDao(UserRoleConfig.class).executeRaw("CREATE TABLE userrolesconfig(" +
+							"id integer primary key autoincrement," +
+							"uuid varchar(36)," +
+							"changeDate timestamp" +
+							"creationDate timestamp," +
+							"userRole varchar(255)," +
+							"userRights varchar(1023)," +
+							"lastOpenedDate timestamp," +
+							"localChangeDate timestamp," +
+							"modified integer," +
+							"snapshot integer);");
+
 				default:
 					throw new IllegalStateException(
 							"onUpgrade() with unknown oldVersion " + oldVersion);
@@ -768,6 +786,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	public static UserDao getUserDao() {
 		return (UserDao) getAdoDao(User.class);
+	}
+
+	public static UserRoleConfigDao getUserRoleConfigDao() {
+		return (UserRoleConfigDao) getAdoDao(UserRoleConfig.class);
 	}
 
 	public static SymptomsDao getSymptomsDao() {

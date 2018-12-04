@@ -16,34 +16,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.util;
+package de.symeda.sormas.app.rest;
 
-import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.app.backend.user.User;
+import java.util.List;
 
-/**
- * Created by Orson on 28/03/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
+import de.symeda.sormas.api.user.UserRoleConfigDto;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
-public class UserHelper {
+public interface UserRoleConfigFacadeRetro {
 
-    public static String getUserRole(User user) {
-        if (user == null)
-            return "";
+    @GET("userroles/all/{since}")
+    Call<List<UserRoleConfigDto>> pullAllSince(@Path("since") long since);
 
-        StringBuilder result = new StringBuilder();
-
-        int index = 0;
-        for (UserRole userRole : user.getUserRoles()) {
-            result.append(userRole.toShortString() + ((index < (user.getUserRoles().size() - 1))? ", " : ""));
-
-            index = index + 1;
-        }
-
-        return result.toString();
-    }
+    @GET("userroles/uuids")
+    Call<List<String>> pullUuids();
 }

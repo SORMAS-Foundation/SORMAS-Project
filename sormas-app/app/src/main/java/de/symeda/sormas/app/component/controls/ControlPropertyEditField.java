@@ -395,7 +395,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
     public void setUserEditRight(UserRight userEditRight) {
         this.userEditRight = userEditRight;
 
-        if (userEditRight != null && !ConfigProvider.getUser().hasUserRight(userEditRight)) {
+        if (userEditRight != null && !ConfigProvider.hasUserRight(userEditRight)) {
             changeVisualState(VisualState.DISABLED);
         }
     }

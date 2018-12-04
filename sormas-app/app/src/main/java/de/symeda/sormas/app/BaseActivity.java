@@ -80,7 +80,6 @@ import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.NavigationHelper;
 import de.symeda.sormas.app.util.SyncCallback;
-import de.symeda.sormas.app.util.UserHelper;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -398,7 +397,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
             }
 
             userName.setText(user.getLastName() + " " + user.getFirstName());
-            userRole.setText(UserHelper.getUserRole(user));
+            userRole.setText(user.getUserRolesString());
 
             Menu menuNav = navView.getMenu();
 
@@ -415,22 +414,22 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                 dashboardMenu.setVisible(false);
 
             if (taskMenu != null)
-                taskMenu.setVisible(user.hasUserRight(UserRight.TASK_VIEW));
+                taskMenu.setVisible(ConfigProvider.hasUserRight(UserRight.TASK_VIEW));
 
             if (caseMenu != null)
-                caseMenu.setVisible(user.hasUserRight(UserRight.CASE_VIEW));
+                caseMenu.setVisible(ConfigProvider.hasUserRight(UserRight.CASE_VIEW));
 
             if (sampleMenu != null)
-                sampleMenu.setVisible(user.hasUserRight(UserRight.SAMPLE_VIEW));
+                sampleMenu.setVisible(ConfigProvider.hasUserRight(UserRight.SAMPLE_VIEW));
 
             if (eventMenu != null)
-                eventMenu.setVisible(user.hasUserRight(UserRight.EVENT_VIEW));
+                eventMenu.setVisible(ConfigProvider.hasUserRight(UserRight.EVENT_VIEW));
 
             if (contactMenu != null)
-                contactMenu.setVisible(user.hasUserRight(UserRight.CONTACT_VIEW));
+                contactMenu.setVisible(ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW));
 
             if (reportMenu != null)
-                reportMenu.setVisible(user.hasUserRight(UserRight.WEEKLYREPORT_VIEW));
+                reportMenu.setVisible(ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_VIEW));
 
         }
 

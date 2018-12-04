@@ -107,7 +107,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         if (!DatabaseHelper.getDiseaseClassificationCriteriaDao().getByDisease(record.getDisease()).hasAnyCriteria()) {
             contentBinding.showClassificationRules.setVisibility(GONE);
         }
-        if (!ConfigProvider.getUser().hasUserRight(UserRight.CASE_TRANSFER)) {
+        if (!ConfigProvider.hasUserRight(UserRight.CASE_TRANSFER)) {
             contentBinding.transferCase.setVisibility(GONE);
         }
         if (contentBinding.showClassificationRules.getVisibility() == GONE && contentBinding.transferCase.getVisibility() == GONE) {
@@ -178,7 +178,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         setUpButtonListeners(contentBinding);
 
         // Epid number warning state
-        if (ConfigProvider.getUser().hasUserRight(UserRight.CASE_CHANGE_EPID_NUMBER)) {
+        if (ConfigProvider.hasUserRight(UserRight.CASE_CHANGE_EPID_NUMBER)) {
             contentBinding.caseDataEpidNumber.addValueChangedListener(new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
@@ -197,7 +197,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         }
 
         // Case classification warning state
-        if (ConfigProvider.getUser().hasUserRight(UserRight.CASE_CLASSIFY)) {
+        if (ConfigProvider.hasUserRight(UserRight.CASE_CLASSIFY)) {
             contentBinding.caseDataCaseClassification.addValueChangedListener(new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {

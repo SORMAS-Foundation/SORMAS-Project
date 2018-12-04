@@ -197,7 +197,7 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
 
     @Override
     protected void changeVisualState(VisualState state) {
-        if (getUserEditRight() != null && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
+        if (getUserEditRight() != null && !ConfigProvider.hasUserRight(getUserEditRight())) {
             state = VisualState.DISABLED;
         }
 
