@@ -102,7 +102,9 @@ public final class ConfigProvider {
 
     private boolean hasDeviceEncryption() {
 
-        // TODO solve #410
+        // Device encryption is no longer used, because it's not reliably implemented
+        // on old android devices (versions 5 and 6) - see #410
+        // As a replacement the database should be encrypted #905
         return true;
 //        DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
 //        return dpm.getStorageEncryptionStatus() == DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE ||
