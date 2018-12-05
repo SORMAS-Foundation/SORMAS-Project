@@ -22,8 +22,10 @@ import com.j256.ormlite.dao.Dao;
 
 import java.sql.SQLException;
 
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 
 public class UserRoleConfigDao extends AbstractAdoDao<UserRoleConfig> {
 
@@ -48,6 +50,37 @@ public class UserRoleConfigDao extends AbstractAdoDao<UserRoleConfig> {
 
     @Override
     public UserRoleConfig mergeOrCreate(UserRoleConfig source) throws DaoException {
-        throw new UnsupportedOperationException();
+        try {
+            // just override - user role configs can't be edited on the device
+            updateOrCreate(source);
+            return source;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public void create(UserRoleConfig data) throws SQLException {
+        super.create(data);
+        if (ConfigProvider.getUser().hasUserRole(data.getUserRole())) {
+            ConfigProvider.onUserRolesConfigChanged();
+        }
+    }
+
+    @Override
+    protected void update(UserRoleConfig data) throws SQLException {
+        super.update(data);
+        if (ConfigProvider.getUser().hasUserRole(data.getUserRole())) {
+            ConfigProvider.onUserRolesConfigChanged();
+        }
+    }
+
+    @Override
+    public void delete(UserRoleConfig data) throws SQLException {
+        UserRole userRole = data.getUserRole();
+        super.delete(data);
+        if (ConfigProvider.getUser().hasUserRole(userRole)) {
+            ConfigProvider.onUserRolesConfigChanged();
+        }
     }
 }

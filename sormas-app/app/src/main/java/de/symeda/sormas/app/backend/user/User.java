@@ -24,11 +24,13 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.lang.reflect.Type;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -195,14 +197,20 @@ public class User extends AbstractDomainObject {
 
     public void setUserRolesJson(String userRolesJson) {
         this.userRolesJson = userRolesJson;
+        userRoles = null;
     }
 
+
+    @Transient // Needed for merge logic
     public Set<UserRole> getUserRoles() {
         if (userRoles == null) {
             Gson gson = new Gson();
             Type type = new TypeToken<Set<UserRole>>() {
             }.getType();
             userRoles = gson.fromJson(userRolesJson, type);
+            if (userRoles == null) {
+                userRoles = new HashSet<>();
+            }
         }
         return userRoles;
     }

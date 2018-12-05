@@ -58,7 +58,7 @@ public class UserRoleConfig extends AbstractDomainObject {
 
 	@ElementCollection(fetch = FetchType.LAZY)
 	@Enumerated(EnumType.STRING)
-	@CollectionTable(name = "useroles_userrights", joinColumns = @JoinColumn(name = "userrole_id", referencedColumnName = UserRoleConfig.ID, nullable = false), uniqueConstraints = @UniqueConstraint(columnNames = {
+	@CollectionTable(name = "userroles_userrights", joinColumns = @JoinColumn(name = "userrole_id", referencedColumnName = UserRoleConfig.ID, nullable = false), uniqueConstraints = @UniqueConstraint(columnNames = {
 			"userrole_id", "userright" }))
 	@Column(name = "userright", nullable = false)
 	public Set<UserRight> getUserRights() {

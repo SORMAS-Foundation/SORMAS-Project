@@ -175,6 +175,12 @@ public final class ConfigProvider {
         }
     }
 
+    public static void onUserRolesConfigChanged() {
+        synchronized (ConfigProvider.class) {
+            instance.userRights = null;
+        }
+    }
+
     public static boolean hasUserRight(UserRight userRight) {
         Set<UserRight> userRights = getUserRights();
         return userRights != null && userRights.contains(userRight);

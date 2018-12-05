@@ -100,7 +100,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 132;
+	private static final int DATABASE_VERSION = 133;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -569,14 +569,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(User.class).executeRaw("ALTER TABLE users ADD COLUMN community_id bigint REFERENCES community(id);");
 					getDao(User.class).executeRaw("UPDATE users SET userRole = replace(userRole, 'INFORMANT', 'HOSPITAL_INFORMANT');");
 
-					// ATTENTION: break should only be done after last version
-					break;
 				case 132:
 					currentVersion = 132;
 					getDao(UserRoleConfig.class).executeRaw("CREATE TABLE userrolesconfig(" +
 							"id integer primary key autoincrement," +
 							"uuid varchar(36)," +
-							"changeDate timestamp" +
+							"changeDate timestamp," +
 							"creationDate timestamp," +
 							"userRole varchar(255)," +
 							"userRights varchar(1023)," +
@@ -585,6 +583,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							"modified integer," +
 							"snapshot integer);");
 
+					// ATTENTION: break should only be done after last version
+					break;
 				default:
 					throw new IllegalStateException(
 							"onUpgrade() with unknown oldVersion " + oldVersion);
@@ -663,6 +663,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new CommunityDao((Dao<Community, Long>) innerDao);
 				} else if (type.equals(User.class)) {
 					dao = (AbstractAdoDao<ADO>) new UserDao((Dao<User, Long>) innerDao);
+				} else if (type.equals(UserRoleConfig.class)) {
+					dao = (AbstractAdoDao<ADO>) new UserRoleConfigDao((Dao<UserRoleConfig, Long>) innerDao);
 				} else if (type.equals(Symptoms.class)) {
 					dao = (AbstractAdoDao<ADO>) new SymptomsDao((Dao<Symptoms, Long>) innerDao);
 				} else if (type.equals(Task.class)) {

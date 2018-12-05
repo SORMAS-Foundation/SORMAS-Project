@@ -77,6 +77,12 @@ public class OutbreakDao extends AbstractAdoDao<Outbreak> {
 
     @Override
     public Outbreak mergeOrCreate(Outbreak source) throws DaoException {
-        throw new UnsupportedOperationException();
+        try {
+            // just override - outbreaks can't be edited on the device
+            updateOrCreate(source);
+            return source;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
     }
 }

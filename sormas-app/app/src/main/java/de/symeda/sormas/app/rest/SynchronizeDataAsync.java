@@ -56,6 +56,7 @@ import de.symeda.sormas.app.backend.sample.SampleDtoHelper;
 import de.symeda.sormas.app.backend.sample.SampleTestDtoHelper;
 import de.symeda.sormas.app.backend.task.TaskDtoHelper;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
+import de.symeda.sormas.app.backend.user.UserRoleConfigDtoHelper;
 import de.symeda.sormas.app.backend.visit.VisitDtoHelper;
 import de.symeda.sormas.app.core.TaskNotificationService;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
@@ -247,6 +248,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
         // order is important, due to dependencies (e.g. case & person)
 
+        new UserRoleConfigDtoHelper().repullEntities();
         new UserDtoHelper().repullEntities();
         new OutbreakDtoHelper().repullEntities();
         personDtoHelper.repullEntities();
@@ -269,7 +271,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new CommunityDtoHelper().pullEntities(false);
         new FacilityDtoHelper().pullEntities(false);
         new UserDtoHelper().pullEntities(false);
-
+        new UserRoleConfigDtoHelper().pullEntities(false);
 
     }
 
@@ -339,6 +341,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // users
         List<String> userUuids = executeUuidCall(RetroProvider.getUserFacade().pullUuids());
         DatabaseHelper.getUserDao().deleteInvalid(userUuids);
+        // users
+        List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullUuids());
+        DatabaseHelper.getUserRoleConfigDao().deleteInvalid(userRoleConfigUuids);
         // facilities
         List<String> facilityUuids = executeUuidCall(RetroProvider.getFacilityFacade().pullUuids());
         DatabaseHelper.getFacilityDao().deleteInvalid(facilityUuids);
@@ -357,7 +362,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new RegionDtoHelper().pullMissing(regionUuids);
         new DistrictDtoHelper().pullMissing(districtUuids);
         new CommunityDtoHelper().pullMissing(communityUuids);
-        new FacilityDtoHelper().pullMissing(districtUuids);
+        new FacilityDtoHelper().pullMissing(facilityUuids);
+        new UserRoleConfigDtoHelper().pullMissing(userRoleConfigUuids);
         new UserDtoHelper().pullMissing(userUuids);
     }
 
