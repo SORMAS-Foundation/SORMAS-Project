@@ -34,10 +34,10 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
-@Entity(name="userrolesconfig")
+@Entity(name = "userrolesconfig")
 @Audited
 public class UserRoleConfig extends AbstractDomainObject {
-	
+
 	private static final long serialVersionUID = 9053095630718041842L;
 
 	public static final String USER_ROLE = "userRole";
@@ -47,7 +47,7 @@ public class UserRoleConfig extends AbstractDomainObject {
 	private Set<UserRight> userRights;
 
 	@Enumerated(EnumType.STRING)
-	@Column(unique=true, nullable=false)
+	@Column(name = USER_ROLE, unique = true, nullable = false)
 	public UserRole getUserRole() {
 		return userRole;
 	}
@@ -55,19 +55,16 @@ public class UserRoleConfig extends AbstractDomainObject {
 	public void setUserRole(UserRole userRole) {
 		this.userRole = userRole;
 	}
-	
-	@ElementCollection(fetch=FetchType.LAZY)
+
+	@ElementCollection(fetch = FetchType.LAZY)
 	@Enumerated(EnumType.STRING)
-	@CollectionTable(
-	        name="useroles_userrights",
-	        joinColumns=@JoinColumn(name="userrole", referencedColumnName=UserRoleConfig.USER_ROLE, nullable = false),
-	        uniqueConstraints=@UniqueConstraint(columnNames={"userrole", "userright"})
-	  )
+	@CollectionTable(name = "useroles_userrights", joinColumns = @JoinColumn(name = "userrole_id", referencedColumnName = UserRoleConfig.ID, nullable = false), uniqueConstraints = @UniqueConstraint(columnNames = {
+			"userrole_id", "userright" }))
 	@Column(name = "userright", nullable = false)
 	public Set<UserRight> getUserRights() {
 		return userRights;
 	}
-	
+
 	public void setUserRights(Set<UserRight> userRights) {
 		this.userRights = userRights;
 	}

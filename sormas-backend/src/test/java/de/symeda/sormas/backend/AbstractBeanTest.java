@@ -41,6 +41,7 @@ import de.symeda.sormas.api.sample.SampleTestFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.user.UserFacade;
+import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb;
@@ -70,6 +71,7 @@ import de.symeda.sormas.backend.sample.SampleTestFacadeEjb.SampleTestFacadeEjbLo
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import info.novatec.beantest.api.BaseBeanTest;
 
@@ -155,6 +157,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public UserFacade getUserFacade() {
 		return getBean(UserFacadeEjbLocal.class);
+	}
+
+	public UserRoleConfigFacade getUserRoleConfigFacade() {
+		return getBean(UserRoleConfigFacadeEjbLocal.class);
 	}
 	
 	public HospitalizationFacade getHospitalizationFacade() {

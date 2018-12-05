@@ -17,9 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class UserRoleConfigDto extends EntityDto {
 
@@ -32,6 +35,16 @@ public class UserRoleConfigDto extends EntityDto {
 
 	private UserRole userRole;
 	private Set<UserRight> userRights;
+
+	public static UserRoleConfigDto build(UserRole userRole, UserRight... userRights) {
+		UserRoleConfigDto dto = new UserRoleConfigDto();
+		dto.setUuid(DataHelper.createUuid());
+		dto.setUserRole(userRole);
+		Set<UserRight> userRightsSet = new HashSet<UserRight>();
+		userRightsSet.addAll(Arrays.asList(userRights));
+		dto.setUserRights(userRightsSet);
+		return dto;
+	}
 
 	public UserRole getUserRole() {
 		return userRole;

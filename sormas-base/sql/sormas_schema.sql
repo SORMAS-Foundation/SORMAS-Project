@@ -2561,7 +2561,6 @@ ALTER TABLE userroles_userrights OWNER TO sormas_user;
 
 ALTER TABLE ONLY userroles_userrights
     ADD CONSTRAINT unq_userroles_userrights_0 UNIQUE (userrole, userright);
-
 ALTER TABLE ONLY userroles_userrights
     ADD CONSTRAINT fk_userroles_userrights_user_id FOREIGN KEY (userrole) REFERENCES userrolesconfig(userrole);
 
@@ -2571,3 +2570,19 @@ FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userroles_userrights_hi
 ALTER TABLE userroles_userrights_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (118, 'User role configuration #830');
+
+ALTER TABLE userroles_userrights ADD COLUMN userrole_id bigint NOT NULL;
+ALTER TABLE userroles_userrights DROP CONSTRAINT fk_userroles_userrights_user_id;
+ALTER TABLE userroles_userrights DROP CONSTRAINT unq_userroles_userrights_0;
+ALTER TABLE userroles_userrights DROP COLUMN userrole;
+ALTER TABLE ONLY userroles_userrights
+    ADD CONSTRAINT unq_userroles_userrights_0 UNIQUE (userrole_id, userright);
+ALTER TABLE ONLY userroles_userrights
+    ADD CONSTRAINT fk_userroles_userrights_userrole_id FOREIGN KEY (userrole_id) REFERENCES userrolesconfig(id);
+
+DROP TABLE userroles_userrights_history;
+CREATE TABLE userroles_userrights_history (LIKE userroles_userrights);
+ALTER TABLE userroles_userrights_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (119, 'Fix for user role configuration #830');
+
