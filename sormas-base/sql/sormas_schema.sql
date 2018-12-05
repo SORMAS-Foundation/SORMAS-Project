@@ -2586,3 +2586,18 @@ ALTER TABLE userroles_userrights_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (119, 'Fix for user role configuration #830');
 
+-- 2018-12-04 Restructuring weekly reports #610
+
+ALTER TABLE weeklyreport ALTER COLUMN healthfacility_id DROP NOT NULL;
+ALTER TABLE weeklyreport RENAME informant_id TO reportinguser_id;
+ALTER TABLE weeklyreport ADD COLUMN district_id bigint;
+ALTER TABLE weeklyreport ADD CONSTRAINT fk_weeklyreport_district_id FOREIGN KEY (district_id) REFERENCES district (id);
+ALTER TABLE weeklyreport ADD COLUMN community_id bigint;
+ALTER TABLE weeklyreport ADD CONSTRAINT fk_weeklyreport_commuinty_id FOREIGN KEY (community_id) REFERENCES community (id);
+ALTER TABLE weeklyreport ADD COLUMN assignedofficer_id bigint;
+ALTER TABLE weeklyreport ADD CONSTRAINT fk_weeklyreport_assignedofficer_id FOREIGN KEY (assignedofficer_id) REFERENCES users (id);
+
+ALTER TABLE users_history ADD COLUMN community_id bigint;
+ALTER TABLE users_history ADD CONSTRAINT fk_users_community_id FOREIGN KEY (community_id) REFERENCES community (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (120, 'Restructuring weekly reports #610');

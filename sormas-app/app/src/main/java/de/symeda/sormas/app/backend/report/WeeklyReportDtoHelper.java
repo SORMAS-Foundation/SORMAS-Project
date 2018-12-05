@@ -20,12 +20,17 @@ package de.symeda.sormas.app.backend.report;
 
 import java.util.List;
 
+import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.report.WeeklyReportDto;
 import de.symeda.sormas.api.report.WeeklyReportReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.rest.RetroProvider;
@@ -63,9 +68,12 @@ public class WeeklyReportDtoHelper extends AdoDtoHelper<WeeklyReport, WeeklyRepo
 
     @Override
     public void fillInnerFromDto(WeeklyReport target, WeeklyReportDto source) {
-        target.setHealthFacility(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getHealthFacility()));
-        target.setInformant(DatabaseHelper.getUserDao().getByReferenceDto(source.getInformant()));
+        target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
         target.setReportDateTime(source.getReportDateTime());
+        target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
+        target.setCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getCommunity()));
+        target.setHealthFacility(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getHealthFacility()));
+        target.setAssignedOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getAssignedOfficer()));
         target.setTotalNumberOfCases(source.getTotalNumberOfCases());
         target.setYear(source.getYear());
         target.setEpiWeek(source.getEpiWeek());
@@ -73,6 +81,27 @@ public class WeeklyReportDtoHelper extends AdoDtoHelper<WeeklyReport, WeeklyRepo
 
     @Override
     public void fillInnerFromAdo(WeeklyReportDto target, WeeklyReport source) {
+        if (source.getReportingUser() != null) {
+            User reportingUser = DatabaseHelper.getUserDao().queryForId(source.getReportingUser().getId());
+            target.setReportingUser(UserDtoHelper.toReferenceDto(reportingUser));
+        } else {
+            target.setReportingUser(null);
+        }
+
+        if (source.getDistrict() != null) {
+            District district = DatabaseHelper.getDistrictDao().queryForId(source.getDistrict().getId());
+            target.setDistrict(DistrictDtoHelper.toReferenceDto(district));
+        } else {
+            target.setDistrict(null);
+        }
+
+        if (source.getCommunity() != null) {
+            Community community = DatabaseHelper.getCommunityDao().queryForId(source.getCommunity().getId());
+            target.setCommunity(CommunityDtoHelper.toReferenceDto(community));
+        } else {
+            target.setCommunity(null);
+        }
+
         if (source.getHealthFacility() != null) {
             Facility facility = DatabaseHelper.getFacilityDao().queryForId(source.getHealthFacility().getId());
             target.setHealthFacility(FacilityDtoHelper.toReferenceDto(facility));
@@ -80,11 +109,11 @@ public class WeeklyReportDtoHelper extends AdoDtoHelper<WeeklyReport, WeeklyRepo
             target.setHealthFacility(null);
         }
 
-        if (source.getInformant() != null) {
-            User informant = DatabaseHelper.getUserDao().queryForId(source.getInformant().getId());
-            target.setInformant(UserDtoHelper.toReferenceDto(informant));
+        if (source.getAssignedOfficer() != null) {
+            User assignedOfficer = DatabaseHelper.getUserDao().queryForId(source.getAssignedOfficer().getId());
+            target.setAssignedOfficer(UserDtoHelper.toReferenceDto(assignedOfficer));
         } else {
-            target.setInformant(null);
+            target.setAssignedOfficer(null);
         }
 
         target.setReportDateTime(source.getReportDateTime());

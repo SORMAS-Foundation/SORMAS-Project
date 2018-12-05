@@ -568,6 +568,19 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					currentVersion = 131;
 					getDao(User.class).executeRaw("ALTER TABLE users ADD COLUMN community_id bigint REFERENCES community(id);");
 					getDao(User.class).executeRaw("UPDATE users SET userRole = replace(userRole, 'INFORMANT', 'HOSPITAL_INFORMANT');");
+				case 132:
+					currentVersion = 132;
+					getDao(WeeklyReport.class).executeRaw("ALTER TABLE weeklyreport RENAME TO tmp_weeklyreport;");
+					getDao(WeeklyReport.class).executeRaw("CREATE TABLE weeklyreport(id integer primary key autoincrement, uuid varchar(36) not null unique, changeDate timestamp not null, " +
+							"creationDate timestamp not null, lastOpenedDate timestamp, localChangeDate timestamp not null, modified integer, snapshot integer, healthFacility_id bigint REFERENCES facility(id), " +
+							"reportingUser_id bigint REFERENCES users(id), reportDateTime timestamp, totalNumberOfCases integer, epiWeek integer, year integer, district_id bigint REFERENCES district(id), " +
+							"community_id bigint REFERENCES community(id), assignedOfficer_id bigint REFERENCES users(id), UNIQUE(snapshot, uuid));");
+					getDao(WeeklyReport.class).executeRaw("INSERT INTO weeklyreport(id, uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, snapshot, healthFacility_id, " +
+							"reportingUser_id, reportDateTime, totalNumberOfCases, epiWeek, year) " +
+							"SELECT id, uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, snapshot, healthFacility_id, informant_id, reportDateTime, " +
+							"totalNumberOfCases, epiWeek, year " +
+							"FROM tmp_weeklyreport;");
+					getDao(WeeklyReport.class).executeRaw("DROP TABLE tmp_weeklyreport;");
 
 				case 132:
 					currentVersion = 132;

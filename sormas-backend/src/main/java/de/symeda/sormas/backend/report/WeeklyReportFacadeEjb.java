@@ -49,6 +49,9 @@ import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.region.CommunityFacadeEjb;
+import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
@@ -71,6 +74,8 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
+	@EJB
+	private CommunityService communityService;
 	@EJB
 	private FacilityService facilityService;
 	@EJB
@@ -190,9 +195,12 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 		}
 		DtoHelper.validateDto(source, target);
 		
-		target.setHealthFacility(facilityService.getByReferenceDto(source.getHealthFacility()));
-		target.setInformant(userService.getByReferenceDto(source.getInformant()));
+		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setReportDateTime(source.getReportDateTime());
+		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
+		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
+		target.setHealthFacility(facilityService.getByReferenceDto(source.getHealthFacility()));
+		target.setAssignedOfficer(userService.getByReferenceDto(source.getAssignedOfficer()));
 		target.setTotalNumberOfCases(source.getTotalNumberOfCases());
 		target.setYear(source.getYear());
 		target.setEpiWeek(source.getEpiWeek());
@@ -215,9 +223,12 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 		WeeklyReportDto target = new WeeklyReportDto();
 		DtoHelper.fillDto(target, source);
 		
-		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
-		target.setInformant(UserFacadeEjb.toReferenceDto(source.getInformant()));
+		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
 		target.setReportDateTime(source.getReportDateTime());
+		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
+		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
+		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
+		target.setAssignedOfficer(UserFacadeEjb.toReferenceDto(source.getAssignedOfficer()));
 		target.setTotalNumberOfCases(source.getTotalNumberOfCases());
 		target.setYear(source.getYear());
 		target.setEpiWeek(source.getEpiWeek());

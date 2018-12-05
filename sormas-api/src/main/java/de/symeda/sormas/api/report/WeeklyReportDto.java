@@ -21,6 +21,8 @@ import java.util.Date;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 public class WeeklyReportDto extends EntityDto {
@@ -28,17 +30,23 @@ public class WeeklyReportDto extends EntityDto {
 	private static final long serialVersionUID = -2884998571593631851L;
 
 	public static final String I18N_PREFIX = "WeeklyReport";
-	
-	public static final String HEALTH_FACILITY = "healthFacility";
-	public static final String INFORMANT = "informant";
+
+	public static final String REPORTING_USER = "reportingUser";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
+	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
+	public static final String HEALTH_FACILITY = "healthFacility";
+	public static final String ASSIGNED_OFFICER = "assignedOfficer";
 	public static final String TOTAL_NUMBER_OF_CASES = "totalNumberOfCases";
 	public static final String YEAR = "year";
 	public static final String EPI_WEEK = "epiWeek";
 	
-	private FacilityReferenceDto healthFacility;
-	private UserReferenceDto informant;
+	private UserReferenceDto reportingUser;
 	private Date reportDateTime;
+	private DistrictReferenceDto district;
+	private CommunityReferenceDto community;
+	private FacilityReferenceDto healthFacility;
+	private UserReferenceDto assignedOfficer;
 	private Integer totalNumberOfCases;
 	private Integer year;
 	private Integer epiWeek;
@@ -50,11 +58,11 @@ public class WeeklyReportDto extends EntityDto {
 		this.healthFacility = healthFacility;
 	}
 	
-	public UserReferenceDto getInformant() {
-		return informant;
+	public UserReferenceDto getReportingUser() {
+		return reportingUser;
 	}
-	public void setInformant(UserReferenceDto informant) {
-		this.informant = informant;
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
 	}
 	
 	public Date getReportDateTime() {
@@ -83,6 +91,27 @@ public class WeeklyReportDto extends EntityDto {
 	}
 	public void setEpiWeek(Integer epiWeek) {
 		this.epiWeek = epiWeek;
+	}
+	
+	public DistrictReferenceDto getDistrict() {
+		return district;
+	}
+	public void setDistrict(DistrictReferenceDto district) {
+		this.district = district;
+	}
+	
+	public CommunityReferenceDto getCommunity() {
+		return community;
+	}
+	public void setCommunity(CommunityReferenceDto community) {
+		this.community = community;
+	}
+	
+	public UserReferenceDto getAssignedOfficer() {
+		return assignedOfficer;
+	}
+	public void setAssignedOfficer(UserReferenceDto assignedOfficer) {
+		this.assignedOfficer = assignedOfficer;
 	}
 	
 	public WeeklyReportReferenceDto toReference() {

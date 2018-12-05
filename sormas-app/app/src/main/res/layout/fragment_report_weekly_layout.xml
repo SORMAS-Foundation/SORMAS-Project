@@ -18,17 +18,16 @@
   -->
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/base_layout"
-        android:descendantFocusability="beforeDescendants">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription"
+    android:id="@+id/base_layout"
+    android:descendantFocusability="beforeDescendants">
 
     <data>
-
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType"/>
 
-        <variable
-            name="reportFilterOptionClass"
-            type="Class"/>
+        <variable name="reportFilterOptionClass" type="Class"/>
     </data>
 
     <ScrollView
@@ -43,7 +42,7 @@
             android:focusableInTouchMode="true"
             android:id="@+id/main_content">
 
-            <requestFocus/>
+            <requestFocus />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -53,23 +52,21 @@
                 android:paddingBottom="@dimen/parentLayoutVerticalMargin"
                 android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
                 android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                android:paddingTop="@dimen/parentLayoutVerticalMargin"
-                >
+                android:paddingTop="@dimen/parentLayoutVerticalMargin">
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/report_selector"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:enumClass="@{reportFilterOptionClass}"
-                    app:showCaption="false"/>
+                    app:showCaption="false" />
 
                 <LinearLayout
                     android:id="@+id/specify_report_selector_frame"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    >
+                    android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/weeklyReport_year"
@@ -79,7 +76,7 @@
                         app:description="@string/desc_report_year"
                         app:hint="@string/hint_report_year"
                         app:labelCaption="@string/label_report_year"
-                        app:slim="true"/>
+                        app:slim="true" />
 
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/weeklyReport_epiWeek"
@@ -90,71 +87,16 @@
                         app:description="@string/desc_report_epi_week"
                         app:hint="@string/hint_report_epi_week"
                         app:labelCaption="@string/label_report_epi_week"
-                        app:slim="true"/>
-
-                </LinearLayout>
-            </LinearLayout>
-<!--
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                android:paddingTop="@dimen/closelyRelatedControlMarginBottom"
-                >
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/closelyRelatedControlMarginBottom"
-                    android:orientation="horizontal"
-                    >
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/weeklyReport_startDate"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:defaultValue="@string/invalid"
-                        app:description="@string/desc_report_start_period"
-                        app:labelCaption="@string/label_report_start_period"
-                        app:value="@{reportFilter.startDate}"/>
-
-                    <ImageView style="@style/FluidHorizontalDividerStyle"/>
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/weeklyReport_endDate"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:defaultValue="@string/invalid"
-                        app:description="@string/desc_report_end_period"
-                        app:labelCaption="@string/label_report_end_period"
-                        app:value="@{reportFilter.endDate}"/>
+                        app:slim="true" />
 
                 </LinearLayout>
 
             </LinearLayout>
--->
-            <!--android:layout_marginBottom="@dimen/textControlMarginBottom"-->
-            <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+            <ImageView style="@style/FullHorizontalDividerStyle" />
 
             <TextView
-                android:id="@+id/noWeeklyReportHint"
-                style="@style/EmptyListHintStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                android:text="@string/hint_no_weekly_report"
-                android:textAlignment="center"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:visibility="gone"/>
-
-            <TextView
-                android:id="@+id/noWeeklyReportData"
-                style="@style/EmptyListHintStyle"
+                android:id="@+id/no_weekly_report_data"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
@@ -162,64 +104,39 @@
                 android:text="@string/hint_weekly_report_no_data"
                 android:textAlignment="center"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                style="@style/EmptyListHintStyle" />
 
             <LinearLayout
-                android:id="@+id/reportContentFrame"
+                android:id="@+id/report_content_frame"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                >
-
+                android:orientation="vertical">
 
                 <android.support.v4.widget.NestedScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
+                    android:layout_height="wrap_content">
 
                     <android.support.v7.widget.RecyclerView
-                        android:id="@+id/recyclerViewForList"
+                        android:id="@+id/report_content"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@color/listActivityRowBackground"
-                        />
-
+                        android:background="@color/listActivityRowBackground" />
 
                 </android.support.v4.widget.NestedScrollView>
 
             </LinearLayout>
 
-
-            <LinearLayout
+            <de.symeda.sormas.app.component.controls.ControlButton
+                android:id="@+id/submit_report"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@string/action_submit_report"
                 android:layout_marginTop="@dimen/margin_default"
-                android:orientation="horizontal"
-                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                >
-
-                <de.symeda.sormas.app.component.controls.ControlButton
-                    android:id="@+id/add_missing_case"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/action_add_missing_case"
-                    android:visibility="gone"
-                    app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
-                    app:rounded="true"/>
-
-                <de.symeda.sormas.app.component.controls.ControlButton
-                    android:id="@+id/confirm_report"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/control_spacing"
-                    android:layout_weight="1"
-                    android:text="@string/action_confirm_report"
-                    app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
-                    app:rounded="true"/>
-
-            </LinearLayout>
+                android:layout_marginStart="@dimen/parentLayoutHorizontalPadding"
+                android:layout_marginEnd="@dimen/parentLayoutHorizontalPadding"
+                app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
+                app:rounded="true" />
 
         </LinearLayout>
 

@@ -182,7 +182,7 @@ public class TestDataCreator {
 		WeeklyReportDto report = new WeeklyReportDto();
 		report.setUuid(DataHelper.createUuid());
 		report.setHealthFacility(beanTest.getFacilityFacade().getFacilityReferenceByUuid(facilityUuid));
-		report.setInformant(informant);
+		report.setReportingUser(informant);
 		report.setReportDateTime(reportDateTime);
 		report.setEpiWeek(epiWeek);
 		report.setYear(year);

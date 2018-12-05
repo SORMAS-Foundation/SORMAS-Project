@@ -23,6 +23,7 @@ import android.databinding.OnRebindCallback;
 import android.databinding.ViewDataBinding;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,14 +44,12 @@ public abstract class BaseReportFragment<TBinding extends ViewDataBinding> exten
     private AsyncTask jobTask;
     private BaseReportActivity baseReportActivity;
     private IUpdateSubHeadingTitle subHeadingHandler;
-    private NotificationContext notificationCommunicator;
     private ViewDataBinding rootBinding;
-    private View rootView;
     private TBinding contentViewStubBinding;
     private boolean skipAfterLayoutBinding = false;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
         if (getActivity() instanceof BaseReportActivity) {
             this.baseReportActivity = (BaseReportActivity) this.getActivity();
         } else {
@@ -64,18 +63,16 @@ public abstract class BaseReportFragment<TBinding extends ViewDataBinding> exten
                     + "implement IUpdateSubHeadingTitle");
         }
 
-        if (getActivity() instanceof NotificationContext) {
-            this.notificationCommunicator = (NotificationContext) this.getActivity();
-        } else {
+        if (!(getActivity() instanceof NotificationContext)) {
             throw new NotImplementedException("Activity for fragment does not support showErrorNotification; "
                     + "implement NotificationContext");
         }
 
         //Inflate Root
         rootBinding = DataBindingUtil.inflate(inflater, getRootLayoutResId(), container, false);
-        rootView = rootBinding.getRoot();
+        View rootView = rootBinding.getRoot();
 
-        final ViewStub vsChildFragmentFrame = (ViewStub) rootView.findViewById(R.id.vsChildFragmentFrame);
+        final ViewStub vsChildFragmentFrame = rootView.findViewById(R.id.vsChildFragmentFrame);
         vsChildFragmentFrame.setOnInflateListener(new ViewStub.OnInflateListener() {
             @Override
             public void onInflate(ViewStub stub, View inflated) {
@@ -124,17 +121,9 @@ public abstract class BaseReportFragment<TBinding extends ViewDataBinding> exten
         return rootView;
     }
 
-    protected void reloadFragment() {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.detach(this);
-        ft.attach(this);
-        ft.commit();
-    }
-
     public int getRootLayoutResId() {
         return R.layout.fragment_root_report_layout;
     }
-
 
     public IUpdateSubHeadingTitle getSubHeadingHandler() {
         return this.subHeadingHandler;

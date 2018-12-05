@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -69,7 +68,7 @@ public class WeeklyReportDao extends AbstractAdoDao<WeeklyReport> {
 
         report.setReportDateTime(new Date());
         User currentUser = ConfigProvider.getUser();
-        report.setInformant(currentUser);
+        report.setReportingUser(currentUser);
         report.setHealthFacility(currentUser.getHealthFacility());
         report.setYear(epiWeek.getYear());
         report.setEpiWeek(epiWeek.getWeek());
@@ -101,7 +100,7 @@ public class WeeklyReportDao extends AbstractAdoDao<WeeklyReport> {
             where.and(
                     where.eq(WeeklyReport.YEAR, epiWeek.getYear()),
                     where.eq(WeeklyReport.EPI_WEEK, epiWeek.getWeek()),
-                    where.eq(WeeklyReport.INFORMANT + "_id", informant)
+                    where.eq(WeeklyReport.REPORTING_USER + "_id", informant)
             );
 
             return (WeeklyReport) builder.queryForFirst();

@@ -97,7 +97,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 
 		Predicate filter = cb.equal(from.get(WeeklyReport.EPI_WEEK), epiWeek.getWeek());
 		filter = cb.and(filter, cb.equal(from.get(WeeklyReport.YEAR), epiWeek.getYear()));
-		filter = cb.and(filter, cb.equal(from.get(WeeklyReport.INFORMANT), user));
+		filter = cb.and(filter, cb.equal(from.get(WeeklyReport.REPORTING_USER), user));
 
 		cq.where(filter);
 		try {
@@ -215,7 +215,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 		}
 
 		// Whoever created the weekly report is allowed to access it
-		Join<WeeklyReport, User> informant = from.join(WeeklyReport.INFORMANT, JoinType.LEFT);
+		Join<WeeklyReport, User> informant = from.join(WeeklyReport.REPORTING_USER, JoinType.LEFT);
 		Predicate filter = cb.equal(informant, user);
 
 		// Allow access based on user role

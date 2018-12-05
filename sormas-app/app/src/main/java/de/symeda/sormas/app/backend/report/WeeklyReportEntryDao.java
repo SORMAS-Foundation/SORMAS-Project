@@ -25,11 +25,9 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -72,7 +70,7 @@ public class WeeklyReportEntryDao extends AbstractAdoDao<WeeklyReportEntry> {
 
         entry.setWeeklyReport(report);
         entry.setDisease(disease);
-        entry.setNumberOfCases(DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeekAndDisease(epiWeek, disease, report.getInformant()));
+        entry.setNumberOfCases(DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeekAndDisease(epiWeek, disease, report.getReportingUser()));
 
         return entry;
     }

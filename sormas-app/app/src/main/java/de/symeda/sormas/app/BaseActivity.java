@@ -209,7 +209,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         preSetupDrawer(savedInstanceState);
         onCreateInner(savedInstanceState);
 
-        if (!isSubActivitiy())
+        if (!isSubActivity())
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_blue_36dp);
 
         setupDrawer(navigationView);
@@ -323,11 +323,11 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         sampleNotificationCounter = (TextView) navigationView.getMenu().findItem(R.id.menu_item_samples).getActionView().findViewById(R.id.main_menu_notification_counter);
     }
 
-    protected abstract boolean isSubActivitiy();
+    protected abstract boolean isSubActivity();
 
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        if (!isSubActivitiy()
+        if (!isSubActivity()
                 && menuDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }

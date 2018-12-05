@@ -278,9 +278,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
     /**
      * Returns the number of cases reported by the current user over the course of the given epi week.
-     * If there are reports for the given and next epi week, all cases between the report dates of these
-     * reports will be collected; if one or both of these dates are missing, the start and end of the given
-     * epi week is taken instead, respectively.
      */
     public int getNumberOfCasesForEpiWeek(EpiWeek epiWeek, User informant) {
         return getNumberOfCasesForEpiWeekAndDisease(epiWeek, null, informant);
@@ -294,22 +291,13 @@ public class CaseDao extends AbstractAdoDao<Case> {
             throw new UnsupportedOperationException("Can only retrieve the number of reported cases by epi week and disease for Informants.");
         }
 
-        WeeklyReport epiWeekReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(epiWeek, informant);
-        WeeklyReport previousEpiWeekReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(DateHelper.getPreviousEpiWeek(epiWeek), informant);
-        WeeklyReport nextEpiWeekReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(DateHelper.getNextEpiWeek(epiWeek), informant);
-
-        Date[] reportStartAndEnd = DateHelper.calculateEpiWeekReportStartAndEnd(new Date(), epiWeek,
-                epiWeekReport != null ? epiWeekReport.getReportDateTime() : null,
-                previousEpiWeekReport != null ? previousEpiWeekReport.getReportDateTime() : null,
-                nextEpiWeekReport != null ? nextEpiWeekReport.getReportDateTime() : null);
-
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
                     where.eq(Case.REPORTING_USER, informant),
-                    where.ge(Case.REPORT_DATE, reportStartAndEnd[0]),
-                    where.le(Case.REPORT_DATE, reportStartAndEnd[1])
+                    where.ge(Case.REPORT_DATE, DateHelper.getEpiWeekStart(epiWeek)),
+                    where.le(Case.REPORT_DATE, DateHelper.getEpiWeekEnd(epiWeek))
             );
 
             if (disease != null) {

@@ -34,18 +34,15 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
 
     private final static String TAG = BaseReportActivity.class.getSimpleName();
 
-    private View applicationTitleBar = null;
     private BaseReportFragment activeFragment = null;
     private TextView subHeadingActivityTitle;
 
     @Override
-    protected boolean isSubActivitiy() {
+    protected boolean isSubActivity() {
         return false;
     }
 
     public void setSubHeadingTitle(String title) {
-        String t = (title == null) ? "" : title;
-
         if (subHeadingActivityTitle != null) {
             if (!DataHelper.isNullOrEmpty(title)) {
                 subHeadingActivityTitle.setText(title);
@@ -83,8 +80,6 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.dashboard_action_menu, menu);
 
-        processActionbarMenu();
-
         return true;
     }
 
@@ -98,11 +93,10 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
     }
 
     protected void onCreateInner(Bundle savedInstanceState) {
-        subHeadingActivityTitle = (TextView) findViewById(R.id.subHeadingActivityTitle);
+        subHeadingActivityTitle = findViewById(R.id.subHeadingActivityTitle);
 
         if (showTitleBar()) {
-            applicationTitleBar = findViewById(R.id.applicationTitleBar);
-
+            View applicationTitleBar = findViewById(R.id.applicationTitleBar);
             if (applicationTitleBar != null)
                 applicationTitleBar.setVisibility(View.VISIBLE);
         }
@@ -121,7 +115,6 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
     }
 
     private void replaceFragment(BaseReportFragment f) {
-        BaseFragment previousFragment = activeFragment;
         activeFragment = f;
 
         if (activeFragment != null) {
@@ -134,8 +127,4 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
         updateStatusFrame();
     }
 
-    private void processActionbarMenu() {
-        if (activeFragment == null)
-            return;
-    }
 }

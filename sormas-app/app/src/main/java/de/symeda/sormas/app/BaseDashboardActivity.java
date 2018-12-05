@@ -43,7 +43,7 @@ public abstract class BaseDashboardActivity extends BaseActivity {
     private Map<String, SummaryRegisterItem> activeFragments = new HashMap<String, SummaryRegisterItem>();
 
     @Override
-    protected boolean isSubActivitiy() {
+    protected boolean isSubActivity() {
         return false;
     }
 
