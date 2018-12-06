@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.report.adapter;
+package de.symeda.sormas.app.report;
 
 import android.content.Context;
 
@@ -26,18 +26,17 @@ import java.util.List;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
-import de.symeda.sormas.app.databinding.RowWeeklyReportOverviewListItemLayoutBinding;
-import de.symeda.sormas.app.report.viewmodel.WeeklyReportOverviewViewModel;
+import de.symeda.sormas.app.databinding.RowWeeklyReportListItemLayoutBinding;
 
-public class WeeklyReportOverviewAdapter extends DataBoundAdapter<RowWeeklyReportOverviewListItemLayoutBinding> {
+public class WeeklyReportAdapter extends DataBoundAdapter<RowWeeklyReportListItemLayoutBinding> {
 
     private static final String TAG = WeeklyReportAdapter.class.getSimpleName();
 
     private final Context context;
-    private List<WeeklyReportOverviewViewModel> data;
+    private List<WeeklyReportListItem> data;
 
-    public WeeklyReportOverviewAdapter(Context context, List<WeeklyReportOverviewViewModel> data) {
-        super(R.layout.row_weekly_report_overview_list_item_layout);
+    public WeeklyReportAdapter(Context context, List<WeeklyReportListItem> data) {
+        super(R.layout.row_weekly_report_list_item_layout);
         this.context = context;
 
         if (data == null)
@@ -47,10 +46,9 @@ public class WeeklyReportOverviewAdapter extends DataBoundAdapter<RowWeeklyRepor
     }
 
     @Override
-    protected void bindItem(DataBoundViewHolder<RowWeeklyReportOverviewListItemLayoutBinding> holder,
+    protected void bindItem(DataBoundViewHolder<RowWeeklyReportListItemLayoutBinding> holder,
                             int position, List<Object> payloads) {
-
-        WeeklyReportOverviewViewModel record = data.get(position);
+        WeeklyReportListItem record = data.get(position);
         holder.setData(record);
     }
 

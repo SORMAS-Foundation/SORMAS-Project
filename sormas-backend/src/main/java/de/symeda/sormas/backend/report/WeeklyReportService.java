@@ -231,13 +231,8 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 				}
 				break;
 			case SURVEILLANCE_OFFICER:
-			case CONTACT_OFFICER:
-			case CASE_OFFICER:
-			case DISTRICT_OBSERVER:
-				// Officers see all reports from facilities in their district
-				if (user.getDistrict() != null) {
-					filter = cb.or(filter, cb.equal(informant.join(User.HEALTH_FACILITY, JoinType.LEFT).get(Facility.DISTRICT), user.getDistrict()));
-				}
+				// Officers see all reports from their assigned informants
+				filter = cb.or(filter, cb.equal(informant.get(User.ASSOCIATED_OFFICER), user));
 				break;
 			default:
 				break;

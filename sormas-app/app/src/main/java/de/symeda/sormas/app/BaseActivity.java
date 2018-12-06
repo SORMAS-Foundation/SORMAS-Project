@@ -508,6 +508,14 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         fragmentFrame.setVisibility(View.VISIBLE);
     }
 
+    public void setPageMenuVisibility(boolean visible) {
+        if (visible) {
+            pageMenu.setVisibility(View.VISIBLE);
+        } else {
+            pageMenu.setVisibility(View.GONE);
+        }
+    }
+
     public boolean isShowTitleBar() {
         return true;
     }
@@ -708,7 +716,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         }
         return activePageItem;
     }
-
 
     protected boolean goToNextPage() {
         if (activePageKey == pageItems.size() - 1)

@@ -41,6 +41,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
@@ -729,6 +730,15 @@ public class TextViewBindingAdapters {
             textField.setText(defaultValue);
         } else {
             textField.setText(facility.toString());
+        }
+    }
+
+    @BindingAdapter(value={"adoValue", "defaultValue"}, requireAll=false)
+    public static void setAdoValue(TextView textField, AbstractDomainObject ado, String defaultValue) {
+        if (ado == null || StringUtils.isEmpty(ado.toString())) {
+            textField.setText(defaultValue);
+        } else {
+            textField.setText(ado.toString());
         }
     }
 

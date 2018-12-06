@@ -42,6 +42,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -279,23 +280,24 @@ public class CaseDao extends AbstractAdoDao<Case> {
     /**
      * Returns the number of cases reported by the current user over the course of the given epi week.
      */
-    public int getNumberOfCasesForEpiWeek(EpiWeek epiWeek, User informant) {
-        return getNumberOfCasesForEpiWeekAndDisease(epiWeek, null, informant);
+    public int getNumberOfCasesForEpiWeek(EpiWeek epiWeek, User user) {
+        return getNumberOfCasesForEpiWeekAndDisease(epiWeek, null, user);
     }
 
     /**
      * Returns the number of cases with the given disease reported by the current user over the course of the given epi week.
      */
-    public int getNumberOfCasesForEpiWeekAndDisease(EpiWeek epiWeek, Disease disease, User informant) {
-        if (!(informant.hasUserRole(UserRole.HOSPITAL_INFORMANT) || informant.hasUserRole(UserRole.COMMUNITY_INFORMANT))) {
-            throw new UnsupportedOperationException("Can only retrieve the number of reported cases by epi week and disease for Informants.");
+    public int getNumberOfCasesForEpiWeekAndDisease(EpiWeek epiWeek, Disease disease, User user) {
+        if (!(user.hasUserRight(UserRight.WEEKLYREPORT_CREATE))) {
+            throw new UnsupportedOperationException("Can only retrieve the number of reported cases by epi week and disease for " +
+                    "users that can create weekly reports.");
         }
 
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
-                    where.eq(Case.REPORTING_USER, informant),
+                    where.eq(Case.REPORTING_USER, user),
                     where.ge(Case.REPORT_DATE, DateHelper.getEpiWeekStart(epiWeek)),
                     where.le(Case.REPORT_DATE, DateHelper.getEpiWeekEnd(epiWeek))
             );

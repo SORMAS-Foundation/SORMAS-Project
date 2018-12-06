@@ -19,24 +19,57 @@
 package de.symeda.sormas.app.report;
 
 import android.content.Context;
+import android.view.View;
 
+import java.util.List;
+
+import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseReportActivity;
 import de.symeda.sormas.app.BaseReportFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.caze.read.CaseReadActivity;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 
 public class ReportActivity extends BaseReportActivity {
 
     private final static String TAG = ReportActivity.class.getSimpleName();
+
+    public EpiWeek epiWeek = null;
 
     public static void startActivity(Context context) {
         BaseActivity.startActivity(context, ReportActivity.class, buildBundle(0));
     }
 
     @Override
-    public BaseReportFragment buildReportFragment() {
-        return ReportFragment.newInstance();
+    public List<PageMenuItem> getPageMenuData() {
+        List<PageMenuItem> menuItems = PageMenuItem.fromEnum(ReportSection.values(), getContext());
+        if (!(ConfigProvider.getUser().hasUserRole(UserRole.SURVEILLANCE_OFFICER))) {
+            menuItems.remove(ReportSection.INFORMANT_REPORTS.ordinal());
+            setPageMenuVisibility(false);
+        }
+
+        return menuItems;
+    }
+
+    @Override
+    public BaseReportFragment buildReportFragment(PageMenuItem menuItem) {
+        ReportSection section = ReportSection.fromOrdinal(menuItem.getKey());
+        BaseReportFragment fragment;
+        switch (section) {
+            case MY_REPORTS:
+                fragment = ReportFragment.newInstance();
+                break;
+            case INFORMANT_REPORTS:
+                fragment = ReportOverviewFragment.newInstance();
+                break;
+            default:
+                throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
+        }
+
+        return fragment;
     }
 
     @Override
@@ -53,4 +86,13 @@ public class ReportActivity extends BaseReportActivity {
     protected boolean showTitleBar() {
         return true;
     }
+
+    public EpiWeek getEpiWeek() {
+        return epiWeek;
+    }
+
+    public void setEpiWeek(EpiWeek epiWeek) {
+        this.epiWeek = epiWeek;
+    }
+
 }

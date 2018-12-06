@@ -16,25 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.report.viewmodel;
+package de.symeda.sormas.app.report;
 
-import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.I18nProperties;
 
-public class WeeklyReportViewModel {
+public enum EpiWeekFilterOption {
 
-    private Disease mDisease;
-    private int nNumberOfCases;
+    LAST_WEEK,
+    THIS_WEEK,
+    SPECIFY_WEEK;
 
-    public WeeklyReportViewModel(Disease disease, int numberOfCases) {
-        this.mDisease = disease;
-        this.nNumberOfCases = numberOfCases;
+    public String toString() {
+        return I18nProperties.getEnumCaption(this);
     }
 
-    public Disease getDisease() {
-        return mDisease;
-    }
-
-    public int getNumberOfCases() {
-        return nNumberOfCases;
-    }
 }

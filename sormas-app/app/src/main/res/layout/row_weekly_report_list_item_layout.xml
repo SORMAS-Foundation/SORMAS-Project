@@ -23,7 +23,7 @@
     <data>
         <variable
             name="data"
-            type="de.symeda.sormas.app.report.viewmodel.WeeklyReportViewModel"/>
+            type="de.symeda.sormas.app.report.WeeklyReportListItem"/>
     </data>
 
     <LinearLayout

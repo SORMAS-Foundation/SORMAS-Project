@@ -65,6 +65,7 @@ public class User extends AbstractDomainObject {
 	public static final String USER_ROLES = "userRoles";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String LABORATORY = "laboratory";
+	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
 
 	private String userName;
 	private String password;

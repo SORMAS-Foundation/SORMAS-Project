@@ -28,10 +28,12 @@ import java.sql.SQLException;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.user.User;
 
 /**
  * Created by Mate Strysewske on 07.09.2017.
@@ -70,7 +72,15 @@ public class WeeklyReportEntryDao extends AbstractAdoDao<WeeklyReportEntry> {
 
         entry.setWeeklyReport(report);
         entry.setDisease(disease);
-        entry.setNumberOfCases(DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeekAndDisease(epiWeek, disease, report.getReportingUser()));
+
+        int numberOfCases = DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeekAndDisease(epiWeek, disease, report.getReportingUser());
+        if (report.getReportingUser().hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+            List<User> informants = DatabaseHelper.getUserDao().getInformantsByAssociatedOfficer(report.getReportingUser());
+            for (User informant : informants) {
+                numberOfCases += DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeekAndDisease(epiWeek, disease, informant);
+            }
+        }
+        entry.setNumberOfCases(numberOfCases);
 
         return entry;
     }

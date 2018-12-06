@@ -120,7 +120,7 @@
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/report_content"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:background="@color/listActivityRowBackground" />
 
                 </android.support.v4.widget.NestedScrollView>
@@ -132,7 +132,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/action_submit_report"
-                android:layout_marginTop="@dimen/margin_default"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="@dimen/margin_default"
                 android:layout_marginStart="@dimen/parentLayoutHorizontalPadding"
                 android:layout_marginEnd="@dimen/parentLayoutHorizontalPadding"
                 app:buttonType="@{ControlButtonType.LINE_PRIMARY}"

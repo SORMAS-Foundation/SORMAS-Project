@@ -131,12 +131,14 @@
     <string name="caption_visit_information">Visit Information</string>
     <string name="caption_visit_symptoms">Symptom Information</string>
     <string name="caption_smallpox_vaccination_scar_img">Smallpox Vaccination Scar</string>
+    <string name="caption_my_reports">My Reports</string>
+    <string name="caption_informant_reports">Informant Reports</string>
 
     <string name="confirmation_resync">SYNC</string>
     <string name="confirmation_unsynchronized_changes">There are unsynchronized changes on your device.\nIf you proceed, they will be lost and you will not be able to restore them. Type the word SYNC into the text field below to continue.</string>
 
     <string name="case_uuid_unknown">Case ID N/A</string>
-    <string name="cases_confirmed_unknown">Cases Confirmed Unknown</string>
+    <string name="unconfirmed">Unconfirmed</string>
     <string name="contact_class_unknown">Classification N/A</string>
     <string name="contact_proximity_unknown">Proximity N/A</string>
     <string name="contact_uuid_unknown">Contact ID N/A</string>
@@ -209,6 +211,7 @@
     <string name="headline_synchronization">Synchronization</string>
     <string name="headline_task_notification">Check sormas task</string>
     <string name="headline_update_app">App update required</string>
+    <string name="headline_informant_reports">Informant Reports</string>
 
     <string name="health_facility_unknown">Health Facility N/A</string>
 

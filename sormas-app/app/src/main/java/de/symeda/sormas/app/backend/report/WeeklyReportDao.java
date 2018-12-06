@@ -29,6 +29,8 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -70,12 +72,22 @@ public class WeeklyReportDao extends AbstractAdoDao<WeeklyReport> {
         User currentUser = ConfigProvider.getUser();
         report.setReportingUser(currentUser);
         report.setHealthFacility(currentUser.getHealthFacility());
+        report.setCommunity(currentUser.getCommunity());
         report.setYear(epiWeek.getYear());
         report.setEpiWeek(epiWeek.getWeek());
+        report.setAssignedOfficer(currentUser.getAssociatedOfficer());
+        report.setDistrict(currentUser.getDistrict());
 
         // We need to use the getPreviousEpiWeek method because the report date of a weekly report will always
         // be in the week after the epi week the report is built for
-        report.setTotalNumberOfCases(DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeek(epiWeek, currentUser));
+        int totalNumberOfCases = DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeek(epiWeek, currentUser);
+        if (currentUser.hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+            List<User> informants = DatabaseHelper.getUserDao().getInformantsByAssociatedOfficer(currentUser);
+            for (User informant : informants) {
+                totalNumberOfCases += DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeek(epiWeek, informant);
+            }
+        }
+        report.setTotalNumberOfCases(totalNumberOfCases);
 
         return report;
     }
@@ -93,43 +105,23 @@ public class WeeklyReportDao extends AbstractAdoDao<WeeklyReport> {
         return report;
     }
 
-    public WeeklyReport queryForEpiWeek(EpiWeek epiWeek, User informant) {
-        try {
-            QueryBuilder builder = queryBuilder();
-            Where where = builder.where();
-            where.and(
-                    where.eq(WeeklyReport.YEAR, epiWeek.getYear()),
-                    where.eq(WeeklyReport.EPI_WEEK, epiWeek.getWeek()),
-                    where.eq(WeeklyReport.REPORTING_USER + "_id", informant)
-            );
-
-            return (WeeklyReport) builder.queryForFirst();
-        } catch (SQLException e) {
-            Log.e(getTableName(), "Could not perform queryForEpiWeek");
-            throw new RuntimeException(e);
+    public WeeklyReport queryByEpiWeekAndUser(EpiWeek epiWeek, User user) {
+        if (!(user.hasUserRight(UserRight.WEEKLYREPORT_CREATE))) {
+            throw new IllegalArgumentException("queryByEpiWeekAndUser is only supported for users who can create weekly reports");
         }
-    }
 
-    /**
-     * queries reports by facility (not user!)
-     */
-    public List<WeeklyReport> queryByDistrict(EpiWeek epiWeek, District district) {
         try {
-
             QueryBuilder builder = queryBuilder();
-            QueryBuilder facilityBuilder = DatabaseHelper.getFacilityDao().queryBuilder();
-            facilityBuilder.where().eq(Facility.DISTRICT, district);
-            builder.join(facilityBuilder);
-
             Where where = builder.where();
             where.and(
+                    where.eq(WeeklyReport.REPORTING_USER + "_id", user),
                     where.eq(WeeklyReport.YEAR, epiWeek.getYear()),
                     where.eq(WeeklyReport.EPI_WEEK, epiWeek.getWeek())
             );
 
-            return builder.query();
+            return (WeeklyReport) builder.queryForFirst();
         } catch (SQLException e) {
-            Log.e(getTableName(), "Could not perform queryByDistrict");
+            Log.e(getTableName(), "Could not perform queryByEpiWeekAndUser");
             throw new RuntimeException(e);
         }
     }

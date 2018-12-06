@@ -55,7 +55,12 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
 
     @Override
     protected boolean openPage(PageMenuItem menuItem) {
-        throw new UnsupportedOperationException();
+        BaseReportFragment newActiveFragment = buildReportFragment(menuItem);
+        if (newActiveFragment == null) {
+            return false;
+        }
+        replaceFragment(newActiveFragment);
+        return true;
     }
 
     @Override
@@ -105,10 +110,10 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
     @Override
     protected void onResumeFragments() {
         super.onResumeFragments();
-        replaceFragment(buildReportFragment());
+        replaceFragment(buildReportFragment(getActivePage()));
     }
 
-    protected abstract BaseReportFragment buildReportFragment();
+    protected abstract BaseReportFragment buildReportFragment(PageMenuItem menuItem);
 
     protected boolean showTitleBar() {
         return true;
