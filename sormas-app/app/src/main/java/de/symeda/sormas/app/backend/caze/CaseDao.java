@@ -288,7 +288,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
      * Returns the number of cases with the given disease reported by the current user over the course of the given epi week.
      */
     public int getNumberOfCasesForEpiWeekAndDisease(EpiWeek epiWeek, Disease disease, User user) {
-        if (!(user.hasUserRight(UserRight.WEEKLYREPORT_CREATE))) {
+        if (!(ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE))) {
             throw new UnsupportedOperationException("Can only retrieve the number of reported cases by epi week and disease for " +
                     "users that can create weekly reports.");
         }

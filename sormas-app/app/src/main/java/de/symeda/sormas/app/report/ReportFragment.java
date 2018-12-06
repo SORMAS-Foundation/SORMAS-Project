@@ -267,7 +267,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
     }
 
     protected void showReportData(User user, EpiWeek epiWeek, EpiWeekFilterOption filterOption) {
-        if (epiWeek == null || !user.hasUserRight(UserRight.WEEKLYREPORT_CREATE)) {
+        if (epiWeek == null || !ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE)) {
             setVisibilityForNoData();
         } else {
             WeeklyReport weeklyReport = DatabaseHelper.getWeeklyReportDao().queryByEpiWeekAndUser(epiWeek, user);
@@ -335,7 +335,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
             return;
         }
 
-        if (ConfigProvider.getUser().hasUserRight(UserRight.WEEKLYREPORT_CREATE)) {
+        if (ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE)) {
             loadReportTask = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {

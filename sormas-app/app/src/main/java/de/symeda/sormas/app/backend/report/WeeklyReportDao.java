@@ -106,7 +106,7 @@ public class WeeklyReportDao extends AbstractAdoDao<WeeklyReport> {
     }
 
     public WeeklyReport queryByEpiWeekAndUser(EpiWeek epiWeek, User user) {
-        if (!(user.hasUserRight(UserRight.WEEKLYREPORT_CREATE))) {
+        if (!(ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE))) {
             throw new IllegalArgumentException("queryByEpiWeekAndUser is only supported for users who can create weekly reports");
         }
 

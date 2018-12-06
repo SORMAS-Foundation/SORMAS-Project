@@ -100,7 +100,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 133;
+	private static final int DATABASE_VERSION = 134;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -570,6 +570,19 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(User.class).executeRaw("UPDATE users SET userRole = replace(userRole, 'INFORMANT', 'HOSPITAL_INFORMANT');");
 				case 132:
 					currentVersion = 132;
+					getDao(UserRoleConfig.class).executeRaw("CREATE TABLE userrolesconfig(" +
+							"id integer primary key autoincrement," +
+							"uuid varchar(36)," +
+							"changeDate timestamp," +
+							"creationDate timestamp," +
+							"userRole varchar(255)," +
+							"userRights varchar(1023)," +
+							"lastOpenedDate timestamp," +
+							"localChangeDate timestamp," +
+							"modified integer," +
+							"snapshot integer);");
+				case 133:
+					currentVersion = 133;
 					getDao(WeeklyReport.class).executeRaw("ALTER TABLE weeklyreport RENAME TO tmp_weeklyreport;");
 					getDao(WeeklyReport.class).executeRaw("CREATE TABLE weeklyreport(id integer primary key autoincrement, uuid varchar(36) not null unique, changeDate timestamp not null, " +
 							"creationDate timestamp not null, lastOpenedDate timestamp, localChangeDate timestamp not null, modified integer, snapshot integer, healthFacility_id bigint REFERENCES facility(id), " +
@@ -582,19 +595,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							"FROM tmp_weeklyreport;");
 					getDao(WeeklyReport.class).executeRaw("DROP TABLE tmp_weeklyreport;");
 
-				case 132:
-					currentVersion = 132;
-					getDao(UserRoleConfig.class).executeRaw("CREATE TABLE userrolesconfig(" +
-							"id integer primary key autoincrement," +
-							"uuid varchar(36)," +
-							"changeDate timestamp," +
-							"creationDate timestamp," +
-							"userRole varchar(255)," +
-							"userRights varchar(1023)," +
-							"lastOpenedDate timestamp," +
-							"localChangeDate timestamp," +
-							"modified integer," +
-							"snapshot integer);");
 
 					// ATTENTION: break should only be done after last version
 					break;

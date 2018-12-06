@@ -46,6 +46,9 @@ public class User extends AbstractDomainObject {
 
     private static final long serialVersionUID = -629432920970152112L;
 
+    public static final String TABLE_NAME = "users";
+    public static final String I18N_PREFIX = "User";
+
 	public static final String USER_NAME = "userName";
 	public static final String ACTIVE = "active";
 	public static final String FIRST_NAME = "firstName";
@@ -59,21 +62,6 @@ public class User extends AbstractDomainObject {
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
 	public static final String USER_ROLES_JSON = "userRole";
-    public static final String TABLE_NAME = "users";
-    public static final String I18N_PREFIX = "User";
-
-    public static final String USER_NAME = "userName";
-    public static final String ACTIVE = "active";
-    public static final String FIRST_NAME = "firstName";
-    public static final String LAST_NAME = "lastName";
-    public static final String USER_EMAIL = "userEmail";
-    public static final String PHONE = "phone";
-    public static final String ADDRESS = "address";
-    public static final String REGION = "region";
-    public static final String DISTRICT = "district";
-    public static final String COMMUNITY = "community";
-    public static final String HEALTH_FACILITY = "healthFacility";
-    public static final String USER_ROLES_JSON = "userRole";
 
     @Column(nullable = false)
     private String userName;
