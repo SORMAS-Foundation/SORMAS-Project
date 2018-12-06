@@ -117,12 +117,12 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 					+ "CASE WHEN SUM(wr.totalnumberofcases) > 0 AND COUNT(users.id) = COUNT(wr.id) THEN 1 ELSE 0 END as report, "
 					+ "CASE WHEN SUM(wr.totalnumberofcases) = 0 AND COUNT(users.id) = COUNT(wr.id) THEN 1 ELSE 0 END as zero "
 					+ "FROM users "
-					+ "INNER JOIN userroles ON userroles.user_id = users.id "
+					+ "INNER JOIN users_userroles ON users_userroles.user_id = users.id "
 					+ "INNER JOIN facility ON users.healthfacility_id = facility.id "
 					+ "LEFT JOIN ("
 						+ "SELECT * FROM weeklyreport WHERE year = " + epiWeek.getYear() + " AND epiweek = " + epiWeek.getWeek() 
-					+ ") as wr ON wr.informant_id = users.id "
-					+ "WHERE userroles.userrole = 'HOSPITAL_INFORMANT' "
+					+ ") as wr ON wr.reportinguser_id = users.id "
+					+ "WHERE users_userroles.userrole = 'HOSPITAL_INFORMANT' "
 					+ "GROUP BY facility.id"
 				+ ") as inner_query "
 				+ "GROUP BY region_id;");
@@ -167,7 +167,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 					+ "INNER JOIN facility ON users.healthfacility_id = facility.id "
 					+ "LEFT JOIN ("
 						+ "SELECT * FROM weeklyreport WHERE year = " + epiWeek.getYear() + " AND epiweek = " + epiWeek.getWeek() 
-					+ ") as wr ON wr.informant_id = users.id "
+					+ ") as wr ON wr.reportinguser_id = users.id "
 					+ "WHERE users_userroles.userrole = 'HOSPITAL_INFORMANT' "
 						+ "AND facility.region_id = " + region.getId() + " "
 					+ "GROUP BY facility.id"
