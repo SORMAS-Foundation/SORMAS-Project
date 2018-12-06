@@ -17,10 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -31,6 +35,7 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Stateless
 @LocalBean
@@ -64,5 +69,19 @@ public class UserRoleConfigService extends AbstractAdoService<UserRoleConfig> {
 		UserRoleConfig entity = q.getResultList().stream().findFirst().orElse(null);
 
 		return entity;
+	}
+
+	public List<String> getDeletedUuids(Date since) {
+
+		String queryString = "SELECT " + AbstractDomainObject.UUID 
+				+ " FROM " + UserRoleConfig.TABLE_NAME + "_history h"
+				+ " WHERE sys_period @> ?1::timestamptz"
+				+ " AND NOT EXISTS (SELECT FROM " + UserRoleConfig.TABLE_NAME 
+					+ " WHERE " + AbstractDomainObject.ID + " = h." + AbstractDomainObject.ID + ")";
+		Query nativeQuery = em.createNativeQuery(queryString);
+		nativeQuery.setParameter(1, since);
+		@SuppressWarnings("unchecked")
+		List<String> results = (List<String>)nativeQuery.getResultList();
+		return results;
 	}
 }

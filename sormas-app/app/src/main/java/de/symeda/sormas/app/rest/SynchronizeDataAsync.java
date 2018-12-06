@@ -271,8 +271,14 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new CommunityDtoHelper().pullEntities(false);
         new FacilityDtoHelper().pullEntities(false);
         new UserDtoHelper().pullEntities(false);
-        new UserRoleConfigDtoHelper().pullEntities(false);
 
+        // user role configurations may be removed, so have to pull the deleted uuids
+        // this may be applied to other entities later as well
+        Date latestChangeDate = DatabaseHelper.getUserRoleConfigDao().getLatestChangeDate();
+        List<String> weeklyReportEntryUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullDeletedUuidsSince(latestChangeDate != null ? latestChangeDate.getTime() + 1 : 0));
+        DatabaseHelper.getUserRoleConfigDao().delete(weeklyReportEntryUuids);
+
+        new UserRoleConfigDtoHelper().pullEntities(false);
     }
 
     private void pullMissingAndDeleteInvalidData() throws ServerConnectionException, ServerCommunicationException, DaoException {
@@ -341,7 +347,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // users
         List<String> userUuids = executeUuidCall(RetroProvider.getUserFacade().pullUuids());
         DatabaseHelper.getUserDao().deleteInvalid(userUuids);
-        // users
+        // user role config
         List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullUuids());
         DatabaseHelper.getUserRoleConfigDao().deleteInvalid(userRoleConfigUuids);
         // facilities

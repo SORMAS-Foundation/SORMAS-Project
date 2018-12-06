@@ -63,4 +63,12 @@ public class UserRoleConfigResource {
 		List<String> uuids = FacadeProvider.getUserRoleConfigFacade().getAllUuids(userDto.getUuid());
 		return uuids;
 	}
+	
+	@GET
+	@Path("/deleted/{since}")
+	public List<String> getDeletedUuids(@PathParam("since") long since) {
+		
+		return FacadeProvider.getUserRoleConfigFacade().getDeletedUuids(new Date(since));
+	}
+
 }

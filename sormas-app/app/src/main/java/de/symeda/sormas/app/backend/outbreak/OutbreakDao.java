@@ -35,9 +35,6 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 
-/**
- * Created by Martin Wahnschaffe on 22.07.2016.
- */
 public class OutbreakDao extends AbstractAdoDao<Outbreak> {
 
     public OutbreakDao(Dao<Outbreak,Long> innerDao) throws SQLException {
@@ -73,16 +70,5 @@ public class OutbreakDao extends AbstractAdoDao<Outbreak> {
     @Override
     public Outbreak saveAndSnapshot(Outbreak source) throws DaoException {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Outbreak mergeOrCreate(Outbreak source) throws DaoException {
-        try {
-            // just override - outbreaks can't be edited on the device
-            updateOrCreate(source);
-            return source;
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
     }
 }

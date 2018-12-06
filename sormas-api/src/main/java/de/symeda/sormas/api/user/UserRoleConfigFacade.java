@@ -32,6 +32,8 @@ public interface UserRoleConfigFacade {
     
 	List<String> getAllUuids(String userUuid);
 
+	List<String> getDeletedUuids(Date date);
+
 	UserRoleConfigDto getByUuid(String uuid);
     
     UserRoleConfigDto saveUserRoleConfig(UserRoleConfigDto dto);

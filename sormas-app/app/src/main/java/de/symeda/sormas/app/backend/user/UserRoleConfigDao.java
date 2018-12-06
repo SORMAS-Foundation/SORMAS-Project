@@ -49,17 +49,6 @@ public class UserRoleConfigDao extends AbstractAdoDao<UserRoleConfig> {
     }
 
     @Override
-    public UserRoleConfig mergeOrCreate(UserRoleConfig source) throws DaoException {
-        try {
-            // just override - user role configs can't be edited on the device
-            updateOrCreate(source);
-            return source;
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    @Override
     public void create(UserRoleConfig data) throws SQLException {
         super.create(data);
         if (ConfigProvider.getUser().hasUserRole(data.getUserRole())) {
