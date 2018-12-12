@@ -43,11 +43,16 @@ public class Outbreak extends AbstractDomainObject {
 	
 	public static final String DISTRICT = "district";
 	public static final String DISEASE = "disease";
+	public static final String START_DATE = "startDate";
+	public static final String END_DATE = "endDate";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String REPORT_DATE = "reportDate";
 	
 	private District district;
 	private Disease disease;
+	private Date startDate;
+	private Date endDate;
+
 	private User reportingUser;
 	private Date reportDate;
 	
@@ -84,5 +89,22 @@ public class Outbreak extends AbstractDomainObject {
 	}
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable=false)
+	public Date getStartDate() {
+		return startDate;
+	}
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getEndDate() {
+		return endDate;
+	}
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}	
 }

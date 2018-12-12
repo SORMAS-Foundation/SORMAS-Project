@@ -2601,3 +2601,14 @@ ALTER TABLE users_history ADD COLUMN community_id bigint;
 ALTER TABLE users_history ADD CONSTRAINT fk_users_community_id FOREIGN KEY (community_id) REFERENCES community (id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (120, 'Restructuring weekly reports #610');
+
+-- 2018-12-10 Outbreak start & end #889
+
+ALTER TABLE outbreak ADD COLUMN startdate timestamp;
+UPDATE outbreak SET startdate=creationdate;
+ALTER TABLE outbreak ALTER COLUMN startdate SET NOT NULL;
+ALTER TABLE outbreak ADD COLUMN enddate timestamp;
+ALTER TABLE outbreak_history ADD COLUMN startdate timestamp;
+ALTER TABLE outbreak_history ADD COLUMN enddate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (121, 'Outbreak start & end #889');

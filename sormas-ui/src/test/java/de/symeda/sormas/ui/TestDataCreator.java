@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
-
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -40,7 +39,6 @@ import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityDto;
@@ -69,12 +67,13 @@ import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 
 public class TestDataCreator {
-	
+
 	public TestDataCreator() {
 
 	}
-	
-	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName, String lastName, UserRole... roles) {
+
+	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName,
+			String lastName, UserRole... roles) {
 		UserDto user = new UserDto();
 		user.setUuid(DataHelper.createUuid());
 		user.setFirstName(firstName);
@@ -85,7 +84,7 @@ public class TestDataCreator {
 		user.setDistrict(FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(districtUuid));
 		user.setHealthFacility(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(facilityUuid));
 		user = FacadeProvider.getUserFacade().saveUser(user);
-		
+
 		return user;
 	}
 
@@ -95,21 +94,22 @@ public class TestDataCreator {
 		cazePerson.setFirstName(firstName);
 		cazePerson.setLastName(lastName);
 		cazePerson = FacadeProvider.getPersonFacade().savePerson(cazePerson);
-		
+
 		return cazePerson;
 	}
-	
+
 	public CaseDataDto createUnclassifiedCase(Disease disease) {
 		RDCF rdcf = createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
-				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv",
+				"Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = createPerson("Case", "Person");
-		return createCase(user.toReference(), cazePerson.toReference(), disease, CaseClassification.NOT_CLASSIFIED, 
+		return createCase(user.toReference(), cazePerson.toReference(), disease, CaseClassification.NOT_CLASSIFIED,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 	}
 
-	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease, CaseClassification caseClassification, 
-			InvestigationStatus investigationStatus, Date reportDate, RDCF rdcf) {
+	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease,
+			CaseClassification caseClassification, InvestigationStatus investigationStatus, Date reportDate,
+			RDCF rdcf) {
 		CaseDataDto caze = CaseDataDto.build(cazePerson, disease);
 		caze.setReportDate(reportDate);
 		caze.setReportingUser(user);
@@ -118,15 +118,15 @@ public class TestDataCreator {
 		caze.setRegion(FacadeProvider.getRegionFacade().getRegionReferenceByUuid(rdcf.region.getUuid()));
 		caze.setDistrict(FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(rdcf.district.getUuid()));
 		caze.setCommunity(FacadeProvider.getCommunityFacade().getCommunityReferenceByUuid(rdcf.community.getUuid()));
-		caze.setHealthFacility(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(rdcf.facility.getUuid()));		
-		
+		caze.setHealthFacility(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(rdcf.facility.getUuid()));
+
 		caze = FacadeProvider.getCaseFacade().saveCase(caze);
-		
+
 		return caze;
 	}
 
-	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer, PersonReferenceDto contactPerson,
-			CaseReferenceDto caze, Date reportDateTime, Date lastContactDate) {
+	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
+			PersonReferenceDto contactPerson, CaseReferenceDto caze, Date reportDateTime, Date lastContactDate) {
 		ContactDto contact = new ContactDto();
 		contact.setUuid(DataHelper.createUuid());
 		contact.setReportingUser(reportingUser);
@@ -135,9 +135,9 @@ public class TestDataCreator {
 		contact.setCaze(caze);
 		contact.setReportDateTime(reportDateTime);
 		contact.setLastContactDate(lastContactDate);
-		
+
 		contact = FacadeProvider.getContactFacade().saveContact(contact);
-		
+
 		return contact;
 	}
 
@@ -159,30 +159,32 @@ public class TestDataCreator {
 		}
 		task.setDueDate(dueDate);
 		task.setAssigneeUser(assigneeUser);
-		
+
 		task = FacadeProvider.getTaskFacade().saveTask(task);
-		
+
 		return task;
 	}
-	
-	public VisitDto createVisit(Disease disease, PersonReferenceDto contactPerson, Date visitDateTime, VisitStatus visitStatus) {
+
+	public VisitDto createVisit(Disease disease, PersonReferenceDto contactPerson, Date visitDateTime,
+			VisitStatus visitStatus) {
 		VisitDto visit = new VisitDto();
 		visit.setUuid(DataHelper.createUuid());
 		visit.setDisease(disease);
 		visit.setPerson(contactPerson);
 		visit.setVisitDateTime(visitDateTime);
 		visit.setVisitStatus(visitStatus);
-		
+
 		SymptomsDto symptoms = new SymptomsDto();
 		symptoms.setUuid(DataHelper.createUuid());
 		visit.setSymptoms(symptoms);
-		
+
 		visit = FacadeProvider.getVisitFacade().saveVisit(visit);
-		
+
 		return visit;
 	}
-	
-	public WeeklyReportDto createWeeklyReport(String facilityUuid, UserReferenceDto informant, Date reportDateTime, int epiWeek, int year, int numberOfCases) {
+
+	public WeeklyReportDto createWeeklyReport(String facilityUuid, UserReferenceDto informant, Date reportDateTime,
+			int epiWeek, int year, int numberOfCases) {
 		WeeklyReportDto report = new WeeklyReportDto();
 		report.setUuid(DataHelper.createUuid());
 		report.setHealthFacility(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(facilityUuid));
@@ -191,13 +193,16 @@ public class TestDataCreator {
 		report.setEpiWeek(epiWeek);
 		report.setYear(year);
 		report.setTotalNumberOfCases(numberOfCases);
-		
+
 		report = FacadeProvider.getWeeklyReportFacade().saveWeeklyReport(report);
-		
+
 		return report;
 	}
-	
-	public EventDto createEvent(EventType eventType, EventStatus eventStatus, String eventDesc, String srcFirstName, String srcLastName, String srcTelNo, TypeOfPlace typeOfPlace, Date eventDate, Date reportDateTime, UserReferenceDto reportingUser, UserReferenceDto surveillanceOfficer, Disease disease, LocationDto eventLocation) {
+
+	public EventDto createEvent(EventType eventType, EventStatus eventStatus, String eventDesc, String srcFirstName,
+			String srcLastName, String srcTelNo, TypeOfPlace typeOfPlace, Date eventDate, Date reportDateTime,
+			UserReferenceDto reportingUser, UserReferenceDto surveillanceOfficer, Disease disease,
+			LocationDto eventLocation) {
 		EventDto event = new EventDto();
 		event.setUuid(DataHelper.createUuid());
 		event.setEventType(eventType);
@@ -213,24 +218,26 @@ public class TestDataCreator {
 		event.setSurveillanceOfficer(surveillanceOfficer);
 		event.setDisease(disease);
 		event.setEventLocation(eventLocation);
-		
+
 		event = FacadeProvider.getEventFacade().saveEvent(event);
-		
+
 		return event;
 	}
-	
-	public EventParticipantDto createEventParticipant(EventReferenceDto event, PersonDto eventPerson, String involvementDescription) {
+
+	public EventParticipantDto createEventParticipant(EventReferenceDto event, PersonDto eventPerson,
+			String involvementDescription) {
 		EventParticipantDto eventParticipant = new EventParticipantDto();
 		eventParticipant.setEvent(event);
 		eventParticipant.setPerson(eventPerson);
 		eventParticipant.setInvolvementDescription(involvementDescription);
-		
+
 		eventParticipant = FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
-		
+
 		return eventParticipant;
 	}
-	
-	public SampleDto createSample(CaseReferenceDto associatedCase, Date sampleDateTime, Date reportDateTime, UserReferenceDto reportingUser, SampleMaterial sampleMaterial, FacilityReferenceDto lab) {
+
+	public SampleDto createSample(CaseReferenceDto associatedCase, Date sampleDateTime, Date reportDateTime,
+			UserReferenceDto reportingUser, SampleMaterial sampleMaterial, FacilityReferenceDto lab) {
 		SampleDto sample = new SampleDto();
 		sample.setUuid(DataHelper.createUuid());
 		sample.setAssociatedCase(associatedCase);
@@ -239,13 +246,15 @@ public class TestDataCreator {
 		sample.setReportingUser(reportingUser);
 		sample.setSampleMaterial(sampleMaterial);
 		sample.setLab(lab);
-		
+
 		sample = FacadeProvider.getSampleFacade().saveSample(sample);
-		
+
 		return sample;
 	}
-	
-	public SampleTestDto createSampleTest(SampleReferenceDto sample, SampleTestType testType, Date testDateTime, FacilityReferenceDto lab, UserReferenceDto labUser, SampleTestResultType testResult, String testResultText, boolean verified) {
+
+	public SampleTestDto createSampleTest(SampleReferenceDto sample, SampleTestType testType, Date testDateTime,
+			FacilityReferenceDto lab, UserReferenceDto labUser, SampleTestResultType testResult, String testResultText,
+			boolean verified) {
 		SampleTestDto sampleTest = new SampleTestDto();
 		sampleTest.setUuid(DataHelper.createUuid());
 		sampleTest.setSample(sample);
@@ -256,40 +265,31 @@ public class TestDataCreator {
 		sampleTest.setTestResult(testResult);
 		sampleTest.setTestResultText(testResultText);
 		sampleTest.setTestResultVerified(verified);
-		
+
 		sampleTest = FacadeProvider.getSampleTestFacade().saveSampleTest(sampleTest);
-		
+
 		return sampleTest;
 	}
 
-	public SampleTestDto createSampleTest(CaseDataDto associatedCase, SampleTestType testType, SampleTestResultType resultType) {
+	public SampleTestDto createSampleTest(CaseDataDto associatedCase, SampleTestType testType,
+			SampleTestResultType resultType) {
 		RDCF rdcf = createRDCF("Region", "District", "Community", "Facility");
-		SampleDto sample = createSample(new CaseReferenceDto(associatedCase.getUuid()), new Date(), new Date(), associatedCase.getReportingUser(), SampleMaterial.BLOOD, rdcf.facility.toReference());
-		return createSampleTest(new SampleReferenceDto(sample.getUuid()), testType, new Date(), rdcf.facility.toReference(), associatedCase.getReportingUser(), resultType, "", true);
+		SampleDto sample = createSample(new CaseReferenceDto(associatedCase.getUuid()), new Date(), new Date(),
+				associatedCase.getReportingUser(), SampleMaterial.BLOOD, rdcf.facility.toReference());
+		return createSampleTest(new SampleReferenceDto(sample.getUuid()), testType, new Date(),
+				rdcf.facility.toReference(), associatedCase.getReportingUser(), resultType, "", true);
 	}
-	
-	public OutbreakDto createOutbreak(RDCF rdcf, Disease disease, UserReferenceDto user) {
-		OutbreakDto outbreak = new OutbreakDto();
-		outbreak.setUuid(DataHelper.createUuid());
-		outbreak.setDistrict(FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(rdcf.district.getUuid()));
-		outbreak.setDisease(disease);
-		outbreak.setReportingUser(user);
-		outbreak.setReportDate(new Date());
-		
-		outbreak = FacadeProvider.getOutbreakFacade().saveOutbreak(outbreak);
-		
-		return outbreak;
-	}
-	
+
 	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName) {
 		RegionDto region = createRegion(regionName);
 		DistrictDto district = createDistrict(districtName, region.toReference());
 		CommunityDto community = createCommunity(communityName, district.toReference());
-		FacilityDto facility = createFacility(facilityName, region.toReference(), district.toReference(), community.toReference());
+		FacilityDto facility = createFacility(facilityName, region.toReference(), district.toReference(),
+				community.toReference());
 
 		return new RDCF(region, district, community, facility);
 	}
-	
+
 	public RegionDto createRegion(String regionName) {
 		RegionDto region = RegionDto.build();
 		region.setUuid(DataHelper.createUuid());
@@ -297,28 +297,29 @@ public class TestDataCreator {
 		FacadeProvider.getRegionFacade().saveRegion(region);
 		return region;
 	}
-	
+
 	public DistrictDto createDistrict(String districtName, RegionReferenceDto region) {
 		DistrictDto district = DistrictDto.build();
 		district.setUuid(DataHelper.createUuid());
 		district.setName(districtName);
 		district.setRegion(region);
 		FacadeProvider.getDistrictFacade().saveDistrict(district);
-		
+
 		return district;
 	}
-	
+
 	public CommunityDto createCommunity(String communityName, DistrictReferenceDto district) {
 		CommunityDto community = CommunityDto.build();
 		community.setUuid(DataHelper.createUuid());
 		community.setName(communityName);
 		community.setDistrict(district);
 		FacadeProvider.getCommunityFacade().saveCommunity(community);
-		
+
 		return community;
 	}
-	
-	public FacilityDto createFacility(String facilityName, RegionReferenceDto region, DistrictReferenceDto district, CommunityReferenceDto community) {
+
+	public FacilityDto createFacility(String facilityName, RegionReferenceDto region, DistrictReferenceDto district,
+			CommunityReferenceDto community) {
 		FacilityDto facility = FacilityDto.build();
 		facility.setUuid(DataHelper.createUuid());
 		facility.setName(facilityName);
@@ -329,13 +330,13 @@ public class TestDataCreator {
 		FacadeProvider.getFacilityFacade().saveFacility(facility);
 		return facility;
 	}
-	
+
 	public class RDCF {
 		public RegionDto region;
 		public DistrictDto district;
 		public CommunityDto community;
 		public FacilityDto facility;
-		
+
 		public RDCF(RegionDto region, DistrictDto district, CommunityDto community, FacilityDto facility) {
 			this.region = region;
 			this.district = district;

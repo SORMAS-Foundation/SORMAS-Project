@@ -18,10 +18,13 @@
 
 package de.symeda.sormas.app.backend.outbreak;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import de.symeda.sormas.api.outbreak.OutbreakDto;
+import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
@@ -57,6 +60,8 @@ public class OutbreakDtoHelper extends AdoDtoHelper<Outbreak, OutbreakDto> {
     public void fillInnerFromDto(Outbreak target, OutbreakDto source) {
         target.setDisease(source.getDisease());
         target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
+        target.setStartDate(source.getStartDate());
+        target.setEndDate(source.getEndDate());
         target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
         target.setReportDate(source.getReportDate());
     }
@@ -64,5 +69,21 @@ public class OutbreakDtoHelper extends AdoDtoHelper<Outbreak, OutbreakDto> {
     @Override
     public void fillInnerFromAdo(OutbreakDto target, Outbreak source) {
         throw new UnsupportedOperationException("Entity is read-only");
+    }
+
+    @Override
+    protected Outbreak handlePulledDto(AbstractAdoDao<Outbreak> dao, OutbreakDto dto) throws DaoException, SQLException {
+
+        if (dto.getEndDate() != null) {
+            // outbreaks that already have an end are not relevant
+            Outbreak existing = dao.queryUuid(dto.getUuid());
+            if (existing != null) {
+                dao.deleteCascade(existing);
+            }
+            return null;
+        } else {
+            Outbreak source = fillOrCreateFromDto(null, dto);
+            return dao.mergeOrCreate(source);
+        }
     }
 }

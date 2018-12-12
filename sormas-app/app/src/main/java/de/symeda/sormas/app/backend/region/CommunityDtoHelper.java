@@ -18,24 +18,19 @@
 
 package de.symeda.sormas.app.backend.region;
 
-import android.util.Log;
-
-import java.util.Date;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.rest.ServerConnectionException;
-import de.symeda.sormas.app.rest.ServerCommunicationException;
 import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.ServerCommunicationException;
+import de.symeda.sormas.app.rest.ServerConnectionException;
 import retrofit2.Call;
-import retrofit2.Response;
 
 /**
  * Created by Martin Wahnschaffe on 27.07.2016.
@@ -93,42 +88,15 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
     // performance tweak: only query for existing during pull, when database was not empty
     private boolean databaseWasEmpty = false;
 
-    /**
-     * Overriden for performance reasons. No merge needed when database was empty.
-     */
     @Override
-    protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<Community> dao, Response<List<CommunityDto>> response) throws ServerCommunicationException, DaoException, ServerConnectionException {
-        if (!response.isSuccessful()) {
-            RetroProvider.throwException(response);
+    protected Community handlePulledDto(AbstractAdoDao<Community> dao, CommunityDto dto) throws SQLException {
+        Community existing = null;
+        if (!databaseWasEmpty) {
+            existing = dao.queryUuid(dto.getUuid());
         }
-
-        final CommunityDao communityDao = (CommunityDao) dao;
-
-        final List<CommunityDto> result = response.body();
-        if (result != null && result.size() > 0) {
-            preparePulledResult(result);
-            dao.callBatchTasks(new Callable<Void>() {
-                public Void call() throws Exception {
-                    for (CommunityDto dto : result) {
-
-                        Community existing = null;
-                        if (!databaseWasEmpty) {
-                            existing = communityDao.queryUuid(dto.getUuid());
-                        }
-                        Community existingOrNew = fillOrCreateFromDto(existing, dto);
-                        if (markAsRead) {
-                            existingOrNew.setLastOpenedDate(DateHelper.addSeconds(new Date(), 5));
-                        }
-                        communityDao.updateOrCreate(existingOrNew);
-                    }
-                    return null;
-                }
-            });
-
-            Log.d(dao.getTableName(), "Pulled: " + result.size());
-            return result.size();
-        }
-        return 0;
+        Community existingOrNew = fillOrCreateFromDto(existing, dto);
+        dao.updateOrCreate(existingOrNew);
+        return existingOrNew;
     }
 
     @Override

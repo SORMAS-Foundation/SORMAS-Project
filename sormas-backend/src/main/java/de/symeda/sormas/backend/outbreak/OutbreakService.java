@@ -78,6 +78,7 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 		return em.createQuery(cq).getSingleResult();
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Outbreak, Outbreak> from, User user) {
 		// no filter by user needed
@@ -94,6 +95,11 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 		}
 		if (criteria.getRegion() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Outbreak.DISTRICT, JoinType.LEFT).join(District.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
+		}
+		if (criteria.getActiveDate() != null) {
+			filter = and(cb, filter, cb.and(
+					cb.lessThanOrEqualTo(from.get(Outbreak.START_DATE), criteria.getActiveDate()),
+					cb.or(cb.isNull(from.get(Outbreak.END_DATE)), cb.greaterThanOrEqualTo(from.get(Outbreak.END_DATE), criteria.getActiveDate()))));
 		}
 		return filter;
 	}

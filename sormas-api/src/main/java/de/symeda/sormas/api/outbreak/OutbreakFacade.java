@@ -31,15 +31,27 @@ public interface OutbreakFacade {
 
 	List<OutbreakDto> getAllAfter(Date date);
 	
-	List<OutbreakDto> getAllByRegionAndDisease(RegionReferenceDto region, Disease disease);
+	List<OutbreakDto> getActive();
 	
-	OutbreakDto getByDistrictAndDisease(DistrictReferenceDto district, Disease disease);
+	List<OutbreakDto> getActiveByRegionAndDisease(RegionReferenceDto region, Disease disease);
+	
+	OutbreakDto getActiveByDistrictAndDisease(DistrictReferenceDto district, Disease disease);
 
 	boolean hasOutbreak(DistrictReferenceDto district, Disease disease);
 
 	List<String> getAllUuids(String userUuid);
 	
 	OutbreakDto saveOutbreak(OutbreakDto outbreakDto);
-	
+
 	void deleteOutbreak(OutbreakDto outbreakDto);
+	
+	/**
+	 * @return The freshly started outbreak or an existing one if already started
+	 */
+	OutbreakDto startOutbreak(DistrictReferenceDto district, Disease disease);
+
+	/**
+	 * @return The ended outbreak or null if none was active
+	 */
+	OutbreakDto endOutbreak(DistrictReferenceDto district, Disease disease);
 }

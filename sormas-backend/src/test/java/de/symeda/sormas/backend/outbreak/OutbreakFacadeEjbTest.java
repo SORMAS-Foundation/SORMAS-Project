@@ -17,32 +17,34 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.outbreak;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.outbreak.OutbreakDto;
-import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 
 public class OutbreakFacadeEjbTest extends AbstractBeanTest {
-	
+
 	@Test
 	public void testOutbreakCreationAndDeletion() {
-		
+
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		OutbreakDto outbreak = creator.createOutbreak(rdcf, Disease.EVD, user.toReference());
-		
-		// Database should contain one outbreak
-		assertEquals(1, getOutbreakFacade().getAllAfter(null).size());
-		
-		getOutbreakFacade().deleteOutbreak(outbreak);
-		
+		creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup",
+				UserRole.SURVEILLANCE_SUPERVISOR);
+		DistrictReferenceDto district = new DistrictReferenceDto(rdcf.district.getUuid());
+		Disease disease = Disease.EVD;
+
+		getOutbreakFacade().startOutbreak(district, disease);
+		// outbreak should be active
+		assertNotNull(getOutbreakFacade().getActiveByDistrictAndDisease(district, disease));
+
+		getOutbreakFacade().endOutbreak(district, disease);
 		// Database should contain no outbreak
-		assertEquals(0, getOutbreakFacade().getAllAfter(null).size());
+		assertNull(getOutbreakFacade().getActiveByDistrictAndDisease(district, disease));
 	}
 }

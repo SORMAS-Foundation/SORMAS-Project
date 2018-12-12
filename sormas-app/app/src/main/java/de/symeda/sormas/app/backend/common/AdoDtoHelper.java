@@ -24,6 +24,7 @@ import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -142,11 +143,10 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                 public Void call() throws Exception {
                     boolean empty = dao.countOf() == 0;
                     for (DTO dto : result) {
-                        ADO source = fillOrCreateFromDto(null, dto);
-                        source = dao.mergeOrCreate(source);
+                        handlePulledDto(dao, dto);
                         // TODO #704
-//                        if (markAsRead) {
-//                            dao.markAsRead(source);
+//                        if (entity != null && markAsRead) {
+//                            dao.markAsRead(entity);
 //                        }
                     }
                     return null;
@@ -157,6 +157,14 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
             return result.size();
         }
         return 0;
+    }
+
+    /**
+     * @return The resulting entity. May be null!
+     */
+    protected ADO handlePulledDto(AbstractAdoDao<ADO> dao, DTO dto) throws DaoException, SQLException {
+        ADO source = fillOrCreateFromDto(null, dto);
+        return dao.mergeOrCreate(source);
     }
 
     /**

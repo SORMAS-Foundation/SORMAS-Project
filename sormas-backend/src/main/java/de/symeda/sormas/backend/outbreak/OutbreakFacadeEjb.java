@@ -33,6 +33,7 @@ import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionService;
@@ -61,10 +62,10 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	}
 	
 	@Override
-	public List<OutbreakDto> getAllByRegionAndDisease(RegionReferenceDto regionRef, Disease disease) {
+	public List<OutbreakDto> getActive() {
 		
 		List<Outbreak> result = outbreakService.queryByCriteria(new OutbreakCriteria()
-				.districtIsInRegion(regionRef).diseaseEquals(disease), null, Outbreak.DISTRICT, true);
+				.activeDate(new Date()), null, Outbreak.DISEASE, true);
 		
 		return result.stream()
 				.map(OutbreakFacadeEjb::toDto)
@@ -72,9 +73,24 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	}
 	
 	@Override
-	public OutbreakDto getByDistrictAndDisease(DistrictReferenceDto districtRef, Disease disease) {
+	public List<OutbreakDto> getActiveByRegionAndDisease(RegionReferenceDto regionRef, Disease disease) {
+		
 		List<Outbreak> result = outbreakService.queryByCriteria(new OutbreakCriteria()
-				.districtEquals(districtRef).diseaseEquals(disease), null, Outbreak.DISTRICT, true);
+				.districtIsInRegion(regionRef)
+				.diseaseEquals(disease)
+				.activeDate(new Date()), null, Outbreak.DISTRICT, true);
+		
+		return result.stream()
+				.map(OutbreakFacadeEjb::toDto)
+				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public OutbreakDto getActiveByDistrictAndDisease(DistrictReferenceDto districtRef, Disease disease) {
+		List<Outbreak> result = outbreakService.queryByCriteria(new OutbreakCriteria()
+				.districtEquals(districtRef)
+				.diseaseEquals(disease)
+				.activeDate(new Date()), null, Outbreak.DISTRICT, true);
 		
 		return result.stream()
 				.map(OutbreakFacadeEjb::toDto)
@@ -85,7 +101,9 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	@Override
 	public boolean hasOutbreak(DistrictReferenceDto district, Disease disease) {
 		Long count = outbreakService.countByCriteria(new OutbreakCriteria()
-				.districtEquals(district).diseaseEquals(disease), null);
+				.districtEquals(district)
+				.diseaseEquals(disease)
+				.activeDate(new Date()), null);
 		return count > 0;
 	}
 	
@@ -100,13 +118,39 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 		
 		return outbreakService.getAllUuids(user);
 	}
+
+	@Override
+	public OutbreakDto startOutbreak(DistrictReferenceDto district, Disease disease) {
+		OutbreakDto outbreak = getActiveByDistrictAndDisease(district, disease);
+		if (outbreak != null) {
+			// there is already an active outbreak - return that one
+			return outbreak;
+		}
+
+		UserReferenceDto reportingUser = UserFacadeEjb.toReferenceDto(userService.getCurrentUser());
+		outbreak = OutbreakDto.build(district, disease, reportingUser);
+		outbreak.setStartDate(new Date());
+		return saveOutbreak(outbreak);
+	}
+
+	@Override
+	public OutbreakDto endOutbreak(DistrictReferenceDto district, Disease disease) {
+		OutbreakDto outbreak = getActiveByDistrictAndDisease(district, disease);
+		if (outbreak != null) {
+			outbreak.setEndDate(new Date());
+			return saveOutbreak(outbreak);
+		}
+		return null;
+	}
 	
+	@Override
 	public OutbreakDto saveOutbreak(OutbreakDto outbreakDto) {
 		Outbreak outbreak = fromDto(outbreakDto);
 		outbreakService.ensurePersisted(outbreak);		
 		return toDto(outbreak);
 	}
 	
+	@Override
 	public void deleteOutbreak(OutbreakDto outbreakDto) {
 		Outbreak outbreak = outbreakService.getByUuid(outbreakDto.getUuid());
 		outbreakService.delete(outbreak);
@@ -129,6 +173,8 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 		
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setDisease(source.getDisease());
+		target.setStartDate(source.getStartDate());
+		target.setEndDate(source.getEndDate());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setReportDate(source.getReportDate());
 		
@@ -144,6 +190,8 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 		
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
 		target.setDisease(source.getDisease());
+		target.setStartDate(source.getStartDate());
+		target.setEndDate(source.getEndDate());
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
 		target.setReportDate(source.getReportDate());
 
