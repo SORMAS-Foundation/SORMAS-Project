@@ -94,7 +94,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                     // infrastructure always has to be pulled - otherwise referenced data may be lost (e.g. #586)
                     pullInfrastructure();
                     // pull and remove archived entities when the last time this has been done is more than 24 hours ago
-                    if (ConfigProvider.getLastArchivedSyncDate() == null || DateHelper.getFullDaysBetween(ConfigProvider.getLastArchivedSyncDate(), new Date()) >= 0) {
+                    if (ConfigProvider.getLastArchivedSyncDate() == null || DateHelper.getFullDaysBetween(ConfigProvider.getLastArchivedSyncDate(), new Date()) >= 1) {
                         pullAndRemoveArchivedUuidsSince(ConfigProvider.getLastArchivedSyncDate());
                     }
                     synchronizeChangedData();
