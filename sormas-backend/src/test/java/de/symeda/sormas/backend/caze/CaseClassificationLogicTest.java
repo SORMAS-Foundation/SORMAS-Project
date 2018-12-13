@@ -680,7 +680,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		// Confirmed
 		caze = buildSuspectCase(Disease.NEW_INFLUENCA);
 		caze = getCaseFacade().saveCase(caze);
-		createSampleTestsForAllTestTypesExcept(caze, SampleTestType.ISOLATION, SampleTestType.PCR_RT_PCR);
+		createSampleTestsForAllTestTypesExcept(caze, SampleTestType.ISOLATION, SampleTestType.PCR_RT_PCR, SampleTestType.NEUTRALIZING_ANTIBODIES);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());		
 	}

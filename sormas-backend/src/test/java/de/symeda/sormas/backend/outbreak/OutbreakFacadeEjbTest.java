@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.outbreak;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 
@@ -26,16 +27,27 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 
 public class OutbreakFacadeEjbTest extends AbstractBeanTest {
 
+	private RDCF rdcf;
+
+	@Override
+	public void resetMocks() {
+		super.resetMocks();
+
+		rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup",
+				UserRole.SURVEILLANCE_SUPERVISOR);
+
+		when(MockProducer.getPrincipal().getName()).thenReturn("SurvSup");
+	}
+
 	@Test
 	public void testOutbreakCreationAndDeletion() {
 
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup",
-				UserRole.SURVEILLANCE_SUPERVISOR);
 		DistrictReferenceDto district = new DistrictReferenceDto(rdcf.district.getUuid());
 		Disease disease = Disease.EVD;
 

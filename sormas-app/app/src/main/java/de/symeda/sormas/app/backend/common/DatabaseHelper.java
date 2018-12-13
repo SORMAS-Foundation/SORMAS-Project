@@ -98,9 +98,9 @@ import de.symeda.sormas.app.backend.visit.VisitDao;
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
-	private static final String DATABASE_NAME = "sormas.db";
+	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 136;
+	public static final int DATABASE_VERSION = 136;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
