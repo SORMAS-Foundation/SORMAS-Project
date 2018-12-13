@@ -54,6 +54,7 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.NoSuchPaddingException;
 import javax.security.auth.x500.X500Principal;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;

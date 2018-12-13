@@ -31,9 +31,13 @@ import retrofit2.http.Path;
  */
 public interface OutbreakFacadeRetro {
 
-    @GET("outbreaks/all/{since}")
-    Call<List<OutbreakDto>> pullAllSince(@Path("since") long since);
+    @GET("outbreaks/active/{since}")
+    Call<List<OutbreakDto>> pullActiveSince(@Path("since") long since);
 
     @GET("outbreaks/uuids")
-    Call<List<String>> pullUuids();
+    Call<List<String>> pullActiveUuids();
+
+    @GET("outbreaks/inactive/{since}")
+    Call<List<String>> pullInactiveUuidsSince(@Path("since") long since);
+
 }

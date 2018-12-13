@@ -70,7 +70,7 @@ public class EventService extends AbstractAdoService<Event> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createDateFilter(cb, cq, from, date);
+			Predicate dateFilter = createChangeDateFilter(cb, from, date);
 			filter = cb.and(filter, dateFilter);		
 		}
 
@@ -284,9 +284,8 @@ public class EventService extends AbstractAdoService<Event> {
 		return filter;
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createDateFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Event, Event> eventPath, Date date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Event, Event> eventPath, Date date) {
 
 		Predicate dateFilter = cb.greaterThan(eventPath.get(AbstractDomainObject.CHANGE_DATE), date);
 

@@ -12,6 +12,7 @@
 /deploy/bundles
 deploy
 /sormas-base/build.properties
+/sormas-base/bin
 /sormas-ui/bin
 
 /sormas-ui/src/main/webapp/VAADIN/themes/sormas/addons.scss
@@ -19,3 +20,4 @@ deploy
 *.jks
 /sormas-app/keystore.properties
 /sormas-app/java_pid21052.hprof
+bin

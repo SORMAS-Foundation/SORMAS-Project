@@ -31,7 +31,8 @@ public class OutbreakCriteria implements Serializable {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private Disease disease;
-	private Date activeDate;
+	private Boolean active;
+	private Date changeDateAfter;
 	
 	public RegionReferenceDto getRegion() {
 		return region;
@@ -57,11 +58,19 @@ public class OutbreakCriteria implements Serializable {
 		return this;
 	}
 	
-	public Date getActiveDate() {
-		return activeDate;
+	public Boolean getActive() {
+		return active;
 	}
-	public OutbreakCriteria activeDate(Date activeDate) {
-		this.activeDate = activeDate;
+	public OutbreakCriteria active(Boolean active) {
+		this.active = active;
+		return this;
+	}
+	
+	public Date getChangeDateAfter() {
+		return changeDateAfter;
+	}
+	public OutbreakCriteria changeDateAfter(Date changeDateAfter) {
+		this.changeDateAfter = changeDateAfter;
 		return this;
 	}
 }

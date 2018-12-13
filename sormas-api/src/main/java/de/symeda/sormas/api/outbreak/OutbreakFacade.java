@@ -29,7 +29,11 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 @Remote
 public interface OutbreakFacade {
 
-	List<OutbreakDto> getAllAfter(Date date);
+	List<String> getActiveUuidsAfter(Date date);
+
+	List<String> getInactiveUuidsAfter(Date date);
+
+	List<OutbreakDto> getActiveAfter(Date date);
 	
 	List<OutbreakDto> getActive();
 	
@@ -39,8 +43,6 @@ public interface OutbreakFacade {
 
 	boolean hasOutbreak(DistrictReferenceDto district, Disease disease);
 
-	List<String> getAllUuids(String userUuid);
-	
 	OutbreakDto saveOutbreak(OutbreakDto outbreakDto);
 
 	void deleteOutbreak(OutbreakDto outbreakDto);

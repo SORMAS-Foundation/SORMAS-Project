@@ -43,7 +43,7 @@ public class OutbreakDtoHelper extends AdoDtoHelper<Outbreak, OutbreakDto> {
 
     @Override
     protected Call<List<OutbreakDto>> pullAllSince(long since) {
-        return RetroProvider.getOutbreakFacade().pullAllSince(since);
+        return RetroProvider.getOutbreakFacade().pullActiveSince(since);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class OutbreakDtoHelper extends AdoDtoHelper<Outbreak, OutbreakDto> {
 
     @Override
     protected Call<Integer> pushAll(List<OutbreakDto> communityDtos) {
-        throw new UnsupportedOperationException("Entity is read-onl");
+        throw new UnsupportedOperationException("Entity is read-only");
     }
 
     @Override
@@ -69,21 +69,5 @@ public class OutbreakDtoHelper extends AdoDtoHelper<Outbreak, OutbreakDto> {
     @Override
     public void fillInnerFromAdo(OutbreakDto target, Outbreak source) {
         throw new UnsupportedOperationException("Entity is read-only");
-    }
-
-    @Override
-    protected Outbreak handlePulledDto(AbstractAdoDao<Outbreak> dao, OutbreakDto dto) throws DaoException, SQLException {
-
-        if (dto.getEndDate() != null) {
-            // outbreaks that already have an end are not relevant
-            Outbreak existing = dao.queryUuid(dto.getUuid());
-            if (existing != null) {
-                dao.deleteCascade(existing);
-            }
-            return null;
-        } else {
-            Outbreak source = fillOrCreateFromDto(null, dto);
-            return dao.mergeOrCreate(source);
-        }
     }
 }

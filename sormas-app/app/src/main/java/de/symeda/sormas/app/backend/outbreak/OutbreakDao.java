@@ -31,9 +31,13 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.task.Task;
 
 public class OutbreakDao extends AbstractAdoDao<Outbreak> {
 
@@ -70,5 +74,16 @@ public class OutbreakDao extends AbstractAdoDao<Outbreak> {
     @Override
     public Outbreak saveAndSnapshot(Outbreak source) throws DaoException {
         throw new UnsupportedOperationException();
+    }
+
+    public void deleteOutbreakAndAllDependingEntities(String outbreakUuid) throws SQLException {
+        Outbreak outbreak = queryUuidWithEmbedded(outbreakUuid);
+
+        // Cancel if not in local database
+        if (outbreak == null) {
+            return;
+        }
+
+        deleteCascade(outbreak);
     }
 }

@@ -31,29 +31,36 @@ import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.outbreak.OutbreakDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 
 /**
- * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>
- * @see <a href="https://jersey.java.net/documentation/latest/jaxrs-resources.html#d0e2051">Jersey documentation HTTP Methods</a>
+ * @see <a href="https://jersey.java.net/documentation/latest/">Jersey
+ *      documentation</a>
+ * @see <a href=
+ *      "https://jersey.java.net/documentation/latest/jaxrs-resources.html#d0e2051">Jersey
+ *      documentation HTTP Methods</a>
  *
  */
 @Path("/outbreaks")
-@Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
+@Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
 @RolesAllowed("USER")
 public class OutbreakResource {
 
-	@GET @Path("/all/{since}")
-	public List<OutbreakDto> getAll(@PathParam("since") long since) {
-		return FacadeProvider.getOutbreakFacade().getAllAfter(new Date(since));
-	}	
-	
+	@GET
+	@Path("/active/{since}")
+	public List<OutbreakDto> getActiveSince(@PathParam("since") long since) {
+		return FacadeProvider.getOutbreakFacade().getActiveAfter(new Date(since));
+	}
+
 	@GET
 	@Path("/uuids")
-	public List<String> getAllUuids(@Context SecurityContext sc) {
-		
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getOutbreakFacade().getAllUuids(userDto.getUuid());
-		return uuids;
+	public List<String> getActiveUuids(@Context SecurityContext sc) {
+		return FacadeProvider.getOutbreakFacade().getActiveUuidsAfter(null);
 	}
+
+	@GET
+	@Path("/inactive/{since}")
+	public List<String> getInactiveUuidsSince(@Context SecurityContext sc, @PathParam("since") long since) {
+		return FacadeProvider.getOutbreakFacade().getInactiveUuidsAfter(new Date(since));
+	}
+
 }

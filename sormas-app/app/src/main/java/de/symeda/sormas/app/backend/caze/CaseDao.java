@@ -389,7 +389,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
     public void deleteCaseAndAllDependingEntities(String caseUuid) throws SQLException {
         Case caze = queryUuidWithEmbedded(caseUuid);
 
-        // Cancel if case is not in local database
+        // Cancel if not in local database
         if (caze == null) {
             return;
         }

@@ -161,7 +161,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createDateFilter(cb, cq, from, date);
+			Predicate dateFilter = createChangeDateFilter(cb, from, date);
 			if (dateFilter != null) {
 				filter = cb.and(filter, dateFilter);	
 			}
@@ -576,9 +576,8 @@ public class CaseService extends AbstractAdoService<Case> {
 		return filter;
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createDateFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath, Date date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Case,Case> casePath, Date date) {
 
 		Predicate dateFilter = cb.greaterThan(casePath.get(Case.CHANGE_DATE), date);
 

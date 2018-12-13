@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.outbreak;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.LocalBean;
@@ -60,7 +61,27 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 		
 		return em.createQuery(cq).getResultList();
 	}
-	
+
+	public List<String> queryUuidByCriteria(OutbreakCriteria criteria, User user, String orderProperty, boolean asc) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Outbreak> from = cq.from(getElementClass());
+		
+		if (orderProperty != null) {
+			cq.orderBy(asc ? cb.asc(from.get(orderProperty)) : cb.desc(from.get(orderProperty)));
+		}
+
+		Predicate filter = createUserFilter(cb, cq, from, user);
+		filter = and(cb, filter, buildCriteriaFilter(criteria, cb, from));
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.select(from.get(Outbreak.UUID));
+		return em.createQuery(cq).getResultList();
+	}
+
 	public Long countByCriteria(OutbreakCriteria criteria, User user) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -87,6 +108,9 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 	
 	public Predicate buildCriteriaFilter(OutbreakCriteria criteria, CriteriaBuilder cb, Root<Outbreak> from) {
 		Predicate filter = null;
+		if (criteria.getChangeDateAfter() != null) {
+			filter = and(cb, filter, createChangeDateFilter(cb, from, criteria.getChangeDateAfter()));
+		}
 		if (criteria.getDisease() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Outbreak.DISEASE), criteria.getDisease()));
 		}
@@ -96,10 +120,15 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 		if (criteria.getRegion() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Outbreak.DISTRICT, JoinType.LEFT).join(District.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
 		}
-		if (criteria.getActiveDate() != null) {
-			filter = and(cb, filter, cb.and(
-					cb.lessThanOrEqualTo(from.get(Outbreak.START_DATE), criteria.getActiveDate()),
-					cb.or(cb.isNull(from.get(Outbreak.END_DATE)), cb.greaterThanOrEqualTo(from.get(Outbreak.END_DATE), criteria.getActiveDate()))));
+		if (criteria.getActive() != null) {
+			Date now = new Date();
+			Predicate activeFilter = cb.and(
+					cb.lessThanOrEqualTo(from.get(Outbreak.START_DATE), now),
+					cb.or(cb.isNull(from.get(Outbreak.END_DATE)), cb.greaterThanOrEqualTo(from.get(Outbreak.END_DATE), now)));
+			if (Boolean.FALSE.equals(criteria.getActive())) {
+				activeFilter = cb.not(activeFilter);
+			}
+			filter = and(cb, filter, activeFilter);
 		}
 		return filter;
 	}
