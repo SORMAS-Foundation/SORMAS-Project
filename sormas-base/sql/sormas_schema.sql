@@ -2612,3 +2612,12 @@ ALTER TABLE outbreak_history ADD COLUMN startdate timestamp;
 ALTER TABLE outbreak_history ADD COLUMN enddate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (121, 'Outbreak start & end #889');
+
+-- 2018-12-13 Virus isolation -> Isolation #838
+
+UPDATE samples SET suggestedtypeoftest='ISOLATION' WHERE suggestedtypeoftest='VIRUS_ISOLATION';
+UPDATE samples_history SET suggestedtypeoftest='ISOLATION' WHERE suggestedtypeoftest='VIRUS_ISOLATION';
+UPDATE sampletest SET testtype='ISOLATION' WHERE testtype='VIRUS_ISOLATION';
+UPDATE sampletest_history SET testtype='ISOLATION' WHERE testtype='VIRUS_ISOLATION';
+
+INSERT INTO schema_version (version_number, comment) VALUES (122, 'Virus isolation -> Isolation #838');
