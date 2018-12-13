@@ -130,8 +130,8 @@ public class ClassificationHtmlRenderer {
 		html.append("<h4 style=\"text-align: center;\">Generated for SORMAS ").append(InfoProvider.get().getVersion()).append(" on ").append(sormasServerUrl).append(" at ").append(DateHelper.formatLocalShortDateTime(new Date())).append("</h4>");
 		
 		for (Disease disease : Disease.values()) {
-			DiseaseClassificationCriteriaDto diseaseCriteria = FacadeProvider.getCaseClassificationFacade().getClassificationCriteriaForDisease(disease);
-			if (diseaseCriteria.hasAnyCriteria()) {
+			DiseaseClassificationCriteriaDto diseaseCriteria = FacadeProvider.getCaseClassificationFacade().getByDisease(disease);
+			if (diseaseCriteria != null && diseaseCriteria.hasAnyCriteria()) {
 				html.append("<h2 style=\"text-align: center; color: #005A9C;\">" + disease.toString() + "</h2>");
 				html.append(createSuspectHtmlString(diseaseCriteria));
 				html.append(createProbableHtmlString(diseaseCriteria));

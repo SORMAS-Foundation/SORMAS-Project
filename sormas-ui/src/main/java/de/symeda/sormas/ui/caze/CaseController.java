@@ -599,25 +599,26 @@ public class CaseController {
 		VerticalLayout classificationRulesLayout = new VerticalLayout();
 		classificationRulesLayout.setMargin(true);
 
-		DiseaseClassificationCriteriaDto diseaseCriteria = FacadeProvider.getCaseClassificationFacade().getClassificationCriteriaForDisease(caze.getDisease());
-
-		Label suspectContent = new Label();
-		suspectContent.setContentMode(ContentMode.HTML);
-		suspectContent.setWidth(100, Unit.PERCENTAGE);
-		suspectContent.setValue(ClassificationHtmlRenderer.createSuspectHtmlString(diseaseCriteria));
-		classificationRulesLayout.addComponent(suspectContent);
-
-		Label probableContent = new Label();
-		probableContent.setContentMode(ContentMode.HTML);
-		probableContent.setWidth(100, Unit.PERCENTAGE);
-		probableContent.setValue(ClassificationHtmlRenderer.createProbableHtmlString(diseaseCriteria));
-		classificationRulesLayout.addComponent(probableContent);
-
-		Label confirmedContent = new Label();
-		confirmedContent.setContentMode(ContentMode.HTML);
-		confirmedContent.setWidth(100, Unit.PERCENTAGE);
-		confirmedContent.setValue(ClassificationHtmlRenderer.createConfirmedHtmlString(diseaseCriteria));
-		classificationRulesLayout.addComponent(confirmedContent);
+		DiseaseClassificationCriteriaDto diseaseCriteria = FacadeProvider.getCaseClassificationFacade().getByDisease(caze.getDisease());
+		if (diseaseCriteria != null) {
+			Label suspectContent = new Label();
+			suspectContent.setContentMode(ContentMode.HTML);
+			suspectContent.setWidth(100, Unit.PERCENTAGE);
+			suspectContent.setValue(ClassificationHtmlRenderer.createSuspectHtmlString(diseaseCriteria));
+			classificationRulesLayout.addComponent(suspectContent);
+	
+			Label probableContent = new Label();
+			probableContent.setContentMode(ContentMode.HTML);
+			probableContent.setWidth(100, Unit.PERCENTAGE);
+			probableContent.setValue(ClassificationHtmlRenderer.createProbableHtmlString(diseaseCriteria));
+			classificationRulesLayout.addComponent(probableContent);
+	
+			Label confirmedContent = new Label();
+			confirmedContent.setContentMode(ContentMode.HTML);
+			confirmedContent.setWidth(100, Unit.PERCENTAGE);
+			confirmedContent.setValue(ClassificationHtmlRenderer.createConfirmedHtmlString(diseaseCriteria));
+			classificationRulesLayout.addComponent(confirmedContent);
+		}
 
 		Window popupWindow = VaadinUiUtil.showPopupWindow(classificationRulesLayout);
 		popupWindow.addCloseListener(e -> {

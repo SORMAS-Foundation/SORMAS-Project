@@ -38,6 +38,7 @@ import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelper;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteriaDao;
+import de.symeda.sormas.app.backend.classification.DiseaseClassificationDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -226,11 +227,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             weeklyReportDtoHelper.pullEntities(true);
         if (weeklyReportEntriesNeedPull)
             weeklyReportEntryDtoHelper.pullEntities(true);
-
-        // Synchronize disease classification if the table is empty
-        if (DatabaseHelper.getDiseaseClassificationCriteriaDao().isEmpty()) {
-            pullDiseaseClassification();
-        }
     }
 
     private void repullData() throws DaoException, ServerConnectionException, ServerCommunicationException {
@@ -249,6 +245,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // order is important, due to dependencies (e.g. case & person)
 
         new UserRoleConfigDtoHelper().repullEntities();
+        new DiseaseClassificationDtoHelper().repullEntities();
         new UserDtoHelper().repullEntities();
         new OutbreakDtoHelper().repullEntities();
         personDtoHelper.repullEntities();
@@ -271,6 +268,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new CommunityDtoHelper().pullEntities(false);
         new FacilityDtoHelper().pullEntities(false);
         new UserDtoHelper().pullEntities(false);
+        new DiseaseClassificationDtoHelper().pullEntities(false);
 
         // user role configurations may be removed, so have to pull the deleted uuids
         // this may be applied to other entities later as well
@@ -453,38 +451,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                 }
             }
         }.execute();
-    }
-
-    private void pullDiseaseClassification() throws DaoException, ServerConnectionException, ServerCommunicationException {
-        Call<List<DiseaseClassificationCriteriaDto>> classificationCriteriaCall = RetroProvider.getClassificationFacade().pullAllClassificationCriteria();
-
-        if (classificationCriteriaCall != null) {
-            Response<List<DiseaseClassificationCriteriaDto>> response;
-            try {
-                response = classificationCriteriaCall.execute();
-            } catch (IOException e) {
-                throw new ServerCommunicationException(e);
-            }
-
-            if (!response.isSuccessful()) {
-                RetroProvider.throwException(response);
-            }
-
-            DiseaseClassificationCriteriaDao dao = DatabaseHelper.getDiseaseClassificationCriteriaDao();
-            final List<DiseaseClassificationCriteriaDto> result = response.body();
-            if (result != null && result.size() > 0) {
-                dao.callBatchTasks(new Callable<Void>() {
-                    public Void call() throws Exception {
-                        for (DiseaseClassificationCriteriaDto criteria : result) {
-                            DiseaseClassificationAppHelper.saveClassificationToDatabase(criteria);
-                        }
-                        return null;
-                    }
-                });
-
-                Log.d(dao.getTableName(), "Pulled and saved " + result.size());
-            }
-        }
     }
 
     public enum SyncMode {
