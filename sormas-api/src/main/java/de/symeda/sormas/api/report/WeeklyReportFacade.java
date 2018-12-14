@@ -23,7 +23,6 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -38,10 +37,6 @@ public interface WeeklyReportFacade {
 	WeeklyReportDto saveWeeklyReport(WeeklyReportDto dto);
 	
 	List<String> getAllUuids(String userUuid);
-	
-	WeeklyReportSummaryDto getSummaryDtoByRegion(RegionReferenceDto regionRef, EpiWeek epiWeek);
-	
-	WeeklyReportSummaryDto getSummaryDtoByDistrict(DistrictReferenceDto districtRef, EpiWeek epiWeek);
 	
 	int getNumberOfWeeklyReportsByFacility(FacilityReferenceDto facilityRef, EpiWeek epiWeek);
 	

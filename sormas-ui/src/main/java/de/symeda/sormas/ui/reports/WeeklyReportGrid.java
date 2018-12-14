@@ -50,16 +50,16 @@ public class WeeklyReportGrid extends Grid implements ItemClickListener {
 	private final class WeeklyReportGridCellStyleGenerator implements CellStyleGenerator {
 		@Override
 		public String getStyle(CellReference cell) {
-			if (WeeklyReportSummaryDto.MISSING_REPORTS_PERCENTAGE.equals(cell.getPropertyId())) {
-				Float missingReportsPercentage = (Float)cell.getProperty().getValue();
-				if (missingReportsPercentage <= 10) {
-					return CssStyles.GRID_CELL_PRIORITY_LOW;
-				} else if (missingReportsPercentage <= 40) {
-					return CssStyles.GRID_CELL_PRIORITY_NORMAL;
-				} else {
-					return CssStyles.GRID_CELL_PRIORITY_HIGH;
-				}
-			}
+//			if (WeeklyReportSummaryDto.MISSING_REPORTS_PERCENTAGE.equals(cell.getPropertyId())) {
+//				Float missingReportsPercentage = (Float) cell.getProperty().getValue();
+//				if (missingReportsPercentage <= 10) {
+//					return CssStyles.GRID_CELL_PRIORITY_LOW;
+//				} else if (missingReportsPercentage <= 40) {
+//					return CssStyles.GRID_CELL_PRIORITY_NORMAL;
+//				} else {
+//					return CssStyles.GRID_CELL_PRIORITY_HIGH;
+//				}
+//			}
 			return null;
 		}
 	}
@@ -76,14 +76,15 @@ public class WeeklyReportGrid extends Grid implements ItemClickListener {
 		setContainerDataSource(generatedContainer);
 		
 		setColumns(VIEW_DETAILS_BTN_ID, 
-				WeeklyReportSummaryDto.REGION, WeeklyReportSummaryDto.DISTRICT, 
-				WeeklyReportSummaryDto.FACILITIES, 
-				WeeklyReportSummaryDto.REPORTS_PERCENTAGE,
-				WeeklyReportSummaryDto.REPORTS, 
-				WeeklyReportSummaryDto.ZERO_REPORTS_PERCENTAGE,
-				WeeklyReportSummaryDto.ZERO_REPORTS, 
-				WeeklyReportSummaryDto.MISSING_REPORTS_PERCENTAGE,
-				WeeklyReportSummaryDto.MISSING_REPORTS
+				WeeklyReportSummaryDto.REGION, 
+				WeeklyReportSummaryDto.DISTRICT
+//				WeeklyReportSummaryDto.FACILITIES, 
+//				WeeklyReportSummaryDto.REPORTS_PERCENTAGE,
+//				WeeklyReportSummaryDto.REPORTS, 
+//				WeeklyReportSummaryDto.ZERO_REPORTS_PERCENTAGE,
+//				WeeklyReportSummaryDto.ZERO_REPORTS, 
+//				WeeklyReportSummaryDto.MISSING_REPORTS_PERCENTAGE,
+//				WeeklyReportSummaryDto.MISSING_REPORTS
 				);
 		
 		for (Column column : getColumns()) {
@@ -96,19 +97,19 @@ public class WeeklyReportGrid extends Grid implements ItemClickListener {
 		}
 
 		HeaderRow preHeaderRow = prependHeaderRow();
-		preHeaderRow.join(WeeklyReportSummaryDto.REPORTS_PERCENTAGE, WeeklyReportSummaryDto.REPORTS)
-			.setHtml(getColumn(WeeklyReportSummaryDto.REPORTS).getHeaderCaption());
-		getColumn(WeeklyReportSummaryDto.REPORTS).setHeaderCaption("#");
-		preHeaderRow.join(WeeklyReportSummaryDto.ZERO_REPORTS_PERCENTAGE, WeeklyReportSummaryDto.ZERO_REPORTS)
-			.setHtml(getColumn(WeeklyReportSummaryDto.ZERO_REPORTS).getHeaderCaption());
-		getColumn(WeeklyReportSummaryDto.ZERO_REPORTS).setHeaderCaption("#");
-		preHeaderRow.join(WeeklyReportSummaryDto.MISSING_REPORTS_PERCENTAGE, WeeklyReportSummaryDto.MISSING_REPORTS)
-			.setHtml(getColumn(WeeklyReportSummaryDto.MISSING_REPORTS).getHeaderCaption());
-		getColumn(WeeklyReportSummaryDto.MISSING_REPORTS).setHeaderCaption("#");
-
-		preHeaderRow.getCell(WeeklyReportSummaryDto.FACILITIES)
-			.setHtml(getColumn(WeeklyReportSummaryDto.FACILITIES).getHeaderCaption());
-		getColumn(WeeklyReportSummaryDto.FACILITIES).setHeaderCaption("#");
+//		preHeaderRow.join(WeeklyReportSummaryDto.REPORTS_PERCENTAGE, WeeklyReportSummaryDto.REPORTS)
+//			.setHtml(getColumn(WeeklyReportSummaryDto.REPORTS).getHeaderCaption());
+//		getColumn(WeeklyReportSummaryDto.REPORTS).setHeaderCaption("#");
+//		preHeaderRow.join(WeeklyReportSummaryDto.ZERO_REPORTS_PERCENTAGE, WeeklyReportSummaryDto.ZERO_REPORTS)
+//			.setHtml(getColumn(WeeklyReportSummaryDto.ZERO_REPORTS).getHeaderCaption());
+//		getColumn(WeeklyReportSummaryDto.ZERO_REPORTS).setHeaderCaption("#");
+//		preHeaderRow.join(WeeklyReportSummaryDto.MISSING_REPORTS_PERCENTAGE, WeeklyReportSummaryDto.MISSING_REPORTS)
+//			.setHtml(getColumn(WeeklyReportSummaryDto.MISSING_REPORTS).getHeaderCaption());
+//		getColumn(WeeklyReportSummaryDto.MISSING_REPORTS).setHeaderCaption("#");
+//
+//		preHeaderRow.getCell(WeeklyReportSummaryDto.FACILITIES)
+//			.setHtml(getColumn(WeeklyReportSummaryDto.FACILITIES).getHeaderCaption());
+//		getColumn(WeeklyReportSummaryDto.FACILITIES).setHeaderCaption("#");
 
         getColumn(VIEW_DETAILS_BTN_ID).setRenderer(new HtmlRenderer());
         getColumn(VIEW_DETAILS_BTN_ID).setWidth(60);

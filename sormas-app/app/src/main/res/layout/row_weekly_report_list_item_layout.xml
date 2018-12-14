@@ -21,9 +21,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <variable
-            name="data"
-            type="de.symeda.sormas.app.report.WeeklyReportListItem"/>
+        <variable name="data" type="de.symeda.sormas.app.report.WeeklyReportListItem"/>
     </data>
 
     <LinearLayout
@@ -34,8 +32,7 @@
         android:background="@drawable/selector_list_activity_row_background"
         android:orientation="vertical"
         android:paddingLeft="@dimen/rowListItemHorizontalMargin"
-        android:paddingRight="@dimen/rowListItemHorizontalMargin"
-        >
+        android:paddingRight="@dimen/rowListItemHorizontalMargin">
 
         <LinearLayout
             android:id="@+id/row_item"
@@ -46,8 +43,7 @@
             android:gravity="fill"
             android:orientation="vertical"
             android:paddingBottom="@dimen/rowListItemVerticalPaddingSmall"
-            android:paddingTop="@dimen/rowListItemVerticalPaddingSmall"
-            >
+            android:paddingTop="@dimen/rowListItemVerticalPaddingSmall">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -66,8 +62,7 @@
                     android:textColor="@color/listActivityRowTertiaryText"
                     android:textSize="@dimen/listActivityRowPrimaryTextSize"
                     app:defaultValue='@{@string/disease_unknown}'
-                    app:diseaseValue="@{data.disease}"
-                    />
+                    app:diseaseValue="@{data.disease}" />
 
                 <TextView
                     android:id="@+id/txtCases"
@@ -78,9 +73,12 @@
                     android:textSize="@dimen/listActivityRowPrimaryTextSize"
                     app:defaultValue='@{@string/no_of_cases_unknown}'
                     app:value="@{data.numberOfCases}"
-                    app:valueFormat="@{@string/number_of_cases_format}"
-                    />
+                    app:valueFormat="@{@string/number_of_cases_format}" />
+
             </LinearLayout>
+
         </LinearLayout>
+
     </LinearLayout>
+
 </layout>

@@ -21,6 +21,7 @@ import java.io.Serializable;
 
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 
 public class WeeklyReportSummaryDto implements Serializable {
 
@@ -29,24 +30,28 @@ public class WeeklyReportSummaryDto implements Serializable {
 	public static final String I18N_PREFIX = "WeeklyReportSummary";
 	
 	public static final String REGION = "region";
+	public static final String OFFICER = "officer";
 	public static final String DISTRICT = "district";
-	public static final String FACILITIES = "facilities";
-	public static final String REPORTS = "reports";
-	public static final String REPORTS_PERCENTAGE = "reportsPercentage";
-	public static final String ZERO_REPORTS = "zeroReports";
-	public static final String ZERO_REPORTS_PERCENTAGE = "zeroReportsPercentage";
-	public static final String MISSING_REPORTS = "missingReports";
-	public static final String MISSING_REPORTS_PERCENTAGE = "missingReportsPercentage";
+	public static final String OFFICERS = "officers";
+	public static final String INFORMANTS = "informants";
+	public static final String OFFICER_REPORTS = "officerReports";
+	public static final String OFFICER_ZERO_REPORTS = "officerZeroReports";
+	public static final String OFFICER_MISSING_REPORTS = "officerMissingReports";
+	public static final String INFORMANT_REPORTS = "informantReports";
+	public static final String INFORMANT_ZERO_REPORTS = "informantZeroReports";
+	public static final String INFORMANT_MISSING_REPORTS = "informantMissingReports";
 	
 	private RegionReferenceDto region;
-	private DistrictReferenceDto district;		
-	private int facilities;
-	private int reports;
-	private float reportsPercentage;
-	private int zeroReports;
-	private float zeroReportsPercentage;
-	private int missingReports;
-	private float missingReportsPercentage;
+	private UserReferenceDto officer;
+	private DistrictReferenceDto district;
+	private int officers;
+	private int informants;
+	private int officerReports;
+	private int officerZeroReports;
+	private int officerMissingReports;
+	private int informantReports;
+	private int informantZeroReports;
+	private int informantMissingReports;
 
 	public RegionReferenceDto getRegion() {
 		return region;
@@ -54,53 +59,65 @@ public class WeeklyReportSummaryDto implements Serializable {
 	public void setRegion(RegionReferenceDto region) {
 		this.region = region;
 	}
+	public UserReferenceDto getOfficer() {
+		return officer;
+	}
+	public void setOfficer(UserReferenceDto officer) {
+		this.officer = officer;
+	}
 	public DistrictReferenceDto getDistrict() {
 		return district;
 	}
 	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
 	}
-	public int getFacilities() {
-		return facilities;
+	public int getOfficers() {
+		return officers;
 	}
-	public void setFacilities(int facilities) {
-		this.facilities = facilities;
+	public void setOfficers(int officers) {
+		this.officers = officers;
 	}
-	public int getReports() {
-		return reports;
+	public int getInformants() {
+		return informants;
 	}
-	public void setReports(int reports) {
-		this.reports = reports;
+	public void setInformants(int informants) {
+		this.informants = informants;
 	}
-	public float getReportsPercentage() {
-		return reportsPercentage;
+	public int getOfficerReports() {
+		return officerReports;
 	}
-	public void setReportsPercentage(float reportsPercentage) {
-		this.reportsPercentage = reportsPercentage;
+	public void setOfficerReports(int officerReports) {
+		this.officerReports = officerReports;
 	}
-	public int getZeroReports() {
-		return zeroReports;
+	public int getOfficerZeroReports() {
+		return officerZeroReports;
 	}
-	public void setZeroReports(int zeroReports) {
-		this.zeroReports = zeroReports;
+	public void setOfficerZeroReports(int officerZeroReports) {
+		this.officerZeroReports = officerZeroReports;
 	}
-	public float getZeroReportsPercentage() {
-		return zeroReportsPercentage;
+	public int getOfficerMissingReports() {
+		return officerMissingReports;
 	}
-	public void setZeroReportsPercentage(float zeroReportsPercentage) {
-		this.zeroReportsPercentage = zeroReportsPercentage;
+	public void setOfficerMissingReports(int officerMissingReports) {
+		this.officerMissingReports = officerMissingReports;
 	}
-	public int getMissingReports() {
-		return missingReports;
+	public int getInformantReports() {
+		return informantReports;
 	}
-	public void setMissingReports(int missingReports) {
-		this.missingReports = missingReports;
+	public void setInformantReports(int informantReports) {
+		this.informantReports = informantReports;
 	}
-	public float getMissingReportsPercentage() {
-		return missingReportsPercentage;
+	public int getInformantZeroReports() {
+		return informantZeroReports;
 	}
-	public void setMissingReportsPercentage(float missingReportsPercentage) {
-		this.missingReportsPercentage = missingReportsPercentage;
+	public void setInformantZeroReports(int informantZeroReports) {
+		this.informantZeroReports = informantZeroReports;
+	}
+	public int getInformantMissingReports() {
+		return informantMissingReports;
+	}
+	public void setInformantMissingReports(int informantMissingReports) {
+		this.informantMissingReports = informantMissingReports;
 	}
 	
 }

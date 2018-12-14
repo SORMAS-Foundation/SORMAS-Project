@@ -31,7 +31,6 @@ import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.report.WeeklyReportDto;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
@@ -144,21 +143,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	public List<WeeklyReportSummaryDto> getSummariesPerDistrict(RegionReferenceDto regionRef, EpiWeek epiWeek) {
 		Region region = regionService.getByReferenceDto(regionRef);
 		
-		return weeklyReportService.getWeeklyReportSummariesPerDistrict(region, epiWeek);
-	}
-	
-	@Override
-	public WeeklyReportSummaryDto getSummaryDtoByRegion(RegionReferenceDto regionRef, EpiWeek epiWeek) {
-		List<FacilityReferenceDto> facilities = facilityFacade.getHealthFacilitiesByRegion(regionRef, false);
-	
-		return buildSummaryDto(facilities, regionRef, null, epiWeek);
-	}
-	
-	@Override
-	public WeeklyReportSummaryDto getSummaryDtoByDistrict(DistrictReferenceDto districtRef, EpiWeek epiWeek) {
-		List<FacilityReferenceDto> facilities = facilityFacade.getHealthFacilitiesByDistrict(districtRef, false);
-		
-		return buildSummaryDto(facilities, null, districtRef, epiWeek);
+		return weeklyReportService.getWeeklyReportSummariesPerOfficer(region, epiWeek);
 	}
 	
 	@Override
@@ -234,51 +219,6 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 		target.setEpiWeek(source.getEpiWeek());
 		
 		return target;
-	}
-	
-	private WeeklyReportSummaryDto buildSummaryDto(List<FacilityReferenceDto> facilities, RegionReferenceDto regionRef, DistrictReferenceDto districtRef, EpiWeek epiWeek) {
-		WeeklyReportSummaryDto dto = new WeeklyReportSummaryDto();
-		int numberOfReports = 0;
-		int numberOfZeroReports = 0;
-		int numberOfMissingReports = 0;
-		for (FacilityReferenceDto facility : facilities) {
-			int numberOfInformants = userFacade.getNumberOfInformantsByFacility(facility);
-			int numberOfWeeklyReports = getNumberOfWeeklyReportsByFacility(facility, epiWeek);
-			if (numberOfInformants != numberOfWeeklyReports) {
-				numberOfMissingReports++;
-				continue;
-			}
-			
-			List<WeeklyReportReferenceDto> reports = getWeeklyReportsByFacility(facility, epiWeek);
-			int numberOfReportsForFacility = 0;
-			for (WeeklyReportReferenceDto report : reports) {
-				int nonZeroEntries = weeklyReportEntryFacade.getNumberOfNonZeroEntries(report);
-				if (nonZeroEntries > 0) {
-					numberOfReportsForFacility++;
-					continue;
-				}
-			}
-			
-			if (numberOfReportsForFacility > 0) {
-				numberOfReports++;
-			} else {
-				numberOfZeroReports++;
-			}
-		}
-		
-		dto.setRegion(regionRef);
-		dto.setDistrict(districtRef);
-		dto.setFacilities(facilities.size());
-		dto.setReports(numberOfReports);
-		dto.setZeroReports(numberOfZeroReports);
-		dto.setMissingReports(numberOfMissingReports);
-		
-		int totalReportsCount = numberOfReports + numberOfZeroReports + numberOfMissingReports;
-		dto.setReportsPercentage(100 / totalReportsCount * numberOfReports);
-		dto.setZeroReportsPercentage(100 / totalReportsCount * numberOfZeroReports);
-		dto.setMissingReportsPercentage(100 / totalReportsCount * numberOfMissingReports);
-		
-		return dto;
 	}
 	
 	@RolesAllowed(UserRole._SYSTEM)

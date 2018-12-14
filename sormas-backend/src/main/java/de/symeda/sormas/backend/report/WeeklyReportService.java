@@ -110,43 +110,67 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 	@SuppressWarnings("rawtypes")
 	public List<WeeklyReportSummaryDto> getWeeklyReportSummariesPerRegion(EpiWeek epiWeek) {
-		Query query = em.createNativeQuery("SELECT region_id, COUNT(fac) as facilities, SUM(missing) as missing, SUM(report) as report, SUM(zero) as zero "
+		Query query = em.createNativeQuery(
+				"SELECT region_id, MAX(officers) as officers, MAX(omissing) as omissing, MAX(oreport) as oreport, MAX(ozero) as ozero, MAX(informants) as informants, MAX(imissing) as imissing, MAX(ireport) as ireport, MAX(izero) as izero FROM ("
+				+ "SELECT region_id COUNT(officers) as officers, SUM(missing) as missing, SUM(report) as report, SUM(zero) as zero, NULL as informants, NULL as imissing, NULL as ireport, NULL as izero "
 				+ "FROM ("
-					+ "SELECT facility.id as fac, facility.region_id, "
-					+ "CASE WHEN COUNT(users.id) > COUNT(wr.id) THEN 1 ELSE 0 END as missing, "
-					+ "CASE WHEN SUM(wr.totalnumberofcases) > 0 AND COUNT(users.id) = COUNT(wr.id) THEN 1 ELSE 0 END as report, "
-					+ "CASE WHEN SUM(wr.totalnumberofcases) = 0 AND COUNT(users.id) = COUNT(wr.id) THEN 1 ELSE 0 END as zero "
-					+ "FROM users "
-					+ "INNER JOIN users_userroles ON users_userroles.user_id = users.id "
-					+ "INNER JOIN facility ON users.healthfacility_id = facility.id "
-					+ "LEFT JOIN ("
-						+ "SELECT * FROM weeklyreport WHERE year = " + epiWeek.getYear() + " AND epiweek = " + epiWeek.getWeek() 
-					+ ") as wr ON wr.reportinguser_id = users.id "
-					+ "WHERE users_userroles.userrole = 'HOSPITAL_INFORMANT' "
-					+ "GROUP BY facility.id"
-				+ ") as inner_query "
-				+ "GROUP BY region_id;");
-
+				+ "SELECT users.id as officers, users.region_id, "
+				+ "CASE WHEN COUNT(wr.id) = 0 THEN 1 ELSE 0 END as omissing, "
+				+ "CASE WHEN SUM(wr.totalnumberofcases) > 0 AND COUNT(wr.id) = 1 THEN 1 ELSE 0 END as oreport, "
+				+ "CASE WHEN SUM(wr.totalnumberofcases) = 0 AND COUNT(wr.id) = 1 THEN 1 ELSE 0 END as ozero "
+				+ "FROM users "
+				+ "INNER JOIN users_userroles ON users_userroles.user_id = users.id "
+				+ "LEFT JOIN ("
+				+ "SELECT * FROM weeklyreport WHERE year = " + epiWeek.getYear() + " AND epiweek = " + epiWeek.getWeek()
+				+ ") as wr ON wr.reportinguser_id = users.id "
+				+ "WHERE users_userroles.userrole = 'SURVEILLANCE_OFFICER' "
+				+ "GROUP BY users.username, users.id"
+				+ ") as officer_query"
+				+ "GROUP BY region_id"
+				+ "UNION ALL"
+				+ "SELECT region_id, NULL as officers, NULL as omissing, NULL as oreport, NULL as ozero, COUNT(informants) as informants, SUM(imissing) as imissing, SUM(ireport) as ireport, SUM(izero) as izero "
+				+ "FROM ("
+				+ "SELECT users.id as informants, iofficer.region_id as region_id, "
+				+ "CASE WHEN COUNT(wr.id) = 0 THEN 1 ELSE 0 END as imissing, "
+				+ "CASE WHEN SUM(wr.totalnumberofcases) > 0 AND COUNT(wr.id) = 1 THEN 1 ELSE 0 END as ireport, "
+				+ "CASE WHEN SUM(wr.totalnumberofcases) = 0 AND COUNT(wr.id) = 1 THEN 1 ELSE 0 END as izero, "
+				+ "FROM users "
+				+ "INNER JOIN users_userroles ON users_userroles.user_id = users.id "
+				+ "LEFT JOIN ("
+				+ "SELECT * FROM weeklyreport WHERE year = " + epiWeek.getYear() + " AND epiweek = " + epiWeek.getWeek()
+				+ ") as wr ON wr.reportinguser_id = users.id "
+				+ "LEFT JOIN ("
+				+ "SELECT * FROM users"
+				+ ") as iofficer ON users.associatedofficer_id = iofficer.id "
+				+ "WHERE users_userroles.userrole IN ('HOSPITAL_INFORMANT', 'COMMUNITY_INFORMANT') "
+				+ "GROUP BY iofficer.region_id, users.id"
+				+ ") as informant_query "
+				+ "GROUP BY region_id"
+				+ ") AS t GROUP BY t.region_id");
+				
 		List results = query.getResultList();
 
 		List<WeeklyReportSummaryDto> summaryDtos = new ArrayList<>();
 
 		for (int i = 0; i < results.size(); i++) {
 			Object[] result = (Object[]) results.get(i);
-			int reports = ((Long) result[3]).intValue();
-			int missingReports = ((Long) result[2]).intValue();
-			int zeroReports = ((Long) result[4]).intValue();
-			int totalReports = reports + missingReports + zeroReports;
+			int officerReports = ((Long) result[3]).intValue();
+			int officerMissingReports = ((Long) result[2]).intValue();
+			int officerZeroReports= ((Long) result[4]).intValue();
+			int informantReports = ((Long) result[7]).intValue();
+			int informantMissingReports = ((Long) result[6]).intValue();
+			int informantZeroReports = ((Long) result[8]).intValue();
 			
 			WeeklyReportSummaryDto summaryDto = new WeeklyReportSummaryDto();
 			summaryDto.setRegion(RegionFacadeEjb.toReferenceDto(regionService.getById((long) result[0])));
-			summaryDto.setFacilities(((Long) result[1]).intValue());
-			summaryDto.setMissingReports(missingReports);
-			summaryDto.setReports(reports);
-			summaryDto.setZeroReports(zeroReports);
-			summaryDto.setMissingReportsPercentage(new BigDecimal(missingReports).multiply(new BigDecimal(100)).divide(new BigDecimal(totalReports), RoundingMode.HALF_UP).intValue());
-			summaryDto.setReportsPercentage(new BigDecimal(reports).multiply(new BigDecimal(100)).divide(new BigDecimal(totalReports), RoundingMode.HALF_UP).intValue());
-			summaryDto.setZeroReportsPercentage(new BigDecimal(zeroReports).multiply(new BigDecimal(100)).divide(new BigDecimal(totalReports), RoundingMode.HALF_UP).intValue());
+			summaryDto.setOfficers(((Long) result[1]).intValue());
+			summaryDto.setInformants(((Long) result[5]).intValue());
+			summaryDto.setOfficerMissingReports(officerMissingReports);
+			summaryDto.setOfficerReports(officerReports);
+			summaryDto.setOfficerZeroReports(officerZeroReports);
+			summaryDto.setInformantMissingReports(informantMissingReports);
+			summaryDto.setInformantReports(informantReports);
+			summaryDto.setInformantZeroReports(informantZeroReports);
 			
 			summaryDtos.add(summaryDto);
 		}
@@ -155,24 +179,26 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 	}
 
 	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-	public List<WeeklyReportSummaryDto> getWeeklyReportSummariesPerDistrict(Region region, EpiWeek epiWeek) {
-		Query query = em.createNativeQuery("SELECT district_id, COUNT(fac) as facilities, SUM(missing) as missing, SUM(report) as report, SUM(zero) as zero "
+	public List<WeeklyReportSummaryDto> getWeeklyReportSummariesPerOfficer(Region region, EpiWeek epiWeek) {
+		Query query = em.createNativeQuery("SELECT id, district_id, COUNT(inf) as informants, SUM(missing) as missing, SUM(report) as report, SUM(zero) as zero "
 				+ "FROM ("
-					+ "SELECT facility.id as fac, facility.district_id, "
+					+ "SELECT users.id, users.district_id, inf, "
 					+ "CASE WHEN COUNT(users.id) > COUNT(wr.id) THEN 1 ELSE 0 END as missing, "
 					+ "CASE WHEN SUM(wr.totalnumberofcases) > 0 AND COUNT(users.id) = COUNT(wr.id) THEN 1 ELSE 0 END as report, "
 					+ "CASE WHEN SUM(wr.totalnumberofcases) = 0 AND COUNT(users.id) = COUNT(wr.id) THEN 1 ELSE 0 END as zero "
 					+ "FROM users "
 					+ "INNER JOIN users_userroles ON users_userroles.user_id = users.id "
-					+ "INNER JOIN facility ON users.healthfacility_id = facility.id "
 					+ "LEFT JOIN ("
 						+ "SELECT * FROM weeklyreport WHERE year = " + epiWeek.getYear() + " AND epiweek = " + epiWeek.getWeek() 
 					+ ") as wr ON wr.reportinguser_id = users.id "
-					+ "WHERE users_userroles.userrole = 'HOSPITAL_INFORMANT' "
-						+ "AND facility.region_id = " + region.getId() + " "
-					+ "GROUP BY facility.id"
+					+ "LEFT JOIN ("
+						+ "SELECT * FROM users"
+					+ ") as inf ON inf.associatedofficer_id = users.id "
+					+ "WHERE users_userroles.userrole = 'SURVEILLANCE_OFFICER' "
+						+ "AND users.region_id = " + region.getId() + " "
+					+ "GROUP BY users.id, inf"
 				+ ") as inner_query "
-				+ "GROUP BY district_id;");
+				+ "GROUP BY district_id, id;");
 
 		@SuppressWarnings("rawtypes")
 		List results = query.getResultList();
@@ -188,13 +214,13 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 			
 			WeeklyReportSummaryDto summaryDto = new WeeklyReportSummaryDto();
 			summaryDto.setDistrict(DistrictFacadeEjb.toReferenceDto(districtService.getById((long) result[0])));
-			summaryDto.setFacilities(((Long) result[1]).intValue());
-			summaryDto.setMissingReports(missingReports);
-			summaryDto.setReports(reports);
-			summaryDto.setZeroReports(zeroReports);
-			summaryDto.setMissingReportsPercentage(new BigDecimal(missingReports).multiply(new BigDecimal(100)).divide(new BigDecimal(totalReports), RoundingMode.HALF_UP).intValue());
-			summaryDto.setReportsPercentage(new BigDecimal(reports).multiply(new BigDecimal(100)).divide(new BigDecimal(totalReports), RoundingMode.HALF_UP).intValue());
-			summaryDto.setZeroReportsPercentage(new BigDecimal(zeroReports).multiply(new BigDecimal(100)).divide(new BigDecimal(totalReports), RoundingMode.HALF_UP).intValue());
+//			summaryDto.setFacilities(((Long) result[1]).intValue());
+//			summaryDto.setMissingReports(missingReports);
+//			summaryDto.setReports(reports);
+//			summaryDto.setZeroReports(zeroReports);
+//			summaryDto.setMissingReportsPercentage(new BigDecimal(missingReports).multiply(new BigDecimal(100)).divide(new BigDecimal(totalReports), RoundingMode.HALF_UP).intValue());
+//			summaryDto.setReportsPercentage(new BigDecimal(reports).multiply(new BigDecimal(100)).divide(new BigDecimal(totalReports), RoundingMode.HALF_UP).intValue());
+//			summaryDto.setZeroReportsPercentage(new BigDecimal(zeroReports).multiply(new BigDecimal(100)).divide(new BigDecimal(totalReports), RoundingMode.HALF_UP).intValue());
 			
 			summaryDtos.add(summaryDto);
 		}

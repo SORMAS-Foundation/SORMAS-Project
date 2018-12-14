@@ -58,6 +58,7 @@ import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.core.TimeAgo;
 import de.symeda.sormas.app.core.enumeration.SampleTestResultTypeElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
+import de.symeda.sormas.app.report.WeeklyReportListItem;
 
 public class TextViewBindingAdapters {
 

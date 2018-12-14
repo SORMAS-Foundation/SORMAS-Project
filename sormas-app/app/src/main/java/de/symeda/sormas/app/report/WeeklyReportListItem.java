@@ -22,19 +22,19 @@ import de.symeda.sormas.api.Disease;
 
 public class WeeklyReportListItem {
 
-    private Disease mDisease;
-    private int nNumberOfCases;
+    private Disease disease;
+    private int numberOfCases;
 
     public WeeklyReportListItem(Disease disease, int numberOfCases) {
-        this.mDisease = disease;
-        this.nNumberOfCases = numberOfCases;
+        this.disease = disease;
+        this.numberOfCases = numberOfCases;
     }
 
     public Disease getDisease() {
-        return mDisease;
+        return disease;
     }
 
     public int getNumberOfCases() {
-        return nNumberOfCases;
+        return numberOfCases;
     }
 }
