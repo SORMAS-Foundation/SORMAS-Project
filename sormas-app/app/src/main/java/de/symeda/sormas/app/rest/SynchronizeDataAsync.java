@@ -117,6 +117,13 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                     throw new IllegalArgumentException(syncMode.toString());
             }
 
+            if (syncMode == SyncMode.Changes && hasAnyUnsynchronizedData()) {
+                Log.w(getClass().getName(), "Still having unsynchronized data. Trying again in complete mode.");
+
+                syncMode = SyncMode.Complete;
+                doInBackground(params);
+            }
+
         } catch (ServerConnectionException e) {
             syncFailed = true;
             syncFailedMessage = e.getMessage(context);

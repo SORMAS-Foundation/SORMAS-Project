@@ -20,6 +20,7 @@ package de.symeda.sormas.api.region;
 import java.util.Date;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class DistrictDto extends EntityDto {
 
@@ -99,6 +100,7 @@ public class DistrictDto extends EntityDto {
 	
 	public static DistrictDto build() {
 		DistrictDto dto = new DistrictDto();
+		dto.setUuid(DataHelper.createUuid());
 		return dto;
 	}
 	

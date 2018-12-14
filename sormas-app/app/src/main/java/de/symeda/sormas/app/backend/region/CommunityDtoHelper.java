@@ -21,6 +21,7 @@ package de.symeda.sormas.app.backend.region;
 import java.sql.SQLException;
 import java.util.List;
 
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
@@ -58,7 +59,7 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
     }
 
     @Override
-    protected Call<Integer> pushAll(List<CommunityDto> communityDtos) {
+    protected Call<List<PushResult>> pushAll(List<CommunityDto> communityDtos) {
         throw new UnsupportedOperationException("Entity is infrastructure");
     }
 

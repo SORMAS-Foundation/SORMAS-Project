@@ -32,55 +32,57 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 /**
- * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>
- * @see <a href="https://jersey.java.net/documentation/latest/jaxrs-resources.html#d0e2051">Jersey documentation HTTP Methods</a>
+ * @see <a href="https://jersey.java.net/documentation/latest/">Jersey
+ *      documentation</a>
+ * @see <a href=
+ *      "https://jersey.java.net/documentation/latest/jaxrs-resources.html#d0e2051">Jersey
+ *      documentation HTTP Methods</a>
  *
  */
 @Path("/contacts")
-@Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
-@Consumes({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
+@Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
+@Consumes({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
 @RolesAllowed("USER")
-public class ContactResource {
+public class ContactResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
 	public List<ContactDto> getAllContacts(@Context SecurityContext sc, @PathParam("since") long since) {
-		
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<ContactDto> contacts = FacadeProvider.getContactFacade().getAllActiveContactsAfter(new Date(since), userDto.getUuid());
+
+		UserReferenceDto userDto = FacadeProvider.getUserFacade()
+				.getByUserNameAsReference(sc.getUserPrincipal().getName());
+		List<ContactDto> contacts = FacadeProvider.getContactFacade().getAllActiveContactsAfter(new Date(since),
+				userDto.getUuid());
 		return contacts;
 	}
-	
+
 	@POST
 	@Path("/query")
 	public List<ContactDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
 
-		List<ContactDto> result = FacadeProvider.getContactFacade().getByUuids(uuids); 
+		List<ContactDto> result = FacadeProvider.getContactFacade().getByUuids(uuids);
 		return result;
 	}
 
-	@POST 
+	@POST
 	@Path("/push")
-	public Integer postContacts(List<ContactDto> dtos) {
-		
-		ContactFacade contactFacade = FacadeProvider.getContactFacade();
-		for (ContactDto dto : dtos) {
-			contactFacade.saveContact(dto);
-		}
-		
-		return dtos.size();
+	public List<PushResult> postContacts(List<ContactDto> dtos) {
+
+		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getContactFacade()::saveContact);
+		return result;
 	}
-	
+
 	@GET
 	@Path("/uuids")
 	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
-		
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
+
+		UserReferenceDto userDto = FacadeProvider.getUserFacade()
+				.getByUserNameAsReference(sc.getUserPrincipal().getName());
 		List<String> uuids = FacadeProvider.getContactFacade().getAllActiveUuids(userDto.getUuid());
 		return uuids;
 	}

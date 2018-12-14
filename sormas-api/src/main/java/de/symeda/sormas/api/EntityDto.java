@@ -20,8 +20,16 @@ package de.symeda.sormas.api;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import de.symeda.sormas.api.utils.Outbreaks;
 
+/**
+ * @JsonInclude We don't need to transfer properties with a null value. This
+ *              will reduce data transferred to something between 20% and 50% -
+ *              especially for fields that are not needed for all diseases
+ */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 
 	private static final long serialVersionUID = -1L;
@@ -36,9 +44,9 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 	private String uuid;
 
 	public EntityDto() {
-		
+
 	}
-	
+
 	public EntityDto(Date creationDate, Date changeDate, String uuid) {
 		this.creationDate = creationDate;
 		this.changeDate = changeDate;
@@ -56,11 +64,11 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 	public Date getChangeDate() {
 		return changeDate;
 	}
-	
+
 	public void setChangeDate(Date changeDate) {
 		this.changeDate = changeDate;
 	}
-	
+
 	@Override
 	public String getUuid() {
 		return uuid;
@@ -79,8 +87,7 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 			return false;
 		}
 
-		if (getUuid() != null && o instanceof HasUuid
-				&& ((HasUuid) o).getUuid() != null) {
+		if (getUuid() != null && o instanceof HasUuid && ((HasUuid) o).getUuid() != null) {
 			// this works, because we are using UUIDs
 			HasUuid ado = (HasUuid) o;
 			return getUuid().equals(ado.getUuid());
@@ -96,7 +103,7 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 		}
 		return 0;
 	}
-	
+
 	@Override
 	public EntityDto clone() throws CloneNotSupportedException {
 		if (getUuid() == null) {
@@ -105,5 +112,3 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 		return (EntityDto) super.clone();
 	}
 }
-
-

@@ -20,12 +20,10 @@ package de.symeda.sormas.app.backend.region;
 
 import java.util.List;
 
-import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
@@ -56,7 +54,7 @@ public class DistrictDtoHelper extends AdoDtoHelper<District, DistrictDto> {
     }
 
     @Override
-    protected Call<Integer> pushAll(List<DistrictDto> districtDtos) {
+    protected Call<List<PushResult>> pushAll(List<DistrictDto> districtDtos) {
         throw new UnsupportedOperationException("Entity is infrastructure");
     }
 

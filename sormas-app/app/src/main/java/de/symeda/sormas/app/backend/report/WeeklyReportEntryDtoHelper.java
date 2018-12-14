@@ -20,10 +20,10 @@ package de.symeda.sormas.app.backend.report;
 
 import java.util.List;
 
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.report.WeeklyReportEntryDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
@@ -54,7 +54,7 @@ public class WeeklyReportEntryDtoHelper extends AdoDtoHelper<WeeklyReportEntry, 
     }
 
     @Override
-    protected Call<Integer> pushAll(List<WeeklyReportEntryDto> weeklyReportEntryDtos) {
+    protected Call<List<PushResult>> pushAll(List<WeeklyReportEntryDto> weeklyReportEntryDtos) {
         return RetroProvider.getWeeklyReportEntryFacade().pushAll(weeklyReportEntryDtos);
     }
 

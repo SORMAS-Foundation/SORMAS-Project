@@ -21,16 +21,14 @@ package de.symeda.sormas.app.backend.classification;
 import java.sql.SQLException;
 import java.util.List;
 
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.rest.ServerCommunicationException;
-import de.symeda.sormas.app.rest.ServerConnectionException;
 import retrofit2.Call;
-import retrofit2.Response;
 
 public class DiseaseClassificationDtoHelper extends AdoDtoHelper<DiseaseClassificationCriteria, DiseaseClassificationCriteriaDto> {
 
@@ -55,7 +53,7 @@ public class DiseaseClassificationDtoHelper extends AdoDtoHelper<DiseaseClassifi
     }
 
     @Override
-    protected Call<Integer> pushAll(List<DiseaseClassificationCriteriaDto> dtos) {
+    protected Call<List<PushResult>> pushAll(List<DiseaseClassificationCriteriaDto> dtos) {
         throw new UnsupportedOperationException("Entity is read-only");
     }
 

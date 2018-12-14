@@ -331,6 +331,7 @@
     <string name="snackbar_select_create_person">Please select a person or click \'Create\' to create a new one.</string>
     <string name="snackbar_sync_conflict">Synchronization conflicts detected. Please check the Sync Log to review them.</string>
     <string name="snackbar_sync_success">Synchronization successful.</string>
+    <string name="snackbar_sync_unsynced">Some entries could not be synchronized. Please try again later.</string>
     <string name="snackbar_task_reply">An assignee reply is required when setting the task status to not executable.</string>
     <string name="snackbar_version_too_new">Could not synchronize because the app version is newer than the server version.</string>
     <string name="snackbar_weekly_report_confirmed">Thank you, your weekly report has been confirmed.</string>

@@ -32,52 +32,53 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.report.WeeklyReportEntryDto;
-import de.symeda.sormas.api.report.WeeklyReportEntryFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Path("/weeklyreportentries")
-@Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
-@Consumes({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
+@Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
+@Consumes({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
 @RolesAllowed("USER")
-public class WeeklyReportEntryResource {
+public class WeeklyReportEntryResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<WeeklyReportEntryDto> getAllWeeklyReportEntries(@Context SecurityContext sc, @PathParam("since") long since) {
-		
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<WeeklyReportEntryDto> weeklyReportEntries = FacadeProvider.getWeeklyReportEntryFacade().getAllWeeklyReportEntriesAfter(new Date(since), userDto.getUuid());
+	public List<WeeklyReportEntryDto> getAllWeeklyReportEntries(@Context SecurityContext sc,
+			@PathParam("since") long since) {
+
+		UserReferenceDto userDto = FacadeProvider.getUserFacade()
+				.getByUserNameAsReference(sc.getUserPrincipal().getName());
+		List<WeeklyReportEntryDto> weeklyReportEntries = FacadeProvider.getWeeklyReportEntryFacade()
+				.getAllWeeklyReportEntriesAfter(new Date(since), userDto.getUuid());
 		return weeklyReportEntries;
 	}
-	
+
 	@POST
 	@Path("/query")
 	public List<WeeklyReportEntryDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
-		
+
 		List<WeeklyReportEntryDto> result = FacadeProvider.getWeeklyReportEntryFacade().getByUuids(uuids);
 		return result;
 	}
-	
+
 	@POST
 	@Path("/push")
-	public Integer postWeeklyReportEntries(List<WeeklyReportEntryDto> dtos) {
-		
-		WeeklyReportEntryFacade weeklyReportEntryFacade = FacadeProvider.getWeeklyReportEntryFacade();
-		for (WeeklyReportEntryDto dto : dtos) {
-			weeklyReportEntryFacade.saveWeeklyReportEntry(dto);
-		}
-		
-		return dtos.size();
+	public List<PushResult> postWeeklyReportEntries(List<WeeklyReportEntryDto> dtos) {
+
+		List<PushResult> result = savePushedDto(dtos,
+				FacadeProvider.getWeeklyReportEntryFacade()::saveWeeklyReportEntry);
+		return result;
 	}
-	
+
 	@GET
 	@Path("/uuids")
 	public List<String> getAllUuids(@Context SecurityContext sc) {
-		
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
+
+		UserReferenceDto userDto = FacadeProvider.getUserFacade()
+				.getByUserNameAsReference(sc.getUserPrincipal().getName());
 		List<String> uuids = FacadeProvider.getWeeklyReportEntryFacade().getAllUuids(userDto.getUuid());
 		return uuids;
 	}
-	
+
 }

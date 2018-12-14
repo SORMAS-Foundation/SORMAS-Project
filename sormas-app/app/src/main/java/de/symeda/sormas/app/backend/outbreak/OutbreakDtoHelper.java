@@ -18,13 +18,11 @@
 
 package de.symeda.sormas.app.backend.outbreak;
 
-import java.sql.SQLException;
 import java.util.List;
 
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.outbreak.OutbreakDto;
-import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
@@ -52,7 +50,7 @@ public class OutbreakDtoHelper extends AdoDtoHelper<Outbreak, OutbreakDto> {
     }
 
     @Override
-    protected Call<Integer> pushAll(List<OutbreakDto> communityDtos) {
+    protected Call<List<PushResult>> pushAll(List<OutbreakDto> communityDtos) {
         throw new UnsupportedOperationException("Entity is read-only");
     }
 

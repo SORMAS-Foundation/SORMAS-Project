@@ -627,6 +627,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                     if (!syncFailed) {
                         if (syncLogCountAfter > syncLogCountBefore) {
                             showConflictSnackbar();
+                        } else if (SynchronizeDataAsync.hasAnyUnsynchronizedData()) {
+                            NotificationHelper.showNotification(BaseActivity.this, NotificationType.WARNING, R.string.snackbar_sync_unsynced);
                         } else {
                             NotificationHelper.showNotification(BaseActivity.this, NotificationType.SUCCESS, R.string.snackbar_sync_success);
                         }

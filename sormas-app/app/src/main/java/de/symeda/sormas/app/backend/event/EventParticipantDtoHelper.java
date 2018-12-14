@@ -20,6 +20,7 @@ package de.symeda.sormas.app.backend.event;
 
 import java.util.List;
 
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -55,7 +56,7 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
     }
 
     @Override
-    protected Call<Integer> pushAll(List<EventParticipantDto> eventParticipantDtos) {
+    protected Call<List<PushResult>> pushAll(List<EventParticipantDto> eventParticipantDtos) {
         return RetroProvider.getEventParticipantFacade().pushAll(eventParticipantDtos);
     }
 

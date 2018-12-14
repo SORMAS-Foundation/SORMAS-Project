@@ -32,56 +32,57 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.task.TaskDto;
-import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 /**
- * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>
- * @see <a href="https://jersey.java.net/documentation/latest/jaxrs-resources.html#d0e2051">Jersey documentation HTTP Methods</a>
+ * @see <a href="https://jersey.java.net/documentation/latest/">Jersey
+ *      documentation</a>
+ * @see <a href=
+ *      "https://jersey.java.net/documentation/latest/jaxrs-resources.html#d0e2051">Jersey
+ *      documentation HTTP Methods</a>
  *
  */
 @Path("/tasks")
-@Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
-@Consumes({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
+@Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
+@Consumes({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
 @RolesAllowed("USER")
-public class TaskResource {
+public class TaskResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
 	public List<TaskDto> getAll(@Context SecurityContext sc, @PathParam("since") long since) {
 
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<TaskDto> result = FacadeProvider.getTaskFacade().getAllActiveTasksAfter(new Date(since), userDto.getUuid()); 
+		UserReferenceDto userDto = FacadeProvider.getUserFacade()
+				.getByUserNameAsReference(sc.getUserPrincipal().getName());
+		List<TaskDto> result = FacadeProvider.getTaskFacade().getAllActiveTasksAfter(new Date(since),
+				userDto.getUuid());
 		return result;
 	}
-	
+
 	@POST
 	@Path("/query")
 	public List<TaskDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
 
-		List<TaskDto> result = FacadeProvider.getTaskFacade().getByUuids(uuids); 
+		List<TaskDto> result = FacadeProvider.getTaskFacade().getByUuids(uuids);
 		return result;
 	}
-	
-	@POST 
+
+	@POST
 	@Path("/push")
-	public Integer postTasks(List<TaskDto> dtos) {
-		
-		TaskFacade raskFacade = FacadeProvider.getTaskFacade();
-		for (TaskDto dto : dtos) {
-			raskFacade.saveTask(dto);
-		}
-		
-		return dtos.size();
+	public List<PushResult> postTasks(List<TaskDto> dtos) {
+
+		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getTaskFacade()::saveTask);
+		return result;
 	}
-	
-	
+
 	@GET
 	@Path("/uuids")
 	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
-		
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
+
+		UserReferenceDto userDto = FacadeProvider.getUserFacade()
+				.getByUserNameAsReference(sc.getUserPrincipal().getName());
 		List<String> uuids = FacadeProvider.getTaskFacade().getAllActiveUuids(userDto.getUuid());
 		return uuids;
 	}

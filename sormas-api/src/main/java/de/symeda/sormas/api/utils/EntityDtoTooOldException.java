@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -14,34 +14,20 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+ *******************************************************************************/
+package de.symeda.sormas.api.utils;
 
-package de.symeda.sormas.app.rest;
-
-import java.util.List;
-
-import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.person.PersonDto;
-import retrofit2.Call;
-import retrofit2.http.Body;
-import retrofit2.http.GET;
-import retrofit2.http.POST;
-import retrofit2.http.Path;
+import de.symeda.sormas.api.EntityDto;
 
 /**
- * Created by Martin Wahnschaffe on 07.06.2016.
+ * Thrown when a entity that is supposed to be saved is older than the current
+ * version in the database
  */
-public interface PersonFacadeRetro {
+@SuppressWarnings("serial")
+public class EntityDtoTooOldException extends RuntimeException {
 
-    @GET("persons/all/{since}")
-    Call<List<PersonDto>> pullAllSince(@Path("since") long since);
+	public EntityDtoTooOldException(String entityUuid, Class<? extends EntityDto> entityClass) {
+		super(entityClass.getSimpleName() + " is older than current version on server: '" + entityUuid + "'");
+	}
 
-    @POST("persons/query")
-    Call<List<PersonDto>> pullByUuids(@Body List<String> uuids);
-
-    @POST("persons/push")
-    Call<List<PushResult>> pushAll(@Body List<PersonDto> dtos);
-
-    @GET("persons/uuids")
-    Call<List<String>> pullUuids();
 }

@@ -395,5 +395,4 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// getArchivedUuidsSince should return length 0
 		assertEquals(0, getCaseFacade().getArchivedUuidsSince(user.getUuid(), testStartDate).size());
 	}
-
 }
