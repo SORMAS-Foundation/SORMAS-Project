@@ -24,6 +24,7 @@ import java.util.List;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -72,6 +73,8 @@ public class DiseaseClassificationDtoHelper extends AdoDtoHelper<DiseaseClassifi
         List<DiseaseClassificationCriteria> existingCriteria = dao.queryForEq(DiseaseClassificationCriteria.DISEASE, dto.getDisease());
         if (!existingCriteria.isEmpty()) {
             dto.setUuid(existingCriteria.get(0).getUuid());
+        } else {
+            dto.setUuid(DataHelper.createUuid());
         }
 
         DiseaseClassificationCriteria source = fillOrCreateFromDto(null, dto);

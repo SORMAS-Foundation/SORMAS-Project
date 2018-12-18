@@ -274,7 +274,8 @@ public final class ConfigProvider {
             DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_USERNAME, username));
             DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_PASSWORD, password));
 
-            DatabaseHelper.clearTables(false);
+            // avoid loss of data
+            //DatabaseHelper.clearTables(false);
         }
     }
 
