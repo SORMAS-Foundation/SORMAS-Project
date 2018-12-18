@@ -273,7 +273,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		district.addValueChangeListener(e -> {
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
 			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade()
-					.getAssignableUsersByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER);
+					.getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER);
 			FieldHelper.updateItems(surveillanceOfficerField, assignableSurveillanceOfficers);
 		});
 

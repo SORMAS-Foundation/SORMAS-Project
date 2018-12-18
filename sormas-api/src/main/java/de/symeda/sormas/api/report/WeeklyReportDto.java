@@ -72,6 +72,10 @@ public class WeeklyReportDto extends EntityDto {
 		this.reportDateTime = reportDateTime;
 	}
 	
+	/**
+	 * For informants the number of cases reported by the user.
+	 * For officers the number of cases reported by the user and all related informants.
+	 */
 	public Integer getTotalNumberOfCases() {
 		return totalNumberOfCases;
 	}

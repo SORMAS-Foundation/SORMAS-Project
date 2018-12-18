@@ -194,6 +194,6 @@ public class UserDto extends EntityDto {
 	}
 	
 	public UserReferenceDto toReference() {
-		return new UserReferenceDto(getUuid());
+		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles());
 	}
 }

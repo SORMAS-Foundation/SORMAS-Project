@@ -116,7 +116,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	    		
 	    		updateFollowUpStatusComponents();
     		
-    	    	contactOfficerField.addItems(FacadeProvider.getUserFacade().getAssignableUsersByDistrict(caseDto.getDistrict(), false, UserRole.CONTACT_OFFICER));
+    	    	contactOfficerField.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(caseDto.getDistrict(), false, UserRole.CONTACT_OFFICER));
     	    	
     	    	getContent().removeComponent(TO_CASE_BTN_LOC);
     	    	if (getValue().getResultingCase() != null) {

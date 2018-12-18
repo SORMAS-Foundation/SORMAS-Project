@@ -95,7 +95,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseDataDto> {
 			ComboBox surveillanceOfficer = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
 			surveillanceOfficer.setEnabled(false);
 			FieldHelper.addSoftRequiredStyleWhen(getFieldGroup(), surveillanceOfficerCheckBox, Arrays.asList(CaseDataDto.SURVEILLANCE_OFFICER), Arrays.asList(true), null);
-			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict(singleSelectedDistrict, false, UserRole.SURVEILLANCE_OFFICER);
+			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, false, UserRole.SURVEILLANCE_OFFICER);
 			FieldHelper.updateItems(surveillanceOfficer, assignableSurveillanceOfficers);
 			
 			surveillanceOfficerCheckBox.addValueChangeListener(e -> {

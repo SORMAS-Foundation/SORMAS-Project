@@ -143,27 +143,24 @@ public class UserService extends AbstractAdoService<User> {
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 		return em.createQuery(cq).getResultList();
 	}
-	
-	public List<User> getForWeeklyReportDetails(District district) {
+
+	/**
+	 * @param district
+	 * @param includeSupervisors If set to true, all supervisors are returned independent of the district
+	 * @param userRoles
+	 * @return
+	 */
+	public List<User> getAllByAssociatedOfficer(User associatedOfficer, UserRole... userRoles) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
+
+		Predicate filter = cb.equal(from.get(User.ASSOCIATED_OFFICER), associatedOfficer);
+		filter = and(cb, filter, buildUserRolesFilter(from, userRoles));
+		cq.where(filter);
 		
-		buildDistrictQuery(cb, cq, from, district, false, UserRole.HOSPITAL_INFORMANT);
-		
-		Join<User, Facility> joinFacility = from.join(User.HEALTH_FACILITY, JoinType.LEFT);
-		cq.orderBy(cb.asc(joinFacility.get(Facility.NAME)));
+		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 		return em.createQuery(cq).getResultList();
-	}
-	
-	public long getNumberOfInformantsByFacility(Facility facility) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<User> from = cq.from(getElementClass());
-		
-		cq.select(cb.count(from));
-		cq.where(cb.equal(from.get(User.HEALTH_FACILITY), facility));
-		return em.createQuery(cq).getSingleResult();
 	}
 
 	public boolean isLoginUnique(String uuid, String userName) {
@@ -209,19 +206,19 @@ public class UserService extends AbstractAdoService<User> {
 		// a user can read all other users
 		return null;
 	}
+	
+	public Predicate buildUserRolesFilter(Root<User> from, UserRole... userRoles) {
+		if (userRoles.length > 0) {
+			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
+			return joinRoles.in(Arrays.asList(userRoles));
+		}
+		return null;
+	}
 
 	private void buildDistrictQuery(CriteriaBuilder cb, CriteriaQuery<User> cq, Root<User> from, District district, boolean includeSupervisors, UserRole... userRoles) {
 		Predicate filter = cb.equal(from.get(User.DISTRICT), district);
 		
-		if (userRoles.length > 0) {
-			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
-			Predicate rolesFilter = joinRoles.in(Arrays.asList(userRoles));
-			if (filter != null) {
-				filter = cb.and(filter, rolesFilter);
-			} else {
-				filter = rolesFilter;
-			}
-		}
+		filter = and(cb, filter, buildUserRolesFilter(from, userRoles));
 
 		if (includeSupervisors) {
 			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
@@ -236,5 +233,27 @@ public class UserService extends AbstractAdoService<User> {
 		if (filter != null) {
 			cq.where(filter);
 		}
+	}
+
+	public Long countByAssignedOfficer(User officer, UserRole... userRoles) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<User> from = cq.from(getElementClass());
+		Predicate filter = cb.equal(from.get(User.ASSOCIATED_OFFICER), officer);
+		filter = and(cb, filter, buildUserRolesFilter(from, userRoles));
+		cq.where(filter);
+		cq.select(cb.count(from));
+		return em.createQuery(cq).getSingleResult();
+	}
+	
+	public Long countByRegion(Region region, UserRole... userRoles) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<User> from = cq.from(getElementClass());
+		Predicate filter = cb.equal(from.get(User.REGION), region);
+		filter = and(cb, filter, buildUserRolesFilter(from, userRoles));
+		cq.where(filter);
+		cq.select(cb.count(from));
+		return em.createQuery(cq).getSingleResult();
 	}
 }

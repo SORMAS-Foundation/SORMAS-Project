@@ -15,34 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.report;
+package de.symeda.sormas.ui.utils;
 
-import java.util.Date;
-import java.util.List;
+import com.vaadin.ui.renderers.HtmlRenderer;
 
-import javax.ejb.Remote;
+import elemental.json.JsonValue;
 
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.EpiWeek;
-
-@Remote
-public interface WeeklyReportFacade {
-
-	List<WeeklyReportDto> getAllWeeklyReportsAfter(Date date, String userUuid);
+@SuppressWarnings("serial")
+public class PercentageRenderer extends HtmlRenderer {
 	
-	List<WeeklyReportDto> getByUuids(List<String> uuids);
-	
-	WeeklyReportDto saveWeeklyReport(WeeklyReportDto dto);
-	
-	List<String> getAllUuids(String userUuid);
-	
-	List<WeeklyReportRegionSummaryDto> getSummariesPerRegion(EpiWeek epiWeek);
-	
-	List<WeeklyReportOfficerSummaryDto> getSummariesPerOfficer(RegionReferenceDto region, EpiWeek epiWeek);
-	
-	WeeklyReportDto getByEpiWeekAndUser(EpiWeek epiWeek, UserReferenceDto userRef);
-	
-	WeeklyReportDto getByUuid(String uuid);
+	@Override
+    public JsonValue encode(String value) {
+    	if (value != null && !value.isEmpty()) {
+    		return super.encode(value + "%");
+    	} else {
+    		return null;
+    	}
+    }
 	
 }

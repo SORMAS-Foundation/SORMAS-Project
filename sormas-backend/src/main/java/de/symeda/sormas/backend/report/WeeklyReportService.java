@@ -17,18 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.report;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -37,7 +32,9 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.report.WeeklyReportSummaryDto;
+import de.symeda.sormas.api.report.WeeklyReportCriteria;
+import de.symeda.sormas.api.report.WeeklyReportOfficerSummaryDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -45,9 +42,10 @@ import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
@@ -57,6 +55,8 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
+	@EJB
+	private UserService userService;
 
 	public WeeklyReportService() {
 		super(WeeklyReport.class);
@@ -107,121 +107,41 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 		}
 	}
 
-	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-	@SuppressWarnings("rawtypes")
-	public List<WeeklyReportSummaryDto> getWeeklyReportSummariesPerRegion(EpiWeek epiWeek) {
-		Query query = em.createNativeQuery(
-				"SELECT region_id, MAX(officers) as officers, MAX(omissing) as omissing, MAX(oreport) as oreport, MAX(ozero) as ozero, MAX(informants) as informants, MAX(imissing) as imissing, MAX(ireport) as ireport, MAX(izero) as izero FROM ("
-				+ "SELECT region_id COUNT(officers) as officers, SUM(missing) as missing, SUM(report) as report, SUM(zero) as zero, NULL as informants, NULL as imissing, NULL as ireport, NULL as izero "
-				+ "FROM ("
-				+ "SELECT users.id as officers, users.region_id, "
-				+ "CASE WHEN COUNT(wr.id) = 0 THEN 1 ELSE 0 END as omissing, "
-				+ "CASE WHEN SUM(wr.totalnumberofcases) > 0 AND COUNT(wr.id) = 1 THEN 1 ELSE 0 END as oreport, "
-				+ "CASE WHEN SUM(wr.totalnumberofcases) = 0 AND COUNT(wr.id) = 1 THEN 1 ELSE 0 END as ozero "
-				+ "FROM users "
-				+ "INNER JOIN users_userroles ON users_userroles.user_id = users.id "
-				+ "LEFT JOIN ("
-				+ "SELECT * FROM weeklyreport WHERE year = " + epiWeek.getYear() + " AND epiweek = " + epiWeek.getWeek()
-				+ ") as wr ON wr.reportinguser_id = users.id "
-				+ "WHERE users_userroles.userrole = 'SURVEILLANCE_OFFICER' "
-				+ "GROUP BY users.username, users.id"
-				+ ") as officer_query"
-				+ "GROUP BY region_id"
-				+ "UNION ALL"
-				+ "SELECT region_id, NULL as officers, NULL as omissing, NULL as oreport, NULL as ozero, COUNT(informants) as informants, SUM(imissing) as imissing, SUM(ireport) as ireport, SUM(izero) as izero "
-				+ "FROM ("
-				+ "SELECT users.id as informants, iofficer.region_id as region_id, "
-				+ "CASE WHEN COUNT(wr.id) = 0 THEN 1 ELSE 0 END as imissing, "
-				+ "CASE WHEN SUM(wr.totalnumberofcases) > 0 AND COUNT(wr.id) = 1 THEN 1 ELSE 0 END as ireport, "
-				+ "CASE WHEN SUM(wr.totalnumberofcases) = 0 AND COUNT(wr.id) = 1 THEN 1 ELSE 0 END as izero, "
-				+ "FROM users "
-				+ "INNER JOIN users_userroles ON users_userroles.user_id = users.id "
-				+ "LEFT JOIN ("
-				+ "SELECT * FROM weeklyreport WHERE year = " + epiWeek.getYear() + " AND epiweek = " + epiWeek.getWeek()
-				+ ") as wr ON wr.reportinguser_id = users.id "
-				+ "LEFT JOIN ("
-				+ "SELECT * FROM users"
-				+ ") as iofficer ON users.associatedofficer_id = iofficer.id "
-				+ "WHERE users_userroles.userrole IN ('HOSPITAL_INFORMANT', 'COMMUNITY_INFORMANT') "
-				+ "GROUP BY iofficer.region_id, users.id"
-				+ ") as informant_query "
-				+ "GROUP BY region_id"
-				+ ") AS t GROUP BY t.region_id");
-				
-		List results = query.getResultList();
+	public List<WeeklyReportOfficerSummaryDto> getWeeklyReportSummariesPerOfficer(Region region, EpiWeek epiWeek) {
 
-		List<WeeklyReportSummaryDto> summaryDtos = new ArrayList<>();
+		List<WeeklyReportOfficerSummaryDto> summaryDtos = new ArrayList<>();
 
-		for (int i = 0; i < results.size(); i++) {
-			Object[] result = (Object[]) results.get(i);
-			int officerReports = ((Long) result[3]).intValue();
-			int officerMissingReports = ((Long) result[2]).intValue();
-			int officerZeroReports= ((Long) result[4]).intValue();
-			int informantReports = ((Long) result[7]).intValue();
-			int informantMissingReports = ((Long) result[6]).intValue();
-			int informantZeroReports = ((Long) result[8]).intValue();
-			
-			WeeklyReportSummaryDto summaryDto = new WeeklyReportSummaryDto();
-			summaryDto.setRegion(RegionFacadeEjb.toReferenceDto(regionService.getById((long) result[0])));
-			summaryDto.setOfficers(((Long) result[1]).intValue());
-			summaryDto.setInformants(((Long) result[5]).intValue());
-			summaryDto.setOfficerMissingReports(officerMissingReports);
-			summaryDto.setOfficerReports(officerReports);
-			summaryDto.setOfficerZeroReports(officerZeroReports);
-			summaryDto.setInformantMissingReports(informantMissingReports);
-			summaryDto.setInformantReports(informantReports);
-			summaryDto.setInformantZeroReports(informantZeroReports);
-			
-			summaryDtos.add(summaryDto);
-		}
+		WeeklyReportCriteria officerReportCriteria = new WeeklyReportCriteria().epiWeek(epiWeek);
+		WeeklyReportCriteria informantsReportCriteria = new WeeklyReportCriteria().epiWeek(epiWeek).isOfficer(false);
 
-		return summaryDtos;
-	}
+		List<User> officers = userService.getAllByRegionAndUserRoles(region, UserRole.SURVEILLANCE_OFFICER);
 
-	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-	public List<WeeklyReportSummaryDto> getWeeklyReportSummariesPerOfficer(Region region, EpiWeek epiWeek) {
-		Query query = em.createNativeQuery("SELECT id, district_id, COUNT(inf) as informants, SUM(missing) as missing, SUM(report) as report, SUM(zero) as zero "
-				+ "FROM ("
-					+ "SELECT users.id, users.district_id, inf, "
-					+ "CASE WHEN COUNT(users.id) > COUNT(wr.id) THEN 1 ELSE 0 END as missing, "
-					+ "CASE WHEN SUM(wr.totalnumberofcases) > 0 AND COUNT(users.id) = COUNT(wr.id) THEN 1 ELSE 0 END as report, "
-					+ "CASE WHEN SUM(wr.totalnumberofcases) = 0 AND COUNT(users.id) = COUNT(wr.id) THEN 1 ELSE 0 END as zero "
-					+ "FROM users "
-					+ "INNER JOIN users_userroles ON users_userroles.user_id = users.id "
-					+ "LEFT JOIN ("
-						+ "SELECT * FROM weeklyreport WHERE year = " + epiWeek.getYear() + " AND epiweek = " + epiWeek.getWeek() 
-					+ ") as wr ON wr.reportinguser_id = users.id "
-					+ "LEFT JOIN ("
-						+ "SELECT * FROM users"
-					+ ") as inf ON inf.associatedofficer_id = users.id "
-					+ "WHERE users_userroles.userrole = 'SURVEILLANCE_OFFICER' "
-						+ "AND users.region_id = " + region.getId() + " "
-					+ "GROUP BY users.id, inf"
-				+ ") as inner_query "
-				+ "GROUP BY district_id, id;");
+		for (User officer : officers) {
+			officerReportCriteria.reportingUser(new UserReferenceDto(officer.getUuid()));
+			List<WeeklyReport> officerReports = queryByCriteria(officerReportCriteria, null, null, true);
 
-		@SuppressWarnings("rawtypes")
-		List results = query.getResultList();
+			WeeklyReportOfficerSummaryDto summaryDto = new WeeklyReportOfficerSummaryDto();
+			summaryDto.setOfficer(UserFacadeEjb.toReferenceDto(officer));
+			summaryDto.setDistrict(DistrictFacadeEjb.toReferenceDto(officer.getDistrict()));
 
-		List<WeeklyReportSummaryDto> summaryDtos = new ArrayList<>();
+			if (officerReports.size() > 0) {
+				WeeklyReport officerReport = officerReports.get(0);
+				summaryDto.setOfficerReportDate(officerReport.getReportDateTime());
+				summaryDto.setTotalCaseCount(officerReport.getTotalNumberOfCases());
+			}
 
-		for (int i = 0; i < results.size(); i++) {
-			Object[] result = (Object[]) results.get(i);
-			int reports = ((Long) result[3]).intValue();
-			int missingReports = ((Long) result[2]).intValue();
-			int zeroReports = ((Long) result[4]).intValue();
-			int totalReports = reports + missingReports + zeroReports;
-			
-			WeeklyReportSummaryDto summaryDto = new WeeklyReportSummaryDto();
-			summaryDto.setDistrict(DistrictFacadeEjb.toReferenceDto(districtService.getById((long) result[0])));
-//			summaryDto.setFacilities(((Long) result[1]).intValue());
-//			summaryDto.setMissingReports(missingReports);
-//			summaryDto.setReports(reports);
-//			summaryDto.setZeroReports(zeroReports);
-//			summaryDto.setMissingReportsPercentage(new BigDecimal(missingReports).multiply(new BigDecimal(100)).divide(new BigDecimal(totalReports), RoundingMode.HALF_UP).intValue());
-//			summaryDto.setReportsPercentage(new BigDecimal(reports).multiply(new BigDecimal(100)).divide(new BigDecimal(totalReports), RoundingMode.HALF_UP).intValue());
-//			summaryDto.setZeroReportsPercentage(new BigDecimal(zeroReports).multiply(new BigDecimal(100)).divide(new BigDecimal(totalReports), RoundingMode.HALF_UP).intValue());
-			
+			Long informants = userService.countByAssignedOfficer(officer);
+			summaryDto.setInformants(informants.intValue());
+
+			informantsReportCriteria.assignedOfficer(summaryDto.getOfficer());
+			informantsReportCriteria.isZeroReport(false);
+			Long informantCaseReports = countByCriteria(informantsReportCriteria, null);
+			summaryDto.setInformantCaseReports(informantCaseReports.intValue());
+
+			informantsReportCriteria.isZeroReport(true);
+			Long informantZeroReports = countByCriteria(informantsReportCriteria, null);
+			summaryDto.setInformantZeroReports(informantZeroReports.intValue());
+
 			summaryDtos.add(summaryDto);
 		}
 
@@ -233,10 +153,16 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<WeeklyReport, WeeklyReport> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<WeeklyReport, WeeklyReport> from,
+			User user) {
+
+		if (user == null) {
+			return null;
+		}
+
 		// National users can access all reports in the system
 		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)
-			|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
+				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
 			return null;
 		}
 
@@ -251,9 +177,10 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 			case CONTACT_SUPERVISOR:
 			case CASE_SUPERVISOR:
 			case STATE_OBSERVER:
-				// Supervisors see all reports from facilities in their region
+				// Supervisors see all reports from users in their region
 				if (user.getRegion() != null) {
-					filter = cb.or(filter, cb.equal(informant.join(User.HEALTH_FACILITY, JoinType.LEFT).get(Facility.REGION), user.getRegion()));
+					filter = cb.or(filter, cb.equal(
+							from.join(WeeklyReport.REPORTING_USER, JoinType.LEFT).get(User.REGION), user.getRegion()));
 				}
 				break;
 			case SURVEILLANCE_OFFICER:
@@ -268,4 +195,70 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 		return filter;
 	}
 
+	public List<WeeklyReport> queryByCriteria(WeeklyReportCriteria criteria, User user, String orderProperty,
+			boolean asc) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<WeeklyReport> cq = cb.createQuery(WeeklyReport.class);
+		Root<WeeklyReport> from = cq.from(WeeklyReport.class);
+
+		if (orderProperty != null) {
+			cq.orderBy(asc ? cb.asc(from.get(orderProperty)) : cb.desc(from.get(orderProperty)));
+		}
+
+		Predicate filter = createUserFilter(cb, cq, from, user);
+		filter = and(cb, filter, buildCriteriaFilter(criteria, cb, from));
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public Long countByCriteria(WeeklyReportCriteria criteria, User user) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<WeeklyReport> from = cq.from(WeeklyReport.class);
+
+		Predicate filter = createUserFilter(cb, cq, from, user);
+		filter = and(cb, filter, buildCriteriaFilter(criteria, cb, from));
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.select(cb.count(from));
+
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	public Predicate buildCriteriaFilter(WeeklyReportCriteria criteria, CriteriaBuilder cb, Root<WeeklyReport> from) {
+		Predicate filter = null;
+		if (criteria.getEpiWeek() != null) {
+			filter = and(cb, filter, cb.equal(from.get(WeeklyReport.YEAR), criteria.getEpiWeek().getYear()));
+			filter = and(cb, filter, cb.equal(from.get(WeeklyReport.EPI_WEEK), criteria.getEpiWeek().getWeek()));
+		}
+		if (criteria.getReportingUser() != null) {
+			filter = and(cb, filter, cb.equal(from.join(WeeklyReport.REPORTING_USER, JoinType.LEFT)
+					.get(User.UUID), criteria.getReportingUser().getUuid()));
+		}
+		if (criteria.getReportingUserRegion() != null) {
+			filter = and(cb, filter, cb.equal(from.join(WeeklyReport.REPORTING_USER, JoinType.LEFT)
+					.join(User.REGION, JoinType.LEFT).get(Region.UUID), criteria.getReportingUserRegion().getUuid()));
+		}
+		if (criteria.getAssignedOfficer() != null) {
+			filter = and(cb, filter, cb.equal(from.join(WeeklyReport.ASSIGNED_OFFICER, JoinType.LEFT).get(User.UUID),
+					criteria.getAssignedOfficer().getUuid()));
+		}
+		if (criteria.getIsOfficer() != null) {
+			filter = and(cb, filter, criteria.getIsOfficer() ? cb.isNull(from.get(WeeklyReport.ASSIGNED_OFFICER))
+					: cb.isNotNull(from.get(WeeklyReport.ASSIGNED_OFFICER)));
+		}
+		if (criteria.getIsZeroReport() != null) {
+			filter = and(cb, filter,
+					criteria.getIsZeroReport() ? cb.equal(from.get(WeeklyReport.TOTAL_NUMBER_OF_CASES), 0)
+							: cb.notEqual(from.get(WeeklyReport.TOTAL_NUMBER_OF_CASES), 0));
+		}
+		return filter;
+	}
 }

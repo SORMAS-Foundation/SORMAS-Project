@@ -30,21 +30,21 @@ import de.symeda.sormas.api.utils.ValidationException;
  */
 public enum UserRole {
 
-	ADMIN(false, false),
-	NATIONAL_USER(false, false),	
-	SURVEILLANCE_SUPERVISOR(true, false),	
-	SURVEILLANCE_OFFICER(false, true),	
-	HOSPITAL_INFORMANT(false, false),	
-	COMMUNITY_INFORMANT(false, false),
-	CASE_SUPERVISOR(true, false),	
-	CASE_OFFICER(false, true),	
-	CONTACT_SUPERVISOR(true, false),	
-	CONTACT_OFFICER(false, true),	
-	EVENT_OFFICER(true, false),	
-	LAB_USER(false, false),
-	NATIONAL_OBSERVER(false, false),
-	STATE_OBSERVER(false, false),
-	DISTRICT_OBSERVER(false, false)
+	ADMIN(false, false, false),
+	NATIONAL_USER(false, false, false),	
+	SURVEILLANCE_SUPERVISOR(true, false, false),	
+	SURVEILLANCE_OFFICER(false, true, false),	
+	HOSPITAL_INFORMANT(false, false, true),	
+	COMMUNITY_INFORMANT(false, false, true),
+	CASE_SUPERVISOR(true, false, false),	
+	CASE_OFFICER(false, true, false),	
+	CONTACT_SUPERVISOR(true, false, false),	
+	CONTACT_OFFICER(false, true, false),	
+	EVENT_OFFICER(true, false, false),	
+	LAB_USER(false, false, false),
+	NATIONAL_OBSERVER(false, false, false),
+	STATE_OBSERVER(false, false, false),
+	DISTRICT_OBSERVER(false, false, false)
 	;
 	
 	public static final String _SYSTEM = "SYSTEM";
@@ -65,11 +65,18 @@ public enum UserRole {
 	
 	private final boolean supervisor;
 	private final boolean officer;
+	private final boolean informant;
+	
 	private HashSet<UserRight> defaultUserRights = null;
 	
-	private UserRole(boolean supervisor, boolean officer) {
+	private static HashSet<UserRole> supervisorRoles = null;
+	private static HashSet<UserRole> officerRoles = null;
+	private static HashSet<UserRole> informantRoles = null;
+	
+	private UserRole(boolean supervisor, boolean officer, boolean informant) {
 		this.supervisor = supervisor;
 		this.officer = officer;
+		this.informant = informant;
 	}
 	
 	public String toString() {
@@ -86,6 +93,14 @@ public enum UserRole {
 	
 	public boolean isOfficer() {
 		return officer;
+	}
+	
+	public boolean isInformant() {
+		return informant;
+	}
+	
+	public boolean isNational() {
+		return this == UserRole.NATIONAL_OBSERVER || this == UserRole.NATIONAL_USER;
 	}
 	
 	public HashSet<UserRight> getDefaultUserRights() {
@@ -220,7 +235,21 @@ public enum UserRole {
 	}
 	
 	public static boolean isInformant(Collection<UserRole> roles) {
-		return roles.contains(UserRole.HOSPITAL_INFORMANT) || roles.contains(UserRole.COMMUNITY_INFORMANT);
+		for (UserRole role : roles) {
+			if (role.isInformant()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static boolean isNational(Collection<UserRole> roles) {
+		for (UserRole role : roles) {
+			if (role.isNational()) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public static boolean isLabUser(Collection<UserRole> roles) {
@@ -245,6 +274,42 @@ public enum UserRole {
 				throw new UserRoleValidationException(userRole, forbiddenUserRole);
 			}
 		}
+	}
+
+	public static HashSet<UserRole> getSupervisorRoles() {
+		if (supervisorRoles == null) {
+			supervisorRoles = new HashSet<>();
+			for (UserRole userRole : values()) {
+				if (userRole.isSupervisor()) {
+					supervisorRoles.add(userRole);
+				}
+			}
+		}
+		return supervisorRoles;
+	}
+	
+	public static HashSet<UserRole> getOfficerRoles() {
+		if (officerRoles == null) {
+			officerRoles = new HashSet<>();
+			for (UserRole userRole : values()) {
+				if (userRole.isOfficer()) {
+					officerRoles.add(userRole);
+				}
+			}
+		}
+		return officerRoles;
+	}
+	
+	public static HashSet<UserRole> getInformantRoles() {
+		if (informantRoles == null) {
+			informantRoles = new HashSet<>();
+			for (UserRole userRole : values()) {
+				if (userRole.isInformant()) {
+					informantRoles.add(userRole);
+				}
+			}
+		}
+		return informantRoles;
 	}
 	
 	@SuppressWarnings("serial")

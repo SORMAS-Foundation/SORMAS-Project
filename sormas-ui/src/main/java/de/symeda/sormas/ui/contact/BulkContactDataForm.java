@@ -79,7 +79,7 @@ public class BulkContactDataForm extends AbstractEditForm<ContactDto> {
 			ComboBox contactOfficer = addField(ContactDto.CONTACT_OFFICER, ComboBox.class);
 			contactOfficer.setEnabled(false);
 			FieldHelper.addSoftRequiredStyleWhen(getFieldGroup(), contactOfficerCheckBox, Arrays.asList(ContactDto.CONTACT_OFFICER), Arrays.asList(true), null);
-			List<UserReferenceDto> assignableContactOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict(singleSelectedDistrict, false, UserRole.CONTACT_OFFICER);
+			List<UserReferenceDto> assignableContactOfficers = FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, false, UserRole.CONTACT_OFFICER);
 			FieldHelper.updateItems(contactOfficer, assignableContactOfficers);
 			
 			contactOfficerCheckBox.addValueChangeListener(e -> {

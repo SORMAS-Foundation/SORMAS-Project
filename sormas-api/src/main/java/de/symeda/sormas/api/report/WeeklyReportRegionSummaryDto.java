@@ -19,105 +19,109 @@ package de.symeda.sormas.api.report;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class WeeklyReportSummaryDto implements Serializable {
+public class WeeklyReportRegionSummaryDto implements Serializable {
 
 	private static final long serialVersionUID = -8776688104892901821L;
 
 	public static final String I18N_PREFIX = "WeeklyReportSummary";
-	
+
 	public static final String REGION = "region";
-	public static final String OFFICER = "officer";
-	public static final String DISTRICT = "district";
 	public static final String OFFICERS = "officers";
 	public static final String INFORMANTS = "informants";
-	public static final String OFFICER_REPORTS = "officerReports";
+	public static final String OFFICER_CASE_REPORTS = "officerCaseReports";
 	public static final String OFFICER_ZERO_REPORTS = "officerZeroReports";
 	public static final String OFFICER_MISSING_REPORTS = "officerMissingReports";
-	public static final String INFORMANT_REPORTS = "informantReports";
+	public static final String OFFICER_REPORT_PERCENTAGE = "officerReportPercentage";
+	public static final String INFORMANT_CASE_REPORTS = "informantCaseReports";
 	public static final String INFORMANT_ZERO_REPORTS = "informantZeroReports";
 	public static final String INFORMANT_MISSING_REPORTS = "informantMissingReports";
-	
+	public static final String INFORMANT_REPORT_PERCENTAGE = "informantReportPercentage";
+
 	private RegionReferenceDto region;
-	private UserReferenceDto officer;
-	private DistrictReferenceDto district;
 	private int officers;
 	private int informants;
-	private int officerReports;
+	private int officerCaseReports;
 	private int officerZeroReports;
-	private int officerMissingReports;
-	private int informantReports;
+	private int informantCaseReports;
 	private int informantZeroReports;
-	private int informantMissingReports;
 
 	public RegionReferenceDto getRegion() {
 		return region;
 	}
+
 	public void setRegion(RegionReferenceDto region) {
 		this.region = region;
 	}
-	public UserReferenceDto getOfficer() {
-		return officer;
-	}
-	public void setOfficer(UserReferenceDto officer) {
-		this.officer = officer;
-	}
-	public DistrictReferenceDto getDistrict() {
-		return district;
-	}
-	public void setDistrict(DistrictReferenceDto district) {
-		this.district = district;
-	}
+
 	public int getOfficers() {
 		return officers;
 	}
+
 	public void setOfficers(int officers) {
 		this.officers = officers;
 	}
+
 	public int getInformants() {
 		return informants;
 	}
+
 	public void setInformants(int informants) {
 		this.informants = informants;
 	}
-	public int getOfficerReports() {
-		return officerReports;
+
+	public int getOfficerCaseReports() {
+		return officerCaseReports;
 	}
-	public void setOfficerReports(int officerReports) {
-		this.officerReports = officerReports;
+
+	public void setOfficerCaseReports(int officerCaseReports) {
+		this.officerCaseReports = officerCaseReports;
 	}
+
 	public int getOfficerZeroReports() {
 		return officerZeroReports;
 	}
+
 	public void setOfficerZeroReports(int officerZeroReports) {
 		this.officerZeroReports = officerZeroReports;
 	}
+
 	public int getOfficerMissingReports() {
-		return officerMissingReports;
+		return officers - officerCaseReports - officerZeroReports;
 	}
-	public void setOfficerMissingReports(int officerMissingReports) {
-		this.officerMissingReports = officerMissingReports;
+	
+	public int getOfficerReportPercentage() {
+		if (officers > 0) {
+			return 100 * (officerCaseReports + officerZeroReports) / officers;
+		}
+		return 0;
 	}
-	public int getInformantReports() {
-		return informantReports;
+
+	public int getInformantCaseReports() {
+		return informantCaseReports;
 	}
-	public void setInformantReports(int informantReports) {
-		this.informantReports = informantReports;
+
+	public void setInformantCaseReports(int informantCaseReports) {
+		this.informantCaseReports = informantCaseReports;
 	}
+
 	public int getInformantZeroReports() {
 		return informantZeroReports;
 	}
+
 	public void setInformantZeroReports(int informantZeroReports) {
 		this.informantZeroReports = informantZeroReports;
 	}
+
 	public int getInformantMissingReports() {
-		return informantMissingReports;
-	}
-	public void setInformantMissingReports(int informantMissingReports) {
-		this.informantMissingReports = informantMissingReports;
-	}
+		return informants - informantCaseReports - informantZeroReports;
+	}	
 	
+	public int getInformantReportPercentage() {
+		if (informants > 0) {
+			return 100 * (informantCaseReports + informantZeroReports) / informants;
+		}
+		return 0;
+	}
 }

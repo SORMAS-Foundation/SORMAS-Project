@@ -42,6 +42,10 @@ public class WeeklyReportEntryDto extends EntityDto {
 		this.disease = disease;
 	}
 	
+	/**
+	 * For informants the number of cases reported by the user.
+	 * For officers the number of cases reported by the user and all related informants.
+	 */
 	public Integer getNumberOfCases() {
 		return numberOfCases;
 	}

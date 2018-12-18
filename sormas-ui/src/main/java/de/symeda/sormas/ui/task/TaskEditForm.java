@@ -151,7 +151,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	    	
 	    	List<UserReferenceDto> users = new ArrayList<>();
 	    	if (district != null) {
-	    		users = FacadeProvider.getUserFacade().getAssignableUsersByDistrict(district, true);
+	    		users = FacadeProvider.getUserFacade().getUserRefsByDistrict(district, true);
 	    	} else if (region != null) {
 	    		users = FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region);
 	    	} else {

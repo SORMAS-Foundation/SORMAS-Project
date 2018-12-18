@@ -128,7 +128,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		districtField.addValueChangeListener(e -> {
 			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade()
-					.getAssignableUsersByDistrict((DistrictReferenceDto) districtField.getValue(), false,
+					.getUserRefsByDistrict((DistrictReferenceDto) districtField.getValue(), false,
 							UserRole.SURVEILLANCE_OFFICER);
 			FieldHelper.updateItems(surveillanceOfficerField, assignableSurveillanceOfficers);
 		});

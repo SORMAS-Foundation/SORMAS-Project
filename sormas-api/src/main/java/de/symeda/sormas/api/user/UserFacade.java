@@ -22,7 +22,6 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 
@@ -53,14 +52,12 @@ public interface UserFacade {
 	 * 
 	 * @param district
 	 * @param includeSupervisors independent from the district
-	 * @param assignableRoles roles of the users by district
+	 * @param userRoles roles of the users by district
 	 * @return
 	 */
-	List<UserReferenceDto> getAssignableUsersByDistrict(DistrictReferenceDto district, boolean includeSupervisors, UserRole... assignableRoles);
+	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, boolean includeSupervisors, UserRole... userRoles);
 
-	int getNumberOfInformantsByFacility(FacilityReferenceDto facilityRef);
-	
-	List<UserReferenceDto> getForWeeklyReportDetails(DistrictReferenceDto districtRef);
+	List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficer, UserRole... userRoles);
 
 	List<String> getAllUuids(String userUuid);
 
