@@ -36,6 +36,7 @@ import org.joda.time.DateTime;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -46,8 +47,10 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventDao;
+import de.symeda.sormas.app.backend.report.WeeklyReport;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
+import de.symeda.sormas.app.report.ReportActivity;
 import de.symeda.sormas.app.rest.ApiVersionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.ServerCommunicationException;
@@ -173,7 +176,7 @@ public class TaskNotificationService extends Service {
                     .setTicker(r.getString(R.string.headline_task_notification))
                     .setSmallIcon(R.mipmap.ic_launcher_foreground)
                     .setContentTitle(task.getTaskType().toString() + (caze != null ? " (" + caze.getDisease().toShortString() + ")" : contact != null ? " (" + contact.getCaseDisease().toShortString() + ")" : ""))
-                    .setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(content.toString())))
+                    .setContentText(content.toString())
                     .setContentIntent(pi)
                     .setAutoCancel(true)
                     .build();
@@ -185,7 +188,39 @@ public class TaskNotificationService extends Service {
             break; // @TODO implement notification grouping
         }
 
+        doWeeklyReportNotification(context, notificationRangeStart, notificationRangeEnd);
+
         ConfigProvider.setLastNotificationDate(notificationRangeEnd);
+    }
+
+    private static void doWeeklyReportNotification(Context context, Date notificationRangeStart, Date notificationRangeEnd) {
+
+        // notify at 6:00
+        Date notificationPoint = DateHelper.addSeconds(DateHelper.getStartOfDay(new Date()), 60*60*6);
+        if (DateHelper.isBetween(notificationPoint, notificationRangeStart, notificationRangeEnd))
+        {
+
+            WeeklyReport weeklyReport = DatabaseHelper.getWeeklyReportDao().queryByEpiWeekAndUser(DateHelper.getPreviousEpiWeek(notificationPoint), ConfigProvider.getUser());
+            if (weeklyReport == null) {
+
+                int notificationId = (int)notificationPoint.getTime();
+                Intent notificationIntent = new Intent(context, ReportActivity.class);
+                PendingIntent pi = PendingIntent.getActivity(context, notificationId, notificationIntent, 0);
+
+                String title = context.getResources().getString(R.string.action_submit_report);
+                Notification notification = new NotificationCompat.Builder(context)
+                        .setTicker(title)
+                        .setSmallIcon(R.mipmap.ic_launcher_foreground)
+                        .setContentTitle(title)
+                        .setContentText(context.getResources().getString(R.string.hint_no_weekly_report))
+                        .setContentIntent(pi)
+                        .setAutoCancel(true)
+                        .build();
+
+                NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+                notificationManager.notify(notificationId, notification);
+            }
+        }
     }
 
     public static void startTaskNotificationAlarm(Context context) {
