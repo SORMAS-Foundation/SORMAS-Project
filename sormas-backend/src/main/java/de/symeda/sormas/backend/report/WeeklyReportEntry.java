@@ -41,7 +41,7 @@ public class WeeklyReportEntry extends AbstractDomainObject {
 	private Integer numberOfCases;
 
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=false)
+	@JoinColumn(nullable = false)
 	public WeeklyReport getWeeklyReport() {
 		return weeklyReport;
 	}

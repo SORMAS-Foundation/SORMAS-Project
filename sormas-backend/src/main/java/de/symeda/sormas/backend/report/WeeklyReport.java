@@ -17,9 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.report;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -29,12 +31,13 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ImportIgnore;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.user.User;
 
-@Entity(name="weeklyreport")
+@Entity(name = "weeklyreport")
 public class WeeklyReport extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 2192478891179257201L;
@@ -48,6 +51,7 @@ public class WeeklyReport extends AbstractDomainObject {
 	public static final String TOTAL_NUMBER_OF_CASES = "totalNumberOfCases";
 	public static final String YEAR = "year";
 	public static final String EPI_WEEK = "epiWeek";
+	public static final String REPORT_ENTRIES = "reportEntries";
 
 	private User reportingUser;
 	private Date reportDateTime;
@@ -58,64 +62,87 @@ public class WeeklyReport extends AbstractDomainObject {
 	private Integer totalNumberOfCases;
 	private Integer year;
 	private Integer epiWeek;
-	
-	private List<WeeklyReportEntry> reportEntries;
+
+	private Date changeDateOfEmbeddedLists;
+	private List<WeeklyReportEntry> reportEntries = new ArrayList<>();
 
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=false)
+	@JoinColumn(nullable = false)
 	public Facility getHealthFacility() {
 		return healthFacility;
 	}
+
 	public void setHealthFacility(Facility healthFacility) {
 		this.healthFacility = healthFacility;
 	}
 
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=false)
+	@JoinColumn(nullable = false)
 	public User getReportingUser() {
 		return reportingUser;
 	}
+
 	public void setReportingUser(User reportingUser) {
 		this.reportingUser = reportingUser;
 	}
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable=false)
+	@Column(nullable = false)
 	public Date getReportDateTime() {
 		return reportDateTime;
 	}
+
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
 	}
 
-	@Column(nullable=false)
+	@Column(nullable = false)
 	public Integer getTotalNumberOfCases() {
 		return totalNumberOfCases;
 	}
+
 	public void setTotalNumberOfCases(Integer totalNumberOfCases) {
 		this.totalNumberOfCases = totalNumberOfCases;
 	}
 
-	@OneToMany(cascade = {}, mappedBy = WeeklyReportEntry.WEEKLY_REPORT)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = WeeklyReportEntry.WEEKLY_REPORT)
 	public List<WeeklyReportEntry> getReportEntries() {
 		return reportEntries;
 	}
+
 	public void setReportEntries(List<WeeklyReportEntry> reportEntries) {
 		this.reportEntries = reportEntries;
 	}
 
-	@Column(nullable=false)
+	/**
+	 * This change date has to be set whenever one of the embedded lists is
+	 * modified: !oldList.equals(newList)
+	 * 
+	 * @return
+	 */
+	@ImportIgnore
+	public Date getChangeDateOfEmbeddedLists() {
+		return changeDateOfEmbeddedLists;
+	}
+
+	public void setChangeDateOfEmbeddedLists(Date changeDateOfEmbeddedLists) {
+		this.changeDateOfEmbeddedLists = changeDateOfEmbeddedLists;
+	}
+
+	@Column(nullable = false)
 	public Integer getYear() {
 		return year;
 	}
+
 	public void setYear(Integer year) {
 		this.year = year;
 	}
 
-	@Column(nullable=false)
+	@Column(nullable = false)
 	public Integer getEpiWeek() {
 		return epiWeek;
 	}
+
 	public void setEpiWeek(Integer epiWeek) {
 		this.epiWeek = epiWeek;
 	}
@@ -125,6 +152,7 @@ public class WeeklyReport extends AbstractDomainObject {
 	public District getDistrict() {
 		return district;
 	}
+
 	public void setDistrict(District district) {
 		this.district = district;
 	}
@@ -134,6 +162,7 @@ public class WeeklyReport extends AbstractDomainObject {
 	public Community getCommunity() {
 		return community;
 	}
+
 	public void setCommunity(Community community) {
 		this.community = community;
 	}
@@ -143,8 +172,8 @@ public class WeeklyReport extends AbstractDomainObject {
 	public User getAssignedOfficer() {
 		return assignedOfficer;
 	}
+
 	public void setAssignedOfficer(User assignedOfficer) {
 		this.assignedOfficer = assignedOfficer;
 	}
-	
 }

@@ -22,7 +22,9 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -78,6 +80,9 @@ public class WeeklyReport extends AbstractDomainObject {
 
     @Column(nullable = false)
     private Integer epiWeek;
+
+    // just for reference, not persisted in DB
+    private List<WeeklyReportEntry> reportEntries = new ArrayList<>();
 
     public Facility getHealthFacility() {
         return healthFacility;
@@ -156,4 +161,11 @@ public class WeeklyReport extends AbstractDomainObject {
         return I18N_PREFIX;
     }
 
+    public List<WeeklyReportEntry> getReportEntries() {
+        return reportEntries;
+    }
+
+    public void setReportEntries(List<WeeklyReportEntry> reportEntries) {
+        this.reportEntries = reportEntries;
+    }
 }

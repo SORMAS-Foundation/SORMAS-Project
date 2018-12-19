@@ -18,13 +18,20 @@
 
 package de.symeda.sormas.app.backend.report;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.report.WeeklyReportDto;
+import de.symeda.sormas.api.report.WeeklyReportEntryDto;
 import de.symeda.sormas.api.report.WeeklyReportReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
+import de.symeda.sormas.app.backend.epidata.EpiDataBurialDtoHelper;
+import de.symeda.sormas.app.backend.epidata.EpiDataGatheringDtoHelper;
+import de.symeda.sormas.app.backend.epidata.EpiDataTravelDtoHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.region.Community;
@@ -40,6 +47,12 @@ import retrofit2.Call;
  * Created by Mate Strysewske on 12.09.2017.
  */
 public class WeeklyReportDtoHelper extends AdoDtoHelper<WeeklyReport, WeeklyReportDto> {
+
+    private WeeklyReportEntryDtoHelper entryDtoHelper;
+
+    public WeeklyReportDtoHelper() {
+        entryDtoHelper = new WeeklyReportEntryDtoHelper();
+    }
 
     @Override
     protected Class<WeeklyReport> getAdoClass() {
@@ -77,6 +90,17 @@ public class WeeklyReportDtoHelper extends AdoDtoHelper<WeeklyReport, WeeklyRepo
         target.setTotalNumberOfCases(source.getTotalNumberOfCases());
         target.setYear(source.getYear());
         target.setEpiWeek(source.getEpiWeek());
+
+        // just recreate all of this and throw the old stuff away
+        List<WeeklyReportEntry> entries = new ArrayList<>();
+        if (!source.getReportEntries().isEmpty()) {
+            for (WeeklyReportEntryDto entryDto : source.getReportEntries()) {
+                WeeklyReportEntry entry = entryDtoHelper.fillOrCreateFromDto(null, entryDto);
+                entry.setWeeklyReport(target);
+                entries.add(entry);
+            }
+        }
+        target.setReportEntries(entries);
     }
 
     @Override
@@ -115,6 +139,15 @@ public class WeeklyReportDtoHelper extends AdoDtoHelper<WeeklyReport, WeeklyRepo
         } else {
             target.setAssignedOfficer(null);
         }
+
+        List<WeeklyReportEntryDto> entryDtos = new ArrayList<>();
+        if (!source.getReportEntries().isEmpty()) {
+            for (WeeklyReportEntry entry : source.getReportEntries()) {
+                WeeklyReportEntryDto entryDto = entryDtoHelper.adoToDto(entry);
+                entryDtos.add(entryDto);
+            }
+        }
+        target.setReportEntries(entryDtos);
 
         target.setReportDateTime(source.getReportDateTime());
         target.setTotalNumberOfCases(source.getTotalNumberOfCases());

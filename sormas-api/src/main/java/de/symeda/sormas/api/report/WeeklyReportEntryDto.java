@@ -24,16 +24,8 @@ public class WeeklyReportEntryDto extends EntityDto {
 
 	private static final long serialVersionUID = 7863410150359837423L;
 
-	private WeeklyReportReferenceDto weeklyReport;
 	private Disease disease;
 	private Integer numberOfCases;
-	
-	public WeeklyReportReferenceDto getWeeklyReport() {
-		return weeklyReport;
-	}
-	public void setWeeklyReport(WeeklyReportReferenceDto weeklyReport) {
-		this.weeklyReport = weeklyReport;
-	}
 	
 	public Disease getDisease() {
 		return disease;
@@ -52,9 +44,4 @@ public class WeeklyReportEntryDto extends EntityDto {
 	public void setNumberOfCases(Integer numberOfCases) {
 		this.numberOfCases = numberOfCases;
 	}
-	
-	public WeeklyReportEntryReferenceDto toReference() {
-		return new WeeklyReportEntryReferenceDto(getUuid());
-	}
-	
 }

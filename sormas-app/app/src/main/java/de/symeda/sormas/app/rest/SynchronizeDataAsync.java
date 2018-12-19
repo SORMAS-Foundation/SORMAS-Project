@@ -179,8 +179,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                 DatabaseHelper.getSampleTestDao().isAnyModified() ||
                 DatabaseHelper.getTaskDao().isAnyModified() ||
                 DatabaseHelper.getVisitDao().isAnyModified() ||
-                DatabaseHelper.getWeeklyReportDao().isAnyModified() ||
-                DatabaseHelper.getWeeklyReportEntryDao().isAnyModified();
+                DatabaseHelper.getWeeklyReportDao().isAnyModified();
     }
 
     private void synchronizeChangedData() throws DaoException, ServerConnectionException, ServerCommunicationException {
@@ -194,7 +193,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         VisitDtoHelper visitDtoHelper = new VisitDtoHelper();
         TaskDtoHelper taskDtoHelper = new TaskDtoHelper();
         WeeklyReportDtoHelper weeklyReportDtoHelper = new WeeklyReportDtoHelper();
-        WeeklyReportEntryDtoHelper weeklyReportEntryDtoHelper = new WeeklyReportEntryDtoHelper();
 
         // order is important, due to dependencies (e.g. case & person)
 
@@ -210,7 +208,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         boolean visitsNeedPull = visitDtoHelper.pullAndPushEntities();
         boolean tasksNeedPull = taskDtoHelper.pullAndPushEntities();
         boolean weeklyReportsNeedPull = weeklyReportDtoHelper.pullAndPushEntities();
-        boolean weeklyReportEntriesNeedPull = weeklyReportEntryDtoHelper.pullAndPushEntities();
 
         if (personsNeedPull)
             personDtoHelper.pullEntities(true);
@@ -232,8 +229,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             taskDtoHelper.pullEntities(true);
         if (weeklyReportsNeedPull)
             weeklyReportDtoHelper.pullEntities(true);
-        if (weeklyReportEntriesNeedPull)
-            weeklyReportEntryDtoHelper.pullEntities(true);
     }
 
     private void repullData() throws DaoException, ServerConnectionException, ServerCommunicationException {
@@ -247,7 +242,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         VisitDtoHelper visitDtoHelper = new VisitDtoHelper();
         TaskDtoHelper taskDtoHelper = new TaskDtoHelper();
         WeeklyReportDtoHelper weeklyReportDtoHelper = new WeeklyReportDtoHelper();
-        WeeklyReportEntryDtoHelper weeklyReportEntryDtoHelper = new WeeklyReportEntryDtoHelper();
 
         // order is important, due to dependencies (e.g. case & person)
 
@@ -265,7 +259,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         visitDtoHelper.repullEntities();
         taskDtoHelper.repullEntities();
         weeklyReportDtoHelper.repullEntities();
-        weeklyReportEntryDtoHelper.repullEntities();
     }
 
     private void pullInfrastructure() throws DaoException, ServerConnectionException, ServerCommunicationException {
@@ -280,8 +273,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // user role configurations may be removed, so have to pull the deleted uuids
         // this may be applied to other entities later as well
         Date latestChangeDate = DatabaseHelper.getUserRoleConfigDao().getLatestChangeDate();
-        List<String> weeklyReportEntryUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullDeletedUuidsSince(latestChangeDate != null ? latestChangeDate.getTime() + 1 : 0));
-        DatabaseHelper.getUserRoleConfigDao().delete(weeklyReportEntryUuids);
+        List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullDeletedUuidsSince(latestChangeDate != null ? latestChangeDate.getTime() + 1 : 0));
+        DatabaseHelper.getUserRoleConfigDao().delete(userRoleConfigUuids);
 
         new UserRoleConfigDtoHelper().pullEntities(false);
     }
@@ -324,8 +317,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // weekly reports and entries
         List<String> weeklyReportUuids = executeUuidCall(RetroProvider.getWeeklyReportFacade().pullUuids());
         DatabaseHelper.getWeeklyReportDao().deleteInvalid(weeklyReportUuids);
-        List<String> weeklyReportEntryUuids = executeUuidCall(RetroProvider.getWeeklyReportEntryFacade().pullUuids());
-        DatabaseHelper.getWeeklyReportEntryDao().deleteInvalid(weeklyReportEntryUuids);
         // tasks
         List<String> taskUuids = executeUuidCall(RetroProvider.getTaskFacade().pullUuids());
         DatabaseHelper.getTaskDao().deleteInvalid(taskUuids);
@@ -369,7 +360,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new VisitDtoHelper().pullMissing(visitUuids);
         new TaskDtoHelper().pullMissing(taskUuids);
         new WeeklyReportDtoHelper().pullMissing(weeklyReportUuids);
-        new WeeklyReportEntryDtoHelper().pullMissing(weeklyReportEntryUuids);
     }
 
     private void pullMissingAndDeleteInvalidInfrastructure() throws ServerConnectionException, ServerCommunicationException, DaoException {

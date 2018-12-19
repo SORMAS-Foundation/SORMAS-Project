@@ -18,7 +18,6 @@
 
 package de.symeda.sormas.app.report;
 
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -188,7 +187,8 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
 
                     @Override
                     public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
-                        DatabaseHelper.getWeeklyReportDao().create(getEpiWeek());
+                        WeeklyReport weeklyReport = DatabaseHelper.getWeeklyReportDao().build(getEpiWeek());
+                        DatabaseHelper.getWeeklyReportDao().saveAndSnapshot(weeklyReport);
                     }
 
                     @Override
@@ -408,7 +408,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
             public void doInBackground(TaskResultHolder resultHolder) {
                 if (weeklyReport != null) {
                     List<WeeklyReportListItem> list = new ArrayList<>();
-                    for (WeeklyReportEntry entry : DatabaseHelper.getWeeklyReportEntryDao().getAllByWeeklyReport(weeklyReport)) {
+                    for (WeeklyReportEntry entry : DatabaseHelper.getWeeklyReportEntryDao().getByWeeklyReport(weeklyReport)) {
                         list.add(new WeeklyReportListItem(entry.getDisease(), entry.getNumberOfCases()));
                     }
                     resultHolder.forOther().add(list);

@@ -25,6 +25,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,8 +37,6 @@ import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.facility.Facility;
-import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.user.User;
 
 /**
@@ -65,6 +64,61 @@ public class WeeklyReportDao extends AbstractAdoDao<WeeklyReport> {
         throw new UnsupportedOperationException("Use build(Date) instead");
     }
 
+    @Override
+    public WeeklyReport queryUuid(String uuid) {
+        WeeklyReport data = super.queryUuid(uuid);
+        initLazyData(data);
+        return data;
+    }
+
+    @Override
+    public WeeklyReport querySnapshotByUuid(String uuid) {
+        WeeklyReport data = super.querySnapshotByUuid(uuid);
+        initLazyData(data);
+        return data;
+    }
+
+    @Override
+    public WeeklyReport queryForId(Long id) {
+        WeeklyReport data = super.queryForId(id);
+        initLazyData(data);
+        return data;
+    }
+
+    private WeeklyReport initLazyData(WeeklyReport report) {
+        if (report != null) {
+            report.setReportEntries(DatabaseHelper.getWeeklyReportEntryDao().getByWeeklyReport(report));
+        }
+        return report;
+    }
+
+    @Override
+    public WeeklyReport saveAndSnapshot(WeeklyReport ado) throws DaoException {
+
+        WeeklyReport snapshot = super.saveAndSnapshot(ado);
+
+        DatabaseHelper.getWeeklyReportEntryDao().saveCollectionWithSnapshot(
+                DatabaseHelper.getWeeklyReportEntryDao().getByWeeklyReport(ado),
+                ado.getReportEntries(), ado);
+
+        return snapshot;
+    }
+
+    @Override
+    public Date getLatestChangeDate() {
+        Date date = super.getLatestChangeDate();
+        if (date == null) {
+            return null;
+        }
+
+        Date entryDate = DatabaseHelper.getWeeklyReportEntryDao().getLatestChangeDate();
+        if (entryDate != null && entryDate.after(date)) {
+            date = entryDate;
+        }
+
+        return date;
+    }
+
     public WeeklyReport build(EpiWeek epiWeek) {
         WeeklyReport report = super.build();
 
@@ -89,18 +143,12 @@ public class WeeklyReportDao extends AbstractAdoDao<WeeklyReport> {
         }
         report.setTotalNumberOfCases(totalNumberOfCases);
 
-        return report;
-    }
-
-    public WeeklyReport create(EpiWeek epiWeek) throws DaoException {
-        WeeklyReport report = build(epiWeek);
-        super.saveAndSnapshot(report);
-        report = DatabaseHelper.getWeeklyReportDao().queryUuid(report.getUuid());
-
         WeeklyReportEntryDao entryDao = DatabaseHelper.getWeeklyReportEntryDao();
+        List<WeeklyReportEntry> entries = new ArrayList<>();
         for (Disease disease : Disease.values()) {
-            entryDao.create(epiWeek, disease, report);
+            entries.add(entryDao.build(epiWeek, disease, report));
         }
+        report.setReportEntries(entries);
 
         return report;
     }
@@ -119,7 +167,10 @@ public class WeeklyReportDao extends AbstractAdoDao<WeeklyReport> {
                     where.eq(WeeklyReport.EPI_WEEK, epiWeek.getWeek())
             );
 
-            return (WeeklyReport) builder.queryForFirst();
+            WeeklyReport result = (WeeklyReport) builder.queryForFirst();
+            initLazyData(result);
+            return result;
+
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform queryByEpiWeekAndUser");
             throw new RuntimeException(e);

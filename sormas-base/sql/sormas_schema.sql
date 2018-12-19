@@ -2621,3 +2621,27 @@ UPDATE sampletest SET testtype='ISOLATION' WHERE testtype='VIRUS_ISOLATION';
 UPDATE sampletest_history SET testtype='ISOLATION' WHERE testtype='VIRUS_ISOLATION';
 
 INSERT INTO schema_version (version_number, comment) VALUES (122, 'Virus isolation -> Isolation #838');
+
+-- 2018-12-19 History table and change date for embedded weekly report lists #610
+
+ALTER TABLE weeklyreport ADD COLUMN changedateofembeddedlists timestamp without time zone;
+
+ALTER TABLE weeklyreport ADD COLUMN sys_period tstzrange;
+UPDATE weeklyreport SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE weeklyreport ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE weeklyreport_history (LIKE weeklyreport);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON weeklyreport
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'weeklyreport_history', true);
+ALTER TABLE weeklyreport_history OWNER TO sormas_user;
+
+ALTER TABLE weeklyreportentry ADD COLUMN sys_period tstzrange;
+UPDATE weeklyreportentry SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE weeklyreportentry ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE weeklyreportentry_history (LIKE weeklyreportentry);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON weeklyreportentry
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'weeklyreportentry_history', true);
+ALTER TABLE weeklyreportentry_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (123, 'History table and change date for embedded weekly report lists #610');

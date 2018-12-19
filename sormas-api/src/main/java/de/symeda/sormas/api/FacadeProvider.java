@@ -36,7 +36,6 @@ import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionFacade;
-import de.symeda.sormas.api.report.WeeklyReportEntryFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleTestFacade;
@@ -145,10 +144,6 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(WeeklyReportFacade.class);
 	}
 
-	public static WeeklyReportEntryFacade getWeeklyReportEntryFacade() {
-		return get().lookupEjbRemote(WeeklyReportEntryFacade.class);
-	}
-
 	public static GeoShapeProvider getGeoShapeProvider() {
 		return get().lookupEjbRemote(GeoShapeProvider.class);
 	}
@@ -168,7 +163,7 @@ public class FacadeProvider {
 	public static ImportFacade getImportFacade() {
 		return get().lookupEjbRemote(ImportFacade.class);
 	}
-	
+
 	public static CaseClassificationFacade getCaseClassificationFacade() {
 		return get().lookupEjbRemote(CaseClassificationFacade.class);
 	}

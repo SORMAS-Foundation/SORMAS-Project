@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.report;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.report.WeeklyReportCriteria;
 import de.symeda.sormas.api.report.WeeklyReportDto;
+import de.symeda.sormas.api.report.WeeklyReportEntryDto;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportOfficerSummaryDto;
 import de.symeda.sormas.api.report.WeeklyReportReferenceDto;
@@ -44,6 +46,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
@@ -56,7 +59,6 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.report.WeeklyReportEntryFacadeEjb.WeeklyReportEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
@@ -72,6 +74,8 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	@EJB
 	private WeeklyReportService weeklyReportService;
 	@EJB
+	private WeeklyReportEntryService weeklyReportEntryService;
+	@EJB
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
@@ -85,8 +89,6 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	private TaskService taskService;
 	@EJB
 	FacilityFacadeEjbLocal facilityFacade;
-	@EJB
-	private WeeklyReportEntryFacadeEjbLocal weeklyReportEntryFacade;
 	@EJB
 	private UserFacadeEjbLocal userFacade;
 
@@ -246,6 +248,38 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 		target.setYear(source.getYear());
 		target.setEpiWeek(source.getEpiWeek());
 
+		List<WeeklyReportEntry> entries = new ArrayList<>();
+		for (WeeklyReportEntryDto entryDto : source.getReportEntries()) {
+			WeeklyReportEntry entry = fromDto(entryDto);
+			entries.add(entry);
+		}
+		if (!DataHelper.equal(target.getReportEntries(), entries)) {
+			target.setChangeDateOfEmbeddedLists(new Date());
+		}
+		target.setReportEntries(entries);
+
+		return target;
+	}
+
+	public WeeklyReportEntry fromDto(WeeklyReportEntryDto source) {
+		if (source == null) {
+			return null;
+		}
+
+		WeeklyReportEntry target = weeklyReportEntryService.getByUuid(source.getUuid());
+		if (target == null) {
+			target = new WeeklyReportEntry();
+			target.setUuid(source.getUuid());
+			if (source.getCreationDate() != null) {
+				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
+			}
+		}
+
+		DtoHelper.validateDto(source, target);
+
+		target.setDisease(source.getDisease());
+		target.setNumberOfCases(source.getNumberOfCases());
+
 		return target;
 	}
 
@@ -273,6 +307,30 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 		target.setTotalNumberOfCases(source.getTotalNumberOfCases());
 		target.setYear(source.getYear());
 		target.setEpiWeek(source.getEpiWeek());
+
+		List<WeeklyReportEntryDto> entryDtos = new ArrayList<>();
+		for (WeeklyReportEntry entry : source.getReportEntries()) {
+			WeeklyReportEntryDto entryDto = toDto(entry);
+			entryDtos.add(entryDto);
+		}
+		target.setReportEntries(entryDtos);
+
+		return target;
+	}
+
+	public static WeeklyReportEntryDto toDto(WeeklyReportEntry source) {
+		if (source == null) {
+			return null;
+		}
+
+		WeeklyReportEntryDto target = new WeeklyReportEntryDto();
+
+		target.setCreationDate(source.getCreationDate());
+		target.setChangeDate(source.getChangeDate());
+		target.setUuid(source.getUuid());
+
+		target.setDisease(source.getDisease());
+		target.setNumberOfCases(source.getNumberOfCases());
 
 		return target;
 	}
