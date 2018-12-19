@@ -36,6 +36,7 @@ import org.joda.time.DateTime;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.R;
@@ -195,30 +196,30 @@ public class TaskNotificationService extends Service {
 
     private static void doWeeklyReportNotification(Context context, Date notificationRangeStart, Date notificationRangeEnd) {
 
-        // notify at 6:00
-        Date notificationPoint = DateHelper.addSeconds(DateHelper.getStartOfDay(new Date()), 60*60*6);
-        if (DateHelper.isBetween(notificationPoint, notificationRangeStart, notificationRangeEnd))
-        {
+        if (ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE)) {
+            // notify at 6:00
+            Date notificationPoint = DateHelper.addSeconds(DateHelper.getStartOfDay(new Date()), 60 * 60 * 6);
+            if (DateHelper.isBetween(notificationPoint, notificationRangeStart, notificationRangeEnd)) {
+                WeeklyReport weeklyReport = DatabaseHelper.getWeeklyReportDao().queryByEpiWeekAndUser(DateHelper.getPreviousEpiWeek(notificationPoint), ConfigProvider.getUser());
+                if (weeklyReport == null) {
 
-            WeeklyReport weeklyReport = DatabaseHelper.getWeeklyReportDao().queryByEpiWeekAndUser(DateHelper.getPreviousEpiWeek(notificationPoint), ConfigProvider.getUser());
-            if (weeklyReport == null) {
+                    int notificationId = (int) notificationPoint.getTime();
+                    Intent notificationIntent = new Intent(context, ReportActivity.class);
+                    PendingIntent pi = PendingIntent.getActivity(context, notificationId, notificationIntent, 0);
 
-                int notificationId = (int)notificationPoint.getTime();
-                Intent notificationIntent = new Intent(context, ReportActivity.class);
-                PendingIntent pi = PendingIntent.getActivity(context, notificationId, notificationIntent, 0);
+                    String title = context.getResources().getString(R.string.action_submit_report);
+                    Notification notification = new NotificationCompat.Builder(context)
+                            .setTicker(title)
+                            .setSmallIcon(R.mipmap.ic_launcher_foreground)
+                            .setContentTitle(title)
+                            .setContentText(context.getResources().getString(R.string.hint_no_weekly_report))
+                            .setContentIntent(pi)
+                            .setAutoCancel(true)
+                            .build();
 
-                String title = context.getResources().getString(R.string.action_submit_report);
-                Notification notification = new NotificationCompat.Builder(context)
-                        .setTicker(title)
-                        .setSmallIcon(R.mipmap.ic_launcher_foreground)
-                        .setContentTitle(title)
-                        .setContentText(context.getResources().getString(R.string.hint_no_weekly_report))
-                        .setContentIntent(pi)
-                        .setAutoCancel(true)
-                        .build();
-
-                NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-                notificationManager.notify(notificationId, notification);
+                    NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+                    notificationManager.notify(notificationId, notification);
+                }
             }
         }
     }
