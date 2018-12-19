@@ -31,7 +31,10 @@ import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
+import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.task.TaskHelper;
+import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -59,6 +62,29 @@ public class TaskDao extends AbstractAdoDao<Task> {
     @Override
     public String getTableName() {
         return Task.TABLE_NAME;
+    }
+
+    @Override
+    public Task build () {
+        Task task = super.build();
+
+        task.setTaskContext(TaskContext.GENERAL);
+        //task.setUuid(DataHelper.createUuid());
+        task.setSuggestedStart(TaskHelper.getDefaultSuggestedStart());
+        task.setDueDate(TaskHelper.getDefaultDueDate());
+        task.setCreatorUser(ConfigProvider.getUser());
+        task.setTaskStatus(TaskStatus.PENDING);
+        task.setPriority(TaskPriority.NORMAL);
+
+        return task;
+    }
+
+    public Task build (Case associatedCase) {
+        Task task = build();
+        task.setTaskContext(TaskContext.CASE);
+        task.setCaze(associatedCase);
+
+        return task;
     }
 
     @Override

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Random;
 
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.app.task.edit.TaskNewActivity;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
@@ -72,4 +73,12 @@ public class TaskListActivity extends BaseListActivity {
     protected int getActivityTitle() {
         return R.string.heading_level2_tasks_list;
     }
+
+    @Override
+    public void goToNewView() {
+        TaskNewActivity.startActivity(getContext());
+    }
+
+    @Override
+    protected boolean isEntryCreateAllowed() { return true; }
 }

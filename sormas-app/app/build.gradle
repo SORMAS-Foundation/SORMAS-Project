@@ -8,7 +8,7 @@ android {
     // ideally: minSdkVersion (lowest possible) <= targetSdkVersion == compileSdkVersion (latest SDK)
     compileSdkVersion 27
     // always use the latest
-    buildToolsVersion '27.0.3'
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "de.symeda.sormas.app"

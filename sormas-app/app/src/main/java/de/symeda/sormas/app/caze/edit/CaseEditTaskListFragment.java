@@ -83,7 +83,7 @@ public class CaseEditTaskListFragment extends BaseEditFragment<FragmentFormListL
 
     @Override
     public boolean isShowSaveAction() {
-        return false;
+        return true;
     }
 
     @Override
