@@ -233,7 +233,7 @@ public class User extends AbstractDomainObject {
             if (result.length() > 0) {
                 result.append(", ");
             }
-            result.append(userRole.toShortString());
+            result.append(userRole.toString());
         }
         return result.toString();
     }
