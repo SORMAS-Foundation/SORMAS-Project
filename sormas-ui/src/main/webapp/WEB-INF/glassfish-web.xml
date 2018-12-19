@@ -16,6 +16,7 @@
         <group-name>NATIONAL_USER</group-name>
         <group-name>NATIONAL_OBSERVER</group-name>
         <group-name>STATE_OBSERVER</group-name>
+        <group-name>DISTRICT_OBSERVER</group-name>
     </security-role-mapping>
     <security-role-mapping>
         <role-name>ADMIN</role-name>
