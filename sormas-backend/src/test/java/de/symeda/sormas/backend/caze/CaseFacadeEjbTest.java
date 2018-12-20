@@ -64,6 +64,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.EntityDtoTooOldException;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.util.DateHelper8;
@@ -359,7 +360,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		cazePerson = getPersonFacade().savePerson(cazePerson);
 
 		// this should throw an exception
-		exception.expect(UnsupportedOperationException.class);
+		exception.expect(EntityDtoTooOldException.class);
 		firstCase = getCaseFacade().saveCase(firstCase);
 	}
 	
