@@ -109,14 +109,15 @@ public class ReportsView extends AbstractView {
 		});
 		filterLayout.addComponent(lastWeekButton);
 
-		Button thisWeekButton = new Button("This week");
-		thisWeekButton.addStyleName(CssStyles.FORCE_CAPTION);
-		thisWeekButton.addClickListener(e -> {
-			EpiWeek epiWeek = DateHelper.getEpiWeek(new Date());
-			yearFilter.select(epiWeek.getYear());
-			epiWeekFilter.select(epiWeek.getWeek());
-		});
-		filterLayout.addComponent(thisWeekButton);
+		// this week will not have any reports
+//		Button thisWeekButton = new Button("This week");
+//		thisWeekButton.addStyleName(CssStyles.FORCE_CAPTION);
+//		thisWeekButton.addClickListener(e -> {
+//			EpiWeek epiWeek = DateHelper.getEpiWeek(new Date());
+//			yearFilter.select(epiWeek.getYear());
+//			epiWeekFilter.select(epiWeek.getWeek());
+//		});
+//		filterLayout.addComponent(thisWeekButton);
 
 		return filterLayout;
 	}

@@ -34,6 +34,7 @@ public class WeeklyReportOfficerSummaryDto implements Serializable {
 	public static final String OFFICER_REPORT_DATE = "officerReportDate";
 	public static final String TOTAL_CASE_COUNT = "totalCaseCount";
 	public static final String INFORMANTS = "informants";
+	public static final String INFORMANT_REPORTS = "informantReports";
 	public static final String INFORMANT_CASE_REPORTS = "informantCaseReports";
 	public static final String INFORMANT_ZERO_REPORTS = "informantZeroReports";
 	public static final String INFORMANT_MISSING_REPORTS = "informantMissingReports";
@@ -104,12 +105,16 @@ public class WeeklyReportOfficerSummaryDto implements Serializable {
 	}
 
 	public int getInformantMissingReports() {
-		return informants - informantCaseReports - informantZeroReports;
+		return informants - getInformantReports();
+	}
+	
+	public int getInformantReports() {
+		return informantCaseReports + informantZeroReports;
 	}
 	
 	public int getInformantReportPercentage() {
 		if (informants > 0) {
-			return 100 * (informantCaseReports + informantZeroReports) / informants;
+			return 100 * getInformantReports() / informants;
 		}
 		return 0;
 	}

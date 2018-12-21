@@ -33,6 +33,7 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.report.WeeklyReportDto;
 import de.symeda.sormas.api.report.WeeklyReportOfficerSummaryDto;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -52,25 +53,32 @@ public class WeeklyReportOfficersGrid extends Grid implements ItemClickListener 
 	private final class WeeklyReportGridCellStyleGenerator implements CellStyleGenerator {
 		@Override
 		public String getStyle(CellReference cell) {
+			String css;
+			if (WeeklyReportOfficerSummaryDto.INFORMANTS.equals(cell.getPropertyId())
+					|| WeeklyReportOfficerSummaryDto.INFORMANT_REPORTS.equals(cell.getPropertyId())
+					|| WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE.equals(cell.getPropertyId())
+					|| WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS.equals(cell.getPropertyId())) {
+				css = CssStyles.GRID_CELL_ODD;
+			} else {
+				css = "";
+			}
+				
 			if (WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE.equals(cell.getPropertyId())) {
 				Integer reportPercentage = (Integer) cell.getProperty().getValue();
 				if (reportPercentage >= 90) {
-					return CssStyles.GRID_CELL_PRIORITY_LOW;
+					css += " " + CssStyles.GRID_CELL_PRIORITY_LOW;
 				} else if (reportPercentage >= 60) {
-					return CssStyles.GRID_CELL_PRIORITY_NORMAL;
+					css += " " + CssStyles.GRID_CELL_PRIORITY_NORMAL;
 				} else {
-					return CssStyles.GRID_CELL_PRIORITY_HIGH;
+					css += " " + CssStyles.GRID_CELL_PRIORITY_HIGH;
 				}
 			}
-			return null;
+			return css;
 		}
 	}
 
 	public WeeklyReportOfficersGrid() {
 		setSizeFull();
-
-		setSelectionMode(SelectionMode.NONE);
-		setCellStyleGenerator(new WeeklyReportGridCellStyleGenerator());
 
 		BeanItemContainer<WeeklyReportOfficerSummaryDto> container = new BeanItemContainer<WeeklyReportOfficerSummaryDto>(
 				WeeklyReportOfficerSummaryDto.class);
@@ -82,10 +90,11 @@ public class WeeklyReportOfficersGrid extends Grid implements ItemClickListener 
 				WeeklyReportOfficerSummaryDto.OFFICER, 
 				WeeklyReportOfficerSummaryDto.DISTRICT,
 				WeeklyReportOfficerSummaryDto.OFFICER_REPORT_DATE, 
+				WeeklyReportOfficerSummaryDto.TOTAL_CASE_COUNT, 
 				WeeklyReportOfficerSummaryDto.INFORMANTS,
-				WeeklyReportOfficerSummaryDto.INFORMANT_CASE_REPORTS,
-				WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS,
-				WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE);
+				WeeklyReportOfficerSummaryDto.INFORMANT_REPORTS,
+				WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE,
+				WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS);
 
 		for (Column column : getColumns()) {
 			if (column.getPropertyId().equals(VIEW_DETAILS_BTN_ID)) {
@@ -96,19 +105,31 @@ public class WeeklyReportOfficersGrid extends Grid implements ItemClickListener 
 			}
 		}
 
+		HeaderRow headerRow = getHeaderRow(0);
+		headerRow.getCell(WeeklyReportOfficerSummaryDto.INFORMANTS).setStyleName(CssStyles.GRID_CELL_ODD);
+		headerRow.getCell(WeeklyReportOfficerSummaryDto.INFORMANT_REPORTS).setStyleName(CssStyles.GRID_CELL_ODD);
+		headerRow.getCell(WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE).setStyleName(CssStyles.GRID_CELL_ODD);
+		headerRow.getCell(WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS).setStyleName(CssStyles.GRID_CELL_ODD);
+
 		HeaderRow preHeaderRow = prependHeaderRow();
-		preHeaderRow.join(WeeklyReportOfficerSummaryDto.INFORMANTS, 
-				WeeklyReportOfficerSummaryDto.INFORMANT_CASE_REPORTS,
-				WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS, 
-				WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE)
-			.setHtml(getColumn(WeeklyReportOfficerSummaryDto.INFORMANTS).getHeaderCaption());
-//		getColumn(WeeklyReportOfficerSummaryDto.INFORMANTS).setHeaderCaption("#");
-
-		getColumn(WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE).setRenderer(new PercentageRenderer());
-
+		HeaderCell preHeaderCell = preHeaderRow.join(
+				WeeklyReportOfficerSummaryDto.INFORMANTS, 
+				WeeklyReportOfficerSummaryDto.INFORMANT_REPORTS,
+				WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE,
+				WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS);
+		preHeaderCell.setHtml(I18nProperties.getPrefixFieldCaption(WeeklyReportOfficerSummaryDto.I18N_PREFIX, "officerInformants"));
+		preHeaderCell.setStyleName(CssStyles.GRID_CELL_ODD);
+		
 		getColumn(VIEW_DETAILS_BTN_ID).setRenderer(new HtmlRenderer());
 		getColumn(VIEW_DETAILS_BTN_ID).setWidth(60);
 
+		getColumn(WeeklyReportOfficerSummaryDto.OFFICER_REPORT_DATE).setRenderer(new HtmlRenderer(
+				I18nProperties.getPrefixFieldCaption(WeeklyReportDto.I18N_PREFIX, "noReport")));
+		getColumn(WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE).setRenderer(new PercentageRenderer());
+		
+		setCellStyleGenerator(new WeeklyReportGridCellStyleGenerator());
+
+		setSelectionMode(SelectionMode.NONE);
 		addItemClickListener(this);
 	}
 
@@ -126,7 +147,7 @@ public class WeeklyReportOfficersGrid extends Grid implements ItemClickListener 
 
 		getContainer().removeAllItems();
 		EpiWeek epiWeek = new EpiWeek(year, week);
-
+		
 		List<WeeklyReportOfficerSummaryDto> summaryDtos = FacadeProvider.getWeeklyReportFacade()
 				.getSummariesPerOfficer(region, epiWeek);
 		summaryDtos.forEach(s -> getContainer().addItem(s));

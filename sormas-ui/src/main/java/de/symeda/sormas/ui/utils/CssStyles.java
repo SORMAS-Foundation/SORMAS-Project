@@ -172,7 +172,9 @@ public final class CssStyles {
 	public static final String GRID_CELL_PRIORITY_NORMAL = "priority-normal";
 	public static final String GRID_CELL_PRIORITY_LOW = "priority-low";
 	public static final String GRID_CELL_WARNING = "warning";
-	
+
+	public static final String GRID_CELL_ODD = "odd";
+
 	public static final String GRID_ROW_STATUS_DISCARDED = "status-discarded";
 	public static final String GRID_ROW_STATUS_NOT = "status-not";
 	public static final String GRID_ROW_STATUS_DONE = "status-done";

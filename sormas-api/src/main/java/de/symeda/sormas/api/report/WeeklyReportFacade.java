@@ -37,6 +37,9 @@ public interface WeeklyReportFacade {
 	
 	List<String> getAllUuids(String userUuid);
 	
+	/**
+	 * Returns only regions that do have surveillance officers
+	 */
 	List<WeeklyReportRegionSummaryDto> getSummariesPerRegion(EpiWeek epiWeek);
 	
 	List<WeeklyReportOfficerSummaryDto> getSummariesPerOfficer(RegionReferenceDto region, EpiWeek epiWeek);

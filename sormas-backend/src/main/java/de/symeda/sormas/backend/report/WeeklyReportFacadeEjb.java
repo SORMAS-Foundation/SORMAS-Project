@@ -147,6 +147,10 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			summaryDto.setRegion(RegionFacadeEjb.toReferenceDto(region));
 
 			Long officers = userService.countByRegion(region, UserRole.SURVEILLANCE_OFFICER);
+			if (officers.intValue() == 0) {
+				continue; // summarize only regions that do have officers
+			}
+			
 			summaryDto.setOfficers(officers.intValue());
 			Long informants = userService.countByRegion(region, UserRole.HOSPITAL_INFORMANT,
 					UserRole.COMMUNITY_INFORMANT);

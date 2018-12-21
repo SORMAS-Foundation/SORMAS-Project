@@ -49,26 +49,34 @@ public class WeeklyReportRegionsGrid extends Grid implements ItemClickListener {
 	private final class WeeklyReportGridCellStyleGenerator implements CellStyleGenerator {
 		@Override
 		public String getStyle(CellReference cell) {
+			
+			String css;
+			if (WeeklyReportRegionSummaryDto.OFFICERS.equals(cell.getPropertyId())
+					|| WeeklyReportRegionSummaryDto.OFFICER_REPORTS.equals(cell.getPropertyId())
+					|| WeeklyReportRegionSummaryDto.OFFICER_REPORT_PERCENTAGE.equals(cell.getPropertyId())
+					|| WeeklyReportRegionSummaryDto.OFFICER_ZERO_REPORTS.equals(cell.getPropertyId())) {
+				css = CssStyles.GRID_CELL_ODD;
+			} else {
+				css = "";
+			}
+				
 			if (WeeklyReportRegionSummaryDto.INFORMANT_REPORT_PERCENTAGE.equals(cell.getPropertyId())
 					|| WeeklyReportRegionSummaryDto.OFFICER_REPORT_PERCENTAGE.equals(cell.getPropertyId())) {
 				Integer reportPercentage = (Integer) cell.getProperty().getValue();
 				if (reportPercentage >= 90) {
-					return CssStyles.GRID_CELL_PRIORITY_LOW;
+					css += " " + CssStyles.GRID_CELL_PRIORITY_LOW;
 				} else if (reportPercentage >= 60) {
-					return CssStyles.GRID_CELL_PRIORITY_NORMAL;
+					css += " " + CssStyles.GRID_CELL_PRIORITY_NORMAL;
 				} else {
-					return CssStyles.GRID_CELL_PRIORITY_HIGH;
+					css += " " + CssStyles.GRID_CELL_PRIORITY_HIGH;
 				}
 			}
-			return null;
+			return css;
 		}
 	}
 
 	public WeeklyReportRegionsGrid() {
 		setSizeFull();
-
-		setSelectionMode(SelectionMode.NONE);
-		setCellStyleGenerator(new WeeklyReportGridCellStyleGenerator());
 
 		BeanItemContainer<WeeklyReportRegionSummaryDto> container = new BeanItemContainer<WeeklyReportRegionSummaryDto>(
 				WeeklyReportRegionSummaryDto.class);
@@ -76,12 +84,16 @@ public class WeeklyReportRegionsGrid extends Grid implements ItemClickListener {
 		VaadinUiUtil.addIconColumn(generatedContainer, VIEW_DETAILS_BTN_ID, FontAwesome.EYE);
 		setContainerDataSource(generatedContainer);
 
-		setColumns(VIEW_DETAILS_BTN_ID, WeeklyReportRegionSummaryDto.REGION, WeeklyReportRegionSummaryDto.OFFICERS,
-				WeeklyReportRegionSummaryDto.OFFICER_CASE_REPORTS, WeeklyReportRegionSummaryDto.OFFICER_ZERO_REPORTS,
-				WeeklyReportRegionSummaryDto.OFFICER_REPORT_PERCENTAGE, WeeklyReportRegionSummaryDto.INFORMANTS,
-				WeeklyReportRegionSummaryDto.INFORMANT_CASE_REPORTS,
-				WeeklyReportRegionSummaryDto.INFORMANT_ZERO_REPORTS,
-				WeeklyReportRegionSummaryDto.INFORMANT_REPORT_PERCENTAGE);
+		setColumns(VIEW_DETAILS_BTN_ID, 
+				WeeklyReportRegionSummaryDto.REGION,
+				WeeklyReportRegionSummaryDto.OFFICERS,
+				WeeklyReportRegionSummaryDto.OFFICER_REPORTS, 
+				WeeklyReportRegionSummaryDto.OFFICER_REPORT_PERCENTAGE, 
+				WeeklyReportRegionSummaryDto.OFFICER_ZERO_REPORTS,
+				WeeklyReportRegionSummaryDto.INFORMANTS,
+				WeeklyReportRegionSummaryDto.INFORMANT_REPORTS,
+				WeeklyReportRegionSummaryDto.INFORMANT_REPORT_PERCENTAGE,
+				WeeklyReportRegionSummaryDto.INFORMANT_ZERO_REPORTS);
 
 		for (Column column : getColumns()) {
 			if (column.getPropertyId().equals(VIEW_DETAILS_BTN_ID)) {
@@ -91,28 +103,38 @@ public class WeeklyReportRegionsGrid extends Grid implements ItemClickListener {
 						column.getPropertyId().toString(), column.getHeaderCaption()));
 			}
 		}
+		
+		HeaderRow headerRow = getHeaderRow(0);
+		headerRow.getCell(WeeklyReportRegionSummaryDto.OFFICERS).setStyleName(CssStyles.GRID_CELL_ODD);
+		headerRow.getCell(WeeklyReportRegionSummaryDto.OFFICER_REPORTS).setStyleName(CssStyles.GRID_CELL_ODD);
+		headerRow.getCell(WeeklyReportRegionSummaryDto.OFFICER_REPORT_PERCENTAGE).setStyleName(CssStyles.GRID_CELL_ODD);
+		headerRow.getCell(WeeklyReportRegionSummaryDto.OFFICER_ZERO_REPORTS).setStyleName(CssStyles.GRID_CELL_ODD);
 
 		HeaderRow preHeaderRow = prependHeaderRow();
-		preHeaderRow.join(WeeklyReportRegionSummaryDto.OFFICERS, 
-				WeeklyReportRegionSummaryDto.OFFICER_CASE_REPORTS,
-				WeeklyReportRegionSummaryDto.OFFICER_ZERO_REPORTS, 
-				WeeklyReportRegionSummaryDto.OFFICER_REPORT_PERCENTAGE)
-			.setHtml(getColumn(WeeklyReportRegionSummaryDto.OFFICERS).getHeaderCaption());
-//		getColumn(WeeklyReportRegionSummaryDto.OFFICERS).setHeaderCaption("#");
+		HeaderCell preHeaderCell = preHeaderRow.join(
+				WeeklyReportRegionSummaryDto.OFFICERS, 
+				WeeklyReportRegionSummaryDto.OFFICER_REPORTS,
+				WeeklyReportRegionSummaryDto.OFFICER_REPORT_PERCENTAGE,
+				WeeklyReportRegionSummaryDto.OFFICER_ZERO_REPORTS);
+		preHeaderCell.setHtml(I18nProperties.getPrefixFieldCaption(WeeklyReportRegionSummaryDto.I18N_PREFIX, "regionOfficers"));
+		preHeaderCell.setStyleName(CssStyles.GRID_CELL_ODD);		
 		
-		preHeaderRow.join(WeeklyReportRegionSummaryDto.INFORMANTS, 
-				WeeklyReportRegionSummaryDto.INFORMANT_CASE_REPORTS,
-				WeeklyReportRegionSummaryDto.INFORMANT_ZERO_REPORTS, 
-				WeeklyReportRegionSummaryDto.INFORMANT_REPORT_PERCENTAGE)
-			.setHtml(getColumn(WeeklyReportRegionSummaryDto.INFORMANTS).getHeaderCaption());
-//		getColumn(WeeklyReportRegionSummaryDto.INFORMANTS).setHeaderCaption("#");
-
-		getColumn(WeeklyReportRegionSummaryDto.OFFICER_REPORT_PERCENTAGE).setRenderer(new PercentageRenderer());
-		getColumn(WeeklyReportRegionSummaryDto.INFORMANT_REPORT_PERCENTAGE).setRenderer(new PercentageRenderer());
+		preHeaderRow.join(
+				WeeklyReportRegionSummaryDto.INFORMANTS, 
+				WeeklyReportRegionSummaryDto.INFORMANT_REPORTS,
+				WeeklyReportRegionSummaryDto.INFORMANT_REPORT_PERCENTAGE,
+				WeeklyReportRegionSummaryDto.INFORMANT_ZERO_REPORTS)
+			.setHtml(I18nProperties.getPrefixFieldCaption(WeeklyReportRegionSummaryDto.I18N_PREFIX, "regionInformants"));
 
 		getColumn(VIEW_DETAILS_BTN_ID).setRenderer(new HtmlRenderer());
 		getColumn(VIEW_DETAILS_BTN_ID).setWidth(60);
 
+		getColumn(WeeklyReportRegionSummaryDto.OFFICER_REPORT_PERCENTAGE).setRenderer(new PercentageRenderer());
+		getColumn(WeeklyReportRegionSummaryDto.INFORMANT_REPORT_PERCENTAGE).setRenderer(new PercentageRenderer());
+
+		setCellStyleGenerator(new WeeklyReportGridCellStyleGenerator());
+
+		setSelectionMode(SelectionMode.NONE);
 		addItemClickListener(this);
 	}
 

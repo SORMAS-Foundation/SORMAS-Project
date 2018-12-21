@@ -23,6 +23,7 @@ import java.util.List;
 
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
@@ -33,14 +34,26 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.ui.utils.CssStyles;
 
+@SuppressWarnings("serial")
 public class WeeklyReportInformantsGrid extends Grid {
-
-	private static final long serialVersionUID = 4840654834928465293L;
 
 	private final UserReferenceDto officerRef;
 	private final EpiWeek epiWeek;
-
+	
+	private final class WeeklyReportGridCellStyleGenerator implements CellStyleGenerator {
+		@Override
+		public String getStyle(CellReference cell) {
+			 if (WeeklyReportInformantSummary.INFORMANT_REPORT_DATE.equals(cell.getPropertyId())) {
+				if (cell.getValue() == null) {
+					return CssStyles.GRID_CELL_PRIORITY_HIGH;
+				}
+			}
+			return null;
+		}
+	}
+	
 	public WeeklyReportInformantsGrid(UserReferenceDto officerRef, EpiWeek epiWeek) {
 		this.officerRef = officerRef;
 		this.epiWeek = epiWeek;
@@ -63,6 +76,11 @@ public class WeeklyReportInformantsGrid extends Grid {
 					column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 
+		getColumn(WeeklyReportInformantSummary.INFORMANT_REPORT_DATE).setRenderer(new HtmlRenderer(
+				I18nProperties.getPrefixFieldCaption(WeeklyReportDto.I18N_PREFIX, "noReport")));
+
+		setCellStyleGenerator(new WeeklyReportGridCellStyleGenerator());
+		
 		reload();
 	}
 
@@ -120,7 +138,8 @@ public class WeeklyReportInformantsGrid extends Grid {
 	}
 
 	public class WeeklyReportInformantSummary {
-		public static final String I18N_PREFIX = "WeeklyReportDetails";
+		public static final String I18N_PREFIX = "WeeklyReportInformantSummary";
+		
 		public static final String INFORMANT = "informant";
 		public static final String COMMUNITY = "community";
 		public static final String FACILITY = "facility";
@@ -173,5 +192,4 @@ public class WeeklyReportInformantsGrid extends Grid {
 			this.community = community;
 		}
 	}
-
 }

@@ -25,15 +25,17 @@ public class WeeklyReportRegionSummaryDto implements Serializable {
 
 	private static final long serialVersionUID = -8776688104892901821L;
 
-	public static final String I18N_PREFIX = "WeeklyReportSummary";
+	public static final String I18N_PREFIX = "WeeklyReportRegionSummary";
 
 	public static final String REGION = "region";
 	public static final String OFFICERS = "officers";
-	public static final String INFORMANTS = "informants";
+	public static final String OFFICER_REPORTS = "officerReports";
 	public static final String OFFICER_CASE_REPORTS = "officerCaseReports";
 	public static final String OFFICER_ZERO_REPORTS = "officerZeroReports";
 	public static final String OFFICER_MISSING_REPORTS = "officerMissingReports";
 	public static final String OFFICER_REPORT_PERCENTAGE = "officerReportPercentage";
+	public static final String INFORMANTS = "informants";
+	public static final String INFORMANT_REPORTS = "informantReports";
 	public static final String INFORMANT_CASE_REPORTS = "informantCaseReports";
 	public static final String INFORMANT_ZERO_REPORTS = "informantZeroReports";
 	public static final String INFORMANT_MISSING_REPORTS = "informantMissingReports";
@@ -88,12 +90,16 @@ public class WeeklyReportRegionSummaryDto implements Serializable {
 	}
 
 	public int getOfficerMissingReports() {
-		return officers - officerCaseReports - officerZeroReports;
+		return officers - getOfficerReports();
+	}
+
+	public int getOfficerReports() {
+		return officerCaseReports + officerZeroReports;
 	}
 	
 	public int getOfficerReportPercentage() {
 		if (officers > 0) {
-			return 100 * (officerCaseReports + officerZeroReports) / officers;
+			return 100 * getOfficerReports() / officers;
 		}
 		return 0;
 	}
@@ -115,12 +121,16 @@ public class WeeklyReportRegionSummaryDto implements Serializable {
 	}
 
 	public int getInformantMissingReports() {
-		return informants - informantCaseReports - informantZeroReports;
+		return informants - getInformantReports();
 	}	
+	
+	public int getInformantReports() {
+		return informantCaseReports + informantZeroReports;
+	}
 	
 	public int getInformantReportPercentage() {
 		if (informants > 0) {
-			return 100 * (informantCaseReports + informantZeroReports) / informants;
+			return 100 * getInformantReports() / informants;
 		}
 		return 0;
 	}
