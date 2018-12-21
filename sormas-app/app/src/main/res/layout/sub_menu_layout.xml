@@ -41,24 +41,13 @@
     </FrameLayout>
 
     <LinearLayout
+        android:id="@+id/sub_menu_frame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@color/lighterBlue"
         android:paddingTop="@dimen/subMenuPadding"
         android:paddingBottom="@dimen/subMenuPadding">
-
-        <TextView
-            android:id="@+id/sub_menu_title"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/subMenuHeaderHeight"
-            android:background="@drawable/background_sub_menu_title"
-            android:textAllCaps="true"
-            android:textAlignment="center"
-            android:textSize="@dimen/subMenuTitleTextSize"
-            android:fontFamily="sans-serif-medium"
-            android:textColor="@color/normalText"
-            android:gravity="center" />
 
         <GridView
             android:id="@+id/sub_menu_grid"

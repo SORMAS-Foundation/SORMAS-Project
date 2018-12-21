@@ -737,16 +737,29 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         _rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
+
+                // in android there is currently no way to track the software keyboard.
+                // as a workaround we are checking the bottom height diff:
+                // https://stackoverflow.com/questions/4745988/how-do-i-detect-if-software-keyboard-is-visible-on-android-device
                 Rect r = new Rect();
                 _rootView.getWindowVisibleDisplayFrame(r);
-                int heightDiff = _rootView.getRootView().getHeight() - (r.bottom - r.top);
+                int screenHeight = _rootView.getRootView().getHeight();
 
-                if (heightDiff > 100) {
+                // r.bottom is the position above soft keypad or device button.
+                // if keypad is shown, the r.bottom is smaller than that before.
+                int keypadHeight = screenHeight - r.bottom;
+
+                if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
+                    // keyboard is opened
                     if (landingPageMenuControl != null) {
                         landingPageMenuControl.hideAll();
                     }
-                } else {
-                    landingPageMenuControl.showFab();
+                }
+                else {
+                    // keyboard is closed
+                    if (landingPageMenuControl != null) {
+                        landingPageMenuControl.showFab();
+                    }
                 }
             }
         });
