@@ -177,7 +177,7 @@ public class TaskNotificationService extends Service {
                     .setTicker(r.getString(R.string.headline_task_notification))
                     .setSmallIcon(R.mipmap.ic_launcher_foreground)
                     .setContentTitle(task.getTaskType().toString() + (caze != null ? " (" + caze.getDisease().toShortString() + ")" : contact != null ? " (" + contact.getCaseDisease().toShortString() + ")" : ""))
-                    .setContentText(content.toString())
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(content.toString())))
                     .setContentIntent(pi)
                     .setAutoCancel(true)
                     .build();
