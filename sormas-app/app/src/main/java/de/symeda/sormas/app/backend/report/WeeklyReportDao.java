@@ -85,7 +85,7 @@ public class WeeklyReportDao extends AbstractAdoDao<WeeklyReport> {
         return data;
     }
 
-    private WeeklyReport initLazyData(WeeklyReport report) {
+    public WeeklyReport initLazyData(WeeklyReport report) {
         if (report != null) {
             report.setReportEntries(DatabaseHelper.getWeeklyReportEntryDao().getByWeeklyReport(report));
         }
@@ -132,15 +132,7 @@ public class WeeklyReportDao extends AbstractAdoDao<WeeklyReport> {
         report.setAssignedOfficer(currentUser.getAssociatedOfficer());
         report.setDistrict(currentUser.getDistrict());
 
-        // We need to use the getPreviousEpiWeek method because the report date of a weekly report will always
-        // be in the week after the epi week the report is built for
         int totalNumberOfCases = DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeek(epiWeek, currentUser);
-        if (currentUser.hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
-            List<User> informants = DatabaseHelper.getUserDao().getInformantsByAssociatedOfficer(currentUser);
-            for (User informant : informants) {
-                totalNumberOfCases += DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeek(epiWeek, informant);
-            }
-        }
         report.setTotalNumberOfCases(totalNumberOfCases);
 
         WeeklyReportEntryDao entryDao = DatabaseHelper.getWeeklyReportEntryDao();

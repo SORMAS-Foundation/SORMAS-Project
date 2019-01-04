@@ -80,6 +80,12 @@ public class WeeklyReportDtoHelper extends AdoDtoHelper<WeeklyReport, WeeklyRepo
     }
 
     @Override
+    public WeeklyReportDto adoToDto(WeeklyReport weeklyReport) {
+        DatabaseHelper.getWeeklyReportDao().initLazyData(weeklyReport);
+        return super.adoToDto(weeklyReport);
+    }
+
+    @Override
     public void fillInnerFromDto(WeeklyReport target, WeeklyReportDto source) {
         target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
         target.setReportDateTime(source.getReportDateTime());

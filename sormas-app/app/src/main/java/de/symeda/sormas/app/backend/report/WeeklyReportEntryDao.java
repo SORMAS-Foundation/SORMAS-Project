@@ -51,9 +51,9 @@ public class WeeklyReportEntryDao extends AbstractAdoDao<WeeklyReportEntry> {
 
     public List<WeeklyReportEntry> getByWeeklyReport(WeeklyReport report) {
         if (report.isSnapshot()) {
-            return querySnapshotsForEq(WeeklyReportEntry.WEEKLY_REPORT + "_id", report, WeeklyReportEntry.CHANGE_DATE, false);
+            return querySnapshotsForEq(WeeklyReportEntry.WEEKLY_REPORT + "_id", report, WeeklyReportEntry.DISEASE, true);
         }
-        return queryForEq(WeeklyReportEntry.WEEKLY_REPORT + "_id", report, WeeklyReportEntry.CHANGE_DATE, false);
+        return queryForEq(WeeklyReportEntry.WEEKLY_REPORT + "_id", report, WeeklyReportEntry.DISEASE, true);
     }
 
     public WeeklyReportEntry build(EpiWeek epiWeek, Disease disease, WeeklyReport report) {
@@ -63,12 +63,6 @@ public class WeeklyReportEntryDao extends AbstractAdoDao<WeeklyReportEntry> {
         entry.setDisease(disease);
 
         int numberOfCases = DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeekAndDisease(epiWeek, disease, report.getReportingUser());
-        if (report.getReportingUser().hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
-            List<User> informants = DatabaseHelper.getUserDao().getInformantsByAssociatedOfficer(report.getReportingUser());
-            for (User informant : informants) {
-                numberOfCases += DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeekAndDisease(epiWeek, disease, informant);
-            }
-        }
         entry.setNumberOfCases(numberOfCases);
 
         return entry;

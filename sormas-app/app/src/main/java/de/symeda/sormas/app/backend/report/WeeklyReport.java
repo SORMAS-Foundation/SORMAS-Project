@@ -29,6 +29,7 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.region.Community;
@@ -167,5 +168,14 @@ public class WeeklyReport extends AbstractDomainObject {
 
     public void setReportEntries(List<WeeklyReportEntry> reportEntries) {
         this.reportEntries = reportEntries;
+    }
+
+    public WeeklyReportEntry getReportEntry(Disease disease) {
+        for (WeeklyReportEntry reportEntry : reportEntries) {
+            if (reportEntry.getDisease() == disease) {
+                return reportEntry;
+            }
+        }
+        return null;
     }
 }

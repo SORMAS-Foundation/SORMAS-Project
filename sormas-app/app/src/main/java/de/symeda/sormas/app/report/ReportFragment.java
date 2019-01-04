@@ -42,6 +42,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.report.WeeklyReport;
 import de.symeda.sormas.app.backend.report.WeeklyReportEntry;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
@@ -59,6 +60,7 @@ import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.SyncCallback;
 
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayoutBinding> {
 
@@ -175,6 +177,13 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
             }
         });
 
+        contentBinding.addMissingCase.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CaseNewActivity.startActivityWithEmptyReportDate(getContext());
+            }
+        });
+
         contentBinding.submitReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -210,12 +219,12 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                                     } else {
                                         NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.snackbar_weekly_report_confirmed);
                                     }
-
-                                    contentBinding.submitReport.setVisibility(GONE);
+                                    ((ReportActivity)getActivity()).onResume(); // reload data
                                 }
                             });
                         } else {
                             NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.snackbar_weekly_report_confirmed);
+                            ((ReportActivity)getActivity()).onResume(); // reload data
                         }
                     }
                 }.executeOnThreadPool();
@@ -236,6 +245,10 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
 
     public EpiWeek getEpiWeek() {
         return (EpiWeek) contentBinding.weeklyReportEpiWeek.getValue();
+    }
+
+    public EpiWeekFilterOption getEpiWeekFilterOption() {
+        return (EpiWeekFilterOption) contentBinding.reportSelector.getValue();
     }
 
     private void updateByEpiWeek() {
@@ -260,13 +273,16 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
             contentBinding.reportSelector.setValue(filterOption);
         }
 
-        final User user = ConfigProvider.getUser();
-        showReportData(user, epiWeek, filterOption);
+        showReportData();
 
         getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
     }
 
-    protected void showReportData(User user, EpiWeek epiWeek, EpiWeekFilterOption filterOption) {
+    protected void showReportData() {
+        User user = ConfigProvider.getUser();
+        EpiWeek epiWeek = getEpiWeek();
+        EpiWeekFilterOption filterOption = getEpiWeekFilterOption();
+
         if (epiWeek == null || !ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE)) {
             setVisibilityForNoData();
         } else {
@@ -311,19 +327,21 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
     }
 
     protected void setVisibilityForTable(boolean showButtons) {
-        contentBinding.reportContentFrame.setVisibility(View.VISIBLE);
+        contentBinding.reportContentFrame.setVisibility(VISIBLE);
         contentBinding.noWeeklyReportData.setVisibility(GONE);
 
         if (showButtons && !ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE)) {
             showButtons = false;
         }
-        contentBinding.submitReport.setVisibility(showButtons ? View.VISIBLE : GONE);
+        contentBinding.submitReport.setVisibility(showButtons ? VISIBLE : GONE);
+        contentBinding.addMissingCase.setVisibility(showButtons ? VISIBLE : GONE);
     }
 
     protected void setVisibilityForNoData() {
-        contentBinding.noWeeklyReportData.setVisibility(View.VISIBLE);
+        contentBinding.noWeeklyReportData.setVisibility(VISIBLE);
         contentBinding.reportContentFrame.setVisibility(GONE);
         contentBinding.submitReport.setVisibility(GONE);
+        contentBinding.addMissingCase.setVisibility(GONE);
     }
 
     private void showNoReport() {
@@ -336,6 +354,9 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
         }
 
         if (ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE)) {
+
+            final WeeklyReport weeklyReport = DatabaseHelper.getWeeklyReportDao().build(getEpiWeek());
+
             loadReportTask = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
@@ -344,25 +365,13 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
 
                 @Override
                 public void doInBackground(TaskResultHolder resultHolder) {
-                    User user = ConfigProvider.getUser();
-                    List<WeeklyReportListItem> list = new ArrayList<>();
-                    List<User> informants = null;
-                    if (user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
-                        informants = DatabaseHelper.getUserDao().getInformantsByAssociatedOfficer(ConfigProvider.getUser());
-                    }
-
-                    for (Disease disease : Disease.values()) {
-                        int numberOfCases = DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeekAndDisease(getEpiWeek(), disease, user);
-
-                        if (informants != null) {
-                            for (User informant : informants) {
-                                numberOfCases += DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeekAndDisease(getEpiWeek(), disease, informant);
-                            }
+                    if (weeklyReport != null) {
+                        List<WeeklyReportListItem> list = new ArrayList<>();
+                        for (WeeklyReportEntry entry : weeklyReport.getReportEntries()) {
+                            list.add(new WeeklyReportListItem(entry.getDisease(), entry.getNumberOfCases()));
                         }
-
-                        list.add(new WeeklyReportListItem(disease, numberOfCases));
+                        resultHolder.forOther().add(list);
                     }
-                    resultHolder.forOther().add(list);
                 }
 
                 @Override
@@ -383,7 +392,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                     pendingReportAdapter = new WeeklyReportAdapter(getContext(), list);
                     getContentBinding().reportContent.setLayoutManager(linearLayoutManager);
                     getContentBinding().reportContent.setAdapter(pendingReportAdapter);
-                    getContentBinding().reportContentFrame.setVisibility(View.VISIBLE);
+                    getContentBinding().reportContentFrame.setVisibility(VISIBLE);
                     pendingReportAdapter.notifyDataSetChanged();
                 }
             }.executeOnThreadPool();
@@ -408,7 +417,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
             public void doInBackground(TaskResultHolder resultHolder) {
                 if (weeklyReport != null) {
                     List<WeeklyReportListItem> list = new ArrayList<>();
-                    for (WeeklyReportEntry entry : DatabaseHelper.getWeeklyReportEntryDao().getByWeeklyReport(weeklyReport)) {
+                    for (WeeklyReportEntry entry : weeklyReport.getReportEntries()) {
                         list.add(new WeeklyReportListItem(entry.getDisease(), entry.getNumberOfCases()));
                     }
                     resultHolder.forOther().add(list);
@@ -433,7 +442,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                 weeklyReportAdapter = new WeeklyReportAdapter(getContext(), list);
                 getContentBinding().reportContent.setLayoutManager(linearLayoutManager);
                 getContentBinding().reportContent.setAdapter(weeklyReportAdapter);
-                getContentBinding().reportContentFrame.setVisibility(View.VISIBLE);
+                getContentBinding().reportContentFrame.setVisibility(VISIBLE);
                 weeklyReportAdapter.notifyDataSetChanged();
             }
         }.executeOnThreadPool();

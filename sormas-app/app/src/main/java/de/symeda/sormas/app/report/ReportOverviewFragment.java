@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -31,14 +32,20 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.report.WeeklyReport;
+import de.symeda.sormas.app.backend.report.WeeklyReportEntry;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentReportWeeklyLayoutBinding;
+import de.symeda.sormas.app.util.DataUtils;
 
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class ReportOverviewFragment extends ReportFragment {
 
@@ -54,13 +61,27 @@ public class ReportOverviewFragment extends ReportFragment {
     @Override
     protected void onAfterLayoutBinding(FragmentReportWeeklyLayoutBinding contentBinding) {
         super.onAfterLayoutBinding(contentBinding);
+
+        List<Item> diseaseList = DataUtils.getEnumItems(Disease.class, true);
+        contentBinding.weeklyReportEntryDisease.initializeSpinner(diseaseList);
+        contentBinding.weeklyReportEntryDisease.setVisibility(VISIBLE);
+        contentBinding.weeklyReportEntryDisease.addValueChangedListener(new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                showReportData(); // update
+            }
+        });
+
+        contentBinding.reportContentHeader.setText(R.string.caption_reported_informant_case_count);
         contentBinding.submitReport.setVisibility(GONE);
     }
 
     @Override
-    protected void showReportData(User user, EpiWeek epiWeek, EpiWeekFilterOption filterOption) {
+    protected void showReportData() {
+
+        EpiWeek epiWeek = getEpiWeek();
         if (epiWeek == null || DateHelper.isEpiWeekAfter(DateHelper.getEpiWeek(new Date()), epiWeek)
-                || !user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+                || !ConfigProvider.getUser().hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
             setVisibilityForNoData();
         } else {
             showWeeklyReportOverview();
@@ -89,14 +110,28 @@ public class ReportOverviewFragment extends ReportFragment {
             public void doInBackground(TaskResultHolder resultHolder) {
                 List<WeeklyReportOverviewListItem> list = new ArrayList<>();
 
+                Disease disease = (Disease)getContentBinding().weeklyReportEntryDisease.getValue();
+
                 // confirmed reports
                 List<User> informants = DatabaseHelper.getUserDao().getInformantsByAssociatedOfficer(ConfigProvider.getUser());
                 for (User informant : informants) {
                     WeeklyReport report = DatabaseHelper.getWeeklyReportDao().queryByEpiWeekAndUser(getEpiWeek(), informant);
                     if (report != null) {
-                        list.add(new WeeklyReportOverviewListItem(report.getHealthFacility(), report.getCommunity(), report.getReportingUser(), report.getTotalNumberOfCases(), report.getReportDateTime()));
+                        if (disease != null) {
+                            WeeklyReportEntry entry = report.getReportEntry(disease);
+                            list.add(new WeeklyReportOverviewListItem(report.getHealthFacility(), report.getCommunity(),
+                                    report.getReportingUser(), entry.getNumberOfCases(), report.getReportDateTime()));
+                        } else {
+                            list.add(new WeeklyReportOverviewListItem(report.getHealthFacility(), report.getCommunity(),
+                                    report.getReportingUser(), report.getTotalNumberOfCases(), report.getReportDateTime()));
+                        }
                     } else {
-                        int numberOfCases = DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeek(getEpiWeek(), informant);
+                        int numberOfCases;
+                        if (disease != null) {
+                            numberOfCases = DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeekAndDisease(getEpiWeek(), disease, informant);
+                        } else {
+                            numberOfCases = DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeek(getEpiWeek(), informant);
+                        }
                         list.add(new WeeklyReportOverviewListItem(informant.getHealthFacility(), informant.getCommunity(), informant, numberOfCases, null));
                     }
                 }

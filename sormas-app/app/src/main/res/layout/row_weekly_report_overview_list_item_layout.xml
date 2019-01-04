@@ -71,7 +71,6 @@
                     android:fontFamily="sans-serif-medium"
                     android:textColor="@color/listActivityRowPrimaryText"
                     android:textSize="@dimen/listActivityRowPrimaryTextSize"
-                    app:defaultValue='@{@string/no_of_cases_unknown}'
                     app:valueFormat="@{@string/number_of_cases_format}"
                     app:value="@{data.numberOfCases}" />
 
@@ -120,7 +119,8 @@
                     android:textColor="@color/row_entry_secondary_text"
                     android:textSize="@dimen/row_entry_secondary_text_size"
                     app:defaultValue='@{@string/unconfirmed}'
-                    app:dateValue="@{data.reportDate}" />
+                    app:dateValue="@{data.reportDate}"
+                    app:valueFormat="@{@string/report_submitted_date_format}" />
 
             </LinearLayout>
 

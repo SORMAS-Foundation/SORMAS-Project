@@ -55,6 +55,11 @@ public class ReportActivity extends BaseReportActivity {
     }
 
     @Override
+    public void onResume() { // public, so the ReportFragment can call it to reload data
+        super.onResume();
+    }
+
+    @Override
     public BaseReportFragment buildReportFragment(PageMenuItem menuItem) {
         ReportSection section = ReportSection.fromOrdinal(menuItem.getKey());
         BaseReportFragment fragment;

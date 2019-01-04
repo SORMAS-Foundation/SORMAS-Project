@@ -24,6 +24,8 @@ public class WeeklyReportEntryDto extends EntityDto {
 
 	private static final long serialVersionUID = 7863410150359837423L;
 
+	public static final String I18N_PREFIX = "WeeklyReportEntry";
+
 	private Disease disease;
 	private Integer numberOfCases;
 	
