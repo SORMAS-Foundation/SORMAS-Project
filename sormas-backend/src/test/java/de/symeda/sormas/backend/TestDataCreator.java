@@ -38,7 +38,6 @@ import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.report.WeeklyReportDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
@@ -180,22 +179,6 @@ public class TestDataCreator {
 		return visit;
 	}
 
-	public WeeklyReportDto createWeeklyReport(String facilityUuid, UserReferenceDto informant, Date reportDateTime,
-			int epiWeek, int year, int numberOfCases) {
-		WeeklyReportDto report = new WeeklyReportDto();
-		report.setUuid(DataHelper.createUuid());
-		report.setHealthFacility(beanTest.getFacilityFacade().getFacilityReferenceByUuid(facilityUuid));
-		report.setReportingUser(informant);
-		report.setReportDateTime(reportDateTime);
-		report.setEpiWeek(epiWeek);
-		report.setYear(year);
-		report.setTotalNumberOfCases(numberOfCases);
-
-		report = beanTest.getWeeklyReportFacade().saveWeeklyReport(report);
-
-		return report;
-	}
-
 	public EventDto createEvent(EventType eventType, EventStatus eventStatus, String eventDesc, String srcFirstName,
 			String srcLastName, String srcTelNo, TypeOfPlace typeOfPlace, Date eventDate, Date reportDateTime,
 			UserReferenceDto reportingUser, UserReferenceDto surveillanceOfficer, Disease disease,
@@ -328,7 +311,10 @@ public class TestDataCreator {
 		return facility;
 	}
 
-	public class RDCF {
+	/**
+	 * TODO use DTOs instead
+	 */
+	public static class RDCF {
 		public Region region;
 		public District district;
 		public Community community;

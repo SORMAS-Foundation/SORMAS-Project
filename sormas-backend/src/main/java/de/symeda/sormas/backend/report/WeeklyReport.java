@@ -67,7 +67,6 @@ public class WeeklyReport extends AbstractDomainObject {
 	private List<WeeklyReportEntry> reportEntries = new ArrayList<>();
 
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable = false)
 	public Facility getHealthFacility() {
 		return healthFacility;
 	}
