@@ -38,7 +38,7 @@
     <string name="action_done">Done</string>
     <string name="action_download">Download</string>
     <string name="action_download_background">Download in background</string>
-    <string name="action_download_later">Download later</string>
+    <string name="action_download_later">Later</string>
     <string name="action_edit">Edit</string>
     <string name="action_edit_case">Edit Case</string>
     <string name="action_edit_contact">Edit Contact</string>
