@@ -77,7 +77,7 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 
 		addField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, OptionGroup.class);
 		DateField admissionDateField = addField(HospitalizationDto.ADMISSION_DATE, DateField.class);
-		DateField dischargeDateField = addField(HospitalizationDto.DISCHARGE_DATE, DateField.class);
+		DateField dischargeDateField = addDateField(HospitalizationDto.DISCHARGE_DATE, DateField.class, 7);
 		addField(HospitalizationDto.ISOLATED, OptionGroup.class);
 		addField(HospitalizationDto.ISOLATION_DATE, DateField.class);
 		OptionGroup hospitalizedPreviouslyField = addField(HospitalizationDto.HOSPITALIZED_PREVIOUSLY, OptionGroup.class);

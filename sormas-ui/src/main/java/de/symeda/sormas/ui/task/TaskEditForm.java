@@ -85,8 +85,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
     	addField(TaskDto.CAZE, ComboBox.class);
     	addField(TaskDto.EVENT, ComboBox.class);
     	addField(TaskDto.CONTACT, ComboBox.class);
-    	DateTimeField startDate = addField(TaskDto.SUGGESTED_START, DateTimeField.class);
-    	DateTimeField dueDate = addField(TaskDto.DUE_DATE, DateTimeField.class);
+    	DateTimeField startDate = addDateField(TaskDto.SUGGESTED_START, DateTimeField.class, -1);
+    	DateTimeField dueDate = addDateField(TaskDto.DUE_DATE, DateTimeField.class, -1);
     	dueDate.setImmediate(true);
     	addField(TaskDto.PRIORITY, ComboBox.class);
     	OptionGroup taskStatus = addField(TaskDto.TASK_STATUS, OptionGroup.class);

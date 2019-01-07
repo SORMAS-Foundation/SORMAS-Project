@@ -23,6 +23,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import com.vaadin.data.Property;
+import com.vaadin.data.Validator;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.AbstractSelect.NewItemHandler;
@@ -190,6 +191,10 @@ public class DateTimeField extends CustomField<Date> {
 			dateField.setConverter(converter);
 			converterSet = true;
 		}
+	}
+	
+	public void addValidatorToDateField(Validator validator) {
+		dateField.addValidator(validator);
 	}
 
 }

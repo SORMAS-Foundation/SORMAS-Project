@@ -147,6 +147,7 @@
                     app:value="@={data.shipmentDate}"
                     app:dependencyParentField="@{sampleShipped}"
                     app:dependencyParentValue="@{true}"
+                    app:allowedDaysInFuture="7"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>

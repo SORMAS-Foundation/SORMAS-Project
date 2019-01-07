@@ -43,8 +43,6 @@ public final class VisitValidator {
                     } else if (contact.getFollowUpUntil() != null && visitDateTime.after(contact.getFollowUpUntil()) && DateHelper.getDaysBetween(contact.getFollowUpUntil(), visitDateTime) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
                         contentBinding.visitVisitDateTime.enableErrorState(
                                 R.string.validation_visit_date_time_after_followup);
-                    } else {
-                        contentBinding.visitVisitDateTime.disableErrorState();
                     }
                 }
             };

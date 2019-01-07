@@ -47,12 +47,9 @@ final class SymptomsValidator {
                         if (contentBinding.symptomsFever.getValue() != SymptomState.YES) {
                             contentBinding.symptomsFever.enableErrorState(
                                     R.string.validation_symptoms_fever);
-                            return;
                         }
                     }
                 }
-
-                contentBinding.symptomsFever.disableErrorState();
             }
         };
 
