@@ -60,27 +60,27 @@ public final class DateHelper {
 	// try block in case you encounter an unusual one."
 
 	public static SimpleDateFormat getLocalShortDateFormat() {
-//		try {
-//			return (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT);
-//		} catch (Exception e) {
+		//		try {
+		//			return (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT);
+		//		} catch (Exception e) {
 		return clone(SHORT_DATE_FORMAT);
-//		}
+		//		}
 	}
 
 	public static SimpleDateFormat getLocalDateFormat() {
-//		try {
-//			return (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.MEDIUM);
-//		} catch (Exception e) {
+		//		try {
+		//			return (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.MEDIUM);
+		//		} catch (Exception e) {
 		return clone(DATE_FORMAT);
-//		}
+		//		}
 	}
 
 	public static SimpleDateFormat getLocalLongDateFormat() {
-//		try {
-//			return (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.LONG);
-//		} catch (Exception e) {
+		//		try {
+		//			return (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.LONG);
+		//		} catch (Exception e) {
 		return clone(DATE_FORMAT);
-//		}
+		//		}
 	}
 
 	public static String getLocalShortDatePattern() {
@@ -96,27 +96,27 @@ public final class DateHelper {
 	}
 
 	public static SimpleDateFormat getLocalShortDateTimeFormat() {
-//		try {
-//			return (SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-//		} catch (Exception e) {
+		//		try {
+		//			return (SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+		//		} catch (Exception e) {
 		return clone(SHORT_DATE_TIME_FORMAT);
-//		}
+		//		}
 	}
 
 	public static SimpleDateFormat getLocalDateTimeFormat() {
-//		try {
-//			return (SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT);
-//		} catch (Exception e) {
+		//		try {
+		//			return (SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT);
+		//		} catch (Exception e) {
 		return clone(DATE_TIME_FORMAT);
-//		}
+		//		}
 	}
 
 	public static SimpleDateFormat getLocalLongDateTimeFormat() {
-//		try {
-//			return (SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT);
-//		} catch (Exception e) {
+		//		try {
+		//			return (SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT);
+		//		} catch (Exception e) {
 		return clone(DATE_TIME_FORMAT);
-//		}
+		//		}
 	}
 
 	public static String getLocalShortDateTimeFormatPattern() {
@@ -362,7 +362,7 @@ public final class DateHelper {
 	public static int getFullDaysBetween(Date start, Date end) {
 		return Days.daysBetween(new LocalDate(start.getTime()), new LocalDate(end.getTime())).getDays();
 	}
-	
+
 	/**
 	 * Calculate days between the two given dates. This includes both the start and
 	 * end dates, so a one-week period from Monday to Sunday will return 7.
@@ -466,7 +466,7 @@ public final class DateHelper {
 		return new LocalDateTime(calendar.getTime()).withDayOfYear(calendar.getActualMaximum(Calendar.DAY_OF_YEAR))
 				.toDate();
 	}
-	
+
 	public static boolean isBetween(Date date, Date start, Date end) {
 		return (date.equals(start) || date.after(start)) && (date.equals(end) || date.before(end));
 	}
@@ -500,14 +500,7 @@ public final class DateHelper {
 	public static EpiWeek getEpiWeek(Date date) {
 		Calendar calendar = getEpiCalendar();
 		calendar.setTime(date);
-		// Year has to be manually increased for week 1 of the next year because Calendar chooses the year
-		// of the actual date; e.g., the 31st of December 2018 is technically in 2018, but already in epi week
-		// 1 of 2019, which is why the year has to be manually increased.
-		if (calendar.get(Calendar.WEEK_OF_YEAR) == 1 && calendar.get(Calendar.MONTH) == 11) {
-			return new EpiWeek(calendar.get(Calendar.YEAR) + 1, calendar.get(Calendar.WEEK_OF_YEAR));
-		} else {
-			return new EpiWeek(calendar.get(Calendar.YEAR), calendar.get(Calendar.WEEK_OF_YEAR));
-		}
+		return getEpiWeekWithCorrectYear(calendar);
 	}
 
 	/**
@@ -521,7 +514,7 @@ public final class DateHelper {
 	public static EpiWeek getPreviousEpiWeek(Date date) {
 		Calendar calendar = getEpiCalendar();
 		calendar.setTime(subtractDays(date, 7));
-		return new EpiWeek(calendar.get(Calendar.YEAR), calendar.get(Calendar.WEEK_OF_YEAR));
+		return getEpiWeekWithCorrectYear(calendar);
 	}
 
 	public static EpiWeek getPreviousEpiWeek(EpiWeek epiWeek) {
@@ -560,7 +553,7 @@ public final class DateHelper {
 	public static EpiWeek getNextEpiWeek(Date date) {
 		Calendar calendar = getEpiCalendar();
 		calendar.setTime(addDays(date, 7));
-		return new EpiWeek(calendar.get(Calendar.YEAR), calendar.get(Calendar.WEEK_OF_YEAR));
+		return getEpiWeekWithCorrectYear(calendar);
 	}
 
 	public static EpiWeek getNextEpiWeek(EpiWeek epiWeek) {
@@ -687,6 +680,17 @@ public final class DateHelper {
 			epiWeekList.add(week);
 		}
 		return epiWeekList;
+	}
+	
+	private static EpiWeek getEpiWeekWithCorrectYear(Calendar calendar) {
+		// Year has to be manually increased for week 1 of the next year because Calendar chooses the year
+		// of the actual date; e.g., the 31st of December 2018 is technically in 2018, but already in epi week
+		// 1 of 2019, which is why the year has to be manually increased.
+		if (calendar.get(Calendar.WEEK_OF_YEAR) == 1 && calendar.get(Calendar.MONTH) == 11) {
+			return new EpiWeek(calendar.get(Calendar.YEAR) + 1, calendar.get(Calendar.WEEK_OF_YEAR));
+		} else {
+			return new EpiWeek(calendar.get(Calendar.YEAR), calendar.get(Calendar.WEEK_OF_YEAR));
+		}
 	}
 
 	/**
@@ -909,7 +913,7 @@ public final class DateHelper {
 
 		return new Integer[] { day, month };
 	}
-	
+
 	/**
 	 * If the century is positive and has only two digits, it is set to a fitting century relative to the current point in time.
 	 * <p>
@@ -921,7 +925,7 @@ public final class DateHelper {
 	public static Date toCorrectCentury(Date value) {
 		return toCorrectCentury(value, new Date());
 	}
-	
+
 	/**
 	 * If the century is positive and has only two digits, it is set to a fitting century relative to the current point in time.
 	 * <p>
@@ -932,11 +936,11 @@ public final class DateHelper {
 	 * @return The entered date, possibly with corrected century
 	 */
 	public static Date toCorrectCentury(Date value, Date reference) {
- 
+
 		if (value == null || reference == null) {
 			return null;
 		}
- 
+
 		Calendar c = Calendar.getInstance();
 		c.setTime(value);
 		int year = c.get(Calendar.YEAR);
@@ -948,7 +952,7 @@ public final class DateHelper {
 			int currentYear = refC.get(Calendar.YEAR);
 			int currentYY = currentYear % 100;
 			int currentCC = currentYear / 100;
- 
+
 			// two-digit for up to 10 years in the future and 89 in the past
 			if (year - 10 > currentYY) {
 				// 19.. last century; ex: 30 - 10 > 15 (2015 % 100)
@@ -962,8 +966,8 @@ public final class DateHelper {
 		} else {
 			correctedValue = value;
 		}
- 
+
 		return correctedValue;
 	}
-	
+
 }
