@@ -87,6 +87,11 @@ public class ContactEditTaskListFragment extends BaseEditFragment<FragmentFormLi
     }
 
     @Override
+    public boolean isShowNewAction() {
+        return true;
+    }
+
+    @Override
     public void onListItemClick(View view, int position, Object item) {
         Task task = (Task) item;
         TaskEditActivity.startActivity(getContext(), task.getUuid());
