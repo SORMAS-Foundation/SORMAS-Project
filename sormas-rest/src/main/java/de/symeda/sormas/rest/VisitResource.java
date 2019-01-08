@@ -32,56 +32,57 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.visit.VisitDto;
-import de.symeda.sormas.api.visit.VisitFacade;
 
 /**
- * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>
- * @see <a href="https://jersey.java.net/documentation/latest/jaxrs-resources.html#d0e2051">Jersey documentation HTTP Methods</a>
+ * @see <a href="https://jersey.java.net/documentation/latest/">Jersey
+ *      documentation</a>
+ * @see <a href=
+ *      "https://jersey.java.net/documentation/latest/jaxrs-resources.html#d0e2051">Jersey
+ *      documentation HTTP Methods</a>
  *
  */
 @Path("/visits")
-@Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
-@Consumes({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
+@Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
+@Consumes({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
 @RolesAllowed("USER")
-public class VisitResource {
+public class VisitResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
 	public List<VisitDto> getAllVisits(@Context SecurityContext sc, @PathParam("since") long since) {
-		
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<VisitDto> result = FacadeProvider.getVisitFacade().getAllActiveVisitsAfter(new Date(since), userDto.getUuid());
+
+		UserReferenceDto userDto = FacadeProvider.getUserFacade()
+				.getByUserNameAsReference(sc.getUserPrincipal().getName());
+		List<VisitDto> result = FacadeProvider.getVisitFacade().getAllActiveVisitsAfter(new Date(since),
+				userDto.getUuid());
 		return result;
-	}	
-	
+	}
+
 	@POST
 	@Path("/query")
 	public List<VisitDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
 
-		List<VisitDto> result = FacadeProvider.getVisitFacade().getByUuids(uuids); 
+		List<VisitDto> result = FacadeProvider.getVisitFacade().getByUuids(uuids);
 		return result;
 	}
-		
-	@POST 
+
+	@POST
 	@Path("/push")
-	public Integer postVisits(List<VisitDto> dtos) {
-		
-		VisitFacade visitFacade = FacadeProvider.getVisitFacade();
-		for (VisitDto dto : dtos) {
-			visitFacade.saveVisit(dto);
-		}
-		
-		return dtos.size();
+	public List<PushResult> postVisits(List<VisitDto> dtos) {
+
+		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getVisitFacade()::saveVisit);
+		return result;
 	}
-	
-	
+
 	@GET
 	@Path("/uuids")
 	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
-		
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
+
+		UserReferenceDto userDto = FacadeProvider.getUserFacade()
+				.getByUserNameAsReference(sc.getUserPrincipal().getName());
 		List<String> uuids = FacadeProvider.getVisitFacade().getAllActiveUuids(userDto.getUuid());
 		return uuids;
 	}

@@ -24,6 +24,7 @@ import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.ServerCommunicationException;
 import de.symeda.sormas.app.rest.ServerConnectionException;
@@ -58,7 +60,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
      */
     protected abstract Call<List<DTO>> pullByUuids(List<String> uuids);
 
-    protected abstract Call<Integer> pushAll(List<DTO> dtos);
+    protected abstract Call<List<PushResult>> pushAll(List<DTO> dtos);
 
     protected abstract void fillInnerFromDto(ADO ado, DTO dto);
 
@@ -142,11 +144,10 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
                 public Void call() throws Exception {
                     boolean empty = dao.countOf() == 0;
                     for (DTO dto : result) {
-                        ADO source = fillOrCreateFromDto(null, dto);
-                        source = dao.mergeOrCreate(source);
+                        handlePulledDto(dao, dto);
                         // TODO #704
-//                        if (markAsRead) {
-//                            dao.markAsRead(source);
+//                        if (entity != null && markAsRead) {
+//                            dao.markAsRead(entity);
 //                        }
                     }
                     return null;
@@ -158,6 +159,16 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         }
         return 0;
     }
+
+    /**
+     * @return The resulting entity. May be null!
+     */
+    protected ADO handlePulledDto(AbstractAdoDao<ADO> dao, DTO dto) throws DaoException, SQLException {
+        ADO source = fillOrCreateFromDto(null, dto);
+        return dao.mergeOrCreate(source);
+    }
+
+    private int pushedTooOldCount, pushedErrorCount;
 
     /**
      * @return true: another pull is needed, because data has been changed on the server
@@ -177,8 +188,8 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
             return false;
         }
 
-        Call<Integer> call = pushAll(modifiedDtos);
-        Response<Integer> response;
+        Call<List<PushResult>> call = pushAll(modifiedDtos);
+        Response<List<PushResult>> response;
         try {
             response = call.execute();
         } catch (IOException e) {
@@ -187,22 +198,41 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
         if (!response.isSuccessful()) {
             RetroProvider.throwException(response);
-        } else if (response.body() != modifiedDtos.size()) {
-            throw new ServerCommunicationException("Server responded with wrong count of changed entities: " + response.body() + " - expected: " + modifiedDtos.size());
         }
 
+        final List<PushResult> pushResults = response.body();
+        if (pushResults.size() != modifiedDtos.size()) {
+            throw new ServerCommunicationException("Server responded with wrong count of received entities: " + pushResults.size() + " - expected: " + modifiedDtos.size());
+        }
+
+        pushedTooOldCount = 0;
+        pushedErrorCount = 0;
         dao.callBatchTasks(new Callable<Void>() {
             public Void call() throws Exception {
-                for (ADO ado : modifiedAdos) {
-                    // data has been pushed, we no longer need the old unmodified version
-                    dao.accept(ado);
+                for (int i = 0; i < modifiedAdos.size(); i++) {
+                    ADO ado = modifiedAdos.get(i);
+                    PushResult pushResult = pushResults.get(i);
+                    switch (pushResult) {
+                        case OK:
+                            // data has been pushed, we no longer need the old unmodified version
+                            dao.accept(ado);
+                            break;
+                        case TOO_OLD:
+                            pushedTooOldCount++;
+                            break;
+                        case ERROR:
+                            pushedErrorCount++;
+                            break;
+                        default:
+                            throw new IllegalArgumentException(pushResult.toString());
+                    }
                 }
                 return null;
             }
         });
 
         if (modifiedAdos.size() > 0) {
-            Log.d(dao.getTableName(), "Pushed: " + modifiedAdos.size());
+            Log.d(dao.getTableName(), "Pushed: " + modifiedAdos.size() + " Too old: " + pushedTooOldCount + " Erros: " + pushedErrorCount);
         }
 
         return true;

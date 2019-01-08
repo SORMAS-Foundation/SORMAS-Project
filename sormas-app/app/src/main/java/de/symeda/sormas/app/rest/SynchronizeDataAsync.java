@@ -38,6 +38,7 @@ import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelper;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteriaDao;
+import de.symeda.sormas.app.backend.classification.DiseaseClassificationDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -116,6 +117,13 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                     throw new IllegalArgumentException(syncMode.toString());
             }
 
+            if (syncMode == SyncMode.Changes && hasAnyUnsynchronizedData()) {
+                Log.w(getClass().getName(), "Still having unsynchronized data. Trying again in complete mode.");
+
+                syncMode = SyncMode.Complete;
+                doInBackground(params);
+            }
+
         } catch (ServerConnectionException e) {
             syncFailed = true;
             syncFailedMessage = e.getMessage(context);
@@ -171,8 +179,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                 DatabaseHelper.getSampleTestDao().isAnyModified() ||
                 DatabaseHelper.getTaskDao().isAnyModified() ||
                 DatabaseHelper.getVisitDao().isAnyModified() ||
-                DatabaseHelper.getWeeklyReportDao().isAnyModified() ||
-                DatabaseHelper.getWeeklyReportEntryDao().isAnyModified();
+                DatabaseHelper.getWeeklyReportDao().isAnyModified();
     }
 
     private void synchronizeChangedData() throws DaoException, ServerConnectionException, ServerCommunicationException {
@@ -186,7 +193,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         VisitDtoHelper visitDtoHelper = new VisitDtoHelper();
         TaskDtoHelper taskDtoHelper = new TaskDtoHelper();
         WeeklyReportDtoHelper weeklyReportDtoHelper = new WeeklyReportDtoHelper();
-        WeeklyReportEntryDtoHelper weeklyReportEntryDtoHelper = new WeeklyReportEntryDtoHelper();
 
         // order is important, due to dependencies (e.g. case & person)
 
@@ -202,7 +208,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         boolean visitsNeedPull = visitDtoHelper.pullAndPushEntities();
         boolean tasksNeedPull = taskDtoHelper.pullAndPushEntities();
         boolean weeklyReportsNeedPull = weeklyReportDtoHelper.pullAndPushEntities();
-        boolean weeklyReportEntriesNeedPull = weeklyReportEntryDtoHelper.pullAndPushEntities();
 
         if (personsNeedPull)
             personDtoHelper.pullEntities(true);
@@ -224,13 +229,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             taskDtoHelper.pullEntities(true);
         if (weeklyReportsNeedPull)
             weeklyReportDtoHelper.pullEntities(true);
-        if (weeklyReportEntriesNeedPull)
-            weeklyReportEntryDtoHelper.pullEntities(true);
-
-        // Synchronize disease classification if the table is empty
-        if (DatabaseHelper.getDiseaseClassificationCriteriaDao().isEmpty()) {
-            pullDiseaseClassification();
-        }
     }
 
     private void repullData() throws DaoException, ServerConnectionException, ServerCommunicationException {
@@ -244,11 +242,11 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         VisitDtoHelper visitDtoHelper = new VisitDtoHelper();
         TaskDtoHelper taskDtoHelper = new TaskDtoHelper();
         WeeklyReportDtoHelper weeklyReportDtoHelper = new WeeklyReportDtoHelper();
-        WeeklyReportEntryDtoHelper weeklyReportEntryDtoHelper = new WeeklyReportEntryDtoHelper();
 
         // order is important, due to dependencies (e.g. case & person)
 
         new UserRoleConfigDtoHelper().repullEntities();
+        new DiseaseClassificationDtoHelper().repullEntities();
         new UserDtoHelper().repullEntities();
         new OutbreakDtoHelper().repullEntities();
         personDtoHelper.repullEntities();
@@ -261,7 +259,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         visitDtoHelper.repullEntities();
         taskDtoHelper.repullEntities();
         weeklyReportDtoHelper.repullEntities();
-        weeklyReportEntryDtoHelper.repullEntities();
     }
 
     private void pullInfrastructure() throws DaoException, ServerConnectionException, ServerCommunicationException {
@@ -271,8 +268,43 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new CommunityDtoHelper().pullEntities(false);
         new FacilityDtoHelper().pullEntities(false);
         new UserDtoHelper().pullEntities(false);
-        new UserRoleConfigDtoHelper().pullEntities(false);
+        new DiseaseClassificationDtoHelper().pullEntities(false);
 
+        // user role configurations may be removed, so have to pull the deleted uuids
+        // this may be applied to other entities later as well
+        Date latestChangeDate = DatabaseHelper.getUserRoleConfigDao().getLatestChangeDate();
+        List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullDeletedUuidsSince(latestChangeDate != null ? latestChangeDate.getTime() + 1 : 0));
+        DatabaseHelper.getUserRoleConfigDao().delete(userRoleConfigUuids);
+
+        new UserRoleConfigDtoHelper().pullEntities(false);
+    }
+
+    private void pullAndRemoveArchivedUuidsSince(Date since) throws ServerConnectionException, ServerCommunicationException {
+        Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullArchivedUuidsSince");
+
+        try {
+            // Cases
+            List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+            for (String caseUuid : caseUuids) {
+                DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
+            }
+
+            // Events
+            List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+            for (String eventUuid : eventUuids) {
+                DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
+            }
+
+            // Inactive outbreaks
+            List<String> outbreakUuids = executeUuidCall(RetroProvider.getOutbreakFacade().pullInactiveUuidsSince(since != null ? since.getTime() : 0));
+            for (String outbreakUuid : outbreakUuids) {
+                DatabaseHelper.getOutbreakDao().deleteOutbreakAndAllDependingEntities(outbreakUuid);
+            }
+
+            ConfigProvider.setLastArchivedSyncDate(new Date());
+        } catch (SQLException e) {
+            Log.e(SynchronizeDataAsync.class.getSimpleName(), "pullAndRemoveArchivedUuidsSince failed: " + e.getMessage());
+        }
     }
 
     private void pullMissingAndDeleteInvalidData() throws ServerConnectionException, ServerCommunicationException, DaoException {
@@ -285,8 +317,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // weekly reports and entries
         List<String> weeklyReportUuids = executeUuidCall(RetroProvider.getWeeklyReportFacade().pullUuids());
         DatabaseHelper.getWeeklyReportDao().deleteInvalid(weeklyReportUuids);
-        List<String> weeklyReportEntryUuids = executeUuidCall(RetroProvider.getWeeklyReportEntryFacade().pullUuids());
-        DatabaseHelper.getWeeklyReportEntryDao().deleteInvalid(weeklyReportEntryUuids);
         // tasks
         List<String> taskUuids = executeUuidCall(RetroProvider.getTaskFacade().pullUuids());
         DatabaseHelper.getTaskDao().deleteInvalid(taskUuids);
@@ -315,7 +345,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         List<String> personUuids = executeUuidCall(RetroProvider.getPersonFacade().pullUuids());
         DatabaseHelper.getPersonDao().deleteInvalid(personUuids);
         // outbreak
-        List<String> outbreakUuids = executeUuidCall(RetroProvider.getOutbreakFacade().pullUuids());
+        List<String> outbreakUuids = executeUuidCall(RetroProvider.getOutbreakFacade().pullActiveUuids());
         DatabaseHelper.getOutbreakDao().deleteInvalid(outbreakUuids);
 
         // order is important, due to dependencies (e.g. case & person)
@@ -330,7 +360,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new VisitDtoHelper().pullMissing(visitUuids);
         new TaskDtoHelper().pullMissing(taskUuids);
         new WeeklyReportDtoHelper().pullMissing(weeklyReportUuids);
-        new WeeklyReportEntryDtoHelper().pullMissing(weeklyReportEntryUuids);
     }
 
     private void pullMissingAndDeleteInvalidInfrastructure() throws ServerConnectionException, ServerCommunicationException, DaoException {
@@ -341,7 +370,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // users
         List<String> userUuids = executeUuidCall(RetroProvider.getUserFacade().pullUuids());
         DatabaseHelper.getUserDao().deleteInvalid(userUuids);
-        // users
+        // user role config
         List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullUuids());
         DatabaseHelper.getUserRoleConfigDao().deleteInvalid(userRoleConfigUuids);
         // facilities
@@ -419,60 +448,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                 }
             }
         }.execute();
-    }
-
-    private void pullDiseaseClassification() throws DaoException, ServerConnectionException, ServerCommunicationException {
-        Call<List<DiseaseClassificationCriteriaDto>> classificationCriteriaCall = RetroProvider.getClassificationFacade().pullAllClassificationCriteria();
-
-        if (classificationCriteriaCall != null) {
-            Response<List<DiseaseClassificationCriteriaDto>> response;
-            try {
-                response = classificationCriteriaCall.execute();
-            } catch (IOException e) {
-                throw new ServerCommunicationException(e);
-            }
-
-            if (!response.isSuccessful()) {
-                RetroProvider.throwException(response);
-            }
-
-            DiseaseClassificationCriteriaDao dao = DatabaseHelper.getDiseaseClassificationCriteriaDao();
-            final List<DiseaseClassificationCriteriaDto> result = response.body();
-            if (result != null && result.size() > 0) {
-                dao.callBatchTasks(new Callable<Void>() {
-                    public Void call() throws Exception {
-                        for (DiseaseClassificationCriteriaDto criteria : result) {
-                            DiseaseClassificationAppHelper.saveClassificationToDatabase(criteria);
-                        }
-                        return null;
-                    }
-                });
-
-                Log.d(dao.getTableName(), "Pulled and saved " + result.size());
-            }
-        }
-    }
-
-    private void pullAndRemoveArchivedUuidsSince(Date since) throws ServerConnectionException, ServerCommunicationException {
-        Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullArchivedUuidsSince");
-
-        try {
-            // Cases
-            List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
-            for (String caseUuid : caseUuids) {
-                DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
-            }
-
-            // Events
-            List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
-            for (String eventUuid : eventUuids) {
-                DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
-            }
-
-            ConfigProvider.setLastArchivedSyncDate(new Date());
-        } catch (SQLException e) {
-            Log.e(SynchronizeDataAsync.class.getSimpleName(), "pullArchivedUuidsSince failed: " + e.getMessage());
-        }
     }
 
     public enum SyncMode {

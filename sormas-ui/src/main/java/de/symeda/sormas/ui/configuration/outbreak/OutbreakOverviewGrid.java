@@ -173,7 +173,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		}
 
 		// Alter cells with regions and diseases that actually have an outbreak
-		List<OutbreakDto> activeOutbreaks = FacadeProvider.getOutbreakFacade().getAllAfter(null);
+		List<OutbreakDto> activeOutbreaks = FacadeProvider.getOutbreakFacade().getActive();
 
 		for (OutbreakDto outbreak : activeOutbreaks) {
 			

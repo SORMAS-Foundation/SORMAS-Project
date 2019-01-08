@@ -22,8 +22,6 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -39,19 +37,14 @@ public interface WeeklyReportFacade {
 	
 	List<String> getAllUuids(String userUuid);
 	
-	WeeklyReportSummaryDto getSummaryDtoByRegion(RegionReferenceDto regionRef, EpiWeek epiWeek);
+	/**
+	 * Returns only regions that do have surveillance officers
+	 */
+	List<WeeklyReportRegionSummaryDto> getSummariesPerRegion(EpiWeek epiWeek);
 	
-	WeeklyReportSummaryDto getSummaryDtoByDistrict(DistrictReferenceDto districtRef, EpiWeek epiWeek);
+	List<WeeklyReportOfficerSummaryDto> getSummariesPerOfficer(RegionReferenceDto region, EpiWeek epiWeek);
 	
-	int getNumberOfWeeklyReportsByFacility(FacilityReferenceDto facilityRef, EpiWeek epiWeek);
-	
-	List<WeeklyReportReferenceDto> getWeeklyReportsByFacility(FacilityReferenceDto facilityRef, EpiWeek epiWeek);
-	
-	List<WeeklyReportSummaryDto> getSummariesPerRegion(EpiWeek epiWeek);
-	
-	List<WeeklyReportSummaryDto> getSummariesPerDistrict(RegionReferenceDto region, EpiWeek epiWeek);
-	
-	WeeklyReportReferenceDto getByEpiWeekAndUser(EpiWeek epiWeek, UserReferenceDto userRef);
+	WeeklyReportDto getByEpiWeekAndUser(EpiWeek epiWeek, UserReferenceDto userRef);
 	
 	WeeklyReportDto getByUuid(String uuid);
 	

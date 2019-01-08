@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -14,26 +14,20 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
-package de.symeda.sormas.api.report;
+ */
 
-import de.symeda.sormas.api.ReferenceDto;
+package de.symeda.sormas.app.report;
 
-public class WeeklyReportEntryReferenceDto extends ReferenceDto {
+import de.symeda.sormas.api.I18nProperties;
 
-	private static final long serialVersionUID = 7863410150359837423L;
+public enum EpiWeekFilterOption {
 
-	public WeeklyReportEntryReferenceDto() {
-		
-	}
-	
-	public WeeklyReportEntryReferenceDto(String uuid) {
-		setUuid(uuid);
-	}
-	
-	public WeeklyReportEntryReferenceDto(String uuid, String caption) {
-		setUuid(uuid);
-		setCaption(caption);
-	}
-	
+    LAST_WEEK,
+    THIS_WEEK,
+    SPECIFY_WEEK;
+
+    public String toString() {
+        return I18nProperties.getEnumCaption(this);
+    }
+
 }

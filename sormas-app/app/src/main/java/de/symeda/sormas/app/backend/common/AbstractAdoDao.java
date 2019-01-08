@@ -868,30 +868,53 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
      *
      * @param validUuids
      */
-    public void deleteInvalid(List<String> validUuids) throws DaoException {
-        try {
-            QueryBuilder<ADO, Long> builder = queryBuilder();
-            builder.where().notIn(AbstractDomainObject.UUID, validUuids);
-            List<ADO> invalidEntities = builder.query();
-            int deletionCounter = 0;
-            for (ADO invalidEntity : invalidEntities) {
+    public void deleteInvalid(final List<String> validUuids) throws DaoException {
+        callBatchTasks(new Callable<Void>() {
+            public Void call() throws Exception {
+                QueryBuilder<ADO, Long> builder = queryBuilder();
+                builder.where().notIn(AbstractDomainObject.UUID, validUuids);
+                List<ADO> invalidEntities = builder.query();
+                int deletionCounter = 0;
+                for (ADO invalidEntity : invalidEntities) {
 
-                if (invalidEntity.isNew()) {
-                    // don't delete new entities
-                    continue;
-                } else {
+                    if (invalidEntity.isNew()) {
+                        // don't delete new entities
+                        continue;
+                    } else {
+                        // delete with all embedded entities
+                        deleteCascade(invalidEntity);
+                        deletionCounter++;
+                    }
+                }
+
+                if (invalidEntities.size() > 0) {
+                    Log.d(getTableName(), "Deleted invalid entities: " + deletionCounter + " of " + invalidEntities.size());
+                }
+                return null;
+            }});
+    }
+
+    /**
+     * Delete all entities (cascading) that are in the list
+     */
+    public void delete(final List<String> uuids) throws DaoException {
+        callBatchTasks(new Callable<Void>() {
+            public Void call() throws Exception {
+                QueryBuilder<ADO, Long> builder = queryBuilder();
+                builder.where().in(AbstractDomainObject.UUID, uuids);
+                List<ADO> entities = builder.query();
+                int deletionCounter = 0;
+                for (ADO entity : entities) {
                     // delete with all embedded entities
-                    deleteCascade(invalidEntity);
+                    deleteCascade(entity);
                     deletionCounter++;
                 }
-            }
 
-            if (invalidEntities.size() > 0) {
-                Log.d(getTableName(), "Deleted invalid entities: " + deletionCounter + " of " + invalidEntities.size());
-            }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
+                if (entities.size() > 0) {
+                    Log.d(getTableName(), "Deleted entities: " + deletionCounter + " of " + entities.size());
+                }
+                return null;
+            }});
     }
 
     public List<String> filterMissing(List<String> uuids) {

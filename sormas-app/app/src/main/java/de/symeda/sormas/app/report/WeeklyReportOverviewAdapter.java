@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.report.adapter;
+package de.symeda.sormas.app.report;
 
 import android.content.Context;
 
@@ -26,18 +26,17 @@ import java.util.List;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
-import de.symeda.sormas.app.databinding.RowWeeklyReportListItemLayoutBinding;
-import de.symeda.sormas.app.report.viewmodel.WeeklyReportViewModel;
+import de.symeda.sormas.app.databinding.RowWeeklyReportOverviewListItemLayoutBinding;
 
-public class WeeklyReportAdapter extends DataBoundAdapter<RowWeeklyReportListItemLayoutBinding> {
+public class WeeklyReportOverviewAdapter extends DataBoundAdapter<RowWeeklyReportOverviewListItemLayoutBinding> {
 
     private static final String TAG = WeeklyReportAdapter.class.getSimpleName();
 
     private final Context context;
-    private List<WeeklyReportViewModel> data;
+    private List<WeeklyReportOverviewListItem> data;
 
-    public WeeklyReportAdapter(Context context, List<WeeklyReportViewModel> data) {
-        super(R.layout.row_weekly_report_list_item_layout);
+    public WeeklyReportOverviewAdapter(Context context, List<WeeklyReportOverviewListItem> data) {
+        super(R.layout.row_weekly_report_overview_list_item_layout);
         this.context = context;
 
         if (data == null)
@@ -47,10 +46,9 @@ public class WeeklyReportAdapter extends DataBoundAdapter<RowWeeklyReportListIte
     }
 
     @Override
-    protected void bindItem(DataBoundViewHolder<RowWeeklyReportListItemLayoutBinding> holder,
+    protected void bindItem(DataBoundViewHolder<RowWeeklyReportOverviewListItemLayoutBinding> holder,
                             int position, List<Object> payloads) {
-
-        WeeklyReportViewModel record = data.get(position);
+        WeeklyReportOverviewListItem record = data.get(position);
         holder.setData(record);
     }
 

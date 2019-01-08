@@ -21,12 +21,12 @@ package de.symeda.sormas.app.backend.epidata;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import retrofit2.Call;
 
 /**
@@ -66,7 +66,7 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
     }
 
     @Override
-    protected Call<Integer> pushAll(List<EpiDataDto> epiDataDtos) {
+    protected Call<List<PushResult>> pushAll(List<EpiDataDto> epiDataDtos) {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 

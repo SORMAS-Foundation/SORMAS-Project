@@ -20,6 +20,7 @@ package de.symeda.sormas.app.backend.region;
 
 import java.util.List;
 
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -52,7 +53,7 @@ public class RegionDtoHelper extends AdoDtoHelper<Region, RegionDto> {
     }
 
     @Override
-    protected Call<Integer> pushAll(List<RegionDto> regionDtos) {
+    protected Call<List<PushResult>> pushAll(List<RegionDto> regionDtos) {
         throw new UnsupportedOperationException("Entity is infrastructure");
     }
 

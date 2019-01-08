@@ -37,11 +37,7 @@ public class SampleValidator {
                                 I18nProperties.getValidationError("beforeDate",
                                         contentBinding.sampleSampleDateTime.getCaption(),
                                         contentBinding.sampleShipmentDate.getCaption()));
-                    } else {
-                        contentBinding.sampleSampleDateTime.disableErrorState();
                     }
-                } else {
-                    contentBinding.sampleSampleDateTime.disableErrorState();
                 }
             }
         };
@@ -55,11 +51,7 @@ public class SampleValidator {
                                 I18nProperties.getValidationError("afterDate",
                                         contentBinding.sampleShipmentDate.getCaption(),
                                         contentBinding.sampleSampleDateTime.getCaption()));
-                    } else {
-                        contentBinding.sampleShipmentDate.disableErrorState();
                     }
-                } else {
-                    contentBinding.sampleShipmentDate.disableErrorState();
                 }
             }
         };
@@ -78,11 +70,7 @@ public class SampleValidator {
                                 I18nProperties.getValidationError("beforeDate",
                                         contentBinding.sampleSampleDateTime.getCaption(),
                                         contentBinding.sampleShipmentDate.getCaption()));
-                    } else {
-                        contentBinding.sampleSampleDateTime.disableErrorState();
                     }
-                } else {
-                    contentBinding.sampleSampleDateTime.disableErrorState();
                 }
             }
         };
@@ -96,11 +84,7 @@ public class SampleValidator {
                                 I18nProperties.getValidationError("afterDate",
                                         contentBinding.sampleShipmentDate.getCaption(),
                                         contentBinding.sampleSampleDateTime.getCaption()));
-                    } else {
-                        contentBinding.sampleShipmentDate.disableErrorState();
                     }
-                } else {
-                    contentBinding.sampleShipmentDate.disableErrorState();
                 }
             }
         };

@@ -2724,7 +2724,7 @@ abstract class BaseDataGenerator {
             add(SampleTestType.PCR_RT_PCR);
             add(SampleTestType.CULTURE);
             add(SampleTestType.MICROSCOPY);
-            add(SampleTestType.VIRUS_ISOLATION);
+            add(SampleTestType.ISOLATION);
             add(SampleTestType.RAPID_TEST);
             add(SampleTestType.OTHER);
         }};
@@ -2765,7 +2765,7 @@ abstract class BaseDataGenerator {
             add(SampleTestType.PCR_RT_PCR);
             add(SampleTestType.CULTURE);
             add(SampleTestType.MICROSCOPY);
-            add(SampleTestType.VIRUS_ISOLATION);
+            add(SampleTestType.ISOLATION);
             add(SampleTestType.RAPID_TEST);
             add(SampleTestType.OTHER);
         }};

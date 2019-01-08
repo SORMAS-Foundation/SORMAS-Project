@@ -31,13 +31,14 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.task.Task;
 
-/**
- * Created by Martin Wahnschaffe on 22.07.2016.
- */
 public class OutbreakDao extends AbstractAdoDao<Outbreak> {
 
     public OutbreakDao(Dao<Outbreak,Long> innerDao) throws SQLException {
@@ -75,14 +76,14 @@ public class OutbreakDao extends AbstractAdoDao<Outbreak> {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Outbreak mergeOrCreate(Outbreak source) throws DaoException {
-        try {
-            // just override - outbreaks can't be edited on the device
-            updateOrCreate(source);
-            return source;
-        } catch (SQLException e) {
-            throw new DaoException(e);
+    public void deleteOutbreakAndAllDependingEntities(String outbreakUuid) throws SQLException {
+        Outbreak outbreak = queryUuidWithEmbedded(outbreakUuid);
+
+        // Cancel if not in local database
+        if (outbreak == null) {
+            return;
         }
+
+        deleteCascade(outbreak);
     }
 }

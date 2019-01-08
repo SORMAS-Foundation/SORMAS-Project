@@ -36,10 +36,8 @@ import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.report.WeeklyReportDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
@@ -63,14 +61,15 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 
 public class TestDataCreator {
-	
+
 	private final AbstractBeanTest beanTest;
 
 	public TestDataCreator(AbstractBeanTest beanTest) {
 		this.beanTest = beanTest;
 	}
-	
-	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName, String lastName, UserRole... roles) {
+
+	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName,
+			String lastName, UserRole... roles) {
 		UserDto user = new UserDto();
 		user.setUuid(DataHelper.createUuid());
 		user.setFirstName(firstName);
@@ -81,7 +80,7 @@ public class TestDataCreator {
 		user.setDistrict(beanTest.getDistrictFacade().getDistrictReferenceByUuid(districtUuid));
 		user.setHealthFacility(beanTest.getFacilityFacade().getFacilityReferenceByUuid(facilityUuid));
 		user = beanTest.getUserFacade().saveUser(user);
-		
+
 		return user;
 	}
 
@@ -91,21 +90,22 @@ public class TestDataCreator {
 		cazePerson.setFirstName(firstName);
 		cazePerson.setLastName(lastName);
 		cazePerson = beanTest.getPersonFacade().savePerson(cazePerson);
-		
+
 		return cazePerson;
 	}
-	
+
 	public CaseDataDto createUnclassifiedCase(Disease disease) {
 		RDCF rdcf = createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
-				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv",
+				"Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = createPerson("Case", "Person");
-		return createCase(user.toReference(), cazePerson.toReference(), disease, CaseClassification.NOT_CLASSIFIED, 
+		return createCase(user.toReference(), cazePerson.toReference(), disease, CaseClassification.NOT_CLASSIFIED,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 	}
 
-	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease, CaseClassification caseClassification, 
-			InvestigationStatus investigationStatus, Date reportDate, RDCF rdcf) {
+	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease,
+			CaseClassification caseClassification, InvestigationStatus investigationStatus, Date reportDate,
+			RDCF rdcf) {
 		CaseDataDto caze = CaseDataDto.build(cazePerson, disease);
 		caze.setReportDate(reportDate);
 		caze.setReportingUser(user);
@@ -114,15 +114,15 @@ public class TestDataCreator {
 		caze.setRegion(beanTest.getRegionFacade().getRegionReferenceByUuid(rdcf.region.getUuid()));
 		caze.setDistrict(beanTest.getDistrictFacade().getDistrictReferenceByUuid(rdcf.district.getUuid()));
 		caze.setCommunity(beanTest.getCommunityFacade().getCommunityReferenceByUuid(rdcf.community.getUuid()));
-		caze.setHealthFacility(beanTest.getFacilityFacade().getFacilityReferenceByUuid(rdcf.facility.getUuid()));		
-		
+		caze.setHealthFacility(beanTest.getFacilityFacade().getFacilityReferenceByUuid(rdcf.facility.getUuid()));
+
 		caze = beanTest.getCaseFacade().saveCase(caze);
-		
+
 		return caze;
 	}
 
-	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer, PersonReferenceDto contactPerson,
-			CaseReferenceDto caze, Date reportDateTime, Date lastContactDate) {
+	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
+			PersonReferenceDto contactPerson, CaseReferenceDto caze, Date reportDateTime, Date lastContactDate) {
 		ContactDto contact = new ContactDto();
 		contact.setUuid(DataHelper.createUuid());
 		contact.setReportingUser(reportingUser);
@@ -131,9 +131,9 @@ public class TestDataCreator {
 		contact.setCaze(caze);
 		contact.setReportDateTime(reportDateTime);
 		contact.setLastContactDate(lastContactDate);
-		
+
 		contact = beanTest.getContactFacade().saveContact(contact);
-		
+
 		return contact;
 	}
 
@@ -155,45 +155,34 @@ public class TestDataCreator {
 		}
 		task.setDueDate(dueDate);
 		task.setAssigneeUser(assigneeUser);
-		
+
 		task = beanTest.getTaskFacade().saveTask(task);
-		
+
 		return task;
 	}
-	
-	public VisitDto createVisit(Disease disease, PersonReferenceDto contactPerson, Date visitDateTime, VisitStatus visitStatus) {
+
+	public VisitDto createVisit(Disease disease, PersonReferenceDto contactPerson, Date visitDateTime,
+			VisitStatus visitStatus) {
 		VisitDto visit = new VisitDto();
 		visit.setUuid(DataHelper.createUuid());
 		visit.setDisease(disease);
 		visit.setPerson(contactPerson);
 		visit.setVisitDateTime(visitDateTime);
 		visit.setVisitStatus(visitStatus);
-		
+
 		SymptomsDto symptoms = new SymptomsDto();
 		symptoms.setUuid(DataHelper.createUuid());
 		visit.setSymptoms(symptoms);
-		
+
 		visit = beanTest.getVisitFacade().saveVisit(visit);
-		
+
 		return visit;
 	}
-	
-	public WeeklyReportDto createWeeklyReport(String facilityUuid, UserReferenceDto informant, Date reportDateTime, int epiWeek, int year, int numberOfCases) {
-		WeeklyReportDto report = new WeeklyReportDto();
-		report.setUuid(DataHelper.createUuid());
-		report.setHealthFacility(beanTest.getFacilityFacade().getFacilityReferenceByUuid(facilityUuid));
-		report.setInformant(informant);
-		report.setReportDateTime(reportDateTime);
-		report.setEpiWeek(epiWeek);
-		report.setYear(year);
-		report.setTotalNumberOfCases(numberOfCases);
-		
-		report = beanTest.getWeeklyReportFacade().saveWeeklyReport(report);
-		
-		return report;
-	}
-	
-	public EventDto createEvent(EventType eventType, EventStatus eventStatus, String eventDesc, String srcFirstName, String srcLastName, String srcTelNo, TypeOfPlace typeOfPlace, Date eventDate, Date reportDateTime, UserReferenceDto reportingUser, UserReferenceDto surveillanceOfficer, Disease disease, LocationDto eventLocation) {
+
+	public EventDto createEvent(EventType eventType, EventStatus eventStatus, String eventDesc, String srcFirstName,
+			String srcLastName, String srcTelNo, TypeOfPlace typeOfPlace, Date eventDate, Date reportDateTime,
+			UserReferenceDto reportingUser, UserReferenceDto surveillanceOfficer, Disease disease,
+			LocationDto eventLocation) {
 		EventDto event = new EventDto();
 		event.setUuid(DataHelper.createUuid());
 		event.setEventType(eventType);
@@ -209,24 +198,26 @@ public class TestDataCreator {
 		event.setSurveillanceOfficer(surveillanceOfficer);
 		event.setDisease(disease);
 		event.setEventLocation(eventLocation);
-		
+
 		event = beanTest.getEventFacade().saveEvent(event);
-		
+
 		return event;
 	}
-	
-	public EventParticipantDto createEventParticipant(EventReferenceDto event, PersonDto eventPerson, String involvementDescription) {
+
+	public EventParticipantDto createEventParticipant(EventReferenceDto event, PersonDto eventPerson,
+			String involvementDescription) {
 		EventParticipantDto eventParticipant = new EventParticipantDto();
 		eventParticipant.setEvent(event);
 		eventParticipant.setPerson(eventPerson);
 		eventParticipant.setInvolvementDescription(involvementDescription);
-		
+
 		eventParticipant = beanTest.getEventParticipantFacade().saveEventParticipant(eventParticipant);
-		
+
 		return eventParticipant;
 	}
-	
-	public SampleDto createSample(CaseReferenceDto associatedCase, Date sampleDateTime, Date reportDateTime, UserReferenceDto reportingUser, SampleMaterial sampleMaterial, Facility lab) {
+
+	public SampleDto createSample(CaseReferenceDto associatedCase, Date sampleDateTime, Date reportDateTime,
+			UserReferenceDto reportingUser, SampleMaterial sampleMaterial, Facility lab) {
 		SampleDto sample = new SampleDto();
 		sample.setUuid(DataHelper.createUuid());
 		sample.setAssociatedCase(associatedCase);
@@ -235,13 +226,15 @@ public class TestDataCreator {
 		sample.setReportingUser(reportingUser);
 		sample.setSampleMaterial(sampleMaterial);
 		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
-		
+
 		sample = beanTest.getSampleFacade().saveSample(sample);
-		
+
 		return sample;
 	}
-	
-	public SampleTestDto createSampleTest(SampleReferenceDto sample, SampleTestType testType, Date testDateTime, Facility lab, UserReferenceDto labUser, SampleTestResultType testResult, String testResultText, boolean verified) {
+
+	public SampleTestDto createSampleTest(SampleReferenceDto sample, SampleTestType testType, Date testDateTime,
+			Facility lab, UserReferenceDto labUser, SampleTestResultType testResult, String testResultText,
+			boolean verified) {
 		SampleTestDto sampleTest = new SampleTestDto();
 		sampleTest.setUuid(DataHelper.createUuid());
 		sampleTest.setSample(sample);
@@ -252,31 +245,21 @@ public class TestDataCreator {
 		sampleTest.setTestResult(testResult);
 		sampleTest.setTestResultText(testResultText);
 		sampleTest.setTestResultVerified(verified);
-		
+
 		sampleTest = beanTest.getSampleTestFacade().saveSampleTest(sampleTest);
-		
+
 		return sampleTest;
 	}
 
-	public SampleTestDto createSampleTest(CaseDataDto associatedCase, SampleTestType testType, SampleTestResultType resultType) {
+	public SampleTestDto createSampleTest(CaseDataDto associatedCase, SampleTestType testType,
+			SampleTestResultType resultType) {
 		RDCF rdcf = createRDCF("Region", "District", "Community", "Facility");
-		SampleDto sample = createSample(new CaseReferenceDto(associatedCase.getUuid()), new Date(), new Date(), associatedCase.getReportingUser(), SampleMaterial.BLOOD, rdcf.facility);
-		return createSampleTest(new SampleReferenceDto(sample.getUuid()), testType, new Date(), rdcf.facility, associatedCase.getReportingUser(), resultType, "", true);
+		SampleDto sample = createSample(new CaseReferenceDto(associatedCase.getUuid()), new Date(), new Date(),
+				associatedCase.getReportingUser(), SampleMaterial.BLOOD, rdcf.facility);
+		return createSampleTest(new SampleReferenceDto(sample.getUuid()), testType, new Date(), rdcf.facility,
+				associatedCase.getReportingUser(), resultType, "", true);
 	}
-	
-	public OutbreakDto createOutbreak(RDCF rdcf, Disease disease, UserReferenceDto user) {
-		OutbreakDto outbreak = new OutbreakDto();
-		outbreak.setUuid(DataHelper.createUuid());
-		outbreak.setDistrict(beanTest.getDistrictFacade().getDistrictReferenceByUuid(rdcf.district.getUuid()));
-		outbreak.setDisease(disease);
-		outbreak.setReportingUser(user);
-		outbreak.setReportDate(new Date());
-		
-		outbreak = beanTest.getOutbreakFacade().saveOutbreak(outbreak);
-		
-		return outbreak;
-	}
-	
+
 	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName) {
 		Region region = createRegion(regionName);
 		District district = createDistrict(districtName, region);
@@ -285,36 +268,36 @@ public class TestDataCreator {
 
 		return new RDCF(region, district, community, facility);
 	}
-	
+
 	public Region createRegion(String regionName) {
 		Region region = new Region();
 		region.setUuid(DataHelper.createUuid());
 		region.setName(regionName);
 		beanTest.getRegionService().persist(region);
-		
+
 		return region;
 	}
-	
+
 	public District createDistrict(String districtName, Region region) {
 		District district = new District();
 		district.setUuid(DataHelper.createUuid());
 		district.setName(districtName);
 		district.setRegion(region);
 		beanTest.getDistrictService().persist(district);
-		
+
 		return district;
 	}
-	
+
 	public Community createCommunity(String communityName, District district) {
 		Community community = new Community();
 		community.setUuid(DataHelper.createUuid());
 		community.setName(communityName);
 		community.setDistrict(district);
 		beanTest.getCommunityService().persist(community);
-		
+
 		return community;
 	}
-	
+
 	public Facility createFacility(String facilityName, Region region, District district, Community community) {
 		Facility facility = new Facility();
 		facility.setUuid(DataHelper.createUuid());
@@ -324,16 +307,19 @@ public class TestDataCreator {
 		facility.setDistrict(district);
 		facility.setRegion(region);
 		beanTest.getFacilityService().persist(facility);
-		
+
 		return facility;
 	}
-	
-	public class RDCF {
+
+	/**
+	 * TODO use DTOs instead
+	 */
+	public static class RDCF {
 		public Region region;
 		public District district;
 		public Community community;
 		public Facility facility;
-		
+
 		public RDCF(Region region, District district, Community community, Facility facility) {
 			this.region = region;
 			this.district = district;

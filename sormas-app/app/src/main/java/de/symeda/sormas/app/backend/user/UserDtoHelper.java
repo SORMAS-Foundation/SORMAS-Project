@@ -18,12 +18,11 @@
 
 package de.symeda.sormas.app.backend.user;
 
-import android.util.Log;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -60,7 +59,7 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
     }
 
     @Override
-    protected Call<Integer> pushAll(List<UserDto> userDtos) {
+    protected Call<List<PushResult>> pushAll(List<UserDto> userDtos) {
         throw new UnsupportedOperationException("Can't change users in app");
     }
 

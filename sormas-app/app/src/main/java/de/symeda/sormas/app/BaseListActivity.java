@@ -42,7 +42,7 @@ public abstract class BaseListActivity extends BaseActivity implements IUpdateSu
     }
 
     @Override
-    protected boolean isSubActivitiy() {
+    protected boolean isSubActivity() {
         return false;
     }
 

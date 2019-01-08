@@ -17,36 +17,31 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze.classification;
 
-import java.io.Serializable;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 
-public class DiseaseClassificationCriteriaDto implements Serializable {
+public class DiseaseClassificationCriteriaDto extends EntityDto {
 
 	private static final long serialVersionUID = 8800921617332187938L;
 
-	// TODO: Remove this once disease configuration has been implemented
-	private static final Date CHANGE_DATE = new GregorianCalendar(2017, 9, 17).getTime();
-	
 	private Disease disease;
 	private ClassificationCriteriaDto suspectCriteria;
 	private ClassificationCriteriaDto probableCriteria;
 	private ClassificationCriteriaDto confirmedCriteria;
-	private Date changeDate;
-	
+
 	public DiseaseClassificationCriteriaDto() {
-		
+
 	}
-	
-	public DiseaseClassificationCriteriaDto(Disease disease, ClassificationCriteriaDto suspectCriteria,
+
+	public DiseaseClassificationCriteriaDto(Disease disease, Date changeDate, ClassificationCriteriaDto suspectCriteria,
 			ClassificationCriteriaDto probableCriteria, ClassificationCriteriaDto confirmedCriteria) {
+		super(changeDate, changeDate, null);
 		this.disease = disease;
 		this.suspectCriteria = suspectCriteria;
 		this.probableCriteria = probableCriteria;
 		this.confirmedCriteria = confirmedCriteria;
-		this.changeDate = CHANGE_DATE;
 	}
 
 	public Disease getDisease() {
@@ -81,16 +76,8 @@ public class DiseaseClassificationCriteriaDto implements Serializable {
 		this.confirmedCriteria = confirmedCriteria;
 	}
 
-	public Date getChangeDate() {
-		return changeDate;
-	}
-
-	public void setChangeDate(Date changeDate) {
-		this.changeDate = changeDate;
-	}
-	
 	public boolean hasAnyCriteria() {
 		return suspectCriteria != null || probableCriteria != null || confirmedCriteria != null;
 	}
-	
+
 }

@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -14,27 +14,23 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+ *******************************************************************************/
+package de.symeda.sormas.ui.utils;
 
-package de.symeda.sormas.app.report.viewmodel;
+import com.vaadin.ui.renderers.HtmlRenderer;
 
-import de.symeda.sormas.api.Disease;
+import elemental.json.JsonValue;
 
-public class PendingReportViewModel {
-
-    private Disease mDisease;
-    private int nNumberOfCases;
-
-    public PendingReportViewModel(Disease disease, int numberOfCases) {
-        this.mDisease = disease;
-        this.nNumberOfCases = numberOfCases;
+@SuppressWarnings("serial")
+public class PercentageRenderer extends HtmlRenderer {
+	
+	@Override
+    public JsonValue encode(String value) {
+    	if (value != null && !value.isEmpty()) {
+    		return super.encode(value + "%");
+    	} else {
+    		return null;
+    	}
     }
-
-    public Disease getDisease() {
-        return mDisease;
-    }
-
-    public int getNumberOfCases() {
-        return nNumberOfCases;
-    }
+	
 }

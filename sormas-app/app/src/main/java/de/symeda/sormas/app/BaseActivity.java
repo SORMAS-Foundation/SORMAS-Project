@@ -209,7 +209,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         preSetupDrawer(savedInstanceState);
         onCreateInner(savedInstanceState);
 
-        if (!isSubActivitiy())
+        if (!isSubActivity())
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_blue_36dp);
 
         setupDrawer(navigationView);
@@ -323,11 +323,11 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         sampleNotificationCounter = (TextView) navigationView.getMenu().findItem(R.id.menu_item_samples).getActionView().findViewById(R.id.main_menu_notification_counter);
     }
 
-    protected abstract boolean isSubActivitiy();
+    protected abstract boolean isSubActivity();
 
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        if (!isSubActivitiy()
+        if (!isSubActivity()
                 && menuDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
@@ -508,6 +508,14 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         fragmentFrame.setVisibility(View.VISIBLE);
     }
 
+    public void setPageMenuVisibility(boolean visible) {
+        if (visible) {
+            pageMenu.setVisibility(View.VISIBLE);
+        } else {
+            pageMenu.setVisibility(View.GONE);
+        }
+    }
+
     public boolean isShowTitleBar() {
         return true;
     }
@@ -619,6 +627,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                     if (!syncFailed) {
                         if (syncLogCountAfter > syncLogCountBefore) {
                             showConflictSnackbar();
+                        } else if (SynchronizeDataAsync.hasAnyUnsynchronizedData()) {
+                            NotificationHelper.showNotification(BaseActivity.this, NotificationType.WARNING, R.string.snackbar_sync_unsynced);
                         } else {
                             NotificationHelper.showNotification(BaseActivity.this, NotificationType.SUCCESS, R.string.snackbar_sync_success);
                         }
@@ -709,7 +719,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         return activePageItem;
     }
 
-
     protected boolean goToNextPage() {
         if (activePageKey == pageItems.size() - 1)
             return false; // last page
@@ -728,16 +737,29 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         _rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
+
+                // in android there is currently no way to track the software keyboard.
+                // as a workaround we are checking the bottom height diff:
+                // https://stackoverflow.com/questions/4745988/how-do-i-detect-if-software-keyboard-is-visible-on-android-device
                 Rect r = new Rect();
                 _rootView.getWindowVisibleDisplayFrame(r);
-                int heightDiff = _rootView.getRootView().getHeight() - (r.bottom - r.top);
+                int screenHeight = _rootView.getRootView().getHeight();
 
-                if (heightDiff > 100) {
+                // r.bottom is the position above soft keypad or device button.
+                // if keypad is shown, the r.bottom is smaller than that before.
+                int keypadHeight = screenHeight - r.bottom;
+
+                if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
+                    // keyboard is opened
                     if (landingPageMenuControl != null) {
                         landingPageMenuControl.hideAll();
                     }
-                } else {
-                    landingPageMenuControl.showFab();
+                }
+                else {
+                    // keyboard is closed
+                    if (landingPageMenuControl != null) {
+                        landingPageMenuControl.showFab();
+                    }
                 }
             }
         });

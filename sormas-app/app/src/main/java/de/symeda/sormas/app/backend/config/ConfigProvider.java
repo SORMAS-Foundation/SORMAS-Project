@@ -54,6 +54,7 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.NoSuchPaddingException;
 import javax.security.auth.x500.X500Principal;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
@@ -273,7 +274,8 @@ public final class ConfigProvider {
             DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_USERNAME, username));
             DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_PASSWORD, password));
 
-            DatabaseHelper.clearTables(false);
+            // avoid loss of data
+            //DatabaseHelper.clearTables(false);
         }
     }
 

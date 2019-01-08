@@ -86,7 +86,7 @@ public class ContactVisitsView extends AbstractContactView {
 			grid.reload(getContactRef());
 			processStatusChangeVisuals(e.getButton());
 		});
-		CssStyles.style(contactButton, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED);
+		CssStyles.style(contactButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 		contactButton.setCaptionAsHtml(true);
 		topLayout.addComponent(contactButton);
 		statusButtons.put(contactButton, "Contact related");
@@ -96,7 +96,7 @@ public class ContactVisitsView extends AbstractContactView {
 			grid.reload(contact.getPerson());
 			processStatusChangeVisuals(e.getButton());
 		});
-		CssStyles.style(personButton, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		CssStyles.style(personButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 		personButton.setCaptionAsHtml(true);
 		topLayout.addComponent(personButton);
 		statusButtons.put(personButton, "All visits of contact person");
@@ -151,10 +151,10 @@ public class ContactVisitsView extends AbstractContactView {
 
 	private void processStatusChangeVisuals(Button button) {
 		statusButtons.keySet().forEach(b -> {
-			CssStyles.style(b, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
 			b.setCaption(statusButtons.get(b));
 		});
-		CssStyles.removeStyles(button, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		CssStyles.removeStyles(button, CssStyles.BUTTON_FILTER_LIGHT);
 		activeStatusButton = button;
 		updateActiveStatusButtonCaption();
 	}

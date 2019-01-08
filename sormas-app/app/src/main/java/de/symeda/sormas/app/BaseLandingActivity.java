@@ -39,7 +39,7 @@ public abstract class BaseLandingActivity extends BaseActivity {
     protected void onCreateInner(Bundle savedInstanceState) {
     }
 
-    protected boolean isSubActivitiy() {
+    protected boolean isSubActivity() {
         return true;
     }
 

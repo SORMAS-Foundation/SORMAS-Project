@@ -18,7 +18,6 @@
 
 package de.symeda.sormas.app.report;
 
-
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -55,34 +54,29 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.FragmentReportWeeklyLayoutBinding;
-import de.symeda.sormas.app.report.adapter.PendingReportAdapter;
-import de.symeda.sormas.app.report.adapter.WeeklyReportAdapter;
-import de.symeda.sormas.app.report.adapter.WeeklyReportOverviewAdapter;
-import de.symeda.sormas.app.report.viewmodel.EpiWeekFilterOption;
-import de.symeda.sormas.app.report.viewmodel.PendingReportViewModel;
-import de.symeda.sormas.app.report.viewmodel.WeeklyReportOverviewViewModel;
-import de.symeda.sormas.app.report.viewmodel.WeeklyReportViewModel;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.SyncCallback;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayoutBinding> {
 
     private AsyncTask confirmReportTask;
-    private AsyncTask loadReportTask;
-    private List<Item> mYearList;
+    protected AsyncTask loadReportTask;
+    private List<Item> yearList;
 
-    private LinearLayoutManager mLinearLayoutManager;
-    private WeeklyReportAdapter mWeeklyReportAdapter;
-    private PendingReportAdapter mPendingReportAdapter;
-    private WeeklyReportOverviewAdapter mWeeklyReportOverviewAdapter;
+    protected LinearLayoutManager linearLayoutManager;
+    private WeeklyReportAdapter weeklyReportAdapter;
+    private WeeklyReportAdapter pendingReportAdapter;
+    protected WeeklyReportOverviewAdapter weeklyReportOverviewAdapter;
 
-    private String mReportDate = "";
+    private String reportDate = "";
     private EpiWeek lastUpdateEpiWeek;
 
     private FragmentReportWeeklyLayoutBinding contentBinding;
-
 
     public static ReportFragment newInstance() {
         return newInstance(ReportFragment.class, null);
@@ -92,8 +86,9 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
     protected String getSubHeadingTitle() {
         Resources r = getResources();
         String defaultValue = r.getString(R.string.hint_report_not_submitted);
-        boolean isInformant = ConfigProvider.getUser().hasUserRole(UserRole.HOSPITAL_INFORMANT);
-        if (DataHelper.isNullOrEmpty(mReportDate)) {
+        boolean isInformant = ConfigProvider.getUser().hasUserRole(UserRole.HOSPITAL_INFORMANT)
+                || ConfigProvider.getUser().hasUserRole(UserRole.COMMUNITY_INFORMANT);
+        if (DataHelper.isNullOrEmpty(reportDate)) {
             if (isInformant) {
                 return defaultValue;
             } else {
@@ -101,20 +96,19 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
             }
         } else {
             String format = isInformant ? r.getString(R.string.caption_confirmation_date) : r.getString(R.string.caption_report_date);
-            return String.format(format, mReportDate);
+            return String.format(format, reportDate);
         }
     }
 
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
-        mYearList = DataUtils.toItems(DateHelper.getYearsToNow());
+        yearList = DataUtils.toItems(DateHelper.getYearsToNow());
     }
 
     @Override
     protected void onLayoutBinding(final FragmentReportWeeklyLayoutBinding contentBinding) {
-
         this.contentBinding = contentBinding;
-        mLinearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
 
         contentBinding.setReportFilterOptionClass(EpiWeekFilterOption.class);
         setupControls();
@@ -123,14 +117,19 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
     @Override
     protected void onAfterLayoutBinding(FragmentReportWeeklyLayoutBinding contentBinding) {
         super.onAfterLayoutBinding(contentBinding);
-        contentBinding.reportSelector.setValue(EpiWeekFilterOption.LAST_WEEK);
+        EpiWeek epiWeek = ((ReportActivity) getActivity()).getEpiWeek();
+        if (epiWeek == null) {
+            contentBinding.reportSelector.setValue(EpiWeekFilterOption.LAST_WEEK);
+        } else {
+            setEpiWeek(epiWeek);
+            updateByEpiWeek();
+        }
     }
 
     private void setupControls() {
-
         EpiWeek epiWeek = DateHelper.getPreviousEpiWeek(new Date());
 
-        contentBinding.weeklyReportYear.initializeSpinner(mYearList, epiWeek.getYear(), new ValueChangeListener() {
+        contentBinding.weeklyReportYear.initializeSpinner(yearList, epiWeek.getYear(), new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 Integer year = (Integer) field.getValue();
@@ -146,6 +145,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                 epiWeek, new ValueChangeListener() {
                     @Override
                     public void onChange(ControlPropertyField field) {
+                        ((ReportActivity) getActivity()).setEpiWeek((EpiWeek) field.getValue());
                         updateByEpiWeek();
                     }
                 });
@@ -158,12 +158,17 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                     switch (filter) {
                         case LAST_WEEK:
                             setEpiWeek(DateHelper.getPreviousEpiWeek(new Date()));
+                            contentBinding.weeklyReportYear.setEnabled(false);
+                            contentBinding.weeklyReportEpiWeek.setEnabled(false);
                             break;
                         case THIS_WEEK:
                             setEpiWeek(DateHelper.getEpiWeek(new Date()));
+                            contentBinding.weeklyReportYear.setEnabled(false);
+                            contentBinding.weeklyReportEpiWeek.setEnabled(false);
                             break;
                         case SPECIFY_WEEK:
-                            // do nothing
+                            contentBinding.weeklyReportYear.setEnabled(true);
+                            contentBinding.weeklyReportEpiWeek.setEnabled(true);
                             break;
                         default:
                             throw new IllegalArgumentException(filter.toString());
@@ -175,14 +180,13 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
         contentBinding.addMissingCase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CaseNewActivity.startActivity(getContext());
+                CaseNewActivity.startActivityWithEmptyReportDate(getContext());
             }
         });
 
-        contentBinding.confirmReport.setOnClickListener(new View.OnClickListener() {
+        contentBinding.submitReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 confirmReportTask = new DefaultAsyncTask(getContext()) {
 
                     @Override
@@ -192,7 +196,8 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
 
                     @Override
                     public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
-                        DatabaseHelper.getWeeklyReportDao().create(getEpiWeek());
+                        WeeklyReport weeklyReport = DatabaseHelper.getWeeklyReportDao().build(getEpiWeek());
+                        DatabaseHelper.getWeeklyReportDao().saveAndSnapshot(weeklyReport);
                     }
 
                     @Override
@@ -210,16 +215,16 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                                 @Override
                                 public void call(boolean syncFailed, String syncFailedMessage) {
                                     if (syncFailed) {
-                                        NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.snackbar_weekly_report_sync_confirmed);
+                                        NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.WARNING, R.string.snackbar_weekly_report_sync_confirmed);
                                     } else {
-                                        NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.WARNING, R.string.snackbar_weekly_report_confirmed);
+                                        NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.snackbar_weekly_report_confirmed);
                                     }
-                                    getActivity().finish();
+                                    ((ReportActivity)getActivity()).onResume(); // reload data
                                 }
                             });
                         } else {
-                            NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.WARNING, R.string.snackbar_weekly_report_confirmed);
-                            getActivity().finish();
+                            NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.snackbar_weekly_report_confirmed);
+                            ((ReportActivity)getActivity()).onResume(); // reload data
                         }
                     }
                 }.executeOnThreadPool();
@@ -234,14 +239,19 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
         if (!DataHelper.equal(contentBinding.weeklyReportEpiWeek.getValue(), epiWeek)) {
             contentBinding.weeklyReportEpiWeek.setValue(epiWeek);
         }
+
+        ((ReportActivity) getActivity()).setEpiWeek(epiWeek);
     }
 
     public EpiWeek getEpiWeek() {
         return (EpiWeek) contentBinding.weeklyReportEpiWeek.getValue();
     }
 
-    private void updateByEpiWeek() {
+    public EpiWeekFilterOption getEpiWeekFilterOption() {
+        return (EpiWeekFilterOption) contentBinding.reportSelector.getValue();
+    }
 
+    private void updateByEpiWeek() {
         EpiWeek epiWeek = getEpiWeek();
         // TODO this is only necessary because the field value changes are triggered multiple times
         if (DataHelper.equal(epiWeek, lastUpdateEpiWeek)) {
@@ -263,31 +273,35 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
             contentBinding.reportSelector.setValue(filterOption);
         }
 
-        final User user = ConfigProvider.getUser();
-        if (epiWeek == null) {
+        showReportData();
+
+        getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
+    }
+
+    protected void showReportData() {
+        User user = ConfigProvider.getUser();
+        EpiWeek epiWeek = getEpiWeek();
+        EpiWeekFilterOption filterOption = getEpiWeekFilterOption();
+
+        if (epiWeek == null || !ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE)) {
             setVisibilityForNoData();
-        } else if (user.hasUserRole(UserRole.HOSPITAL_INFORMANT)) {
-            WeeklyReport weeklyReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(epiWeek, user);
+        } else {
+            WeeklyReport weeklyReport = DatabaseHelper.getWeeklyReportDao().queryByEpiWeekAndUser(epiWeek, user);
 
             if (EpiWeekFilterOption.THIS_WEEK.equals(filterOption)) {
                 // table is shown if the report for the last week has been confirmed; no buttons
-                mReportDate = getActivity().getString(R.string.hint_report_not_submitted);
-                if (DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(DateHelper.getPreviousEpiWeek(epiWeek), user) != null) {
-                    setVisibilityForTable(false);
-                    showPendingReport();
-                } else {
-                    setVisibilityForNoReportHint();
-                    showNoReport();
-                }
+                reportDate = getResources().getString(R.string.hint_report_not_submitted);
+                setVisibilityForTable(false);
+                showPendingReport();
             } else if (EpiWeekFilterOption.LAST_WEEK.equals(filterOption)) {
                 // table is shown, buttons are shown if the report has not been confirmed yet
                 if (weeklyReport == null) {
                     setVisibilityForTable(true);
-                    mReportDate = getActivity().getString(R.string.hint_report_not_submitted);
+                    reportDate = getResources().getString(R.string.hint_report_not_submitted);
                     showPendingReport();
                 } else {
                     setVisibilityForTable(false);
-                    mReportDate = DateHelper.formatLocalDate(weeklyReport.getReportDateTime());
+                    reportDate = DateHelper.formatLocalDate(weeklyReport.getReportDateTime());
                     showWeeklyReport(weeklyReport);
                 }
             } else { // any other week;
@@ -295,64 +309,54 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                     if (DateHelper.isEpiWeekAfter(DateHelper.getEpiWeek(new Date()), epiWeek)) {
                         // 'no data' hint is shown for dates in the future
                         setVisibilityForNoData();
-                        mReportDate = "";
+                        reportDate = "";
                         showNoReport();
                     } else {
                         // table is shown for dates in the past
-                        setVisibilityForTable(false);
-                        mReportDate = getActivity().getString(R.string.hint_report_not_submitted);
+                        setVisibilityForTable(true);
+                        reportDate = getResources().getString(R.string.hint_report_not_submitted);
                         showPendingReport();
                     }
                 } else {
                     setVisibilityForTable(false);
-                    mReportDate = DateHelper.formatLocalDate(weeklyReport.getReportDateTime());
+                    reportDate = DateHelper.formatLocalDate(weeklyReport.getReportDateTime());
                     showWeeklyReport(weeklyReport);
                 }
             }
-        } else {
-            setVisibilityForTable(false);
-            mReportDate = "";
-            showWeeklyReportOverview();
         }
-
-        getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
     }
 
-    private void setVisibilityForTable(boolean showButtons) {
-        contentBinding.noWeeklyReportHint.setVisibility(View.GONE);
-        contentBinding.noWeeklyReportData.setVisibility(View.GONE);
+    protected void setVisibilityForTable(boolean showButtons) {
+        contentBinding.reportContentFrame.setVisibility(VISIBLE);
+        contentBinding.noWeeklyReportData.setVisibility(GONE);
 
         if (showButtons && !ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE)) {
             showButtons = false;
         }
-        contentBinding.addMissingCase.setVisibility(showButtons ? View.VISIBLE : View.GONE);
-        contentBinding.confirmReport.setVisibility(showButtons ? View.VISIBLE : View.GONE);
+        contentBinding.submitReport.setVisibility(showButtons ? VISIBLE : GONE);
+        contentBinding.addMissingCase.setVisibility(showButtons ? VISIBLE : GONE);
     }
 
-    private void setVisibilityForNoReportHint() {
-        contentBinding.noWeeklyReportHint.setVisibility(View.VISIBLE);
-        contentBinding.noWeeklyReportData.setVisibility(View.GONE);
-        contentBinding.addMissingCase.setVisibility(View.GONE);
-        contentBinding.confirmReport.setVisibility(View.GONE);
-    }
-
-    private void setVisibilityForNoData() {
-        contentBinding.noWeeklyReportHint.setVisibility(View.GONE);
-        contentBinding.noWeeklyReportData.setVisibility(View.VISIBLE);
-        contentBinding.addMissingCase.setVisibility(View.GONE);
-        contentBinding.confirmReport.setVisibility(View.GONE);
+    protected void setVisibilityForNoData() {
+        contentBinding.noWeeklyReportData.setVisibility(VISIBLE);
+        contentBinding.reportContentFrame.setVisibility(GONE);
+        contentBinding.submitReport.setVisibility(GONE);
+        contentBinding.addMissingCase.setVisibility(GONE);
     }
 
     private void showNoReport() {
-        getContentBinding().recyclerViewForList.setVisibility(View.GONE);
+        getContentBinding().reportContentFrame.setVisibility(GONE);
     }
 
     private void showPendingReport() {
-
-        if (ConfigProvider.getUser() == null)
+        if (ConfigProvider.getUser() == null) {
             return;
+        }
 
-        if (ConfigProvider.getUser().hasUserRole(UserRole.HOSPITAL_INFORMANT)) {
+        if (ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE)) {
+
+            final WeeklyReport weeklyReport = DatabaseHelper.getWeeklyReportDao().build(getEpiWeek());
+
             loadReportTask = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
@@ -361,15 +365,13 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
 
                 @Override
                 public void doInBackground(TaskResultHolder resultHolder) {
-                    List<PendingReportViewModel> list = new ArrayList<>();
-
-                    User user = ConfigProvider.getUser();
-                    for (Disease disease : Disease.values()) {
-
-                        int numberOfCases = DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeekAndDisease(getEpiWeek(), disease, user);
-                        list.add(new PendingReportViewModel(disease, numberOfCases));
+                    if (weeklyReport != null) {
+                        List<WeeklyReportListItem> list = new ArrayList<>();
+                        for (WeeklyReportEntry entry : weeklyReport.getReportEntries()) {
+                            list.add(new WeeklyReportListItem(entry.getDisease(), entry.getNumberOfCases()));
+                        }
+                        resultHolder.forOther().add(list);
                     }
-                    resultHolder.forOther().add(list);
                 }
 
                 @Override
@@ -381,17 +383,17 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                         return;
                     }
 
-                    List<PendingReportViewModel> list = new ArrayList<>();
+                    List<WeeklyReportListItem> list = new ArrayList<>();
                     ITaskResultHolderIterator otherIterator = taskResult.getResult().forOther().iterator();
 
                     if (otherIterator.hasNext())
                         list = otherIterator.next();
 
-                    mPendingReportAdapter = new PendingReportAdapter(getContext(), list);
-                    getContentBinding().recyclerViewForList.setLayoutManager(mLinearLayoutManager);
-                    getContentBinding().recyclerViewForList.setAdapter(mPendingReportAdapter);
-                    getContentBinding().recyclerViewForList.setVisibility(View.VISIBLE);
-                    mPendingReportAdapter.notifyDataSetChanged();
+                    pendingReportAdapter = new WeeklyReportAdapter(getContext(), list);
+                    getContentBinding().reportContent.setLayoutManager(linearLayoutManager);
+                    getContentBinding().reportContent.setAdapter(pendingReportAdapter);
+                    getContentBinding().reportContentFrame.setVisibility(VISIBLE);
+                    pendingReportAdapter.notifyDataSetChanged();
                 }
             }.executeOnThreadPool();
         }
@@ -414,9 +416,9 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
             @Override
             public void doInBackground(TaskResultHolder resultHolder) {
                 if (weeklyReport != null) {
-                    List<WeeklyReportViewModel> list = new ArrayList<>();
-                    for (WeeklyReportEntry entry : DatabaseHelper.getWeeklyReportEntryDao().getAllByWeeklyReport(weeklyReport)) {
-                        list.add(new WeeklyReportViewModel(entry.getDisease(), entry.getNumberOfCases()));
+                    List<WeeklyReportListItem> list = new ArrayList<>();
+                    for (WeeklyReportEntry entry : weeklyReport.getReportEntries()) {
+                        list.add(new WeeklyReportListItem(entry.getDisease(), entry.getNumberOfCases()));
                     }
                     resultHolder.forOther().add(list);
                 }
@@ -431,80 +433,17 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                     return;
                 }
 
-                List<WeeklyReportViewModel> list = new ArrayList<>();
+                List<WeeklyReportListItem> list = new ArrayList<>();
                 ITaskResultHolderIterator otherIterator = taskResult.getResult().forOther().iterator();
 
                 if (otherIterator.hasNext())
                     list = otherIterator.next();
 
-                mWeeklyReportAdapter = new WeeklyReportAdapter(getContext(), list);
-                getContentBinding().recyclerViewForList.setLayoutManager(mLinearLayoutManager);
-                getContentBinding().recyclerViewForList.setAdapter(mWeeklyReportAdapter);
-                getContentBinding().recyclerViewForList.setVisibility(View.VISIBLE);
-                mWeeklyReportAdapter.notifyDataSetChanged();
-            }
-        }.executeOnThreadPool();
-    }
-
-    /**
-     * Shows an overview of all informant reports for the user's district
-     */
-    private void showWeeklyReportOverview() {
-
-        if (ConfigProvider.getUser() == null)
-            return;
-
-        loadReportTask = new DefaultAsyncTask(getContext()) {
-            @Override
-            public void onPreExecute() {
-                getBaseReportActivity().showPreloader();
-            }
-
-            @Override
-            public void doInBackground(TaskResultHolder resultHolder) {
-                List<WeeklyReportOverviewViewModel> list = new ArrayList<>();
-
-                // confirmed reports
-                List<WeeklyReport> reports = DatabaseHelper.getWeeklyReportDao().queryByDistrict(getEpiWeek(), ConfigProvider.getUser().getDistrict());
-                List<User> doneInformants = new ArrayList<User>();
-                for (WeeklyReport report : reports) {
-                    list.add(new WeeklyReportOverviewViewModel(report.getHealthFacility(), report.getInformant(), report.getTotalNumberOfCases(), true));
-                    doneInformants.add(report.getInformant());
-                }
-
-                // get data for unconfirmed
-                List<User> informants = DatabaseHelper.getUserDao().getByDistrictAndRole(ConfigProvider.getUser().getDistrict(), UserRole.HOSPITAL_INFORMANT, User.HEALTH_FACILITY + "_id");
-                for (User informant : informants) {
-                    if (doneInformants.contains(informant))
-                        continue;
-                    int numberOfCases = DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeek(getEpiWeek(), informant);
-                    list.add(new WeeklyReportOverviewViewModel(informant.getHealthFacility(), informant, numberOfCases, false));
-                }
-
-                resultHolder.forOther().add(list);
-            }
-
-            @Override
-            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-
-                super.onPostExecute(taskResult);
-                getBaseActivity().hidePreloader();
-
-                if (taskResult.getResult() == null) {
-                    return;
-                }
-
-                List<WeeklyReportOverviewViewModel> list = new ArrayList<>();
-                ITaskResultHolderIterator otherIterator = taskResult.getResult().forOther().iterator();
-
-                if (otherIterator.hasNext())
-                    list = otherIterator.next();
-
-                mWeeklyReportOverviewAdapter = new WeeklyReportOverviewAdapter(getContext(), list);
-                getContentBinding().recyclerViewForList.setLayoutManager(mLinearLayoutManager);
-                getContentBinding().recyclerViewForList.setAdapter(mWeeklyReportOverviewAdapter);
-                getContentBinding().recyclerViewForList.setVisibility(View.VISIBLE);
-                mWeeklyReportOverviewAdapter.notifyDataSetChanged();
+                weeklyReportAdapter = new WeeklyReportAdapter(getContext(), list);
+                getContentBinding().reportContent.setLayoutManager(linearLayoutManager);
+                getContentBinding().reportContent.setAdapter(weeklyReportAdapter);
+                getContentBinding().reportContentFrame.setVisibility(VISIBLE);
+                weeklyReportAdapter.notifyDataSetChanged();
             }
         }.executeOnThreadPool();
     }

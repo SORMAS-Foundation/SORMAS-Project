@@ -40,10 +40,11 @@ import java.util.List;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 public interface ClassificationFacadeRetro {
 
-    @GET("classification/all")
-    Call<List<DiseaseClassificationCriteriaDto>> pullAllClassificationCriteria();
+    @GET("classification/all/{since}")
+    Call<List<DiseaseClassificationCriteriaDto>> pullAllSince(@Path("since") long since);
 
 }

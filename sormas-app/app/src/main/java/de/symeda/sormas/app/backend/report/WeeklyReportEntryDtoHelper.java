@@ -20,11 +20,9 @@ package de.symeda.sormas.app.backend.report;
 
 import java.util.List;
 
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.report.WeeklyReportEntryDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
-import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
 /**
@@ -45,35 +43,27 @@ public class WeeklyReportEntryDtoHelper extends AdoDtoHelper<WeeklyReportEntry, 
 
     @Override
     protected Call<List<WeeklyReportEntryDto>> pullAllSince(long since) {
-        return RetroProvider.getWeeklyReportEntryFacade().pullAllSince(since);
+        throw new UnsupportedOperationException("Entity is embedded");
     }
 
     @Override
     protected Call<List<WeeklyReportEntryDto>> pullByUuids(List<String> uuids) {
-        return RetroProvider.getWeeklyReportEntryFacade().pullByUuids(uuids);
+        throw new UnsupportedOperationException("Entity is embedded");
     }
 
     @Override
-    protected Call<Integer> pushAll(List<WeeklyReportEntryDto> weeklyReportEntryDtos) {
-        return RetroProvider.getWeeklyReportEntryFacade().pushAll(weeklyReportEntryDtos);
+    protected Call<List<PushResult>> pushAll(List<WeeklyReportEntryDto> weeklyReportEntryDtos) {
+        throw new UnsupportedOperationException("Entity is embedded");
     }
 
     @Override
     public void fillInnerFromDto(WeeklyReportEntry target, WeeklyReportEntryDto source) {
         target.setDisease(source.getDisease());
         target.setNumberOfCases(source.getNumberOfCases());
-        target.setWeeklyReport(DatabaseHelper.getWeeklyReportDao().getByReferenceDto(source.getWeeklyReport()));
     }
 
     @Override
     public void fillInnerFromAdo(WeeklyReportEntryDto target, WeeklyReportEntry source) {
-        if (source.getWeeklyReport() != null) {
-            WeeklyReport report = DatabaseHelper.getWeeklyReportDao().queryForId(source.getWeeklyReport().getId());
-            target.setWeeklyReport(WeeklyReportDtoHelper.toReferenceDto(report));
-        } else {
-            target.setWeeklyReport(null);
-        }
-
         target.setDisease(source.getDisease());
         target.setNumberOfCases(source.getNumberOfCases());
     }

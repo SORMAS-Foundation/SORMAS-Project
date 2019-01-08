@@ -61,7 +61,7 @@ public class AboutView extends VerticalLayout implements View {
 		aboutContent.addComponent(documentsLayout, "documents");
 		
 		Button classificationDocumentButton = new Button("Case Classification Rules (HTML)");
-		CssStyles.style(classificationDocumentButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_NO_PADDING, CssStyles.BUTTON_NO_UPPERCASE);
+		CssStyles.style(classificationDocumentButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 		documentsLayout.addComponent(classificationDocumentButton);
 
 		try {
@@ -74,13 +74,13 @@ public class AboutView extends VerticalLayout implements View {
 		}
 
 		Button dataDictionaryButton = new Button("Data Dictionary (XLSX)");
-		CssStyles.style(dataDictionaryButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_NO_PADDING, CssStyles.BUTTON_NO_UPPERCASE);
+		CssStyles.style(dataDictionaryButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 		documentsLayout.addComponent(dataDictionaryButton);
 		FileDownloader dataDictionaryDownloader = new FileDownloader(new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
 		dataDictionaryDownloader.extend(dataDictionaryButton);
 		
 		Button technicalManualButton = new Button("Technical Manual (PDF)");
-		CssStyles.style(technicalManualButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_NO_PADDING, CssStyles.BUTTON_NO_UPPERCASE);
+		CssStyles.style(technicalManualButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 		documentsLayout.addComponent(technicalManualButton);
 		technicalManualButton.addClickListener(e -> {
 			getUI().getPage().open("https://github.com/hzi-braunschweig/SORMAS-Project/files/2585973/SORMAS_Technical_Manual_Webversion_20180911.pdf", "_self");

@@ -95,6 +95,11 @@ public class EventDao extends AbstractAdoDao<Event> {
     public void deleteEventAndAllDependingEntities(String eventUuid) throws SQLException {
         Event event = queryUuidWithEmbedded(eventUuid);
 
+        // Cancel if not in local database
+        if (event == null) {
+            return;
+        }
+
         // Delete event tasks
         List<Task> tasks = DatabaseHelper.getTaskDao().queryByEvent(event);
         for (Task task : tasks) {
@@ -110,5 +115,4 @@ public class EventDao extends AbstractAdoDao<Event> {
         // Delete event
         deleteCascade(event);
     }
-
 }

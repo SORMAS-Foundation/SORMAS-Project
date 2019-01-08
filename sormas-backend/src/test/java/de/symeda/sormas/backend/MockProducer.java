@@ -45,13 +45,13 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
  */
 public class MockProducer {
 
-	private static SessionContext sessionContext = mock(SessionContext.class);
-	private static Principal principal = mock(Principal.class);
-	private static Topic topic = mock(Topic.class);
-	private static ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
-	private static TimerService timerService = mock(TimerService.class);
-	private static Properties properties = new Properties();
-	private static UserTransaction userTransaction = mock(UserTransaction.class);
+	private static final SessionContext sessionContext = mock(SessionContext.class);
+	private static final Principal principal = mock(Principal.class);
+	private static final Topic topic = mock(Topic.class);
+	private static final ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
+	private static final TimerService timerService = mock(TimerService.class);
+	private static final Properties properties = new Properties();
+	private static final UserTransaction userTransaction = mock(UserTransaction.class);
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
@@ -77,13 +77,13 @@ public class MockProducer {
 
 	public static void resetMocks() {
 
-		reset(sessionContext, principal, topic, connectionFactory, timerService, userTransaction);
+		reset(sessionContext, getPrincipal(), topic, connectionFactory, timerService, userTransaction);
 		wireMocks();
 	}
 
 	public static void wireMocks() {
 
-		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		when(sessionContext.getCallerPrincipal()).thenReturn(getPrincipal());
 	}
 
 	@Produces
@@ -119,5 +119,10 @@ public class MockProducer {
 	@Produces
 	public static UserTransaction getUserTransaction() {
 		return userTransaction;
+	}
+
+	@Produces
+	public static Principal getPrincipal() {
+		return principal;
 	}
 }

@@ -32,4 +32,7 @@ public interface UserRoleConfigFacadeRetro {
 
     @GET("userroles/uuids")
     Call<List<String>> pullUuids();
+
+    @GET("userroles/deleted/{since}")
+    Call<List<String>> pullDeletedUuidsSince(@Path("since") long since);
 }

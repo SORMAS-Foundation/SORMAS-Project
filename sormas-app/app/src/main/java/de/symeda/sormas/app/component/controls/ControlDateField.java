@@ -21,6 +21,7 @@ package de.symeda.sormas.app.component.controls;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
 import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
@@ -63,6 +64,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 
     private FragmentManager fragmentManager;
     private SimpleDateFormat dateFormat;
+    private int allowedDaysInFuture;
 
     // Constructors
 
@@ -80,6 +82,22 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
     }
 
     // Instance methods
+
+    public void setErrorIfOutOfDateRange() {
+        if (getValue() == null || getValue().before(new Date())) {
+            return;
+        }
+
+        if (allowedDaysInFuture > 0) {
+            if (DateHelper.getFullDaysBetween(new Date(), getValue()) > allowedDaysInFuture) {
+                enableErrorState(I18nProperties.getValidationError("futureDate", getCaption(), allowedDaysInFuture));
+            }
+        } else {
+            if (!DateHelper.isSameDay(new Date(), getValue())) {
+                enableErrorState(I18nProperties.getValidationError("futureDateStrict", getCaption()));
+            }
+        }
+    }
 
     /**
      * Shows a date fragment linked with the value of this field.
@@ -158,7 +176,6 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 
     // Overrides
 
-
     @Override
     public Date getValue() {
         return (Date) super.getValue();
@@ -197,6 +214,19 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
     @Override
     protected void initialize(Context context, AttributeSet attrs, int defStyle) {
         dateFormat = DateHelper.getLocalShortDateFormat();
+
+        if (attrs != null) {
+            TypedArray a = context.getTheme().obtainStyledAttributes(
+                    attrs,
+                    R.styleable.ControlDateField,
+                    0, 0);
+
+            try {
+                allowedDaysInFuture = a.getInt(R.styleable.ControlDateField_allowedDaysInFuture, 0);
+            } finally {
+                a.recycle();
+            }
+        }
     }
 
     @Override
@@ -237,6 +267,15 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
                     inverseBindingListener.onChange();
                 }
                 onValueChanged();
+            }
+        });
+
+        addValueChangedListener(new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                if (!isLiveValidationDisabled()) {
+                    ((ControlDateField) field).setErrorIfOutOfDateRange();
+                }
             }
         });
 

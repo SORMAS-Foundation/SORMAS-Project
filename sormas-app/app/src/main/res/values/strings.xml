@@ -29,7 +29,7 @@
     <string name="action_close">Close</string>
     <string name="action_close_app">Close SORMAS</string>
     <string name="action_confirm">Confirm</string>
-    <string name="action_confirm_report">Confirm Report</string>
+    <string name="action_submit_report">Submit Weekly Report</string>
     <string name="action_create">Create</string>
     <string name="action_create_case_from_contact">Create a case for this contact person</string>
     <string name="action_create_case_from_event_person">Create a case for this event person</string>
@@ -38,7 +38,7 @@
     <string name="action_done">Done</string>
     <string name="action_download">Download</string>
     <string name="action_download_background">Download in background</string>
-    <string name="action_download_later">Download later</string>
+    <string name="action_download_later">Later</string>
     <string name="action_edit">Edit</string>
     <string name="action_edit_case">Edit Case</string>
     <string name="action_edit_contact">Edit Contact</string>
@@ -114,9 +114,12 @@
     <string name="caption_contact_information">Contact Information</string>
     <string name="caption_contact_tasks">Contact Tasks</string>
     <string name="caption_contact_visits">Follow-Up Information</string>
+    <string name="caption_date_of_birth">Date of birth (year / month / day)</string>
     <string name="caption_event_information">Event Information</string>
     <string name="caption_event_participants">Persons Involved</string>
     <string name="caption_event_tasks">Event Tasks</string>
+    <string name="caption_informant_reports">Informant Reports</string>
+    <string name="caption_my_reports">My Reports</string>
     <string name="caption_new_case">New Case</string>
     <string name="caption_new_contact">New Contact</string>
     <string name="caption_new_sample">New Sample</string>
@@ -126,32 +129,38 @@
     <string name="caption_person_information">Person Information</string>
     <string name="caption_person_involved">Person Involved</string>
     <string name="caption_report_date">Report Date: %1$s</string>
+    <string name="caption_reported_case_count">Number of cases you have reported</string>
+    <string name="caption_reported_informant_case_count">Number of cases informants have reported</string>
     <string name="caption_sample_information">Sample Information</string>
+    <string name="caption_smallpox_vaccination_scar_img">Smallpox Vaccination Scar</string>
     <string name="caption_symptoms">Symptom Information</string>
     <string name="caption_task_information">Task Information</string>
     <string name="caption_visit_information">Visit Information</string>
     <string name="caption_visit_symptoms">Symptom Information</string>
-    <string name="caption_smallpox_vaccination_scar_img">Smallpox Vaccination Scar</string>
-
-    <string name="confirmation_resync">SYNC</string>
-    <string name="confirmation_unsynchronized_changes">There are unsynchronized changes on your device.\nIf you proceed, they will be lost and you will not be able to restore them. Type the word SYNC into the text field below to continue.</string>
 
     <string name="case_uuid_unknown">Case ID N/A</string>
-    <string name="cases_confirmed_unknown">Cases Confirmed Unknown</string>
+    <string name="confirmation_resync">SYNC</string>
+    <string name="confirmation_unsynchronized_changes">There are unsynchronized changes on your device.\nIf you proceed, they will be lost and you will not be able to restore them. Type the word SYNC into the text field below to continue.</string>
     <string name="contact_class_unknown">Classification N/A</string>
     <string name="contact_proximity_unknown">Proximity N/A</string>
     <string name="contact_uuid_unknown">Contact ID N/A</string>
+
     <string name="dashboard_section_title_case">Case Summary</string>
     <string name="dashboard_section_title_contact">Contact Summary</string>
     <string name="dashboard_section_title_event">Event Summary</string>
     <string name="dashboard_section_title_sample">Sample Summary</string>
     <string name="dashboard_section_title_task">Task Summary</string>
-
     <string name="desc_login_password">Password</string>
     <string name="desc_login_username">Username</string>
+    <string name="description_epidemiological_info">Please indicate if any of the following is relevant for the patient during the incubation period or illness.</string>
+    <string name="description_pick_or_create_person">The name of at least one person already existing in SORMAS is similar to the name you entered.</string>
+    <string name="description_pick_person">If applicable, select a matching person by tapping on them and then clicking the \"Select\" button below. <b>Do this only if you are absolutely sure that the person you have specified is the same as one of the persons in this list.</b></string>
+    <string name="description_pick_person_no_records">No matching persons found.</string>
+    <string name="description_create_person">If the person you have created is <b>not</b> among the suggested list of existing persons, click the \"Create\" button.</string>
     <string name="disease_unknown">Disease N/A</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="drawer_open">Open navigation drawer</string>
+
     <string name="entity_case">Case</string>
     <string name="entity_contact">Contact</string>
     <string name="entity_event">Event</string>
@@ -159,10 +168,8 @@
     <string name="entity_sample">Sample</string>
     <string name="entity_task">Task</string>
     <string name="entity_visit">Visit</string>
-    <string name="description_epidemiological_info">Please indicate if any of the following is relevant for the patient during the incubation period or illness.</string>
     <string name="event_date_unknown">Date N/A</string>
     <string name="event_location_unknown">Location N/A</string>
-    <string name="caption_date_of_birth">Date of birth (year / month / day)</string>
     <string name="gender_unknown">Gender N/A</string>
 
     <string name="error_case_transfer">An error occurred while trying to transfer the case.</string>
@@ -210,7 +217,7 @@
     <string name="headline_synchronization">Synchronization</string>
     <string name="headline_task_notification">Check sormas task</string>
     <string name="headline_update_app">App update required</string>
-
+    <string name="headline_informant_reports">Informant Reports</string>
     <string name="health_facility_unknown">Health Facility N/A</string>
 
     <string name="hint_app_download">Downloading new SORMAS version... Depending on your internet connection, this may take a while.</string>
@@ -228,7 +235,7 @@
     <string name="hint_no_records_found">There were no records found.</string>
     <string name="hint_no_records_found_add_new">There were no records found. To add a new record, press the "+" symbol at the top right of the toolbar.</string>
     <string name="hint_no_sync_errors">There are no synchronization conflicts to display.</string>
-    <string name="hint_no_weekly_report">You have not yet confirmed the report for last week.</string>
+    <string name="hint_no_weekly_report">You need to confirm the report for last week.</string>
     <string name="hint_report_not_submitted">No <i>report</i> submitted</string>
     <string name="hint_select_a_date">Pick a Date</string>
     <string name="hint_select_a_time">Pick a Time</string>
@@ -268,7 +275,6 @@
     <string name="login_sign_in">Sign In</string>
     <string name="login_sign_in_tag_line">Sign into SORMAS to continue the journey of saving lives.</string>
 
-
     <string name="main_menu_cases">Cases</string>
     <string name="main_menu_contacts">Contacts</string>
     <string name="main_menu_dashboard">Dashboard</string>
@@ -285,7 +291,6 @@
     <string name="message_update_app_required">A new version of the SORMAS app is available. It is strongly recommended to download it by clicking the \'Download\' button below.</string>
 
     <string name="no">No</string>
-    <string name="no_of_cases_unknown">No. of Cases Unknown</string>
     <string name="no_recent_test">Sample has not been tested yet</string>
     <string name="not_available">N/A</string>
     <string name="notification_empty_password">Please enter a password.</string>
@@ -296,15 +301,12 @@
     <string name="record_desc_unknown">Description N/A</string>
     <string name="report_date_unknown">Report Date N/A</string>
     <string name="resulting_case_status_unknown">No Resulting Case</string>
+
     <string name="sample_disease_unknown">Disease N/A</string>
     <string name="sample_lab_unknown">Lab N/A</string>
     <string name="sample_material_unknown">Material N/A</string>
     <string name="sample_result_unknown">Test Result N/A</string>
     <string name="sampling_date_unknown">Sampling Date N/A</string>
-    <string name="description_pick_or_create_person">The name of at least one person already existing in SORMAS is similar to the name you entered.</string>
-    <string name="description_pick_person">If applicable, select a matching person by tapping on them and then clicking the \"Select\" button below. <b>Do this only if you are absolutely sure that the person you have specified is the same as one of the persons in this list.</b></string>
-    <string name="description_pick_person_no_records">No matching persons found.</string>
-    <string name="description_create_person">If the person you have created is <b>not</b> among the suggested list of existing persons, click the \"Create\" button.</string>
     <string name="server_connection_error">Could not connect to SORMAS server. Try again later.</string>
     <string name="snackbar_already_saving">Already saving..</string>
     <string name="snackbar_entity_overridden">%1$s refreshed. Unsaved changes discarded.</string>
@@ -329,6 +331,7 @@
     <string name="snackbar_select_create_person">Please select a person or click \'Create\' to create a new one.</string>
     <string name="snackbar_sync_conflict">Synchronization conflicts detected. Please check the Sync Log to review them.</string>
     <string name="snackbar_sync_success">Synchronization successful.</string>
+    <string name="snackbar_sync_unsynced">Some entries could not be synchronized. Please try again later.</string>
     <string name="snackbar_task_reply">An assignee reply is required when setting the task status to not executable.</string>
     <string name="snackbar_version_too_new">Could not synchronize because the app version is newer than the server version.</string>
     <string name="snackbar_weekly_report_confirmed">Thank you, your weekly report has been confirmed.</string>
@@ -377,8 +380,9 @@
     <string name="title_landing_cell_total_events">Total Events</string>
     <string name="title_landing_cell_total_samples">Total Samples</string>
     <string name="title_landing_cell_total_tasks">Total Tasks</string>
-
     <string name="type_unknown">Type N/A</string>
+
+    <string name="unconfirmed">Missing report</string>
     <string name="userNamePlaceholder">No Username</string>
     <string name="userRolePlaceholder">Role Unassigned</string>
     <string name="user_role_unknown">User Role Unknown</string>

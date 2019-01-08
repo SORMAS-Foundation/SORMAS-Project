@@ -34,12 +34,14 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
-@Entity(name = "userrolesconfig")
+@Entity(name = UserRoleConfig.TABLE_NAME)
 @Audited
 public class UserRoleConfig extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 9053095630718041842L;
 
+	public static final String TABLE_NAME = "userrolesconfig";
+	
 	public static final String USER_ROLE = "userRole";
 	public static final String USER_RIGHTS = "userRights";
 

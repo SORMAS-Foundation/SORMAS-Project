@@ -42,6 +42,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -278,38 +279,27 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
     /**
      * Returns the number of cases reported by the current user over the course of the given epi week.
-     * If there are reports for the given and next epi week, all cases between the report dates of these
-     * reports will be collected; if one or both of these dates are missing, the start and end of the given
-     * epi week is taken instead, respectively.
      */
-    public int getNumberOfCasesForEpiWeek(EpiWeek epiWeek, User informant) {
-        return getNumberOfCasesForEpiWeekAndDisease(epiWeek, null, informant);
+    public int getNumberOfCasesForEpiWeek(EpiWeek epiWeek, User user) {
+        return getNumberOfCasesForEpiWeekAndDisease(epiWeek, null, user);
     }
 
     /**
      * Returns the number of cases with the given disease reported by the current user over the course of the given epi week.
      */
-    public int getNumberOfCasesForEpiWeekAndDisease(EpiWeek epiWeek, Disease disease, User informant) {
-        if (!(informant.hasUserRole(UserRole.HOSPITAL_INFORMANT) || informant.hasUserRole(UserRole.COMMUNITY_INFORMANT))) {
-            throw new UnsupportedOperationException("Can only retrieve the number of reported cases by epi week and disease for Informants.");
+    public int getNumberOfCasesForEpiWeekAndDisease(EpiWeek epiWeek, Disease disease, User user) {
+        if (!(ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE))) {
+            throw new UnsupportedOperationException("Can only retrieve the number of reported cases by epi week and disease for " +
+                    "users that can create weekly reports.");
         }
-
-        WeeklyReport epiWeekReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(epiWeek, informant);
-        WeeklyReport previousEpiWeekReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(DateHelper.getPreviousEpiWeek(epiWeek), informant);
-        WeeklyReport nextEpiWeekReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(DateHelper.getNextEpiWeek(epiWeek), informant);
-
-        Date[] reportStartAndEnd = DateHelper.calculateEpiWeekReportStartAndEnd(new Date(), epiWeek,
-                epiWeekReport != null ? epiWeekReport.getReportDateTime() : null,
-                previousEpiWeekReport != null ? previousEpiWeekReport.getReportDateTime() : null,
-                nextEpiWeekReport != null ? nextEpiWeekReport.getReportDateTime() : null);
 
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
-                    where.eq(Case.REPORTING_USER, informant),
-                    where.ge(Case.REPORT_DATE, reportStartAndEnd[0]),
-                    where.le(Case.REPORT_DATE, reportStartAndEnd[1])
+                    where.eq(Case.REPORTING_USER, user),
+                    where.ge(Case.REPORT_DATE, DateHelper.getEpiWeekStart(epiWeek)),
+                    where.le(Case.REPORT_DATE, DateHelper.getEpiWeekEnd(epiWeek))
             );
 
             if (disease != null) {
@@ -399,7 +389,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
     public void deleteCaseAndAllDependingEntities(String caseUuid) throws SQLException {
         Case caze = queryUuidWithEmbedded(caseUuid);
 
-        // Cancel if case is not in local database
+        // Cancel if not in local database
         if (caze == null) {
             return;
         }

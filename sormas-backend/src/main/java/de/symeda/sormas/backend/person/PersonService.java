@@ -136,7 +136,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		Predicate lgaFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
 		// date range
 		if (date != null) {
-			Predicate dateFilter = createDateFilter(cb, personsQuery, personsRoot, date);
+			Predicate dateFilter = createChangeDateFilter(cb, personsRoot, date);
 			lgaFilter = cb.and(lgaFilter, dateFilter);
 		}
 		personsQuery.where(lgaFilter);
@@ -150,7 +150,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot, user);
 		// date range
 		if (date != null) {
-			Predicate dateFilter = createDateFilter(cb, casePersonsQuery, casePersonsSelect, date);
+			Predicate dateFilter = createChangeDateFilter(cb, casePersonsSelect, date);
 			if (casePersonsFilter != null) {
 				casePersonsFilter = cb.and(casePersonsFilter, dateFilter);
 			} else {
@@ -172,7 +172,7 @@ public class PersonService extends AbstractAdoService<Person> {
 				user);
 		// date range
 		if (date != null) {
-			Predicate dateFilter = createDateFilter(cb, contactPersonsQuery, contactPersonsSelect, date);
+			Predicate dateFilter = createChangeDateFilter(cb, contactPersonsSelect, date);
 			contactPersonsFilter = cb.and(contactPersonsFilter, dateFilter);
 		}
 		if (contactPersonsFilter != null) {
@@ -190,7 +190,7 @@ public class PersonService extends AbstractAdoService<Person> {
 				user);
 		// date range
 		if (date != null) {
-			Predicate dateFilter = createDateFilter(cb, eventPersonsQuery, eventPersonsSelect, date);
+			Predicate dateFilter = createChangeDateFilter(cb, eventPersonsSelect, date);
 			eventPersonsFilter = cb.and(eventPersonsFilter, dateFilter);
 		}
 		if (eventPersonsFilter != null) {
@@ -337,7 +337,7 @@ public class PersonService extends AbstractAdoService<Person> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createDateFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Person, Person> from, Date date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Person, Person> from, Date date) {
 		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
 		Join<Person, Location> address = from.join(Person.ADDRESS);
 		dateFilter = cb.or(dateFilter, cb.greaterThan(address.get(AbstractDomainObject.CHANGE_DATE), date));

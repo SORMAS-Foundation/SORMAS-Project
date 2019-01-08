@@ -235,8 +235,6 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
                 || (this instanceof ControlTextEditField
                 && ((String) getValue()).isEmpty())) {
             enableErrorState(R.string.validation_error_required);
-        } else {
-            disableErrorState();
         }
     }
 
@@ -351,6 +349,8 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
             @Override
             public void onChange(ControlPropertyField field) {
                 if (!liveValidationDisabled) {
+                    ((ControlPropertyEditField) field).disableErrorState();
+
                     ((ControlPropertyEditField) field).setErrorIfEmpty();
 
                     if (validationCallback != null) {
@@ -406,6 +406,10 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
     public boolean isHasError() {
         return hasError;
+    }
+
+    public boolean isLiveValidationDisabled() {
+        return liveValidationDisabled;
     }
 
     public void setLiveValidationDisabled(boolean liveValidationDisabled) {

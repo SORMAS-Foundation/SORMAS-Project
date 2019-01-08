@@ -48,24 +48,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
 public class DiseaseClassificationAppHelper {
 
-    public static void saveClassificationToDatabase(DiseaseClassificationCriteriaDto classificationCriteriaDto) {
-        DiseaseClassificationCriteria classificationCriteria = new DiseaseClassificationCriteria();
-
-        classificationCriteria.setDisease(classificationCriteriaDto.getDisease());
-        classificationCriteria.setChangeDate(classificationCriteriaDto.getChangeDate());
-        classificationCriteria.setCreationDate(new Date());
-        classificationCriteria.setUuid(DataHelper.createUuid());
-        classificationCriteria.setSuspectCriteria(ClassificationHtmlRenderer.createSuspectHtmlString(classificationCriteriaDto));
-        classificationCriteria.setProbableCriteria(ClassificationHtmlRenderer.createProbableHtmlString(classificationCriteriaDto));
-        classificationCriteria.setConfirmedCriteria(ClassificationHtmlRenderer.createConfirmedHtmlString(classificationCriteriaDto));
-
-        try {
-            DatabaseHelper.getDiseaseClassificationCriteriaDao().saveAndSnapshot(classificationCriteria);
-        } catch (DaoException e) {
-            Log.e(DiseaseClassificationAppHelper.class.getName(), "Could not save disease classification to database");
-        }
-    }
-
     public static String buildDiseaseClassificationHtml(Disease disease) {
         StringBuilder html = new StringBuilder();
         html.append("<html><header><style>");

@@ -68,7 +68,7 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
     }
 
     @Override
-    protected boolean isSubActivitiy() {
+    protected boolean isSubActivity() {
         return true;
     }
 

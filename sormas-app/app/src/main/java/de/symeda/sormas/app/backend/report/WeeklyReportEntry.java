@@ -28,12 +28,15 @@ import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.EmbeddedAdo;
+import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 
 /**
  * Created by Mate Strysewske on 07.09.2017.
  */
 @Entity(name = WeeklyReportEntry.TABLE_NAME)
 @DatabaseTable(tableName = WeeklyReportEntry.TABLE_NAME)
+@EmbeddedAdo(parentAccessor = WeeklyReportEntry.WEEKLY_REPORT)
 public class WeeklyReportEntry extends AbstractDomainObject {
 
     private static final long serialVersionUID = -4161597011857710604L;
@@ -45,7 +48,7 @@ public class WeeklyReportEntry extends AbstractDomainObject {
     public static final String DISEASE = "disease";
     public static final String NUMBER_OF_CASES = "numberOfCases";
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private WeeklyReport weeklyReport;
 
     @Enumerated(EnumType.STRING)

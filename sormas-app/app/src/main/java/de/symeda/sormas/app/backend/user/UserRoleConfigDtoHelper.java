@@ -18,25 +18,13 @@
 
 package de.symeda.sormas.app.backend.user;
 
-import android.util.Log;
-
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Callable;
 
-import de.symeda.sormas.api.outbreak.OutbreakDto;
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.user.UserRoleConfigDto;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
-import de.symeda.sormas.app.backend.common.DaoException;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.outbreak.Outbreak;
 import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.rest.ServerCommunicationException;
-import de.symeda.sormas.app.rest.ServerConnectionException;
 import retrofit2.Call;
-import retrofit2.Response;
 
 public class UserRoleConfigDtoHelper extends AdoDtoHelper<UserRoleConfig, UserRoleConfigDto> {
 
@@ -61,7 +49,7 @@ public class UserRoleConfigDtoHelper extends AdoDtoHelper<UserRoleConfig, UserRo
     }
 
     @Override
-    protected Call<Integer> pushAll(List<UserRoleConfigDto> communityDtos) {
+    protected Call<List<PushResult>> pushAll(List<UserRoleConfigDto> communityDtos) {
         throw new UnsupportedOperationException("Entity is read-onl");
     }
 

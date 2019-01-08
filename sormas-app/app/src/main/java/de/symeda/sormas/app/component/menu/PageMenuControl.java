@@ -68,6 +68,7 @@ public class PageMenuControl extends LinearLayout {
     private int titleActiveColor;
     private FrameLayout fabFrame;
     private FloatingActionButton fab;
+    private LinearLayout subMenuFrame;
     private GridView taskLandingMenuGridView;
 
     private boolean mVisible;
@@ -246,9 +247,10 @@ public class PageMenuControl extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        taskLandingMenuGridView = (GridView) findViewById(R.id.sub_menu_grid);
-        fabFrame = (FrameLayout) findViewById(R.id.button_frame);
-        fab = (FloatingActionButton) findViewById(R.id.sub_menu_button);
+        subMenuFrame = findViewById(R.id.sub_menu_frame);
+        taskLandingMenuGridView = findViewById(R.id.sub_menu_grid);
+        fabFrame = findViewById(R.id.button_frame);
+        fab = findViewById(R.id.sub_menu_button);
 
         taskLandingMenuGridView.setAdapter(adapter);
         taskLandingMenuGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -289,8 +291,12 @@ public class PageMenuControl extends LinearLayout {
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
-        this.mCapturedLayoutHeight = this.getHeight();
-        this.mFabHeight = calculateFabHeight();
+        if (fabFrame != null) {
+            this.mFabHeight = fabFrame.getHeight();
+        }
+        if (subMenuFrame != null) {
+            this.mCapturedLayoutHeight = subMenuFrame.getHeight() + this.mFabHeight;
+        }
 
         this.mOpenPositionY = this.mParentHeight - this.mCapturedLayoutHeight;
         this.mClosePositionY = this.mParentHeight - this.mFabHeight;
@@ -350,6 +356,7 @@ public class PageMenuControl extends LinearLayout {
             return;
 
         setVisibility(View.VISIBLE);
+        subMenuFrame.setVisibility(View.VISIBLE);
 
         if (mLastAnimation == null) {
             setY(this.mOpenPositionY);
@@ -359,7 +366,6 @@ public class PageMenuControl extends LinearLayout {
             this.animate().y(this.mOpenPositionY).setInterpolator(new AccelerateInterpolator()).setListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
-                    setY(PageMenuControl.this.mClosePositionY);
                 }
 
                 @Override
@@ -370,12 +376,10 @@ public class PageMenuControl extends LinearLayout {
 
                 @Override
                 public void onAnimationCancel(Animator animation) {
-
                 }
 
                 @Override
                 public void onAnimationRepeat(Animator animation) {
-
                 }
             }).start();
         }
@@ -399,7 +403,7 @@ public class PageMenuControl extends LinearLayout {
             return;
 
         if (!showPageMenu()) {
-            setY(2000);
+            setVisibility(View.GONE);
             return;
         }
         setVisibility(View.VISIBLE);
@@ -407,6 +411,7 @@ public class PageMenuControl extends LinearLayout {
         if (mLastAnimation == null) {
             setY(this.mClosePositionY);
             mLastAnimation = ActionType.HIDE;
+            subMenuFrame.setVisibility(View.GONE);
         } else if (mLastAnimation != null && mLastAnimation == ActionType.SHOW) {
             this.animate().y(this.mClosePositionY).setInterpolator(new AccelerateInterpolator()).setListener(new Animator.AnimatorListener() {
                 @Override
@@ -418,6 +423,7 @@ public class PageMenuControl extends LinearLayout {
                 public void onAnimationEnd(Animator animation) {
                     setY(PageMenuControl.this.mClosePositionY);
                     mLastAnimation = ActionType.HIDE;
+                    subMenuFrame.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -522,21 +528,17 @@ public class PageMenuControl extends LinearLayout {
         }
     }
 
-    private int calculateFabHeight() {
-        if (fabFrame == null) {
-            return 0;
-        }
-
-        if (fab == null) {
-            return 0;
-        }
-
-        return fabFrame.getHeight();
-    }
-
     private void setFabFrameVisibility(boolean visibility) {
-        if (fabFrame != null)
+        if (fabFrame != null) {
             fabFrame.setVisibility(mCollapsible && visibility && showPageMenu() ? VISIBLE : GONE);
+        }
+
+        if (visibility) {
+            // make sure fab is not out of screen
+            if (getY() > mClosePositionY) {
+                setY(mClosePositionY);
+            }
+        }
     }
 
     public void disableClipOnParents(View v) {

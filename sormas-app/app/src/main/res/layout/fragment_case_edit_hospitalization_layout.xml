@@ -94,6 +94,7 @@
                         dependencyParentField="@{caseHospitalizationAdmittedToHealthFacility}"
                         dependencyParentValue="@{YesNoUnknown.YES}"
                         app:value="@={data.dischargeDate}"
+                        app:allowedDaysInFuture="7"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>

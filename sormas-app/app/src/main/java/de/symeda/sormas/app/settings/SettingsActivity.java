@@ -94,7 +94,7 @@ public class SettingsActivity extends BaseLandingActivity {
      * @see SettingsActivity#onOptionsItemSelected(MenuItem)
      */
     @Override
-    protected boolean isSubActivitiy() {
+    protected boolean isSubActivity() {
         return ConfigProvider.getUser() == null;
     }
 

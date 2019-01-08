@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze.classification;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -28,17 +29,11 @@ import de.symeda.sormas.api.sample.SampleTestDto;
 
 @Remote
 public interface CaseClassificationFacade {
-	
-	CaseClassification getClassification(CaseDataDto caze, List<SampleTestDto> sampleTests);
-	
-	ClassificationCriteriaDto getSuspectCriteria(Disease disease);
 
-	ClassificationCriteriaDto getProbableCriteria(Disease disease);
-	
-	ClassificationCriteriaDto getConfirmedCriteria(Disease disease);
-	
-	List<DiseaseClassificationCriteriaDto> getAllClassificationCriteria();
-	
-	DiseaseClassificationCriteriaDto getClassificationCriteriaForDisease(Disease disease);
-	
+	CaseClassification getClassification(CaseDataDto caze, List<SampleTestDto> sampleTests);
+
+	DiseaseClassificationCriteriaDto getByDisease(Disease disease);
+
+	List<DiseaseClassificationCriteriaDto> getAllSince(Date changeDate);
+
 }

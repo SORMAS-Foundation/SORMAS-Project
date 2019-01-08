@@ -2586,3 +2586,62 @@ ALTER TABLE userroles_userrights_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (119, 'Fix for user role configuration #830');
 
+-- 2018-12-04 Restructuring weekly reports #610
+
+ALTER TABLE weeklyreport ALTER COLUMN healthfacility_id DROP NOT NULL;
+ALTER TABLE weeklyreport RENAME informant_id TO reportinguser_id;
+ALTER TABLE weeklyreport ADD COLUMN district_id bigint;
+ALTER TABLE weeklyreport ADD CONSTRAINT fk_weeklyreport_district_id FOREIGN KEY (district_id) REFERENCES district (id);
+ALTER TABLE weeklyreport ADD COLUMN community_id bigint;
+ALTER TABLE weeklyreport ADD CONSTRAINT fk_weeklyreport_commuinty_id FOREIGN KEY (community_id) REFERENCES community (id);
+ALTER TABLE weeklyreport ADD COLUMN assignedofficer_id bigint;
+ALTER TABLE weeklyreport ADD CONSTRAINT fk_weeklyreport_assignedofficer_id FOREIGN KEY (assignedofficer_id) REFERENCES users (id);
+
+ALTER TABLE users_history ADD COLUMN community_id bigint;
+ALTER TABLE users_history ADD CONSTRAINT fk_users_community_id FOREIGN KEY (community_id) REFERENCES community (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (120, 'Restructuring weekly reports #610');
+
+-- 2018-12-10 Outbreak start & end #889
+
+ALTER TABLE outbreak ADD COLUMN startdate timestamp;
+UPDATE outbreak SET startdate=creationdate;
+ALTER TABLE outbreak ALTER COLUMN startdate SET NOT NULL;
+ALTER TABLE outbreak ADD COLUMN enddate timestamp;
+ALTER TABLE outbreak_history ADD COLUMN startdate timestamp;
+ALTER TABLE outbreak_history ADD COLUMN enddate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (121, 'Outbreak start & end #889');
+
+-- 2018-12-13 Virus isolation -> Isolation #838
+
+UPDATE samples SET suggestedtypeoftest='ISOLATION' WHERE suggestedtypeoftest='VIRUS_ISOLATION';
+UPDATE samples_history SET suggestedtypeoftest='ISOLATION' WHERE suggestedtypeoftest='VIRUS_ISOLATION';
+UPDATE sampletest SET testtype='ISOLATION' WHERE testtype='VIRUS_ISOLATION';
+UPDATE sampletest_history SET testtype='ISOLATION' WHERE testtype='VIRUS_ISOLATION';
+
+INSERT INTO schema_version (version_number, comment) VALUES (122, 'Virus isolation -> Isolation #838');
+
+-- 2018-12-19 History table and change date for embedded weekly report lists #610
+
+ALTER TABLE weeklyreport ADD COLUMN changedateofembeddedlists timestamp without time zone;
+
+ALTER TABLE weeklyreport ADD COLUMN sys_period tstzrange;
+UPDATE weeklyreport SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE weeklyreport ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE weeklyreport_history (LIKE weeklyreport);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON weeklyreport
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'weeklyreport_history', true);
+ALTER TABLE weeklyreport_history OWNER TO sormas_user;
+
+ALTER TABLE weeklyreportentry ADD COLUMN sys_period tstzrange;
+UPDATE weeklyreportentry SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE weeklyreportentry ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE weeklyreportentry_history (LIKE weeklyreportentry);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON weeklyreportentry
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'weeklyreportentry_history', true);
+ALTER TABLE weeklyreportentry_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (123, 'History table and change date for embedded weekly report lists #610');

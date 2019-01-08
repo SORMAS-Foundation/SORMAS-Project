@@ -56,7 +56,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
     private MenuItem newMenu = null;
 
     @Override
-    protected boolean isSubActivitiy() {
+    protected boolean isSubActivity() {
         return true;
     }
 

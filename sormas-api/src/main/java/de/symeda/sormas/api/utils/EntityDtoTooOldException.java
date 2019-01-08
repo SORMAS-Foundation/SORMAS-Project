@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -14,35 +14,20 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+ *******************************************************************************/
+package de.symeda.sormas.api.utils;
 
-package de.symeda.sormas.app.rest;
-
-import java.util.List;
-
-import de.symeda.sormas.api.report.WeeklyReportEntryDto;
-import retrofit2.Call;
-import retrofit2.http.Body;
-import retrofit2.http.GET;
-import retrofit2.http.POST;
-import retrofit2.http.Path;
-import retrofit2.http.Query;
+import de.symeda.sormas.api.EntityDto;
 
 /**
- * Created by Mate Strysewske on 12.09.2017.
+ * Thrown when a entity that is supposed to be saved is older than the current
+ * version in the database
  */
-public interface WeeklyReportEntryFacadeRetro {
+@SuppressWarnings("serial")
+public class EntityDtoTooOldException extends RuntimeException {
 
-    @GET("weeklyreportentries/all/{since}")
-    Call<List<WeeklyReportEntryDto>> pullAllSince(@Path("since") long since);
-
-    @POST("weeklyreportentries/query")
-    Call<List<WeeklyReportEntryDto>> pullByUuids(@Body List<String> uuids);
-
-    @POST("weeklyreportentries/push")
-    Call<Integer> pushAll(@Body List<WeeklyReportEntryDto> dtos);
-
-    @GET("weeklyreportentries/uuids")
-    Call<List<String>> pullUuids();
+	public EntityDtoTooOldException(String entityUuid, Class<? extends EntityDto> entityClass) {
+		super(entityClass.getSimpleName() + " is older than current version on server: '" + entityUuid + "'");
+	}
 
 }

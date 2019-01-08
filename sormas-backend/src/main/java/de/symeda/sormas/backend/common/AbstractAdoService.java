@@ -129,7 +129,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 
 		Predicate filter = createUserFilter(cb, cq, from, user);	
 		if (date != null) {
-			Predicate dateFilter = createDateFilter(cb, cq, from, date);
+			Predicate dateFilter = createChangeDateFilter(cb, from, date);
 			if (filter != null) {
 				filter = cb.and(filter, dateFilter);
 			} else {
@@ -183,9 +183,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	@SuppressWarnings("rawtypes")
 	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<ADO,ADO> from, User user);
 
-	// TODO rename to createChangeDateFilter
-	@SuppressWarnings("rawtypes")
-	public Predicate createDateFilter(CriteriaBuilder cb, CriteriaQuery cq, From<ADO,ADO> from, Date date) {		
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<ADO,ADO> from, Date date) {		
 		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
 		return dateFilter;
 	}

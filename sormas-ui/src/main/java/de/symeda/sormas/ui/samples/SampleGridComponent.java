@@ -233,7 +233,7 @@ public class SampleGridComponent extends VerticalLayout {
 		{
 			Button statusAll = new Button("All", e -> processStatusChange(false, false, false, false, e.getButton()));
 			initializeStatusButton(statusAll, buttonFilterLayout, "All");
-			CssStyles.removeStyles(statusAll, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			CssStyles.removeStyles(statusAll, CssStyles.BUTTON_FILTER_LIGHT);
 			activeStatusButton = statusAll;
 
 			Button notShippedButton = new Button("Not shipped", e -> processStatusChange(true, false, false, false, e.getButton()));
@@ -314,7 +314,7 @@ public class SampleGridComponent extends VerticalLayout {
 		{
 			Button statusAll = new Button("All", e -> processStatusChange(false, false, false, false, e.getButton()));
 			initializeStatusButton(statusAll, buttonFilterLayout, "All");
-			CssStyles.removeStyles(statusAll, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			CssStyles.removeStyles(statusAll, CssStyles.BUTTON_FILTER_LIGHT);
 			activeStatusButton = statusAll;
 
 			Button notShippedButton = new Button("Not shipped", e -> processStatusChange(true, false, false, false, e.getButton()));
@@ -413,16 +413,16 @@ public class SampleGridComponent extends VerticalLayout {
 		}
 
 		statusButtons.keySet().forEach(b -> {
-			CssStyles.style(b, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
 			b.setCaption(statusButtons.get(b));
 		});
-		CssStyles.removeStyles(button, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		CssStyles.removeStyles(button, CssStyles.BUTTON_FILTER_LIGHT);
 		activeStatusButton = button;
 		updateActiveStatusButtonCaption();
 	}
 
 	private void initializeStatusButton(Button button, HorizontalLayout filterLayout, String caption) {
-		CssStyles.style(button, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		CssStyles.style(button, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 		button.setCaptionAsHtml(true);
 		filterLayout.addComponent(button);
 		statusButtons.put(button, caption);

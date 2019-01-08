@@ -329,12 +329,13 @@ public class TestEntityCreator {
         WeeklyReport weeklyReport;
 
         try {
-            weeklyReport = DatabaseHelper.getWeeklyReportDao().create(epiWeek);
+            weeklyReport = DatabaseHelper.getWeeklyReportDao().build(epiWeek);
+            DatabaseHelper.getWeeklyReportDao().saveAndSnapshot(weeklyReport);
         } catch (DaoException e) {
             throw new RuntimeException(e);
         }
 
-        return weeklyReport;
+        return DatabaseHelper.getWeeklyReportDao().queryForIdWithEmbedded(weeklyReport.getId());
     }
 
 }

@@ -28,7 +28,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.ValidationException;
 
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -39,7 +38,6 @@ import de.symeda.sormas.api.user.UserRole.UserRoleValidationException;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventService;
-import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
@@ -85,26 +83,26 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public List<UserReferenceDto> getAssignableUsersByDistrict(DistrictReferenceDto districtRef,
-			boolean includeSupervisors, UserRole... assignableRoles) {
+	public List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto districtRef,
+			boolean includeSupervisors, UserRole... userRoles) {
+		
 		District district = districtService.getByReferenceDto(districtRef);
 
-		return userService.getAllByDistrict(district, includeSupervisors, assignableRoles).stream()
+		return userService.getAllByDistrict(district, includeSupervisors, userRoles).stream()
 				.map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<UserReferenceDto> getForWeeklyReportDetails(DistrictReferenceDto districtRef) {
-		District district = districtService.getByReferenceDto(districtRef);
+	public List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficerRef, UserRole... userRoles) {
 
-		return userService.getForWeeklyReportDetails(district).stream().map(u -> toReferenceDto(u))
-				.collect(Collectors.toList());
+		User associatedOfficer = userService.getByReferenceDto(associatedOfficerRef);
+
+		return userService.getAllByAssociatedOfficer(associatedOfficer, userRoles).stream()
+				.map(f -> toDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<UserDto> getAll(UserRole... roles) {
-
-		// TODO user region of the current user
 
 		return userService.getAllByRegionAndUserRoles(null, roles).stream().map(f -> toDto(f))
 				.collect(Collectors.toList());
@@ -166,13 +164,6 @@ public class UserFacadeEjb implements UserFacade {
 		userService.ensurePersisted(user);
 
 		return toDto(user);
-	}
-
-	@Override
-	public int getNumberOfInformantsByFacility(FacilityReferenceDto facilityRef) {
-		Facility facility = facilityService.getByReferenceDto(facilityRef);
-
-		return (int) userService.getNumberOfInformantsByFacility(facility);
 	}
 
 	public static UserDto toDto(User source) {

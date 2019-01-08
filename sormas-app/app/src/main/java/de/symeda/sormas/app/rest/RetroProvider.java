@@ -104,7 +104,6 @@ public final class RetroProvider {
     private SampleTestFacadeRetro sampleTestFacadeRetro;
     private EventParticipantFacadeRetro eventParticipantFacadeRetro;
     private WeeklyReportFacadeRetro weeklyReportFacadeRetro;
-    private WeeklyReportEntryFacadeRetro weeklyReportEntryFacadeRetro;
     private OutbreakFacadeRetro outbreakFacadeRetro;
     private ClassificationFacadeRetro classificationFacadeRetro;
     private UserRoleConfigFacadeRetro userRoleConfigFacadeRetro;
@@ -556,17 +555,6 @@ public final class RetroProvider {
             }
         }
         return instance.weeklyReportFacadeRetro;
-    }
-
-    public static WeeklyReportEntryFacadeRetro getWeeklyReportEntryFacade() {
-        if (instance.weeklyReportEntryFacadeRetro == null) {
-            synchronized ((RetroProvider.class)) {
-                if (instance.weeklyReportEntryFacadeRetro == null) {
-                    instance.weeklyReportEntryFacadeRetro = instance.retrofit.create(WeeklyReportEntryFacadeRetro.class);
-                }
-            }
-        }
-        return instance.weeklyReportEntryFacadeRetro;
     }
 
     public static OutbreakFacadeRetro getOutbreakFacade() {

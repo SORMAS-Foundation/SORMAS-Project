@@ -57,7 +57,7 @@ public class UserReferenceDto extends ReferenceDto {
 				} else {
 					result.append(", ");
 				}
-				result.append(userRole.toShortString());
+				result.append(userRole.toString());
 			}
 		}
 		return result.toString();

@@ -32,22 +32,24 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Path("/cases")
-@Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
-@Consumes({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
+@Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
+@Consumes({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
 @RolesAllowed("USER")
-public class CaseResource {
+public class CaseResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
 	public List<CaseDataDto> getAllCases(@Context SecurityContext sc, @PathParam("since") long since) {
-		
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<CaseDataDto> cases = FacadeProvider.getCaseFacade().getAllActiveCasesAfter(new Date(since), userDto.getUuid());
+
+		UserReferenceDto userDto = FacadeProvider.getUserFacade()
+				.getByUserNameAsReference(sc.getUserPrincipal().getName());
+		List<CaseDataDto> cases = FacadeProvider.getCaseFacade().getAllActiveCasesAfter(new Date(since),
+				userDto.getUuid());
 		return cases;
 	}
 
@@ -55,36 +57,34 @@ public class CaseResource {
 	@Path("/query")
 	public List<CaseDataDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
 
-		List<CaseDataDto> result = FacadeProvider.getCaseFacade().getByUuids(uuids); 
+		List<CaseDataDto> result = FacadeProvider.getCaseFacade().getByUuids(uuids);
 		return result;
 	}
 
-	@POST 
+	@POST
 	@Path("/push")
-	public Integer postCases(List<CaseDataDto> dtos) {
-		
-		CaseFacade caseFacade = FacadeProvider.getCaseFacade();
-		for (CaseDataDto dto : dtos) {
-			caseFacade.saveCase(dto);
-		}
-		
-		return dtos.size();
+	public List<PushResult> postCases(List<CaseDataDto> dtos) {
+
+		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getCaseFacade()::saveCase);
+		return result;
 	}
-	
+
 	@GET
 	@Path("/uuids")
 	public List<String> getAllUuids(@Context SecurityContext sc) {
-		
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
+
+		UserReferenceDto userDto = FacadeProvider.getUserFacade()
+				.getByUserNameAsReference(sc.getUserPrincipal().getName());
 		List<String> uuids = FacadeProvider.getCaseFacade().getAllActiveUuids(userDto.getUuid());
 		return uuids;
 	}
-	
+
 	@GET
 	@Path("/archived/{since}")
 	public List<String> getArchivedUuidsSince(@Context SecurityContext sc, @PathParam("since") long since) {
 
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
+		UserReferenceDto userDto = FacadeProvider.getUserFacade()
+				.getByUserNameAsReference(sc.getUserPrincipal().getName());
 		List<String> uuids = FacadeProvider.getCaseFacade().getArchivedUuidsSince(userDto.getUuid(), new Date(since));
 		return uuids;
 	}
