@@ -91,10 +91,6 @@ read -p "Press [Enter] to continue..."
 # copying server-libs
 cp serverlibs/*.jar ${DOMAIN_DIR}/lib/
 
-# copying bundles
-mkdir -p ${DOMAIN_DIR}/autodeploy/bundles
-cp -a bundles/*.jar ${DOMAIN_DIR}/autodeploy/bundles/
-
 echo "copying libs completed"
 read -p "Press [Enter] to continue..."
 

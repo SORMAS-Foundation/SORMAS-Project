@@ -4,12 +4,9 @@
 
 	<property file="build.properties" />
 	<property name="deploy.path" value="${glassfish.domain.root}/autodeploy" />
-	<property name="deploy.bundles.path" value="${deploy.path}/bundles" />
 	<property name="deploy.serverlibs.path" value="${glassfish.domain.root}/lib" />
 	<property name="collect.root.path" value="../deploy" />
 	<property name="collect.serverlibs.path" value="${collect.root.path}/serverlibs" />
-	<property name="collect.gf-modules.path" value="${collect.root.path}/gf-modules" />
-	<property name="collect.bundles.path" value="${collect.root.path}/bundles" />
 	<property name="collect.sql.path" value="${collect.root.path}/sql" />
 
 	<property environment="env" />
@@ -48,44 +45,12 @@
 		</artifact:mvn>
 	</target>
 
-	<target name="deploy-bundles" description="Deploy osgi bundles to development server">
-
-		<artifact:pom id="bundlesPom" file="dependencies/bundles.pom">
-		</artifact:pom>
-
-		<artifact:dependencies filesetId="bundlesid" pomRefId="bundlesPom" useScope="compile" versionsId="dependency.versions" />
-
-		<delete failonerror="false">
-			<fileset dir="${deploy.bundles.path}">
-				<include name="*.jar" />
-			</fileset>
-		</delete>
-
-		<copy todir="${deploy.bundles.path}" preservelastmodified="true" verbose="true">
-			<fileset refid="bundlesid" />
-			<mapper type="flatten" />
-		</copy>
-	</target>
-
-	<target name="-deploy-bundles-prod" description="Gather osgi bundles for production server">
-
-		<artifact:pom id="bundlesPom" file="dependencies/bundles.pom">
-		</artifact:pom>
-
-		<artifact:dependencies filesetId="bundlesid" pomRefId="bundlesPom" useScope="compile" versionsId="dependency.versions" />
-		<!-- <echo>${dependency.versions}</echo> -->
-		<copy todir="${deploy.bundles.path}" preservelastmodified="true" verbose="true">
-			<fileset refid="bundlesid" />
-			<mapper type="flatten" />
-		</copy>
-	</target>
-
 	<target name="deploy-serverlibs" description="Gather server jars">
 
 		<artifact:pom id="serverlibsPom" file="dependencies/serverlibs.pom">
 		</artifact:pom>
 
-		<echo>Die folgende invalid-POM-Warning kann ignoriert werden</echo>
+		<echo>The following invalid POM warning can be ignored</echo>
 		<artifact:dependencies filesetId="serverlibsid" pomRefId="serverlibsPom" useScope="compile" versionsId="dependency.versions" />
 
 		<delete failonerror="false">
@@ -96,44 +61,6 @@
 
 		<copy todir="${deploy.serverlibs.path}" preservelastmodified="true" verbose="true">
 			<fileset refid="serverlibsid" />
-			<mapper type="flatten" />
-		</copy>
-	</target>
-
-	<target name="collect-bundles" description="bundles für glassfish-config bereitstellen">
-
-		<artifact:pom id="bundlesPom" file="dependencies/bundles.pom">
-		</artifact:pom>
-
-		<artifact:dependencies filesetId="bundlesid" pomRefId="bundlesPom" useScope="compile" versionsId="dependency.versions" />
-
-		<delete failonerror="false">
-			<fileset dir="${collect.bundles.path}">
-				<include name="*.jar" />
-			</fileset>
-		</delete>
-
-		<copy todir="${collect.bundles.path}" preservelastmodified="true" verbose="true">
-			<fileset refid="bundlesid" />
-			<mapper type="flatten" />
-		</copy>
-	</target>
-
-	<target name="collect-gf-modules" description="modules als Patches für glassfish bereitstellen">
-
-		<artifact:pom id="gf-modulesPom" file="dependencies/gf-modules.pom">
-		</artifact:pom>
-
-		<artifact:dependencies filesetId="gf-modulesid" pomRefId="gf-modulesPom" useScope="compile" versionsId="dependency.versions" />
-
-		<delete failonerror="false">
-			<fileset dir="${collect.gf-modules.path}">
-				<include name="*.*ar" />
-			</fileset>
-		</delete>
-
-		<copy todir="${collect.gf-modules.path}" preservelastmodified="true" verbose="true">
-			<fileset refid="gf-modulesid" />
 			<mapper type="flatten" />
 		</copy>
 	</target>
@@ -159,7 +86,7 @@
 		<artifact:pom id="serverlibsPom" file="dependencies/serverlibs.pom">
 		</artifact:pom>
 
-		<echo>Die folgende invalid-POM-Warning kann ignoriert werden</echo>
+		<echo>The following invalid POM warning can be ignored</echo>
 		<artifact:dependencies filesetId="serverlibsid" pomRefId="serverlibsPom" useScope="compile" versionsId="dependency.versions" />
 
 		<delete failonerror="false">
@@ -200,17 +127,11 @@
 		<echo>Collecting serverlibs</echo>
 		<antcall target="collect-serverlibs" />
 
-		<echo>Collecting bundles</echo>
-		<antcall target="collect-bundles" />
-
 		<echo>Collecting SQL</echo>
 		<antcall target="collect-sql" />
 
 		<echo>Collecting config und scripts</echo>
 		<antcall target="collect-setup" />
-
-		<echo>Collecting gf-modules</echo>
-		<antcall target="collect-gf-modules" />
 
 		<echo>Collecting SORMAS artifacts</echo>
 		<antcall target="collect-artifacts" />
