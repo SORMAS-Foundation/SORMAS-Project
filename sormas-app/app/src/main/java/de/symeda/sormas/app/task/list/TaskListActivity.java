@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Random;
 
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.task.edit.TaskNewActivity;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListFragment;
@@ -80,5 +82,8 @@ public class TaskListActivity extends BaseListActivity {
     }
 
     @Override
-    protected boolean isEntryCreateAllowed() { return true; }
+    protected boolean isEntryCreateAllowed() {
+        return ConfigProvider.hasUserRight(UserRight.TASK_CREATE);
+        //return true;
+    }
 }
