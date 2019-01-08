@@ -155,14 +155,14 @@ public class EventsView extends AbstractView {
 		statusButtons = new HashMap<>();
 
 		Button statusAll = new Button("All", e -> processStatusChange(null, e.getButton()));
-		CssStyles.style(statusAll, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED);
+		CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 		statusAll.setCaptionAsHtml(true);
 		statusFilterLayout.addComponent(statusAll);
 		statusButtons.put(statusAll, "All");
 
 		for(EventStatus status : EventStatus.values()) {
 			Button statusButton = new Button(status.toString(), e -> processStatusChange(status, e.getButton()));
-			CssStyles.style(statusButton, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			CssStyles.style(statusButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 			statusButton.setCaptionAsHtml(true);
 			statusFilterLayout.addComponent(statusButton);
 			statusButtons.put(statusButton, status.toString());
@@ -266,10 +266,10 @@ public class EventsView extends AbstractView {
 	private void processStatusChange(EventStatus eventStatus, Button button) {
 		grid.setStatusFilter(eventStatus);
 		statusButtons.keySet().forEach(b -> {
-			CssStyles.style(b, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
 			b.setCaption(statusButtons.get(b));
 		});
-		CssStyles.removeStyles(button, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		CssStyles.removeStyles(button, CssStyles.BUTTON_FILTER_LIGHT);
 		activeStatusButton = button;
 		updateActiveStatusButtonCaption();
 	}

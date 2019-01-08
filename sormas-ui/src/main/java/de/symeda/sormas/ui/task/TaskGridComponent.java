@@ -140,7 +140,7 @@ public class TaskGridComponent extends VerticalLayout {
 			if (CurrentUser.getCurrent().hasUserRole(UserRole.LAB_USER) && CurrentUser.getCurrent().getUserRoles().size() == 1) {
 				processAssigneeFilterChange(false, true, myTasks);
 			} else {
-				CssStyles.removeStyles(allTasks, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+				CssStyles.removeStyles(allTasks, CssStyles.BUTTON_FILTER_LIGHT);
 				activeStatusButton = allTasks;
 			}
 		}
@@ -211,7 +211,7 @@ public class TaskGridComponent extends VerticalLayout {
 		{
 			Button statusAll = new Button("all", e -> processStatusChange(null, e.getButton()));
 			initializeStatusButton(statusAll, buttonFilterLayout, "All");
-			CssStyles.removeStyles(statusAll, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			CssStyles.removeStyles(statusAll, CssStyles.BUTTON_FILTER_LIGHT);
 			activeStatusButton = statusAll;
 
 			for (TaskStatus status : TaskStatus.values()) {
@@ -278,10 +278,10 @@ public class TaskGridComponent extends VerticalLayout {
 		}
 
 		statusButtons.keySet().forEach(b -> {
-			CssStyles.style(b, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
 			b.setCaption(statusButtons.get(b));
 		});
-		CssStyles.removeStyles(button, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		CssStyles.removeStyles(button, CssStyles.BUTTON_FILTER_LIGHT);
 		activeStatusButton = button;	
 		updateActiveStatusButtonCaption();
 	}
@@ -289,16 +289,16 @@ public class TaskGridComponent extends VerticalLayout {
 	private void processStatusChange(TaskStatus taskStatus, Button button) {
 		grid.filterTaskStatus(taskStatus, true);
 		statusButtons.keySet().forEach(b -> {
-			CssStyles.style(b, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
 			b.setCaption(statusButtons.get(b));
 		});
-		CssStyles.removeStyles(button, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		CssStyles.removeStyles(button, CssStyles.BUTTON_FILTER_LIGHT);
 		activeStatusButton = button;
 		updateActiveStatusButtonCaption();
 	}
 
 	private void initializeStatusButton(Button button, HorizontalLayout filterLayout, String caption) {
-		CssStyles.style(button, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		CssStyles.style(button, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 		button.setCaptionAsHtml(true);
 		filterLayout.addComponent(button);
 		statusButtons.put(button, caption);

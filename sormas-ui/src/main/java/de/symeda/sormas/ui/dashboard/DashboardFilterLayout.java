@@ -155,8 +155,8 @@ public class DashboardFilterLayout extends HorizontalLayout {
 			setDateFilter(DateHelper.getStartOfWeek(now), DateHelper.getEndOfWeek(now));
 			dashboardView.refreshDashboard();
 		});
-		CssStyles.style(thisWeekButton, CssStyles.LINK_HIGHLIGHTED_DARK);
-		CssStyles.removeStyles(thisWeekButton, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		CssStyles.style(thisWeekButton, CssStyles.BUTTON_FILTER_DARK);
+		CssStyles.removeStyles(thisWeekButton, CssStyles.BUTTON_FILTER_LIGHT);
 
 		Button lastWeekButton = new Button("Last week");
 		initializeDateFilterButton(lastWeekButton);
@@ -256,21 +256,21 @@ public class DashboardFilterLayout extends HorizontalLayout {
 				changeDateFilterButtonsStyles(button);
 			});
 		}
-		CssStyles.style(button, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT, CssStyles.FORCE_CAPTION);
+		CssStyles.style(button, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT, CssStyles.FORCE_CAPTION);
 		dateFilterButtons.add(button);
 	}
 
 	private void changeDateFilterButtonsStyles(Button activeFilterButton) {
-		CssStyles.style(activeFilterButton, CssStyles.LINK_HIGHLIGHTED_DARK);
-		CssStyles.removeStyles(activeFilterButton, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		CssStyles.style(activeFilterButton, CssStyles.BUTTON_FILTER_DARK);
+		CssStyles.removeStyles(activeFilterButton, CssStyles.BUTTON_FILTER_LIGHT);
 		if (customButton != activeFilterButton) {
 			customButton.setCaption("Custom");
 		}
 
 		dateFilterButtons.forEach(b -> {
 			if (b != activeFilterButton) {
-				CssStyles.style(b, CssStyles.LINK_HIGHLIGHTED_LIGHT);
-				CssStyles.removeStyles(b, CssStyles.LINK_HIGHLIGHTED_DARK);
+				CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
+				CssStyles.removeStyles(b, CssStyles.BUTTON_FILTER_DARK);
 			}
 		});
 	}
