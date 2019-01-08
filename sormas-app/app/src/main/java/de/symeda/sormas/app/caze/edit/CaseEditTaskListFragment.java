@@ -35,8 +35,9 @@ import de.symeda.sormas.app.task.edit.TaskEditActivity;
 
 public class CaseEditTaskListFragment extends BaseEditFragment<FragmentFormListLayoutBinding, List<Task>, Case> implements OnListItemClickListener {
 
-    private List<Task> record;
+    public static final String TAG = CaseEditTaskListFragment.class.getSimpleName();
 
+    private List<Task> record;
     private CaseEditTaskListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
 
@@ -83,12 +84,12 @@ public class CaseEditTaskListFragment extends BaseEditFragment<FragmentFormListL
 
     @Override
     public boolean isShowSaveAction() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isShowNewAction() {
-        return false;
+        return true;
     }
 
     @Override

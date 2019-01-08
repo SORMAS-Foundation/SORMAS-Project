@@ -120,6 +120,7 @@
     <string name="caption_new_case">New Case</string>
     <string name="caption_new_contact">New Contact</string>
     <string name="caption_new_sample">New Sample</string>
+    <string name="caption_new_task">New Task</string>
     <string name="caption_new_event_participant">New Person Involved</string>
     <string name="caption_patient_information">Patient Information</string>
     <string name="caption_person_information">Person Information</string>
@@ -190,7 +191,6 @@
     <string name="heading_level4_event_edit">Edit Event</string>
     <string name="heading_level4_sample_edit">Edit Sample</string>
     <string name="heading_level4_task_edit">Task</string>
-    <string name="heading_level4_task_new">New Task</string>
     <string name="heading_person_involved_new">New Person Involved</string>
     <string name="heading_sample_new">New Sample</string>
     <string name="heading_sub_dialog_placeholder">Dialog Sub Heading</string>

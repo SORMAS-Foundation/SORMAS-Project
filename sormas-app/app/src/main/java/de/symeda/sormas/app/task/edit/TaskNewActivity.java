@@ -35,87 +35,151 @@ import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
+import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.util.Bundler;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class TaskNewActivity extends BaseEditActivity<Task> {
 
-    private static TaskContext taskContext = null;
-    private String entityUuid = null;
+    public static final String TAG = TaskNewActivity.class.getSimpleName();
 
     private AsyncTask saveTask;
 
-    public static void startActivity(Context context) {
-        taskContext = TaskContext.GENERAL;
-        BaseEditActivity.startActivity(context, TaskNewActivity.class, buildBundle());
+    //private static TaskContext taskContext = null;
+    private String caseUuid;
+    private String contactUuid;
+    private String eventUuid;
+
+    public static void startActivity(Context fromActivity) {
+        //taskContext = TaskContext.GENERAL;
+        BaseEditActivity.startActivity(fromActivity, TaskNewActivity.class, buildBundle());
     }
 
-    public static void startActivityWithCase(Context context, String rootUuid) {
-        BaseEditActivity.startActivity(context, TaskNewActivity.class, buildBundle(rootUuid));
+    public static void startActivityFromCase(Context fromActivity, String caseUuid) {
+        //taskContext = TaskContext.CASE;
+        BaseEditActivity.startActivity(fromActivity, TaskNewActivity.class, buildBundleWithCase(caseUuid));
     }
 
-    public static Bundler buildBundle() {
-        return BaseEditActivity.buildBundle(null);
+    public static void startActivityFromContact(Context fromActivity, String contactUuid) {
+        //taskContext = TaskContext.CONTACT;
+        BaseEditActivity.startActivity(fromActivity, TaskNewActivity.class, buildBundleWithContact(contactUuid));
     }
 
-    public static Bundler buildBundle(String rootUuid) {
-        return BaseEditActivity.buildBundle(rootUuid);
+    public static void startActivityFromEvent(Context fromActivity, String eventUuid) {
+        //taskContext = TaskContext.EVENT;
+        BaseEditActivity.startActivity(fromActivity, TaskNewActivity.class, buildBundleWithEvent(eventUuid));
     }
 
-    @Override
-    public TaskStatus getPageStatus() {
-        return getStoredRootEntity() == null ? null : getStoredRootEntity().getTaskStatus();
+    public static Bundler buildBundle() { return BaseEditActivity.buildBundle(null); }
+
+    public static Bundler buildBundleWithCase(String caseUuid) {
+        return BaseEditActivity.buildBundle(null).setCaseUuid(caseUuid);
+    }
+
+    public static Bundler buildBundleWithContact(String contactUuid) {
+        return BaseEditActivity.buildBundle(null).setContactUuid(contactUuid);
+    }
+
+    public static Bundler buildBundleWithEvent(String eventUuid) {
+        return BaseEditActivity.buildBundle(null).setEventUuid(eventUuid);
     }
 
     @Override
     protected void onCreateInner(Bundle savedInstanceState) {
         super.onCreateInner(savedInstanceState);
-        entityUuid = new Bundler(savedInstanceState).getRootUuid();
+        Bundler bundler = new Bundler(savedInstanceState);
+        caseUuid = bundler.getCaseUuid();
+        contactUuid = bundler.getContactUuid();
+        eventUuid = bundler.getEventUuid();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Bundler bundler = new Bundler(outState);
+        bundler.setCaseUuid(caseUuid);
+        bundler.setContactUuid(contactUuid);
+        bundler.setEventUuid(eventUuid);
+    }
+
+    @Override
+    public TaskStatus getPageStatus() {
+        return null;
+        //return getStoredRootEntity() == null ? null : getStoredRootEntity().getTaskStatus();
     }
 
     @Override
     protected Task queryRootEntity(String recordUuid) {
-        return DatabaseHelper.getTaskDao().queryUuid(recordUuid);
+        throw new UnsupportedOperationException();
+        //return DatabaseHelper.getTaskDao().queryUuid(recordUuid);
     }
 
     @Override
     protected Task buildRootEntity() {
-        Task _task = null;
+        Task _task;
 
-        switch (taskContext) {
-            case CASE:
-                Case _case = DatabaseHelper.getCaseDao().queryUuidBasic(entityUuid);
-                _task = DatabaseHelper.getTaskDao().build(_case);
-                break;
-            case CONTACT:
-                break;
-            case EVENT:
-                break;
-            case GENERAL:
-                _task = DatabaseHelper.getTaskDao().build();
-                break;
-            default:
-                throw new IndexOutOfBoundsException(getContext().toString());
+        if (!DataHelper.isNullOrEmpty(caseUuid)) {
+            Case _case = DatabaseHelper.getCaseDao().queryUuidBasic(caseUuid);
+            _task = DatabaseHelper.getTaskDao().build(_case);
+        } else if (!DataHelper.isNullOrEmpty(contactUuid)) {
+            Contact _contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
+            _task = DatabaseHelper.getTaskDao().build(_contact);
+        } else if (!DataHelper.isNullOrEmpty(eventUuid)) {
+            Event _event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
+            _task = DatabaseHelper.getTaskDao().build(_event);
+        } else {
+            _task = DatabaseHelper.getTaskDao().build();
         }
 
         return _task;
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-//        Bundler bundler = new Bundler(outState);
-//        bundler.setContactUuid(contactUuid);
-//        bundler.setEventParticipantUuid(eventParticipantUuid);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        boolean result = super.onCreateOptionsMenu(menu);
+        getSaveMenu().setTitle(R.string.action_save_task);
+        return result;
+    }
+
+    @Override
+    protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Task activityRootData) {
+        BaseEditFragment fragment;
+
+        if (caseUuid != null) {
+            fragment = TaskNewFragment.newInstanceFromCase(activityRootData, caseUuid);
+        } else if (contactUuid != null) {
+            fragment = TaskNewFragment.newInstanceFromContact(activityRootData, contactUuid);
+        } else if (eventUuid != null) {
+            fragment = TaskNewFragment.newInstanceFromEvent(activityRootData, eventUuid);
+        } else {
+            fragment = TaskNewFragment.newInstance(activityRootData);
+        }
+
+        fragment.setLiveValidationDisabled(true);
+        return fragment;
+    }
+
+    @Override
+    protected int getActivityTitle() {
+        return R.string.caption_new_task;
+    }
+
+    @Override
+    public void replaceFragment(BaseEditFragment f, boolean allowBackNavigation) {
+        super.replaceFragment(f, allowBackNavigation);
+        getActiveFragment().setLiveValidationDisabled(true);
     }
 
     @Override
@@ -127,8 +191,32 @@ public class TaskNewActivity extends BaseEditActivity<Task> {
         }
 
         final Task taskToSave = getStoredRootEntity();
+        TaskNewFragment fragment = (TaskNewFragment) getActiveFragment();
+
+        fragment.setLiveValidationDisabled(false);
+
+        try {
+            FragmentValidator.validate(getContext(), fragment.getContentBinding());
+        } catch (ValidationException e) {
+            NotificationHelper.showNotification(this, ERROR, e.getMessage());
+            return;
+        }
+
+        saveDataInner(taskToSave);
+    }
+
+    private void saveDataInner(final Task taskToSave) {
+
+        if (saveTask != null) {
+            NotificationHelper.showNotification(this, WARNING, getString(R.string.snackbar_already_saving));
+            return; // don't save multiple times
+        }
 
         saveTask = new SavingAsyncTask(getRootView(), taskToSave) {
+            @Override
+            protected void onPreExecute() {
+                showPreloader();
+            }
 
             @Override
             public void doInBackground(TaskResultHolder resultHolder) throws DaoException, ValidationException {
@@ -138,12 +226,11 @@ public class TaskNewActivity extends BaseEditActivity<Task> {
 
             @Override
             protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                hidePreloader();
                 super.onPostExecute(taskResult);
-
                 if (taskResult.getResultStatus().isSuccess()) {
                     finish();
-                } else {
-                    onResume(); // reload data
+                    TaskEditActivity.startActivity(getContext(), taskToSave.getUuid());
                 }
                 saveTask = null;
             }
@@ -164,25 +251,6 @@ public class TaskNewActivity extends BaseEditActivity<Task> {
             CaseDtoHelper.fillDto(cazeDto, caze);
             CaseLogic.validateInvestigationDoneAllowed(cazeDto);
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        boolean result = super.onCreateOptionsMenu(menu);
-        getSaveMenu().setTitle(R.string.action_save_task);
-        return result;
-    }
-
-    @Override
-    protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Task activityRootData) {
-        BaseEditFragment fragment = TaskNewFragment.newInstance(activityRootData);
-        fragment.setLiveValidationDisabled(true);
-        return fragment;
-    }
-
-    @Override
-    protected int getActivityTitle() {
-        return R.string.heading_level4_task_new;
     }
 
     @Override

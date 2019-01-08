@@ -41,6 +41,7 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.event.EventSection;
 import de.symeda.sormas.app.event.edit.eventparticipant.EventParticipantNewActivity;
+import de.symeda.sormas.app.task.edit.TaskNewActivity;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
@@ -110,9 +111,13 @@ public class EventEditActivity extends BaseEditActivity<Event> {
     @Override
     public void goToNewView() {
         EventSection section = EventSection.fromOrdinal(getActivePage().getKey());
+
         switch (section) {
             case EVENT_PARTICIPANTS:
                 EventParticipantNewActivity.startActivity(getContext(), getRootUuid());
+                break;
+            case TASKS:
+                TaskNewActivity.startActivityFromEvent(getContext(), getRootUuid());
                 break;
             default:
                 throw new IllegalArgumentException(DataHelper.toStringNullable(section));

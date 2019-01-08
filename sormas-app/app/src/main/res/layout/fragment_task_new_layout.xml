@@ -51,7 +51,7 @@
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/task_taskType"
                     style="@style/ControlSingleColumnStyle"
-                    app:value="@{data.taskType}" />
+                    app:value="@={data.taskType}" />
 
                 <de.symeda.sormas.app.component.controls.ControlLinkField
                     android:id="@+id/task_caze"
@@ -74,27 +74,27 @@
                 <de.symeda.sormas.app.component.controls.ControlDateTimeField
                     android:id="@+id/task_suggestedStart"
                     style="@style/ControlSingleColumnStyle"
-                    app:value="@{data.suggestedStart}" />
+                    app:value="@={data.suggestedStart}" />
 
                 <de.symeda.sormas.app.component.controls.ControlDateTimeField
                     android:id="@+id/task_dueDate"
                     style="@style/ControlSingleColumnStyle"
-                    app:value="@{data.dueDate}" />
+                    app:value="@={data.dueDate}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/task_assigneeUser"
                     style="@style/ControlSingleColumnStyle"
-                    app:value="@{data.assigneeUser}" />
+                    app:value="@={data.assigneeUser}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/task_priority"
                     style="@style/ControlSingleColumnStyle"
-                    app:value="@{data.taskType}" />
+                    app:value="@={data.priority}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/task_creatorComment"
                     style="@style/ControlSingleColumnStyle"
-                    app:value="@{data.creatorComment}" />
+                    app:value="@={data.creatorComment}" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

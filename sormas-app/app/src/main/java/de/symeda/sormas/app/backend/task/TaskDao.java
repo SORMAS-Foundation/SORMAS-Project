@@ -87,6 +87,22 @@ public class TaskDao extends AbstractAdoDao<Task> {
         return task;
     }
 
+    public Task build (Contact associatedContact) {
+        Task task = build();
+        task.setTaskContext(TaskContext.CONTACT);
+        task.setContact(associatedContact);
+
+        return task;
+    }
+
+    public Task build (Event associatedEvent) {
+        Task task = build();
+        task.setTaskContext(TaskContext.EVENT);
+        task.setEvent(associatedEvent);
+
+        return task;
+    }
+
     @Override
     public Task saveAndSnapshot(Task task) throws DaoException {
 

@@ -85,7 +85,7 @@ public class EventEditTaskListFragement extends BaseEditFragment<FragmentFormLis
 
     @Override
     public boolean isShowNewAction() {
-        return false;
+        return true;
     }
 
     @Override
