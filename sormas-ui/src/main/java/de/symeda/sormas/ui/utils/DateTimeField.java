@@ -17,7 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -44,11 +46,11 @@ public class DateTimeField extends CustomField<Date> {
 	private ComboBox timeField;
 
 	private Converter<Date, ?> converter;
+	private List<Validator> dateFieldValidators = new ArrayList<>();
 	boolean converterSet;
 
 	@Override
 	protected Component initContent() {
-
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.setSpacing(true);
 		layout.setWidth(100, Unit.PERCENTAGE);
@@ -63,6 +65,10 @@ public class DateTimeField extends CustomField<Date> {
 		if (!converterSet) {
 			dateField.setConverter(converter);
 			converterSet = true;
+		}
+		
+		for (Validator validator : dateFieldValidators) {
+			dateField.addValidator(validator);
 		}
 
 		timeField = new ComboBox();
@@ -194,7 +200,11 @@ public class DateTimeField extends CustomField<Date> {
 	}
 	
 	public void addValidatorToDateField(Validator validator) {
-		dateField.addValidator(validator);
+		if (dateField != null) {
+			dateField.addValidator(validator);
+		} else {
+			dateFieldValidators.add(validator);
+		}
 	}
 
 }
