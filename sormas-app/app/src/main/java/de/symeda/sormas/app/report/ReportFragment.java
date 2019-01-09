@@ -395,7 +395,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                             return;
                         }
 
-                        NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.snackbar_weekly_report_confirmed);
+                        NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.snackbar_weekly_report_submitted);
                         ((ReportActivity)getActivity()).onResume(); // reload data
                     }
                 }.executeOnThreadPool();
