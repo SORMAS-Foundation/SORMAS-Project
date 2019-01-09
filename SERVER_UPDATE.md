@@ -41,7 +41,8 @@ For information on what libs are used see pom.xml in sormas-base project: https:
 * ``rm /opt/domains/sormas/lib/*.jar``
 * ``cp ./serverlibs/* /opt/domains/sormas/lib/``
 
-## OSGi Bundles (only when SORMAS versions pre 1.10 where installed on the server)
+## OSGi Bundles 
+Only when SORMAS versions pre 1.10 where installed on the server.
 * ``rm /opt/domains/sormas/autodeploy/bundles/*.jar``
 * ``rm /opt/domains/sormas/autodeploy/.autodeploystatus/*``
 * ``rm -r /opt/domains/sormas/osgi-cache/felix``
