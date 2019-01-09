@@ -75,7 +75,7 @@ public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemL
 
 
         //Sync Icon
-        if (record.isModifiedOrChildModified()) {
+        if (record.isModified() || record.getPerson().isModified()) {
             holder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
             holder.binding.imgSyncIcon.setImageResource(R.drawable.ic_sync_blue_24dp);
         } else {

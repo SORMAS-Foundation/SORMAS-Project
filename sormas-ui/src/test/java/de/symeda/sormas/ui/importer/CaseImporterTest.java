@@ -18,6 +18,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServletRequest;
+import com.vaadin.ui.UI;
 import com.vaadin.util.CurrentInstance;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -27,8 +28,10 @@ import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
+import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.MockProducer;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.TestDataCreator;
-import de.symeda.sormas.ui.login.LoginHelper;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseImporterTest extends AbstractBeanTest {
@@ -40,21 +43,22 @@ public class CaseImporterTest extends AbstractBeanTest {
 	public void initUI() throws Exception {
 		creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
 
-		when(request.getUserPrincipal()).thenReturn(new Principal() {
+		Principal principal = new Principal() {
 			@Override
 			public String getName() {
 				return "admin";
 			}
-		});
+		};
+		when(MockProducer.getSessionContext().getCallerPrincipal()).thenReturn(principal);
+		when(request.getUserPrincipal()).thenReturn(principal);
 		
 		CurrentInstance.setInheritable(VaadinRequest.class, request);
-
-		// TODO init UI
+		CurrentInstance.setInheritable(UI.class, new SormasUI());
 	}
 
 	@Test
 	public void testImportAllCases() throws IOException, InvalidColumnException, InterruptedException {
-		UserReferenceDto user = LoginHelper.getCurrentUserAsReference();
+		UserReferenceDto user = CurrentUser.getCurrent().getUserReference();
 		
 		new TestDataCreator().createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
 

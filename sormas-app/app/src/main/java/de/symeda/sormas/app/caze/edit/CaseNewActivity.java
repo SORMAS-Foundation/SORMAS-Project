@@ -57,11 +57,16 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
     private AsyncTask saveTask;
 
+    private boolean emptyReportDate;
     private String contactUuid;
     private String eventParticipantUuid;
 
     public static void startActivity(Context fromActivity) {
         BaseEditActivity.startActivity(fromActivity, CaseNewActivity.class, buildBundle());
+    }
+
+    public static void startActivityWithEmptyReportDate(Context fromActivity) {
+        BaseEditActivity.startActivity(fromActivity, CaseNewActivity.class, buildBundleWithEmptyReportDate());
     }
 
     public static void startActivityFromContact(Context fromActivity, String contactUuid) {
@@ -74,6 +79,10 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
     public static Bundler buildBundle() {
         return BaseEditActivity.buildBundle(null);
+    }
+
+    public static Bundler buildBundleWithEmptyReportDate() {
+        return BaseEditActivity.buildBundle(null).setEmptyReportDate(true);
     }
 
     public static Bundler buildBundleWithContact(String contactUuid) {
@@ -90,6 +99,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
         Bundler bundler = new Bundler(savedInstanceState);
         contactUuid = bundler.getContactUuid();
         eventParticipantUuid = bundler.getEventParticipantUuid();
+        emptyReportDate = bundler.getEmptyReportDate();
     }
 
     @Override
@@ -98,6 +108,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
         Bundler bundler = new Bundler(outState);
         bundler.setContactUuid(contactUuid);
         bundler.setEventParticipantUuid(eventParticipantUuid);
+        bundler.setEmptyReportDate(emptyReportDate);
     }
 
     @Override
@@ -125,6 +136,10 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
         } else {
             _person = DatabaseHelper.getPersonDao().build();
             _case = DatabaseHelper.getCaseDao().build(_person);
+        }
+
+        if (emptyReportDate) {
+            _case.setReportDate(null);
         }
 
         return _case;

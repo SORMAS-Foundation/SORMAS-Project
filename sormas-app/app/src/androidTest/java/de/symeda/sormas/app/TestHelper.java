@@ -63,7 +63,7 @@ public class TestHelper {
         // Initialize a testing context to not operate on the actual database
         RenamingDelegatingContext context = new RenamingDelegatingContext(InstrumentationRegistry.getTargetContext(), "test_");
         // Make sure that no database/user is still set from the last run
-        context.deleteDatabase("sormas.db");
+        context.deleteDatabase(DatabaseHelper.DATABASE_NAME);
         ConfigProvider.clearUsernameAndPassword();
         // Initialize the testing database
         DatabaseHelper.init(context);
@@ -117,7 +117,7 @@ public class TestHelper {
         informant.setAktiv(true);
         informant.setFirstName("Info");
         informant.setLastName("User");
-        informant.setUserRoles(new HashSet(Arrays.asList(UserRole.INFORMANT)));
+        informant.setUserRoles(new HashSet(Arrays.asList(UserRole.HOSPITAL_INFORMANT)));
         informant.setCreationDate(new Date());
         informant.setChangeDate(new Date());
         informant.setUuid(INFORMANT_USER_UUID);

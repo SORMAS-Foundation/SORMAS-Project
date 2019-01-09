@@ -25,13 +25,13 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.dashboard.contacts.DashboardContactsView;
 import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 import de.symeda.sormas.ui.dashboard.statistics.AbstractDashboardStatisticsComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.DashboardSurveillanceView;
-import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -65,11 +65,11 @@ public abstract class AbstractDashboardView extends AbstractView {
 
 		OptionGroup dashboardSwitcher = new OptionGroup();
 		CssStyles.style(dashboardSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
-		if (LoginHelper.hasUserRight(UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
 			dashboardSwitcher.addItem(DashboardType.SURVEILLANCE);
 			dashboardSwitcher.setItemCaption(DashboardType.SURVEILLANCE, I18nProperties.getEnumCaption(DashboardType.SURVEILLANCE));
 		}
-		if (LoginHelper.hasUserRight(UserRight.DASHBOARD_CONTACT_ACCESS)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.DASHBOARD_CONTACT_ACCESS)) {
 			dashboardSwitcher.addItem(DashboardType.CONTACTS);
 			dashboardSwitcher.setItemCaption(DashboardType.CONTACTS, I18nProperties.getEnumCaption(DashboardType.CONTACTS));
 		}

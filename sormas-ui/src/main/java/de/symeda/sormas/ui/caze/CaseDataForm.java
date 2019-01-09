@@ -57,7 +57,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
@@ -165,18 +165,17 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		// Set requirements that don't need visibility changes and read only status
 
-		setRequired(true, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.OUTCOME,
+		setRequired(true, CaseDataDto.REPORT_DATE, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.OUTCOME,
 				CaseDataDto.DISEASE, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY);
 		FieldHelper.addSoftRequiredStyle(investigatedDate, outcomeDate, plagueType, community,
 				surveillanceOfficerField);
 		FieldHelper.setReadOnlyWhen(getFieldGroup(), CaseDataDto.INVESTIGATED_DATE, CaseDataDto.INVESTIGATION_STATUS, Arrays.asList(InvestigationStatus.PENDING), false);
-		setReadOnly(true, CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER,
-				CaseDataDto.CLASSIFICATION_USER, CaseDataDto.CLASSIFICATION_DATE, CaseDataDto.REGION,
+		setReadOnly(true, CaseDataDto.UUID, CaseDataDto.REPORTING_USER, CaseDataDto.CLASSIFICATION_USER, CaseDataDto.CLASSIFICATION_DATE, CaseDataDto.REGION,
 				CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
-		setReadOnly(!LoginHelper.hasUserRight(UserRight.CASE_CHANGE_DISEASE), CaseDataDto.DISEASE);
-		setReadOnly(!LoginHelper.hasUserRight(UserRight.CASE_INVESTIGATE), CaseDataDto.INVESTIGATION_STATUS,
+		setReadOnly(!CurrentUser.getCurrent().hasUserRight(UserRight.CASE_CHANGE_DISEASE), CaseDataDto.DISEASE);
+		setReadOnly(!CurrentUser.getCurrent().hasUserRight(UserRight.CASE_INVESTIGATE), CaseDataDto.INVESTIGATION_STATUS,
 				CaseDataDto.INVESTIGATED_DATE);
-		setReadOnly(!LoginHelper.hasUserRight(UserRight.CASE_CLASSIFY), CaseDataDto.CASE_CLASSIFICATION,
+		setReadOnly(!CurrentUser.getCurrent().hasUserRight(UserRight.CASE_CLASSIFY), CaseDataDto.CASE_CLASSIFICATION,
 				CaseDataDto.OUTCOME, CaseDataDto.OUTCOME_DATE);
 
 		// Set conditional visibilities - ALWAYS call isVisibleAllowed before
@@ -274,7 +273,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		district.addValueChangeListener(e -> {
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
 			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade()
-					.getAssignableUsersByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER);
+					.getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER);
 			FieldHelper.updateItems(surveillanceOfficerField, assignableSurveillanceOfficers);
 		});
 

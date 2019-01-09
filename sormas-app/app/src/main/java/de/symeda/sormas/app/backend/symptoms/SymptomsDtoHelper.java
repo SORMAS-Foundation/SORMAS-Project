@@ -20,12 +20,9 @@ package de.symeda.sormas.app.backend.symptoms;
 
 import java.util.List;
 
-import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.location.Location;
-import de.symeda.sormas.app.backend.location.LocationDtoHelper;
 import retrofit2.Call;
 
 /**
@@ -54,7 +51,7 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
     }
 
     @Override
-    protected Call<Integer> pushAll(List<SymptomsDto> symptomsDtos) {
+    protected Call<List<PushResult>> pushAll(List<SymptomsDto> symptomsDtos) {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 

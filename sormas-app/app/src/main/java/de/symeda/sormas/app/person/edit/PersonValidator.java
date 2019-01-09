@@ -46,11 +46,7 @@ final class PersonValidator {
                                 I18nProperties.getValidationError("afterDate",
                                         contentBinding.personDeathDate.getCaption(),
                                         contentBinding.personBirthdateLabel.getText()));
-                    } else {
-                        contentBinding.personDeathDate.disableErrorState();
                     }
-                } else {
-                    contentBinding.personDeathDate.disableErrorState();
                 }
             }
         };
@@ -63,11 +59,7 @@ final class PersonValidator {
                                 I18nProperties.getValidationError("afterDate",
                                         contentBinding.personBurialDate.getCaption(),
                                         contentBinding.personDeathDate.getCaption()));
-                    } else {
-                        contentBinding.personBurialDate.disableErrorState();
                     }
-                } else {
-                    contentBinding.personBurialDate.disableErrorState();
                 }
             }
         };

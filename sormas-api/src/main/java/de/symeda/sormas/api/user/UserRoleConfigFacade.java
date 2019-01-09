@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -14,35 +14,34 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+ *******************************************************************************/
+package de.symeda.sormas.api.user;
 
-package de.symeda.sormas.app.rest;
-
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
-import de.symeda.sormas.api.report.WeeklyReportEntryDto;
-import retrofit2.Call;
-import retrofit2.http.Body;
-import retrofit2.http.GET;
-import retrofit2.http.POST;
-import retrofit2.http.Path;
-import retrofit2.http.Query;
+import javax.ejb.Remote;
 
-/**
- * Created by Mate Strysewske on 12.09.2017.
- */
-public interface WeeklyReportEntryFacadeRetro {
+@Remote
+public interface UserRoleConfigFacade {
 
-    @GET("weeklyreportentries/all/{since}")
-    Call<List<WeeklyReportEntryDto>> pullAllSince(@Path("since") long since);
+	List<UserRoleConfigDto> getAllAfter(Date date);
 
-    @POST("weeklyreportentries/query")
-    Call<List<WeeklyReportEntryDto>> pullByUuids(@Body List<String> uuids);
+    List<UserRoleConfigDto> getAll();
+    
+	List<String> getAllUuids(String userUuid);
 
-    @POST("weeklyreportentries/push")
-    Call<Integer> pushAll(@Body List<WeeklyReportEntryDto> dtos);
+	List<String> getDeletedUuids(Date date);
 
-    @GET("weeklyreportentries/uuids")
-    Call<List<String>> pullUuids();
+	UserRoleConfigDto getByUuid(String uuid);
+    
+    UserRoleConfigDto saveUserRoleConfig(UserRoleConfigDto dto);
 
+	void deleteUserRoleConfig(UserRoleConfigDto dto);
+
+	/**
+	 * Will fallback to default user rights for each role that has no configuration defined
+	 */
+	Set<UserRight> getEffectiveUserRights(UserRole... userRoles);
 }

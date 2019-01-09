@@ -33,8 +33,8 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
-import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
@@ -66,7 +66,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 		gridLayout.setStyleName("crud-main-layout");
 		grid.reload();
 
-		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = new Button("New entry");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);

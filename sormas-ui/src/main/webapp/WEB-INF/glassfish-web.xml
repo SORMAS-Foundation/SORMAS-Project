@@ -13,9 +13,11 @@
         <group-name>CONTACT_SUPERVISOR</group-name>
         <group-name>EVENT_OFFICER</group-name>
         <group-name>LAB_USER</group-name>
+        <group-name>EXTERNAL_LAB_USER</group-name>
         <group-name>NATIONAL_USER</group-name>
         <group-name>NATIONAL_OBSERVER</group-name>
         <group-name>STATE_OBSERVER</group-name>
+        <group-name>DISTRICT_OBSERVER</group-name>
     </security-role-mapping>
     <security-role-mapping>
         <role-name>ADMIN</role-name>
@@ -42,6 +44,10 @@
         <group-name>LAB_USER</group-name>
     </security-role-mapping>
     <security-role-mapping>
+        <role-name>EXTERNAL_LAB_USER</role-name>
+        <group-name>EXTERNAL_LAB_USER</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
         <role-name>NATIONAL_USER</role-name>
         <group-name>NATIONAL_USER</group-name>
     </security-role-mapping>
@@ -52,5 +58,9 @@
     <security-role-mapping>
         <role-name>STATE_OBSERVER</role-name>
         <group-name>STATE_OBSERVER</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>DISTRICT_OBSERVER</role-name>
+        <group-name>DISTRICT_OBSERVER</group-name>
     </security-role-mapping>
 </glassfish-web-app>

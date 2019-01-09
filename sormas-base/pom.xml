@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.9.0</version>
+	<version>1.10.0</version>
 
 	<prerequisites>
 		<maven>3.0</maven>
@@ -573,8 +573,6 @@
 		<profile>
 			<id>with-dep-poms</id>
 			<modules>
-				<module>./dependencies/bundles.pom</module>
-				<module>./dependencies/gf-modules.pom</module>
 				<module>./dependencies/serverlibs.pom</module>
 			</modules>
 		</profile>

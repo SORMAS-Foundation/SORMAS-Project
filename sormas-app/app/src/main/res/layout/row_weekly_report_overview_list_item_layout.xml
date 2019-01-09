@@ -21,10 +21,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
-        <variable
-            name="data"
-            type="de.symeda.sormas.app.report.viewmodel.WeeklyReportOverviewViewModel"/>
+        <variable name="data" type="de.symeda.sormas.app.report.WeeklyReportOverviewListItem" />
     </data>
 
     <LinearLayout
@@ -35,10 +32,8 @@
         android:background="@drawable/selector_list_activity_row_background"
         android:orientation="vertical"
         android:paddingLeft="@dimen/rowListItemHorizontalMargin"
-        android:paddingRight="@dimen/rowListItemHorizontalMargin"
-        >
+        android:paddingRight="@dimen/rowListItemHorizontalMargin">
 
-        <!---->
         <LinearLayout
             android:id="@+id/row_item"
             android:layout_width="match_parent"
@@ -48,9 +43,7 @@
             android:gravity="fill"
             android:orientation="vertical"
             android:paddingBottom="@dimen/rowListItemVerticalPaddingSmall"
-            android:paddingTop="@dimen/rowListItemVerticalPaddingSmall"
-            >
-
+            android:paddingTop="@dimen/rowListItemVerticalPaddingSmall">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -58,9 +51,8 @@
                 android:orientation="horizontal"
                 android:paddingBottom="@dimen/rowListItemParentElevationVerticalPadding">
 
-
                 <TextView
-                    android:id="@+id/healthFacility"
+                    android:id="@+id/user"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -70,9 +62,7 @@
                     android:scrollHorizontally="true"
                     android:textColor="@color/listActivityRowTertiaryText"
                     android:textSize="@dimen/listActivityRowPrimaryTextSize"
-                    app:defaultValue='@{@string/health_facility_unknown}'
-                    app:facilityValue="@{data.healthFacility}"
-                    />
+                    app:userValue="@{data.user}" />
 
                 <TextView
                     android:id="@+id/txtCases"
@@ -81,22 +71,18 @@
                     android:fontFamily="sans-serif-medium"
                     android:textColor="@color/listActivityRowPrimaryText"
                     android:textSize="@dimen/listActivityRowPrimaryTextSize"
-                    app:defaultValue='@{@string/no_of_cases_unknown}'
-                    app:value="@{data.numberOfCases}"
                     app:valueFormat="@{@string/number_of_cases_format}"
-                    />
+                    app:value="@{data.numberOfCases}" />
 
             </LinearLayout>
-
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-
                 <TextView
-                    android:id="@+id/user"
+                    android:id="@+id/healthFacility"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -106,26 +92,40 @@
                     android:scrollHorizontally="true"
                     android:textColor="@color/row_entry_secondary_text"
                     android:textSize="@dimen/row_entry_secondary_text_size"
-                    app:defaultValue='@{@string/user_unknown}'
-                    app:userValue="@{data.user}"
-                    />
-
+                    app:facilityValue="@{data.healthFacility}"
+                    app:goneIfEmpty="@{data.healthFacility}" />
 
                 <TextView
-                    android:id="@+id/reportedCaseStatus"
+                    android:id="@+id/community"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:fontFamily="sans-serif-medium"
+                    android:maxLines="1"
+                    android:scrollHorizontally="true"
+                    android:textColor="@color/row_entry_secondary_text"
+                    android:textSize="@dimen/row_entry_secondary_text_size"
+                    app:adoValue="@{data.community}"
+                    app:goneIfEmpty="@{data.community}" />
+
+                <TextView
+                    android:id="@+id/reportDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/contentHorizontalSpacing"
+                    android:layout_marginStart="@dimen/contentHorizontalSpacing"
                     android:fontFamily="sans-serif-medium"
                     android:textAllCaps="true"
                     android:textColor="@color/row_entry_secondary_text"
                     android:textSize="@dimen/row_entry_secondary_text_size"
-                    app:defaultValue='@{@string/cases_confirmed_unknown}'
-                    app:value="@{data.reportedCaseStatus}"
-                    />
+                    app:defaultValue='@{@string/unconfirmed}'
+                    app:dateValue="@{data.reportDate}"
+                    app:valueFormat="@{@string/report_submitted_date_format}" />
 
             </LinearLayout>
 
         </LinearLayout>
+
     </LinearLayout>
+
 </layout>

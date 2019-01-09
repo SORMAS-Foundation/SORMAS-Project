@@ -15,25 +15,37 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.report;
+package de.symeda.sormas.ui;
 
-import de.symeda.sormas.api.ReferenceDto;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 
-public class WeeklyReportEntryReferenceDto extends ReferenceDto {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-	private static final long serialVersionUID = 7863410150359837423L;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
 
-	public WeeklyReportEntryReferenceDto() {
-		
+@Singleton(name = "StartupShutdownService")
+@Startup
+@TransactionManagement(TransactionManagementType.CONTAINER)
+public class StartupShutdownService {
+
+	@SuppressWarnings("unused")
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	@PostConstruct
+	public void startup() {
+
+		I18nProperties.setLocale(FacadeProvider.getConfigFacade().getCountryLocale());
 	}
-	
-	public WeeklyReportEntryReferenceDto(String uuid) {
-		setUuid(uuid);
+
+	@PreDestroy
+	public void shutdown() {
+
 	}
-	
-	public WeeklyReportEntryReferenceDto(String uuid, String caption) {
-		setUuid(uuid);
-		setCaption(caption);
-	}
-	
 }

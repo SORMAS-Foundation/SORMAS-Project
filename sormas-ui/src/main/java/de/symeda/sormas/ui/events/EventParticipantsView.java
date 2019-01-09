@@ -33,7 +33,7 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class EventParticipantsView extends AbstractEventView {
@@ -78,7 +78,7 @@ public class EventParticipantsView extends AbstractEventView {
 		topLayout.addComponent(header);
 
 		// Bulk operation dropdown
-		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
 			MenuBar bulkOperationsDropdown = new MenuBar();	
@@ -99,7 +99,7 @@ public class EventParticipantsView extends AbstractEventView {
 			topLayout.setExpandRatio(bulkOperationsDropdown, 1);
 		}
 
-		if (LoginHelper.hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
 			addButton = new Button("Add person");
 			addButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			addButton.setIcon(FontAwesome.PLUS_CIRCLE);

@@ -199,12 +199,13 @@
     </declare-styleable>
 
     <declare-styleable name="ControlDateField">
-        <!--<attr name="hint" />-->
+        <attr name="allowedDaysInFuture" />
     </declare-styleable>
 
     <declare-styleable name="ControlDateTimeField">
         <attr name="dateHint" />
         <attr name="timeHint" />
+        <attr name="allowedDaysInFuture" />
     </declare-styleable>
 
     <declare-styleable name="ControlTextEditField">

@@ -104,9 +104,9 @@ public final class RetroProvider {
     private SampleTestFacadeRetro sampleTestFacadeRetro;
     private EventParticipantFacadeRetro eventParticipantFacadeRetro;
     private WeeklyReportFacadeRetro weeklyReportFacadeRetro;
-    private WeeklyReportEntryFacadeRetro weeklyReportEntryFacadeRetro;
     private OutbreakFacadeRetro outbreakFacadeRetro;
     private ClassificationFacadeRetro classificationFacadeRetro;
+    private UserRoleConfigFacadeRetro userRoleConfigFacadeRetro;
 
     private RetroProvider(Context context, Interceptor... additionalInterceptors) throws ServerConnectionException, ServerCommunicationException, ApiVersionException {
 
@@ -557,17 +557,6 @@ public final class RetroProvider {
         return instance.weeklyReportFacadeRetro;
     }
 
-    public static WeeklyReportEntryFacadeRetro getWeeklyReportEntryFacade() {
-        if (instance.weeklyReportEntryFacadeRetro == null) {
-            synchronized ((RetroProvider.class)) {
-                if (instance.weeklyReportEntryFacadeRetro == null) {
-                    instance.weeklyReportEntryFacadeRetro = instance.retrofit.create(WeeklyReportEntryFacadeRetro.class);
-                }
-            }
-        }
-        return instance.weeklyReportEntryFacadeRetro;
-    }
-
     public static OutbreakFacadeRetro getOutbreakFacade() {
         if (instance.outbreakFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
@@ -588,6 +577,17 @@ public final class RetroProvider {
             }
         }
         return instance.classificationFacadeRetro;
+    }
+
+    public static UserRoleConfigFacadeRetro getUserRoleConfigFacade() {
+        if (instance.userRoleConfigFacadeRetro == null) {
+            synchronized ((RetroProvider.class)) {
+                if (instance.userRoleConfigFacadeRetro == null) {
+                    instance.userRoleConfigFacadeRetro = instance.retrofit.create(UserRoleConfigFacadeRetro.class);
+                }
+            }
+        }
+        return instance.userRoleConfigFacadeRetro;
     }
 
     public static void throwException(Response<?> response) throws ServerConnectionException, ServerCommunicationException {

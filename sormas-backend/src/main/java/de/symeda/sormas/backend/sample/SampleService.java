@@ -93,7 +93,7 @@ public class SampleService extends AbstractAdoService<Sample> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createDateFilter(cb, cq, from, date);
+			Predicate dateFilter = createChangeDateFilter(cb, from, date);
 			filter = cb.and(filter, dateFilter);		
 		}
 
@@ -103,7 +103,7 @@ public class SampleService extends AbstractAdoService<Sample> {
 
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	public List<String> getAllActiveUuids(User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -113,18 +113,18 @@ public class SampleService extends AbstractAdoService<Sample> {
 		Predicate filter = cb.or(
 				cb.equal(caze.get(Case.ARCHIVED), false),
 				cb.isNull(caze.get(Case.ARCHIVED)));
-		
+
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
 			filter = cb.and(filter, userFilter);
 		}
-		
+
 		cq.where(filter);
 		cq.select(from.get(Sample.UUID));
-		
+
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	public List<Sample> getAllByCase(Case caze) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Sample> cq = cb.createQuery(getElementClass());
@@ -275,7 +275,7 @@ public class SampleService extends AbstractAdoService<Sample> {
 		//filter = cb.equal(samplePath.get(Sample.REPORTING_USER), user);
 
 		// lab users can see samples assigned to their laboratory
-		if (user.getUserRoles().contains(UserRole.LAB_USER)) {
+		if (user.getUserRoles().contains(UserRole.LAB_USER) || user.getUserRoles().contains(UserRole.EXTERNAL_LAB_USER)) {
 			if(user.getLaboratory() != null) {
 				filter = or(cb, filter, cb.equal(samplePath.get(Sample.LAB), user.getLaboratory()));			}
 		}

@@ -86,16 +86,17 @@ public class ClassificationSampleTestCriteriaDto extends ClassificationCaseCrite
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(I18nProperties.getPrefixFieldCaption(SampleTestDto.I18N_PREFIX, propertyId));
 		if (testTypes != null && !testTypes.isEmpty()) {
-			stringBuilder.append(" (for one of the following test types: ");
+			stringBuilder.append(" ").append(I18nProperties.getText("criteriaForTestType")).append(" ");
 			for (int i = 0; i < testTypes.size(); i++) {
-				if (i == testTypes.size() - 1) {
-					stringBuilder.append(" <b>OR</b> ");
-				} else if (i > 0) {
-					stringBuilder.append(", ");
+				if (i > 0) {
+					if (i == testTypes.size() - 1) {
+						stringBuilder.append(" <b>OR</b> ");
+					} else {
+						stringBuilder.append(", ");
+					}
 				}
 				stringBuilder.append(testTypes.get(i).toString());
 			}
-			stringBuilder.append(")");
 		}
 
 		return stringBuilder.toString();

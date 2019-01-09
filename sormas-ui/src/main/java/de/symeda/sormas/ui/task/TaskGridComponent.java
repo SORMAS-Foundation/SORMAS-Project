@@ -41,7 +41,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -137,10 +137,10 @@ public class TaskGridComponent extends VerticalLayout {
 			initializeStatusButton(myTasks, buttonFilterLayout, "My tasks");
 
 			// Default filter for lab users (that don't have any other role) is "My tasks"
-			if (LoginHelper.getCurrentUserRoles().contains(UserRole.LAB_USER) && LoginHelper.getCurrentUserRoles().size() == 1) {
+			if ((CurrentUser.getCurrent().hasUserRole(UserRole.LAB_USER) || CurrentUser.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) && CurrentUser.getCurrent().getUserRoles().size() == 1) {
 				processAssigneeFilterChange(false, true, myTasks);
 			} else {
-				CssStyles.removeStyles(allTasks, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+				CssStyles.removeStyles(allTasks, CssStyles.BUTTON_FILTER_LIGHT);
 				activeStatusButton = allTasks;
 			}
 		}
@@ -150,7 +150,7 @@ public class TaskGridComponent extends VerticalLayout {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show archived/active cases button
-			if (LoginHelper.hasUserRight(UserRight.TASK_VIEW_ARCHIVED)) {
+			if (CurrentUser.getCurrent().hasUserRight(UserRight.TASK_VIEW_ARCHIVED)) {
 				Button switchArchivedActiveButton = new Button(I18nProperties.getText("showArchivedTasks"));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
@@ -172,7 +172,7 @@ public class TaskGridComponent extends VerticalLayout {
 				actionButtonsLayout.addComponent(switchArchivedActiveButton);
 			}
 			// Bulk operation dropdown
-			if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				assigneeFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 				MenuBar bulkOperationsDropdown = new MenuBar();	
@@ -211,7 +211,7 @@ public class TaskGridComponent extends VerticalLayout {
 		{
 			Button statusAll = new Button("all", e -> processStatusChange(null, e.getButton()));
 			initializeStatusButton(statusAll, buttonFilterLayout, "All");
-			CssStyles.removeStyles(statusAll, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			CssStyles.removeStyles(statusAll, CssStyles.BUTTON_FILTER_LIGHT);
 			activeStatusButton = statusAll;
 
 			for (TaskStatus status : TaskStatus.values()) {
@@ -222,7 +222,7 @@ public class TaskGridComponent extends VerticalLayout {
 		filterLayout.addComponent(buttonFilterLayout);
 
 		// Bulk operation dropdown
-		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			filterLayout.setWidth(100, Unit.PERCENTAGE);
 
 			MenuBar bulkOperationsDropdown = new MenuBar();	
@@ -243,7 +243,7 @@ public class TaskGridComponent extends VerticalLayout {
 			filterLayout.setExpandRatio(bulkOperationsDropdown, 1);
 		}
 
-		if (LoginHelper.hasUserRight(UserRight.TASK_CREATE)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
 			createButton = new Button("New task");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
@@ -270,18 +270,18 @@ public class TaskGridComponent extends VerticalLayout {
 
 	private void processAssigneeFilterChange(boolean officerTasks, boolean myTasks, Button button) {
 		if (officerTasks) {
-			grid.filterExcludeAssignee(LoginHelper.getCurrentUserAsReference(), true);
+			grid.filterExcludeAssignee(CurrentUser.getCurrent().getUserReference(), true);
 		} else if (myTasks) {
-			grid.filterAssignee(LoginHelper.getCurrentUserAsReference(), true);
+			grid.filterAssignee(CurrentUser.getCurrent().getUserReference(), true);
 		} else {
 			grid.filterAssignee(null, true);
 		}
 
 		statusButtons.keySet().forEach(b -> {
-			CssStyles.style(b, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
 			b.setCaption(statusButtons.get(b));
 		});
-		CssStyles.removeStyles(button, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		CssStyles.removeStyles(button, CssStyles.BUTTON_FILTER_LIGHT);
 		activeStatusButton = button;	
 		updateActiveStatusButtonCaption();
 	}
@@ -289,16 +289,16 @@ public class TaskGridComponent extends VerticalLayout {
 	private void processStatusChange(TaskStatus taskStatus, Button button) {
 		grid.filterTaskStatus(taskStatus, true);
 		statusButtons.keySet().forEach(b -> {
-			CssStyles.style(b, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
 			b.setCaption(statusButtons.get(b));
 		});
-		CssStyles.removeStyles(button, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		CssStyles.removeStyles(button, CssStyles.BUTTON_FILTER_LIGHT);
 		activeStatusButton = button;
 		updateActiveStatusButtonCaption();
 	}
 
 	private void initializeStatusButton(Button button, HorizontalLayout filterLayout, String caption) {
-		CssStyles.style(button, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		CssStyles.style(button, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 		button.setCaptionAsHtml(true);
 		filterLayout.addComponent(button);
 		statusButtons.put(button, caption);

@@ -27,26 +27,25 @@ import de.symeda.sormas.api.utils.ValidationException;
 
 /**
  * These are also used as user groups in the server realm
- * 
- * TODO (longterm) make entities
- *  
- * @author Martin Wahnschaffe
  */
 public enum UserRole {
 
-	ADMIN(false, false),
-	NATIONAL_USER(false, false),	
-	SURVEILLANCE_SUPERVISOR(true, false),	
-	SURVEILLANCE_OFFICER(false, true),	
-	INFORMANT(false, false),	
-	CASE_SUPERVISOR(true, false),	
-	CASE_OFFICER(false, true),	
-	CONTACT_SUPERVISOR(true, false),	
-	CONTACT_OFFICER(false, true),	
-	EVENT_OFFICER(true, false),	
-	LAB_USER(false, false),
-	NATIONAL_OBSERVER(false, false),
-	STATE_OBSERVER(false, false)
+	ADMIN(false, false, false),
+	NATIONAL_USER(false, false, false),	
+	SURVEILLANCE_SUPERVISOR(true, false, false),	
+	SURVEILLANCE_OFFICER(false, true, false),	
+	HOSPITAL_INFORMANT(false, false, true),	
+	COMMUNITY_INFORMANT(false, false, true),
+	CASE_SUPERVISOR(true, false, false),	
+	CASE_OFFICER(false, true, false),	
+	CONTACT_SUPERVISOR(true, false, false),	
+	CONTACT_OFFICER(false, true, false),	
+	EVENT_OFFICER(true, false, false),	
+	LAB_USER(false, false, false),
+	EXTERNAL_LAB_USER(false, false, false),
+	NATIONAL_OBSERVER(false, false, false),
+	STATE_OBSERVER(false, false, false),
+	DISTRICT_OBSERVER(false, false, false)
 	;
 	
 	public static final String _SYSTEM = "SYSTEM";
@@ -55,22 +54,31 @@ public enum UserRole {
 	public static final String _NATIONAL_USER = NATIONAL_USER.name();
 	public static final String _SURVEILLANCE_SUPERVISOR = SURVEILLANCE_SUPERVISOR.name();
 	public static final String _SURVEILLANCE_OFFICER = SURVEILLANCE_OFFICER.name();
-	public static final String _INFORMANT = INFORMANT.name();
+	public static final String _HOSPITAL_INFORMANT = HOSPITAL_INFORMANT.name();
+	public static final String _COMMUNITY_INFORMANT = COMMUNITY_INFORMANT.name();
 	public static final String _CASE_SUPERVISOR = CASE_SUPERVISOR.name();
 	public static final String _CASE_OFFICER = CASE_OFFICER.name();
 	public static final String _CONTACT_SUPERVISOR = CONTACT_SUPERVISOR.name();
 	public static final String _CONTACT_OFFICER = CONTACT_OFFICER.name();
 	public static final String _EVENT_OFFICER = EVENT_OFFICER.name();
 	public static final String _LAB_USER = LAB_USER.name();
+	public static final String _EXTERNAL_LAB_USER = EXTERNAL_LAB_USER.name();
 	public static final String _NATIONAL_OBSERVER = NATIONAL_OBSERVER.name();
 	
 	private final boolean supervisor;
 	private final boolean officer;
-	private HashSet<UserRight> userRights = null;
+	private final boolean informant;
 	
-	private UserRole(boolean supervisor, boolean officer) {
+	private HashSet<UserRight> defaultUserRights = null;
+	
+	private static HashSet<UserRole> supervisorRoles = null;
+	private static HashSet<UserRole> officerRoles = null;
+	private static HashSet<UserRole> informantRoles = null;
+	
+	private UserRole(boolean supervisor, boolean officer, boolean informant) {
 		this.supervisor = supervisor;
 		this.officer = officer;
+		this.informant = informant;
 	}
 	
 	public String toString() {
@@ -89,22 +97,28 @@ public enum UserRole {
 		return officer;
 	}
 	
-	private void initUserRights() {
-		
-		userRights = new HashSet<UserRight>();
-
-		for (UserRight userRight : UserRight.values()) {
-			if (userRight.isForRole(this)) {
-				userRights.add(userRight);
-			}
-		}
+	public boolean isInformant() {
+		return informant;
 	}
 	
-	public boolean hasRight(UserRight userRight) {
-		if (userRights == null) {
-			initUserRights();
+	public boolean isNational() {
+		return this == UserRole.NATIONAL_OBSERVER || this == UserRole.NATIONAL_USER;
+	}
+	
+	public HashSet<UserRight> getDefaultUserRights() {
+		if (defaultUserRights == null) {
+			defaultUserRights = new HashSet<UserRight>();
+			for (UserRight userRight : UserRight.values()) {
+				if (userRight.isDefaultForRole(this)) {
+					getDefaultUserRights().add(userRight);
+				}
+			}
 		}
-		return userRights.contains(userRight);
+		return defaultUserRights;
+	}
+		
+	public boolean hasDefaultRight(UserRight userRight) {
+		return getDefaultUserRights().contains(userRight);
 	}
 	
 	public void addAssignableRoles(Collection<UserRole> collection) {
@@ -124,10 +138,12 @@ public enum UserRole {
 			collection.add(LAB_USER);
 			collection.add(NATIONAL_OBSERVER);
 			collection.add(STATE_OBSERVER);
+			collection.add(DISTRICT_OBSERVER);
 			break;
 		case SURVEILLANCE_SUPERVISOR:
 			collection.add(SURVEILLANCE_OFFICER);
-			collection.add(INFORMANT);
+			collection.add(HOSPITAL_INFORMANT);
+			collection.add(COMMUNITY_INFORMANT);
 			break;
 		case CASE_SUPERVISOR:
 			collection.add(CASE_OFFICER);
@@ -140,6 +156,9 @@ public enum UserRole {
 			break;
 		case LAB_USER:
 			collection.add(LAB_USER);
+			break;
+		case EXTERNAL_LAB_USER:
+			collection.add(EXTERNAL_LAB_USER);
 			break;
 		default:
 			break;
@@ -168,6 +187,8 @@ public enum UserRole {
 			return Arrays.asList(ADMIN);
 		case STATE_OBSERVER:
 			return Collections.emptyList();
+		case DISTRICT_OBSERVER:
+			return Collections.emptyList();
 		case CASE_SUPERVISOR:
 		case CONTACT_SUPERVISOR:
 		case SURVEILLANCE_SUPERVISOR:
@@ -187,8 +208,12 @@ public enum UserRole {
 			return Arrays.asList(
 					SURVEILLANCE_OFFICER, CASE_OFFICER, CONTACT_OFFICER
 					);
-		case INFORMANT:
-			return Arrays.asList(INFORMANT);
+		case HOSPITAL_INFORMANT:
+			return Arrays.asList(HOSPITAL_INFORMANT);
+		case COMMUNITY_INFORMANT:
+			return Arrays.asList(COMMUNITY_INFORMANT);
+		case EXTERNAL_LAB_USER:
+			return Arrays.asList(EXTERNAL_LAB_USER);
 		default:
 			throw new UnsupportedOperationException("getCombinableRoles not implemented for user role: " + this);
 		}
@@ -217,11 +242,25 @@ public enum UserRole {
 	}
 	
 	public static boolean isInformant(Collection<UserRole> roles) {
-		return roles.contains(UserRole.INFORMANT);
+		for (UserRole role : roles) {
+			if (role.isInformant()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static boolean isNational(Collection<UserRole> roles) {
+		for (UserRole role : roles) {
+			if (role.isNational()) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public static boolean isLabUser(Collection<UserRole> roles) {
-		return roles.contains(UserRole.LAB_USER);
+		return roles.contains(UserRole.LAB_USER) || roles.contains(UserRole.EXTERNAL_LAB_USER);
 	}
 	
 	public static UserRole getFirstDifferentUserRole(Collection<UserRole> roles, UserRole ignoredUserRole, Collection<UserRole> ignoredRoles) {
@@ -242,6 +281,42 @@ public enum UserRole {
 				throw new UserRoleValidationException(userRole, forbiddenUserRole);
 			}
 		}
+	}
+
+	public static HashSet<UserRole> getSupervisorRoles() {
+		if (supervisorRoles == null) {
+			supervisorRoles = new HashSet<>();
+			for (UserRole userRole : values()) {
+				if (userRole.isSupervisor()) {
+					supervisorRoles.add(userRole);
+				}
+			}
+		}
+		return supervisorRoles;
+	}
+	
+	public static HashSet<UserRole> getOfficerRoles() {
+		if (officerRoles == null) {
+			officerRoles = new HashSet<>();
+			for (UserRole userRole : values()) {
+				if (userRole.isOfficer()) {
+					officerRoles.add(userRole);
+				}
+			}
+		}
+		return officerRoles;
+	}
+	
+	public static HashSet<UserRole> getInformantRoles() {
+		if (informantRoles == null) {
+			informantRoles = new HashSet<>();
+			for (UserRole userRole : values()) {
+				if (userRole.isInformant()) {
+					informantRoles.add(userRole);
+				}
+			}
+		}
+		return informantRoles;
 	}
 	
 	@SuppressWarnings("serial")

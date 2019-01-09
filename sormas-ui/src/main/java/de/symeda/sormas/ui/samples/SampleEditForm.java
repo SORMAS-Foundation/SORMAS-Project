@@ -43,7 +43,7 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -87,7 +87,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.SAMPLE_MATERIAL, ComboBox.class);
 		addField(SampleDto.SAMPLE_MATERIAL_TEXT, TextField.class);
 		ComboBox sampleSource = addField(SampleDto.SAMPLE_SOURCE, ComboBox.class);
-		DateField shipmentDate = addField(SampleDto.SHIPMENT_DATE, DateField.class);
+		DateField shipmentDate = addDateField(SampleDto.SHIPMENT_DATE, DateField.class, 7);
 		addField(SampleDto.SHIPMENT_DETAILS, TextField.class);		
 		addField(SampleDto.SUGGESTED_TYPE_OF_TEST, ComboBox.class);
 		DateField receivedDate = addField(SampleDto.RECEIVED_DATE, DateField.class);
@@ -129,7 +129,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			if (caze.getDisease() != Disease.NEW_INFLUENCA) {
 				sampleSource.setVisible(false);
 			}
-			if ((LoginHelper.getCurrentUser().getUuid().equals(getValue().getReportingUser().getUuid()))) {
+			if ((CurrentUser.getCurrent().getUuid().equals(getValue().getReportingUser().getUuid()))) {
 				FieldHelper.setEnabledWhen(getFieldGroup(), shipped, Arrays.asList(true), Arrays.asList(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS), true);
 				FieldHelper.setRequiredWhen(getFieldGroup(), shipped, Arrays.asList(SampleDto.SHIPMENT_DATE), Arrays.asList(true));
 				setRequired(true, SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_MATERIAL, SampleDto.LAB);

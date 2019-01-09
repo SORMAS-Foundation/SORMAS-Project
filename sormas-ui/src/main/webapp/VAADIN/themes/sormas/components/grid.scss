@@ -42,6 +42,7 @@ $v-grid-cell-focused-border: none !default;
       
         &.priority-high {
           color: $s-important-color;
+          font-weight: 600;
         }
         &.priority-normal {
           color: $s-default-color;
@@ -49,6 +50,10 @@ $v-grid-cell-focused-border: none !default;
         &.warning {
           color: $s-warning-color;
           font-weight: 600;
+        }
+		
+        &.odd {
+          background-color: #eee;
         }
       }
     	

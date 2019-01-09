@@ -54,6 +54,8 @@ public class Outbreak extends AbstractDomainObject {
 
     public static final String DISTRICT = "district_id";
     public static final String DISEASE = "disease";
+    public static final String START_DATE = "startDate";
+    public static final String END_DATE = "endDate";
     public static final String REPORTING_USER = "reportingUser_id";
     public static final String REPORT_DATE = "reportDate";
 
@@ -61,10 +63,19 @@ public class Outbreak extends AbstractDomainObject {
     private District district;
     @Enumerated(EnumType.STRING)
     private Disease disease;
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date startDate;
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date endDate;
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private User reportingUser;
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date reportDate;
+
+    @Override
+    public String getI18nPrefix() {
+        return I18N_PREFIX;
+    }
 
     public District getDistrict() {
         return district;
@@ -78,6 +89,20 @@ public class Outbreak extends AbstractDomainObject {
     }
     public void setDisease(Disease disease) {
         this.disease = disease;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
     public User getReportingUser() {

@@ -25,18 +25,18 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.facility.Facility;
-import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.user.User;
 
 /**
@@ -64,73 +64,107 @@ public class WeeklyReportDao extends AbstractAdoDao<WeeklyReport> {
         throw new UnsupportedOperationException("Use build(Date) instead");
     }
 
+    @Override
+    public WeeklyReport queryUuid(String uuid) {
+        WeeklyReport data = super.queryUuid(uuid);
+        initLazyData(data);
+        return data;
+    }
+
+    @Override
+    public WeeklyReport querySnapshotByUuid(String uuid) {
+        WeeklyReport data = super.querySnapshotByUuid(uuid);
+        initLazyData(data);
+        return data;
+    }
+
+    @Override
+    public WeeklyReport queryForId(Long id) {
+        WeeklyReport data = super.queryForId(id);
+        initLazyData(data);
+        return data;
+    }
+
+    public WeeklyReport initLazyData(WeeklyReport report) {
+        if (report != null) {
+            report.setReportEntries(DatabaseHelper.getWeeklyReportEntryDao().getByWeeklyReport(report));
+        }
+        return report;
+    }
+
+    @Override
+    public WeeklyReport saveAndSnapshot(WeeklyReport ado) throws DaoException {
+
+        WeeklyReport snapshot = super.saveAndSnapshot(ado);
+
+        DatabaseHelper.getWeeklyReportEntryDao().saveCollectionWithSnapshot(
+                DatabaseHelper.getWeeklyReportEntryDao().getByWeeklyReport(ado),
+                ado.getReportEntries(), ado);
+
+        return snapshot;
+    }
+
+    @Override
+    public Date getLatestChangeDate() {
+        Date date = super.getLatestChangeDate();
+        if (date == null) {
+            return null;
+        }
+
+        Date entryDate = DatabaseHelper.getWeeklyReportEntryDao().getLatestChangeDate();
+        if (entryDate != null && entryDate.after(date)) {
+            date = entryDate;
+        }
+
+        return date;
+    }
+
     public WeeklyReport build(EpiWeek epiWeek) {
         WeeklyReport report = super.build();
 
         report.setReportDateTime(new Date());
         User currentUser = ConfigProvider.getUser();
-        report.setInformant(currentUser);
+        report.setReportingUser(currentUser);
         report.setHealthFacility(currentUser.getHealthFacility());
+        report.setCommunity(currentUser.getCommunity());
         report.setYear(epiWeek.getYear());
         report.setEpiWeek(epiWeek.getWeek());
+        report.setAssignedOfficer(currentUser.getAssociatedOfficer());
+        report.setDistrict(currentUser.getDistrict());
 
-        // We need to use the getPreviousEpiWeek method because the report date of a weekly report will always
-        // be in the week after the epi week the report is built for
-        report.setTotalNumberOfCases(DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeek(epiWeek, currentUser));
-
-        return report;
-    }
-
-    public WeeklyReport create(EpiWeek epiWeek) throws DaoException {
-        WeeklyReport report = build(epiWeek);
-        super.saveAndSnapshot(report);
-        report = DatabaseHelper.getWeeklyReportDao().queryUuid(report.getUuid());
+        int totalNumberOfCases = DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeek(epiWeek, currentUser);
+        report.setTotalNumberOfCases(totalNumberOfCases);
 
         WeeklyReportEntryDao entryDao = DatabaseHelper.getWeeklyReportEntryDao();
+        List<WeeklyReportEntry> entries = new ArrayList<>();
         for (Disease disease : Disease.values()) {
-            entryDao.create(epiWeek, disease, report);
+            entries.add(entryDao.build(epiWeek, disease, report));
         }
+        report.setReportEntries(entries);
 
         return report;
     }
 
-    public WeeklyReport queryForEpiWeek(EpiWeek epiWeek, User informant) {
-        try {
-            QueryBuilder builder = queryBuilder();
-            Where where = builder.where();
-            where.and(
-                    where.eq(WeeklyReport.YEAR, epiWeek.getYear()),
-                    where.eq(WeeklyReport.EPI_WEEK, epiWeek.getWeek()),
-                    where.eq(WeeklyReport.INFORMANT + "_id", informant)
-            );
-
-            return (WeeklyReport) builder.queryForFirst();
-        } catch (SQLException e) {
-            Log.e(getTableName(), "Could not perform queryForEpiWeek");
-            throw new RuntimeException(e);
+    public WeeklyReport queryByEpiWeekAndUser(EpiWeek epiWeek, User user) {
+        if (!(ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE))) {
+            throw new IllegalArgumentException("queryByEpiWeekAndUser is only supported for users who can create weekly reports");
         }
-    }
 
-    /**
-     * queries reports by facility (not user!)
-     */
-    public List<WeeklyReport> queryByDistrict(EpiWeek epiWeek, District district) {
         try {
-
             QueryBuilder builder = queryBuilder();
-            QueryBuilder facilityBuilder = DatabaseHelper.getFacilityDao().queryBuilder();
-            facilityBuilder.where().eq(Facility.DISTRICT, district);
-            builder.join(facilityBuilder);
-
             Where where = builder.where();
             where.and(
+                    where.eq(WeeklyReport.REPORTING_USER + "_id", user),
                     where.eq(WeeklyReport.YEAR, epiWeek.getYear()),
                     where.eq(WeeklyReport.EPI_WEEK, epiWeek.getWeek())
             );
 
-            return builder.query();
+            WeeklyReport result = (WeeklyReport) builder.queryForFirst();
+            initLazyData(result);
+            return result;
+
         } catch (SQLException e) {
-            Log.e(getTableName(), "Could not perform queryByDistrict");
+            Log.e(getTableName(), "Could not perform queryByEpiWeekAndUser");
             throw new RuntimeException(e);
         }
     }

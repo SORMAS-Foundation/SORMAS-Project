@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.region;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class RegionDto extends EntityDto {
 
@@ -73,6 +74,7 @@ public class RegionDto extends EntityDto {
 	
 	public static RegionDto build() {
 		RegionDto dto = new RegionDto();
+		dto.setUuid(DataHelper.createUuid());
 		return dto;
 	}
 }

@@ -22,13 +22,18 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.user.User;
 
 /**
@@ -43,21 +48,30 @@ public class WeeklyReport extends AbstractDomainObject {
     public static final String TABLE_NAME = "weeklyreport";
     public static final String I18N_PREFIX = "WeeklyReport";
 
-    public static final String HEALTH_FACILITY = "healthFacility";
-    public static final String INFORMANT = "informant";
+    public static final String REPORTING_USER = "reportingUser";
     public static final String REPORT_DATE_TIME = "reportDateTime";
+    public static final String HEALTH_FACILITY = "healthFacility";
     public static final String TOTAL_NUMBER_OF_CASES = "totalNumberOfCases";
     public static final String YEAR = "year";
     public static final String EPI_WEEK = "epiWeek";
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private User reportingUser;
+
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date reportDateTime;
+
+    @DatabaseField(foreign=true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+    private District district;
+
+    @DatabaseField(foreign=true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+    private Community community;
+
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
     private Facility healthFacility;
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false)
-    private User informant;
-
-    @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
-    private Date reportDateTime;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private User assignedOfficer;
 
     @Column(nullable = false)
     private Integer totalNumberOfCases;
@@ -68,6 +82,9 @@ public class WeeklyReport extends AbstractDomainObject {
     @Column(nullable = false)
     private Integer epiWeek;
 
+    // just for reference, not persisted in DB
+    private List<WeeklyReportEntry> reportEntries = new ArrayList<>();
+
     public Facility getHealthFacility() {
         return healthFacility;
     }
@@ -76,12 +93,12 @@ public class WeeklyReport extends AbstractDomainObject {
         this.healthFacility = healthFacility;
     }
 
-    public User getInformant() {
-        return informant;
+    public User getReportingUser() {
+        return reportingUser;
     }
 
-    public void setInformant(User informant) {
-        this.informant = informant;
+    public void setReportingUser(User reportingUser) {
+        this.reportingUser = reportingUser;
     }
 
     public Date getReportDateTime() {
@@ -116,9 +133,49 @@ public class WeeklyReport extends AbstractDomainObject {
         this.epiWeek = epiWeek;
     }
 
+    public District getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(District district) {
+        this.district = district;
+    }
+
+    public Community getCommunity() {
+        return community;
+    }
+
+    public void setCommunity(Community community) {
+        this.community = community;
+    }
+
+    public User getAssignedOfficer() {
+        return assignedOfficer;
+    }
+
+    public void setAssignedOfficer(User assignedOfficer) {
+        this.assignedOfficer = assignedOfficer;
+    }
+
     @Override
     public String getI18nPrefix() {
         return I18N_PREFIX;
     }
 
+    public List<WeeklyReportEntry> getReportEntries() {
+        return reportEntries;
+    }
+
+    public void setReportEntries(List<WeeklyReportEntry> reportEntries) {
+        this.reportEntries = reportEntries;
+    }
+
+    public WeeklyReportEntry getReportEntry(Disease disease) {
+        for (WeeklyReportEntry reportEntry : reportEntries) {
+            if (reportEntry.getDisease() == disease) {
+                return reportEntry;
+            }
+        }
+        return null;
+    }
 }

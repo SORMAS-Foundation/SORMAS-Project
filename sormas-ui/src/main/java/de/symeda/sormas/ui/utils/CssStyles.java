@@ -122,13 +122,12 @@ public final class CssStyles {
 	public static final String BUTTON_WARNING = "warning";
 	public static final String BUTTON_SUBTLE = "subtle";
 	public static final String BUTTON_BORDER_NEUTRAL = "border-neutral";
-	public static final String BUTTON_NO_PADDING = "no-padding";
-	public static final String BUTTON_NO_UPPERCASE = "no-uppercase";
+	public static final String BUTTON_COMPACT = "compact";
 	public static final String LINK_ACTIVE = "active";
-	public static final String LINK_HIGHLIGHTED = "link-highlighted";
-	public static final String LINK_HIGHLIGHTED_LIGHT = "link-highlighted-light";
-	public static final String LINK_HIGHLIGHTED_DARK = "link-highlighted-dark";
-	public static final String LINK_HIGHLIGHTED_SMALL = "link-highlighted-small";
+	public static final String BUTTON_FILTER = "filter";
+	public static final String BUTTON_FILTER_LIGHT = "filter-light";
+	public static final String BUTTON_FILTER_DARK = "filter-dark";
+	public static final String BUTTON_FILTER_SMALL = "filter-small";
 	public static final String BUTTON_FONT_SIZE_LARGE = "font-size-large";
 	
 	// List styles
@@ -172,7 +171,9 @@ public final class CssStyles {
 	public static final String GRID_CELL_PRIORITY_NORMAL = "priority-normal";
 	public static final String GRID_CELL_PRIORITY_LOW = "priority-low";
 	public static final String GRID_CELL_WARNING = "warning";
-	
+
+	public static final String GRID_CELL_ODD = "odd";
+
 	public static final String GRID_ROW_STATUS_DISCARDED = "status-discarded";
 	public static final String GRID_ROW_STATUS_NOT = "status-not";
 	public static final String GRID_ROW_STATUS_DONE = "status-done";

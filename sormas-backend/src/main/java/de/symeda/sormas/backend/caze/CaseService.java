@@ -161,7 +161,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createDateFilter(cb, cq, from, date);
+			Predicate dateFilter = createChangeDateFilter(cb, from, date);
 			if (dateFilter != null) {
 				filter = cb.and(filter, dateFilter);	
 			}
@@ -528,15 +528,22 @@ public class CaseService extends AbstractAdoService<Case> {
 			case SURVEILLANCE_OFFICER:
 			case CONTACT_OFFICER:
 			case CASE_OFFICER:
+			case DISTRICT_OBSERVER:
 				// officers see all cases of their district
 				if (user.getDistrict() != null) {
 					filter = cb.or(filter, cb.equal(casePath.get(Case.DISTRICT), user.getDistrict()));
 				}
 				break;
-			case INFORMANT:
-				// informants see all cases of their facility
+			case HOSPITAL_INFORMANT:
+				// hospital informants see all cases of their facility
 				if (user.getHealthFacility() != null) {
 					filter = cb.or(filter, cb.equal(casePath.get(Case.HEALTH_FACILITY), user.getHealthFacility()));
+				}
+				break;
+			case COMMUNITY_INFORMANT:
+				// community informants see all cases of their community
+				if (user.getCommunity() != null) {
+					filter = cb.or(filter, cb.equal(casePath.get(Case.COMMUNITY), user.getCommunity()));
 				}
 				break;
 			case LAB_USER:
@@ -548,6 +555,7 @@ public class CaseService extends AbstractAdoService<Case> {
 				filter = cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery);
 				break;
 			case ADMIN:
+			case EXTERNAL_LAB_USER:
 				break;
 
 			default:
@@ -569,9 +577,8 @@ public class CaseService extends AbstractAdoService<Case> {
 		return filter;
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createDateFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath, Date date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Case,Case> casePath, Date date) {
 
 		Predicate dateFilter = cb.greaterThan(casePath.get(Case.CHANGE_DATE), date);
 

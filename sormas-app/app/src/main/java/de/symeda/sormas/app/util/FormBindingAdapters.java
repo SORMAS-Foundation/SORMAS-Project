@@ -125,7 +125,7 @@ public class FormBindingAdapters {
     }
     @BindingAdapter("userViewRight")
     public static void setUserViewRight(View view, UserRight viewRight) {
-        if (!ConfigProvider.getUser().hasUserRight(viewRight)) {
+        if (!ConfigProvider.hasUserRight(viewRight)) {
             view.setVisibility(GONE);
         }
     }

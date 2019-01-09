@@ -99,7 +99,7 @@ public class TaskListEntry extends HorizontalLayout {
 	public void addEditListener(ClickListener editClickListener) {
 		if (editButton == null) {
 			editButton = new Button(FontAwesome.PENCIL);
-			CssStyles.style(editButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_NO_PADDING);
+			CssStyles.style(editButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 			addComponent(editButton);
 			setComponentAlignment(editButton, Alignment.MIDDLE_RIGHT);
 			setExpandRatio(editButton, 0);

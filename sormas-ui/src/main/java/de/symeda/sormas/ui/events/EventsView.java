@@ -43,7 +43,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
@@ -90,7 +90,7 @@ public class EventsView extends AbstractView {
 
 		addComponent(gridLayout);
 
-		if (LoginHelper.hasUserRight(UserRight.EVENT_EXPORT)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.EVENT_EXPORT)) {
 			Button exportButton = new Button("Export");
 			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
@@ -102,7 +102,7 @@ public class EventsView extends AbstractView {
 			addHeaderComponent(exportButton);
 		}
 
-		if (LoginHelper.hasUserRight(UserRight.EVENT_CREATE)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.EVENT_CREATE)) {
 			createButton = new Button("New event");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
@@ -155,14 +155,14 @@ public class EventsView extends AbstractView {
 		statusButtons = new HashMap<>();
 
 		Button statusAll = new Button("All", e -> processStatusChange(null, e.getButton()));
-		CssStyles.style(statusAll, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED);
+		CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 		statusAll.setCaptionAsHtml(true);
 		statusFilterLayout.addComponent(statusAll);
 		statusButtons.put(statusAll, "All");
 
 		for(EventStatus status : EventStatus.values()) {
 			Button statusButton = new Button(status.toString(), e -> processStatusChange(status, e.getButton()));
-			CssStyles.style(statusButton, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			CssStyles.style(statusButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 			statusButton.setCaptionAsHtml(true);
 			statusFilterLayout.addComponent(statusButton);
 			statusButtons.put(statusButton, status.toString());
@@ -172,7 +172,7 @@ public class EventsView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show archived/active cases button
-			if (LoginHelper.hasUserRight(UserRight.EVENT_VIEW_ARCHIVED)) {
+			if (CurrentUser.getCurrent().hasUserRight(UserRight.EVENT_VIEW_ARCHIVED)) {
 				Button switchArchivedActiveButton = new Button(I18nProperties.getText("showArchivedEvents"));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
@@ -206,7 +206,7 @@ public class EventsView extends AbstractView {
 			}
 
 			// Bulk operation dropdown
-			if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				MenuBar bulkOperationsDropdown = new MenuBar();	
 				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
 
@@ -266,10 +266,10 @@ public class EventsView extends AbstractView {
 	private void processStatusChange(EventStatus eventStatus, Button button) {
 		grid.setStatusFilter(eventStatus);
 		statusButtons.keySet().forEach(b -> {
-			CssStyles.style(b, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
 			b.setCaption(statusButtons.get(b));
 		});
-		CssStyles.removeStyles(button, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		CssStyles.removeStyles(button, CssStyles.BUTTON_FILTER_LIGHT);
 		activeStatusButton = button;
 		updateActiveStatusButtonCaption();
 	}

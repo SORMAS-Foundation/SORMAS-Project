@@ -20,6 +20,7 @@ package de.symeda.sormas.app.backend.location;
 
 import java.util.List;
 
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -54,7 +55,7 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
     }
 
     @Override
-    protected Call<Integer> pushAll(List<LocationDto> locationDtos) {
+    protected Call<List<PushResult>> pushAll(List<LocationDto> locationDtos) {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 

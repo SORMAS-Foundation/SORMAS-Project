@@ -48,8 +48,8 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
@@ -73,7 +73,7 @@ public class SampleController {
 
 	public void create(CaseReferenceDto caseRef, Runnable callback) {
 		SampleCreateForm createForm = new SampleCreateForm(UserRight.SAMPLE_CREATE);
-		createForm.setValue(SampleDto.buildSample(LoginHelper.getCurrentUserAsReference(), caseRef));
+		createForm.setValue(SampleDto.buildSample(CurrentUser.getCurrent().getUserReference(), caseRef));
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<SampleCreateForm>(createForm, createForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
@@ -92,7 +92,7 @@ public class SampleController {
 
 	public void createReferral(SampleDto sample) {
 		SampleCreateForm createForm = new SampleCreateForm(UserRight.SAMPLE_CREATE);
-		SampleDto referralSample = SampleDto.buildReferralSample(LoginHelper.getCurrentUserAsReference(), sample);
+		SampleDto referralSample = SampleDto.buildReferralSample(CurrentUser.getCurrent().getUserReference(), sample);
 		createForm.setValue(referralSample);
 		final CommitDiscardWrapperComponent<SampleCreateForm> createView = new CommitDiscardWrapperComponent<SampleCreateForm>(createForm, createForm.getFieldGroup());
 
@@ -137,7 +137,8 @@ public class SampleController {
 					navigateToData(dto.getUuid());
 
 					if (dto.getSpecimenCondition() != originalDto.getSpecimenCondition() &&
-							dto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
+							dto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE &&
+							CurrentUser.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
 						requestSampleCollectionTaskCreation(dto, form);
 					} else {
 						Notification.show("Sample data saved", Type.WARNING_MESSAGE);
@@ -146,11 +147,11 @@ public class SampleController {
 			}
 		});
 
-		if (LoginHelper.getCurrentUserRoles().contains(UserRole.ADMIN)) {
+		if (CurrentUser.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getSampleFacade().deleteSample(dto.toReference(), LoginHelper.getCurrentUserAsReference().getUuid());
+					FacadeProvider.getSampleFacade().deleteSample(dto.toReference(), CurrentUser.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
 				}
 			}, I18nProperties.getFieldCaption("Sample"));
@@ -160,7 +161,7 @@ public class SampleController {
 		Button referOrLinkToOtherLabButton = new Button();
 		referOrLinkToOtherLabButton.addStyleName(ValoTheme.BUTTON_LINK);
 		if (dto.getReferredTo() == null) {
-			if (LoginHelper.hasUserRight(UserRight.SAMPLE_TRANSFER)) {
+			if (CurrentUser.getCurrent().hasUserRight(UserRight.SAMPLE_TRANSFER)) {
 				referOrLinkToOtherLabButton.setCaption("Refer to another laboratory");
 				referOrLinkToOtherLabButton.addClickListener(new ClickListener() {
 					private static final long serialVersionUID = 1L;
@@ -255,7 +256,7 @@ public class SampleController {
 			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected samples?", new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getSampleFacade().deleteSample(new SampleReferenceDto(((SampleIndexDto) selectedRow).getUuid()), LoginHelper.getCurrentUser().getUuid());
+						FacadeProvider.getSampleFacade().deleteSample(new SampleReferenceDto(((SampleIndexDto) selectedRow).getUuid()), CurrentUser.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification("Cases deleted", "All selected cases have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());

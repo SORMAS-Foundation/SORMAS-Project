@@ -85,6 +85,8 @@ import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDao;
+import de.symeda.sormas.app.backend.user.UserRoleConfig;
+import de.symeda.sormas.app.backend.user.UserRoleConfigDao;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.backend.visit.VisitDao;
 
@@ -96,9 +98,9 @@ import de.symeda.sormas.app.backend.visit.VisitDao;
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
-	private static final String DATABASE_NAME = "sormas.db";
+	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 131;
+	public static final int DATABASE_VERSION = 136;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -157,6 +159,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			if (clearInfrastructure) {
 				TableUtils.clearTable(connectionSource, User.class);
+				TableUtils.clearTable(connectionSource, UserRoleConfig.class);
 				TableUtils.clearTable(connectionSource, Facility.class);
 				TableUtils.clearTable(connectionSource, Community.class);
 				TableUtils.clearTable(connectionSource, District.class);
@@ -189,6 +192,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, District.class);
 			TableUtils.createTable(connectionSource, Community.class);
 			TableUtils.createTable(connectionSource, Facility.class);
+			TableUtils.createTable(connectionSource, UserRoleConfig.class);
 			TableUtils.createTable(connectionSource, User.class);
 			TableUtils.createTable(connectionSource, Person.class);
 			TableUtils.createTable(connectionSource, Case.class);
@@ -560,6 +564,46 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 									"probableCriteria TEXT, confirmedCriteria TEXT, changeDate BIGINT NOT NULL, creationDate BIGINT NOT NULL, " +
 									"id INTEGER PRIMARY KEY AUTOINCREMENT, localChangeDate BIGINT NOT NULL, modified SMALLINT, snapshot SMALLINT, uuid VARCHAR NOT NULL, " +
 									"UNIQUE(snapshot, uuid));");
+				case 131:
+					currentVersion = 131;
+					getDao(User.class).executeRaw("ALTER TABLE users ADD COLUMN community_id bigint REFERENCES community(id);");
+					getDao(User.class).executeRaw("UPDATE users SET userRole = replace(userRole, 'INFORMANT', 'HOSPITAL_INFORMANT');");
+				case 132:
+					currentVersion = 132;
+					getDao(UserRoleConfig.class).executeRaw("CREATE TABLE userrolesconfig(" +
+							"id integer primary key autoincrement," +
+							"uuid varchar(36)," +
+							"changeDate timestamp," +
+							"creationDate timestamp," +
+							"userRole varchar(255)," +
+							"userRights varchar(1023)," +
+							"lastOpenedDate timestamp," +
+							"localChangeDate timestamp," +
+							"modified integer," +
+							"snapshot integer);");
+				case 133:
+					currentVersion = 133;
+					getDao(WeeklyReport.class).executeRaw("ALTER TABLE weeklyreport RENAME TO tmp_weeklyreport;");
+					getDao(WeeklyReport.class).executeRaw("CREATE TABLE weeklyreport(id integer primary key autoincrement, uuid varchar(36) not null unique, changeDate timestamp not null, " +
+							"creationDate timestamp not null, lastOpenedDate timestamp, localChangeDate timestamp not null, modified integer, snapshot integer, healthFacility_id bigint REFERENCES facility(id), " +
+							"reportingUser_id bigint REFERENCES users(id), reportDateTime timestamp, totalNumberOfCases integer, epiWeek integer, year integer, district_id bigint REFERENCES district(id), " +
+							"community_id bigint REFERENCES community(id), assignedOfficer_id bigint REFERENCES users(id), UNIQUE(snapshot, uuid));");
+					getDao(WeeklyReport.class).executeRaw("INSERT INTO weeklyreport(id, uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, snapshot, healthFacility_id, " +
+							"reportingUser_id, reportDateTime, totalNumberOfCases, epiWeek, year) " +
+							"SELECT id, uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, snapshot, healthFacility_id, informant_id, reportDateTime, " +
+							"totalNumberOfCases, epiWeek, year " +
+							"FROM tmp_weeklyreport;");
+					getDao(WeeklyReport.class).executeRaw("DROP TABLE tmp_weeklyreport;");
+				case 134:
+					currentVersion = 134;
+					getDao(Outbreak.class).executeRaw("ALTER TABLE outbreak ADD COLUMN startDate timestamp;");
+					getDao(Outbreak.class).executeRaw("ALTER TABLE outbreak ADD COLUMN endDate timestamp;");
+					getDao(Outbreak.class).executeRaw("UPDATE outbreak SET startDate=creationDate");
+				case 135:
+					currentVersion = 135;
+					getDao(Sample.class).executeRaw("UPDATE samples SET suggestedTypeOfTest='ISOLATION' WHERE suggestedTypeOfTest='VIRUS_ISOLATION'");
+					getDao(SampleTest.class).executeRaw("UPDATE sampleTests SET testType='ISOLATION' WHERE testType='VIRUS_ISOLATION'");
+
 
 					// ATTENTION: break should only be done after last version
 					break;
@@ -641,6 +685,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new CommunityDao((Dao<Community, Long>) innerDao);
 				} else if (type.equals(User.class)) {
 					dao = (AbstractAdoDao<ADO>) new UserDao((Dao<User, Long>) innerDao);
+				} else if (type.equals(UserRoleConfig.class)) {
+					dao = (AbstractAdoDao<ADO>) new UserRoleConfigDao((Dao<UserRoleConfig, Long>) innerDao);
 				} else if (type.equals(Symptoms.class)) {
 					dao = (AbstractAdoDao<ADO>) new SymptomsDao((Dao<Symptoms, Long>) innerDao);
 				} else if (type.equals(Task.class)) {
@@ -764,6 +810,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	public static UserDao getUserDao() {
 		return (UserDao) getAdoDao(User.class);
+	}
+
+	public static UserRoleConfigDao getUserRoleConfigDao() {
+		return (UserRoleConfigDao) getAdoDao(UserRoleConfig.class);
 	}
 
 	public static SymptomsDao getSymptomsDao() {

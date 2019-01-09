@@ -342,7 +342,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 
     @Override
     protected void changeVisualState(VisualState state) {
-        if (getUserEditRight() != null && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
+        if (getUserEditRight() != null && !ConfigProvider.hasUserRight(getUserEditRight())) {
             state = VisualState.DISABLED;
         }
 

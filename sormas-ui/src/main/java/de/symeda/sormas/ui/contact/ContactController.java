@@ -47,9 +47,9 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.caze.CaseContactsView;
-import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
@@ -134,7 +134,7 @@ public class ContactController {
 		contact.setCaze(caze);
 
 		contact.setReportDateTime(new Date());
-		UserReferenceDto userReference = LoginHelper.getCurrentUserAsReference();
+		UserReferenceDto userReference = CurrentUser.getCurrent().getUserReference();
 		contact.setReportingUser(userReference);
 		contact.setContactClassification(ContactClassification.UNCONFIRMED);
 		contact.setContactStatus(ContactStatus.ACTIVE);
@@ -219,11 +219,11 @@ public class ContactController {
 			}
 		});
 
-		if (LoginHelper.getCurrentUserRoles().contains(UserRole.ADMIN)) {
+		if (CurrentUser.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			editComponent.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getContactFacade().deleteContact(contact.toReference(), LoginHelper.getCurrentUserAsReference().getUuid());
+					FacadeProvider.getContactFacade().deleteContact(contact.toReference(), CurrentUser.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
 				}
 			}, I18nProperties.getFieldCaption("Contact"));
@@ -302,7 +302,7 @@ public class ContactController {
 			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected contacts?", new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getContactFacade().deleteContact(new ContactReferenceDto(((ContactIndexDto) selectedRow).getUuid()), LoginHelper.getCurrentUser().getUuid());
+						FacadeProvider.getContactFacade().deleteContact(new ContactReferenceDto(((ContactIndexDto) selectedRow).getUuid()), CurrentUser.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification("Contacts deleted", "All selected contacts have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
@@ -322,7 +322,7 @@ public class ContactController {
 						if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 							ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
 							contactDto.setFollowUpStatus(FollowUpStatus.CANCELED);
-							contactDto.setFollowUpComment("Canceled by " + LoginHelper.getCurrentUserName() + " using bulk action");
+							contactDto.setFollowUpComment("Canceled by " + CurrentUser.getCurrent().getUserName() + " using bulk action");
 							FacadeProvider.getContactFacade().saveContact(contactDto);
 						}
 					}
@@ -344,7 +344,7 @@ public class ContactController {
 						if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 							ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
 							contactDto.setFollowUpStatus(FollowUpStatus.LOST);
-							contactDto.setFollowUpComment("Set to lost to follow-up by " + LoginHelper.getCurrentUserName() + " using bulk action");
+							contactDto.setFollowUpComment("Set to lost to follow-up by " + CurrentUser.getCurrent().getUserName() + " using bulk action");
 							FacadeProvider.getContactFacade().saveContact(contactDto);
 						}
 					}

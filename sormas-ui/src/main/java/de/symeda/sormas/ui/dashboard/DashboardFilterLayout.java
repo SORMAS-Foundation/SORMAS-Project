@@ -44,7 +44,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 
@@ -82,7 +82,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 
 	private void createRegionAndDistrictFilter() {
 		// Region filter
-		if (LoginHelper.getCurrentUser().getRegion() == null) {
+		if (CurrentUser.getCurrent().getUser().getRegion() == null) {
 			regionFilter.setWidth(200, Unit.PIXELS);
 			regionFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(AbstractDashboardView.I18N_PREFIX, "region"));
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
@@ -96,10 +96,10 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		}
 
 		// District filter
-		if (LoginHelper.getCurrentUser().getRegion() != null) {
+		if (CurrentUser.getCurrent().getUser().getRegion() != null && CurrentUser.getCurrent().getUser().getDistrict() == null) {
 			districtFilter.setWidth(200, Unit.PIXELS);
 			districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(AbstractDashboardView.I18N_PREFIX, "district"));
-			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(LoginHelper.getCurrentUser().getRegion().getUuid()));
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(CurrentUser.getCurrent().getUser().getRegion().getUuid()));
 			districtFilter.addValueChangeListener(e -> {
 				dashboardDataProvider.setDistrict((DistrictReferenceDto) districtFilter.getValue());
 				dashboardView.refreshDashboard();
@@ -155,8 +155,8 @@ public class DashboardFilterLayout extends HorizontalLayout {
 			setDateFilter(DateHelper.getStartOfWeek(now), DateHelper.getEndOfWeek(now));
 			dashboardView.refreshDashboard();
 		});
-		CssStyles.style(thisWeekButton, CssStyles.LINK_HIGHLIGHTED_DARK);
-		CssStyles.removeStyles(thisWeekButton, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		CssStyles.style(thisWeekButton, CssStyles.BUTTON_FILTER_DARK);
+		CssStyles.removeStyles(thisWeekButton, CssStyles.BUTTON_FILTER_LIGHT);
 
 		Button lastWeekButton = new Button("Last week");
 		initializeDateFilterButton(lastWeekButton);
@@ -256,21 +256,21 @@ public class DashboardFilterLayout extends HorizontalLayout {
 				changeDateFilterButtonsStyles(button);
 			});
 		}
-		CssStyles.style(button, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT, CssStyles.FORCE_CAPTION);
+		CssStyles.style(button, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT, CssStyles.FORCE_CAPTION);
 		dateFilterButtons.add(button);
 	}
 
 	private void changeDateFilterButtonsStyles(Button activeFilterButton) {
-		CssStyles.style(activeFilterButton, CssStyles.LINK_HIGHLIGHTED_DARK);
-		CssStyles.removeStyles(activeFilterButton, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		CssStyles.style(activeFilterButton, CssStyles.BUTTON_FILTER_DARK);
+		CssStyles.removeStyles(activeFilterButton, CssStyles.BUTTON_FILTER_LIGHT);
 		if (customButton != activeFilterButton) {
 			customButton.setCaption("Custom");
 		}
 
 		dateFilterButtons.forEach(b -> {
 			if (b != activeFilterButton) {
-				CssStyles.style(b, CssStyles.LINK_HIGHLIGHTED_LIGHT);
-				CssStyles.removeStyles(b, CssStyles.LINK_HIGHLIGHTED_DARK);
+				CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
+				CssStyles.removeStyles(b, CssStyles.BUTTON_FILTER_DARK);
 			}
 		});
 	}

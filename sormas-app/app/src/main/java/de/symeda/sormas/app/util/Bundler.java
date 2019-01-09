@@ -20,6 +20,8 @@ package de.symeda.sormas.app.util;
 
 import android.os.Bundle;
 
+import de.symeda.sormas.api.utils.EpiWeek;
+
 public class Bundler {
 
     private static final String FINISH_INSTEAD_OF_UP_NAV = "finishInsteadOfUpNav";
@@ -30,6 +32,8 @@ public class Bundler {
     private static final String CONTACT_UUID = "contactUuid";
     private static final String EVENT_UUID = "eventUuid";
     private static final String EVENT_PARTICIPANT_UUID = "eventParticipantUuid";
+    private static final String EPI_WEEK = "epiWeek";
+    private static final String EMPTY_REPORT_DATE = "emptyReportDate";
 
     private final Bundle bundle;
 
@@ -72,6 +76,21 @@ public class Bundler {
             return bundle.getString(ROOT_UUID);
         }
         return null;
+    }
+
+    public Bundler setEmptyReportDate(boolean emptyReportDate) {
+        bundle.putBoolean(EMPTY_REPORT_DATE, emptyReportDate);
+        return this;
+    }
+
+    /**
+     * Default value is 'false'
+     */
+    public boolean getEmptyReportDate() {
+        if (bundle.containsKey(EMPTY_REPORT_DATE)) {
+            return bundle.getBoolean(EMPTY_REPORT_DATE);
+        }
+        return false;
     }
 
     public Bundler setListFilter(Enum listFilter) {
@@ -130,6 +149,18 @@ public class Bundler {
     public String getEventParticipantUuid() {
         if (bundle.containsKey(EVENT_PARTICIPANT_UUID)) {
             return bundle.getString(EVENT_PARTICIPANT_UUID);
+        }
+        return null;
+    }
+
+    public Bundler setEpiWeek(EpiWeek epiWeek) {
+        bundle.putSerializable(EPI_WEEK, epiWeek);
+        return this;
+    }
+
+    public EpiWeek getEpiWeek() {
+        if (bundle.containsKey(EPI_WEEK)) {
+            return (EpiWeek) bundle.getSerializable(EPI_WEEK);
         }
         return null;
     }

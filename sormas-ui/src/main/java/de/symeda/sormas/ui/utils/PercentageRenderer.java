@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -14,36 +14,23 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+ *******************************************************************************/
+package de.symeda.sormas.ui.utils;
 
-package de.symeda.sormas.app.util;
+import com.vaadin.ui.renderers.HtmlRenderer;
 
-import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.app.backend.user.User;
+import elemental.json.JsonValue;
 
-/**
- * Created by Orson on 28/03/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
-public class UserHelper {
-
-    public static String getUserRole(User user) {
-        if (user == null)
-            return "";
-
-        StringBuilder result = new StringBuilder();
-
-        int index = 0;
-        for (UserRole userRole : user.getUserRoles()) {
-            result.append(userRole.toShortString() + ((index < (user.getUserRoles().size() - 1))? ", " : ""));
-
-            index = index + 1;
-        }
-
-        return result.toString();
+@SuppressWarnings("serial")
+public class PercentageRenderer extends HtmlRenderer {
+	
+	@Override
+    public JsonValue encode(String value) {
+    	if (value != null && !value.isEmpty()) {
+    		return super.encode(value + "%");
+    	} else {
+    		return null;
+    	}
     }
+	
 }

@@ -16,25 +16,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.report.viewmodel;
+package de.symeda.sormas.app.rest;
 
-import de.symeda.sormas.api.Disease;
+import java.util.List;
 
-public class PendingReportViewModel {
+import de.symeda.sormas.api.user.UserRoleConfigDto;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
-    private Disease mDisease;
-    private int nNumberOfCases;
+public interface UserRoleConfigFacadeRetro {
 
-    public PendingReportViewModel(Disease disease, int numberOfCases) {
-        this.mDisease = disease;
-        this.nNumberOfCases = numberOfCases;
-    }
+    @GET("userroles/all/{since}")
+    Call<List<UserRoleConfigDto>> pullAllSince(@Path("since") long since);
 
-    public Disease getDisease() {
-        return mDisease;
-    }
+    @GET("userroles/uuids")
+    Call<List<String>> pullUuids();
 
-    public int getNumberOfCases() {
-        return nNumberOfCases;
-    }
+    @GET("userroles/deleted/{since}")
+    Call<List<String>> pullDeletedUuidsSince(@Path("since") long since);
 }

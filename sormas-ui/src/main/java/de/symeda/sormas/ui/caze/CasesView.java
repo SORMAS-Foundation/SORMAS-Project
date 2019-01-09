@@ -68,8 +68,8 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.dashboard.DateFilterOption;
-import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
@@ -145,7 +145,7 @@ public class CasesView extends AbstractView {
 			updateActiveStatusButtonCaption();
 		});
 
-		if (LoginHelper.hasUserRight(UserRight.CASE_IMPORT)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
 			Button importButton = new Button("Import");
 			importButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			importButton.setIcon(FontAwesome.UPLOAD);
@@ -159,7 +159,7 @@ public class CasesView extends AbstractView {
 			addHeaderComponent(importButton);
 		}
 
-		if (LoginHelper.hasUserRight(UserRight.CASE_EXPORT)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.CASE_EXPORT)) {
 			PopupButton exportButton = new PopupButton("Export"); 
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
 			VerticalLayout exportLayout = new VerticalLayout();
@@ -189,7 +189,7 @@ public class CasesView extends AbstractView {
 			exportLayout.addComponent(extendedExportButton);
 
 			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class,
-					(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(LoginHelper.getCurrentUser().getUuid(), grid.getFilterCriteria(), start, max), 
+					(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(CurrentUser.getCurrent().getUuid(), grid.getFilterCriteria(), start, max), 
 					propertyId -> {
 						return I18nProperties.getPrefixFieldCaption(CaseExportDto.I18N_PREFIX, propertyId,
 								I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, propertyId,
@@ -210,7 +210,7 @@ public class CasesView extends AbstractView {
 			});
 		}
 
-		if (LoginHelper.hasUserRight(UserRight.CASE_CREATE)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
 			createButton = new Button("New case");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
@@ -282,7 +282,7 @@ public class CasesView extends AbstractView {
 			});
 			secondFilterRowLayout.addComponent(presentConditionFilter);      
 
-			UserDto user = LoginHelper.getCurrentUser();
+			UserDto user = CurrentUser.getCurrent().getUser();
 
 			regionFilter = new ComboBox();
 			if (user.getRegion() == null) {
@@ -304,7 +304,7 @@ public class CasesView extends AbstractView {
 				grid.setDistrictFilter(((DistrictReferenceDto)e.getProperty().getValue()));
 			});
 
-			if (user.getRegion() != null) {
+			if (user.getRegion() != null && user.getDistrict() == null) {
 				districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
 				districtFilter.setEnabled(true);
 			} else {
@@ -432,7 +432,7 @@ public class CasesView extends AbstractView {
 		Button statusAll = new Button("All", e -> {
 			processStatusChange(null, e.getButton());
 		});
-		CssStyles.style(statusAll, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED);
+		CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 		statusAll.setCaptionAsHtml(true);
 		statusFilterLayout.addComponent(statusAll);
 		statusButtons.put(statusAll, "All");
@@ -442,7 +442,7 @@ public class CasesView extends AbstractView {
 			Button statusButton = new Button(status.toString(), e -> {
 				processStatusChange(status, e.getButton());
 			});
-			CssStyles.style(statusButton, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			CssStyles.style(statusButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 			statusButton.setCaptionAsHtml(true);
 			statusFilterLayout.addComponent(statusButton);
 			statusButtons.put(statusButton, status.toString());
@@ -452,7 +452,7 @@ public class CasesView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show archived/active cases button
-			if (LoginHelper.hasUserRight(UserRight.CASE_VIEW_ARCHIVED)) {
+			if (CurrentUser.getCurrent().hasUserRight(UserRight.CASE_VIEW_ARCHIVED)) {
 				Button switchArchivedActiveButton = new Button(I18nProperties.getText("showArchivedCases"));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
@@ -486,7 +486,7 @@ public class CasesView extends AbstractView {
 			}
 
 			// Bulk operation dropdown
-			if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				MenuBar bulkOperationsDropdown = new MenuBar();	
 				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
 
@@ -584,10 +584,10 @@ public class CasesView extends AbstractView {
 	private void processStatusChange(InvestigationStatus investigationStatus, Button button) {
 		grid.setInvestigationFilter(investigationStatus);
 		statusButtons.keySet().forEach(b -> {
-			CssStyles.style(b, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
 			b.setCaption(statusButtons.get(b));
 		});
-		CssStyles.removeStyles(button, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		CssStyles.removeStyles(button, CssStyles.BUTTON_FILTER_LIGHT);
 		activeStatusButton = button;
 		updateActiveStatusButtonCaption();
 	}

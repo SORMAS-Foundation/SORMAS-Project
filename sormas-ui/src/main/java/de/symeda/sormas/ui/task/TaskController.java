@@ -43,7 +43,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
@@ -126,11 +126,11 @@ public class TaskController {
 			}
 		});
 
-		if (LoginHelper.getCurrentUserRoles().contains(UserRole.ADMIN)) {
+		if (CurrentUser.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getTaskFacade().deleteTask(newDto, LoginHelper.getCurrentUserAsReference().getUuid());
+					FacadeProvider.getTaskFacade().deleteTask(newDto, CurrentUser.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().removeWindow(popupWindow);
 					callback.run();
 				}
@@ -143,7 +143,7 @@ public class TaskController {
 		task.setUuid(DataHelper.createUuid());
 		task.setSuggestedStart(TaskHelper.getDefaultSuggestedStart());
 		task.setDueDate(TaskHelper.getDefaultDueDate());
-		task.setCreatorUser(LoginHelper.getCurrentUserAsReference());
+		task.setCreatorUser(CurrentUser.getCurrent().getUserReference());
 		task.setTaskStatus(TaskStatus.PENDING);
 		task.setPriority(TaskPriority.NORMAL);
 		task.setTaskContext(context);
@@ -175,7 +175,7 @@ public class TaskController {
 			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected tasks?", new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getTaskFacade().deleteTask(FacadeProvider.getTaskFacade().getByUuid(((TaskIndexDto) selectedRow).getUuid()), LoginHelper.getCurrentUser().getUuid());
+						FacadeProvider.getTaskFacade().deleteTask(FacadeProvider.getTaskFacade().getByUuid(((TaskIndexDto) selectedRow).getUuid()), CurrentUser.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification("Tasks deleted", "All selected tasks have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());

@@ -20,6 +20,7 @@ package de.symeda.sormas.app.backend.task;
 
 import java.util.List;
 
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
@@ -58,7 +59,7 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
     }
 
     @Override
-    protected Call<Integer> pushAll(List<TaskDto> taskDtos) {
+    protected Call<List<PushResult>> pushAll(List<TaskDto> taskDtos) {
         return RetroProvider.getTaskFacade().pushAll(taskDtos);
     }
 

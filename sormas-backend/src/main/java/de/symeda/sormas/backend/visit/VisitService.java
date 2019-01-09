@@ -109,7 +109,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 		Predicate filter = cb.in(visitRoot.get(Visit.PERSON).get(Person.ID)).value(contactPersonSubquery);
 		// date range
 		if (date != null) {
-			filter = cb.and(filter, createDateFilter(cb, cq, visitRoot, date));
+			filter = cb.and(filter, createChangeDateFilter(cb, visitRoot, date));
 		}
 		cq.where(filter);
 		cq.distinct(true);
@@ -316,9 +316,8 @@ public class VisitService extends AbstractAdoService<Visit> {
 		throw new UnsupportedOperationException();
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createDateFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Visit,Visit> visitPath, Date date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Visit,Visit> visitPath, Date date) {
 
 		Predicate dateFilter = cb.greaterThan(visitPath.get(Visit.CHANGE_DATE), date);
 

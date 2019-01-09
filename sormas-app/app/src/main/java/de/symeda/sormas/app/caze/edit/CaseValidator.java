@@ -47,11 +47,7 @@ final class CaseValidator {
                                 I18nProperties.getValidationError("beforeDate",
                                         contentBinding.epiDataBurialBurialDateFrom.getCaption(),
                                         contentBinding.epiDataBurialBurialDateTo.getCaption()));
-                    } else {
-                        contentBinding.epiDataBurialBurialDateFrom.disableErrorState();
                     }
-                } else {
-                    contentBinding.epiDataBurialBurialDateFrom.disableErrorState();
                 }
             }
         };
@@ -64,11 +60,7 @@ final class CaseValidator {
                                 I18nProperties.getValidationError("afterDate",
                                         contentBinding.epiDataBurialBurialDateTo.getCaption(),
                                         contentBinding.epiDataBurialBurialDateFrom.getCaption()));
-                    } else {
-                        contentBinding.epiDataBurialBurialDateTo.disableErrorState();
                     }
-                } else {
-                    contentBinding.epiDataBurialBurialDateTo.disableErrorState();
                 }
             }
         };
@@ -87,11 +79,7 @@ final class CaseValidator {
                                 I18nProperties.getValidationError("beforeDate",
                                         contentBinding.epiDataTravelTravelDateFrom.getCaption(),
                                         contentBinding.epiDataTravelTravelDateTo.getCaption()));
-                    } else {
-                        contentBinding.epiDataTravelTravelDateFrom.disableErrorState();
                     }
-                } else {
-                    contentBinding.epiDataTravelTravelDateFrom.disableErrorState();
                 }
             }
         };
@@ -105,11 +93,7 @@ final class CaseValidator {
                                 I18nProperties.getValidationError("afterDate",
                                         contentBinding.epiDataTravelTravelDateTo.getCaption(),
                                         contentBinding.epiDataTravelTravelDateFrom.getCaption()));
-                    } else {
-                        contentBinding.epiDataTravelTravelDateTo.disableErrorState();
                     }
-                } else {
-                    contentBinding.epiDataTravelTravelDateTo.disableErrorState();
                 }
             }
         };
@@ -142,11 +126,7 @@ final class CaseValidator {
                                 I18nProperties.getValidationError("beforeDate",
                                         contentBinding.caseHospitalizationAdmissionDate.getCaption(),
                                         contentBinding.caseHospitalizationDischargeDate.getCaption()));
-                    } else {
-                        contentBinding.caseHospitalizationAdmissionDate.disableErrorState();
                     }
-                } else {
-                    contentBinding.caseHospitalizationAdmissionDate.disableErrorState();
                 }
             }
         };
@@ -160,11 +140,7 @@ final class CaseValidator {
                                 I18nProperties.getValidationError("afterDate",
                                         contentBinding.caseHospitalizationDischargeDate.getCaption(),
                                         contentBinding.caseHospitalizationAdmissionDate.getCaption()));
-                    } else {
-                        contentBinding.caseHospitalizationDischargeDate.disableErrorState();
                     }
-                } else {
-                    contentBinding.caseHospitalizationDischargeDate.disableErrorState();
                 }
             }
         };
@@ -183,11 +159,7 @@ final class CaseValidator {
                                 I18nProperties.getValidationError("beforeDate",
                                         contentBinding.casePreviousHospitalizationAdmissionDate.getCaption(),
                                         contentBinding.casePreviousHospitalizationDischargeDate.getCaption()));
-                    } else {
-                        contentBinding.casePreviousHospitalizationAdmissionDate.disableErrorState();
                     }
-                } else {
-                    contentBinding.casePreviousHospitalizationAdmissionDate.disableErrorState();
                 }
             }
         };
@@ -201,11 +173,7 @@ final class CaseValidator {
                                 I18nProperties.getValidationError("afterDate",
                                         contentBinding.casePreviousHospitalizationDischargeDate.getCaption(),
                                         contentBinding.casePreviousHospitalizationAdmissionDate.getCaption()));
-                    } else {
-                        contentBinding.casePreviousHospitalizationDischargeDate.disableErrorState();
                     }
-                } else {
-                    contentBinding.casePreviousHospitalizationDischargeDate.disableErrorState();
                 }
             }
         };

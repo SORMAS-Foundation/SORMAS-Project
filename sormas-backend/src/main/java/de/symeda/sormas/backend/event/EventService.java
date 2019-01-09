@@ -70,7 +70,7 @@ public class EventService extends AbstractAdoService<Event> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createDateFilter(cb, cq, from, date);
+			Predicate dateFilter = createChangeDateFilter(cb, from, date);
 			filter = cb.and(filter, dateFilter);		
 		}
 
@@ -262,12 +262,15 @@ public class EventService extends AbstractAdoService<Event> {
 			case SURVEILLANCE_OFFICER:
 			case CONTACT_OFFICER:
 			case CASE_OFFICER:
+			case DISTRICT_OBSERVER:
 				// officers see all events of their district
 				if (user.getDistrict() != null) {
 					filter = cb.or(filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.DISTRICT), user.getDistrict()));
 				}
 				break;
-			case INFORMANT:
+			case HOSPITAL_INFORMANT:
+			case COMMUNITY_INFORMANT:
+			case EXTERNAL_LAB_USER:
 				// informants dont see events
 				break;
 			default:
@@ -282,9 +285,8 @@ public class EventService extends AbstractAdoService<Event> {
 		return filter;
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createDateFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Event, Event> eventPath, Date date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Event, Event> eventPath, Date date) {
 
 		Predicate dateFilter = cb.greaterThan(eventPath.get(AbstractDomainObject.CHANGE_DATE), date);
 

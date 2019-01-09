@@ -34,13 +34,13 @@ import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionFacade;
-import de.symeda.sormas.api.report.WeeklyReportEntryFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleTestFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.user.UserFacade;
+import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb;
@@ -63,28 +63,29 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.GeoShapeProviderEjb.GeoShapeProviderEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.report.WeeklyReportEntryFacadeEjb.WeeklyReportEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleTestFacadeEjb.SampleTestFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import info.novatec.beantest.api.BaseBeanTest;
 
 public class AbstractBeanTest extends BaseBeanTest {
 
 	protected final TestDataCreator creator = new TestDataCreator(this);
-	
+
 	/**
-	 * Resets mocks to their initial state so that mock configurations are not shared between tests.
+	 * Resets mocks to their initial state so that mock configurations are not
+	 * shared between tests.
 	 */
 	@Before
 	public void resetMocks() {
 		MockProducer.resetMocks();
 	}
-	
+
 	public ConfigFacade getConfigFacade() {
 		return getBean(ConfigFacadeEjbLocal.class);
 	}
@@ -92,31 +93,31 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public CaseFacade getCaseFacade() {
 		return getBean(CaseFacadeEjbLocal.class);
 	}
-	
+
 	public CaseClassificationFacadeEjb getCaseClassificationLogic() {
 		return getBean(CaseClassificationFacadeEjb.class);
 	}
-	
+
 	public ContactFacade getContactFacade() {
 		return getBean(ContactFacadeEjbLocal.class);
 	}
-	
+
 	public ContactService getContactService() {
 		return getBean(ContactService.class);
 	}
-	
+
 	public EventFacade getEventFacade() {
 		return getBean(EventFacadeEjbLocal.class);
 	}
-	
+
 	public EventParticipantFacade getEventParticipantFacade() {
 		return getBean(EventParticipantFacadeEjbLocal.class);
 	}
-	
+
 	public VisitFacade getVisitFacade() {
 		return getBean(VisitFacadeEjbLocal.class);
 	}
-	
+
 	public PersonFacade getPersonFacade() {
 		return getBean(PersonFacadeEjbLocal.class);
 	}
@@ -128,11 +129,11 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public SampleFacade getSampleFacade() {
 		return getBean(SampleFacadeEjbLocal.class);
 	}
-	
+
 	public SampleTestFacade getSampleTestFacade() {
 		return getBean(SampleTestFacadeEjbLocal.class);
 	}
-	
+
 	public SymptomsFacade getSymptomsFacade() {
 		return getBean(SymptomsFacadeEjbLocal.class);
 	}
@@ -140,15 +141,15 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public FacilityFacade getFacilityFacade() {
 		return getBean(FacilityFacadeEjbLocal.class);
 	}
-	
+
 	public RegionFacade getRegionFacade() {
 		return getBean(RegionFacadeEjbLocal.class);
 	}
-	
+
 	public DistrictFacade getDistrictFacade() {
 		return getBean(DistrictFacadeEjbLocal.class);
 	}
-	
+
 	public CommunityFacade getCommunityFacade() {
 		return getBean(CommunityFacadeEjbLocal.class);
 	}
@@ -156,49 +157,49 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public UserFacade getUserFacade() {
 		return getBean(UserFacadeEjbLocal.class);
 	}
-	
+
+	public UserRoleConfigFacade getUserRoleConfigFacade() {
+		return getBean(UserRoleConfigFacadeEjbLocal.class);
+	}
+
 	public HospitalizationFacade getHospitalizationFacade() {
 		return getBean(HospitalizationFacadeEjbLocal.class);
 	}
-	
+
 	public EpiDataFacade getEpiDataFacade() {
 		return getBean(EpiDataFacadeEjbLocal.class);
 	}
-	
+
 	public WeeklyReportFacade getWeeklyReportFacade() {
 		return getBean(WeeklyReportFacadeEjbLocal.class);
 	}
-	
-	public WeeklyReportEntryFacade getWeeklyReportEntryFacade() {
-		return getBean(WeeklyReportEntryFacadeEjbLocal.class);
-	}
-	
+
 	public GeoShapeProvider getGeoShapeProvider() {
 		return getBean(GeoShapeProviderEjbLocal.class);
 	}
-	
+
 	public OutbreakFacade getOutbreakFacade() {
 		return getBean(OutbreakFacadeEjbLocal.class);
 	}
-	
+
 	public ImportFacade getImportFacade() {
 		return getBean(ImportFacadeEjbLocal.class);
 	}
-	
+
 	public FacilityService getFacilityService() {
 		return getBean(FacilityService.class);
 	}
-	
+
 	public RegionService getRegionService() {
 		return getBean(RegionService.class);
 	}
-	
+
 	public DistrictService getDistrictService() {
 		return getBean(DistrictService.class);
 	}
-	
+
 	public CommunityService getCommunityService() {
 		return getBean(CommunityService.class);
 	}
-	
+
 }

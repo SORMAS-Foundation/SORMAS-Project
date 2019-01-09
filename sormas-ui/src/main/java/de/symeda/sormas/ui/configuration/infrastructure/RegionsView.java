@@ -27,8 +27,8 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
-import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class RegionsView extends AbstractConfigurationView {
@@ -57,7 +57,7 @@ public class RegionsView extends AbstractConfigurationView {
 		gridLayout.setStyleName("crud-main-layout");
 		grid.reload();
 		
-		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = new Button("New entry");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);

@@ -20,29 +20,20 @@ package de.symeda.sormas.app.caze.list;
 
 import android.content.Context;
 import android.view.Menu;
-import android.view.View;
 import android.widget.AdapterView;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.report.MissingWeeklyReportDialog;
-import de.symeda.sormas.app.report.ReportActivity;
-import de.symeda.sormas.app.util.Callback;
 
 public class CaseListActivity extends BaseListActivity {
 
@@ -87,29 +78,11 @@ public class CaseListActivity extends BaseListActivity {
 
     @Override
     public void goToNewView() {
-        EpiWeek lastEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
-        User user = ConfigProvider.getUser();
-        if (user.hasUserRole(UserRole.INFORMANT)
-                && DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(lastEpiWeek, ConfigProvider.getUser()) == null) {
-
-            final MissingWeeklyReportDialog confirmationDialog = new MissingWeeklyReportDialog(this);
-            confirmationDialog.setPositiveCallback(new Callback() {
-                @Override
-                public void call() {
-                    ReportActivity.startActivity(getContext());
-                    confirmationDialog.dismiss();
-                }
-            });
-
-            confirmationDialog.show();
-        } else {
-            CaseNewActivity.startActivity(getContext());
-        }
+        CaseNewActivity.startActivity(getContext());
     }
 
     @Override
     public boolean isEntryCreateAllowed() {
-        User user = ConfigProvider.getUser();
-        return user.hasUserRight(UserRight.CASE_CREATE);
+        return ConfigProvider.hasUserRight(UserRight.CASE_CREATE);
     }
 }

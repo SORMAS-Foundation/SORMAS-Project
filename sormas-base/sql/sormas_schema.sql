@@ -2513,3 +2513,135 @@ UPDATE cases SET investigateddate = investigateddate + interval '2000 years' WHE
 UPDATE symptoms SET onsetdate = onsetdate + interval '2000 years' WHERE EXTRACT(year FROM onsetdate) = 18;
 
 INSERT INTO schema_version (version_number, comment) VALUES (115, 'Change dates with year 18 to 2018 #792');
+
+-- 2018-12-03 Community Informant user role #872
+
+UPDATE userroles SET userrole = REPLACE(userrole, 'INFORMANT', 'HOSPITAL_INFORMANT');
+UPDATE userroles_history SET userrole = REPLACE(userrole, 'INFORMANT', 'HOSPITAL_INFORMANT');
+ALTER TABLE users ADD COLUMN community_id bigint;
+ALTER TABLE users ADD CONSTRAINT fk_users_community_id FOREIGN KEY (community_id) REFERENCES community (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (116, 'Community informant user role #872');
+
+-- 2018-12-03 Rename useroles to user_userroles #830
+
+DROP TRIGGER versioning_trigger ON userroles;
+ALTER TABLE userroles RENAME TO users_userroles;
+ALTER TABLE userroles_history RENAME TO users_userroles_history;
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON users_userroles
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'users_userroles_history', true);
+
+INSERT INTO schema_version (version_number, comment) VALUES (117, 'Rename useroles to users_userroles #830');
+
+-- 2018-12-03 User role configuration #830
+
+CREATE TABLE userrolesconfig (
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	userrole varchar(255) not null unique,
+	sys_period tstzrange NOT NULL,
+	primary key(id)
+);
+ALTER TABLE userrolesconfig OWNER TO sormas_user;
+
+CREATE TABLE userrolesconfig_history (LIKE userrolesconfig);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON userrolesconfig
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userrolesconfig_history', true);
+ALTER TABLE userrolesconfig_history OWNER TO sormas_user;
+
+CREATE TABLE userroles_userrights (
+    userrole character varying(255) NOT NULL,
+    userright character varying(255) NOT NULL,
+	sys_period tstzrange NOT NULL
+);
+ALTER TABLE userroles_userrights OWNER TO sormas_user;
+
+ALTER TABLE ONLY userroles_userrights
+    ADD CONSTRAINT unq_userroles_userrights_0 UNIQUE (userrole, userright);
+ALTER TABLE ONLY userroles_userrights
+    ADD CONSTRAINT fk_userroles_userrights_user_id FOREIGN KEY (userrole) REFERENCES userrolesconfig(userrole);
+
+CREATE TABLE userroles_userrights_history (LIKE userroles_userrights);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON userroles_userrights
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userroles_userrights_history', true);
+ALTER TABLE userroles_userrights_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (118, 'User role configuration #830');
+
+ALTER TABLE userroles_userrights ADD COLUMN userrole_id bigint NOT NULL;
+ALTER TABLE userroles_userrights DROP CONSTRAINT fk_userroles_userrights_user_id;
+ALTER TABLE userroles_userrights DROP CONSTRAINT unq_userroles_userrights_0;
+ALTER TABLE userroles_userrights DROP COLUMN userrole;
+ALTER TABLE ONLY userroles_userrights
+    ADD CONSTRAINT unq_userroles_userrights_0 UNIQUE (userrole_id, userright);
+ALTER TABLE ONLY userroles_userrights
+    ADD CONSTRAINT fk_userroles_userrights_userrole_id FOREIGN KEY (userrole_id) REFERENCES userrolesconfig(id);
+
+DROP TABLE userroles_userrights_history;
+CREATE TABLE userroles_userrights_history (LIKE userroles_userrights);
+ALTER TABLE userroles_userrights_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (119, 'Fix for user role configuration #830');
+
+-- 2018-12-04 Restructuring weekly reports #610
+
+ALTER TABLE weeklyreport ALTER COLUMN healthfacility_id DROP NOT NULL;
+ALTER TABLE weeklyreport RENAME informant_id TO reportinguser_id;
+ALTER TABLE weeklyreport ADD COLUMN district_id bigint;
+ALTER TABLE weeklyreport ADD CONSTRAINT fk_weeklyreport_district_id FOREIGN KEY (district_id) REFERENCES district (id);
+ALTER TABLE weeklyreport ADD COLUMN community_id bigint;
+ALTER TABLE weeklyreport ADD CONSTRAINT fk_weeklyreport_commuinty_id FOREIGN KEY (community_id) REFERENCES community (id);
+ALTER TABLE weeklyreport ADD COLUMN assignedofficer_id bigint;
+ALTER TABLE weeklyreport ADD CONSTRAINT fk_weeklyreport_assignedofficer_id FOREIGN KEY (assignedofficer_id) REFERENCES users (id);
+
+ALTER TABLE users_history ADD COLUMN community_id bigint;
+ALTER TABLE users_history ADD CONSTRAINT fk_users_community_id FOREIGN KEY (community_id) REFERENCES community (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (120, 'Restructuring weekly reports #610');
+
+-- 2018-12-10 Outbreak start & end #889
+
+ALTER TABLE outbreak ADD COLUMN startdate timestamp;
+UPDATE outbreak SET startdate=creationdate;
+ALTER TABLE outbreak ALTER COLUMN startdate SET NOT NULL;
+ALTER TABLE outbreak ADD COLUMN enddate timestamp;
+ALTER TABLE outbreak_history ADD COLUMN startdate timestamp;
+ALTER TABLE outbreak_history ADD COLUMN enddate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (121, 'Outbreak start & end #889');
+
+-- 2018-12-13 Virus isolation -> Isolation #838
+
+UPDATE samples SET suggestedtypeoftest='ISOLATION' WHERE suggestedtypeoftest='VIRUS_ISOLATION';
+UPDATE samples_history SET suggestedtypeoftest='ISOLATION' WHERE suggestedtypeoftest='VIRUS_ISOLATION';
+UPDATE sampletest SET testtype='ISOLATION' WHERE testtype='VIRUS_ISOLATION';
+UPDATE sampletest_history SET testtype='ISOLATION' WHERE testtype='VIRUS_ISOLATION';
+
+INSERT INTO schema_version (version_number, comment) VALUES (122, 'Virus isolation -> Isolation #838');
+
+-- 2018-12-19 History table and change date for embedded weekly report lists #610
+
+ALTER TABLE weeklyreport ADD COLUMN changedateofembeddedlists timestamp without time zone;
+
+ALTER TABLE weeklyreport ADD COLUMN sys_period tstzrange;
+UPDATE weeklyreport SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE weeklyreport ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE weeklyreport_history (LIKE weeklyreport);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON weeklyreport
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'weeklyreport_history', true);
+ALTER TABLE weeklyreport_history OWNER TO sormas_user;
+
+ALTER TABLE weeklyreportentry ADD COLUMN sys_period tstzrange;
+UPDATE weeklyreportentry SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE weeklyreportentry ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE weeklyreportentry_history (LIKE weeklyreportentry);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON weeklyreportentry
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'weeklyreportentry_history', true);
+ALTER TABLE weeklyreportentry_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (123, 'History table and change date for embedded weekly report lists #610');

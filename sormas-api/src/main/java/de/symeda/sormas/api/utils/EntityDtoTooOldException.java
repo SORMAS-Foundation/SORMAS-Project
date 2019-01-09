@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -14,27 +14,20 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
+package de.symeda.sormas.api.utils;
+
+import de.symeda.sormas.api.EntityDto;
+
+/**
+ * Thrown when a entity that is supposed to be saved is older than the current
+ * version in the database
  */
+@SuppressWarnings("serial")
+public class EntityDtoTooOldException extends RuntimeException {
 
-package de.symeda.sormas.app.report.viewmodel;
+	public EntityDtoTooOldException(String entityUuid, Class<? extends EntityDto> entityClass) {
+		super(entityClass.getSimpleName() + " is older than current version on server: '" + entityUuid + "'");
+	}
 
-import de.symeda.sormas.api.Disease;
-
-public class WeeklyReportViewModel {
-
-    private Disease mDisease;
-    private int nNumberOfCases;
-
-    public WeeklyReportViewModel(Disease disease, int numberOfCases) {
-        this.mDisease = disease;
-        this.nNumberOfCases = numberOfCases;
-    }
-
-    public Disease getDisease() {
-        return mDisease;
-    }
-
-    public int getNumberOfCases() {
-        return nNumberOfCases;
-    }
 }

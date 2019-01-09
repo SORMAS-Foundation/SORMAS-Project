@@ -19,7 +19,7 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 
 public class LaboratoriesView extends AbstractFacilitiesView {
 
@@ -29,7 +29,7 @@ public class LaboratoriesView extends AbstractFacilitiesView {
 
 	public LaboratoriesView() {
 		super(VIEW_NAME, true);
-		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton.setCaption("New entry");
 			createButton.addClickListener(
 					e -> ControllerProvider.getInfrastructureController().createHealthFacility(true));

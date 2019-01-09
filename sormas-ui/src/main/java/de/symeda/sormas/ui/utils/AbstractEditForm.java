@@ -56,12 +56,12 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
 import de.symeda.sormas.ui.epidata.EpiDataGatheringsField;
 import de.symeda.sormas.ui.epidata.EpiDataTravelsField;
 import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
-import de.symeda.sormas.ui.login.LoginHelper;
 
 @SuppressWarnings("serial")
 public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomField<DTO> implements CommitHandler {// implements DtoEditForm<DTO> {
@@ -193,7 +193,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			addFields();
 		}
 
-		if (editOrCreateUserRight != null && !LoginHelper.hasUserRight(editOrCreateUserRight)) {
+		if (editOrCreateUserRight != null && !CurrentUser.getCurrent().hasUserRight(editOrCreateUserRight)) {
 			getFieldGroup().setReadOnly(true);
 		}
 	}
@@ -351,6 +351,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	protected <T extends Field> T addCustomField(String fieldId, Class<?> dataType, Class<T> fieldType) {
 		T field = getFieldGroup().getFieldFactory().createField(dataType, fieldType);
 		formatField(field, fieldId);
+		addDefaultAdditionalValidators(field);
 		getContent().addComponent(field, fieldId);
 		customFields.add(field);
 		return field;
@@ -365,7 +366,21 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	protected <T extends Field> T addField(String propertyId, Class<T> fieldType) {
 		T field = getFieldGroup().buildAndBind(propertyId, (Object)propertyId, fieldType);
 		formatField(field, propertyId);
-		getContent().addComponent(field, propertyId);		
+		getContent().addComponent(field, propertyId);	
+		addDefaultAdditionalValidators(field);	
+		return field;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	/**
+	 * @param allowedDaysInFuture How many days in the future the value of this field can be or
+	 * -1 for no restriction at all
+	 */
+	protected <T extends Field> T addDateField(String propertyId, Class<T> fieldType, int allowedDaysInFuture) {
+		T field = getFieldGroup().buildAndBind(propertyId, (Object)propertyId, fieldType);
+		formatField(field, propertyId);
+		getContent().addComponent(field, propertyId);	
+		addFutureDateValidator(field, allowedDaysInFuture);	
 		return field;
 	}
 
@@ -392,6 +407,26 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 
 		field.setWidth(100, Unit.PERCENTAGE);
 
+		return field;
+	}
+
+	@SuppressWarnings("rawtypes")
+	protected <T extends Field> T addDefaultAdditionalValidators(T field) {
+		addFutureDateValidator(field, 0);
+		return field;
+	}
+
+	@SuppressWarnings("rawtypes")
+	protected <T extends Field> T addFutureDateValidator(T field, int amountOfDays) {
+		if (amountOfDays < 0) {
+			return field;
+		}
+		
+		if (DateField.class.isAssignableFrom(field.getClass())
+				|| DateTimeField.class.isAssignableFrom(field.getClass())) {
+			field.addValidator(new FutureDateValidator(amountOfDays, field.getCaption()));
+		}
+		
 		return field;
 	}
 

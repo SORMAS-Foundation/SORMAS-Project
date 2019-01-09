@@ -40,6 +40,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 
@@ -60,9 +61,11 @@ public class User extends AbstractDomainObject {
 	public static final String ADDRESS = "address";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
 	public static final String USER_ROLES = "userRoles";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String LABORATORY = "laboratory";
+	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
 
 	private String userName;
 	private String password;
@@ -80,7 +83,9 @@ public class User extends AbstractDomainObject {
 
 	private Region region;
 	private District district;
-	// facility of informant
+	// community of community informant
+	private Community community;
+	// facility of hospital informant
 	private Facility healthFacility;
 	// laboratory of lab user
 	private Facility laboratory;
@@ -171,14 +176,10 @@ public class User extends AbstractDomainObject {
 		this.region = region;
 	}
 	
-	/**
-	 * TODO we need a main user role
-	 * @return
-	 */
 	@ElementCollection(fetch=FetchType.LAZY)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(
-	        name="userroles",
+	        name="users_userroles",
 	        joinColumns=@JoinColumn(name="user_id", referencedColumnName=User.ID, nullable = false),
 	        uniqueConstraints=@UniqueConstraint(columnNames={"user_id", "userrole"})
 	  )
@@ -223,6 +224,14 @@ public class User extends AbstractDomainObject {
 	}
 	public void setDistrict(District district) {
 		this.district = district;
+	}
+	
+	@ManyToOne(cascade = {})
+	public Community getCommunity() {
+		return community;
+	}
+	public void setCommunity(Community community) {
+		this.community = community;
 	}
 	
 	@ManyToOne(cascade = {})

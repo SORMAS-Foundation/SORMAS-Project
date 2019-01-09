@@ -20,6 +20,7 @@ package de.symeda.sormas.api.region;
 import java.util.Date;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class CommunityDto extends EntityDto {
 
@@ -68,6 +69,7 @@ public class CommunityDto extends EntityDto {
 
 	public static CommunityDto build() {
 		CommunityDto dto = new CommunityDto();
+		dto.setUuid(DataHelper.createUuid());
 		return dto;
 	}
 	

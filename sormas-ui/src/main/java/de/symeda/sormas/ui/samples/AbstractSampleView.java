@@ -24,7 +24,9 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.SubNavigationMenu;
 import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
@@ -47,7 +49,7 @@ public class AbstractSampleView extends AbstractSubNavigationView {
 		
 		menu.removeAllViews();
 		menu.addView(SamplesView.VIEW_NAME, "Samples list");
-		if(caseRef != null) {
+		if (caseRef != null && CurrentUser.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 			menu.addView(CaseDataView.VIEW_NAME, "Case", caseRef.getUuid(), true);
 		}
 		menu.addView(SampleDataView.VIEW_NAME, I18nProperties.getFieldCaption(SampleDto.I18N_PREFIX), params);

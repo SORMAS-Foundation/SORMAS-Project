@@ -28,8 +28,8 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.caze.AbstractTableField;
-import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
@@ -152,7 +152,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 		gathering.setUuid(DataHelper.createUuid());
 		LocationDto location = new LocationDto();
 		location.setUuid(DataHelper.createUuid());
-		location.setRegion(LoginHelper.getCurrentUser().getRegion());
+		location.setRegion(CurrentUser.getCurrent().getUser().getRegion());
 		gathering.setGatheringAddress(location);
 		return gathering;
 	}

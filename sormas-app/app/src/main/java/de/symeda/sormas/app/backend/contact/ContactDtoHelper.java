@@ -20,14 +20,11 @@ package de.symeda.sormas.app.backend.contact;
 
 import java.util.List;
 
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
@@ -65,7 +62,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
     }
 
     @Override
-    protected Call<Integer> pushAll(List<ContactDto> contactDtos) {
+    protected Call<List<PushResult>> pushAll(List<ContactDto> contactDtos) {
         return RetroProvider.getContactFacade().pushAll(contactDtos);
     }
 

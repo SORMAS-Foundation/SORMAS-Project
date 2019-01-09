@@ -325,6 +325,7 @@
     <string name="heading_sub_confirmation_notification_dialog_delete">Are you sure you want to delete this record?</string>
     <string name="heading_sub_confirmation_notification_dialog_pick_gps">Are you in this place right now?</string>
     <string name="heading_sub_confirmation_notification_dialog_resync">Re-sync will probably take several minutes.</string>
+    <string name="heading_sub_confirmation_submit_report">Please make sure you have added all cases for this epi week before you submit your report.</string>
     <!-- ........................................................................ -->
 
 

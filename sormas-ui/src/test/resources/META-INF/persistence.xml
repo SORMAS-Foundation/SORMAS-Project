@@ -9,29 +9,30 @@
 		<class>de.symeda.sormas.backend.caze.Case</class>
 		<class>de.symeda.sormas.backend.common.AbstractDomainObject</class>
 		<class>de.symeda.sormas.backend.contact.Contact</class>
-		<class>de.symeda.sormas.backend.facility.Facility</class>
-		<class>de.symeda.sormas.backend.location.Location</class>
-		<class>de.symeda.sormas.backend.person.Person</class>
-		<class>de.symeda.sormas.backend.region.Community</class>
-		<class>de.symeda.sormas.backend.region.District</class>
-		<class>de.symeda.sormas.backend.region.Region</class>
-		<class>de.symeda.sormas.backend.symptoms.Symptoms</class>
-		<class>de.symeda.sormas.backend.task.Task</class>
-		<class>de.symeda.sormas.backend.user.User</class>
-		<class>de.symeda.sormas.backend.visit.Visit</class>
-		<class>de.symeda.sormas.backend.event.Event</class>
-		<class>de.symeda.sormas.backend.event.EventParticipant</class>
-		<class>de.symeda.sormas.backend.sample.Sample</class>
-		<class>de.symeda.sormas.backend.sample.SampleTest</class>
-		<class>de.symeda.sormas.backend.hospitalization.Hospitalization</class>
-		<class>de.symeda.sormas.backend.hospitalization.PreviousHospitalization</class>
 		<class>de.symeda.sormas.backend.epidata.EpiData</class>
 		<class>de.symeda.sormas.backend.epidata.EpiDataBurial</class>
 		<class>de.symeda.sormas.backend.epidata.EpiDataGathering</class>
 		<class>de.symeda.sormas.backend.epidata.EpiDataTravel</class>
+		<class>de.symeda.sormas.backend.event.Event</class>
+		<class>de.symeda.sormas.backend.event.EventParticipant</class>
+		<class>de.symeda.sormas.backend.facility.Facility</class>
+		<class>de.symeda.sormas.backend.hospitalization.Hospitalization</class>
+		<class>de.symeda.sormas.backend.hospitalization.PreviousHospitalization</class>
+		<class>de.symeda.sormas.backend.location.Location</class>
+		<class>de.symeda.sormas.backend.outbreak.Outbreak</class>
+		<class>de.symeda.sormas.backend.person.Person</class>
+		<class>de.symeda.sormas.backend.region.Community</class>
+		<class>de.symeda.sormas.backend.region.District</class>
+		<class>de.symeda.sormas.backend.region.Region</class>
 		<class>de.symeda.sormas.backend.report.WeeklyReport</class>
 		<class>de.symeda.sormas.backend.report.WeeklyReportEntry</class>
-		<class>de.symeda.sormas.backend.outbreak.Outbreak</class>
+		<class>de.symeda.sormas.backend.sample.Sample</class>
+		<class>de.symeda.sormas.backend.sample.SampleTest</class>
+		<class>de.symeda.sormas.backend.symptoms.Symptoms</class>
+		<class>de.symeda.sormas.backend.task.Task</class>
+		<class>de.symeda.sormas.backend.user.User</class>
+		<class>de.symeda.sormas.backend.user.UserRoleConfig</class>
+		<class>de.symeda.sormas.backend.visit.Visit</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

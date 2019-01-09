@@ -79,8 +79,7 @@ public class EventListActivity extends BaseListActivity {
 
     @Override
     public boolean isEntryCreateAllowed() {
-        User user = ConfigProvider.getUser();
-        return user.hasUserRight(UserRight.EVENT_CREATE);
+        return ConfigProvider.hasUserRight(UserRight.EVENT_CREATE);
     }
 
     @Override

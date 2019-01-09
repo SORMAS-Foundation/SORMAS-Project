@@ -98,4 +98,23 @@ public class UserDao extends AbstractAdoDao<User> {
         }
     }
 
+    public List<User> getInformantsByAssociatedOfficer(User officer) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.and(
+                    where.eq(User.ASSOCIATED_OFFICER + "_id", officer),
+                    where.or(
+                            where.like(User.USER_ROLES_JSON, "%\"" + UserRole.HOSPITAL_INFORMANT.name() + "\"%"),
+                            where.like(User.USER_ROLES_JSON, "%\"" + UserRole.COMMUNITY_INFORMANT.name() + "\"%")
+                    )
+            );
+
+            return (List<User>) builder.query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getInformantsByAssociatedOfficer");
+            throw new RuntimeException(e);
+        }
+    }
+
 }

@@ -41,7 +41,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 
 public class FacilitiesGrid extends Grid {
 
@@ -61,7 +61,7 @@ public class FacilitiesGrid extends Grid {
 		BeanItemContainer<FacilityDto> container = new BeanItemContainer<FacilityDto>(FacilityDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 
-		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			generatedContainer.addGeneratedProperty(EDIT_BTN_ID, new PropertyValueGenerator<String>() {
 				private static final long serialVersionUID = -7255691609662228895L;
 
@@ -86,7 +86,7 @@ public class FacilitiesGrid extends Grid {
 					column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 
-		if (LoginHelper.hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addColumn(EDIT_BTN_ID);
 			getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
 			getColumn(EDIT_BTN_ID).setWidth(40);
@@ -110,7 +110,7 @@ public class FacilitiesGrid extends Grid {
 		getContainer().removeAllItems();
 
 		List<FacilityDto> facilities = FacadeProvider.getFacilityFacade()
-				.getIndexList(LoginHelper.getCurrentUser().getUuid(), facilityCriteria);
+				.getIndexList(CurrentUser.getCurrent().getUuid(), facilityCriteria);
 
 		getContainer().addAll(facilities);
 	}

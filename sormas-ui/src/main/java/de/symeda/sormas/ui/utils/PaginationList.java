@@ -82,7 +82,7 @@ public abstract class PaginationList<T> extends VerticalLayout {
 	
 	private void initializePaginationLayout() {
 		firstPageButton = new Button("|<");
-		CssStyles.style(firstPageButton, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT, CssStyles.LINK_HIGHLIGHTED_SMALL);
+		CssStyles.style(firstPageButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT, CssStyles.BUTTON_FILTER_SMALL);
 		firstPageButton.addClickListener(e -> {
 			showPage(1);
 		});
@@ -93,32 +93,32 @@ public abstract class PaginationList<T> extends VerticalLayout {
 		paginationLayout.addComponent(previousGapLabel);
 
 		previousPreviousPageButton = new Button();
-		CssStyles.style(previousPreviousPageButton, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT, CssStyles.LINK_HIGHLIGHTED_SMALL);
+		CssStyles.style(previousPreviousPageButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT, CssStyles.BUTTON_FILTER_SMALL);
 		previousPreviousPageButton.addClickListener(e -> {
 			showPage(currentPage - 2);
 		});
 		paginationLayout.addComponent(previousPreviousPageButton);
 		
 		previousPageButton = new Button();
-		CssStyles.style(previousPageButton, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT, CssStyles.LINK_HIGHLIGHTED_SMALL);
+		CssStyles.style(previousPageButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT, CssStyles.BUTTON_FILTER_SMALL);
 		previousPageButton.addClickListener(e -> {
 			showPage(currentPage - 1);
 		});
 		paginationLayout.addComponent(previousPageButton);
 
 		currentPageButton = new Button();
-		CssStyles.style(currentPageButton, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_DARK, CssStyles.LINK_HIGHLIGHTED_SMALL);
+		CssStyles.style(currentPageButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_DARK, CssStyles.BUTTON_FILTER_SMALL);
 		paginationLayout.addComponent(currentPageButton);
 		
 		nextPageButton = new Button();
-		CssStyles.style(nextPageButton, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT, CssStyles.LINK_HIGHLIGHTED_SMALL);
+		CssStyles.style(nextPageButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT, CssStyles.BUTTON_FILTER_SMALL);
 		nextPageButton.addClickListener(e -> {
 			showPage(currentPage + 1);
 		});
 		paginationLayout.addComponent(nextPageButton);
 
 		nextNextPageButton = new Button();
-		CssStyles.style(nextNextPageButton, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT, CssStyles.LINK_HIGHLIGHTED_SMALL);
+		CssStyles.style(nextNextPageButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT, CssStyles.BUTTON_FILTER_SMALL);
 		nextNextPageButton.addClickListener(e -> {
 			showPage(currentPage + 2);
 		});
@@ -129,7 +129,7 @@ public abstract class PaginationList<T> extends VerticalLayout {
 		paginationLayout.addComponent(nextGapLabel);
 		
 		lastPageButton = new Button(">|");
-		CssStyles.style(lastPageButton, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT, CssStyles.LINK_HIGHLIGHTED_SMALL);
+		CssStyles.style(lastPageButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT, CssStyles.BUTTON_FILTER_SMALL);
 		lastPageButton.addClickListener(e -> {
 			showPage(calculateLastPageNumber());
 		});

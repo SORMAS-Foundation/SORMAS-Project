@@ -20,6 +20,7 @@ package de.symeda.sormas.app.backend.sample;
 
 import java.util.List;
 
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -60,7 +61,7 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
     }
 
     @Override
-    protected Call<Integer> pushAll(List<SampleDto> sampleDtos) {
+    protected Call<List<PushResult>> pushAll(List<SampleDto> sampleDtos) {
         return RetroProvider.getSampleFacade().pushAll(sampleDtos);
     }
 

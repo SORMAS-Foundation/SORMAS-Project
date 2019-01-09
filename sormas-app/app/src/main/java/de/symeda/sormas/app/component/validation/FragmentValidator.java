@@ -24,6 +24,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import de.symeda.sormas.api.utils.ValidationException;
+import de.symeda.sormas.app.component.controls.ControlDateField;
+import de.symeda.sormas.app.component.controls.ControlDateTimeField;
 import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 
 import static android.view.View.VISIBLE;
@@ -55,6 +57,14 @@ public class FragmentValidator {
             if (child instanceof ControlPropertyEditField) {
                 ControlPropertyEditField field = (ControlPropertyEditField) child;
                 field.setErrorIfEmpty();
+
+                if (field instanceof ControlDateField) {
+                    ((ControlDateField) field).setErrorIfOutOfDateRange();
+                }
+
+                if (field instanceof ControlDateTimeField) {
+                    ((ControlDateTimeField) field).setErrorIfOutOfDateRange();
+                }
 
                 if (field.getValidationCallback() != null) {
                     field.getValidationCallback().call();

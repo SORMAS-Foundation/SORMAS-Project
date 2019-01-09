@@ -35,7 +35,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -70,7 +70,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     	TextField lastName = addCustomField(LAST_NAME, String.class, TextField.class);
     	
     	ComboBox caze = addField(ContactDto.CAZE, ComboBox.class);
-    	caze.addItems(FacadeProvider.getCaseFacade().getSelectableCases(LoginHelper.getCurrentUserAsReference()));
+    	caze.addItems(FacadeProvider.getCaseFacade().getSelectableCases(CurrentUser.getCurrent().getUserReference()));
 
     	DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
     	OptionGroup contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
@@ -92,7 +92,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     		ContactDto contactDto = getValue();
         	if (contactDto != null) {
     	    	CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
-    	    	contactOfficerField.addItems(FacadeProvider.getUserFacade().getAssignableUsersByDistrict(caseDto.getDistrict(), false, UserRole.CONTACT_OFFICER));
+    	    	contactOfficerField.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(caseDto.getDistrict(), false, UserRole.CONTACT_OFFICER));
         	}
     	});
     }

@@ -12,6 +12,19 @@ All commands mentioned are linux commands.
 * 0.16.0: update the glassfish config with the export path, SMS sender name, auth key and secret
 * 0.19.0: update the glassfish config with the generated files path
 * 1.4.0: update the glassfish config with the automatic classification feature
+* 1.10.0: update the auth realm query properties:
+  Linux:
+  ```
+  /opt/payara-172/glassfish/bin/asadmin --port 6048 delete-auth-realm sormas-realm
+  /opt/payara-172/glassfish/bin/asadmin --port 6048 create-auth-realm --classname org.wamblee.glassfish.auth.FlexibleJdbcRealm --property "jaas.context=sormasRealm:sql.password=SELECT password FROM users WHERE username\=? AND aktiv\=true:sql.groups=SELECT userrole FROM users_userroles INNER JOIN users ON users_userroles.user_id\=users.id WHERE users.username\=?:sql.seed=SELECT seed FROM users WHERE username\=?:datasource.jndi=jdbc/sormasUsersDataPool:assign-groups=AUTHED_USER:password.digest=SHA-256:charset=UTF-8" sormas-realm
+  /opt/payara-172/glassfish/bin/asadmin --port 6048 set server-config.security-service.default-realm=sormas-realm
+  ```
+  Windows:
+  ```
+  C:/srv/payara-172/glassfish/bin/asadmin --port 6048 delete-auth-realm sormas-realm
+  C:/srv/payara-172/glassfish/bin/asadmin --port 6048 create-auth-realm --classname org.wamblee.glassfish.auth.FlexibleJdbcRealm --property "jaas.context=sormasRealm:sql.password=SELECT password FROM users WHERE username\=? AND aktiv\=true:sql.groups=SELECT userrole FROM users_userroles INNER JOIN users ON users_userroles.user_id\=users.id WHERE users.username\=?:sql.seed=SELECT seed FROM users WHERE username\=?:datasource.jndi=jdbc/sormasUsersDataPool:assign-groups=AUTHED_USER:password.digest=SHA-256:charset=UTF-8" sormas-realm
+  C:/srv/payara-172/glassfish/bin/asadmin --port 6048 set server-config.security-service.default-realm=sormas-realm
+  ```
 
 ## Maintainance Mode
 * a2dissite your.sormas.server.url.conf
@@ -28,12 +41,12 @@ For information on what libs are used see pom.xml in sormas-base project: https:
 * ``rm /opt/domains/sormas/lib/*.jar``
 * ``cp ./serverlibs/* /opt/domains/sormas/lib/``
 
-## OSGi Bundles
+## OSGi Bundles 
+Only when SORMAS versions pre 1.10 where installed on the server.
 * ``rm /opt/domains/sormas/autodeploy/bundles/*.jar``
 * ``rm /opt/domains/sormas/autodeploy/.autodeploystatus/*``
 * ``rm -r /opt/domains/sormas/osgi-cache/felix``
 * ``rm -r /opt/domains/sormas/generated/``
-* ``cp ./bundles/* /opt/domains/sormas/autodeploy/bundles/``
 
 ## Database
 * Create a database backup directory (if not already done)

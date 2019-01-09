@@ -16,40 +16,49 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.report.viewmodel;
+package de.symeda.sormas.app.report;
 
-import de.symeda.sormas.api.user.UserRole;
+import java.util.Date;
+
 import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.report.ReportedCasesStatus;
 
-public class WeeklyReportOverviewViewModel {
+public class WeeklyReportOverviewListItem {
 
-    private Facility mHealthFacility;
-    private User mUser;
-    private int nNumberOfCases;
-    private ReportedCasesStatus nReportedCasesStatus;
+    private Facility healthFacility;
+    private Community community;
+    private User user;
+    private int numberOfCases;
+    private Date reportDate;
 
-    public WeeklyReportOverviewViewModel(Facility healthFacility, User user, int numberOfCases, boolean casesConfirmed) {
-        this.mHealthFacility = healthFacility;
-        this.mUser = user;
-        this.nNumberOfCases = numberOfCases;
-        this.nReportedCasesStatus = casesConfirmed? ReportedCasesStatus.CONFIRMED : ReportedCasesStatus.UNCONFIRMED;
+    public WeeklyReportOverviewListItem(Facility healthFacility, Community community, User user, int numberOfCases, Date reportDate) {
+        this.healthFacility = healthFacility;
+        this.community = community;
+        this.user = user;
+        this.numberOfCases = numberOfCases;
+        this.reportDate = reportDate;
     }
 
     public Facility getHealthFacility() {
-        return mHealthFacility;
+        return healthFacility;
     }
 
     public User getUser() {
-        return mUser;
+        return user;
     }
 
     public int getNumberOfCases() {
-        return nNumberOfCases;
+        return numberOfCases;
     }
 
-    public ReportedCasesStatus getReportedCaseStatus() {
-        return nReportedCasesStatus;
+    public Community getCommunity() {
+        return community;
     }
+
+    public Date getReportDate() {
+        return reportDate;
+    }
+
 }

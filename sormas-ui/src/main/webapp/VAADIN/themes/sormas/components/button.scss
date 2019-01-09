@@ -6,6 +6,10 @@
     border-color: $v-selection-color;
     box-shadow: none;
   
+  	&.v-button-link {
+  	  text-transform: none;
+  	}
+  
   	&.v-button-font-size-large {
   	  font-size: 1.5em;
   	}  
@@ -18,13 +22,9 @@
   	  border-color: #000000;
     }
 
-    &.v-button-no-padding {
+    &.v-button-compact {
   	  padding: 0px;
   	  height: auto;
-    }
-   
-    &.v-button-no-uppercase {
-      text-transform: none;
     }
  
     &.v-button-danger,
@@ -38,14 +38,14 @@
       border-color: darken($s-warning-color, 25%)
     }
    
-    &.v-button-link-highlighted {
+    &.v-button-filter {
       background-color: $v-focus-color;
       text-decoration: none;
       text-transform: none;
   	  font-weight: bold;
       color: $v-font-color;
       
-      &.v-button-link-highlighted-light {
+      &.v-button-filter-light {
         background-color: $v-focus-light-color;
         
         &:hover {
@@ -57,12 +57,12 @@
         }
       }
      
-      &.v-button-link-highlighted-dark {
+      &.v-button-filter-dark {
       	background-color: $s-primary-color;
       	color: #FFFFFF;
       }
      
-      &.v-button-link-highlighted-small {
+      &.v-button-filter-small {
       	height: 26px;
       	padding: 0px 7px;
       }

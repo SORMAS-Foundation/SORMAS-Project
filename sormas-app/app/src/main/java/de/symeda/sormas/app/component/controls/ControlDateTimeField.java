@@ -49,6 +49,7 @@ import org.joda.time.LocalTime;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -66,6 +67,7 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
 
     private String dateHint;
     private String timeHint;
+    private int allowedDaysInFuture;
 
     // Listeners
 
@@ -92,6 +94,22 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
     }
 
     // Instance methods
+
+    public void setErrorIfOutOfDateRange() {
+        if (getFieldValue() == null || getFieldValue().before(new Date())) {
+            return;
+        }
+
+        if (allowedDaysInFuture > 0) {
+            if (DateHelper.getFullDaysBetween(new Date(), getFieldValue()) > allowedDaysInFuture) {
+                enableErrorState(I18nProperties.getValidationError("futureDate", getCaption(), allowedDaysInFuture));
+            }
+        } else {
+            if (!DateHelper.isSameDay(new Date(), getFieldValue())) {
+                enableErrorState(I18nProperties.getValidationError("futureDateStrict", getCaption()));
+            }
+        }
+    }
 
     private void showDateFragment() {
         if (fragmentManager == null) {
@@ -258,6 +276,7 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
             try {
                 dateHint = a.getString(R.styleable.ControlDateTimeField_dateHint);
                 timeHint = a.getString(R.styleable.ControlDateTimeField_timeHint);
+                allowedDaysInFuture = a.getInt(R.styleable.ControlDateTimeField_allowedDaysInFuture, 0);
             } finally {
                 a.recycle();
             }
@@ -327,6 +346,15 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
             }
         });
 
+        addValueChangedListener(new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                if (!isLiveValidationDisabled()) {
+                    ((ControlDateTimeField) field).setErrorIfOutOfDateRange();
+                }
+            }
+        });
+
         setUpOnFocusChangeListener(dateInput);
         setUpOnFocusChangeListener(timeInput);
         setUpOnClickListener(dateInput);
@@ -335,7 +363,7 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
 
     @Override
     protected void changeVisualState(VisualState state) {
-        if (getUserEditRight() != null && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
+        if (getUserEditRight() != null && !ConfigProvider.hasUserRight(getUserEditRight())) {
             state = VisualState.DISABLED;
         }
 

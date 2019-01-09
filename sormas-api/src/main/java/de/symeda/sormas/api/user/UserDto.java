@@ -22,6 +22,7 @@ import java.util.Set;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 
@@ -42,6 +43,7 @@ public class UserDto extends EntityDto {
 	public static final String USER_ROLES = "userRoles";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
 	public static final String LABORATORY = "laboratory";
@@ -60,6 +62,8 @@ public class UserDto extends EntityDto {
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	// community of community informant
+	private CommunityReferenceDto community;
 	// facility of informant
 	private FacilityReferenceDto healthFacility;
 	// laboratory of lab user
@@ -165,6 +169,14 @@ public class UserDto extends EntityDto {
 		this.district = district;
 	}
 
+	public CommunityReferenceDto getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(CommunityReferenceDto community) {
+		this.community = community;
+	}
+
 	public FacilityReferenceDto getHealthFacility() {
 		return healthFacility;
 	}
@@ -182,6 +194,6 @@ public class UserDto extends EntityDto {
 	}
 	
 	public UserReferenceDto toReference() {
-		return new UserReferenceDto(getUuid());
+		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles());
 	}
 }

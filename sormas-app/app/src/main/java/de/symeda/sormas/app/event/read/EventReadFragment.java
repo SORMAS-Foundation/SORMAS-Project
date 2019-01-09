@@ -65,8 +65,7 @@ public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutB
 
     @Override
     public boolean showEditAction() {
-        User user = ConfigProvider.getUser();
-        return user.hasUserRight(UserRight.EVENT_EDIT);
+        return ConfigProvider.hasUserRight(UserRight.EVENT_EDIT);
     }
 
 }

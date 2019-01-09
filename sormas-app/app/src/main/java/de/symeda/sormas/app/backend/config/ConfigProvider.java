@@ -44,6 +44,9 @@ import java.security.cert.CertificateException;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -51,15 +54,16 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.NoSuchPaddingException;
 import javax.security.auth.x500.X500Principal;
 
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.backend.user.UserRoleConfig;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.SormasProperties;
 
-/**
- * Created by Martin Wahnschaffe on 10.08.2016.
- */
 public final class ConfigProvider {
 
     private static String KEY_USERNAME = "username";
@@ -87,6 +91,7 @@ public final class ConfigProvider {
     private String password;
     private String pin;
     private User user;
+    private Set<UserRight> userRights; // just a cache
     private Date lastNotificationDate;
     private Date lastArchivedSyncDate;
     private Long currentAppDownloadId;
@@ -98,7 +103,9 @@ public final class ConfigProvider {
 
     private boolean hasDeviceEncryption() {
 
-        // TODO solve #410
+        // Device encryption is no longer used, because it's not reliably implemented
+        // on old android devices (versions 5 and 6) - see #410
+        // As a replacement the database should be encrypted #905
         return true;
 //        DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
 //        return dpm.getStorageEncryptionStatus() == DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE ||
@@ -139,17 +146,45 @@ public final class ConfigProvider {
     public static User getUser() {
         synchronized (ConfigProvider.class) {
             if (instance.user == null) {
-                synchronized (ConfigProvider.class) {
-                    if (instance.user == null) {
-                        String username = getUsername();
-                        if (username != null) {
-                            instance.user = DatabaseHelper.getUserDao().getByUsername(username);
-                        }
-                    }
+                String username = getUsername();
+                if (username != null) {
+                    instance.user = DatabaseHelper.getUserDao().getByUsername(username);
                 }
             }
             return instance.user;
         }
+    }
+
+    public static Set<UserRight> getUserRights() {
+        synchronized (ConfigProvider.class) {
+            if (instance.userRights == null) {
+                User user = getUser();
+                if (user != null) {
+                    instance.userRights = new HashSet<>();
+
+                    for (UserRole userRole : user.getUserRoles()) {
+                        List<UserRoleConfig> userRoleConfigs = DatabaseHelper.getUserRoleConfigDao().queryForEq(UserRoleConfig.USER_ROLE, userRole);
+                        if (userRoleConfigs.size() > 0) {
+                            instance.userRights.addAll(userRoleConfigs.get(0).getUserRights());
+                        } else {
+                            instance.userRights.addAll(userRole.getDefaultUserRights());
+                        }
+                    }
+                }
+            }
+            return instance.userRights;
+        }
+    }
+
+    public static void onUserRolesConfigChanged() {
+        synchronized (ConfigProvider.class) {
+            instance.userRights = null;
+        }
+    }
+
+    public static boolean hasUserRight(UserRight userRight) {
+        Set<UserRight> userRights = getUserRights();
+        return userRights != null && userRights.contains(userRight);
     }
 
     public static String getUsername() {
@@ -239,7 +274,8 @@ public final class ConfigProvider {
             DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_USERNAME, username));
             DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_PASSWORD, password));
 
-            DatabaseHelper.clearTables(false);
+            // avoid loss of data
+            //DatabaseHelper.clearTables(false);
         }
     }
 

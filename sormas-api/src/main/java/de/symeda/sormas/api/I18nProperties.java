@@ -17,21 +17,21 @@
  *******************************************************************************/
 package de.symeda.sormas.api;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
+import java.util.Locale;
 
 public class I18nProperties {
 
 	private static I18nProperties instance = null;
-
-	private final Properties fieldCaptionProperties;
-	private final Properties fieldDescriptionProperties;
-	private final Properties fragmentProperties;
-	private final Properties enumProperties;
-	private final Properties validationErrorProperties;
-	private final Properties messageProperties;
-	private final Properties textProperties;
+	
+	private final ResourceBundle fieldCaptionProperties;
+	private final ResourceBundle fieldDescriptionProperties;
+	private final ResourceBundle fragmentProperties;
+	private final ResourceBundle enumProperties;
+	private final ResourceBundle validationErrorProperties;
+	private final ResourceBundle messageProperties;
+	private final ResourceBundle textProperties;
+	
+	private static Locale locale;
 
 	private static I18nProperties getInstance() {
 		if (instance == null)
@@ -39,9 +39,29 @@ public class I18nProperties {
 		return instance;
 	}
 	
+	private static Locale getLocale () {
+		if (locale == null) {
+			locale = Locale.getDefault();
+		}
+		
+		return locale;
+	}
+	
+	public static void setLocale (Locale _locale) {
+		if (_locale == null) return;
+		
+		locale = _locale;
+	}
+	
+	public static void setLocale (String _locale) {
+		if (_locale == null) return;
+		
+		setLocale(new Locale(_locale));
+	}
+	
 	@SuppressWarnings("rawtypes")
 	public static String getEnumCaption(Enum value) {
-		String caption = getInstance().enumProperties.getProperty(value.getClass().getSimpleName() + "." + value.name());
+		String caption = getInstance().enumProperties.getString(value.getClass().getSimpleName() + "." + value.name());
 		if (caption != null) {
 			return caption;
 		} else {
@@ -56,7 +76,7 @@ public class I18nProperties {
 	 * Does fallback to enum caption without addition.
 	 */
 	public static String getEnumCaption(Enum<?> value, String addition) {
-		String caption = getInstance().enumProperties.getProperty(value.getClass().getSimpleName() + "." + addition + "." + value.name());
+		String caption = getInstance().enumProperties.getString(value.getClass().getSimpleName() + "." + addition + "." + value.name());
 		if (caption != null) {
 			return caption;
 		} else {
@@ -80,7 +100,7 @@ public class I18nProperties {
 	}
 
 	public static String getFragment(String key, String defaultValue) {
-		return getInstance().fragmentProperties.getProperty(key, defaultValue);
+		return getInstance().fragmentProperties.getString(key, defaultValue);
 	}
 
 	/**
@@ -93,7 +113,7 @@ public class I18nProperties {
 	public static String getPrefixFragment(String prefix, String key, String defaultValue) {
 		String result = null;
 		if (prefix != null) {
-			result = getInstance().fragmentProperties.getProperty(prefix+"."+key);
+			result = getInstance().fragmentProperties.getString(prefix+"."+key);
 		}
 		if (result == null) {
 			result = getFragment(key, defaultValue);
@@ -109,7 +129,7 @@ public class I18nProperties {
 	}
 
 	public static String getFieldCaption(String key, String defaultValue) {
-		return getInstance().fieldCaptionProperties.getProperty(key, defaultValue);
+		return getInstance().fieldCaptionProperties.getString(key, defaultValue);
 	}
 
 	/**
@@ -122,7 +142,7 @@ public class I18nProperties {
 	public static String getPrefixFieldCaption(String prefix, String key, String defaultValue) {
 		String result = null;
 		if (prefix != null) {
-			result = getInstance().fieldCaptionProperties.getProperty(prefix+"."+key);
+			result = getInstance().fieldCaptionProperties.getString(prefix+"."+key);
 		}
 		if (result == null) {
 			result = getFieldCaption(key, defaultValue);
@@ -131,11 +151,11 @@ public class I18nProperties {
 	}
 	
 	public static String getFieldDescription(String key) {
-		return getInstance().fieldDescriptionProperties.getProperty(key);
+		return getInstance().fieldDescriptionProperties.getString(key);
 	}
 
 	public static String getFieldDescription(String key, String defaultValue) {
-		return getInstance().fieldDescriptionProperties.getProperty(key, defaultValue);
+		return getInstance().fieldDescriptionProperties.getString(key, defaultValue);
 	}
 
 	/**
@@ -164,7 +184,7 @@ public class I18nProperties {
 	 * Uses <param>key</param> as default value
 	 */
 	public static String getValidationError(String key, Object ...formatArgs) {
-		String result = getInstance().validationErrorProperties.getProperty(key, null);
+		String result = getInstance().validationErrorProperties.getString(key, null);
 		if (result != null) {
 			return String.format(result, formatArgs);
 		} else if (formatArgs.length > 0) {
@@ -177,7 +197,7 @@ public class I18nProperties {
 	public static String getPrefixValidationError(String prefix, String key, Object ...formatArgs) {
 		String result = null;
 		if (prefix != null) {
-			result = getInstance().validationErrorProperties.getProperty(prefix+"."+key);
+			result = getInstance().validationErrorProperties.getString(prefix+"."+key);
 			if (result != null) {
 				return String.format(result, result);
 			}
@@ -187,33 +207,24 @@ public class I18nProperties {
 	}
 	
 	public static String getMessage(String property) {
-		return getInstance().messageProperties.getProperty(property);
+		return getInstance().messageProperties.getString(property);
 	}
 	
 	public static String getText(String property) {
-		return getInstance().textProperties.getProperty(property);
+		return getInstance().textProperties.getString(property);
 	}
 
 	private I18nProperties() {
-		fieldCaptionProperties = loadProperties("/fieldCaptions.properties");
-		fieldDescriptionProperties = loadProperties("/fieldDescriptions.properties");
-		fragmentProperties = loadProperties("/fragments.properties");
-		enumProperties = loadProperties("/enum.properties");
-		validationErrorProperties = loadProperties("/validationErrors.properties");
-		messageProperties = loadProperties("/messages.properties");
-		textProperties = loadProperties("/texts.properties");
+		fieldCaptionProperties = loadProperties("fieldCaptions");
+		fieldDescriptionProperties = loadProperties("fieldDescriptions");
+		fragmentProperties = loadProperties("fragments");
+		enumProperties = loadProperties("enum");
+		validationErrorProperties = loadProperties("validationErrors");
+		messageProperties = loadProperties("messages");
+		textProperties = loadProperties("texts");
 	}
 	
-	public static Properties loadProperties(String fileName) {
-		try (InputStream inputStream = I18nProperties.class.getResourceAsStream(fileName)) {
-			Properties properties = new Properties();
-			properties.load(inputStream);
-			return properties;
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-			// TODO logging
-			//logger.error("Could not read file " + fileName, e);
-		}
-		//return null;
+	public static ResourceBundle loadProperties(String propertiesGroup) {
+		return new ResourceBundle(java.util.ResourceBundle.getBundle(propertiesGroup, getLocale()));
 	}
 }

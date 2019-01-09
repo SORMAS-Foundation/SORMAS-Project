@@ -36,13 +36,13 @@ import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionFacade;
-import de.symeda.sormas.api.report.WeeklyReportEntryFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleTestFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.user.UserFacade;
+import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 
 public class FacadeProvider {
@@ -128,6 +128,10 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(UserFacade.class);
 	}
 
+	public static UserRoleConfigFacade getUserRoleConfigFacade() {
+		return get().lookupEjbRemote(UserRoleConfigFacade.class);
+	}
+
 	public static HospitalizationFacade getHospitalizationFacade() {
 		return get().lookupEjbRemote(HospitalizationFacade.class);
 	}
@@ -138,10 +142,6 @@ public class FacadeProvider {
 
 	public static WeeklyReportFacade getWeeklyReportFacade() {
 		return get().lookupEjbRemote(WeeklyReportFacade.class);
-	}
-
-	public static WeeklyReportEntryFacade getWeeklyReportEntryFacade() {
-		return get().lookupEjbRemote(WeeklyReportEntryFacade.class);
 	}
 
 	public static GeoShapeProvider getGeoShapeProvider() {
@@ -163,7 +163,7 @@ public class FacadeProvider {
 	public static ImportFacade getImportFacade() {
 		return get().lookupEjbRemote(ImportFacade.class);
 	}
-	
+
 	public static CaseClassificationFacade getCaseClassificationFacade() {
 		return get().lookupEjbRemote(CaseClassificationFacade.class);
 	}

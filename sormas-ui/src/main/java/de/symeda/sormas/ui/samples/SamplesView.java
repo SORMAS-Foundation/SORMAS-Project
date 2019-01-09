@@ -28,7 +28,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 
@@ -46,7 +46,7 @@ public class SamplesView extends AbstractView {
 		setSizeFull();
 		addComponent(sampleListComponent);
 		
-		if (LoginHelper.hasUserRight(UserRight.SAMPLE_EXPORT)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.SAMPLE_EXPORT)) {
 			Button exportButton = new Button("Export");
 			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			exportButton.setIcon(FontAwesome.DOWNLOAD);

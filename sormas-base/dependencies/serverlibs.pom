@@ -8,7 +8,7 @@
     <parent>
         <artifactId>sormas-base</artifactId>
         <groupId>de.symeda.sormas</groupId>
-        <version>1.9.0</version>
+        <version>1.10.0</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -27,6 +27,40 @@
 			<classifier>all</classifier>
 		</dependency>
 		
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jul-to-slf4j</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<!-- set scope explicitly to provided for build.xml -->
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<!-- set scope explicitly to provided for build.xml -->
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-themes</artifactId>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 </project>

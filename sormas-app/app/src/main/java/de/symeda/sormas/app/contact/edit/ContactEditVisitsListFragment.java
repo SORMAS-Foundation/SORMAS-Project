@@ -88,7 +88,7 @@ public class ContactEditVisitsListFragment extends BaseEditFragment<FragmentForm
 
     @Override
     public boolean isShowNewAction() {
-        return ConfigProvider.getUser().hasUserRight(UserRight.VISIT_CREATE)
+        return ConfigProvider.hasUserRight(UserRight.VISIT_CREATE)
                 && getActivityRootData().getContactStatus() != ContactStatus.CONVERTED;
     }
 

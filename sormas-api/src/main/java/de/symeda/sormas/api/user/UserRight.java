@@ -17,19 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
-import static de.symeda.sormas.api.user.UserRole.ADMIN;
-import static de.symeda.sormas.api.user.UserRole.CASE_OFFICER;
-import static de.symeda.sormas.api.user.UserRole.CASE_SUPERVISOR;
-import static de.symeda.sormas.api.user.UserRole.CONTACT_OFFICER;
-import static de.symeda.sormas.api.user.UserRole.CONTACT_SUPERVISOR;
-import static de.symeda.sormas.api.user.UserRole.EVENT_OFFICER;
-import static de.symeda.sormas.api.user.UserRole.INFORMANT;
-import static de.symeda.sormas.api.user.UserRole.LAB_USER;
-import static de.symeda.sormas.api.user.UserRole.NATIONAL_OBSERVER;
-import static de.symeda.sormas.api.user.UserRole.NATIONAL_USER;
-import static de.symeda.sormas.api.user.UserRole.STATE_OBSERVER;
-import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_OFFICER;
-import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_SUPERVISOR;
+import static de.symeda.sormas.api.user.UserRole.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,7 +35,8 @@ public enum UserRight {
 			CASE_OFFICER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER,
-			INFORMANT,
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT,
 			LAB_USER,
 			EVENT_OFFICER
 			),
@@ -56,13 +45,15 @@ public enum UserRight {
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR,
 			CASE_OFFICER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER,
-			INFORMANT,
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT,
 			LAB_USER,
 			EVENT_OFFICER
 			),
@@ -75,7 +66,8 @@ public enum UserRight {
 			CASE_OFFICER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER,
-			INFORMANT,
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT,
 			LAB_USER,
 			EVENT_OFFICER
 			),
@@ -136,6 +128,7 @@ public enum UserRight {
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
 			SURVEILLANCE_SUPERVISOR,
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
@@ -149,6 +142,7 @@ public enum UserRight {
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR
 			),
@@ -159,7 +153,8 @@ public enum UserRight {
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR,
 			CASE_OFFICER,
-			INFORMANT,
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT,
 			LAB_USER
 			),
 	SAMPLE_VIEW(
@@ -167,14 +162,17 @@ public enum UserRight {
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR,
 			CASE_OFFICER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER,
-			INFORMANT,
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT,
 			LAB_USER,
+			EXTERNAL_LAB_USER,
 			EVENT_OFFICER
 			),
 	SAMPLE_EDIT(
@@ -184,8 +182,10 @@ public enum UserRight {
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR,
 			CASE_OFFICER,
-			INFORMANT,
-			LAB_USER
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT,
+			LAB_USER,
+			EXTERNAL_LAB_USER
 			),
 	SAMPLE_DELETE(
 			ADMIN
@@ -195,13 +195,15 @@ public enum UserRight {
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR,
 			CASE_SUPERVISOR,
-			LAB_USER
+			LAB_USER,
+			EXTERNAL_LAB_USER
 			),
 	SAMPLE_EXPORT(
 			ADMIN,
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
 			SURVEILLANCE_SUPERVISOR,
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
@@ -212,6 +214,7 @@ public enum UserRight {
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR
 			),
@@ -220,14 +223,16 @@ public enum UserRight {
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR,
 			CASE_SUPERVISOR,
-			LAB_USER
+			LAB_USER,
+			EXTERNAL_LAB_USER
 			),
 	SAMPLETEST_EDIT(
 			ADMIN,
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR,
 			CASE_SUPERVISOR,
-			LAB_USER
+			LAB_USER,
+			EXTERNAL_LAB_USER
 			),
 	CONTACT_CREATE(
 			ADMIN,
@@ -242,6 +247,7 @@ public enum UserRight {
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR,
@@ -285,6 +291,7 @@ public enum UserRight {
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
 			SURVEILLANCE_SUPERVISOR,
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
@@ -295,6 +302,7 @@ public enum UserRight {
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR
 			),
@@ -323,14 +331,17 @@ public enum UserRight {
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR,
 			CASE_OFFICER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER,
-			INFORMANT,
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT,
 			LAB_USER,
+			EXTERNAL_LAB_USER,
 			EVENT_OFFICER
 			),
 	TASK_EDIT(
@@ -342,8 +353,10 @@ public enum UserRight {
 			CASE_OFFICER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER,
-			INFORMANT,
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT,
 			LAB_USER,
+			EXTERNAL_LAB_USER,
 			EVENT_OFFICER
 			),
 	TASK_ASSIGN(
@@ -359,6 +372,7 @@ public enum UserRight {
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR
 			),
@@ -374,13 +388,15 @@ public enum UserRight {
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR,
 			CASE_OFFICER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER,
-			INFORMANT,
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT,
 			EVENT_OFFICER
 			),
 	EVENT_EDIT(
@@ -395,6 +411,7 @@ public enum UserRight {
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
 			SURVEILLANCE_SUPERVISOR,
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
@@ -408,6 +425,7 @@ public enum UserRight {
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR
 			),
@@ -426,18 +444,22 @@ public enum UserRight {
 			EVENT_OFFICER
 			),
 	WEEKLYREPORT_CREATE(
-			INFORMANT
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT,
+			SURVEILLANCE_OFFICER
 			),
 	WEEKLYREPORT_VIEW(
 			ADMIN,
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
-			INFORMANT
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT
 			),
 	USER_CREATE(
 			ADMIN
@@ -471,6 +493,7 @@ public enum UserRight {
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
 			SURVEILLANCE_SUPERVISOR
 			),
 	OUTBREAK_CONFIGURE_ALL(
@@ -480,11 +503,23 @@ public enum UserRight {
 	OUTBREAK_CONFIGURE_RESTRICTED(
 			SURVEILLANCE_SUPERVISOR
 			),
+	STATISTICS_ACCESS(
+			ADMIN,
+			NATIONAL_USER,
+			NATIONAL_OBSERVER,
+			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
+			SURVEILLANCE_SUPERVISOR,
+			CASE_SUPERVISOR,
+			CONTACT_SUPERVISOR,
+			LAB_USER
+			),
 	STATISTICS_EXPORT(
 			ADMIN,
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
 			SURVEILLANCE_SUPERVISOR,
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
@@ -508,6 +543,7 @@ public enum UserRight {
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
 			SURVEILLANCE_SUPERVISOR
 			),
 	USER_RIGHTS_MANAGE(
@@ -518,6 +554,7 @@ public enum UserRight {
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
 			SURVEILLANCE_SUPERVISOR,
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
@@ -529,6 +566,7 @@ public enum UserRight {
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
 			SURVEILLANCE_SUPERVISOR,
 			CASE_SUPERVISOR,
 			LAB_USER,
@@ -539,20 +577,21 @@ public enum UserRight {
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
 			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
 			CONTACT_SUPERVISOR
 			);
 
-	private final Set<UserRole> userRoles;
+	private final Set<UserRole> defaultUserRoles;
 
-	private UserRight(UserRole... userRoles) {
-		this.userRoles = Collections.unmodifiableSet(new HashSet<UserRole>(Arrays.asList(userRoles)));
+	private UserRight(UserRole... defaultUserRoles) {
+		this.defaultUserRoles = Collections.unmodifiableSet(new HashSet<UserRole>(Arrays.asList(defaultUserRoles)));
 	}
 
-	public boolean isForRole(UserRole userRole) {
-		return userRoles.contains(userRole);
+	public boolean isDefaultForRole(UserRole userRole) {
+		return defaultUserRoles.contains(userRole);
 	}
 
-	public Set<UserRole> getUserRoles() {
-		return userRoles;
+	public Set<UserRole> getDefaultUserRoles() {
+		return defaultUserRoles;
 	}
 }
