@@ -137,7 +137,8 @@ public class SampleController {
 					navigateToData(dto.getUuid());
 
 					if (dto.getSpecimenCondition() != originalDto.getSpecimenCondition() &&
-							dto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
+							dto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE &&
+							CurrentUser.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
 						requestSampleCollectionTaskCreation(dto, form);
 					} else {
 						Notification.show("Sample data saved", Type.WARNING_MESSAGE);

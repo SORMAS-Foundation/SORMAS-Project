@@ -26,6 +26,7 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.caze.CasesView;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
@@ -161,6 +162,8 @@ public class MainScreen extends HorizontalLayout {
 				// redirect to default view
 				if (CurrentUser.getCurrent().hasUserRight(UserRight.DASHBOARD_VIEW)) {
 					SormasUI.get().getNavigator().navigateTo(DashboardSurveillanceView.VIEW_NAME);
+				} else if (CurrentUser.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
+					SormasUI.get().getNavigator().navigateTo(SamplesView.VIEW_NAME);
 				} else if (CurrentUser.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
 					SormasUI.get().getNavigator().navigateTo(TasksView.VIEW_NAME);
 				} else {
