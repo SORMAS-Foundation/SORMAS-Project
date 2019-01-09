@@ -84,6 +84,5 @@ public class TaskListActivity extends BaseListActivity {
     @Override
     protected boolean isEntryCreateAllowed() {
         return ConfigProvider.hasUserRight(UserRight.TASK_CREATE);
-        //return true;
     }
 }

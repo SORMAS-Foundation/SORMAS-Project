@@ -24,9 +24,11 @@ import android.view.View;
 
 import java.util.List;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
@@ -88,7 +90,7 @@ public class ContactEditTaskListFragment extends BaseEditFragment<FragmentFormLi
 
     @Override
     public boolean isShowNewAction() {
-        return true;
+        return ConfigProvider.hasUserRight(UserRight.TASK_CREATE);
     }
 
     @Override
