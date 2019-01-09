@@ -23,6 +23,9 @@
     <role-name>LAB_USER</role-name>
   </security-role>
   <security-role>
+    <role-name>EXTERNAL_LAB_USER</role-name>
+  </security-role>
+  <security-role>
     <role-name>NATIONAL_USER</role-name>
   </security-role>
   <security-role>

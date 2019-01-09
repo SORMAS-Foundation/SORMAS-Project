@@ -21,13 +21,17 @@ import java.util.Date;
 import java.util.List;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.user.UserRole;
@@ -74,6 +78,7 @@ public class ReportsView extends AbstractView {
 		HorizontalLayout filterLayout = new HorizontalLayout();
 		filterLayout.setSpacing(true);
 		filterLayout.addStyleName(CssStyles.VSPACE_3);
+		filterLayout.setWidth(100, Unit.PERCENTAGE);
 
 		EpiWeek prevEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
 		int year = prevEpiWeek.getYear();
@@ -118,6 +123,21 @@ public class ReportsView extends AbstractView {
 //			epiWeekFilter.select(epiWeek.getWeek());
 //		});
 //		filterLayout.addComponent(thisWeekButton);
+		
+		Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+		infoLabel.setDescription("<b>Number of officer/informant reports</b> is the total number of reports that were submitted "
+					+ "by the officers/informants associated with the displayed region or officer this week.<br/><br/>"
+					+ "<b>Percentage</b> is the percentage of officers/informants that submitted their report for the "
+					+ "respective week.<br/><br/>"
+					+ "<b>Number of officers/informants zero reports</b> is the amount of zero reports, i.e. submitted reports "
+					+ "with no cases. These are included in the total number of reports.<br/><br/>"
+					+ "<b>Officer/Informant report submission</b> is either the date the report has been submitted at or "
+					+ "a hint that no report has been submitted for this week yet.");
+		infoLabel.setSizeUndefined();
+		CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
+		filterLayout.addComponent(infoLabel);
+		filterLayout.setComponentAlignment(infoLabel, Alignment.MIDDLE_RIGHT);
+		filterLayout.setExpandRatio(infoLabel, 1);
 
 		return filterLayout;
 	}

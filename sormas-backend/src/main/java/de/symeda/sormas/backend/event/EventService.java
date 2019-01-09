@@ -270,6 +270,7 @@ public class EventService extends AbstractAdoService<Event> {
 				break;
 			case HOSPITAL_INFORMANT:
 			case COMMUNITY_INFORMANT:
+			case EXTERNAL_LAB_USER:
 				// informants dont see events
 				break;
 			default:

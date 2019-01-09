@@ -167,7 +167,7 @@ public class WeeklyReportRegionsGrid extends Grid implements ItemClickListener {
 
 			WeeklyReportOfficersGrid grid = new WeeklyReportOfficersGrid();
 			grid.reload(summaryDto.getRegion(), year, week);
-			grid.setWidth(1080, Unit.PIXELS);
+			grid.setWidth(1600, Unit.PIXELS);
 			grid.setHeightMode(HeightMode.ROW);
 			grid.setHeightUndefined();
 			layout.addComponent(grid);

@@ -42,6 +42,7 @@ public enum UserRole {
 	CONTACT_OFFICER(false, true, false),	
 	EVENT_OFFICER(true, false, false),	
 	LAB_USER(false, false, false),
+	EXTERNAL_LAB_USER(false, false, false),
 	NATIONAL_OBSERVER(false, false, false),
 	STATE_OBSERVER(false, false, false),
 	DISTRICT_OBSERVER(false, false, false)
@@ -61,6 +62,7 @@ public enum UserRole {
 	public static final String _CONTACT_OFFICER = CONTACT_OFFICER.name();
 	public static final String _EVENT_OFFICER = EVENT_OFFICER.name();
 	public static final String _LAB_USER = LAB_USER.name();
+	public static final String _EXTERNAL_LAB_USER = EXTERNAL_LAB_USER.name();
 	public static final String _NATIONAL_OBSERVER = NATIONAL_OBSERVER.name();
 	
 	private final boolean supervisor;
@@ -155,6 +157,9 @@ public enum UserRole {
 		case LAB_USER:
 			collection.add(LAB_USER);
 			break;
+		case EXTERNAL_LAB_USER:
+			collection.add(EXTERNAL_LAB_USER);
+			break;
 		default:
 			break;
 		}
@@ -207,6 +212,8 @@ public enum UserRole {
 			return Arrays.asList(HOSPITAL_INFORMANT);
 		case COMMUNITY_INFORMANT:
 			return Arrays.asList(COMMUNITY_INFORMANT);
+		case EXTERNAL_LAB_USER:
+			return Arrays.asList(EXTERNAL_LAB_USER);
 		default:
 			throw new UnsupportedOperationException("getCombinableRoles not implemented for user role: " + this);
 		}
@@ -253,7 +260,7 @@ public enum UserRole {
 	}
 	
 	public static boolean isLabUser(Collection<UserRole> roles) {
-		return roles.contains(UserRole.LAB_USER);
+		return roles.contains(UserRole.LAB_USER) || roles.contains(UserRole.EXTERNAL_LAB_USER);
 	}
 	
 	public static UserRole getFirstDifferentUserRole(Collection<UserRole> roles, UserRole ignoredUserRole, Collection<UserRole> ignoredRoles) {

@@ -124,8 +124,10 @@ public class MainScreen extends HorizontalLayout {
 		if (CurrentUser.getCurrent().hasUserRight(UserRight.WEEKLYREPORT_VIEW)) {
 			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, "Reports", FontAwesome.FILE_TEXT);
 		}
-		ControllerProvider.getStatisticsController().registerViews(navigator);
-		menu.addView(StatisticsView.class, AbstractStatisticsView.ROOT_VIEW_NAME, "Statistics", FontAwesome.BAR_CHART);
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.STATISTICS_ACCESS)) {
+			ControllerProvider.getStatisticsController().registerViews(navigator);
+			menu.addView(StatisticsView.class, AbstractStatisticsView.ROOT_VIEW_NAME, "Statistics", FontAwesome.BAR_CHART);
+		}
 		if (CurrentUser.getCurrent().hasUserRight(UserRight.USER_VIEW)) {
 			menu.addView(UsersView.class, UsersView.VIEW_NAME, "Users", FontAwesome.USERS);
 		}
@@ -157,7 +159,13 @@ public class MainScreen extends HorizontalLayout {
 		public boolean beforeViewChange(ViewChangeEvent event) {
 			if (event.getViewName().isEmpty()) {
 				// redirect to default view
-				SormasUI.get().getNavigator().navigateTo(DashboardSurveillanceView.VIEW_NAME);
+				if (CurrentUser.getCurrent().hasUserRight(UserRight.DASHBOARD_VIEW)) {
+					SormasUI.get().getNavigator().navigateTo(DashboardSurveillanceView.VIEW_NAME);
+				} else if (CurrentUser.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
+					SormasUI.get().getNavigator().navigateTo(TasksView.VIEW_NAME);
+				} else {
+					SormasUI.get().getNavigator().navigateTo(AboutView.VIEW_NAME);
+				}
 				return false;
 			}
 			return true;

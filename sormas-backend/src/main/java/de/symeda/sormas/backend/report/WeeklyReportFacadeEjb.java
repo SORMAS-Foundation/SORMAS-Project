@@ -255,6 +255,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 		List<WeeklyReportEntry> entries = new ArrayList<>();
 		for (WeeklyReportEntryDto entryDto : source.getReportEntries()) {
 			WeeklyReportEntry entry = fromDto(entryDto);
+			entry.setWeeklyReport(target);
 			entries.add(entry);
 		}
 		if (!DataHelper.equal(target.getReportEntries(), entries)) {
