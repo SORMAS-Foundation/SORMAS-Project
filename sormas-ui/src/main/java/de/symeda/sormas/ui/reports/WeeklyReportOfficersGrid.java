@@ -158,8 +158,9 @@ public class WeeklyReportOfficersGrid extends Grid implements ItemClickListener 
 		if (event.getPropertyId().equals(VIEW_DETAILS_BTN_ID)) {
 			WeeklyReportOfficerSummaryDto summaryDto = (WeeklyReportOfficerSummaryDto) event.getItemId();
 			VerticalLayout layout = new VerticalLayout();
-			Window window = VaadinUiUtil.showPopupWindow(layout);
+			layout.setSizeUndefined();
 			layout.setMargin(true);
+			Window window = VaadinUiUtil.showPopupWindow(layout);
 
 			WeeklyReportInformantsGrid grid = new WeeklyReportInformantsGrid(summaryDto.getOfficer(), new EpiWeek(year, week));
 			grid.setWidth(960, Unit.PIXELS);
