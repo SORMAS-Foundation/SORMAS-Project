@@ -422,10 +422,9 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			return field;
 		}
 		
-		if (DateField.class.isAssignableFrom(field.getClass())) {
+		if (DateField.class.isAssignableFrom(field.getClass())
+				|| DateTimeField.class.isAssignableFrom(field.getClass())) {
 			field.addValidator(new FutureDateValidator(amountOfDays, field.getCaption()));
-		} else if (DateTimeField.class.isAssignableFrom(field.getClass())) {
-			((DateTimeField) field).addValidatorToDateField(new FutureDateValidator(amountOfDays, field.getCaption()));
 		}
 		
 		return field;

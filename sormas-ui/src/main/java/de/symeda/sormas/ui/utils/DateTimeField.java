@@ -17,15 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import com.vaadin.data.Property;
-import com.vaadin.data.Validator;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.AbstractSelect.NewItemHandler;
@@ -46,7 +43,6 @@ public class DateTimeField extends CustomField<Date> {
 	private ComboBox timeField;
 
 	private Converter<Date, ?> converter;
-	private List<Validator> dateFieldValidators = new ArrayList<>();
 	boolean converterSet;
 
 	@Override
@@ -67,10 +63,6 @@ public class DateTimeField extends CustomField<Date> {
 			converterSet = true;
 		}
 		
-		for (Validator validator : dateFieldValidators) {
-			dateField.addValidator(validator);
-		}
-
 		timeField = new ComboBox();
 		timeField.addContainerProperty(CAPTION_PROPERTY_ID, String.class, null);
 		timeField.setItemCaptionPropertyId(CAPTION_PROPERTY_ID);
@@ -198,13 +190,4 @@ public class DateTimeField extends CustomField<Date> {
 			converterSet = true;
 		}
 	}
-	
-	public void addValidatorToDateField(Validator validator) {
-		if (dateField != null) {
-			dateField.addValidator(validator);
-		} else {
-			dateFieldValidators.add(validator);
-		}
-	}
-
 }
