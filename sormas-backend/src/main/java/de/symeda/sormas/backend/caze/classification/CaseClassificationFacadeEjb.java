@@ -129,131 +129,217 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		ClassificationCriteriaDto suspect, probable, confirmed;
 
 		// EVD
-		suspect = allOf(symptom(SymptomsDto.FEVER),
-				xOf(1, allOfCompact(symptom(SymptomsDto.BLOODY_BLACK_STOOL), symptom(SymptomsDto.DIARRHEA)),
-						symptom(SymptomsDto.GUMS_BLEEDING), symptom(SymptomsDto.SKIN_BRUISING),
-						allOfCompact(symptom(SymptomsDto.EYES_BLEEDING), symptom(SymptomsDto.BLOOD_URINE))));
-		probable = allOf(caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED), suspect,
-				xOf(1, epiData(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE),
+		suspect = allOf(
+				symptom(SymptomsDto.FEVER),
+				xOf(1, 
+						allOfCompact(
+								symptom(SymptomsDto.BLOODY_BLACK_STOOL), 
+								symptom(SymptomsDto.DIARRHEA)),
+						symptom(SymptomsDto.GUMS_BLEEDING),
+						symptom(SymptomsDto.SKIN_BRUISING),
+						allOfCompact(
+								symptom(SymptomsDto.EYES_BLEEDING),
+								symptom(SymptomsDto.BLOOD_URINE))));
+		probable = allOf(
+				caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED), 
+				suspect,
+				xOf(1, 
+						epiData(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE),
 						epiData(EpiDataDto.PROCESSING_CONFIRMED_CASE_FLUID_UNSAFE),
 						epiData(EpiDataDto.PERCUTANEOUS_CASE_BLOOD),
-						allOfCompact(epiData(EpiDataDto.AREA_CONFIRMED_CASES),
+						allOfCompact(
+								epiData(EpiDataDto.AREA_CONFIRMED_CASES),
 								epiData(EpiDataDto.DIRECT_CONTACT_DEAD_UNSAFE))));
-		confirmed = allOf(suspect, positiveTestResult(SampleTestType.IGM_SERUM_ANTIBODY, SampleTestType.PCR_RT_PCR,
-				SampleTestType.ISOLATION));
+		confirmed = allOf(
+				suspect, 
+				positiveTestResult(SampleTestType.IGM_SERUM_ANTIBODY, SampleTestType.PCR_RT_PCR, SampleTestType.ISOLATION));
 		addCriteria(Disease.EVD, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed);
 
 		// CSM
-		suspect = allOf(symptom(SymptomsDto.FEVER),
-				xOf(1, symptom(SymptomsDto.NECK_STIFFNESS), symptom(SymptomsDto.ALTERED_CONSCIOUSNESS),
-						symptom(SymptomsDto.MENINGEAL_SIGNS), symptom(SymptomsDto.BULGING_FONTANELLE)));
-		probable = allOf(caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED), suspect,
+		suspect = allOf(
+				symptom(SymptomsDto.FEVER),
+				xOf(1, 
+						symptom(SymptomsDto.NECK_STIFFNESS), 
+						symptom(SymptomsDto.ALTERED_CONSCIOUSNESS),
+						symptom(SymptomsDto.MENINGEAL_SIGNS),
+						symptom(SymptomsDto.BULGING_FONTANELLE)));
+		probable = allOf(
+				caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED),
+				suspect,
 				epiData(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE));
-		confirmed = allOf(suspect, positiveTestResult(SampleTestType.ISOLATION));
+		confirmed = allOf(
+				suspect, 
+				positiveTestResult(SampleTestType.ISOLATION));
 		addCriteria(Disease.CSM, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed);
 
 		// Lassa Fever
 		suspect = allOf(
-				xOf(1, symptom(SymptomsDto.FATIGUE_WEAKNESS), symptom(SymptomsDto.FEVER), symptom(SymptomsDto.HEADACHE),
+				xOf(1, 
+						symptom(SymptomsDto.FATIGUE_WEAKNESS), symptom(SymptomsDto.FEVER), symptom(SymptomsDto.HEADACHE),
 						symptom(SymptomsDto.SORE_THROAT), symptom(SymptomsDto.COUGH), symptom(SymptomsDto.NAUSEA),
 						symptom(SymptomsDto.VOMITING), symptom(SymptomsDto.DIARRHEA), symptom(SymptomsDto.MUSCLE_PAIN),
 						symptom(SymptomsDto.CHEST_PAIN), symptom(SymptomsDto.HEARINGLOSS)),
-				epiData(EpiDataDto.RODENTS), xOf(1, epiData(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE),
+				epiData(EpiDataDto.RODENTS), 
+				xOf(1, 
+						epiData(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE),
 						epiData(EpiDataDto.DIRECT_CONTACT_PROBABLE_CASE)));
-		probable = allOf(caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED), suspect);
-		confirmed = allOf(suspect, positiveTestResult(SampleTestType.IGM_SERUM_ANTIBODY, SampleTestType.PCR_RT_PCR,
-				SampleTestType.ISOLATION));
+		probable = allOf(
+				caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED),
+				suspect);
+		confirmed = allOf(
+				suspect,
+				positiveTestResult(SampleTestType.IGM_SERUM_ANTIBODY, SampleTestType.PCR_RT_PCR, SampleTestType.ISOLATION));
 		addCriteria(Disease.LASSA, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed);
 
 		// Yellow fever
-		suspect = allOf(symptom(SymptomsDto.FEVER), symptom(SymptomsDto.JAUNDICE));
-		probable = allOf(suspect,
-				xOf(1, epiData(EpiDataDto.AREA_CONFIRMED_CASES),
-						allOfCompact(caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED),
+		suspect = allOf(
+				symptom(SymptomsDto.FEVER), 
+				symptom(SymptomsDto.JAUNDICE));
+		probable = allOf(
+				suspect,
+				xOf(1, 
+						epiData(EpiDataDto.AREA_CONFIRMED_CASES),
+						allOfCompact(
+								caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED),
 								positiveTestResult(SampleTestType.HISTOPATHOLOGY))));
-		confirmed = allOf(suspect, notInStartDateRange(CaseDataDto.VACCINATION_DATE, 30),
-				xOf(1, allOf(positiveTestResult(SampleTestType.YELLOW_FEVER_IGM),
-						noneOf(positiveTestResult(SampleTestType.WEST_NILE_FEVER_IGM),
+		confirmed = allOf(
+				suspect, 
+				notInStartDateRange(CaseDataDto.VACCINATION_DATE, 30),
+				xOf(1, 
+						allOf(positiveTestResult(SampleTestType.YELLOW_FEVER_IGM),
+						noneOf(
+								positiveTestResult(SampleTestType.WEST_NILE_FEVER_IGM),
 								positiveTestResult(SampleTestType.DENGUE_FEVER_IGM))),
-						allOf(positiveTestResult(SampleTestType.YELLOW_FEVER_ANTIBODIES),
-								noneOf(positiveTestResult(SampleTestType.WEST_NILE_FEVER_ANTIBODIES),
+						allOf(
+								positiveTestResult(SampleTestType.YELLOW_FEVER_ANTIBODIES),
+								noneOf(
+										positiveTestResult(SampleTestType.WEST_NILE_FEVER_ANTIBODIES),
 										positiveTestResult(SampleTestType.DENGUE_FEVER_ANTIBODIES))),
-						positiveTestResult(SampleTestType.PCR_RT_PCR, SampleTestType.ANTIGEN_DETECTION,
-								SampleTestType.ISOLATION),
+						positiveTestResult(
+								SampleTestType.PCR_RT_PCR, SampleTestType.ANTIGEN_DETECTION, SampleTestType.ISOLATION),
 						sampleTest(
-								SampleTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, Arrays.asList(new SampleTestType[] {
-										SampleTestType.IGM_SERUM_ANTIBODY, SampleTestType.IGG_SERUM_ANTIBODY }),
-								true)));
+								SampleTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER,
+								Arrays.asList(new SampleTestType[] { SampleTestType.IGM_SERUM_ANTIBODY, SampleTestType.IGG_SERUM_ANTIBODY }), true)));
 		addCriteria(Disease.YELLOW_FEVER, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed);
 
 		// Dengue fever
-		suspect = allOf(symptom(SymptomsDto.FEVER),
-				xOf(2, symptom(SymptomsDto.HEADACHE), symptom(SymptomsDto.EYE_PAIN_LIGHT_SENSITIVE),
+		suspect = allOf(
+				symptom(SymptomsDto.FEVER),
+				xOf(2, 
+						symptom(SymptomsDto.HEADACHE), symptom(SymptomsDto.EYE_PAIN_LIGHT_SENSITIVE),
 						symptom(SymptomsDto.NAUSEA), symptom(SymptomsDto.VOMITING), symptom(SymptomsDto.SWOLLEN_GLANDS),
-						allOfCompact(symptom(SymptomsDto.MUSCLE_PAIN), symptom(SymptomsDto.JOINT_PAIN)),
+						allOfCompact(
+								symptom(SymptomsDto.MUSCLE_PAIN), 
+								symptom(SymptomsDto.JOINT_PAIN)),
 						symptom(SymptomsDto.SKIN_RASH)));
-		probable = allOf(suspect, epiData(EpiDataDto.AREA_CONFIRMED_CASES));
-		confirmed = allOf(suspect,
-				xOf(1, allOf(positiveTestResult(SampleTestType.DENGUE_FEVER_IGM),
-						noneOf(positiveTestResult(SampleTestType.WEST_NILE_FEVER_IGM),
+		probable = allOf(
+				suspect, 
+				epiData(EpiDataDto.AREA_CONFIRMED_CASES));
+		confirmed = allOf(
+				suspect,
+				xOf(1,
+						allOf(positiveTestResult(SampleTestType.DENGUE_FEVER_IGM),
+						noneOf(
+								positiveTestResult(SampleTestType.WEST_NILE_FEVER_IGM),
 								positiveTestResult(SampleTestType.YELLOW_FEVER_IGM))),
-						positiveTestResult(SampleTestType.PCR_RT_PCR), positiveTestResult(SampleTestType.ISOLATION),
-						sampleTest(SampleTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER,
+						positiveTestResult(SampleTestType.PCR_RT_PCR), 
+						positiveTestResult(SampleTestType.ISOLATION),
+						sampleTest(
+								SampleTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER,
 								Arrays.asList(new SampleTestType[] { SampleTestType.IGG_SERUM_ANTIBODY }), true)));
 		addCriteria(Disease.DENGUE, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed);
 
 		// Influenca (new subtype)
-		suspect = allOf(symptom(SymptomsDto.FEVER),
-				xOf(1, symptom(SymptomsDto.COUGH), symptom(SymptomsDto.DIFFICULTY_BREATHING)),
-				xOf(1, oneOfCompact(epiData(EpiDataDto.CLOSE_CONTACT_PROBABLE_CASE),
-						epiData(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE)), epiData(EpiDataDto.AREA_INFECTED_ANIMALS),
+		suspect = allOf(
+				symptom(SymptomsDto.FEVER),
+				xOf(1, 
+						symptom(SymptomsDto.COUGH), 
+						symptom(SymptomsDto.DIFFICULTY_BREATHING)),
+				xOf(1, 
+						oneOfCompact(epiData(EpiDataDto.CLOSE_CONTACT_PROBABLE_CASE),
+						epiData(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE)),
+						epiData(EpiDataDto.AREA_INFECTED_ANIMALS),
 						epiData(EpiDataDto.EATING_RAW_ANIMALS_IN_INFECTED_AREA),
 						epiData(EpiDataDto.PROCESSING_SUSPECTED_CASE_SAMPLE_UNSAFE)));
-		probable = allOf(suspect, caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED),
+		probable = allOf(
+				suspect,
+				caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED),
 				epiData(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE));
-		confirmed = allOf(suspect,
-				xOf(1, positiveTestResult(SampleTestType.ISOLATION, SampleTestType.NEUTRALIZING_ANTIBODIES,
-						SampleTestType.PCR_RT_PCR),
-						sampleTest(SampleTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER,
+		confirmed = allOf(
+				suspect,
+				xOf(1, 
+						positiveTestResult(SampleTestType.ISOLATION, SampleTestType.NEUTRALIZING_ANTIBODIES, SampleTestType.PCR_RT_PCR),
+						sampleTest(
+								SampleTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER,
 								Arrays.asList(new SampleTestType[] { SampleTestType.IGG_SERUM_ANTIBODY }), true)));
 		addCriteria(Disease.NEW_INFLUENCA, DateHelper.getDateZero(2018, 12, 13), suspect, probable, confirmed);
 
 		// Measles
-		suspect = allOf(symptom(SymptomsDto.FEVER), symptom(SymptomsDto.SKIN_RASH), xOf(1, symptom(SymptomsDto.COUGH),
-				symptom(SymptomsDto.RUNNY_NOSE), symptom(SymptomsDto.CONJUNCTIVITIS)));
+		suspect = allOf(
+				symptom(SymptomsDto.FEVER), 
+				symptom(SymptomsDto.SKIN_RASH), 
+				xOf(1, 
+						symptom(SymptomsDto.COUGH),
+						symptom(SymptomsDto.RUNNY_NOSE),
+						symptom(SymptomsDto.CONJUNCTIVITIS)));
 		probable = epiData(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE);
-		confirmed = allOf(suspect, positiveTestResult(SampleTestType.IGM_SERUM_ANTIBODY));
+		confirmed = allOf(
+				suspect, 
+				positiveTestResult(SampleTestType.IGM_SERUM_ANTIBODY));
 		addCriteria(Disease.MEASLES, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed);
 
 		// Cholera
-		suspect = allOf(personAge(5, null, ApproximateAgeType.YEARS),
-				xOf(1, symptom(SymptomsDto.DEHYDRATION),
-						allOf(symptom(SymptomsDto.DIARRHEA),
-								xOfSub(1, caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED),
+		suspect = allOf(
+				personAge(5, null, ApproximateAgeType.YEARS),
+				xOf(1, 
+						symptom(SymptomsDto.DEHYDRATION),
+						allOf(
+								symptom(SymptomsDto.DIARRHEA),
+								xOfSub(1, 
+										caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED),
 										epiData(EpiDataDto.AREA_CONFIRMED_CASES)))));
 		probable = null;
-		confirmed = allOf(suspect, positiveTestResult(SampleTestType.ISOLATION));
+		confirmed = allOf(
+				suspect, 
+				positiveTestResult(SampleTestType.ISOLATION));
 		addCriteria(Disease.CHOLERA, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed);
 
 		// Monkey pox
-		suspect = allOf(symptom(SymptomsDto.FEVER), symptom(SymptomsDto.SKIN_RASH));
+		suspect = allOf(
+				symptom(SymptomsDto.FEVER), 
+				symptom(SymptomsDto.SKIN_RASH));
 		probable = null;
-		confirmed = allOf(suspect, positiveTestResult(SampleTestType.IGM_SERUM_ANTIBODY, SampleTestType.PCR_RT_PCR,
-				SampleTestType.ISOLATION));
+		confirmed = allOf(
+				suspect, 
+				positiveTestResult(SampleTestType.IGM_SERUM_ANTIBODY, SampleTestType.PCR_RT_PCR, SampleTestType.ISOLATION));
 		addCriteria(Disease.MONKEYPOX, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed);
 
 		// Plague
-		suspect = allOf(xOf(1,
-				allOfCompact(caseData(CaseDataDto.PLAGUE_TYPE, PlagueType.BUBONIC), symptom(SymptomsDto.FEVER),
+		suspect = allOf(
+				xOf(1,
+				allOfCompact(
+						caseData(CaseDataDto.PLAGUE_TYPE, PlagueType.BUBONIC), 
+						symptom(SymptomsDto.FEVER),
 						symptom(SymptomsDto.PAINFUL_LYMPHADENITIS)),
-				allOf(allOfCompact(caseData(CaseDataDto.PLAGUE_TYPE, PlagueType.PNEUMONIC), symptom(SymptomsDto.FEVER)),
-						xOfSub(1, symptom(SymptomsDto.COUGH), symptom(SymptomsDto.CHEST_PAIN),
+				allOf(
+						allOfCompact(
+								caseData(CaseDataDto.PLAGUE_TYPE, PlagueType.PNEUMONIC), 
+								symptom(SymptomsDto.FEVER)),
+						xOfSub(1, 
+								symptom(SymptomsDto.COUGH), 
+								symptom(SymptomsDto.CHEST_PAIN),
 								symptom(SymptomsDto.COUGHING_BLOOD))),
-				allOfCompact(caseData(CaseDataDto.PLAGUE_TYPE, PlagueType.SEPTICAEMIC), symptom(SymptomsDto.FEVER),
+				allOfCompact(
+						caseData(CaseDataDto.PLAGUE_TYPE, PlagueType.SEPTICAEMIC), 
+						symptom(SymptomsDto.FEVER),
 						symptom(SymptomsDto.CHILLS_SWEATS))));
-		probable = allOf(suspect, xOf(1, epiData(EpiDataDto.AREA_CONFIRMED_CASES),
+		probable = allOf(
+				suspect, 
+				xOf(1, epiData(EpiDataDto.AREA_CONFIRMED_CASES),
 				positiveTestResult(SampleTestType.YERSINIA_PESTIS_ANTIGEN)));
-		confirmed = allOf(suspect, positiveTestResult(SampleTestType.ISOLATION, SampleTestType.PCR_RT_PCR));
+		confirmed = allOf(
+				suspect,
+				positiveTestResult(SampleTestType.ISOLATION, SampleTestType.PCR_RT_PCR));
 		addCriteria(Disease.PLAGUE, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed);
 	}
 
