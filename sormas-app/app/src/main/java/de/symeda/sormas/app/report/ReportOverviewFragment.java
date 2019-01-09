@@ -100,6 +100,8 @@ public class ReportOverviewFragment extends ReportFragment {
             return;
         }
 
+        getContentBinding().noWeeklyReportData.setVisibility(GONE);
+
         loadReportTask = new DefaultAsyncTask(getContext()) {
             @Override
             public void onPreExecute() {

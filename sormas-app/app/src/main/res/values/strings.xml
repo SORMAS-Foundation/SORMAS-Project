@@ -333,8 +333,7 @@
     <string name="snackbar_sync_unsynced">Some entries could not be synchronized. Please try again later.</string>
     <string name="snackbar_task_reply">An assignee reply is required when setting the task status to not executable.</string>
     <string name="snackbar_version_too_new">Could not synchronize because the app version is newer than the server version.</string>
-    <string name="snackbar_weekly_report_confirmed">Thank you, your weekly report has been confirmed.</string>
-    <string name="snackbar_weekly_report_sync_confirmed">Your weekly report has been confirmed, but could  not be synchronized.</string>
+    <string name="snackbar_weekly_report_submitted">Thank you for submitting your weekly report.</string>
 
     <string name="sormas_logo_desc">SORMAS Logo</string>
     <string name="status_unknown">Status N/A</string>

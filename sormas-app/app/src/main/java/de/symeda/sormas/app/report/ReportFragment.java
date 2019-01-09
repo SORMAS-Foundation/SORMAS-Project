@@ -395,22 +395,8 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                             return;
                         }
 
-                        if (RetroProvider.isConnected()) {
-                            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, getActivity(), new SyncCallback() {
-                                @Override
-                                public void call(boolean syncFailed, String syncFailedMessage) {
-                                    if (syncFailed) {
-                                        NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.WARNING, R.string.snackbar_weekly_report_sync_confirmed);
-                                    } else {
-                                        NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.snackbar_weekly_report_confirmed);
-                                    }
-                                    ((ReportActivity)getActivity()).onResume(); // reload data
-                                }
-                            });
-                        } else {
-                            NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.snackbar_weekly_report_confirmed);
-                            ((ReportActivity)getActivity()).onResume(); // reload data
-                        }
+                        NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.snackbar_weekly_report_confirmed);
+                        ((ReportActivity)getActivity()).onResume(); // reload data
                     }
                 }.executeOnThreadPool();
             }
