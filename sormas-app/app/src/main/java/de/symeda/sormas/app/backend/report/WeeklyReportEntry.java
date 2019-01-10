@@ -52,10 +52,10 @@ public class WeeklyReportEntry extends AbstractDomainObject {
     private WeeklyReport weeklyReport;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column
     private Disease disease;
 
-    @Column(nullable = false)
+    @Column
     private Integer numberOfCases;
 
     public WeeklyReport getWeeklyReport() {
