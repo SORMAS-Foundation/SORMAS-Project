@@ -234,7 +234,6 @@ public final class RetroProvider {
     }
 
     public static void connectAsyncHandled(FragmentActivity activity, final boolean showUpgradePrompt, final boolean matchExactVersion, final Consumer<Boolean> callback) {
-
         if (!(activity instanceof NotificationContext)) {
             throw new UnsupportedOperationException("Activity needs to implement NotificationContext: " + activity.toString());
         }

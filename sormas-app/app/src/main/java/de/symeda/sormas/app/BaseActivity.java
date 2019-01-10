@@ -583,17 +583,18 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                     new Consumer<Boolean>() {
                         @Override
                         public void accept(Boolean result) {
+                            if (swipeRefreshLayout != null) {
+                                swipeRefreshLayout.setRefreshing(false);
+                            }
+                            if (progressDialog != null && progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                                progressDialog = null;
+                            }
+
                             if (Boolean.TRUE.equals(result)) {
                                 // try again
                                 synchronizeData(syncMode, showUpgradePrompt, showProgressDialog, swipeRefreshLayout, resultCallback, beforeSyncCallback);
                             } else {
-                                if (swipeRefreshLayout != null) {
-                                    swipeRefreshLayout.setRefreshing(false);
-                                }
-                                if (progressDialog != null && progressDialog.isShowing()) {
-                                    progressDialog.dismiss();
-                                    progressDialog = null;
-                                }
                                 checkActiveUser();
                             }
                         }

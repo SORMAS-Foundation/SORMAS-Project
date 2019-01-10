@@ -61,7 +61,6 @@ public class InfoProvider {
 	 * MINIMUM_REQUIRED_VERSION and lower or equal to the version returned by getVersion().
 	 */
 	public CompatibilityCheckResponse isCompatibleToApi(String appVersionInput) {
-
 		return isCompatibleToApi(VersionHelper.extractVersion(appVersionInput));
 	}
 	
@@ -70,7 +69,6 @@ public class InfoProvider {
 	 * MINIMUM_REQUIRED_VERSION and lower or equal to the version returned by getVersion().
 	 */
 	public CompatibilityCheckResponse isCompatibleToApi(int[] appVersion) {
-
 		if (!VersionHelper.isVersion(appVersion)) {
 			throw new IllegalArgumentException("No proper app version provided");
 		}
