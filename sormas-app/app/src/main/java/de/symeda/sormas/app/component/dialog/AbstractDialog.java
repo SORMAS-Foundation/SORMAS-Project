@@ -78,7 +78,6 @@ public abstract class AbstractDialog implements NotificationContext {
         this.buttonPanelLayoutResourceId = buttonPanelLayoutResourceId;
 
         Resources resources = activity.getResources();
-
         String heading = null;
         if (headingResourceId >= 0) {
             heading = resources.getString(headingResourceId);
@@ -215,9 +214,9 @@ public abstract class AbstractDialog implements NotificationContext {
     private void onNegativeClick() {
         if (negativeCallback != null) {
             negativeCallback.call();
-        } else {
-            dismiss();
         }
+
+        dismiss();
     }
 
     private void onDeleteClick() {
@@ -414,6 +413,10 @@ public abstract class AbstractDialog implements NotificationContext {
 
     public DialogViewConfig getConfig() {
         return config;
+    }
+
+    public void setCancelable(boolean cancelable) {
+        this.builder.setCancelable(cancelable);
     }
 
 }
