@@ -122,7 +122,7 @@ public class ReportOverviewFragment extends ReportFragment {
                         if (disease != null) {
                             WeeklyReportEntry entry = report.getReportEntry(disease);
                             list.add(new WeeklyReportOverviewListItem(report.getHealthFacility(), report.getCommunity(),
-                                    report.getReportingUser(), entry.getNumberOfCases(), report.getReportDateTime()));
+                                    report.getReportingUser(), entry != null ? entry.getNumberOfCases() : 0, report.getReportDateTime()));
                         } else {
                             list.add(new WeeklyReportOverviewListItem(report.getHealthFacility(), report.getCommunity(),
                                     report.getReportingUser(), report.getTotalNumberOfCases(), report.getReportDateTime()));

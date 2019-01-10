@@ -34,8 +34,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <requestFocus />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -43,6 +41,8 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:id="@+id/main_content">
+
+            <requestFocus/>
 
             <LinearLayout
                 android:layout_width="match_parent"
