@@ -20,18 +20,25 @@ package de.symeda.sormas.app.task.edit;
 
 import android.view.View;
 
+import java.util.List;
+
+import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
+import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.contact.read.ContactReadActivity;
 import de.symeda.sormas.app.databinding.FragmentTaskEditLayoutBinding;
 import de.symeda.sormas.app.event.read.EventReadActivity;
+import de.symeda.sormas.app.util.DataUtils;
 
 import static android.view.View.GONE;
 
@@ -39,8 +46,28 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
 
     private Task record;
 
+    private List<Item> taskTypeList;
+    private List<Item> priorityList;
+    private List<Item> assigneeList;
+
+//    public static TaskEditFragment newInstance(Task activityRootData) {
+//        return newInstance(TaskEditFragment.class, null, activityRootData);
+//    }
+
     public static TaskEditFragment newInstance(Task activityRootData) {
-        return newInstance(TaskEditFragment.class, null, activityRootData);
+        return newInstance(TaskEditFragment.class, activityRootData.isNew() ? TaskNewActivity.buildBundle().get() : null, activityRootData);
+    }
+
+    public static TaskEditFragment newInstanceFromCase(Task activityRootData, String caseUuid) {
+        return newInstance(TaskEditFragment.class, TaskNewActivity.buildBundleWithCase(caseUuid).get(), activityRootData);
+    }
+
+    public static TaskEditFragment newInstanceFromContact(Task activityRootData, String contactUuid) {
+        return newInstance(TaskEditFragment.class, TaskNewActivity.buildBundleWithContact(contactUuid).get(), activityRootData);
+    }
+
+    public static TaskEditFragment newInstanceFromEvent(Task activityRootData, String eventUuid) {
+        return newInstance(TaskEditFragment.class, TaskNewActivity.buildBundleWithEvent(eventUuid).get(), activityRootData);
     }
 
     private void setUpControlListeners(FragmentTaskEditLayoutBinding contentBinding) {
@@ -111,12 +138,16 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
 
     @Override
     public boolean isShowSaveAction() {
-        return false;
+        return true;
     }
 
     @Override
     protected void prepareFragmentData() {
         record = getActivityRootData();
+
+        taskTypeList = DataUtils.getEnumItems(TaskType.class, true);
+        priorityList = DataUtils.getEnumItems(TaskPriority.class, true);
+        assigneeList = DataUtils.toItems(DatabaseHelper.getUserDao().queryForAll(), true);
     }
 
     @Override
@@ -127,7 +158,7 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
         // Additionally, the save option is hidden for pending tasks because those should be saved
         // by clicking on the "Done" and "Not executable" buttons
         if (!ConfigProvider.getUser().equals(record.getAssigneeUser())) {
-            contentBinding.taskAssigneeReply.setEnabled(false);
+            contentBinding.taskAssigneeReply.setVisibility(GONE);
             contentBinding.taskButtonPanel.setVisibility(GONE);
         } else {
             if (record.getTaskStatus() != TaskStatus.PENDING) {
@@ -136,12 +167,32 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
             }
         }
 
+        if (!ConfigProvider.getUser().equals(record.getCreatorUser())) {
+            contentBinding.taskTaskType.setEnabled(false);
+            contentBinding.taskSuggestedStart.setEnabled(false);
+            contentBinding.taskDueDate.setEnabled(false);
+            contentBinding.taskAssigneeUser.setEnabled(false);
+            contentBinding.taskPriority.setEnabled(false);
+
+            contentBinding.taskCreatorComment.setEnabled(false);
+            contentBinding.taskCreatorComment.setFocusable(false);
+            contentBinding.taskCreatorComment.setFocusableInTouchMode(false);
+        }
+
         contentBinding.setData(record);
+
+        // Initialize ControlSpinnerFields
+        contentBinding.taskTaskType.initializeSpinner(taskTypeList);
+        contentBinding.taskPriority.initializeSpinner(priorityList);
+        contentBinding.taskAssigneeUser.initializeSpinner(assigneeList);
+
+        // Initialize ControlDateFields and ControlDateTimeFields
+        contentBinding.taskSuggestedStart.initializeDateTimeField(getFragmentManager());
+        contentBinding.taskDueDate.initializeDateTimeField(getFragmentManager());
     }
 
     @Override
     public int getEditLayout() {
         return R.layout.fragment_task_edit_layout;
     }
-
 }

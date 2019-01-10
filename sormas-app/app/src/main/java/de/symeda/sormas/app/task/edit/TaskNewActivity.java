@@ -57,28 +57,23 @@ public class TaskNewActivity extends BaseEditActivity<Task> {
 
     private AsyncTask saveTask;
 
-    //private static TaskContext taskContext = null;
     private String caseUuid;
     private String contactUuid;
     private String eventUuid;
 
     public static void startActivity(Context fromActivity) {
-        //taskContext = TaskContext.GENERAL;
         BaseEditActivity.startActivity(fromActivity, TaskNewActivity.class, buildBundle());
     }
 
     public static void startActivityFromCase(Context fromActivity, String caseUuid) {
-        //taskContext = TaskContext.CASE;
         BaseEditActivity.startActivity(fromActivity, TaskNewActivity.class, buildBundleWithCase(caseUuid));
     }
 
     public static void startActivityFromContact(Context fromActivity, String contactUuid) {
-        //taskContext = TaskContext.CONTACT;
         BaseEditActivity.startActivity(fromActivity, TaskNewActivity.class, buildBundleWithContact(contactUuid));
     }
 
     public static void startActivityFromEvent(Context fromActivity, String eventUuid) {
-        //taskContext = TaskContext.EVENT;
         BaseEditActivity.startActivity(fromActivity, TaskNewActivity.class, buildBundleWithEvent(eventUuid));
     }
 
@@ -158,13 +153,13 @@ public class TaskNewActivity extends BaseEditActivity<Task> {
         BaseEditFragment fragment;
 
         if (caseUuid != null) {
-            fragment = TaskNewFragment.newInstanceFromCase(activityRootData, caseUuid);
+            fragment = TaskEditFragment.newInstanceFromCase(activityRootData, caseUuid);
         } else if (contactUuid != null) {
-            fragment = TaskNewFragment.newInstanceFromContact(activityRootData, contactUuid);
+            fragment = TaskEditFragment.newInstanceFromContact(activityRootData, contactUuid);
         } else if (eventUuid != null) {
-            fragment = TaskNewFragment.newInstanceFromEvent(activityRootData, eventUuid);
+            fragment = TaskEditFragment.newInstanceFromEvent(activityRootData, eventUuid);
         } else {
-            fragment = TaskNewFragment.newInstance(activityRootData);
+            fragment = TaskEditFragment.newInstance(activityRootData);
         }
 
         fragment.setLiveValidationDisabled(true);
@@ -191,7 +186,7 @@ public class TaskNewActivity extends BaseEditActivity<Task> {
         }
 
         final Task taskToSave = getStoredRootEntity();
-        TaskNewFragment fragment = (TaskNewFragment) getActiveFragment();
+        TaskEditFragment fragment = (TaskEditFragment) getActiveFragment();
 
         fragment.setLiveValidationDisabled(false);
 

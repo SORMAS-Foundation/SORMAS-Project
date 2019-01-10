@@ -22,32 +22,17 @@ import android.view.View;
 
 import java.util.List;
 
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskPriority;
-import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
-import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.task.Task;
-import de.symeda.sormas.app.caze.edit.CaseNewFragment;
-import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.contact.read.ContactReadActivity;
-import de.symeda.sormas.app.databinding.FragmentSampleNewLayoutBinding;
-import de.symeda.sormas.app.databinding.FragmentTaskNewLayoutBinding;
-import de.symeda.sormas.app.event.read.EventReadActivity;
+import de.symeda.sormas.app.databinding.FragmentTaskEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 
-import static android.view.View.GONE;
-
-public class TaskNewFragment extends BaseEditFragment<FragmentTaskNewLayoutBinding, Task, Task> {
+public class TaskNewFragment extends BaseEditFragment<FragmentTaskEditLayoutBinding, Task, Task> {
 
     public static final String TAG = TaskNewFragment.class.getSimpleName();
 
@@ -91,7 +76,7 @@ public class TaskNewFragment extends BaseEditFragment<FragmentTaskNewLayoutBindi
     }
 
     @Override
-    public void onLayoutBinding(FragmentTaskNewLayoutBinding contentBinding) {
+    public void onLayoutBinding(FragmentTaskEditLayoutBinding contentBinding) {
         contentBinding.setData(record);
 
         // Initialize ControlSpinnerFields
@@ -105,11 +90,11 @@ public class TaskNewFragment extends BaseEditFragment<FragmentTaskNewLayoutBindi
     }
 
     @Override
-    public void onAfterLayoutBinding(final FragmentTaskNewLayoutBinding contentBinding) {
+    public void onAfterLayoutBinding(final FragmentTaskEditLayoutBinding contentBinding) {
 
     }
 
     @Override
-    public int getEditLayout() { return R.layout.fragment_task_new_layout; }
+    public int getEditLayout() { return R.layout.fragment_task_edit_layout; }
 
 }
