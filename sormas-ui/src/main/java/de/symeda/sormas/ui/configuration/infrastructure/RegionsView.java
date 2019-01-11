@@ -40,11 +40,11 @@ import de.symeda.sormas.ui.utils.DownloadUtil;
 public class RegionsView extends AbstractConfigurationView {
 
 	private static final long serialVersionUID = -3487830069266335042L;
-	
+
 	public static final String SEARCH = "search";
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/regions";
-	
+
 	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;
 	private RegionsGrid grid;	
@@ -62,19 +62,17 @@ public class RegionsView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 		grid.reload();
-		
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
-			Button exportButton = new Button("Export");
-			exportButton.setDescription("Export the columns and rows that are shown in the table below.");
-			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			exportButton.setIcon(FontAwesome.TABLE);
-			addHeaderComponent(exportButton);
-			
-			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), grid.getColumns(), "sormas_regions", "sormas_regions_" + DateHelper.formatDateForExport(new Date()) + ".csv", RegionsGrid.EDIT_BTN_ID);
-			FileDownloader fileDownloader = new FileDownloader(streamResource);
-			fileDownloader.extend(exportButton);
-		}
-		
+
+		Button exportButton = new Button("Export");
+		exportButton.setDescription("Export the columns and rows that are shown in the table below.");
+		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		exportButton.setIcon(FontAwesome.TABLE);
+		addHeaderComponent(exportButton);
+
+		StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), grid.getColumns(), "sormas_regions", "sormas_regions_" + DateHelper.formatDateForExport(new Date()) + ".csv", RegionsGrid.EDIT_BTN_ID);
+		FileDownloader fileDownloader = new FileDownloader(streamResource);
+		fileDownloader.extend(exportButton);
+
 		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = new Button("New entry");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -83,10 +81,10 @@ public class RegionsView extends AbstractConfigurationView {
 					e -> ControllerProvider.getInfrastructureController().createRegion());
 			addHeaderComponent(createButton);
 		}
-		
+
 		addComponent(gridLayout);
 	}
-	
+
 	private HorizontalLayout createFilterBar() {
 		filterLayout = new HorizontalLayout();
 		filterLayout.setSpacing(true);
@@ -100,8 +98,8 @@ public class RegionsView extends AbstractConfigurationView {
 		});
 		CssStyles.style(searchField, CssStyles.FORCE_CAPTION);
 		filterLayout.addComponent(searchField);
-		
+
 		return filterLayout;
 	}
-	
+
 }

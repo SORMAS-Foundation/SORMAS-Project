@@ -45,18 +45,22 @@ public class CaseExportDto implements Serializable {
 	private long personId;
 	private long epiDataId;
 	private long symptomsId;
+	private long hospitalizationId;
 	private String uuid;
 	private String epidNumber;
 	private String disease;
 	private String person;
 	private Sex sex;
 	private String approximateAge;
+	private String ageGroup;
 	private Date reportDate;
 	private String region;
 	private String district;
 	private String community;
 	private Date admissionDate;
 	private String healthFacility;
+	private YesNoUnknown admittedToHealthFacility;
+	private String initialDetectionPlace;
 	private YesNoUnknown sampleTaken;
 	private String sampleDates;
 	private String labResults;
@@ -73,28 +77,36 @@ public class CaseExportDto implements Serializable {
 	private YesNoUnknown contactWithConfirmedCase;
 	private Date onsetDate;
 	private String symptoms;
+	private Vaccination vaccination;
+	private String vaccinationDoses;
+	private Date vaccinationDate;
+	private VaccinationInfoSource vaccinationInfoSource;
 
-	public CaseExportDto(long id, long personId, long epiDataId, long symptomsId, String uuid, String epidNumber, Disease disease, String diseaseDetails, String firstName, String lastName, 
+	public CaseExportDto(long id, long personId, long epiDataId, long symptomsId, long hospitalizationId, String uuid, String epidNumber, Disease disease, String diseaseDetails, String firstName, String lastName, 
 			Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType, Date reportDate, String region, 
-			String district, String community, Date admissionDate, String healthFacility, String healthFacilityUuid,
-			String healthFacilityDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus, 
+			String district, String community, YesNoUnknown admittedToHealthFacility, Date admissionDate, String healthFacility, String healthFacilityUuid, String healthFacilityDetails, 
+			CaseClassification caseClassification, InvestigationStatus investigationStatus, 
 			PresentCondition presentCondition, CaseOutcome outcome, Date deathDate, String phone, String phoneOwner,
 			OccupationType occupationType, String occupationDetails, String occupationFacility, String occupationFacilityUuid, String occupationFacilityDetails,
-			YesNoUnknown contactWithRodent, YesNoUnknown contactWithConfirmedCase, Date onsetDate) {
+			YesNoUnknown contactWithRodent, YesNoUnknown contactWithConfirmedCase, Date onsetDate, Vaccination vaccination, String vaccinationDoses,
+			Date vaccinationDate, VaccinationInfoSource vaccinationInfoSource) {
 		this.id = id;
 		this.personId = personId;
 		this.epiDataId = epiDataId;
 		this.symptomsId = symptomsId;
+		this.hospitalizationId = hospitalizationId;
 		this.uuid = uuid;
 		this.epidNumber = epidNumber;
 		this.disease = DiseaseHelper.toString(disease, diseaseDetails);
 		this.person = PersonDto.buildCaption(firstName, lastName);
 		this.sex = sex;
 		this.approximateAge = PersonHelper.buildAgeString(approximateAge, approximateAgeType);
+		this.ageGroup = PersonHelper.getAgeGroupFromAge(approximateAge, approximateAgeType);
 		this.reportDate = reportDate;
 		this.region = region;
 		this.district = district;
 		this.community = community;
+		this.admittedToHealthFacility = admittedToHealthFacility;
 		this.admissionDate = admissionDate;
 		this.healthFacility = FacilityHelper.buildFacilityString(healthFacilityUuid, healthFacility, healthFacilityDetails);
 		this.caseClassification = caseClassification;
@@ -108,6 +120,10 @@ public class CaseExportDto implements Serializable {
 		this.contactWithRodent = contactWithRodent;
 		this.contactWithConfirmedCase = contactWithConfirmedCase;
 		this.onsetDate = onsetDate;
+		this.vaccination = vaccination;
+		this.vaccinationDoses = vaccinationDoses;
+		this.vaccinationDate = vaccinationDate;
+		this.vaccinationInfoSource = vaccinationInfoSource;
 	}
 
 	public CaseReferenceDto toReference() {
@@ -128,6 +144,10 @@ public class CaseExportDto implements Serializable {
 
 	public long getSymptomsId() {
 		return symptomsId;
+	}
+	
+	public long getHospitalizationId() {
+		return hospitalizationId;
 	}
 	
 	@Order(0)
@@ -159,113 +179,148 @@ public class CaseExportDto implements Serializable {
 	public String getApproximateAge() {
 		return approximateAge;
 	}
-
+	
 	@Order(6)
+	public String getAgeGroup() {
+		return ageGroup;
+	}
+
+	@Order(7)
 	public Date getReportDate() {
 		return reportDate;
 	}
 
-	@Order(7)
+	@Order(8)
 	public String getRegion() {
 		return region;
 	}
 
-	@Order(8)
+	@Order(9)
 	public String getDistrict() {
 		return district;
 	}
 
-	@Order(9)
+	@Order(10)
 	public String getCommunity() {
 		return community;
 	}
+	
+	@Order(11)
+	public YesNoUnknown getAdmittedToHealthFacility() {
+		return admittedToHealthFacility;
+	}
 
-	@Order(10)
+	@Order(12)
 	public Date getAdmissionDate() {
 		return admissionDate;
 	}
 
-	@Order(11)
+	@Order(13)
 	public String getHealthFacility() {
 		return healthFacility;
 	}
+	
+	@Order(14)
+	public String getInitialDetectionPlace() {
+		return initialDetectionPlace;
+	}
 
-	@Order(12)
+	@Order(15)
 	public YesNoUnknown getSampleTaken() {
 		return sampleTaken;
 	}
 
-	@Order(13)
+	@Order(16)
 	public String getSampleDates() {
 		return sampleDates;
 	}
 
-	@Order(14)
+	@Order(17)
 	public String getLabResults() {
 		return labResults;
 	}
 
-	@Order(15)
+	@Order(18)
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}
 
-	@Order(16)
+	@Order(19)
 	public InvestigationStatus getInvestigationStatus() {
 		return investigationStatus;
 	}
 
-	@Order(17)
+	@Order(20)
 	public PresentCondition getPresentCondition() {
 		return presentCondition;
 	}
 
-	@Order(18)
+	@Order(21)
 	public CaseOutcome getOutcome() {
 		return outcome;
 	}
 
-	@Order(19)
+	@Order(22)
 	public Date getDeathDate() {
 		return deathDate;
 	}
 
-	@Order(20)
+	@Order(23)
 	public String getAddress() {
 		return address;
 	}
 
-	@Order(21)
+	@Order(24)
 	public String getPhone() {
 		return phone;
 	}
 
-	@Order(22)
+	@Order(25)
 	public String getOccupationType() {
 		return occupationType;
 	}
 
-	@Order(23)
+	@Order(26)
 	public String getTravelHistory() {
 		return travelHistory;
 	}
 
-	@Order(24)
+	@Order(27)
 	public YesNoUnknown getContactWithRodent() {
 		return contactWithRodent;
 	}
 
-	@Order(25)
+	@Order(28)
 	public YesNoUnknown getContactWithConfirmedCase() {
 		return contactWithConfirmedCase;
 	}
+	
+	@Order(29)
+	public Vaccination getVaccination() {
+		return vaccination;
+	}
+	
+	@Order(30)
+	public String getVaccinationDoses() {
+		return vaccinationDoses;
+	}
+	
+	@Order(31)
+	public Date getVaccinationDate() {
+		return vaccinationDate;
+	}
+	
+	@Order(32)
+	public VaccinationInfoSource getVaccinationInfoSource() {
+		return vaccinationInfoSource;
+	}
 
-	@Order(26)
+	@Order(33)
 	public Date getOnsetDate() {
 		return onsetDate;
 	}
 
-	@Order(27)
+	@Order(34)
 	public String getSymptoms() {
 		return symptoms;
 	}
@@ -284,6 +339,10 @@ public class CaseExportDto implements Serializable {
 
 	public void setSymptomsId(long symptomsId) {
 		this.symptomsId = symptomsId;
+	}
+	
+	public void setHospitalizationId(long hospitalizationId) {
+		this.hospitalizationId = hospitalizationId;
 	}
 	
 	public void setUuid(String uuid) {
@@ -310,6 +369,10 @@ public class CaseExportDto implements Serializable {
 		this.approximateAge = age;
 	}
 
+	public void setAgeGroup(String ageGroup) {
+		this.ageGroup = ageGroup;
+	}
+	
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
 	}
@@ -332,6 +395,10 @@ public class CaseExportDto implements Serializable {
 
 	public void setHealthFacility(String healthFacility) {
 		this.healthFacility = healthFacility;
+	}
+	
+	public void setAdmittedToHealthFacility(YesNoUnknown admittedToHealthFacility) {
+		this.admittedToHealthFacility = admittedToHealthFacility;
 	}
 
 	public void setSampleTaken(YesNoUnknown sampleTaken) {
@@ -418,6 +485,26 @@ public class CaseExportDto implements Serializable {
 
 	public void setSymptoms(String symptoms) {
 		this.symptoms = symptoms;
+	}
+	
+	public void setInitialDetectionPlace(String initialDetectionPlace) {
+		this.initialDetectionPlace = initialDetectionPlace;
+	}
+
+	public void setVaccination(Vaccination vaccination) {
+		this.vaccination = vaccination;
+	}
+
+	public void setVaccinationDoses(String vaccinationDoses) {
+		this.vaccinationDoses = vaccinationDoses;
+	}
+
+	public void setVaccinationDate(Date vaccinationDate) {
+		this.vaccinationDate = vaccinationDate;
+	}
+
+	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
+		this.vaccinationInfoSource = vaccinationInfoSource;
 	}
 
 }

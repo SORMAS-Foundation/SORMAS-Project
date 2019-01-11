@@ -128,6 +128,7 @@ import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.HospitalizationService;
+import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalizationService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.LocationService;
@@ -312,6 +313,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				person.get(Person.ID),
 				epiData.get(EpiData.ID),
 				symptoms.get(Symptoms.ID),
+				hospitalization.get(Hospitalization.ID),
 				caze.get(Case.UUID),
 				caze.get(Case.EPID_NUMBER),
 				caze.get(Case.DISEASE),
@@ -325,6 +327,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				region.get(Region.NAME),
 				district.get(District.NAME),
 				community.get(Community.NAME),
+				hospitalization.get(Hospitalization.ADMITTED_TO_HEALTH_FACILITY),
 				hospitalization.get(Hospitalization.ADMISSION_DATE),
 				facility.get(Facility.NAME),
 				facility.get(Facility.UUID),
@@ -343,7 +346,11 @@ public class CaseFacadeEjb implements CaseFacade {
 				person.get(Person.OCCUPATION_FACILITY_DETAILS),
 				epiData.get(EpiData.RODENTS),
 				epiData.get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE),
-				symptoms.get(Symptoms.ONSET_DATE));
+				symptoms.get(Symptoms.ONSET_DATE),
+				caze.get(Case.VACCINATION),
+				caze.get(Case.VACCINATION_DOSES),
+				caze.get(Case.VACCINATION_DATE),
+				caze.get(Case.VACCINATION_INFO_SOURCE));
 
 		User user = userService.getByUuid(userUuid);
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
@@ -362,7 +369,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<CaseExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
 		for (CaseExportDto exportDto : resultList) {
-			// TODO: Speed up this code, e.g. by persisting symtoms, lab results, etc. as a String in the database
+			// TODO: Speed up this code, e.g. by persisting symptoms, lab results, etc. as a String in the database
 			List<Date> sampleDates = sampleService.getSampleDatesForCase(exportDto.getId());
 			exportDto.setSampleTaken((sampleDates == null || sampleDates.isEmpty()) ? YesNoUnknown.NO : YesNoUnknown.YES);
 			exportDto.setSampleDates(sampleDates);
@@ -383,6 +390,14 @@ public class CaseFacadeEjb implements CaseFacade {
 						travel.getTravelDateFrom(), travel.getTravelDateTo()));
 			}
 			exportDto.setTravelHistory(travelHistoryBuilder.toString());
+			
+			// Place of initial detection
+			PreviousHospitalization firstPrevHosp = previousHospitalizationService.getInitialHospitalization(exportDto.getHospitalizationId());
+			if (firstPrevHosp != null) {
+				exportDto.setInitialDetectionPlace(firstPrevHosp.getHealthFacility().toString());
+			} else {
+				exportDto.setInitialDetectionPlace(exportDto.getHealthFacility());
+			}
 		}
 
 		return resultList;
