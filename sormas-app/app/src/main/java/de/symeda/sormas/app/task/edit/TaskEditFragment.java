@@ -158,7 +158,7 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
         // Additionally, the save option is hidden for pending tasks because those should be saved
         // by clicking on the "Done" and "Not executable" buttons
         if (!ConfigProvider.getUser().equals(record.getAssigneeUser())) {
-            contentBinding.taskAssigneeReply.setVisibility(GONE);
+            contentBinding.taskAssigneeReply.setEnabled(false);
             contentBinding.taskButtonPanel.setVisibility(GONE);
         } else {
             if (record.getTaskStatus() != TaskStatus.PENDING) {
