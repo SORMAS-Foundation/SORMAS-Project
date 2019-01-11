@@ -46,8 +46,9 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 //	private HorizontalLayout headerLayout;
 	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;
-	private FacilitiesGrid grid;
+	protected FacilitiesGrid grid;
 	protected Button createButton;
+	protected Button exportButton;
 
 	private ComboBox districtFilter;
 	private ComboBox communityFilter;
@@ -66,6 +67,14 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 		grid.reload();
+		
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
+			exportButton = new Button("Export");
+			exportButton.setDescription("Export the columns and rows that are shown in the table below.");
+			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			exportButton.setIcon(FontAwesome.TABLE);
+			addHeaderComponent(exportButton);
+		}
 
 		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = new Button();

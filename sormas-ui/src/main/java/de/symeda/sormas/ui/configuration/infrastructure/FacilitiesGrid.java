@@ -47,7 +47,7 @@ public class FacilitiesGrid extends Grid {
 
 	private static final long serialVersionUID = 4488941182432777837L;
 
-	private static final String EDIT_BTN_ID = "edit";
+	public static final String EDIT_BTN_ID = "edit";
 
 	private FacilityCriteria facilityCriteria = new FacilityCriteria();
 

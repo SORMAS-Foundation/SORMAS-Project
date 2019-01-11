@@ -177,6 +177,7 @@ public class AppUpdateController {
         int negativeButtonTextResId = allowDismiss ? R.string.action_download_later : R.string.action_close_app;
 
         final ConfirmationDialog downloadAppDialog = new ConfirmationDialog(activity, headingResId, subHeadingResId, positiveButtonTextResId, negativeButtonTextResId);
+        downloadAppDialog.setCancelable(false);
         downloadAppDialog.setPositiveCallback(new Callback() {
             @Override
             public void call() {
@@ -207,6 +208,7 @@ public class AppUpdateController {
         int negativeButtonTextResId = allowDismiss ? R.string.action_download_later : R.string.action_close_app;
 
         final ConfirmationDialog downloadFailedDialog = new ConfirmationDialog(activity, headingResId, subHeadingResId, positiveButtonTextResId, negativeButtonTextResId);
+        downloadFailedDialog.setCancelable(false);
         downloadFailedDialog.setPositiveCallback(new Callback() {
             @Override
             public void call() {
@@ -237,6 +239,7 @@ public class AppUpdateController {
         int negativeButtonTextResId = allowDismiss ? R.string.action_install_later : R.string.action_close_app;
 
         final ConfirmationDialog installAppDialog = new ConfirmationDialog(activity, headingResId, subHeadingResId, positiveButtonTextResId, negativeButtonTextResId);
+        installAppDialog.setCancelable(false);
         installAppDialog.setPositiveCallback(new Callback() {
             @Override
             public void call() {
@@ -267,6 +270,7 @@ public class AppUpdateController {
         int negativeButtonTextResId = allowDismiss ? R.string.action_redownload_app_later : R.string.action_close_app;
 
         final ConfirmationDialog installFailedDialog = new ConfirmationDialog(activity, headingResId, subHeadingResId, positiveButtonTextResId, negativeButtonTextResId);
+        installFailedDialog.setCancelable(false);
         installFailedDialog.setPositiveCallback(new Callback() {
             @Override
             public void call() {
@@ -296,6 +300,7 @@ public class AppUpdateController {
         int positiveButtonTextResId = allowDismiss ? R.string.action_ok : R.string.action_close_app;
 
         ConfirmationDialog installNotPossibleDialog = new ConfirmationDialog(activity, headingResId, subHeadingResId, positiveButtonTextResId, -1);
+        installNotPossibleDialog.setCancelable(false);
         installNotPossibleDialog.getNegativeButton().setVisibility(GONE);
         if (allowDismiss) {
             installNotPossibleDialog.setPositiveCallback(dismissCallback);

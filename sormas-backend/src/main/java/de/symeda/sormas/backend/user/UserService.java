@@ -121,7 +121,7 @@ public class UserService extends AbstractAdoService<User> {
 		
 		Predicate filter = cb.and(
 				cb.equal(from.get(User.LABORATORY), facility),
-				joinRoles.in(Arrays.asList(new UserRole[]{UserRole.LAB_USER})));
+				joinRoles.in(Arrays.asList(new UserRole[]{UserRole.LAB_USER, UserRole.EXTERNAL_LAB_USER})));
 		
 		cq.where(filter).distinct(true);
 		return em.createQuery(cq).getResultList();

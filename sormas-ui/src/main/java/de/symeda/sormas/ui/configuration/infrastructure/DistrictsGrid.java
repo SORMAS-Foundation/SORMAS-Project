@@ -45,7 +45,7 @@ public class DistrictsGrid extends Grid {
 
 	private static final long serialVersionUID = -4437531618828715458L;
 
-	private static final String EDIT_BTN_ID = "edit";
+	public static final String EDIT_BTN_ID = "edit";
 	
 	private DistrictCriteria districtCriteria = new DistrictCriteria();
 	

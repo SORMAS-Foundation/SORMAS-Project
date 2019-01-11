@@ -135,10 +135,14 @@ public class SampleGrid extends Grid {
 	       	}
 		});
 		
-		if(CurrentUser.getCurrent().hasUserRole(UserRole.LAB_USER)) {
+		if (CurrentUser.getCurrent().hasUserRole(UserRole.LAB_USER) || CurrentUser.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
 			removeColumn(SampleIndexDto.SHIPMENT_DATE);
 		} else {
 			removeColumn(SampleIndexDto.RECEIVED_DATE);
+		}
+		
+		if (CurrentUser.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
+			removeColumn(SampleIndexDto.ASSOCIATED_CASE);
 		}
 	}
 	

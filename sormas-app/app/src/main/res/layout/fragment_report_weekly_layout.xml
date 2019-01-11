@@ -42,7 +42,7 @@
             android:focusableInTouchMode="true"
             android:id="@+id/main_content">
 
-            <requestFocus />
+            <requestFocus/>
 
             <LinearLayout
                 android:layout_width="match_parent"

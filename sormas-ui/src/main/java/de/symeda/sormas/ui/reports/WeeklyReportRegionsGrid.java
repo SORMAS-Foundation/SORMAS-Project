@@ -162,12 +162,13 @@ public class WeeklyReportRegionsGrid extends Grid implements ItemClickListener {
 		if (event.getPropertyId().equals(VIEW_DETAILS_BTN_ID)) {
 			WeeklyReportRegionSummaryDto summaryDto = (WeeklyReportRegionSummaryDto) event.getItemId();
 			VerticalLayout layout = new VerticalLayout();
-			Window window = VaadinUiUtil.showPopupWindow(layout);
+			layout.setSizeUndefined();
 			layout.setMargin(true);
+			Window window = VaadinUiUtil.showPopupWindow(layout);
 
 			WeeklyReportOfficersGrid grid = new WeeklyReportOfficersGrid();
 			grid.reload(summaryDto.getRegion(), year, week);
-			grid.setWidth(1080, Unit.PIXELS);
+			grid.setWidth(1600, Unit.PIXELS);
 			grid.setHeightMode(HeightMode.ROW);
 			grid.setHeightUndefined();
 			layout.addComponent(grid);

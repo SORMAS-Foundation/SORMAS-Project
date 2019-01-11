@@ -46,6 +46,7 @@ import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
+import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
@@ -56,6 +57,7 @@ import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.FragmentReportWeeklyLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.SyncCallback;
 
@@ -187,47 +189,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
         contentBinding.submitReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                confirmReportTask = new DefaultAsyncTask(getContext()) {
-
-                    @Override
-                    public void onPreExecute() {
-                        getBaseActivity().showPreloader();
-                    }
-
-                    @Override
-                    public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
-                        WeeklyReport weeklyReport = DatabaseHelper.getWeeklyReportDao().build(getEpiWeek());
-                        DatabaseHelper.getWeeklyReportDao().saveAndSnapshot(weeklyReport);
-                    }
-
-                    @Override
-                    protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-                        super.onPostExecute(taskResult);
-                        getBaseActivity().hidePreloader();
-
-                        if (!taskResult.getResultStatus().isSuccess()) {
-                            NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, taskResult.getResultStatus().getMessage());
-                            return;
-                        }
-
-                        if (RetroProvider.isConnected()) {
-                            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, getActivity(), new SyncCallback() {
-                                @Override
-                                public void call(boolean syncFailed, String syncFailedMessage) {
-                                    if (syncFailed) {
-                                        NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.WARNING, R.string.snackbar_weekly_report_sync_confirmed);
-                                    } else {
-                                        NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.snackbar_weekly_report_confirmed);
-                                    }
-                                    ((ReportActivity)getActivity()).onResume(); // reload data
-                                }
-                            });
-                        } else {
-                            NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.snackbar_weekly_report_confirmed);
-                            ((ReportActivity)getActivity()).onResume(); // reload data
-                        }
-                    }
-                }.executeOnThreadPool();
+                showSubmitReportConfirmationDialog();
             }
         });
     }
@@ -397,6 +359,50 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                 }
             }.executeOnThreadPool();
         }
+    }
+    private void showSubmitReportConfirmationDialog() {
+        final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActivity(),
+                R.string.heading_confirmation_dialog,
+                R.string.heading_sub_confirmation_submit_report,
+                R.string.action_submit_report,
+                R.string.action_cancel);
+
+        confirmationDialog.setPositiveCallback(new Callback() {
+            @Override
+            public void call() {
+                confirmationDialog.dismiss();
+
+                confirmReportTask = new DefaultAsyncTask(getContext()) {
+
+                    @Override
+                    public void onPreExecute() {
+                        getBaseActivity().showPreloader();
+                    }
+
+                    @Override
+                    public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
+                        WeeklyReport weeklyReport = DatabaseHelper.getWeeklyReportDao().build(getEpiWeek());
+                        DatabaseHelper.getWeeklyReportDao().saveAndSnapshot(weeklyReport);
+                    }
+
+                    @Override
+                    protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                        super.onPostExecute(taskResult);
+                        getBaseActivity().hidePreloader();
+
+                        if (!taskResult.getResultStatus().isSuccess()) {
+                            NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, taskResult.getResultStatus().getMessage());
+                            return;
+                        }
+
+                        NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.snackbar_weekly_report_submitted);
+                        ((ReportActivity)getActivity()).onResume(); // reload data
+                    }
+                }.executeOnThreadPool();
+            }
+        });
+
+        confirmationDialog.show();
     }
 
     /**

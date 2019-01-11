@@ -23,7 +23,6 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import com.vaadin.data.Property;
-import com.vaadin.data.Validator;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.AbstractSelect.NewItemHandler;
@@ -48,7 +47,6 @@ public class DateTimeField extends CustomField<Date> {
 
 	@Override
 	protected Component initContent() {
-
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.setSpacing(true);
 		layout.setWidth(100, Unit.PERCENTAGE);
@@ -64,7 +62,7 @@ public class DateTimeField extends CustomField<Date> {
 			dateField.setConverter(converter);
 			converterSet = true;
 		}
-
+		
 		timeField = new ComboBox();
 		timeField.addContainerProperty(CAPTION_PROPERTY_ID, String.class, null);
 		timeField.setItemCaptionPropertyId(CAPTION_PROPERTY_ID);
@@ -192,9 +190,4 @@ public class DateTimeField extends CustomField<Date> {
 			converterSet = true;
 		}
 	}
-	
-	public void addValidatorToDateField(Validator validator) {
-		dateField.addValidator(validator);
-	}
-
 }

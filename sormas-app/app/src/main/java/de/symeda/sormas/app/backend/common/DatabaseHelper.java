@@ -100,7 +100,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 136;
+	public static final int DATABASE_VERSION = 137;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -603,7 +603,30 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					currentVersion = 135;
 					getDao(Sample.class).executeRaw("UPDATE samples SET suggestedTypeOfTest='ISOLATION' WHERE suggestedTypeOfTest='VIRUS_ISOLATION'");
 					getDao(SampleTest.class).executeRaw("UPDATE sampleTests SET testType='ISOLATION' WHERE testType='VIRUS_ISOLATION'");
-
+				case 136:
+					currentVersion = 136;
+					try {
+						getDao(Outbreak.class).executeRaw("ALTER TABLE diseaseClassificationCriteria ADD COLUMN lastOpenedDate timestamp;");
+					} catch(SQLException e) { } // may already exist
+					getDao(WeeklyReportEntry.class).executeRaw("ALTER TABLE weeklyreportentry RENAME TO tmp_weeklyreportentry;");
+					getDao(WeeklyReportEntry.class).executeRaw("CREATE TABLE weeklyreportentry(" +
+							"id integer primary key autoincrement," +
+							"uuid varchar(36) not null unique," +
+							"changeDate timestamp not null," +
+							"creationDate timestamp not null," +
+							"lastOpenedDate timestamp," +
+							"localChangeDate timestamp not null," +
+							"modified integer," +
+							"snapshot integer," +
+							"weeklyReport_id bigint REFERENCES weeklyreport(id)," +
+							"disease character varying(255)," +
+							"numberOfCases integer" +
+							");");
+					getDao(WeeklyReportEntry.class).executeRaw("INSERT INTO weeklyreportentry(id, uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, snapshot, weeklyReport_id, " +
+							"disease, numberOfCases) " +
+							"SELECT id, uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, snapshot, weeklyReport_id, disease, numberOfCases " +
+							"FROM tmp_weeklyreportentry;");
+					getDao(WeeklyReportEntry.class).executeRaw("DROP TABLE tmp_weeklyreportentry;");
 
 					// ATTENTION: break should only be done after last version
 					break;

@@ -34,6 +34,7 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -428,7 +429,11 @@ public class FacilityService extends AbstractAdoService<Facility> {
 			filter = and(cb, filter, cb.equal(from.join(Facility.COMMUNITY, JoinType.LEFT).get(District.UUID), facilityCriteria.getCommunity().getUuid()));
 		}
 		if (facilityCriteria.isExcludeStaticFacilities() != null && facilityCriteria.isExcludeStaticFacilities()) {
-			filter = and(cb, filter, cb.isNotNull(from.get(Facility.REGION)));
+			Predicate excludeFilter = cb.and(
+					cb.notEqual(from.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
+					cb.notEqual(from.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID),
+					cb.notEqual(from.get(Facility.UUID), FacilityDto.OTHER_LABORATORY_UUID));
+			filter = and(cb, filter, excludeFilter);
 		}
 		filter = and(cb, filter, cb.equal(from.get(Facility.TYPE), facilityCriteria.getType()));
 		return filter;

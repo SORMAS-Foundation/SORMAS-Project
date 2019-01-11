@@ -17,7 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import java.util.Date;
+
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -30,10 +34,12 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DownloadUtil;
 
 public class DistrictsView extends AbstractConfigurationView {
 
@@ -60,6 +66,18 @@ public class DistrictsView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 		grid.reload();
+		
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
+			Button exportButton = new Button("Export");
+			exportButton.setDescription("Export the columns and rows that are shown in the table below.");
+			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			exportButton.setIcon(FontAwesome.TABLE);
+			addHeaderComponent(exportButton);
+			
+			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), grid.getColumns(), "sormas_districts", "sormas_districts_" + DateHelper.formatDateForExport(new Date()) + ".csv", DistrictsGrid.EDIT_BTN_ID);
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(exportButton);
+		}
 
 		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = new Button("New entry");

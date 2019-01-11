@@ -366,8 +366,8 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	protected <T extends Field> T addField(String propertyId, Class<T> fieldType) {
 		T field = getFieldGroup().buildAndBind(propertyId, (Object)propertyId, fieldType);
 		formatField(field, propertyId);
-		addDefaultAdditionalValidators(field);
-		getContent().addComponent(field, propertyId);		
+		getContent().addComponent(field, propertyId);	
+		addDefaultAdditionalValidators(field);	
 		return field;
 	}
 	
@@ -379,8 +379,8 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	protected <T extends Field> T addDateField(String propertyId, Class<T> fieldType, int allowedDaysInFuture) {
 		T field = getFieldGroup().buildAndBind(propertyId, (Object)propertyId, fieldType);
 		formatField(field, propertyId);
-		addFutureDateValidator(field, allowedDaysInFuture);
-		getContent().addComponent(field, propertyId);		
+		getContent().addComponent(field, propertyId);	
+		addFutureDateValidator(field, allowedDaysInFuture);	
 		return field;
 	}
 
@@ -422,10 +422,9 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			return field;
 		}
 		
-		if (DateField.class.isAssignableFrom(field.getClass())) {
+		if (DateField.class.isAssignableFrom(field.getClass())
+				|| DateTimeField.class.isAssignableFrom(field.getClass())) {
 			field.addValidator(new FutureDateValidator(amountOfDays, field.getCaption()));
-		} else if (DateTimeField.class.isAssignableFrom(field.getClass())) {
-			((DateTimeField) field).addValidatorToDateField(new FutureDateValidator(amountOfDays, field.getCaption()));
 		}
 		
 		return field;

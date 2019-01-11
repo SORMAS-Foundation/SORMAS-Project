@@ -555,6 +555,7 @@ public class CaseService extends AbstractAdoService<Case> {
 				filter = cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery);
 				break;
 			case ADMIN:
+			case EXTERNAL_LAB_USER:
 				break;
 
 			default:

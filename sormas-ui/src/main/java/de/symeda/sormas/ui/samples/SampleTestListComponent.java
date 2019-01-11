@@ -52,7 +52,7 @@ public class SampleTestListComponent extends VerticalLayout {
 		Label tasksHeader = new Label(LayoutUtil.h3("Tests"), ContentMode.HTML);
 		componentHeader.addComponent(tasksHeader);
 
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.SAMPLETEST_CREATE)) {
 			createButton = new Button("New test");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
