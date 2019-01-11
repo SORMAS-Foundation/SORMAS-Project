@@ -364,11 +364,6 @@ public class AppUpdateController {
                 context.unregisterReceiver(this);
                 ConfigProvider.setCurrentAppDownloadId(null);
 
-                if (progressDialog != null) {
-                    progressDialog.dismiss();
-                    progressDialog = null;
-                }
-
                 // Check if the download has been successful
                 File file = new File(activity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName);
                 if (!file.exists()) {
@@ -379,6 +374,8 @@ public class AppUpdateController {
                 // If progressDialog is null, the download has been completed in the background
                 // and the install prompt should not be shown automatically
                 if (progressDialog != null) {
+                    progressDialog.dismiss();
+                    progressDialog = null;
                     displayedDialog = buildInstallAppDialog();
                     displayedDialog.show();
                 }
