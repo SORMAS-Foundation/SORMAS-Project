@@ -173,10 +173,7 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
             contentBinding.taskDueDate.setEnabled(false);
             contentBinding.taskAssigneeUser.setEnabled(false);
             contentBinding.taskPriority.setEnabled(false);
-
             contentBinding.taskCreatorComment.setEnabled(false);
-            contentBinding.taskCreatorComment.setFocusable(false);
-            contentBinding.taskCreatorComment.setFocusableInTouchMode(false);
         }
 
         contentBinding.setData(record);
