@@ -42,7 +42,7 @@ public class RegionsGrid extends Grid {
 
 	private static final long serialVersionUID = 6289713952342575369L;
 
-	private static final String EDIT_BTN_ID = "edit";
+	public static final String EDIT_BTN_ID = "edit";
 	
 	public RegionsGrid() {
 		setSizeFull();

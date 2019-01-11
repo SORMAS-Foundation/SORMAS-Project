@@ -47,7 +47,7 @@ public class CommunitiesGrid extends Grid {
 
 	private static final long serialVersionUID = 3355810665696318673L;
 
-	private static final String EDIT_BTN_ID = "edit";
+	public static final String EDIT_BTN_ID = "edit";
 	private static final String REGION_LOC = "region";
 	
 	private CommunityCriteria communityCriteria = new CommunityCriteria();

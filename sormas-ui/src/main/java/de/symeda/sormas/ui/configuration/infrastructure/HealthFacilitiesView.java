@@ -17,9 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import java.util.Date;
+
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.StreamResource;
+
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.utils.DownloadUtil;
 
 public class HealthFacilitiesView extends AbstractFacilitiesView {
 
@@ -29,6 +36,13 @@ public class HealthFacilitiesView extends AbstractFacilitiesView {
 
 	public HealthFacilitiesView() {
 		super(VIEW_NAME, false);
+
+		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
+			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), grid.getColumns(), "sormas_health_facilities", "sormas_health_facilities_" + DateHelper.formatDateForExport(new Date()) + ".csv", FacilitiesGrid.EDIT_BTN_ID);
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(exportButton);
+		}
+
 		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton.setCaption("New entry");
 			createButton.addClickListener(
