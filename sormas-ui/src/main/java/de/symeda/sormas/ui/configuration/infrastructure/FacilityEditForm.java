@@ -71,8 +71,8 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		longitude.setConversionError("Only geo coordinate values are allowed for " + longitude.getCaption());
 
 		name.setRequired(true);
-		region.setRequired(true);
 		if (!laboratory) {
+			region.setRequired(true);
 			district.setRequired(true);
 			community.setRequired(true);
 		}
@@ -99,7 +99,9 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 
 		// TODO: Workaround until cases and other data is properly transfered when infrastructure data changes
 		if (!create) {
-			region.setEnabled(false);
+			if (!laboratory) {
+				region.setEnabled(false);
+			}
 			district.setEnabled(false);
 			community.setEnabled(false);
 		}

@@ -244,10 +244,10 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	public void saveFacility(FacilityDto dto) throws ValidationRuntimeException {
 		Facility facility = facilityService.getByUuid(dto.getUuid());
 
-		if (dto.getRegion() == null) {
-			throw new ValidationRuntimeException("You have to specify a valid region");
-		}
 		if (dto.getType() != FacilityType.LABORATORY) {
+			if (dto.getRegion() == null) {
+				throw new ValidationRuntimeException("You have to specify a valid region");
+			}
 			if (dto.getDistrict() == null) {
 				throw new ValidationRuntimeException("You have to specify a valid district");
 			}
