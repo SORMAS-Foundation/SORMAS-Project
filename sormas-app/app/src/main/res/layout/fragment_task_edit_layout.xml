@@ -74,11 +74,13 @@
                 <de.symeda.sormas.app.component.controls.ControlDateTimeField
                     android:id="@+id/task_suggestedStart"
                     style="@style/ControlSingleColumnStyle"
+                    app:allowedDaysInFuture="-1"
                     app:value="@={data.suggestedStart}" />
 
                 <de.symeda.sormas.app.component.controls.ControlDateTimeField
                     android:id="@+id/task_dueDate"
                     style="@style/ControlSingleColumnStyle"
+                    app:allowedDaysInFuture="-1"
                     app:value="@={data.dueDate}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
@@ -90,12 +92,6 @@
                     android:id="@+id/task_priority"
                     style="@style/ControlSingleColumnStyle"
                     app:value="@={data.priority}" />
-
-                <!--<de.symeda.sormas.app.component.controls.ControlSpinnerField-->
-                    <!--android:id="@+id/task_taskStatus"-->
-                    <!--style="@style/ControlSingleColumnStyle"-->
-                    <!--app:goneIfEmpty="@{data.taskStatus}"-->
-                    <!--app:value="@={data.taskStatus}" />-->
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/task_creatorComment"

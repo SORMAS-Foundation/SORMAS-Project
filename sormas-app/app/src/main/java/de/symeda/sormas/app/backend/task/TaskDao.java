@@ -69,7 +69,6 @@ public class TaskDao extends AbstractAdoDao<Task> {
         Task task = super.build();
 
         task.setTaskContext(TaskContext.GENERAL);
-        //task.setUuid(DataHelper.createUuid());
         task.setSuggestedStart(TaskHelper.getDefaultSuggestedStart());
         task.setDueDate(TaskHelper.getDefaultDueDate());
         task.setCreatorUser(ConfigProvider.getUser());

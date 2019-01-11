@@ -912,7 +912,6 @@ public class TextViewBindingAdapters {
                 sb.append(", " + record.getEvent().getEventLocation().getCity());
             }
             sb.append(", " + StringUtils.substring(record.getEvent().getEventDesc(), 0, 15) + (record.getEvent().getEventDesc().length() > 15 ? "..." : ""));
-            //sb.append(", " + record.getEvent().getEventDesc().substring(0, 15) + (record.getEvent().getEventDesc().length() > 15 ? "..." : ""));
             result = sb.toString();
         }
 

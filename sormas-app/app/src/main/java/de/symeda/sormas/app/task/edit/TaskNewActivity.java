@@ -112,13 +112,11 @@ public class TaskNewActivity extends BaseEditActivity<Task> {
     @Override
     public TaskStatus getPageStatus() {
         return null;
-        //return getStoredRootEntity() == null ? null : getStoredRootEntity().getTaskStatus();
     }
 
     @Override
     protected Task queryRootEntity(String recordUuid) {
         throw new UnsupportedOperationException();
-        //return DatabaseHelper.getTaskDao().queryUuid(recordUuid);
     }
 
     @Override

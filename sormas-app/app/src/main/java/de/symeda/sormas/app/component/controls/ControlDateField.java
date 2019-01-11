@@ -92,7 +92,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
             if (DateHelper.getFullDaysBetween(new Date(), getValue()) > allowedDaysInFuture) {
                 enableErrorState(I18nProperties.getValidationError("futureDate", getCaption(), allowedDaysInFuture));
             }
-        } else {
+        } else if (allowedDaysInFuture == 0) {
             if (!DateHelper.isSameDay(new Date(), getValue())) {
                 enableErrorState(I18nProperties.getValidationError("futureDateStrict", getCaption()));
             }

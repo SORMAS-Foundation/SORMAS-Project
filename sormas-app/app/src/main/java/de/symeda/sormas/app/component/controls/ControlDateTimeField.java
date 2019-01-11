@@ -104,7 +104,7 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
             if (DateHelper.getFullDaysBetween(new Date(), getFieldValue()) > allowedDaysInFuture) {
                 enableErrorState(I18nProperties.getValidationError("futureDate", getCaption(), allowedDaysInFuture));
             }
-        } else {
+        } else if (allowedDaysInFuture == 0) {
             if (!DateHelper.isSameDay(new Date(), getFieldValue())) {
                 enableErrorState(I18nProperties.getValidationError("futureDateStrict", getCaption()));
             }

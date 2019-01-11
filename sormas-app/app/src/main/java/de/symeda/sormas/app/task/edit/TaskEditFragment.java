@@ -138,7 +138,7 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
 
     @Override
     public boolean isShowSaveAction() {
-        return true;
+        return ConfigProvider.getUser().equals(record.getCreatorUser());
     }
 
     @Override
@@ -153,6 +153,22 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
     @Override
     public void onLayoutBinding(FragmentTaskEditLayoutBinding contentBinding) {
         setUpControlListeners(contentBinding);
+
+        // Initialize ControlSpinnerFields
+        contentBinding.taskTaskType.initializeSpinner(taskTypeList);
+        contentBinding.taskPriority.initializeSpinner(priorityList);
+        contentBinding.taskAssigneeUser.initializeSpinner(assigneeList);
+
+        // Initialize ControlDateFields and ControlDateTimeFields
+        contentBinding.taskSuggestedStart.initializeDateTimeField(getFragmentManager());
+        contentBinding.taskDueDate.initializeDateTimeField(getFragmentManager());
+
+        contentBinding.setData(record);
+    }
+
+    @Override
+    protected void onAfterLayoutBinding(FragmentTaskEditLayoutBinding contentBinding) {
+        super.onAfterLayoutBinding(contentBinding);
 
         // Saving and editing the assignee reply is only allowed when the task is assigned to the user;
         // Additionally, the save option is hidden for pending tasks because those should be saved
@@ -176,16 +192,6 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
             contentBinding.taskCreatorComment.setEnabled(false);
         }
 
-        contentBinding.setData(record);
-
-        // Initialize ControlSpinnerFields
-        contentBinding.taskTaskType.initializeSpinner(taskTypeList);
-        contentBinding.taskPriority.initializeSpinner(priorityList);
-        contentBinding.taskAssigneeUser.initializeSpinner(assigneeList);
-
-        // Initialize ControlDateFields and ControlDateTimeFields
-        contentBinding.taskSuggestedStart.initializeDateTimeField(getFragmentManager());
-        contentBinding.taskDueDate.initializeDateTimeField(getFragmentManager());
     }
 
     @Override
