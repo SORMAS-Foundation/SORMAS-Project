@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.person;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -73,6 +74,16 @@ public class PersonHelperTest {
 		secondName = "Don Van";
 
 		assertFalse(PersonHelper.areNamesSimilar(firstName, secondName));
+	}
+	
+	@Test
+	public void testAgeGroupCalculation() {
+		assertEquals("0-4", PersonHelper.getAgeGroupFromAge(7, ApproximateAgeType.MONTHS));
+		assertEquals("5-9", PersonHelper.getAgeGroupFromAge(7, ApproximateAgeType.YEARS));
+		assertEquals("20-24", PersonHelper.getAgeGroupFromAge(20, ApproximateAgeType.YEARS));
+		assertEquals("20-24", PersonHelper.getAgeGroupFromAge(24, ApproximateAgeType.YEARS));
+		assertEquals("0-4", PersonHelper.getAgeGroupFromAge(2, ApproximateAgeType.YEARS));
+		assertEquals("120+", PersonHelper.getAgeGroupFromAge(121, ApproximateAgeType.YEARS));
 	}
 	
 }

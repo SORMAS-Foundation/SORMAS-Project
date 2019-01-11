@@ -54,7 +54,9 @@ Only when SORMAS versions pre 1.10 where installed on the server.
 * Create a backup of the database
     * ``cd /root/deploy/sormas/backup``
     * ``sudo -u postgres pg_dump -Fc -b sormas_db > "sormas_db_"`date +"%Y-%m-%d_%H-%M-%S"`".dump"`` \
-     (to restore the data you can use: sudo -u postgres pg_restore -Fc -d sormas_db sormas_db_....dump)
+     To restore the data you can use: ``sudo -u postgres pg_restore -Fc -d sormas_db sormas_db_....dump`` \
+     You can ignore the following warning/error
+     > could not change directory to "/root/deploy/sormas/backup": Permission denied
     * ``sudo -u postgres pg_dump -Fc -b sormas_audit_db > "sormas_audit_db_"`date +"%Y-%m-%d_%H-%M-%S"`".dump"``
     * ``cd /root/deploy/sormas/$(date +%F)``	
 * Update the database schema
