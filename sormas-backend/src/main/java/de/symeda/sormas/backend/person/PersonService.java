@@ -335,7 +335,6 @@ public class PersonService extends AbstractAdoService<Person> {
 		throw new UnsupportedOperationException();
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Person, Person> from, Date date) {
 		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);

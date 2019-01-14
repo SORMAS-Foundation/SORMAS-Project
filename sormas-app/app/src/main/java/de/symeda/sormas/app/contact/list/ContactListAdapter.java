@@ -21,7 +21,7 @@ package de.symeda.sormas.app.contact.list;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -87,7 +87,7 @@ public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemL
             int numberOfVisits = DatabaseHelper.getVisitDao().getVisitCount(record, null);
             int numberOfCooperativeVisits = DatabaseHelper.getVisitDao().getVisitCount(record, VisitStatus.COOPERATIVE);
 
-            holder.binding.numberOfVisits.setText(String.format(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, "numberOfVisitsLongFormat"),
+            holder.binding.numberOfVisits.setText(String.format(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, "numberOfVisitsLongFormat"),
                     numberOfCooperativeVisits, numberOfVisits - numberOfCooperativeVisits));
         } else {
             holder.binding.numberOfVisits.setVisibility(View.GONE);

@@ -56,7 +56,7 @@ public final class ContactValidator {
                     Date lastContactDate = contentBinding.contactLastContactDate.getValue();
                     Date contactReferenceDate = contact.getReportDateTime();
                     if (lastContactDate.after(contactReferenceDate)) {
-                        contentBinding.contactLastContactDate.enableErrorState(I18nProperties.getValidationError("beforeDate", contentBinding.contactLastContactDate.getCaption(), I18nProperties.getPrefixFieldCaption(ContactDto.I18N_PREFIX, ContactDto.REPORT_DATE_TIME)));
+                        contentBinding.contactLastContactDate.enableErrorState(I18nProperties.getValidationError("beforeDate", contentBinding.contactLastContactDate.getCaption(), I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.REPORT_DATE_TIME)));
                     }
                 }
             };

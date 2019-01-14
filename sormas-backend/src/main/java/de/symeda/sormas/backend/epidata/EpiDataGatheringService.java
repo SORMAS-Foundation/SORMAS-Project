@@ -35,6 +35,7 @@ public class EpiDataGatheringService extends AbstractAdoService<EpiDataGathering
 		super(EpiDataGathering.class);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<EpiDataGathering, EpiDataGathering> from, User user) {
 		// A user should not directly query for this

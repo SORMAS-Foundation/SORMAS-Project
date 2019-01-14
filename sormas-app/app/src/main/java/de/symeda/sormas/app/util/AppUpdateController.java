@@ -29,8 +29,8 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.FileProvider;
+import androidx.fragment.app.FragmentActivity;
+import androidx.core.content.FileProvider;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;

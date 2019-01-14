@@ -18,7 +18,7 @@
 
 package de.symeda.sormas.app.backend.common;
 
-import android.databinding.BaseObservable;
+import androidx.databinding.BaseObservable;
 import android.util.Log;
 
 import com.googlecode.openbeans.PropertyDescriptor;
@@ -272,6 +272,6 @@ public class AbstractDomainObject extends BaseObservable implements Serializable
 	}
 
 	public String getEntityName() {
-		return I18nProperties.getFieldCaption(getI18nPrefix());
+		return I18nProperties.getCaption(getI18nPrefix());
 	}
 }

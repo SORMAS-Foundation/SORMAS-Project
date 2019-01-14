@@ -60,9 +60,10 @@ public class CommunityService extends AbstractAdoService<Community> {
 		return em.createQuery(cq).getResultList();
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Community, Community> from, User user) {
-		// no fitler by user needed
+		// no filter by user needed
 		return null;
 	}
 

@@ -43,6 +43,7 @@ public class HospitalizationService extends AbstractAdoService<Hospitalization> 
 		return hospitalization;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Hospitalization, Hospitalization> from, User user) {
 		// A user should not directly query for this

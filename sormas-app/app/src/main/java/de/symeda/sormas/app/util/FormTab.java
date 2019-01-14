@@ -22,8 +22,8 @@ package de.symeda.sormas.app.util;
  * Created by Orson on 03/11/2017.
  */
 
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentTransaction;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentTransaction;
 import android.view.View;
 
 

@@ -22,12 +22,12 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
-import android.databinding.BindingAdapter;
-import android.databinding.InverseBindingAdapter;
-import android.databinding.InverseBindingListener;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.InverseBindingAdapter;
+import androidx.databinding.InverseBindingListener;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
+import androidx.fragment.app.FragmentManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -288,7 +288,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
         super.onAttachedToWindow();
 
         if (getHint() == null) {
-            setHint(I18nProperties.getFieldCaption(getFieldCaptionPropertyId()));
+            setHint(I18nProperties.getCaption(getCaptionPropertyId()));
         }
     }
 

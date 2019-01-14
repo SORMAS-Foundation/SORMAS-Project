@@ -18,7 +18,7 @@
 
 package de.symeda.sormas.app.login;
 
-import android.databinding.BaseObservable;
+import androidx.databinding.BaseObservable;
 
 public class LoginViewModel extends BaseObservable {
 

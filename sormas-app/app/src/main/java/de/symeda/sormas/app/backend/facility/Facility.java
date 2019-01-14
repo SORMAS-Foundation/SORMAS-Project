@@ -18,7 +18,7 @@
 
 package de.symeda.sormas.app.backend.facility;
 
-import android.databinding.Bindable;
+import androidx.databinding.Bindable;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;

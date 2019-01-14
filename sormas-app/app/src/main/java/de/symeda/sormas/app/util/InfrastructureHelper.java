@@ -166,14 +166,14 @@ public final class InfrastructureHelper {
 
             if (otherHealthFacility) {
                 healthFacilityDetailsField.setVisibility(VISIBLE);
-                String caption = I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS);
+                String caption = I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS);
                 healthFacilityDetailsField.setCaption(caption);
                 if (healthFacilityDetailsField instanceof ControlPropertyEditField) {
                     ((ControlPropertyEditField) healthFacilityDetailsField).setHint(caption);
                 }
             } else if (noneHealthFacility) {
                 healthFacilityDetailsField.setVisibility(VISIBLE);
-                String caption = I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS);
+                String caption = I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS);
                 healthFacilityDetailsField.setCaption(caption);
                 if (healthFacilityDetailsField instanceof ControlPropertyEditField) {
                     ((ControlPropertyEditField) healthFacilityDetailsField).setHint(caption);

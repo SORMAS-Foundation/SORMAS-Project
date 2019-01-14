@@ -127,13 +127,13 @@ public class SymptomsReadFragment extends BaseReadFragment<FragmentSymptomsReadL
                 if (symptomState != null) {
                     switch (symptomState) {
                         case YES:
-                            yesResult.add(I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, symptomPropertyId));
+                            yesResult.add(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, symptomPropertyId));
                             break;
                         case NO:
                             // ignore this
                             break;
                         case UNKNOWN:
-                            unknownResult.add(I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, symptomPropertyId));
+                            unknownResult.add(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, symptomPropertyId));
                             break;
                         default:
                             throw new IllegalArgumentException(symptomState.toString());

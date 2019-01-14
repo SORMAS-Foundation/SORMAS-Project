@@ -20,7 +20,7 @@ package de.symeda.sormas.app.event.edit;
 
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.view.View;
 
 import de.symeda.sormas.app.R;

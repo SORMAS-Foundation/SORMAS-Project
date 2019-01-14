@@ -22,7 +22,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.security.KeyPairGeneratorSpec;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.util.Base64;
 import android.util.Log;
 

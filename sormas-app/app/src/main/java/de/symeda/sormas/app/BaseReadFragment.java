@@ -19,9 +19,9 @@
 package de.symeda.sormas.app;
 
 import android.content.res.Resources;
-import android.databinding.DataBindingUtil;
-import android.databinding.OnRebindCallback;
-import android.databinding.ViewDataBinding;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.OnRebindCallback;
+import androidx.databinding.ViewDataBinding;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;

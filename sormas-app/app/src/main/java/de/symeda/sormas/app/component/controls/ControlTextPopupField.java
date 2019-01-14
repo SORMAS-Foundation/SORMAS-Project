@@ -20,9 +20,9 @@ package de.symeda.sormas.app.component.controls;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.databinding.BindingAdapter;
-import android.databinding.InverseBindingAdapter;
-import android.databinding.InverseBindingListener;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.InverseBindingAdapter;
+import androidx.databinding.InverseBindingListener;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -233,7 +233,7 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
         super.onAttachedToWindow();
 
         if (getHint() == null) {
-            setHint(I18nProperties.getFieldCaption(getFieldCaptionPropertyId()));
+            setHint(I18nProperties.getCaption(getCaptionPropertyId()));
         }
     }
 

@@ -25,7 +25,7 @@
     android:layout_height="match_parent"
     android:id="@+id/base_layout">
 
-    <android.support.v4.widget.DrawerLayout
+    <androidx.drawerlayout.widget.DrawerLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
@@ -37,14 +37,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <android.support.v7.widget.Toolbar
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/applicationToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/sormasToolBarHeight"
                 style="@style/ToolBarStyle">
-            </android.support.v7.widget.Toolbar>
+            </androidx.appcompat.widget.Toolbar>
 
-            <android.support.percent.PercentFrameLayout
+            <androidx.percentlayout.widget.PercentFrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 >
@@ -73,12 +73,12 @@
                     android:layout_height="wrap_content"
                     />
 
-            </android.support.percent.PercentFrameLayout>
+            </androidx.percentlayout.widget.PercentFrameLayout>
 
 
         </LinearLayout>
 
-        <android.support.design.widget.NavigationView
+        <com.google.android.material.navigation.NavigationView
             android:id="@+id/main_navigation_view"
             android:layout_width="@dimen/drawerWidth"
             android:layout_height="match_parent"
@@ -122,8 +122,8 @@
 
             </LinearLayout>
 
-        </android.support.design.widget.NavigationView>
+        </com.google.android.material.navigation.NavigationView>
 
-    </android.support.v4.widget.DrawerLayout>
+    </androidx.drawerlayout.widget.DrawerLayout>
 
 </LinearLayout>

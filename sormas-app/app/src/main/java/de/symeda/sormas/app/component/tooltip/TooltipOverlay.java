@@ -24,7 +24,7 @@ import android.util.AttributeSet;
 
 import de.symeda.sormas.app.R;
 
-public class TooltipOverlay extends android.support.v7.widget.AppCompatImageView {
+public class TooltipOverlay extends androidx.appcompat.widget.AppCompatImageView {
     private int mMargins;
 
     public TooltipOverlay(Context context) {

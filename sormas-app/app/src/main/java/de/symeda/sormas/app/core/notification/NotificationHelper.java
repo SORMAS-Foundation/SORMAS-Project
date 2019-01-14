@@ -20,7 +20,7 @@ package de.symeda.sormas.app.core.notification;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.databinding.ViewDataBinding;
+import androidx.databinding.ViewDataBinding;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;

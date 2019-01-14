@@ -20,8 +20,8 @@ package de.symeda.sormas.app.util;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.databinding.BindingAdapter;
-import android.databinding.ObservableList;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.ObservableList;
 import android.graphics.Typeface;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -385,7 +385,7 @@ public class TextViewBindingAdapters {
         } else {
             String val = yesNoUnknown.toString();
             String fieldId = textField.getResources().getResourceName(textField.getId());
-            String caption = I18nProperties.getFieldCaption(ControlPropertyField.toPrefixPropertyId(fieldId));
+            String caption = I18nProperties.getCaption(ControlPropertyField.toPrefixPropertyId(fieldId));
 
             if (DataHelper.isNullOrEmpty(caption)) {
                 textField.setText(val);

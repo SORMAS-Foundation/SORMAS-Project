@@ -65,7 +65,7 @@ final class SymptomsValidator {
                             && DateTimeComparator.getDateOnlyInstance().compare(value, ((Case) ado).getHospitalization().getAdmissionDate()) >= 0) {
                         contentBinding.symptomsOnsetDate.enableWarningState(
                                 I18nProperties.getValidationError("beforeDateSoft", contentBinding.symptomsOnsetDate.getCaption(),
-                                        I18nProperties.getPrefixFieldCaption(HospitalizationDto.I18N_PREFIX, HospitalizationDto.ADMISSION_DATE)));
+                                        I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, HospitalizationDto.ADMISSION_DATE)));
                     } else {
                         contentBinding.symptomsOnsetDate.disableWarningState();
                     }

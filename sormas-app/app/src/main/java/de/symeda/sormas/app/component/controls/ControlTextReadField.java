@@ -20,11 +20,10 @@ package de.symeda.sormas.app.component.controls;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.databinding.BindingAdapter;
-import android.databinding.BindingMethod;
-import android.databinding.BindingMethods;
-import android.databinding.InverseBindingListener;
-import android.graphics.Typeface;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.BindingMethod;
+import androidx.databinding.BindingMethods;
+import androidx.databinding.InverseBindingListener;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -38,7 +37,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
-import java.util.List;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -53,7 +51,6 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.util.ResourceUtils;
-import de.symeda.sormas.app.util.TypefaceUtil;
 
 @BindingMethods({@BindingMethod(type = ControlTextReadField.class, attribute = "valueFormat", method = "setValueFormat")})
 public class ControlTextReadField extends ControlPropertyField<String> {
@@ -92,7 +89,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
         if (defaultValue != null) {
             return defaultValue;
         } else {
-            return I18nProperties.getText(I18nConstants.NOT_ANSWERED);
+            return I18nProperties.getString(I18nConstants.NOT_ANSWERED);
         }
     }
 
@@ -309,7 +306,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
                 Boolean lesionsLocation = (Boolean) getter.invoke(symptoms);
                 if (lesionsLocation != null) {
                     if (lesionsLocation) {
-                        lesionsLocationsString.append(I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, lesionsLocationId))
+                        lesionsLocationsString.append(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, lesionsLocationId))
                                 .append(", ");
                     }
                 }

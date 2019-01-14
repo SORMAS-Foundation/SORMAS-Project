@@ -18,7 +18,7 @@
 
 package de.symeda.sormas.app.core;
 
-import android.databinding.InverseMethod;
+import androidx.databinding.InverseMethod;
 
 /**
  * Created by Orson on 28/01/2018.

@@ -19,7 +19,7 @@
 package de.symeda.sormas.app.caze.edit;
 
 import android.content.res.Resources;
-import android.support.v7.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import android.view.View;
 
 import java.util.List;
