@@ -22,9 +22,11 @@ import android.view.View;
 
 import java.util.List;
 
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -35,6 +37,8 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.contact.read.ContactReadActivity;
 import de.symeda.sormas.app.databinding.FragmentTaskEditLayoutBinding;
 import de.symeda.sormas.app.event.read.EventReadActivity;
@@ -151,7 +155,7 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
     }
 
     @Override
-    public void onLayoutBinding(FragmentTaskEditLayoutBinding contentBinding) {
+    public void onLayoutBinding(final FragmentTaskEditLayoutBinding contentBinding) {
         setUpControlListeners(contentBinding);
 
         // Initialize ControlSpinnerFields
@@ -163,12 +167,24 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
         contentBinding.taskSuggestedStart.initializeDateTimeField(getFragmentManager());
         contentBinding.taskDueDate.initializeDateTimeField(getFragmentManager());
 
+        //creatorComment should be required when task type is OTHER
+        contentBinding.taskTaskType.addValueChangedListener(new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+            contentBinding.taskCreatorComment.setRequired(field.getValue() == TaskType.OTHER);
+            }
+        });
+
         contentBinding.setData(record);
     }
 
     @Override
     protected void onAfterLayoutBinding(FragmentTaskEditLayoutBinding contentBinding) {
         super.onAfterLayoutBinding(contentBinding);
+
+        if (record.isNew()) {
+            contentBinding.taskAssigneeReply.setVisibility(GONE);
+        }
 
         // Saving and editing the assignee reply is only allowed when the task is assigned to the user;
         // Additionally, the save option is hidden for pending tasks because those should be saved
@@ -191,7 +207,6 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
             contentBinding.taskPriority.setEnabled(false);
             contentBinding.taskCreatorComment.setEnabled(false);
         }
-
     }
 
     @Override

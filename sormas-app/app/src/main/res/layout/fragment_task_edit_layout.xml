@@ -51,6 +51,7 @@
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/task_taskType"
                     style="@style/ControlSingleColumnStyle"
+                    app:required="true"
                     app:value="@={data.taskType}" />
 
                 <de.symeda.sormas.app.component.controls.ControlLinkField
@@ -80,12 +81,14 @@
                 <de.symeda.sormas.app.component.controls.ControlDateTimeField
                     android:id="@+id/task_dueDate"
                     style="@style/ControlSingleColumnStyle"
+                    app:required="true"
                     app:allowedDaysInFuture="-1"
                     app:value="@={data.dueDate}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/task_assigneeUser"
                     style="@style/ControlSingleColumnStyle"
+                    app:required="true"
                     app:value="@={data.assigneeUser}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
