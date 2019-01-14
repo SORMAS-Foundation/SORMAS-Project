@@ -18,8 +18,8 @@
 package de.symeda.sormas.api.caze.classification;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 

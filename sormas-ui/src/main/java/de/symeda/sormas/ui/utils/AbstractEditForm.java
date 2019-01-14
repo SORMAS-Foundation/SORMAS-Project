@@ -48,7 +48,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserRight;
@@ -392,7 +392,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 
 		if (field instanceof AbstractField) {
 			AbstractField abstractField = (AbstractField)field;
-			abstractField.setDescription(I18nProperties.getPrefixFieldDescription(
+			abstractField.setDescription(I18nProperties.getPrefixDescription(
 					getPropertyI18nPrefix(), propertyId, abstractField.getDescription()));
 
 			if (hideValidationUntilNextCommit) {

@@ -28,7 +28,8 @@ import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -89,17 +90,17 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 
 		// Validators
 		sampleDateField.addValidator(new DateComparisonValidator(sampleDateField, shipmentDate, true, false,
-				I18nProperties.getValidationError("beforeDate", sampleDateField.getCaption(), shipmentDate.getCaption())));
+				I18nProperties.getValidationError(Validations.beforeDate, sampleDateField.getCaption(), shipmentDate.getCaption())));
 		sampleDateField.addValidator(new DateComparisonValidator(sampleDateField, receivedDate, true, false,
-				I18nProperties.getValidationError("beforeDate", sampleDateField.getCaption(), receivedDate.getCaption())));
+				I18nProperties.getValidationError(Validations.beforeDate, sampleDateField.getCaption(), receivedDate.getCaption())));
 		shipmentDate.addValidator(new DateComparisonValidator(shipmentDate, sampleDateField, false, false,
-				I18nProperties.getValidationError("afterDate", shipmentDate.getCaption(), sampleDateField.getCaption())));
+				I18nProperties.getValidationError(Validations.afterDate, shipmentDate.getCaption(), sampleDateField.getCaption())));
 		shipmentDate.addValidator(new DateComparisonValidator(shipmentDate, receivedDate, true, false,
-				I18nProperties.getValidationError("beforeDate", shipmentDate.getCaption(), receivedDate.getCaption())));
+				I18nProperties.getValidationError(Validations.beforeDate, shipmentDate.getCaption(), receivedDate.getCaption())));
 		receivedDate.addValidator(new DateComparisonValidator(receivedDate, sampleDateField, false, false,
-				I18nProperties.getValidationError("afterDate", receivedDate.getCaption(), sampleDateField.getCaption())));
+				I18nProperties.getValidationError(Validations.afterDate, receivedDate.getCaption(), sampleDateField.getCaption())));
 		receivedDate.addValidator(new DateComparisonValidator(receivedDate, shipmentDate, false, false,
-				I18nProperties.getValidationError("afterDate", receivedDate.getCaption(), shipmentDate.getCaption())));
+				I18nProperties.getValidationError(Validations.afterDate, receivedDate.getCaption(), shipmentDate.getCaption())));
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.SAMPLE_MATERIAL_TEXT, SampleDto.SAMPLE_MATERIAL,
 				Arrays.asList(SampleMaterial.OTHER), true);

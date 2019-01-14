@@ -24,7 +24,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum TaskType {
 

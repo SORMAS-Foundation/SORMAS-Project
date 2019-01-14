@@ -34,7 +34,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
 @MappedSuperclass
 public class AbstractDomainObject extends BaseObservable implements Serializable, Cloneable  {

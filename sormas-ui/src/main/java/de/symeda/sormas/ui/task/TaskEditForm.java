@@ -27,7 +27,8 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -161,9 +162,9 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	    	
 	    	// Validation
 			startDate.addValidator(new DateComparisonValidator(startDate, dueDate, true, false, 
-					I18nProperties.getValidationError("beforeDate", startDate.getCaption(), dueDate.getCaption())));
+					I18nProperties.getValidationError(Validations.beforeDate, startDate.getCaption(), dueDate.getCaption())));
 			dueDate.addValidator(new DateComparisonValidator(dueDate, startDate, false, false, 
-					I18nProperties.getValidationError("afterDate", dueDate.getCaption(), startDate.getCaption())));
+					I18nProperties.getValidationError(Validations.afterDate, dueDate.getCaption(), startDate.getCaption())));
 	    	
 	    	TaskController taskController = ControllerProvider.getTaskController();
     		for (UserReferenceDto user : users) {

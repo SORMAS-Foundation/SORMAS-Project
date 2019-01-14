@@ -23,7 +23,7 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.SubNavigationMenu;

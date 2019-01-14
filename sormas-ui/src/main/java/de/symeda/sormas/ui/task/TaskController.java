@@ -26,7 +26,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -134,7 +135,7 @@ public class TaskController {
 					UI.getCurrent().removeWindow(popupWindow);
 					callback.run();
 				}
-			}, I18nProperties.getString("task"));
+			}, I18nProperties.getString(Strings.task));
 		}
 	}
 

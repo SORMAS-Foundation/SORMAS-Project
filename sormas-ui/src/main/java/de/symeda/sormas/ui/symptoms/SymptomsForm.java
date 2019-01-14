@@ -41,7 +41,9 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -75,7 +77,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_3, SymptomsDto.ONSET_DATE, SymptomsDto.ONSET_SYMPTOM) +
 			LayoutUtil.fluidRowCss(CssStyles.VSPACE_3,
 					LayoutUtil.fluidColumn(8, 0,
-							LayoutUtil.divs(I18nProperties.getString("Symptoms.hint"))),
+							LayoutUtil.divs(I18nProperties.getString(Strings.Symptoms_hint))),
 					LayoutUtil.fluidColumn(4, 0,
 							LayoutUtil.locCss(CssStyles.ALIGN_RIGHT, BUTTONS_LOC))) +
 			LayoutUtil.fluidRow(
@@ -148,7 +150,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		DateField onsetDateField = addField(SymptomsDto.ONSET_DATE, DateField.class);
 		if (symptomsContext == SymptomsContext.CASE) {
 			onsetDateField.addValidator(new DateComparisonValidator(onsetDateField, caze.getHospitalization().getAdmissionDate(), true, false, 
-					I18nProperties.getValidationError("beforeDateSoft", onsetDateField.getCaption(), I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, HospitalizationDto.ADMISSION_DATE))));
+					I18nProperties.getValidationError(Validations.beforeDateSoft, onsetDateField.getCaption(), I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, HospitalizationDto.ADMISSION_DATE))));
 			onsetDateField.setInvalidCommitted(true);
 		}
 		ComboBox temperature = addField(SymptomsDto.TEMPERATURE, ComboBox.class);

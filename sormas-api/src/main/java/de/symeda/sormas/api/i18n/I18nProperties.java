@@ -15,9 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api;
+package de.symeda.sormas.api.i18n;
 
 import java.util.Locale;
+
+import de.symeda.sormas.api.ResourceBundle;
 
 public class I18nProperties {
 
@@ -119,34 +121,34 @@ public class I18nProperties {
 		return result;
 	}
 	
-	public static String getFieldDescription(String key) {
+	public static String getDescription(String key) {
 		return getInstance().descriptionProperties.getString(key);
 	}
 
-	public static String getFieldDescription(String key, String defaultValue) {
+	public static String getDescription(String key, String defaultValue) {
 		return getInstance().descriptionProperties.getString(key, defaultValue);
 	}
 
 	/**
 	 * Uses <param>key</param> as default value
 	 */
-	public static String getPrefixFieldDescription(String prefix, String key) {
-		return getPrefixFieldDescription(prefix, key, key);
+	public static String getPrefixDescription(String prefix, String key) {
+		return getPrefixDescription(prefix, key, key);
 	}
 
-	public static String getPrefixFieldDescription(String prefix, String key, String defaultValue) {
+	public static String getPrefixDescription(String prefix, String key, String defaultValue) {
 		String result = null;
 		if (prefix != null) {
-			result = getFieldDescription(prefix + "." + key);
+			result = getDescription(prefix + "." + key);
 		}
 		if (result == null) {
-			result = getFieldDescription(key, defaultValue);
+			result = getDescription(key, defaultValue);
 		}
 		return result;
 	}
 	
 	public static String getRequiredError(String fieldCaption) {
-		return getValidationError("required", fieldCaption);
+		return getValidationError(Validations.required, fieldCaption);
 	}
 	
 	/**

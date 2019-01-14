@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;

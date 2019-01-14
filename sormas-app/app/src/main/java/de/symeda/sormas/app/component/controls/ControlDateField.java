@@ -43,7 +43,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -90,11 +91,11 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 
         if (allowedDaysInFuture > 0) {
             if (DateHelper.getFullDaysBetween(new Date(), getValue()) > allowedDaysInFuture) {
-                enableErrorState(I18nProperties.getValidationError("futureDate", getCaption(), allowedDaysInFuture));
+                enableErrorState(I18nProperties.getValidationError(Validations.futureDate, getCaption(), allowedDaysInFuture));
             }
         } else {
             if (!DateHelper.isSameDay(new Date(), getValue())) {
-                enableErrorState(I18nProperties.getValidationError("futureDateStrict", getCaption()));
+                enableErrorState(I18nProperties.getValidationError(Validations.futureDateStrict, getCaption()));
             }
         }
     }

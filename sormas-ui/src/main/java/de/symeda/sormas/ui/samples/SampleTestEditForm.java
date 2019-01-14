@@ -25,7 +25,8 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestType;
@@ -73,7 +74,7 @@ public class SampleTestEditForm extends AbstractEditForm<SampleTestDto> {
 		addField(SampleTestDto.TEST_TYPE_TEXT, TextField.class);
 		DateTimeField sampleTestDateField = addField(SampleTestDto.TEST_DATE_TIME, DateTimeField.class);
 		sampleTestDateField.addValidator(new DateComparisonValidator(sampleTestDateField, sample.getSampleDateTime(), false, false,
-				I18nProperties.getValidationError("afterDate", sampleTestDateField.getCaption(), I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME))));
+				I18nProperties.getValidationError(Validations.afterDate, sampleTestDateField.getCaption(), I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME))));
 		ComboBox lab = addField(SampleTestDto.LAB, ComboBox.class);
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(true));
 		

@@ -33,7 +33,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.util.ControlLabelOnTouchListener;
 
@@ -106,7 +106,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 
     private void initializePropertyField(Context context, AttributeSet attrs) {
         caption = I18nProperties.getCaption(getCaptionPropertyId());
-        description = I18nProperties.getFieldDescription(getCaptionPropertyId());
+        description = I18nProperties.getDescription(getCaptionPropertyId());
 
         if (attrs != null) {
             TypedArray a = context.getTheme().obtainStyledAttributes(

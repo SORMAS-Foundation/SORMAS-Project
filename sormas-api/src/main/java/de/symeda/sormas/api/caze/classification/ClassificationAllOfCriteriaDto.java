@@ -20,8 +20,9 @@ package de.symeda.sormas.api.caze.classification;
 import java.util.Arrays;
 import java.util.List;
 
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 
@@ -56,7 +57,7 @@ public class ClassificationAllOfCriteriaDto extends ClassificationCriteriaDto im
 	
 	@Override
 	public String getCriteriaName() {
-		return "<b>" + I18nProperties.getString("allOf").toUpperCase() + "</b>";
+		return "<b>" + I18nProperties.getString(Strings.allOf).toUpperCase() + "</b>";
 	}
 	
 	@Override
@@ -84,7 +85,7 @@ public class ClassificationAllOfCriteriaDto extends ClassificationCriteriaDto im
 					if (i + 1 < subCriteria.size()) {
 						stringBuilder.append(", ");
 					} else {
-						stringBuilder.append(" <b>").append(I18nProperties.getString("and").toUpperCase()).append("</b> ");
+						stringBuilder.append(" <b>").append(I18nProperties.getString(Strings.and).toUpperCase()).append("</b> ");
 					}
 				}
 				

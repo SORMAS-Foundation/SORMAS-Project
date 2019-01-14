@@ -20,8 +20,9 @@ package de.symeda.sormas.api.caze.classification;
 import java.util.Arrays;
 import java.util.List;
 
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 
@@ -58,7 +59,7 @@ public class ClassificationNoneOfCriteriaDto extends ClassificationCriteriaDto i
 	@Override
 	public String buildDescription() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("<b> ").append(I18nProperties.getString("noneOf").toUpperCase()).append("</b>");
+		stringBuilder.append("<b> ").append(I18nProperties.getString(Strings.noneOf).toUpperCase()).append("</b>");
 		for (int i = 0; i < classificationCriteria.size(); i++) {
 			stringBuilder.append("<br/>- ");
 			stringBuilder.append(classificationCriteria.get(i).buildDescription());
@@ -68,7 +69,7 @@ public class ClassificationNoneOfCriteriaDto extends ClassificationCriteriaDto i
 	
 	@Override
 	public String getCriteriaName() {
-		return "<b>" + I18nProperties.getString("noneOf").toUpperCase() + "</b>";
+		return "<b>" + I18nProperties.getString(Strings.noneOf).toUpperCase() + "</b>";
 	}
 	
 	@Override

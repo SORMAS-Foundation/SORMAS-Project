@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+
 public enum CaseMeasure {
 
 	/**

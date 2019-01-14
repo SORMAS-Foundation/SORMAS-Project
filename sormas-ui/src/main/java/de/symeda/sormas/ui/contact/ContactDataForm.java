@@ -38,7 +38,8 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -220,7 +221,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     		}
     	}
     	if (getValue() != null) {
-	    	dateField.addValidator(new DateRangeValidator(I18nProperties.getValidationError("beforeDate", dateField.getCaption(), getField(ContactDto.REPORT_DATE_TIME).getCaption()),
+	    	dateField.addValidator(new DateRangeValidator(I18nProperties.getValidationError(Validations.beforeDate, dateField.getCaption(), getField(ContactDto.REPORT_DATE_TIME).getCaption()),
 	    			null, new LocalDate(getValue().getReportDateTime()).plusDays(1).toDate(), Resolution.SECOND));
     	}
     }

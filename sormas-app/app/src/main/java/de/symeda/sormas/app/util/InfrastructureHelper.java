@@ -21,7 +21,7 @@ package de.symeda.sormas.app.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;

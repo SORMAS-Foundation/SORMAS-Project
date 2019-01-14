@@ -19,8 +19,9 @@ package de.symeda.sormas.api.caze.classification;
 
 import java.util.List;
 
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
@@ -68,16 +69,16 @@ public class ClassificationPersonAgeCriteriaDto extends ClassificationCriteriaDt
 	@Override
 	public String buildDescription() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(I18nProperties.getString("personAged")).append(" ");
+		stringBuilder.append(I18nProperties.getString(Strings.personAged)).append(" ");
 		if (lowerThreshold != null && upperThreshold != null) {
-			stringBuilder.append(I18nProperties.getString("between"))
+			stringBuilder.append(I18nProperties.getString(Strings.between))
 					.append(" ").append(lowerThreshold).append(" ")
-					.append(I18nProperties.getString("and")).append(" ")
-					.append(upperThreshold).append(" ").append(I18nProperties.getString("years"));
+					.append(I18nProperties.getString(Strings.and)).append(" ")
+					.append(upperThreshold).append(" ").append(I18nProperties.getString(Strings.years));
 		} else if (lowerThreshold != null) {
-			stringBuilder.append(lowerThreshold).append(" ").append(I18nProperties.getString("yearsOrMore"));
+			stringBuilder.append(lowerThreshold).append(" ").append(I18nProperties.getString(Strings.yearsOrMore));
 		} else if (upperThreshold != null) {
-			stringBuilder.append(upperThreshold).append(" ").append(I18nProperties.getString("yearsOrLess"));
+			stringBuilder.append(upperThreshold).append(" ").append(I18nProperties.getString(Strings.yearsOrLess));
 		}
 
 		return stringBuilder.toString();

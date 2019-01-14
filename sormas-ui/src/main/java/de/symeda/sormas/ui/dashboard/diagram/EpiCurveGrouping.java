@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.diagram;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum EpiCurveGrouping {
 

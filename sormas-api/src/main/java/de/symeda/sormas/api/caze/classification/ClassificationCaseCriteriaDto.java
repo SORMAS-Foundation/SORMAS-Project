@@ -25,8 +25,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;

@@ -40,7 +40,6 @@ import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -49,6 +48,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityDto;
@@ -196,7 +196,7 @@ public class DataDictionaryGenerator {
 			// description
 			XSSFCell descriptionCell = row.createCell(EntityColumn.DESCRIPTION.ordinal());
 			descriptionCell.setCellStyle(defaultCellStyle);
-			descriptionCell.setCellValue(I18nProperties.getPrefixFieldDescription(i18nPrefix, field.getName(), ""));
+			descriptionCell.setCellValue(I18nProperties.getPrefixDescription(i18nPrefix, field.getName(), ""));
 
 			// required
 			XSSFCell requiredCell = row.createCell(EntityColumn.REQUIRED.ordinal());

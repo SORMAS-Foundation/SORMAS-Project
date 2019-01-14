@@ -30,7 +30,8 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.location.LocationDto;
@@ -85,7 +86,7 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 
 		// Info label
 
-		Label infoLabel = new Label(I18nProperties.getString("importSimilarityInfo"));
+		Label infoLabel = new Label(I18nProperties.getString(Strings.importSimilarityInfo));
 		CssStyles.style(infoLabel, CssStyles.VSPACE_3);
 		layout.addComponent(infoLabel);
 
@@ -94,7 +95,7 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 		outerCaseInfoLayout.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(outerCaseInfoLayout, CssStyles.BACKGROUND_ROUNDED_CORNERS, CssStyles.BACKGROUND_SUB_CRITERIA, CssStyles.VSPACE_3, "v-scrollable");
 
-		Label importedCaseLabel = new Label(I18nProperties.getString("importedCaseInfo"));
+		Label importedCaseLabel = new Label(I18nProperties.getString(Strings.importedCaseInfo));
 		CssStyles.style(importedCaseLabel, CssStyles.LABEL_BOLD, CssStyles.VSPACE_4);
 		outerCaseInfoLayout.addComponent(importedCaseLabel);
 
@@ -157,7 +158,7 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 		outerPersonInfoLayout.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(outerPersonInfoLayout, CssStyles.BACKGROUND_ROUNDED_CORNERS, CssStyles.BACKGROUND_SUB_CRITERIA, CssStyles.VSPACE_3, "v-scrollable");
 
-		Label importedPersonLabel = new Label(I18nProperties.getString("importedPersonInfo"));
+		Label importedPersonLabel = new Label(I18nProperties.getString(Strings.importedPersonInfo));
 		CssStyles.style(importedPersonLabel, CssStyles.LABEL_BOLD, CssStyles.VSPACE_4);
 		outerPersonInfoLayout.addComponent(importedPersonLabel);
 
