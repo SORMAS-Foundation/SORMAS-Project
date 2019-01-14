@@ -638,6 +638,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                         checkActiveUser();
                     }
 
+                    RetroProvider.disconnect();
+
                     if (resultCallback != null) resultCallback.call();
                 }
             });
