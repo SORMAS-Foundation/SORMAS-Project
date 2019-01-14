@@ -44,6 +44,7 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.util.Bundler;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class TaskEditActivity extends BaseEditActivity<Task> {
@@ -83,11 +84,17 @@ public class TaskEditActivity extends BaseEditActivity<Task> {
 
         final Task taskToSave = getStoredRootEntity();
 
+        try {
+            validateData(taskToSave);
+        } catch (ValidationException e) {
+            NotificationHelper.showNotification(this, ERROR, e.getMessage());
+            return;
+        }
+
         saveTask = new SavingAsyncTask(getRootView(), taskToSave) {
 
             @Override
             public void doInBackground(TaskResultHolder resultHolder) throws DaoException, ValidationException {
-                validateData(taskToSave);
                 DatabaseHelper.getTaskDao().saveAndSnapshot(taskToSave);
             }
 
