@@ -43,7 +43,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 
 	public static final String SEARCH = "search";
 
-//	private HorizontalLayout headerLayout;
+	//	private HorizontalLayout headerLayout;
 	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;
 	protected FacilitiesGrid grid;
@@ -57,7 +57,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		super(viewName);
 		grid = new FacilitiesGrid();
 		gridLayout = new VerticalLayout();
-//		gridLayout.addComponent(createHeaderBar());
+		//		gridLayout.addComponent(createHeaderBar());
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(grid);
 		grid.setTypeFilter(showLaboratories);
@@ -67,14 +67,12 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 		grid.reload();
-		
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
-			exportButton = new Button("Export");
-			exportButton.setDescription("Export the columns and rows that are shown in the table below.");
-			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			exportButton.setIcon(FontAwesome.TABLE);
-			addHeaderComponent(exportButton);
-		}
+
+		exportButton = new Button("Export");
+		exportButton.setDescription("Export the columns and rows that are shown in the table below.");
+		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		exportButton.setIcon(FontAwesome.TABLE);
+		addHeaderComponent(exportButton);
 
 		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = new Button();
@@ -86,14 +84,14 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		addComponent(gridLayout);
 	}
 
-//	TODO additional filter bar (active, archived and other)
-//	private HorizontalLayout createHeaderBar() {
-//		headerLayout = new HorizontalLayout();
-//		headerLayout.setSpacing(true);
-//		headerLayout.setWidth(100, Unit.PERCENTAGE);
-//
-//		return headerLayout;
-//	}
+	//	TODO additional filter bar (active, archived and other)
+	//	private HorizontalLayout createHeaderBar() {
+	//		headerLayout = new HorizontalLayout();
+	//		headerLayout.setSpacing(true);
+	//		headerLayout.setWidth(100, Unit.PERCENTAGE);
+	//
+	//		return headerLayout;
+	//	}
 
 	private HorizontalLayout createFilterBar() {
 		filterLayout = new HorizontalLayout();

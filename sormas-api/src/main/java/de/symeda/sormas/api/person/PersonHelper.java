@@ -23,7 +23,7 @@ import org.apache.commons.text.similarity.LevenshteinDistance;
 import de.symeda.sormas.api.utils.DataHelper;
 
 public class PersonHelper {
-	
+
 	private final static double SIMILARITY_THRESHOLD = 0.65;
 	private final static double LOWER_THRESHOLD = 0.33;
 
@@ -35,7 +35,7 @@ public class PersonHelper {
 		return areNamesSimilar(firstPerson.getFirstName() + " " + firstPerson.getLastName(), 
 				secondPersonFirstName + " " + secondPersonLastName);
 	}
-	
+
 	/**
 	 * Calculates a modified Levenshtein distance between both names and returns true
 	 * if the similarity is high enough to consider them a possible match.
@@ -43,18 +43,18 @@ public class PersonHelper {
 	public static boolean areNamesSimilar(String firstName, String secondName) {
 		firstName = firstName.toLowerCase();
 		secondName = secondName.toLowerCase();
-		
+
 		// Split names at whitespaces and the symbols _ and -
 		String[] firstNameParts = StringUtils.split(firstName.trim(), " _-", 0);
 		String[] secondNameParts = StringUtils.split(secondName.trim(), " _-", 0);
-		
+
 		if (firstNameParts.length <= secondNameParts.length) {
 			return getAverageSimilarity(firstNameParts, secondNameParts) >= SIMILARITY_THRESHOLD;
 		} else {
 			return getAverageSimilarity(secondNameParts, firstNameParts) >= SIMILARITY_THRESHOLD;
 		}
 	}
-	
+
 	/**
 	 * Average similarity is calculated by comparing each element in the shorter name array with
 	 * each element in the longer name array. The highest achieved similarity is stored and
@@ -65,7 +65,7 @@ public class PersonHelper {
 	 */
 	private static double getAverageSimilarity(String[] shorterArray, String[] longerArray) {
 		double[] similarityResults = new double[shorterArray.length];
-		
+
 		for (int i = 0; i < shorterArray.length; i++) {
 			String str1 = shorterArray[i];
 			double highestValue = 0;
@@ -74,7 +74,7 @@ public class PersonHelper {
 				if (longerArray[j] == null) {
 					continue;
 				}
-				
+
 				String str2 = longerArray[j];
 				double levenshteinDistance = getSimilarity(str1, str2);				
 				if (levenshteinDistance > highestValue) {
@@ -82,40 +82,40 @@ public class PersonHelper {
 					entryPosition = j;
 				}
 			}
-			
+
 			if (highestValue < LOWER_THRESHOLD) {
 				return 0;
 			}
-			
+
 			similarityResults[i] = highestValue;
 			if (entryPosition >= 0) {
 				longerArray[entryPosition] = null;
 			}
 		}
-		
+
 		double totalDistance = 0;
 		for (double d : similarityResults) {
 			totalDistance += d;
 		}
-		
+
 		return totalDistance / similarityResults.length;
 	}
-	
+
 	private static double getSimilarity(String str1, String str2) {
 		if (str1 == null || str2 == null) {
 			return 0;
 		}
-		
-		int len = Math.max(str1.length(), str2.length());
-        if (len == 0) {
-              return 0;
-        }
 
-        int levenshteinDistance = new LevenshteinDistance().apply(str1, str2);
-        
-        return 1 - ((double) levenshteinDistance / (double) len);
+		int len = Math.max(str1.length(), str2.length());
+		if (len == 0) {
+			return 0;
+		}
+
+		int levenshteinDistance = new LevenshteinDistance().apply(str1, str2);
+
+		return 1 - ((double) levenshteinDistance / (double) len);
 	}
-	
+
 	public static String buildAgeString(Integer approximateAge, ApproximateAgeType approximateAgeType) {
 		if (approximateAge == null) {
 			return "";
@@ -129,7 +129,7 @@ public class PersonHelper {
 			throw new IllegalArgumentException(approximateAgeType.toString());
 		}
 	}
-	
+
 	public static String buildPhoneString(String phone, String phoneOwner) {
 		StringBuilder result = new StringBuilder();
 		if (!DataHelper.isNullOrEmpty(phone)) {
@@ -157,6 +157,24 @@ public class PersonHelper {
 			}
 			result.append(occupationFacilityName);
 		}
-		return result.toString();
+		return result.length() > 0 ? result.toString() : "";
+	}
+
+	public static String getAgeGroupFromAge(Integer age, ApproximateAgeType ageType) {
+		if (age == null) {
+			return null;
+		}
+		
+		if (ageType == ApproximateAgeType.MONTHS) {
+			return "0-4";
+		}
+
+		int lowerAgeBoundary = (int) Math.floor(age / 5f) * 5;
+		
+		if (lowerAgeBoundary >= 120) {
+			return "120+";
+		} else {
+			return lowerAgeBoundary + "-" + (lowerAgeBoundary + 4);
+		}
 	}
 }

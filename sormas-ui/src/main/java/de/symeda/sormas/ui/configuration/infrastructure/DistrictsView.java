@@ -48,7 +48,7 @@ public class DistrictsView extends AbstractConfigurationView {
 	public static final String SEARCH = "search";
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/districts";
-	
+
 	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;
 	private DistrictsGrid grid;
@@ -66,18 +66,16 @@ public class DistrictsView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 		grid.reload();
-		
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
-			Button exportButton = new Button("Export");
-			exportButton.setDescription("Export the columns and rows that are shown in the table below.");
-			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			exportButton.setIcon(FontAwesome.TABLE);
-			addHeaderComponent(exportButton);
-			
-			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), grid.getColumns(), "sormas_districts", "sormas_districts_" + DateHelper.formatDateForExport(new Date()) + ".csv", DistrictsGrid.EDIT_BTN_ID);
-			FileDownloader fileDownloader = new FileDownloader(streamResource);
-			fileDownloader.extend(exportButton);
-		}
+
+		Button exportButton = new Button("Export");
+		exportButton.setDescription("Export the columns and rows that are shown in the table below.");
+		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		exportButton.setIcon(FontAwesome.TABLE);
+		addHeaderComponent(exportButton);
+
+		StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), grid.getColumns(), "sormas_districts", "sormas_districts_" + DateHelper.formatDateForExport(new Date()) + ".csv", DistrictsGrid.EDIT_BTN_ID);
+		FileDownloader fileDownloader = new FileDownloader(streamResource);
+		fileDownloader.extend(exportButton);
 
 		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = new Button("New entry");
@@ -87,7 +85,7 @@ public class DistrictsView extends AbstractConfigurationView {
 					e -> ControllerProvider.getInfrastructureController().createDistrict());
 			addHeaderComponent(createButton);
 		}
-		
+
 		addComponent(gridLayout);
 	}
 
@@ -118,5 +116,5 @@ public class DistrictsView extends AbstractConfigurationView {
 
 		return filterLayout;
 	}	
-	
+
 }

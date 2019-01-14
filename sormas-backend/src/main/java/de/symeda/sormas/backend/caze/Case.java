@@ -90,6 +90,7 @@ public class Case extends AbstractDomainObject {
 	public static final String PREGNANT = "pregnant";
 	public static final String VACCINATION = "vaccination";
 	public static final String VACCINATION_DOSES = "vaccinationDoses";
+	public static final String VACCINATION_DATE = "vaccinationDate";
 	public static final String VACCINATION_INFO_SOURCE = "vaccinationInfoSource";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
 	public static final String EPID_NUMBER = "epidNumber";
