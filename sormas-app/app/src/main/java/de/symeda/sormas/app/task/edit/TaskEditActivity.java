@@ -35,6 +35,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
@@ -129,7 +130,13 @@ public class TaskEditActivity extends BaseEditActivity<Task> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Task activityRootData) {
-        return TaskEditFragment.newInstance(activityRootData);
+        if (activityRootData.getId() == null
+            || ConfigProvider.getUser().equals(activityRootData.getCreatorUser())) {
+            return TaskEditFragment.newInstance(activityRootData);
+        }
+        else {
+            return TaskExecutionFragment.newInstance(activityRootData);
+        }
     }
 
     @Override

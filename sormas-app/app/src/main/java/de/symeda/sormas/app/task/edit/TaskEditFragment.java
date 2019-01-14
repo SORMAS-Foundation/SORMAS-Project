@@ -54,12 +54,8 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
     private List<Item> priorityList;
     private List<Item> assigneeList;
 
-//    public static TaskEditFragment newInstance(Task activityRootData) {
-//        return newInstance(TaskEditFragment.class, null, activityRootData);
-//    }
-
     public static TaskEditFragment newInstance(Task activityRootData) {
-        return newInstance(TaskEditFragment.class, activityRootData.isNew() ? TaskNewActivity.buildBundle().get() : null, activityRootData);
+        return newInstance(TaskEditFragment.class, activityRootData.getId() == null ? TaskNewActivity.buildBundle().get() : null, activityRootData);
     }
 
     public static TaskEditFragment newInstanceFromCase(Task activityRootData, String caseUuid) {
@@ -90,42 +86,6 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
                 getBaseEditActivity().saveData();
             }
         });
-
-        if (record.getCaze() != null) {
-            contentBinding.taskCaze.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Case caze = record.getCaze();
-                    if (caze != null) {
-                        CaseReadActivity.startActivity(getActivity(), caze.getUuid(), true);
-                    }
-                }
-            });
-        }
-
-        if (record.getContact() != null) {
-            contentBinding.taskContact.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Contact contact = record.getContact();
-                    if (contact != null) {
-                        ContactReadActivity.startActivity(getActivity(), contact.getUuid(), true);
-                    }
-                }
-            });
-        }
-
-        if (record.getEvent() != null) {
-            contentBinding.taskEvent.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Event event = record.getEvent();
-                    if (event != null) {
-                        EventReadActivity.startActivity(getActivity(), event.getUuid(), true);
-                    }
-                }
-            });
-        }
     }
 
     // Overrides
@@ -182,7 +142,7 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
     protected void onAfterLayoutBinding(FragmentTaskEditLayoutBinding contentBinding) {
         super.onAfterLayoutBinding(contentBinding);
 
-        if (record.isNew()) {
+        if (record.getId() == null) {
             contentBinding.taskAssigneeReply.setVisibility(GONE);
         }
 
@@ -197,15 +157,6 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
                 getBaseEditActivity().getSaveMenu().setVisible(true);
                 contentBinding.taskButtonPanel.setVisibility(GONE);
             }
-        }
-
-        if (!ConfigProvider.getUser().equals(record.getCreatorUser())) {
-            contentBinding.taskTaskType.setEnabled(false);
-            contentBinding.taskSuggestedStart.setEnabled(false);
-            contentBinding.taskDueDate.setEnabled(false);
-            contentBinding.taskAssigneeUser.setEnabled(false);
-            contentBinding.taskPriority.setEnabled(false);
-            contentBinding.taskCreatorComment.setEnabled(false);
         }
     }
 
