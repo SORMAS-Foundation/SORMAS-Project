@@ -23,13 +23,11 @@ public class I18nProperties {
 
 	private static I18nProperties instance = null;
 	
-	private final ResourceBundle fieldCaptionProperties;
-	private final ResourceBundle fieldDescriptionProperties;
-	private final ResourceBundle fragmentProperties;
+	private final ResourceBundle captionProperties;
+	private final ResourceBundle descriptionProperties;
 	private final ResourceBundle enumProperties;
-	private final ResourceBundle validationErrorProperties;
-	private final ResourceBundle messageProperties;
-	private final ResourceBundle textProperties;
+	private final ResourceBundle validationProperties;
+	private final ResourceBundle stringProperties;
 	
 	private static Locale locale;
 
@@ -95,67 +93,38 @@ public class I18nProperties {
 	/**
 	 * Uses <param>key</param> as default value
 	 */
-	public static String getFragment(String key) {
-		return getFragment(key, key);
+	public static String getCaption(String key) {
+		return getCaption(key, key);
 	}
 
-	public static String getFragment(String key, String defaultValue) {
-		return getInstance().fragmentProperties.getString(key, defaultValue);
+	public static String getCaption(String key, String defaultValue) {
+		return getInstance().captionProperties.getString(key, defaultValue);
 	}
 
 	/**
 	 * Uses <param>key</param> as default value
 	 */
-	public static String getPrefixFragment(String prefix, String key) {
-		return getPrefixFragment(prefix, key, key);
+	public static String getPrefixCaption(String prefix, String key) {
+		return getPrefixCaption(prefix, key, key);
 	}
 	
-	public static String getPrefixFragment(String prefix, String key, String defaultValue) {
+	public static String getPrefixCaption(String prefix, String key, String defaultValue) {
 		String result = null;
 		if (prefix != null) {
-			result = getInstance().fragmentProperties.getString(prefix+"."+key);
+			result = getInstance().captionProperties.getString(prefix+"."+key);
 		}
 		if (result == null) {
-			result = getFragment(key, defaultValue);
-		}
-		return result;
-	}
-	
-	/**
-	 * Uses <param>key</param> as default value
-	 */
-	public static String getFieldCaption(String key) {
-		return getFieldCaption(key, key);
-	}
-
-	public static String getFieldCaption(String key, String defaultValue) {
-		return getInstance().fieldCaptionProperties.getString(key, defaultValue);
-	}
-
-	/**
-	 * Uses <param>key</param> as default value
-	 */
-	public static String getPrefixFieldCaption(String prefix, String key) {
-		return getPrefixFieldCaption(prefix, key, key);
-	}
-	
-	public static String getPrefixFieldCaption(String prefix, String key, String defaultValue) {
-		String result = null;
-		if (prefix != null) {
-			result = getInstance().fieldCaptionProperties.getString(prefix+"."+key);
-		}
-		if (result == null) {
-			result = getFieldCaption(key, defaultValue);
+			result = getCaption(key, defaultValue);
 		}
 		return result;
 	}
 	
 	public static String getFieldDescription(String key) {
-		return getInstance().fieldDescriptionProperties.getString(key);
+		return getInstance().descriptionProperties.getString(key);
 	}
 
 	public static String getFieldDescription(String key, String defaultValue) {
-		return getInstance().fieldDescriptionProperties.getString(key, defaultValue);
+		return getInstance().descriptionProperties.getString(key, defaultValue);
 	}
 
 	/**
@@ -184,7 +153,7 @@ public class I18nProperties {
 	 * Uses <param>key</param> as default value
 	 */
 	public static String getValidationError(String key, Object ...formatArgs) {
-		String result = getInstance().validationErrorProperties.getString(key, null);
+		String result = getInstance().validationProperties.getString(key, null);
 		if (result != null) {
 			return String.format(result, formatArgs);
 		} else if (formatArgs.length > 0) {
@@ -197,7 +166,7 @@ public class I18nProperties {
 	public static String getPrefixValidationError(String prefix, String key, Object ...formatArgs) {
 		String result = null;
 		if (prefix != null) {
-			result = getInstance().validationErrorProperties.getString(prefix+"."+key);
+			result = getInstance().validationProperties.getString(prefix+"."+key);
 			if (result != null) {
 				return String.format(result, result);
 			}
@@ -206,22 +175,16 @@ public class I18nProperties {
 		return getValidationError(key, formatArgs);
 	}
 	
-	public static String getMessage(String property) {
-		return getInstance().messageProperties.getString(property);
-	}
-	
-	public static String getText(String property) {
-		return getInstance().textProperties.getString(property);
+	public static String getString(String property) {
+		return getInstance().stringProperties.getString(property);
 	}
 
 	private I18nProperties() {
-		fieldCaptionProperties = loadProperties("fieldCaptions");
-		fieldDescriptionProperties = loadProperties("fieldDescriptions");
-		fragmentProperties = loadProperties("fragments");
+		captionProperties = loadProperties("captions");
+		descriptionProperties = loadProperties("descriptions");
 		enumProperties = loadProperties("enum");
-		validationErrorProperties = loadProperties("validationErrors");
-		messageProperties = loadProperties("messages");
-		textProperties = loadProperties("texts");
+		validationProperties = loadProperties("validations");
+		stringProperties = loadProperties("strings");
 	}
 	
 	public static ResourceBundle loadProperties(String propertiesGroup) {

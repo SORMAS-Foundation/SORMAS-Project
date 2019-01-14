@@ -73,7 +73,7 @@ public class SampleTestEditForm extends AbstractEditForm<SampleTestDto> {
 		addField(SampleTestDto.TEST_TYPE_TEXT, TextField.class);
 		DateTimeField sampleTestDateField = addField(SampleTestDto.TEST_DATE_TIME, DateTimeField.class);
 		sampleTestDateField.addValidator(new DateComparisonValidator(sampleTestDateField, sample.getSampleDateTime(), false, false,
-				I18nProperties.getValidationError("afterDate", sampleTestDateField.getCaption(), I18nProperties.getPrefixFieldCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME))));
+				I18nProperties.getValidationError("afterDate", sampleTestDateField.getCaption(), I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME))));
 		ComboBox lab = addField(SampleTestDto.LAB, ComboBox.class);
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(true));
 		

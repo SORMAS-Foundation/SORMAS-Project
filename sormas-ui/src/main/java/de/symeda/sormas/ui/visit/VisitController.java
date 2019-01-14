@@ -91,7 +91,7 @@ public class VisitController {
         				doneConsumer.accept(referenceDto);
         			}
 				}
-			}, I18nProperties.getFieldCaption("Visit"));
+			}, I18nProperties.getCaption("Visit"));
 		}
 	}
 

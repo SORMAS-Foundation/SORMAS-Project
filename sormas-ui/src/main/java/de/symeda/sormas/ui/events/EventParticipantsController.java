@@ -112,7 +112,7 @@ public class EventParticipantsController {
 					UI.getCurrent().removeWindow(window);
 					refreshView();
 				}
-			}, I18nProperties.getFieldCaption("EventParticipant"));
+			}, I18nProperties.getCaption("EventParticipant"));
 		}
 	}
 	

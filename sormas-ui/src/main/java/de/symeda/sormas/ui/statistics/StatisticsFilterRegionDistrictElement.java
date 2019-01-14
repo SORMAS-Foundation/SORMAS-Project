@@ -39,9 +39,9 @@ public class StatisticsFilterRegionDistrictElement extends StatisticsFilterEleme
 		addStyleName(CssStyles.LAYOUT_MINIMAL);
 		setWidth(100, Unit.PERCENTAGE);
 
-		regionElement = new StatisticsFilterValuesElement(I18nProperties.getPrefixFieldCaption(LocationDto.I18N_PREFIX, LocationDto.REGION),
+		regionElement = new StatisticsFilterValuesElement(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.REGION),
 				StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.REGION, this);
-		districtElement = new StatisticsFilterValuesElement(I18nProperties.getPrefixFieldCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT),
+		districtElement = new StatisticsFilterValuesElement(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT),
 				StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.DISTRICT, this);
 
 		addComponent(regionElement);

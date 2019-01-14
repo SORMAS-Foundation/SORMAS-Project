@@ -49,15 +49,15 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		menu.removeAllViews();
 		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
-			menu.addView(RegionsView.VIEW_NAME, I18nProperties.getPrefixFragment("View",
+			menu.addView(RegionsView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
 					RegionsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
-			menu.addView(DistrictsView.VIEW_NAME, I18nProperties.getPrefixFragment("View",
+			menu.addView(DistrictsView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
 					DistrictsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
-			menu.addView(CommunitiesView.VIEW_NAME, I18nProperties.getPrefixFragment("View",
+			menu.addView(CommunitiesView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
 					CommunitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
-			menu.addView(HealthFacilitiesView.VIEW_NAME, I18nProperties.getPrefixFragment("View",
+			menu.addView(HealthFacilitiesView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
 					HealthFacilitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
-			menu.addView(LaboratoriesView.VIEW_NAME, I18nProperties.getPrefixFragment("View",
+			menu.addView(LaboratoriesView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
 					LaboratoriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
 		}
 //		if (LoginHelper.hasUserRight(UserRight.USER_RIGHTS_MANAGE)) {
@@ -65,7 +65,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 //					UserRightsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
 //		}
 		menu.addView(OutbreaksView.VIEW_NAME,
-				I18nProperties.getPrefixFragment("View", OutbreaksView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				I18nProperties.getPrefixCaption("View", OutbreaksView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 				params);
 	}
 

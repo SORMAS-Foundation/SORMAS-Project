@@ -111,7 +111,7 @@ public class DataDictionaryGenerator {
 	@SuppressWarnings("unchecked")
 	private XSSFSheet createEntitySheet(XSSFWorkbook workbook, Class<? extends EntityDto> entityClass,
 			String i18nPrefix) {
-		String name = I18nProperties.getFieldCaption(i18nPrefix);
+		String name = I18nProperties.getCaption(i18nPrefix);
 		String safeName = WorkbookUtil.createSafeSheetName(name);
 		XSSFSheet sheet = workbook.createSheet(safeName);
 
@@ -180,18 +180,18 @@ public class DataDictionaryGenerator {
 			} else if (ReferenceDto.class.isAssignableFrom(fieldType)) {
 				fieldValueCell.setCellValue(fieldType.getSimpleName().replaceAll("Dto", ""));
 			} else if (String.class.isAssignableFrom(fieldType)) {
-				fieldValueCell.setCellValue(I18nProperties.getFieldCaption("text"));
+				fieldValueCell.setCellValue(I18nProperties.getCaption("text"));
 			} else if (Date.class.isAssignableFrom(fieldType)) {
-				fieldValueCell.setCellValue(I18nProperties.getFieldCaption("date"));
+				fieldValueCell.setCellValue(I18nProperties.getCaption("date"));
 			} else if (Number.class.isAssignableFrom(fieldType)) {
-				fieldValueCell.setCellValue(I18nProperties.getFieldCaption("number"));
+				fieldValueCell.setCellValue(I18nProperties.getCaption("number"));
 			} else if (Boolean.class.isAssignableFrom(fieldType) || boolean.class.isAssignableFrom(fieldType)) {
 				fieldValueCell.setCellValue(Boolean.TRUE.toString() + ", " + Boolean.FALSE.toString());
 			}
 
 			// caption
 			XSSFCell captionCell = row.createCell(EntityColumn.CAPTION.ordinal());
-			captionCell.setCellValue(I18nProperties.getPrefixFieldCaption(i18nPrefix, field.getName(), ""));
+			captionCell.setCellValue(I18nProperties.getPrefixCaption(i18nPrefix, field.getName(), ""));
 
 			// description
 			XSSFCell descriptionCell = row.createCell(EntityColumn.DESCRIPTION.ordinal());

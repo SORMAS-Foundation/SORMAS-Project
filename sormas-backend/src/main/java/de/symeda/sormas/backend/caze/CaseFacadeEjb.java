@@ -688,9 +688,9 @@ public class CaseFacadeEjb implements CaseFacade {
 			for (User recipient : messageRecipients) {
 				try {
 					messagingService.sendMessage(recipient,
-							I18nProperties.getMessage(MessagingService.SUBJECT_CASE_CLASSIFICATION_CHANGED),
+							I18nProperties.getString(MessagingService.SUBJECT_CASE_CLASSIFICATION_CHANGED),
 							String.format(
-									I18nProperties.getMessage(MessagingService.CONTENT_CASE_CLASSIFICATION_CHANGED),
+									I18nProperties.getString(MessagingService.CONTENT_CASE_CLASSIFICATION_CHANGED),
 									DataHelper.getShortUuid(newCase.getUuid()),
 									newCase.getCaseClassification().toString()),
 							MessageType.EMAIL, MessageType.SMS);
@@ -1167,8 +1167,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (User recipient : messageRecipients) {
 			try {
 				messagingService.sendMessage(recipient,
-						I18nProperties.getMessage(MessagingService.SUBJECT_CASE_INVESTIGATION_DONE),
-						String.format(I18nProperties.getMessage(MessagingService.CONTENT_CASE_INVESTIGATION_DONE),
+						I18nProperties.getString(MessagingService.SUBJECT_CASE_INVESTIGATION_DONE),
+						String.format(I18nProperties.getString(MessagingService.CONTENT_CASE_INVESTIGATION_DONE),
 								DataHelper.getShortUuid(caze.getUuid())),
 						MessageType.EMAIL, MessageType.SMS);
 			} catch (NotificationDeliveryFailedException e) {

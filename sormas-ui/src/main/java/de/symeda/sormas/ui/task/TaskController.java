@@ -134,7 +134,7 @@ public class TaskController {
 					UI.getCurrent().removeWindow(popupWindow);
 					callback.run();
 				}
-			}, I18nProperties.getFieldCaption("Task"));
+			}, I18nProperties.getString("task"));
 		}
 	}
 

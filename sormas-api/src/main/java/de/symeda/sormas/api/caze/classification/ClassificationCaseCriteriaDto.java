@@ -92,7 +92,7 @@ public class ClassificationCaseCriteriaDto extends ClassificationCriteriaDto {
 	@Override
 	public String buildDescription() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, propertyId));
+		stringBuilder.append(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId));
 		appendDescValues(stringBuilder);
 		return stringBuilder.toString();
 	}

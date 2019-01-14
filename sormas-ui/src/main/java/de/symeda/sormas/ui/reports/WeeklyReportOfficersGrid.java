@@ -100,7 +100,7 @@ public class WeeklyReportOfficersGrid extends Grid implements ItemClickListener 
 			if (column.getPropertyId().equals(VIEW_DETAILS_BTN_ID)) {
 				column.setHeaderCaption("");
 			} else {
-				column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(WeeklyReportOfficerSummaryDto.I18N_PREFIX,
+				column.setHeaderCaption(I18nProperties.getPrefixCaption(WeeklyReportOfficerSummaryDto.I18N_PREFIX,
 						column.getPropertyId().toString(), column.getHeaderCaption()));
 			}
 		}
@@ -117,14 +117,14 @@ public class WeeklyReportOfficersGrid extends Grid implements ItemClickListener 
 				WeeklyReportOfficerSummaryDto.INFORMANT_REPORTS,
 				WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE,
 				WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS);
-		preHeaderCell.setHtml(I18nProperties.getPrefixFieldCaption(WeeklyReportOfficerSummaryDto.I18N_PREFIX, "officerInformants"));
+		preHeaderCell.setHtml(I18nProperties.getPrefixCaption(WeeklyReportOfficerSummaryDto.I18N_PREFIX, "officerInformants"));
 		preHeaderCell.setStyleName(CssStyles.GRID_CELL_ODD);
 		
 		getColumn(VIEW_DETAILS_BTN_ID).setRenderer(new HtmlRenderer());
 		getColumn(VIEW_DETAILS_BTN_ID).setWidth(60);
 
 		getColumn(WeeklyReportOfficerSummaryDto.OFFICER_REPORT_DATE).setRenderer(new HtmlRenderer(
-				I18nProperties.getPrefixFieldCaption(WeeklyReportDto.I18N_PREFIX, "noReport")));
+				I18nProperties.getPrefixCaption(WeeklyReportDto.I18N_PREFIX, "noReport")));
 		getColumn(WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE).setRenderer(new PercentageRenderer());
 		
 		setCellStyleGenerator(new WeeklyReportGridCellStyleGenerator());

@@ -82,7 +82,7 @@ public class FacilitiesGrid extends Grid {
 				FacilityDto.LATITUDE, FacilityDto.LONGITUDE);
 
 		for (Column column : getColumns()) {
-			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX,
+			column.setHeaderCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX,
 					column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 

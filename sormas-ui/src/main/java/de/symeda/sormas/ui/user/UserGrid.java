@@ -79,7 +79,7 @@ public class UserGrid extends Grid {
         getColumn(UserDto.USER_ROLES).setConverter(new StringToCollectionConverter());
 
         for (Column column : getColumns()) {
-        	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
+        	column.setHeaderCaption(I18nProperties.getPrefixCaption(
         			UserDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
 	}

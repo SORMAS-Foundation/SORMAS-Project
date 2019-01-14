@@ -56,8 +56,8 @@ public abstract class AbstractView extends VerticalLayout implements View {
 	        viewTitleLayout.setSpacing(false);
 	
 	        // note: splitting title and subtitle into labels does not work with the css
-	        String viewTitle = I18nProperties.getPrefixFragment("View", viewName.replaceAll("/", "."));
-	        String viewSubTitle = I18nProperties.getPrefixFragment("View", viewName.replaceAll("/", ".") + ".sub", "");
+	        String viewTitle = I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", "."));
+	        String viewSubTitle = I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", ".") + ".sub", "");
 	        viewTitleLabel = new Label(viewTitle);
 	        viewTitleLabel.setSizeUndefined();
 	        CssStyles.style(viewTitleLabel, CssStyles.H1, CssStyles.VSPACE_NONE);

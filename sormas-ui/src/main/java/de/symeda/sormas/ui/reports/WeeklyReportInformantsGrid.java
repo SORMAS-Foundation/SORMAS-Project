@@ -72,12 +72,12 @@ public class WeeklyReportInformantsGrid extends Grid {
 				WeeklyReportInformantSummary.TOTAL_CASE_COUNT);
 
 		for (Column column : getColumns()) {
-			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(WeeklyReportInformantSummary.I18N_PREFIX,
+			column.setHeaderCaption(I18nProperties.getPrefixCaption(WeeklyReportInformantSummary.I18N_PREFIX,
 					column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 
 		getColumn(WeeklyReportInformantSummary.INFORMANT_REPORT_DATE).setRenderer(new HtmlRenderer(
-				I18nProperties.getPrefixFieldCaption(WeeklyReportDto.I18N_PREFIX, "noReport")));
+				I18nProperties.getPrefixCaption(WeeklyReportDto.I18N_PREFIX, "noReport")));
 
 		setCellStyleGenerator(new WeeklyReportGridCellStyleGenerator());
 		

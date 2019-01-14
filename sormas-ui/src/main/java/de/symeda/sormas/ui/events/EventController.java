@@ -149,7 +149,7 @@ public class EventController {
 					FacadeProvider.getEventFacade().deleteEvent(event.toReference(), CurrentUser.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
 				}
-			}, I18nProperties.getFieldCaption("Event"));
+			}, I18nProperties.getString("event"));
 		}
 
 		// Initialize 'Archive' button
@@ -158,9 +158,9 @@ public class EventController {
 			Button archiveEventButton = new Button();
 			archiveEventButton.addStyleName(ValoTheme.BUTTON_LINK);
 			if (archived) {
-				archiveEventButton.setCaption(I18nProperties.getText("dearchive"));
+				archiveEventButton.setCaption(I18nProperties.getCaption("dearchive"));
 			} else {
-				archiveEventButton.setCaption(I18nProperties.getText("archive"));
+				archiveEventButton.setCaption(I18nProperties.getCaption("archive"));
 			}
 			archiveEventButton.addClickListener(e -> {
 				editView.commit();
@@ -240,20 +240,20 @@ public class EventController {
 
 	private void archiveOrDearchiveEvent(String eventUuid, boolean archive) {
 		if (archive) {
-			Label contentLabel = new Label(String.format(I18nProperties.getText("archivePrompt"), I18nProperties.getText("event").toLowerCase(), I18nProperties.getText("event").toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(I18nProperties.getText("archiveEvent"), contentLabel, I18nProperties.getText("yes"), I18nProperties.getText("no"), 640, e -> {
+			Label contentLabel = new Label(String.format(I18nProperties.getString("archivePrompt"), I18nProperties.getString("event").toLowerCase(), I18nProperties.getString("event").toLowerCase()));
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString("archiveEvent"), contentLabel, I18nProperties.getString("yes"), I18nProperties.getString("no"), 640, e -> {
 				if (e.booleanValue() == true) {
 					FacadeProvider.getEventFacade().archiveOrDearchiveEvent(eventUuid, true);
-					Notification.show(String.format(I18nProperties.getText("archiveNotification"), I18nProperties.getText("event")), Type.ASSISTIVE_NOTIFICATION);
+					Notification.show(String.format(I18nProperties.getString("archiveNotification"), I18nProperties.getString("event")), Type.ASSISTIVE_NOTIFICATION);
 					navigateToData(eventUuid);
 				}
 			});
 		} else {
-			Label contentLabel = new Label(String.format(I18nProperties.getText("dearchivePrompt"), I18nProperties.getText("event").toLowerCase(), I18nProperties.getText("event").toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(I18nProperties.getText("dearchiveEvent"), contentLabel, I18nProperties.getText("yes"), I18nProperties.getText("no"), 640, e -> {
+			Label contentLabel = new Label(String.format(I18nProperties.getString("dearchivePrompt"), I18nProperties.getString("event").toLowerCase(), I18nProperties.getString("event").toLowerCase()));
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString("dearchiveEvent"), contentLabel, I18nProperties.getString("yes"), I18nProperties.getString("no"), 640, e -> {
 				if (e.booleanValue()) {
 					FacadeProvider.getEventFacade().archiveOrDearchiveEvent(eventUuid, false);
-					Notification.show(String.format(I18nProperties.getText("dearchiveNotification"), I18nProperties.getText("event")), Type.ASSISTIVE_NOTIFICATION);
+					Notification.show(String.format(I18nProperties.getString("dearchiveNotification"), I18nProperties.getString("event")), Type.ASSISTIVE_NOTIFICATION);
 					navigateToData(eventUuid);
 				}
 			});

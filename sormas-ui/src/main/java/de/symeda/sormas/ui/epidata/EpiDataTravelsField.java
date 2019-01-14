@@ -74,7 +74,7 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 		table.setColumnExpandRatio(PERIOD, 0);
 		
 		for (Object columnId : table.getVisibleColumns()) {
-			table.setColumnHeader(columnId, I18nProperties.getPrefixFieldCaption(EpiDataTravelDto.I18N_PREFIX, (String) columnId));
+			table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(EpiDataTravelDto.I18N_PREFIX, (String) columnId));
 		}
 	}
 	
@@ -123,7 +123,7 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 					popupWindow.close();
 					EpiDataTravelsField.this.removeEntry(entry);
 				}
-			}, I18nProperties.getFieldCaption("EpiDataTravel"));
+			}, I18nProperties.getCaption("EpiDataTravel"));
 		}
 	}
 	

@@ -154,7 +154,7 @@ public class SampleController {
 					FacadeProvider.getSampleFacade().deleteSample(dto.toReference(), CurrentUser.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
 				}
-			}, I18nProperties.getFieldCaption("Sample"));
+			}, I18nProperties.getString("sample"));
 		}
 
 		// Initialize 'Refer to another laboratory' button or link to referred sample

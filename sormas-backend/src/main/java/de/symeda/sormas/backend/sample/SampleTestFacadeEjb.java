@@ -234,8 +234,8 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 
 			for (User recipient : messageRecipients) {
 				try {
-					messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_LAB_RESULT_ARRIVED), 
-							String.format(I18nProperties.getMessage(MessagingService.CONTENT_LAB_RESULT_ARRIVED), 
+					messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_LAB_RESULT_ARRIVED), 
+							String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_RESULT_ARRIVED), 
 									newSampleTest.getTestResult().toString(), DataHelper.getShortUuid(newSampleTest.getUuid())), 
 							MessageType.EMAIL, MessageType.SMS);
 				} catch (NotificationDeliveryFailedException e) {
@@ -251,8 +251,8 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 
 			for (User recipient : messageRecipients) {
 				try {
-					messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_LAB_RESULT_SPECIFIED), 
-							String.format(I18nProperties.getMessage(MessagingService.CONTENT_LAB_RESULT_SPECIFIED), 
+					messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_LAB_RESULT_SPECIFIED), 
+							String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_RESULT_SPECIFIED), 
 									DataHelper.getShortUuid(newSampleTest.getUuid()), newSampleTest.getTestResult().toString()), 
 							MessageType.EMAIL, MessageType.SMS);
 				} catch (NotificationDeliveryFailedException e) {

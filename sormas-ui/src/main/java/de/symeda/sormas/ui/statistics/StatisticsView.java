@@ -568,7 +568,7 @@ public class StatisticsView extends AbstractStatisticsView {
 	}
 
 	private String getEscapedFragment(String i18nFragmentKeykey) {
-		return StringEscapeUtils.escapeEcmaScript(I18nProperties.getFragment(i18nFragmentKeykey));
+		return StringEscapeUtils.escapeEcmaScript(I18nProperties.getCaption(i18nFragmentKeykey));
 	}
 
 	private void finalizeChartSegment(Object seriesKey, TreeMap<Integer, Long> currentKeyValues,

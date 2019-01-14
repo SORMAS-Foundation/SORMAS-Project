@@ -99,7 +99,7 @@ public class SampleTestController {
 					UI.getCurrent().removeWindow(popupWindow);
 					callback.run();
 				}
-			}, I18nProperties.getFieldCaption("SampleTest"));
+			}, I18nProperties.getCaption("SampleTest"));
 		}
 	}
 	

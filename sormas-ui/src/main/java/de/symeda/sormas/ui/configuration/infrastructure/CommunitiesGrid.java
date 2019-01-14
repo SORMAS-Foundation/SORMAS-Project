@@ -92,7 +92,7 @@ public class CommunitiesGrid extends Grid {
 		setColumns(CommunityDto.NAME, REGION_LOC, CommunityDto.DISTRICT);
 		
         for (Column column : getColumns()) {
-        	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
+        	column.setHeaderCaption(I18nProperties.getPrefixCaption(
         			CommunityDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
 		

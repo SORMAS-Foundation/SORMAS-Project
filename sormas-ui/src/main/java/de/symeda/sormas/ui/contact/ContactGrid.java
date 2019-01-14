@@ -90,7 +90,7 @@ public class ContactGrid extends Grid {
 						numberOfMissedVisits = 0;
 					}
 
-					return String.format(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, "numberOfVisitsFormat"),
+					return String.format(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, "numberOfVisitsFormat"),
 							numberOfVisits, numberOfMissedVisits);
 				} else {
 					return "-";
@@ -106,7 +106,7 @@ public class ContactGrid extends Grid {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				ContactIndexDto contactIndexDto = (ContactIndexDto)itemId;
-				return String.format(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, NUMBER_OF_PENDING_TASKS + "Format"), 
+				return String.format(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, NUMBER_OF_PENDING_TASKS + "Format"), 
 						FacadeProvider.getTaskFacade().getPendingTaskCountByContact(contactIndexDto.toReference()));
 			}
 			@Override
@@ -136,7 +136,7 @@ public class ContactGrid extends Grid {
 		getColumn(ContactIndexDto.UUID).setRenderer(new UuidRenderer());
 
 		for (Column column : getColumns()) {
-			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
+			column.setHeaderCaption(I18nProperties.getPrefixCaption(
 					ContactIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 

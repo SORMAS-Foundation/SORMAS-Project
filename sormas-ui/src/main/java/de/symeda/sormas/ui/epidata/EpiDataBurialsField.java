@@ -42,7 +42,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 	
 	private static final String PERIOD = "period";
 	private static final String CITY = "city";
-	private static final String LGA = "lga";
+	private static final String DISTRICT = "district";
 	
 	@Override
 	public Class<EpiDataBurialDto> getEntryType() {
@@ -78,7 +78,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 			}
 		});
 		
-		table.addGeneratedColumn(LGA, new Table.ColumnGenerator() {
+		table.addGeneratedColumn(DISTRICT, new Table.ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataBurialDto burial = (EpiDataBurialDto) itemId;
@@ -93,7 +93,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 				EpiDataBurialDto.BURIAL_RELATION,
 				PERIOD,
 				CITY,
-				LGA,
+				DISTRICT,
 				EpiDataBurialDto.BURIAL_ILL,
 				EpiDataBurialDto.BURIAL_TOUCHING);
 
@@ -102,12 +102,12 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 		table.setColumnExpandRatio(EpiDataBurialDto.BURIAL_RELATION, 0);
 		table.setColumnExpandRatio(PERIOD, 0);
 		table.setColumnExpandRatio(CITY, 0);
-		table.setColumnExpandRatio(LGA, 0);
+		table.setColumnExpandRatio(DISTRICT, 0);
 		table.setColumnExpandRatio(EpiDataBurialDto.BURIAL_ILL, 0);
 		table.setColumnExpandRatio(EpiDataBurialDto.BURIAL_TOUCHING, 0);
 		
 		for (Object columnId : table.getVisibleColumns()) {
-			table.setColumnHeader(columnId, I18nProperties.getPrefixFieldCaption(EPI_DATA_BURIAL_TABLE_PREFIX, (String) columnId));
+			table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(EPI_DATA_BURIAL_TABLE_PREFIX, (String) columnId));
 		}
 	}
 	
@@ -162,7 +162,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 					popupWindow.close();
 					EpiDataBurialsField.this.removeEntry(entry);
 				}
-			}, I18nProperties.getFieldCaption("EpiDataBurial"));
+			}, I18nProperties.getCaption("EpiDataBurial"));
 		}
 	}
 	

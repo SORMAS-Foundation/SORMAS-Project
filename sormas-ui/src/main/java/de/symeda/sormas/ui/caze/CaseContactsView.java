@@ -95,7 +95,7 @@ public class CaseContactsView extends AbstractCaseView {
 
 		classificationFilter = new ComboBox();
 		classificationFilter.setWidth(240, Unit.PIXELS);
-		classificationFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CLASSIFICATION));
+		classificationFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CLASSIFICATION));
 		classificationFilter.addValueChangeListener(e -> {
 			ContactClassification classification = (ContactClassification) e.getProperty().getValue();
 			grid.setClassificationFilter(classification);
@@ -104,7 +104,7 @@ public class CaseContactsView extends AbstractCaseView {
 
 		districtFilter = new ComboBox();
 		districtFilter.setWidth(240, Unit.PIXELS);
-		districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISTRICT_UUID));
+		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISTRICT_UUID));
 		districtFilter.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
 			grid.setDistrictFilter(district);
@@ -113,7 +113,7 @@ public class CaseContactsView extends AbstractCaseView {
 
 		officerFilter = new ComboBox();
 		officerFilter.setWidth(240, Unit.PIXELS);
-		officerFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
+		officerFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
 		officerFilter.addValueChangeListener(e -> {
 			UserReferenceDto officer = (UserReferenceDto) e.getProperty().getValue();
 			grid.setContactOfficerFilter(officer);

@@ -387,7 +387,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	@SuppressWarnings("rawtypes")
 	protected <T extends Field> T formatField(T field, String propertyId) {
 
-		String caption = I18nProperties.getPrefixFieldCaption(getPropertyI18nPrefix(), propertyId, field.getCaption());
+		String caption = I18nProperties.getPrefixCaption(getPropertyI18nPrefix(), propertyId, field.getCaption());
 		field.setCaption(caption);
 
 		if (field instanceof AbstractField) {

@@ -109,14 +109,14 @@ public class PersonGrid extends Grid {
 				CASE_LOC);
 
 		for (Column column : getColumns()) {
-			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
+			column.setHeaderCaption(I18nProperties.getPrefixCaption(
 					PersonIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 
 		getColumn(PersonIndexDto.FIRST_NAME).setMinimumWidth(150);
 		getColumn(PersonIndexDto.LAST_NAME).setMinimumWidth(150);
 		getColumn(CASE_LOC).setRenderer(new HtmlRenderer());
-		getColumn(CASE_LOC).setHeaderCaption(I18nProperties.getPrefixFieldCaption(PersonIndexDto.I18N_PREFIX, 
+		getColumn(CASE_LOC).setHeaderCaption(I18nProperties.getPrefixCaption(PersonIndexDto.I18N_PREFIX, 
 				associatedCase == null ? "lastDisease" : "matchingCase"));
 	}
 

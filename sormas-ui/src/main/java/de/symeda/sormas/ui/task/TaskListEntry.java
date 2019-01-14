@@ -57,9 +57,9 @@ public class TaskListEntry extends HorizontalLayout {
 		// very hacky: clean up when needed elsewher!
 		String htmlLeft = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE,
 				task.getTaskType().toString())
-				+ LayoutUtil.div(I18nProperties.getPrefixFieldCaption(TaskDto.I18N_PREFIX, TaskDto.SUGGESTED_START)
+				+ LayoutUtil.div(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.SUGGESTED_START)
 						+ ": " + DateHelper.formatLocalShortDate(task.getSuggestedStart()))
-				+ LayoutUtil.div(I18nProperties.getPrefixFieldCaption(TaskDto.I18N_PREFIX, TaskDto.DUE_DATE) + ": "
+				+ LayoutUtil.div(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.DUE_DATE) + ": "
 						+ DateHelper.formatLocalShortDate(task.getDueDate()));
 		Label labelLeft = new Label(htmlLeft, ContentMode.HTML);
 		labelLayout.addComponent(labelLeft);
@@ -69,9 +69,9 @@ public class TaskListEntry extends HorizontalLayout {
 				+ LayoutUtil.divCss(
 						TaskPriority.HIGH == task.getPriority() ? CssStyles.LABEL_IMPORTANT
 								: (TaskPriority.NORMAL == task.getPriority() ? CssStyles.LABEL_NEUTRAL : ""),
-						I18nProperties.getPrefixFieldCaption(TaskDto.I18N_PREFIX, TaskDto.PRIORITY) + ": "
+						I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.PRIORITY) + ": "
 								+ DataHelper.toStringNullable(task.getPriority()))
-				+ LayoutUtil.div(I18nProperties.getPrefixFieldCaption(TaskDto.I18N_PREFIX, TaskDto.ASSIGNEE_USER) + ": "
+				+ LayoutUtil.div(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.ASSIGNEE_USER) + ": "
 						+ task.getAssigneeUser().getCaption());
 		Label labelRight = new Label(htmlRight, ContentMode.HTML);
 		labelRight.addStyleName(CssStyles.ALIGN_RIGHT);

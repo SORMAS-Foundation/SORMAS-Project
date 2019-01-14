@@ -52,7 +52,7 @@ public class ClassificationSymptomsCriteriaDto extends ClassificationCaseCriteri
 	@Override
 	public String buildDescription() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, propertyId));
+		stringBuilder.append(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId));
 		if (!(propertyValues.get(0) instanceof SymptomState)) {
 			appendDescValues(stringBuilder);
 		}

@@ -140,7 +140,7 @@ public class EventParticipantsGrid extends Grid {
 		getColumn(CASE_ID).setRenderer(new CaseUuidRenderer(true));
 		
 		for(Column column : getColumns()) {
-			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
+			column.setHeaderCaption(I18nProperties.getPrefixCaption(
 					EventParticipantDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 

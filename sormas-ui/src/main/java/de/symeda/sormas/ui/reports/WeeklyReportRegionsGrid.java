@@ -99,7 +99,7 @@ public class WeeklyReportRegionsGrid extends Grid implements ItemClickListener {
 			if (column.getPropertyId().equals(VIEW_DETAILS_BTN_ID)) {
 				column.setHeaderCaption("");
 			} else {
-				column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(WeeklyReportRegionSummaryDto.I18N_PREFIX,
+				column.setHeaderCaption(I18nProperties.getPrefixCaption(WeeklyReportRegionSummaryDto.I18N_PREFIX,
 						column.getPropertyId().toString(), column.getHeaderCaption()));
 			}
 		}
@@ -116,7 +116,7 @@ public class WeeklyReportRegionsGrid extends Grid implements ItemClickListener {
 				WeeklyReportRegionSummaryDto.OFFICER_REPORTS,
 				WeeklyReportRegionSummaryDto.OFFICER_REPORT_PERCENTAGE,
 				WeeklyReportRegionSummaryDto.OFFICER_ZERO_REPORTS);
-		preHeaderCell.setHtml(I18nProperties.getPrefixFieldCaption(WeeklyReportRegionSummaryDto.I18N_PREFIX, "regionOfficers"));
+		preHeaderCell.setHtml(I18nProperties.getPrefixCaption(WeeklyReportRegionSummaryDto.I18N_PREFIX, "regionOfficers"));
 		preHeaderCell.setStyleName(CssStyles.GRID_CELL_ODD);		
 		
 		preHeaderRow.join(
@@ -124,7 +124,7 @@ public class WeeklyReportRegionsGrid extends Grid implements ItemClickListener {
 				WeeklyReportRegionSummaryDto.INFORMANT_REPORTS,
 				WeeklyReportRegionSummaryDto.INFORMANT_REPORT_PERCENTAGE,
 				WeeklyReportRegionSummaryDto.INFORMANT_ZERO_REPORTS)
-			.setHtml(I18nProperties.getPrefixFieldCaption(WeeklyReportRegionSummaryDto.I18N_PREFIX, "regionInformants"));
+			.setHtml(I18nProperties.getPrefixCaption(WeeklyReportRegionSummaryDto.I18N_PREFIX, "regionInformants"));
 
 		getColumn(VIEW_DETAILS_BTN_ID).setRenderer(new HtmlRenderer());
 		getColumn(VIEW_DETAILS_BTN_ID).setWidth(60);

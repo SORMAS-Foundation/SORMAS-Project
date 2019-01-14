@@ -91,7 +91,7 @@ public class UsersView extends AbstractView {
 
         ComboBox activeFilter = new ComboBox();
         activeFilter.setWidth(200, Unit.PIXELS);
-        activeFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(UserDto.I18N_PREFIX, UserDto.ACTIVE));
+        activeFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.ACTIVE));
         activeFilter.addItems(ACTIVE_FILTER,INACTIVE_FILTER);
         activeFilter.addValueChangeListener(e-> {
         	String value = (String)e.getProperty().getValue();
@@ -102,7 +102,7 @@ public class UsersView extends AbstractView {
         
         ComboBox roleFilter = new ComboBox();
         roleFilter.setWidth(200, Unit.PIXELS);
-        roleFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
+        roleFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
         roleFilter.addItems(UserRole.getAssignableRoles(CurrentUser.getCurrent().getUserRoles()));
         roleFilter.addValueChangeListener(e -> {
         	UserRole value = (UserRole) e.getProperty().getValue();

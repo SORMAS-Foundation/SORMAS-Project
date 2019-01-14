@@ -72,7 +72,7 @@ public class EventParticipantsView extends AbstractEventView {
 		topLayout.setSpacing(true);
 		topLayout.setWidth("100%");
 
-		Label header = new Label(I18nProperties.getPrefixFieldCaption(EventDto.I18N_PREFIX, EventDto.EVENT_PERSONS));
+		Label header = new Label(I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.EVENT_PERSONS));
 		header.setSizeUndefined();
 		CssStyles.style(header, CssStyles.H2, CssStyles.VSPACE_NONE);
 		topLayout.addComponent(header);

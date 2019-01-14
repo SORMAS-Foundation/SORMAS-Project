@@ -61,13 +61,13 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 		nameLayout.setWidth(100, Unit.PERCENTAGE);
 		
 		firstNameField.setCaption(
-				I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
+				I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
 		firstNameField.setWidth(100, Unit.PERCENTAGE);
 		firstNameField.setRequired(true);
 		nameLayout.addComponent(firstNameField);
 		
 		lastNameField.setCaption(
-				I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
+				I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
 		lastNameField.setWidth(100, Unit.PERCENTAGE);
 		lastNameField.setRequired(true);
 		nameLayout.addComponent(lastNameField);
@@ -83,7 +83,7 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 		
 		selectPerson = new OptionGroup(null);
 		selectPerson.addItem(SELECT_PERSON);
-		selectPerson.setItemCaption(SELECT_PERSON, I18nProperties.getFragment("Person.select"));
+		selectPerson.setItemCaption(SELECT_PERSON, I18nProperties.getCaption("Person.select"));
 		CssStyles.style(selectPerson, CssStyles.VSPACE_NONE);
 		selectPerson.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
@@ -113,7 +113,7 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 		
 		createNewPerson = new OptionGroup(null);
 		createNewPerson.addItem(CREATE_PERSON);
-		createNewPerson.setItemCaption(CREATE_PERSON, I18nProperties.getFragment("Person.createNew"));
+		createNewPerson.setItemCaption(CREATE_PERSON, I18nProperties.getCaption("Person.createNew"));
 		// unselect grid when "create new" is selected
 		createNewPerson.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {

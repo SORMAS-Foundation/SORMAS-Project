@@ -75,8 +75,8 @@ public class ClassificationNotInStartDateRangeCriteriaDto extends Classification
 	@Override
 	public String buildDescription() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, propertyId));
-		stringBuilder.append(" ").append(I18nProperties.getText("notWithin")).append(" ").append(daysBeforeStartDate).append(" ").append(I18nProperties.getText("daysBeforeCaseStart"));
+		stringBuilder.append(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId));
+		stringBuilder.append(" ").append(I18nProperties.getString("notWithin")).append(" ").append(daysBeforeStartDate).append(" ").append(I18nProperties.getString("daysBeforeCaseStart"));
 		return stringBuilder.toString();
 	}
 

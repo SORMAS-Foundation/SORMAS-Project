@@ -163,7 +163,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			FollowUpStatus followUpStatus = statusField.getValue();
 			if (followUpStatus == FollowUpStatus.FOLLOW_UP) {
 				
-		    	Button cancelButton = new Button(I18nProperties.getFragment("Contact.cancelFollowUp"));
+		    	Button cancelButton = new Button(I18nProperties.getCaption("Contact.cancelFollowUp"));
 		    	cancelButton.setWidth(100, Unit.PERCENTAGE);
 		    	cancelButton.addClickListener(new ClickListener() {
 					@Override
@@ -177,7 +177,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				});
 				getContent().addComponent(cancelButton, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
 
-		    	Button lostButton = new Button(I18nProperties.getFragment("Contact.lostToFollowUp"));
+		    	Button lostButton = new Button(I18nProperties.getCaption("Contact.lostToFollowUp"));
 		    	lostButton.setWidth(100, Unit.PERCENTAGE);
 		    	lostButton.addClickListener(new ClickListener() {
 					@Override
@@ -194,7 +194,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			} else if (followUpStatus == FollowUpStatus.CANCELED
 					|| followUpStatus == FollowUpStatus.LOST) {
 
-		    	Button resumeButton = new Button(I18nProperties.getFragment("Contact.resumeFollowUp"));
+		    	Button resumeButton = new Button(I18nProperties.getCaption("Contact.resumeFollowUp"));
 		    	resumeButton.addStyleName(CssStyles.FORCE_CAPTION);
 		    	resumeButton.setWidth(100, Unit.PERCENTAGE);
 		    	resumeButton.addClickListener(new ClickListener() {

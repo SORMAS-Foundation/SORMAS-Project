@@ -51,7 +51,7 @@ public class ClassificationEpiDataCriteriaDto extends ClassificationCaseCriteria
 
 	@Override
 	public String buildDescription() {
-		return I18nProperties.getPrefixFieldCaption(EpiDataDto.I18N_PREFIX, propertyId);
+		return I18nProperties.getPrefixCaption(EpiDataDto.I18N_PREFIX, propertyId);
 	}
 	
 }

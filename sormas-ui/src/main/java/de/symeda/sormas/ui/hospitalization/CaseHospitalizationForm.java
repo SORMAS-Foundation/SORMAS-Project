@@ -95,7 +95,7 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 
 		// Validations
 		admissionDateField.addValidator(new DateComparisonValidator(admissionDateField, caze.getSymptoms().getOnsetDate(), false, false, 
-				I18nProperties.getValidationError("afterDateSoft", admissionDateField.getCaption(), I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE))));
+				I18nProperties.getValidationError("afterDateSoft", admissionDateField.getCaption(), I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE))));
 		admissionDateField.addValidator(new DateComparisonValidator(admissionDateField, dischargeDateField, true, false, 
 				I18nProperties.getValidationError("beforeDate", admissionDateField.getCaption(), dischargeDateField.getCaption())));
 		admissionDateField.setInvalidCommitted(true);

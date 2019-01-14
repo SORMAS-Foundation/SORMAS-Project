@@ -226,7 +226,7 @@ public class ContactController {
 					FacadeProvider.getContactFacade().deleteContact(contact.toReference(), CurrentUser.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
 				}
-			}, I18nProperties.getFieldCaption("Contact"));
+			}, I18nProperties.getString("contact"));
 		}
 
 		return editComponent;

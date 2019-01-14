@@ -71,7 +71,7 @@ public class RegionsGrid extends Grid {
 		setColumns(RegionDto.NAME, RegionDto.EPID_CODE, RegionDto.POPULATION, RegionDto.GROWTH_RATE);
 
         for (Column column : getColumns()) {
-        	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
+        	column.setHeaderCaption(I18nProperties.getPrefixCaption(
         			RegionDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
         

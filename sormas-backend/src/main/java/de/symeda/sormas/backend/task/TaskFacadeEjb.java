@@ -225,8 +225,8 @@ public class TaskFacadeEjb implements TaskFacade {
 					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
 			for (User recipient : messageRecipients) {
 				try {
-					messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_VISIT_COMPLETED), 
-							String.format(I18nProperties.getMessage(MessagingService.CONTENT_VISIT_COMPLETED), DataHelper.getShortUuid(ado.getContact().getUuid()), DataHelper.getShortUuid(ado.getAssigneeUser().getUuid())), 
+					messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_VISIT_COMPLETED), 
+							String.format(I18nProperties.getString(MessagingService.CONTENT_VISIT_COMPLETED), DataHelper.getShortUuid(ado.getContact().getUuid()), DataHelper.getShortUuid(ado.getAssigneeUser().getUuid())), 
 							MessageType.EMAIL, MessageType.SMS);
 				} catch (NotificationDeliveryFailedException e) {
 					logger.error(String.format("NotificationDeliveryFailedException when trying to notify supervisors about the completion of a follow-up visit. "
@@ -461,10 +461,10 @@ public class TaskFacadeEjb implements TaskFacade {
 					context == TaskContext.EVENT ? task.getEvent() : null;
 			if (task.getAssigneeUser() != null && task.getAssigneeUser().isSupervisor() || task.getAssigneeUser().getUserRoles().contains(UserRole.NATIONAL_USER)) {
 				try {
-					String subject = I18nProperties.getMessage(MessagingService.SUBJECT_TASK_START);
+					String subject = I18nProperties.getString(MessagingService.SUBJECT_TASK_START);
 					String content = context == TaskContext.GENERAL ? 
-								String.format(I18nProperties.getMessage(MessagingService.CONTENT_TASK_START_GENERAL), task.getTaskType().toString()) :
-								String.format(I18nProperties.getMessage(MessagingService.CONTENT_TASK_START_SPECIFIC), task.getTaskType().toString(), 
+								String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_START_GENERAL), task.getTaskType().toString()) :
+								String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_START_SPECIFIC), task.getTaskType().toString(), 
 								context.toString() + " " + DataHelper.getShortUuid(associatedEntity.getUuid()));
 
 					messagingService.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), subject, content, MessageType.EMAIL, MessageType.SMS);
@@ -483,10 +483,10 @@ public class TaskFacadeEjb implements TaskFacade {
 					context == TaskContext.EVENT ? task.getEvent() : null;
 			if (task.getAssigneeUser() != null && task.getAssigneeUser().isSupervisor() || task.getAssigneeUser().getUserRoles().contains(UserRole.NATIONAL_USER)) {
 				try {
-					String subject = I18nProperties.getMessage(MessagingService.SUBJECT_TASK_DUE);
+					String subject = I18nProperties.getString(MessagingService.SUBJECT_TASK_DUE);
 					String content = context == TaskContext.GENERAL ? 
-								String.format(I18nProperties.getMessage(MessagingService.CONTENT_TASK_DUE_GENERAL), task.getTaskType().toString()) :
-								String.format(I18nProperties.getMessage(MessagingService.CONTENT_TASK_DUE_SPECIFIC), task.getTaskType().toString(), 
+								String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_GENERAL), task.getTaskType().toString()) :
+								String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_SPECIFIC), task.getTaskType().toString(), 
 								context.toString() + " " + DataHelper.getShortUuid(associatedEntity.getUuid()));
 
 					messagingService.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), subject, content, MessageType.EMAIL, MessageType.SMS);
