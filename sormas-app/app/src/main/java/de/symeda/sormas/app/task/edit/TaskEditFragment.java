@@ -145,7 +145,7 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
     protected void prepareFragmentData() {
         record = getActivityRootData();
 
-        taskTypeList = DataUtils.getEnumItems(TaskType.class, true);
+        taskTypeList = DataUtils.toItems(TaskType.getTaskTypes(record.getTaskContext()), true);
         priorityList = DataUtils.getEnumItems(TaskPriority.class, true);
         assigneeList = DataUtils.toItems(DatabaseHelper.getUserDao().queryForAll(), true);
     }

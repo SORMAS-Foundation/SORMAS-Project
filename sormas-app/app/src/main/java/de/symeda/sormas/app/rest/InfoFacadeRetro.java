@@ -36,4 +36,7 @@ public interface InfoFacadeRetro {
 
     @GET("info/checkcompatibility")
     Call<CompatibilityCheckResponse> isCompatibleToApi(@Query("appVersion") String appVersion);
+
+    @GET("info/locale")
+    Call<String> getLocale();
 }
