@@ -48,6 +48,8 @@
                 android:focusableInTouchMode="true"
                 android:id="@+id/main_content">
 
+                <requestFocus/>
+
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/task_taskType"
                     style="@style/ControlSingleColumnStyle"
