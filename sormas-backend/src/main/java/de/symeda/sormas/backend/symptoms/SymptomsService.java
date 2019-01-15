@@ -35,6 +35,7 @@ public class SymptomsService extends AbstractAdoService<Symptoms> {
 		super(Symptoms.class);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Symptoms, Symptoms> from, User user) {
 		// A user should not directly query for this

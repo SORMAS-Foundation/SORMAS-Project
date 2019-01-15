@@ -38,7 +38,8 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
@@ -154,7 +155,7 @@ public class SampleController {
 					FacadeProvider.getSampleFacade().deleteSample(dto.toReference(), CurrentUser.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
 				}
-			}, I18nProperties.getFieldCaption("Sample"));
+			}, I18nProperties.getString(Strings.sample));
 		}
 
 		// Initialize 'Refer to another laboratory' button or link to referred sample

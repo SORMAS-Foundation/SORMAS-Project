@@ -27,7 +27,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -67,7 +67,7 @@ public class SampleTestListEntry extends HorizontalLayout {
 			Label labelTopRight = new Label(FontAwesome.CHECK_CIRCLE.getHtml(), ContentMode.HTML);
 			labelTopRight.setSizeUndefined();
 			labelTopRight.addStyleName(CssStyles.LABEL_LARGE);
-			labelTopRight.setDescription(I18nProperties.getPrefixFieldCaption(SampleTestDto.I18N_PREFIX,
+			labelTopRight.setDescription(I18nProperties.getPrefixCaption(SampleTestDto.I18N_PREFIX,
 					SampleTestDto.TEST_RESULT_VERIFIED));
 			topLabelLayout.addComponent(labelTopRight);
 			topLabelLayout.setComponentAlignment(labelTopRight, Alignment.TOP_RIGHT);

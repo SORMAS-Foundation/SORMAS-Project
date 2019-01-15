@@ -21,7 +21,8 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.location.LocationEditForm;
@@ -55,9 +56,9 @@ public class EpiDataBurialEditForm extends AbstractEditForm<EpiDataBurialDto> {
 		DateField burialDateFrom = addField(EpiDataBurialDto.BURIAL_DATE_FROM, DateField.class);
 		DateField burialDateTo = addField(EpiDataBurialDto.BURIAL_DATE_TO, DateField.class);
 		burialDateFrom.addValidator(new DateComparisonValidator(burialDateFrom, burialDateTo, true, false, 
-				I18nProperties.getValidationError("beforeDate", burialDateFrom.getCaption(), burialDateTo.getCaption())));
+				I18nProperties.getValidationError(Validations.beforeDate, burialDateFrom.getCaption(), burialDateTo.getCaption())));
 		burialDateTo.addValidator(new DateComparisonValidator(burialDateTo, burialDateFrom, false, false, 
-				I18nProperties.getValidationError("afterDate", burialDateFrom.getCaption(), burialDateTo.getCaption())));
+				I18nProperties.getValidationError(Validations.afterDate, burialDateFrom.getCaption(), burialDateTo.getCaption())));
 		addField(EpiDataBurialDto.BURIAL_PERSON_NAME, TextField.class);
 		addField(EpiDataBurialDto.BURIAL_RELATION, TextField.class);
 		addField(EpiDataBurialDto.BURIAL_ILL, OptionGroup.class);

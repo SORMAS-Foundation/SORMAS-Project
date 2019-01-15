@@ -27,7 +27,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
@@ -99,7 +99,7 @@ public class SampleTestController {
 					UI.getCurrent().removeWindow(popupWindow);
 					callback.run();
 				}
-			}, I18nProperties.getFieldCaption("SampleTest"));
+			}, I18nProperties.getCaption("SampleTest"));
 		}
 	}
 	

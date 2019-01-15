@@ -19,7 +19,7 @@ package de.symeda.sormas.ui.statistics;
 
 import com.vaadin.ui.Label;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.SubNavigationMenu;
@@ -39,9 +39,9 @@ public class AbstractStatisticsView extends AbstractSubNavigationView {
 	@Override
 	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		menu.removeAllViews();
-		menu.addView(StatisticsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(I18N_PREFIX, StatisticsView.VIEW_NAME), params);
+		menu.addView(StatisticsView.VIEW_NAME, I18nProperties.getPrefixCaption(I18N_PREFIX, StatisticsView.VIEW_NAME), params);
 		if (CurrentUser.getCurrent().hasUserRight(UserRight.DATABASE_EXPORT_ACCESS)) {
-			menu.addView(DatabaseExportView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(I18N_PREFIX, "database-export"), params);
+			menu.addView(DatabaseExportView.VIEW_NAME, I18nProperties.getPrefixCaption(I18N_PREFIX, "databaseExport"), params);
 		}
 	
 		hideInfoLabel();

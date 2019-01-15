@@ -32,7 +32,7 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.person.PersonDto;
@@ -109,14 +109,14 @@ public class PersonGrid extends Grid {
 				CASE_LOC);
 
 		for (Column column : getColumns()) {
-			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
+			column.setHeaderCaption(I18nProperties.getPrefixCaption(
 					PersonIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 
 		getColumn(PersonIndexDto.FIRST_NAME).setMinimumWidth(150);
 		getColumn(PersonIndexDto.LAST_NAME).setMinimumWidth(150);
 		getColumn(CASE_LOC).setRenderer(new HtmlRenderer());
-		getColumn(CASE_LOC).setHeaderCaption(I18nProperties.getPrefixFieldCaption(PersonIndexDto.I18N_PREFIX, 
+		getColumn(CASE_LOC).setHeaderCaption(I18nProperties.getPrefixCaption(PersonIndexDto.I18N_PREFIX, 
 				associatedCase == null ? "lastDisease" : "matchingCase"));
 	}
 

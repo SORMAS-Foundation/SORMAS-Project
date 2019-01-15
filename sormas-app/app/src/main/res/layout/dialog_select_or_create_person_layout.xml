@@ -26,7 +26,7 @@
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.person.Person" />
-        <variable name="availablePersons" type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.person.Person&gt;" />
+        <variable name="availablePersons" type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.person.Person&gt;" />
         <variable name="updateSearchCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
         <variable name="availablePersonItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>

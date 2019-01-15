@@ -18,7 +18,7 @@
 
 package de.symeda.sormas.app.util;
 
-import android.databinding.InverseMethod;
+import androidx.databinding.InverseMethod;
 
 import de.symeda.sormas.app.core.YesNo;
 

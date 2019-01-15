@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum ContactStatus {
 	ACTIVE,

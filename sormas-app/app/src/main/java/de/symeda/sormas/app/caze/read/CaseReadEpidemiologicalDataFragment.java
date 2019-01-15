@@ -18,7 +18,7 @@
 
 package de.symeda.sormas.app.caze.read;
 
-import android.databinding.ObservableArrayList;
+import androidx.databinding.ObservableArrayList;
 import android.os.Bundle;
 import android.view.View;
 

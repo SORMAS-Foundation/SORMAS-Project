@@ -39,7 +39,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -127,7 +127,7 @@ public class SampleGridComponent extends VerticalLayout {
 
 		ComboBox testResultFilter = new ComboBox();
 		testResultFilter.setWidth(140, Unit.PIXELS);
-		testResultFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(SampleTestDto.I18N_PREFIX, SampleTestDto.TEST_RESULT));
+		testResultFilter.setInputPrompt(I18nProperties.getPrefixCaption(SampleTestDto.I18N_PREFIX, SampleTestDto.TEST_RESULT));
 		testResultFilter.addItems((Object[])SampleTestResultType.values());
 		testResultFilter.addValueChangeListener(e -> {
 			grid.setTestResultFilter(((SampleTestResultType)e.getProperty().getValue()));
@@ -136,7 +136,7 @@ public class SampleGridComponent extends VerticalLayout {
 
 		ComboBox specimenConditionFilter = new ComboBox();
 		specimenConditionFilter.setWidth(140, Unit.PIXELS);
-		specimenConditionFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(SampleDto.I18N_PREFIX, SampleDto.SPECIMEN_CONDITION));
+		specimenConditionFilter.setInputPrompt(I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SPECIMEN_CONDITION));
 		specimenConditionFilter.addItems((Object[])SpecimenCondition.values());
 		specimenConditionFilter.addValueChangeListener(e -> {
 			grid.setSpecimenConditionFilter(((SpecimenCondition)e.getProperty().getValue()));
@@ -145,7 +145,7 @@ public class SampleGridComponent extends VerticalLayout {
 
 		ComboBox classificationFilter = new ComboBox();
 		classificationFilter.setWidth(140, Unit.PIXELS);
-		classificationFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
+		classificationFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
 		classificationFilter.addItems((Object[])CaseClassification.values());
 		classificationFilter.addValueChangeListener(e -> {
 			grid.setCaseClassificationFilter(((CaseClassification)e.getProperty().getValue()));
@@ -154,7 +154,7 @@ public class SampleGridComponent extends VerticalLayout {
 
 		ComboBox diseaseFilter = new ComboBox();
 		diseaseFilter.setWidth(140, Unit.PIXELS);
-		diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
+		diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
 		diseaseFilter.addItems((Object[])Disease.values());
 		diseaseFilter.addValueChangeListener(e -> {
 			grid.setDiseaseFilter(((Disease)e.getProperty().getValue()));
@@ -165,7 +165,7 @@ public class SampleGridComponent extends VerticalLayout {
 		ComboBox regionFilter = new ComboBox();
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(140, Unit.PIXELS);
-			regionFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
+			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
@@ -176,7 +176,7 @@ public class SampleGridComponent extends VerticalLayout {
 
 		ComboBox districtFilter = new ComboBox();
 		districtFilter.setWidth(140, Unit.PIXELS);
-		districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
+		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
 		districtFilter.setDescription("Select a district in the state");
 		districtFilter.addValueChangeListener(e -> {
 			grid.setDistrictFilter(((DistrictReferenceDto)e.getProperty().getValue()));
@@ -202,7 +202,7 @@ public class SampleGridComponent extends VerticalLayout {
 
 		ComboBox labFilter = new ComboBox();
 		labFilter.setWidth(140, Unit.PIXELS);
-		labFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(SampleIndexDto.I18N_PREFIX, SampleIndexDto.LAB));
+		labFilter.setInputPrompt(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, SampleIndexDto.LAB));
 		labFilter.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(true));
 		labFilter.addValueChangeListener(e -> {
 			grid.setLabFilter(((FacilityReferenceDto)e.getProperty().getValue()));
@@ -211,7 +211,7 @@ public class SampleGridComponent extends VerticalLayout {
 
 		TextField searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
-		searchField.setInputPrompt(I18nProperties.getPrefixFieldCaption(SampleIndexDto.I18N_PREFIX, SEARCH_FIELD));
+		searchField.setInputPrompt(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, SEARCH_FIELD));
 		searchField.addTextChangeListener(e -> {
 			grid.filterByText(e.getText());
 		});
@@ -253,19 +253,19 @@ public class SampleGridComponent extends VerticalLayout {
 		{
 			// Show archived/active cases button
 			if (CurrentUser.getCurrent().hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
-				Button switchArchivedActiveButton = new Button(I18nProperties.getText("showArchivedSamples"));
+				Button switchArchivedActiveButton = new Button(I18nProperties.getCaption("showArchivedSamples"));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
 					showArchivedSamples = !showArchivedSamples;
 					if (!showArchivedSamples) {
 						viewTitleLabel.setValue(originalViewTitle);
-						switchArchivedActiveButton.setCaption(I18nProperties.getText("showArchivedSamples"));
+						switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showArchivedSamples"));
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 						grid.getSampleCriteria().archived(false);
 						grid.reload();
 					} else {
-						viewTitleLabel.setValue(I18nProperties.getPrefixFragment("View", SamplesView.VIEW_NAME.replaceAll("/", ".") + ".archive"));
-						switchArchivedActiveButton.setCaption(I18nProperties.getText("showActiveSamples"));
+						viewTitleLabel.setValue(I18nProperties.getPrefixCaption("View", SamplesView.VIEW_NAME.replaceAll("/", ".") + ".archive"));
+						switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showActiveSamples"));
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
 						grid.getSampleCriteria().archived(true);
 						grid.reload();

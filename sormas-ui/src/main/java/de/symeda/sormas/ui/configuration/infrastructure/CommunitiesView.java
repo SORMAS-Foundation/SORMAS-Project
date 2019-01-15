@@ -30,7 +30,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -100,7 +100,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 
 		TextField searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
-		searchField.setInputPrompt(I18nProperties.getText(SEARCH));
+		searchField.setInputPrompt(I18nProperties.getCaption(SEARCH));
 		searchField.addTextChangeListener(e -> {
 			grid.filterByText(e.getText());
 		});
@@ -109,7 +109,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 
 		ComboBox regionFilter = new ComboBox();
 		regionFilter.setWidth(140, Unit.PIXELS);
-		regionFilter.setCaption(I18nProperties.getPrefixFieldCaption(DistrictDto.I18N_PREFIX, DistrictDto.REGION));
+		regionFilter.setCaption(I18nProperties.getPrefixCaption(DistrictDto.I18N_PREFIX, DistrictDto.REGION));
 		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 		regionFilter.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
@@ -122,7 +122,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 
 		districtFilter = new ComboBox();
 		districtFilter.setWidth(140, Unit.PIXELS);
-		districtFilter.setCaption(I18nProperties.getPrefixFieldCaption(CommunityDto.I18N_PREFIX, CommunityDto.DISTRICT));
+		districtFilter.setCaption(I18nProperties.getPrefixCaption(CommunityDto.I18N_PREFIX, CommunityDto.DISTRICT));
 		districtFilter.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
 			grid.setDistrictFilter(district);

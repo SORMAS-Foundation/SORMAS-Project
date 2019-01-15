@@ -47,7 +47,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
@@ -191,11 +191,11 @@ public class CasesView extends AbstractView {
 			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class,
 					(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(CurrentUser.getCurrent().getUuid(), grid.getFilterCriteria(), start, max), 
 					propertyId -> {
-						return I18nProperties.getPrefixFieldCaption(CaseExportDto.I18N_PREFIX, propertyId,
-								I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, propertyId,
-										I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, propertyId,
-												I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, propertyId,
-														I18nProperties.getPrefixFieldCaption(HospitalizationDto.I18N_PREFIX, propertyId)))));
+						return I18nProperties.getPrefixCaption(CaseExportDto.I18N_PREFIX, propertyId,
+								I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
+										I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, propertyId,
+												I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId,
+														I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId)))));
 					},
 					"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
@@ -232,7 +232,7 @@ public class CasesView extends AbstractView {
 		{
 			outcomeFilter = new ComboBox();
 			outcomeFilter.setWidth(140, Unit.PIXELS);
-			outcomeFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.OUTCOME));
+			outcomeFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.OUTCOME));
 			outcomeFilter.addItems((Object[]) CaseOutcome.values());
 			outcomeFilter.addValueChangeListener(e -> {
 				grid.setOutcomeFilter(((CaseOutcome) e.getProperty().getValue()));
@@ -241,7 +241,7 @@ public class CasesView extends AbstractView {
 
 			diseaseFilter = new ComboBox();
 			diseaseFilter.setWidth(140, Unit.PIXELS);
-			diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
+			diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
 			diseaseFilter.addItems((Object[])Disease.values());
 			diseaseFilter.addValueChangeListener(e -> {
 				grid.setDiseaseFilter(((Disease)e.getProperty().getValue()));
@@ -250,7 +250,7 @@ public class CasesView extends AbstractView {
 
 			classificationFilter = new ComboBox();
 			classificationFilter.setWidth(140, Unit.PIXELS);
-			classificationFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
+			classificationFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
 			classificationFilter.addItems((Object[])CaseClassification.values());
 			classificationFilter.addValueChangeListener(e -> {
 				grid.setClassificationFilter(((CaseClassification)e.getProperty().getValue()));
@@ -259,7 +259,7 @@ public class CasesView extends AbstractView {
 
 			searchField = new TextField();
 			searchField.setWidth(200, Unit.PIXELS);
-			searchField.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, SEARCH_FIELD));
+			searchField.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, SEARCH_FIELD));
 			searchField.addTextChangeListener(e -> {
 				grid.filterByText(e.getText());
 			});
@@ -275,7 +275,7 @@ public class CasesView extends AbstractView {
 		{
 			presentConditionFilter = new ComboBox();
 			presentConditionFilter.setWidth(140, Unit.PIXELS);
-			presentConditionFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
+			presentConditionFilter.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
 			presentConditionFilter.addItems((Object[])PresentCondition.values());
 			presentConditionFilter.addValueChangeListener(e -> {
 				grid.setPresentConditionFilter(((PresentCondition)e.getProperty().getValue()));
@@ -287,7 +287,7 @@ public class CasesView extends AbstractView {
 			regionFilter = new ComboBox();
 			if (user.getRegion() == null) {
 				regionFilter.setWidth(140, Unit.PIXELS);
-				regionFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
+				regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
 				regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 				regionFilter.addValueChangeListener(e -> {
 					RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
@@ -298,7 +298,7 @@ public class CasesView extends AbstractView {
 
 			districtFilter = new ComboBox();
 			districtFilter.setWidth(140, Unit.PIXELS);
-			districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
+			districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
 			districtFilter.setDescription("Select a district in the state");
 			districtFilter.addValueChangeListener(e -> {
 				grid.setDistrictFilter(((DistrictReferenceDto)e.getProperty().getValue()));
@@ -324,7 +324,7 @@ public class CasesView extends AbstractView {
 
 			facilityFilter = new ComboBox();
 			facilityFilter.setWidth(140, Unit.PIXELS);
-			facilityFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
+			facilityFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
 			facilityFilter.setDescription("Select a facility in the LGA");
 			facilityFilter.addValueChangeListener(e -> {
 				grid.setHealthFacilityFilter(((FacilityReferenceDto)e.getProperty().getValue()));
@@ -345,7 +345,7 @@ public class CasesView extends AbstractView {
 
 			officerFilter = new ComboBox();
 			officerFilter.setWidth(140, Unit.PIXELS);
-			officerFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SURVEILLANCE_OFFICER));
+			officerFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SURVEILLANCE_OFFICER));
 			if (user.getRegion() != null) {
 				officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.SURVEILLANCE_OFFICER));
 			}
@@ -453,7 +453,7 @@ public class CasesView extends AbstractView {
 		{
 			// Show archived/active cases button
 			if (CurrentUser.getCurrent().hasUserRight(UserRight.CASE_VIEW_ARCHIVED)) {
-				Button switchArchivedActiveButton = new Button(I18nProperties.getText("showArchivedCases"));
+				Button switchArchivedActiveButton = new Button(I18nProperties.getCaption("showArchivedCases"));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
 					if (!grid.getSelectedRows().isEmpty()) {
@@ -462,7 +462,7 @@ public class CasesView extends AbstractView {
 					showArchivedCases = !showArchivedCases;
 					if (!showArchivedCases) {
 						getViewTitleLabel().setValue(originalViewTitle);
-						switchArchivedActiveButton.setCaption(I18nProperties.getText("showArchivedCases"));
+						switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showArchivedCases"));
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 						if (archiveItem != null && dearchiveItem != null) {
 							dearchiveItem.setVisible(false);
@@ -471,8 +471,8 @@ public class CasesView extends AbstractView {
 						grid.getFilterCriteria().archived(false);
 						grid.reload();
 					} else {
-						getViewTitleLabel().setValue(I18nProperties.getPrefixFragment("View", viewName.replaceAll("/", ".") + ".archive"));
-						switchArchivedActiveButton.setCaption(I18nProperties.getText("showActiveCases"));
+						getViewTitleLabel().setValue(I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", ".") + ".archive"));
+						switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showActiveCases"));
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
 						if (archiveItem != null && dearchiveItem != null) {
 							archiveItem.setVisible(false);
@@ -513,7 +513,7 @@ public class CasesView extends AbstractView {
 						}
 					});
 				};
-				archiveItem = bulkOperationsItem.addItem(I18nProperties.getText("archive"), FontAwesome.ARCHIVE, archiveCommand);
+				archiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption("archive"), FontAwesome.ARCHIVE, archiveCommand);
 
 				Command dearchiveCommand = selectedItem -> {
 					ControllerProvider.getCaseController().dearchiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -523,7 +523,7 @@ public class CasesView extends AbstractView {
 						}
 					});
 				};
-				dearchiveItem = bulkOperationsItem.addItem(I18nProperties.getText("dearchive"), FontAwesome.ARCHIVE, dearchiveCommand);
+				dearchiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption("dearchive"), FontAwesome.ARCHIVE, dearchiveCommand);
 				dearchiveItem.setVisible(false);
 
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);

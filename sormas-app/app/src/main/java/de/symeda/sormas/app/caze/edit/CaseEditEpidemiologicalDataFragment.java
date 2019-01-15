@@ -19,7 +19,7 @@
 package de.symeda.sormas.app.caze.edit;
 
 import android.content.res.Resources;
-import android.databinding.ObservableArrayList;
+import androidx.databinding.ObservableArrayList;
 import android.view.View;
 
 import java.util.List;

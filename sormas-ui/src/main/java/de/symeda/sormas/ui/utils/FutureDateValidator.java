@@ -4,7 +4,8 @@ import java.util.Date;
 
 import com.vaadin.data.validator.AbstractValidator;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DateHelper;
 
 @SuppressWarnings("serial")
@@ -14,8 +15,8 @@ public class FutureDateValidator extends AbstractValidator<Date> {
 
 	public FutureDateValidator(int allowedDaysInFuture, String caption) {
 		super(allowedDaysInFuture > 0 ?
-				I18nProperties.getValidationError("futureDate", caption, allowedDaysInFuture) :
-					I18nProperties.getValidationError("futureDateStrict", caption));
+				I18nProperties.getValidationError(Validations.futureDate, caption, allowedDaysInFuture) :
+					I18nProperties.getValidationError(Validations.futureDateStrict, caption));
 
 		this.allowedDaysInFuture = allowedDaysInFuture;
 	}

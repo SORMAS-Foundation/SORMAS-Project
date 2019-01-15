@@ -23,7 +23,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Months;
 import org.joda.time.Years;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 
 public enum ApproximateAgeType {

@@ -20,8 +20,9 @@ package de.symeda.sormas.api.caze.classification;
 import java.util.Arrays;
 import java.util.List;
 
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestResultType;
@@ -55,13 +56,13 @@ public class ClassificationSampleTestPositiveResultCriteriaDto extends Classific
 	@Override
 	public String buildDescription() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(I18nProperties.getText("onePositiveTestResult")).append(" ");
+		stringBuilder.append(I18nProperties.getString(Strings.onePositiveTestResult)).append(" ");
 		for (int i = 0; i < sampleTestTypes.size(); i++) {
 			if (i > 0) {
 				if (i < sampleTestTypes.size() - 1) {
 					stringBuilder.append(", ");
 				} else {
-					stringBuilder.append(" <b>").append(I18nProperties.getText("or").toUpperCase()).append("</b> ");
+					stringBuilder.append(" <b>").append(I18nProperties.getString(Strings.or).toUpperCase()).append("</b> ");
 				}
 			}
 

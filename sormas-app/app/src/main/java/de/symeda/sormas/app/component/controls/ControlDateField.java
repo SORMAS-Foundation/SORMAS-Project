@@ -22,12 +22,12 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
-import android.databinding.BindingAdapter;
-import android.databinding.InverseBindingAdapter;
-import android.databinding.InverseBindingListener;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.InverseBindingAdapter;
+import androidx.databinding.InverseBindingListener;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
+import androidx.fragment.app.FragmentManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -43,7 +43,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -90,11 +91,11 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 
         if (allowedDaysInFuture > 0) {
             if (DateHelper.getFullDaysBetween(new Date(), getValue()) > allowedDaysInFuture) {
-                enableErrorState(I18nProperties.getValidationError("futureDate", getCaption(), allowedDaysInFuture));
+                enableErrorState(I18nProperties.getValidationError(Validations.futureDate, getCaption(), allowedDaysInFuture));
             }
         } else if (allowedDaysInFuture == 0) {
             if (!DateHelper.isSameDay(new Date(), getValue())) {
-                enableErrorState(I18nProperties.getValidationError("futureDateStrict", getCaption()));
+                enableErrorState(I18nProperties.getValidationError(Validations.futureDateStrict, getCaption()));
             }
         }
     }
@@ -288,7 +289,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
         super.onAttachedToWindow();
 
         if (getHint() == null) {
-            setHint(I18nProperties.getFieldCaption(getFieldCaptionPropertyId()));
+            setHint(I18nProperties.getCaption(getCaptionPropertyId()));
         }
     }
 

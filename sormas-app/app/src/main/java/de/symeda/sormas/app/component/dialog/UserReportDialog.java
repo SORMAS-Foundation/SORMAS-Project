@@ -19,16 +19,13 @@
 package de.symeda.sormas.app.component.dialog;
 
 import android.content.Context;
-import android.databinding.ViewDataBinding;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentActivity;
-import android.util.Log;
-import android.view.View;
 
-import com.android.databinding.library.baseAdapters.BR;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
+import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.FragmentActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.config.ConfigProvider;

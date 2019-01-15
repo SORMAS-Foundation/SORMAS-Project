@@ -35,7 +35,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
@@ -118,7 +118,7 @@ public class EventsView extends AbstractView {
 
 		ComboBox typeFilter = new ComboBox();
 		typeFilter.setWidth(140, Unit.PIXELS);
-		typeFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.EVENT_TYPE));
+		typeFilter.setInputPrompt(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.EVENT_TYPE));
 		typeFilter.addItems((Object[])EventType.values());
 		typeFilter.addValueChangeListener(e -> {
 			grid.setEventTypeFilter(((EventType)e.getProperty().getValue()));
@@ -127,7 +127,7 @@ public class EventsView extends AbstractView {
 
 		ComboBox diseaseFilter = new ComboBox();
 		diseaseFilter.setWidth(140, Unit.PIXELS);
-		diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.DISEASE));
+		diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.DISEASE));
 		diseaseFilter.addItems((Object[])Disease.values());
 		diseaseFilter.addValueChangeListener(e -> {
 			grid.setDiseaseFilter(((Disease)e.getProperty().getValue()));
@@ -173,7 +173,7 @@ public class EventsView extends AbstractView {
 		{
 			// Show archived/active cases button
 			if (CurrentUser.getCurrent().hasUserRight(UserRight.EVENT_VIEW_ARCHIVED)) {
-				Button switchArchivedActiveButton = new Button(I18nProperties.getText("showArchivedEvents"));
+				Button switchArchivedActiveButton = new Button(I18nProperties.getCaption("showArchivedEvents"));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
 					if (!grid.getSelectedRows().isEmpty()) {
@@ -182,7 +182,7 @@ public class EventsView extends AbstractView {
 					showArchivedEvents = !showArchivedEvents;
 					if (!showArchivedEvents) {
 						getViewTitleLabel().setValue(originalViewTitle);
-						switchArchivedActiveButton.setCaption(I18nProperties.getText("showArchivedEvents"));
+						switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showArchivedEvents"));
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 						if (archiveItem != null && dearchiveItem != null) {
 							dearchiveItem.setVisible(false);
@@ -191,8 +191,8 @@ public class EventsView extends AbstractView {
 						grid.getEventCriteria().archived(false);
 						grid.reload();
 					} else {
-						getViewTitleLabel().setValue(I18nProperties.getPrefixFragment("View", viewName.replaceAll("/", ".") + ".archive"));
-						switchArchivedActiveButton.setCaption(I18nProperties.getText("showActiveEvents"));
+						getViewTitleLabel().setValue(I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", ".") + ".archive"));
+						switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showActiveEvents"));
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
 						if (archiveItem != null && dearchiveItem != null) {
 							archiveItem.setVisible(false);
@@ -233,7 +233,7 @@ public class EventsView extends AbstractView {
 						}
 					});
 				};
-				archiveItem = bulkOperationsItem.addItem(I18nProperties.getText("archive"), FontAwesome.ARCHIVE, archiveCommand);
+				archiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption("archive"), FontAwesome.ARCHIVE, archiveCommand);
 
 				Command dearchiveCommand = selectedItem -> {
 					ControllerProvider.getEventController().dearchiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -243,7 +243,7 @@ public class EventsView extends AbstractView {
 						}
 					});
 				};
-				dearchiveItem = bulkOperationsItem.addItem(I18nProperties.getText("dearchive"), FontAwesome.ARCHIVE, dearchiveCommand);
+				dearchiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption("dearchive"), FontAwesome.ARCHIVE, dearchiveCommand);
 				dearchiveItem.setVisible(false);
 
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);

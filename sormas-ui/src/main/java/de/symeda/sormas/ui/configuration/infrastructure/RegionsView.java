@@ -28,7 +28,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -92,7 +92,7 @@ public class RegionsView extends AbstractConfigurationView {
 
 		TextField searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
-		searchField.setInputPrompt(I18nProperties.getText(SEARCH));
+		searchField.setInputPrompt(I18nProperties.getCaption(SEARCH));
 		searchField.addTextChangeListener(e -> {
 			grid.filterByText(e.getText());
 		});

@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.Month;
 import de.symeda.sormas.api.MonthOfYear;
@@ -72,6 +71,7 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.facility.FacilityHelper;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
@@ -688,9 +688,9 @@ public class CaseFacadeEjb implements CaseFacade {
 			for (User recipient : messageRecipients) {
 				try {
 					messagingService.sendMessage(recipient,
-							I18nProperties.getMessage(MessagingService.SUBJECT_CASE_CLASSIFICATION_CHANGED),
+							I18nProperties.getString(MessagingService.SUBJECT_CASE_CLASSIFICATION_CHANGED),
 							String.format(
-									I18nProperties.getMessage(MessagingService.CONTENT_CASE_CLASSIFICATION_CHANGED),
+									I18nProperties.getString(MessagingService.CONTENT_CASE_CLASSIFICATION_CHANGED),
 									DataHelper.getShortUuid(newCase.getUuid()),
 									newCase.getCaseClassification().toString()),
 							MessageType.EMAIL, MessageType.SMS);
@@ -1167,8 +1167,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (User recipient : messageRecipients) {
 			try {
 				messagingService.sendMessage(recipient,
-						I18nProperties.getMessage(MessagingService.SUBJECT_CASE_INVESTIGATION_DONE),
-						String.format(I18nProperties.getMessage(MessagingService.CONTENT_CASE_INVESTIGATION_DONE),
+						I18nProperties.getString(MessagingService.SUBJECT_CASE_INVESTIGATION_DONE),
+						String.format(I18nProperties.getString(MessagingService.CONTENT_CASE_INVESTIGATION_DONE),
 								DataHelper.getShortUuid(caze.getUuid())),
 						MessageType.EMAIL, MessageType.SMS);
 			} catch (NotificationDeliveryFailedException e) {

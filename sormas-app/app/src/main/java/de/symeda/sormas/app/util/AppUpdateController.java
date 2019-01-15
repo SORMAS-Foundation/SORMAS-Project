@@ -29,8 +29,8 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.FileProvider;
+import androidx.fragment.app.FragmentActivity;
+import androidx.core.content.FileProvider;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -364,11 +364,6 @@ public class AppUpdateController {
                 context.unregisterReceiver(this);
                 ConfigProvider.setCurrentAppDownloadId(null);
 
-                if (progressDialog != null) {
-                    progressDialog.dismiss();
-                    progressDialog = null;
-                }
-
                 // Check if the download has been successful
                 File file = new File(activity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName);
                 if (!file.exists()) {
@@ -379,6 +374,8 @@ public class AppUpdateController {
                 // If progressDialog is null, the download has been completed in the background
                 // and the install prompt should not be shown automatically
                 if (progressDialog != null) {
+                    progressDialog.dismiss();
+                    progressDialog = null;
                     displayedDialog = buildInstallAppDialog();
                     displayedDialog.show();
                 }

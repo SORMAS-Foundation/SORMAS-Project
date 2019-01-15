@@ -28,7 +28,7 @@ import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
@@ -84,7 +84,7 @@ public class EventGrid extends Grid {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				EventIndexDto event = (EventIndexDto)itemId;
-				return String.format(I18nProperties.getPrefixFieldCaption(EventIndexDto.I18N_PREFIX, PENDING_EVENT_TASKS + "Format"),
+				return String.format(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, PENDING_EVENT_TASKS + "Format"),
 						FacadeProvider.getTaskFacade().getPendingTaskCountByEvent(event.toReference()));
 			}
 			@Override
@@ -115,7 +115,7 @@ public class EventGrid extends Grid {
 		getColumn(EventIndexDto.REPORT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
 		
 		for(Column column : getColumns()) {
-			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
+			column.setHeaderCaption(I18nProperties.getPrefixCaption(
 					EventIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 		

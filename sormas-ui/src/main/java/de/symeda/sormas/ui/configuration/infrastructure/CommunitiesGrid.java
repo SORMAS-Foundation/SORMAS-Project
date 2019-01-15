@@ -32,7 +32,7 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.CommunityCriteria;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.DistrictDto;
@@ -92,7 +92,7 @@ public class CommunitiesGrid extends Grid {
 		setColumns(CommunityDto.NAME, REGION_LOC, CommunityDto.DISTRICT);
 		
         for (Column column : getColumns()) {
-        	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
+        	column.setHeaderCaption(I18nProperties.getPrefixCaption(
         			CommunityDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
 		

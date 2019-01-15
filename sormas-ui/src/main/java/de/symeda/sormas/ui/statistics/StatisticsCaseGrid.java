@@ -25,7 +25,7 @@ import org.apache.commons.collections.CollectionUtils;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Grid;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
@@ -74,7 +74,7 @@ public class StatisticsCaseGrid extends Grid {
 		// If no displayed attributes are selected, simply show the total number of cases
 		if (rowsAttribute == null && columnsAttribute == null) {
 			addColumn(CASE_COUNT_COLUMN);
-			getColumn(CASE_COUNT_COLUMN).setHeaderCaption(I18nProperties.getFragment(StatisticsHelper.CASE_COUNT));
+			getColumn(CASE_COUNT_COLUMN).setHeaderCaption(I18nProperties.getCaption(StatisticsHelper.CASE_COUNT));
 			addRow(new Object[]{String.valueOf(content.get(0)[0])});
 			return;
 		}
@@ -89,7 +89,7 @@ public class StatisticsCaseGrid extends Grid {
 		if (columnsAttribute == null && columnsSubAttribute == null) {
 			// When no column grouping has been selected, simply display the number of cases for the respective row
 			addColumn(CASE_COUNT_COLUMN);
-			getColumn(CASE_COUNT_COLUMN).setHeaderCaption(I18nProperties.getFragment(StatisticsHelper.CASE_COUNT));
+			getColumn(CASE_COUNT_COLUMN).setHeaderCaption(I18nProperties.getCaption(StatisticsHelper.CASE_COUNT));
 		} else {
 			boolean addColumnUnknown = false;
 			// Iterate over content and add new columns to the list
@@ -125,14 +125,14 @@ public class StatisticsCaseGrid extends Grid {
 			// Add the column to display unknown numbers if required
 			if (addColumnUnknown) {
 				Column column = addColumn(UNKNOWN_COLUMN);
-				column.setHeaderCaption(I18nProperties.getFragment(StatisticsHelper.UNKNOWN));
+				column.setHeaderCaption(I18nProperties.getCaption(StatisticsHelper.UNKNOWN));
 				column.setSortable(false);
 				column.setMaximumWidth(120);
 			}
 
 			// Add total column
 			Column totalColumn = addColumn(TOTAL_COLUMN);
-			totalColumn.setHeaderCaption(I18nProperties.getFragment(StatisticsHelper.TOTAL));
+			totalColumn.setHeaderCaption(I18nProperties.getCaption(StatisticsHelper.TOTAL));
 			totalColumn.setSortable(false);
 		}
 
@@ -140,7 +140,7 @@ public class StatisticsCaseGrid extends Grid {
 		if (rowsAttribute == null && rowsSubAttribute == null) {
 			// When no row grouping has been selected, simply display the number of cases for the respective column
 			Object[] row = new Object[getColumns().size()];
-			row[0] = I18nProperties.getFragment(StatisticsHelper.CASE_COUNT);
+			row[0] = I18nProperties.getCaption(StatisticsHelper.CASE_COUNT);
 			long totalAmountOfCases = 0;
 			for (int i = 0; i < content.size(); i++) {
 				Object[] entry = content.get(i);
@@ -176,7 +176,7 @@ public class StatisticsCaseGrid extends Grid {
 						columnTotals[columnTotals.length - 1] += (long) entry[0];
 					} else {
 						unknownRow = new Object[getColumns().size()];
-						unknownRow[0] = I18nProperties.getFragment(StatisticsHelper.UNKNOWN);
+						unknownRow[0] = I18nProperties.getCaption(StatisticsHelper.UNKNOWN);
 						unknownRow[1] = entry[0].toString();
 						columnTotals[columnTotals.length - 1] += (long) entry[0];
 					}
@@ -196,7 +196,7 @@ public class StatisticsCaseGrid extends Grid {
 						if (StatisticsHelper.isNullOrUnknown(entry[1])) {
 							if (unknownRow == null) {
 								unknownRow = new Object[getColumns().size()];
-								unknownRow[0] = I18nProperties.getFragment(StatisticsHelper.UNKNOWN);
+								unknownRow[0] = I18nProperties.getCaption(StatisticsHelper.UNKNOWN);
 							}
 						} else {
 							currentRow = new Object[getColumns().size()];
@@ -267,7 +267,7 @@ public class StatisticsCaseGrid extends Grid {
 
 			// Add total row
 			Object[] totalRow = new Object[getColumns().size()];
-			totalRow[0] = I18nProperties.getFragment(StatisticsHelper.TOTAL);
+			totalRow[0] = I18nProperties.getCaption(StatisticsHelper.TOTAL);
 			for (int i = 1; i < columnTotals.length; i++) {
 				if (columnTotals[i] > 0) {
 					totalRow[i] = String.valueOf(columnTotals[i]);

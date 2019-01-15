@@ -24,7 +24,8 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -108,10 +109,10 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 				healthFacilityDetails.setRequired(visibleAndRequired);
 				
 				if (otherHealthFacility) {
-					healthFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
+					healthFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
 				}
 				if (noneHealthFacility) {
-					healthFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
+					healthFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
 				}
 				if (!visibleAndRequired) {
 					healthFacilityDetails.clear();
@@ -125,9 +126,9 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		
 		// Validations
 		admissionDate.addValidator(new DateComparisonValidator(admissionDate, dischargeDate, true, false, 
-				I18nProperties.getValidationError("beforeDate", admissionDate.getCaption(), dischargeDate.getCaption())));
+				I18nProperties.getValidationError(Validations.beforeDate, admissionDate.getCaption(), dischargeDate.getCaption())));
 		dischargeDate.addValidator(new DateComparisonValidator(dischargeDate, admissionDate, false, false, 
-				I18nProperties.getValidationError("afterDate", dischargeDate.getCaption(), admissionDate.getCaption())));
+				I18nProperties.getValidationError(Validations.afterDate, dischargeDate.getCaption(), admissionDate.getCaption())));
 
 		FieldHelper.addSoftRequiredStyle(admissionDate, dischargeDate, facilityCommunity, healthFacilityDetails);
 		setRequired(true,

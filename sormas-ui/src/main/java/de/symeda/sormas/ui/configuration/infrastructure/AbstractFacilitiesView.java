@@ -26,7 +26,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -99,7 +99,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 
 		TextField searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
-		searchField.setInputPrompt(I18nProperties.getText(SEARCH));
+		searchField.setInputPrompt(I18nProperties.getCaption(SEARCH));
 		searchField.addTextChangeListener(e -> {
 			grid.filterByText(e.getText());
 		});
@@ -108,7 +108,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 
 		ComboBox regionFilter = new ComboBox();
 		regionFilter.setWidth(140, Unit.PIXELS);
-		regionFilter.setCaption(I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX, FacilityDto.REGION));
+		regionFilter.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.REGION));
 		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 		regionFilter.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
@@ -121,7 +121,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 
 		districtFilter = new ComboBox();
 		districtFilter.setWidth(140, Unit.PIXELS);
-		districtFilter.setCaption(I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX, FacilityDto.DISTRICT));
+		districtFilter.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.DISTRICT));
 		districtFilter.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
 			grid.setDistrictFilter(district);
@@ -132,7 +132,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 
 		communityFilter = new ComboBox();
 		communityFilter.setWidth(140, Unit.PIXELS);
-		communityFilter.setCaption(I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX, FacilityDto.COMMUNITY));
+		communityFilter.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.COMMUNITY));
 		communityFilter.addValueChangeListener(e -> {
 			CommunityReferenceDto community = (CommunityReferenceDto) e.getProperty().getValue();
 			grid.setCommunityFilter(community);

@@ -33,8 +33,8 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.user.UserRole;
@@ -251,8 +251,8 @@ public class VisitFacadeEjb implements VisitFacade {
 						UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
 				for (User recipient : messageRecipients) {
 					try { 
-						messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_CONTACT_SYMPTOMATIC), 
-								String.format(I18nProperties.getMessage(MessagingService.CONTENT_CONTACT_SYMPTOMATIC), DataHelper.getShortUuid(contact.getUuid()), DataHelper.getShortUuid(contactCase.getUuid())), 
+						messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_CONTACT_SYMPTOMATIC), 
+								String.format(I18nProperties.getString(MessagingService.CONTENT_CONTACT_SYMPTOMATIC), DataHelper.getShortUuid(contact.getUuid()), DataHelper.getShortUuid(contactCase.getUuid())), 
 								MessageType.EMAIL, MessageType.SMS);
 					} catch (NotificationDeliveryFailedException e) {
 						logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about a contact that has become symptomatic. "

@@ -20,8 +20,9 @@ package de.symeda.sormas.app.contact.edit;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.app.R;
@@ -40,7 +41,7 @@ public final class ContactValidator {
                     Date lastContactDate = contentBinding.contactLastContactDate.getValue();
                     Date contactReferenceDate = contact.getReportDateTime();
                     if (lastContactDate.after(contactReferenceDate)) {
-                        contentBinding.contactLastContactDate.enableErrorState(I18nProperties.getValidationError("beforeDate", contentBinding.contactLastContactDate.getCaption(),
+                        contentBinding.contactLastContactDate.enableErrorState(I18nProperties.getValidationError(Validations.beforeDate, contentBinding.contactLastContactDate.getCaption(),
                                 contentBinding.contactReportDateTime.getCaption()));
                     }
                 }
@@ -56,7 +57,7 @@ public final class ContactValidator {
                     Date lastContactDate = contentBinding.contactLastContactDate.getValue();
                     Date contactReferenceDate = contact.getReportDateTime();
                     if (lastContactDate.after(contactReferenceDate)) {
-                        contentBinding.contactLastContactDate.enableErrorState(I18nProperties.getValidationError("beforeDate", contentBinding.contactLastContactDate.getCaption(), I18nProperties.getPrefixFieldCaption(ContactDto.I18N_PREFIX, ContactDto.REPORT_DATE_TIME)));
+                        contentBinding.contactLastContactDate.enableErrorState(I18nProperties.getValidationError(Validations.beforeDate, contentBinding.contactLastContactDate.getCaption(), I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.REPORT_DATE_TIME)));
                     }
                 }
             };

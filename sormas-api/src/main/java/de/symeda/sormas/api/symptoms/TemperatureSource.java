@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.symptoms;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum TemperatureSource {
 	AXILLARY, 

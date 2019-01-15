@@ -42,7 +42,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -155,12 +155,12 @@ public class ContactsView extends AbstractView {
 			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(ContactExportDto.class,
 					(Integer start, Integer max) -> FacadeProvider.getContactFacade().getExportList(CurrentUser.getCurrent().getUuid(), grid.getFilterCriteria(), start, max), 
 					propertyId -> {
-						return I18nProperties.getPrefixFieldCaption(ContactExportDto.I18N_PREFIX, propertyId,
-								I18nProperties.getPrefixFieldCaption(ContactDto.I18N_PREFIX, propertyId,
-										I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, propertyId,
-												I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, propertyId,
-														I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, propertyId,
-																I18nProperties.getPrefixFieldCaption(HospitalizationDto.I18N_PREFIX, propertyId))))));
+						return I18nProperties.getPrefixCaption(ContactExportDto.I18N_PREFIX, propertyId,
+								I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, propertyId,
+										I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
+												I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, propertyId,
+														I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId,
+																I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId))))));
 					},
 					"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
@@ -185,7 +185,7 @@ public class ContactsView extends AbstractView {
 
 		classificationFilter = new ComboBox();
 		classificationFilter.setWidth(140, Unit.PIXELS);
-		classificationFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CLASSIFICATION));
+		classificationFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CLASSIFICATION));
 		classificationFilter.addItems((Object[]) ContactClassification.values());
 		classificationFilter.addValueChangeListener(e -> {
 			grid.setClassificationFilter((ContactClassification) e.getProperty().getValue());
@@ -194,7 +194,7 @@ public class ContactsView extends AbstractView {
 
 		diseaseFilter = new ComboBox();
 		diseaseFilter.setWidth(140, Unit.PIXELS);
-		diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISEASE));
+		diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISEASE));
 		diseaseFilter.addItems((Object[])Disease.values());
 		diseaseFilter.addValueChangeListener(e -> {
 			grid.setDiseaseFilter(((Disease)e.getProperty().getValue()));
@@ -206,7 +206,7 @@ public class ContactsView extends AbstractView {
 		regionFilter = new ComboBox();
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(140, Unit.PIXELS);
-			regionFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_REGION_UUID));
+			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_REGION_UUID));
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
@@ -217,7 +217,7 @@ public class ContactsView extends AbstractView {
 
 		districtFilter = new ComboBox();
 		districtFilter.setWidth(140, Unit.PIXELS);
-		districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISTRICT_UUID));
+		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISTRICT_UUID));
 		districtFilter.setDescription("Select a district in the state");
 		districtFilter.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
@@ -244,7 +244,7 @@ public class ContactsView extends AbstractView {
 
 		facilityFilter = new ComboBox();
 		facilityFilter.setWidth(140, Unit.PIXELS);
-		facilityFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_HEALTH_FACILITY_UUID));
+		facilityFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_HEALTH_FACILITY_UUID));
 		facilityFilter.setDescription("Select a facility in the LGA");
 		facilityFilter.addValueChangeListener(e -> {
 			FacilityReferenceDto facility = (FacilityReferenceDto) e.getProperty().getValue();
@@ -266,7 +266,7 @@ public class ContactsView extends AbstractView {
 
 		officerFilter = new ComboBox();
 		officerFilter.setWidth(140, Unit.PIXELS);
-		officerFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
+		officerFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
 		if (user.getRegion() != null) {
 			officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.CONTACT_OFFICER));
 		}
@@ -278,7 +278,7 @@ public class ContactsView extends AbstractView {
 
 		followUpStatusFilter = new ComboBox();
 		followUpStatusFilter.setWidth(140, Unit.PIXELS);
-		followUpStatusFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.FOLLOW_UP_STATUS));
+		followUpStatusFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.FOLLOW_UP_STATUS));
 		followUpStatusFilter.addItems((Object[])FollowUpStatus.values());
 		followUpStatusFilter.addValueChangeListener(e -> {
 			grid.setFollowUpStatusFilter(((FollowUpStatus)e.getProperty().getValue()));
@@ -296,7 +296,7 @@ public class ContactsView extends AbstractView {
 
 		searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
-		searchField.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, SEARCH_FIELD));
+		searchField.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, SEARCH_FIELD));
 		searchField.addTextChangeListener(e -> {
 			grid.filterByText(e.getText());
 		});
@@ -332,19 +332,19 @@ public class ContactsView extends AbstractView {
 		{
 			// Show archived/active cases button
 			if (CurrentUser.getCurrent().hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
-				Button switchArchivedActiveButton = new Button(I18nProperties.getText("showArchivedContacts"));
+				Button switchArchivedActiveButton = new Button(I18nProperties.getCaption("showArchivedContacts"));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
 					showArchivedContacts = !showArchivedContacts;
 					if (!showArchivedContacts) {
 						getViewTitleLabel().setValue(originalViewTitle);
-						switchArchivedActiveButton.setCaption(I18nProperties.getText("showArchivedContacts"));
+						switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showArchivedContacts"));
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 						grid.getFilterCriteria().archived(false);
 						grid.reload();
 					} else {
-						getViewTitleLabel().setValue(I18nProperties.getPrefixFragment("View", viewName.replaceAll("/", ".") + ".archive"));
-						switchArchivedActiveButton.setCaption(I18nProperties.getText("showActiveContacts"));
+						getViewTitleLabel().setValue(I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", ".") + ".archive"));
+						switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showActiveContacts"));
 						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
 						grid.getFilterCriteria().archived(true);
 						grid.reload();

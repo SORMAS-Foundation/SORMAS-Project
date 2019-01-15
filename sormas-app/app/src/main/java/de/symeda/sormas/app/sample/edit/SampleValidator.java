@@ -20,7 +20,8 @@ package de.symeda.sormas.app.sample.edit;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.app.databinding.FragmentSampleEditLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentSampleNewLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
@@ -34,7 +35,7 @@ public class SampleValidator {
                 if (contentBinding.sampleSampleDateTime.getValue() != null && contentBinding.sampleShipmentDate.getValue() != null) {
                     if (((Date) contentBinding.sampleSampleDateTime.getValue()).after(contentBinding.sampleShipmentDate.getValue())) {
                         contentBinding.sampleSampleDateTime.enableErrorState(
-                                I18nProperties.getValidationError("beforeDate",
+                                I18nProperties.getValidationError(Validations.beforeDate,
                                         contentBinding.sampleSampleDateTime.getCaption(),
                                         contentBinding.sampleShipmentDate.getCaption()));
                     }
@@ -48,7 +49,7 @@ public class SampleValidator {
                 if (contentBinding.sampleShipmentDate.getValue() != null && contentBinding.sampleSampleDateTime.getValue() != null) {
                     if (contentBinding.sampleShipmentDate.getValue().before((Date) contentBinding.sampleSampleDateTime.getValue())) {
                         contentBinding.sampleShipmentDate.enableErrorState(
-                                I18nProperties.getValidationError("afterDate",
+                                I18nProperties.getValidationError(Validations.afterDate,
                                         contentBinding.sampleShipmentDate.getCaption(),
                                         contentBinding.sampleSampleDateTime.getCaption()));
                     }
@@ -67,7 +68,7 @@ public class SampleValidator {
                 if (contentBinding.sampleSampleDateTime.getValue() != null && contentBinding.sampleShipmentDate.getValue() != null) {
                     if (((Date) contentBinding.sampleSampleDateTime.getValue()).after(contentBinding.sampleShipmentDate.getValue())) {
                         contentBinding.sampleSampleDateTime.enableErrorState(
-                                I18nProperties.getValidationError("beforeDate",
+                                I18nProperties.getValidationError(Validations.beforeDate,
                                         contentBinding.sampleSampleDateTime.getCaption(),
                                         contentBinding.sampleShipmentDate.getCaption()));
                     }
@@ -81,7 +82,7 @@ public class SampleValidator {
                 if (contentBinding.sampleShipmentDate.getValue() != null && contentBinding.sampleSampleDateTime.getValue() != null) {
                     if (contentBinding.sampleShipmentDate.getValue().before((Date) contentBinding.sampleSampleDateTime.getValue())) {
                         contentBinding.sampleShipmentDate.enableErrorState(
-                                I18nProperties.getValidationError("afterDate",
+                                I18nProperties.getValidationError(Validations.afterDate,
                                         contentBinding.sampleShipmentDate.getCaption(),
                                         contentBinding.sampleSampleDateTime.getCaption()));
                     }

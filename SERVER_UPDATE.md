@@ -39,6 +39,7 @@ All commands mentioned are linux commands.
 For information on what libs are used see pom.xml in sormas-base project: https://git.symeda/sormas/sormas/blob/development/sormas-base/pom.xml
 * stop server: ``service payara-sormas stop``
 * ``rm /opt/domains/sormas/lib/*.jar``
+* ``cd /root/deploy/sormas/$(date +%F)`` (just to make sure you're in the right directory)
 * ``cp ./serverlibs/* /opt/domains/sormas/lib/``
 
 ## OSGi Bundles 
@@ -77,7 +78,7 @@ Only when SORMAS versions pre 1.10 where installed on the server.
 
 ## Web Applications
 * ``service payara-sormas start``
-* ``cd /root/deploy/sormas/$(date +%F) (just to make sure you're in the right directory)``
+* ``cd /root/deploy/sormas/$(date +%F)`` (just to make sure you're in the right directory)
 * ``cp apps/*.ear /opt/domains/sormas/autodeploy/``
 * ``cp apps/*.war /opt/domains/sormas/autodeploy/``
 * ``cp android/release/*.apk /var/www/sormas/downloads/``

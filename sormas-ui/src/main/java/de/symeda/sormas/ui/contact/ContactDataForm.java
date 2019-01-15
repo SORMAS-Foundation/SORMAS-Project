@@ -38,7 +38,8 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -163,7 +164,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			FollowUpStatus followUpStatus = statusField.getValue();
 			if (followUpStatus == FollowUpStatus.FOLLOW_UP) {
 				
-		    	Button cancelButton = new Button(I18nProperties.getFragment("Contact.cancelFollowUp"));
+		    	Button cancelButton = new Button(I18nProperties.getCaption("Contact.cancelFollowUp"));
 		    	cancelButton.setWidth(100, Unit.PERCENTAGE);
 		    	cancelButton.addClickListener(new ClickListener() {
 					@Override
@@ -177,7 +178,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				});
 				getContent().addComponent(cancelButton, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
 
-		    	Button lostButton = new Button(I18nProperties.getFragment("Contact.lostToFollowUp"));
+		    	Button lostButton = new Button(I18nProperties.getCaption("Contact.lostToFollowUp"));
 		    	lostButton.setWidth(100, Unit.PERCENTAGE);
 		    	lostButton.addClickListener(new ClickListener() {
 					@Override
@@ -194,7 +195,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			} else if (followUpStatus == FollowUpStatus.CANCELED
 					|| followUpStatus == FollowUpStatus.LOST) {
 
-		    	Button resumeButton = new Button(I18nProperties.getFragment("Contact.resumeFollowUp"));
+		    	Button resumeButton = new Button(I18nProperties.getCaption("Contact.resumeFollowUp"));
 		    	resumeButton.addStyleName(CssStyles.FORCE_CAPTION);
 		    	resumeButton.setWidth(100, Unit.PERCENTAGE);
 		    	resumeButton.addClickListener(new ClickListener() {
@@ -220,7 +221,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     		}
     	}
     	if (getValue() != null) {
-	    	dateField.addValidator(new DateRangeValidator(I18nProperties.getValidationError("beforeDate", dateField.getCaption(), getField(ContactDto.REPORT_DATE_TIME).getCaption()),
+	    	dateField.addValidator(new DateRangeValidator(I18nProperties.getValidationError(Validations.beforeDate, dateField.getCaption(), getField(ContactDto.REPORT_DATE_TIME).getCaption()),
 	    			null, new LocalDate(getValue().getReportDateTime()).plusDays(1).toDate(), Resolution.SECOND));
     	}
     }

@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.facility;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 
 public class FacilityHelper {
@@ -38,13 +38,13 @@ public class FacilityHelper {
 	public static String buildFacilityString(String facilityUuid, String facilityName) {
 		if (facilityUuid != null) {
 			if (facilityUuid.equals(FacilityDto.OTHER_FACILITY_UUID)) {
-				return I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX, FacilityDto.OTHER_FACILITY);
+				return I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.OTHER_FACILITY);
 			}
 			if (facilityUuid.equals(FacilityDto.NONE_FACILITY_UUID)) {
-				return I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX, FacilityDto.NO_FACILITY);
+				return I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.NO_FACILITY);
 			}
 			if (facilityUuid.equals(FacilityDto.OTHER_LABORATORY_UUID)) {
-				return I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX, FacilityDto.OTHER_LABORATORY);
+				return I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.OTHER_LABORATORY);
 			}
 		}
 

@@ -32,7 +32,7 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -82,7 +82,7 @@ public class FacilitiesGrid extends Grid {
 				FacilityDto.LATITUDE, FacilityDto.LONGITUDE);
 
 		for (Column column : getColumns()) {
-			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX,
+			column.setHeaderCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX,
 					column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 

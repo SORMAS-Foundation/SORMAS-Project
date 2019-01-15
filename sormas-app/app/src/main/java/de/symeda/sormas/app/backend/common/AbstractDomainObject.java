@@ -18,7 +18,7 @@
 
 package de.symeda.sormas.app.backend.common;
 
-import android.databinding.BaseObservable;
+import androidx.databinding.BaseObservable;
 import android.util.Log;
 
 import com.googlecode.openbeans.PropertyDescriptor;
@@ -34,7 +34,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
 @MappedSuperclass
 public class AbstractDomainObject extends BaseObservable implements Serializable, Cloneable  {
@@ -278,6 +278,6 @@ public class AbstractDomainObject extends BaseObservable implements Serializable
 	}
 
 	public String getEntityName() {
-		return I18nProperties.getFieldCaption(getI18nPrefix());
+		return I18nProperties.getCaption(getI18nPrefix());
 	}
 }

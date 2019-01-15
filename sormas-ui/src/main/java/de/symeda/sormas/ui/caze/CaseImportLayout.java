@@ -52,7 +52,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonIndexDto;
@@ -302,9 +302,9 @@ public class CaseImportLayout extends VerticalLayout {
 					}
 				};
 				selectOrCreateComponent.addDiscardListener(discardListener);
-				selectOrCreateComponent.getDiscardButton().setCaption(I18nProperties.getText("cancel"));
+				selectOrCreateComponent.getDiscardButton().setCaption(I18nProperties.getCaption("cancel"));
 
-				Button skipButton = new Button(I18nProperties.getText("skip"));
+				Button skipButton = new Button(I18nProperties.getCaption("skip"));
 				skipButton.addClickListener(e -> {
 					currentUI.accessSynchronously(new Runnable() {
 						@Override

@@ -42,7 +42,7 @@ import java.util.concurrent.Callable;
 
 import javax.persistence.NonUniqueResultException;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -590,7 +590,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                                     "'; Yours: '" + DataHelper.toStringNullable(currentFieldValue) +
                                     "'; Server: '" + DataHelper.toStringNullable(sourceFieldValue) + "'");
 
-                            conflictStringBuilder.append(I18nProperties.getFieldCaption(source.getI18nPrefix() + "." + property.getName()));
+                            conflictStringBuilder.append(I18nProperties.getCaption(source.getI18nPrefix() + "." + property.getName()));
                             conflictStringBuilder.append("<br/><i>");
                             conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_yours));
                             conflictStringBuilder.append("</i>");

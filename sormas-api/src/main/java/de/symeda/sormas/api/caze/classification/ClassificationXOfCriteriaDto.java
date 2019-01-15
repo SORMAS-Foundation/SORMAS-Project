@@ -20,8 +20,9 @@ package de.symeda.sormas.api.caze.classification;
 import java.util.Arrays;
 import java.util.List;
 
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 
@@ -67,7 +68,7 @@ public class ClassificationXOfCriteriaDto extends ClassificationCriteriaDto impl
 
 	@Override
 	public String getCriteriaName() {
-		return "<b>" + parseAmountNumber() + " " + I18nProperties.getText("of").toUpperCase() + "</b>";
+		return "<b>" + parseAmountNumber() + " " + I18nProperties.getString(Strings.of).toUpperCase() + "</b>";
 	}
 
 	@Override
@@ -78,29 +79,29 @@ public class ClassificationXOfCriteriaDto extends ClassificationCriteriaDto impl
 	protected String parseAmountNumber() {
 		switch (requiredAmount) {
 		case 1:
-			return I18nProperties.getText("one").toUpperCase();
+			return I18nProperties.getString(Strings.one).toUpperCase();
 		case 2:
-			return I18nProperties.getText("two").toUpperCase();
+			return I18nProperties.getString(Strings.two).toUpperCase();
 		case 3:
-			return I18nProperties.getText("three").toUpperCase();
+			return I18nProperties.getString(Strings.three).toUpperCase();
 		case 4:
-			return I18nProperties.getText("four").toUpperCase();
+			return I18nProperties.getString(Strings.four).toUpperCase();
 		case 5:
-			return I18nProperties.getText("five").toUpperCase();
+			return I18nProperties.getString(Strings.five).toUpperCase();
 		case 6:
-			return I18nProperties.getText("six").toUpperCase();
+			return I18nProperties.getString(Strings.six).toUpperCase();
 		case 7:
-			return I18nProperties.getText("seven").toUpperCase();
+			return I18nProperties.getString(Strings.seven).toUpperCase();
 		case 8:
-			return I18nProperties.getText("eight").toUpperCase();
+			return I18nProperties.getString(Strings.eight).toUpperCase();
 		case 9:
-			return I18nProperties.getText("nine").toUpperCase();
+			return I18nProperties.getString(Strings.nine).toUpperCase();
 		case 10:
-			return I18nProperties.getText("ten").toUpperCase();
+			return I18nProperties.getString(Strings.ten).toUpperCase();
 		case 11:
-			return I18nProperties.getText("eleven").toUpperCase();
+			return I18nProperties.getString(Strings.eleven).toUpperCase();
 		case 12:
-			return I18nProperties.getText("twelve").toUpperCase();
+			return I18nProperties.getString(Strings.twelve).toUpperCase();
 		default:
 			return Integer.toString(requiredAmount);
 		}
@@ -141,7 +142,7 @@ public class ClassificationXOfCriteriaDto extends ClassificationCriteriaDto impl
 		@Override
 		public String buildDescription() {
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("<b> ").append(I18nProperties.getText("oneOf").toUpperCase()).append("</b>");
+			stringBuilder.append("<b> ").append(I18nProperties.getString(Strings.oneOf).toUpperCase()).append("</b>");
 			for (int i = 0; i < classificationCriteria.size(); i++) {
 				stringBuilder.append("<br/>- ");
 				stringBuilder.append(classificationCriteria.get(i).buildDescription());	
@@ -176,7 +177,7 @@ public class ClassificationXOfCriteriaDto extends ClassificationCriteriaDto impl
 					if (i + 1 < classificationCriteria.size()) {
 						stringBuilder.append(", ");
 					} else {
-						stringBuilder.append(" <b>").append( I18nProperties.getText("or").toUpperCase()).append("</b> ");
+						stringBuilder.append(" <b>").append( I18nProperties.getString(Strings.or).toUpperCase()).append("</b> ");
 					}
 				}
 				

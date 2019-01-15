@@ -20,7 +20,7 @@ package de.symeda.sormas.ui.samples;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
@@ -52,7 +52,7 @@ public class AbstractSampleView extends AbstractSubNavigationView {
 		if (caseRef != null && CurrentUser.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 			menu.addView(CaseDataView.VIEW_NAME, "Case", caseRef.getUuid(), true);
 		}
-		menu.addView(SampleDataView.VIEW_NAME, I18nProperties.getFieldCaption(SampleDto.I18N_PREFIX), params);
+		menu.addView(SampleDataView.VIEW_NAME, I18nProperties.getCaption(SampleDto.I18N_PREFIX), params);
 		infoLabel.setValue(sampleRef.getCaption());
 		infoLabelSub.setValue(DataHelper.getShortUuid(sampleRef.getUuid()));
 	}

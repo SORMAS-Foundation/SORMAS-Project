@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
@@ -127,13 +127,13 @@ public class SymptomsReadFragment extends BaseReadFragment<FragmentSymptomsReadL
                 if (symptomState != null) {
                     switch (symptomState) {
                         case YES:
-                            yesResult.add(I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, symptomPropertyId));
+                            yesResult.add(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, symptomPropertyId));
                             break;
                         case NO:
                             // ignore this
                             break;
                         case UNKNOWN:
-                            unknownResult.add(I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, symptomPropertyId));
+                            unknownResult.add(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, symptomPropertyId));
                             break;
                         default:
                             throw new IllegalArgumentException(symptomState.toString());

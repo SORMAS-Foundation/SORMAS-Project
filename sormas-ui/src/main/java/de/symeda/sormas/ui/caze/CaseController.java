@@ -46,7 +46,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -55,6 +55,7 @@ import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
@@ -386,7 +387,7 @@ public class CaseController {
 					FacadeProvider.getCaseFacade().deleteCase(cazeRef, CurrentUser.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
 				}
-			}, I18nProperties.getFieldCaption("Case"));
+			}, I18nProperties.getString(Strings.caze));
 		}
 
 		// Initialize 'Archive' button
@@ -395,9 +396,9 @@ public class CaseController {
 			Button archiveCaseButton = new Button();
 			archiveCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
 			if (archived) {
-				archiveCaseButton.setCaption(I18nProperties.getText("dearchive"));
+				archiveCaseButton.setCaption(I18nProperties.getCaption("dearchive"));
 			} else {
-				archiveCaseButton.setCaption(I18nProperties.getText("archive"));
+				archiveCaseButton.setCaption(I18nProperties.getCaption("archive"));
 			}
 			archiveCaseButton.addClickListener(e -> {
 				editView.commit();
@@ -575,20 +576,20 @@ public class CaseController {
 
 	private void archiveOrDearchiveCase(String caseUuid, boolean archive) {
 		if (archive) {
-			Label contentLabel = new Label(String.format(I18nProperties.getText("archivePrompt"), I18nProperties.getText("case").toLowerCase(), I18nProperties.getText("case").toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(I18nProperties.getText("archiveCase"), contentLabel, I18nProperties.getText("yes"), I18nProperties.getText("no"), 640, e -> {
+			Label contentLabel = new Label(String.format(I18nProperties.getString(Strings.archivePrompt), I18nProperties.getString(Strings.caze).toLowerCase(), I18nProperties.getString(Strings.caze).toLowerCase()));
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.archiveCase), contentLabel, I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 640, e -> {
 				if (e.booleanValue() == true) {
 					FacadeProvider.getCaseFacade().archiveOrDearchiveCase(caseUuid, true);
-					Notification.show(String.format(I18nProperties.getText("archiveNotification"), I18nProperties.getText("case")), Type.ASSISTIVE_NOTIFICATION);
+					Notification.show(String.format(I18nProperties.getString(Strings.archiveNotification), I18nProperties.getString(Strings.caze)), Type.ASSISTIVE_NOTIFICATION);
 					navigateToView(CaseDataView.VIEW_NAME, caseUuid, null);
 				}
 			});
 		} else {
-			Label contentLabel = new Label(String.format(I18nProperties.getText("dearchivePrompt"), I18nProperties.getText("case").toLowerCase(), I18nProperties.getText("case").toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(I18nProperties.getText("dearchiveCases"), contentLabel, I18nProperties.getText("yes"), I18nProperties.getText("no"), 640, e -> {
+			Label contentLabel = new Label(String.format(I18nProperties.getString(Strings.dearchivePrompt), I18nProperties.getString(Strings.caze).toLowerCase(), I18nProperties.getString(Strings.caze).toLowerCase()));
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.dearchiveCase), contentLabel, I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 640, e -> {
 				if (e.booleanValue()) {
 					FacadeProvider.getCaseFacade().archiveOrDearchiveCase(caseUuid, false);
-					Notification.show(String.format(I18nProperties.getText("dearchiveNotification"), I18nProperties.getText("case")), Type.ASSISTIVE_NOTIFICATION);
+					Notification.show(String.format(I18nProperties.getString(Strings.dearchiveNotification), I18nProperties.getString(Strings.caze)), Type.ASSISTIVE_NOTIFICATION);
 					navigateToView(CaseDataView.VIEW_NAME, caseUuid, null);
 				}
 			});
@@ -626,7 +627,7 @@ public class CaseController {
 		});
 		popupWindow.setWidth(860, Unit.PIXELS);
 		popupWindow.setHeight(80, Unit.PERCENTAGE);
-		popupWindow.setCaption(I18nProperties.getText("classificationRulesFor") + " " + caze.getDisease().toString());
+		popupWindow.setCaption(I18nProperties.getString(Strings.classificationRulesFor) + " " + caze.getDisease().toString());
 	}
 
 	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {

@@ -18,7 +18,7 @@
 
 package de.symeda.sormas.app.core;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
 /**
  * Created by Orson on 16/02/2018.

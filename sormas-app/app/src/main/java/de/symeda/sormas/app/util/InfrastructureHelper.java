@@ -21,7 +21,7 @@ package de.symeda.sormas.app.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -166,14 +166,14 @@ public final class InfrastructureHelper {
 
             if (otherHealthFacility) {
                 healthFacilityDetailsField.setVisibility(VISIBLE);
-                String caption = I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS);
+                String caption = I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS);
                 healthFacilityDetailsField.setCaption(caption);
                 if (healthFacilityDetailsField instanceof ControlPropertyEditField) {
                     ((ControlPropertyEditField) healthFacilityDetailsField).setHint(caption);
                 }
             } else if (noneHealthFacility) {
                 healthFacilityDetailsField.setVisibility(VISIBLE);
-                String caption = I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS);
+                String caption = I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS);
                 healthFacilityDetailsField.setCaption(caption);
                 if (healthFacilityDetailsField instanceof ControlPropertyEditField) {
                     ((ControlPropertyEditField) healthFacilityDetailsField).setHint(caption);

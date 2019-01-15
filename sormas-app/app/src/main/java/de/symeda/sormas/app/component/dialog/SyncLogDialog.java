@@ -19,8 +19,8 @@
 package de.symeda.sormas.app.component.dialog;
 
 import android.content.Context;
-import android.databinding.ViewDataBinding;
-import android.support.v4.app.FragmentActivity;
+import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.FragmentActivity;
 import android.text.Html;
 
 import java.util.ArrayList;

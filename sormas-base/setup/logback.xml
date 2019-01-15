@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
 <configuration scan="true" scanPeriod="30 seconds" debug="true">
 
 	<!-- TODO Configure EMAIL_ERROR appender for your server or STDOUT for your local development system  -->

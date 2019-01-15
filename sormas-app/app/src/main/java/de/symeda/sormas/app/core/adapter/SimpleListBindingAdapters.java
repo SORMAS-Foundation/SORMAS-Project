@@ -19,11 +19,11 @@
 package de.symeda.sormas.app.core.adapter;
 
 import android.content.Context;
-import android.databinding.BindingAdapter;
-import android.databinding.DataBindingUtil;
-import android.databinding.ObservableList;
-import android.databinding.ViewDataBinding;
-import android.databinding.adapters.ListenerUtil;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableList;
+import androidx.databinding.ViewDataBinding;
+import androidx.databinding.adapters.ListenerUtil;
 import android.os.Build;
 import android.transition.TransitionManager;
 import android.util.Log;

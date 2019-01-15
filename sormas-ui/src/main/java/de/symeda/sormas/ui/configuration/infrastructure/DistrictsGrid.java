@@ -32,7 +32,7 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictCriteria;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionDto;
@@ -76,7 +76,7 @@ public class DistrictsGrid extends Grid {
 		setColumns(DistrictDto.NAME, DistrictDto.REGION, DistrictDto.EPID_CODE, DistrictDto.POPULATION, DistrictDto.GROWTH_RATE);
 
         for (Column column : getColumns()) {
-        	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
+        	column.setHeaderCaption(I18nProperties.getPrefixCaption(
         			DistrictDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
         

@@ -30,7 +30,8 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.location.LocationDto;
@@ -85,7 +86,7 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 
 		// Info label
 
-		Label infoLabel = new Label(I18nProperties.getText("importSimilarityInfo"));
+		Label infoLabel = new Label(I18nProperties.getString(Strings.importSimilarityInfo));
 		CssStyles.style(infoLabel, CssStyles.VSPACE_3);
 		layout.addComponent(infoLabel);
 
@@ -94,7 +95,7 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 		outerCaseInfoLayout.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(outerCaseInfoLayout, CssStyles.BACKGROUND_ROUNDED_CORNERS, CssStyles.BACKGROUND_SUB_CRITERIA, CssStyles.VSPACE_3, "v-scrollable");
 
-		Label importedCaseLabel = new Label(I18nProperties.getText("importedCaseInfo"));
+		Label importedCaseLabel = new Label(I18nProperties.getString(Strings.importedCaseInfo));
 		CssStyles.style(importedCaseLabel, CssStyles.LABEL_BOLD, CssStyles.VSPACE_4);
 		outerCaseInfoLayout.addComponent(importedCaseLabel);
 
@@ -103,45 +104,45 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 		caseInfoLayout.setSizeUndefined();
 		{
 			Label diseaseField = new Label();
-			diseaseField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
+			diseaseField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
 			diseaseField.setValue(DiseaseHelper.toString(importedCase.getDisease(), importedCase.getDiseaseDetails()));
 			diseaseField.setWidthUndefined();
 			caseInfoLayout.addComponent(diseaseField);
 
 			Label caseDateField = new Label();
 			if (importedCase.getSymptoms().getOnsetDate() != null) {
-				caseDateField.setCaption(I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
+				caseDateField.setCaption(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
 				caseDateField.setValue(DateHelper.formatLocalShortDate(importedCase.getSymptoms().getOnsetDate()));
 			} else if (importedCase.getReceptionDate() != null) {
-				caseDateField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RECEPTION_DATE));
+				caseDateField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RECEPTION_DATE));
 				caseDateField.setValue(DateHelper.formatLocalShortDate(importedCase.getReceptionDate()));
 			} else {
-				caseDateField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORT_DATE));
+				caseDateField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORT_DATE));
 				caseDateField.setValue(DateHelper.formatLocalShortDate(importedCase.getReportDate()));
 			}
 			caseDateField.setWidthUndefined();
 			caseInfoLayout.addComponent(caseDateField);
 
 			Label regionField = new Label();
-			regionField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
+			regionField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
 			regionField.setValue(importedCase.getRegion().toString());
 			regionField.setWidthUndefined();
 			caseInfoLayout.addComponent(regionField);
 
 			Label districtField = new Label();
-			districtField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
+			districtField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
 			districtField.setValue(importedCase.getDistrict().toString());
 			districtField.setWidthUndefined();
 			caseInfoLayout.addComponent(districtField);
 
 			Label communityField = new Label();
-			communityField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.COMMUNITY));
+			communityField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.COMMUNITY));
 			communityField.setValue(importedCase.getCommunity().toString());
 			communityField.setWidthUndefined();
 			caseInfoLayout.addComponent(communityField);
 
 			Label facilityField = new Label();
-			facilityField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
+			facilityField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
 			facilityField.setValue(FacilityHelper.buildFacilityString(null, 
 					importedCase.getHealthFacility() != null ? importedCase.getHealthFacility().toString() : "", 
 							importedCase.getHealthFacilityDetails()));
@@ -157,7 +158,7 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 		outerPersonInfoLayout.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(outerPersonInfoLayout, CssStyles.BACKGROUND_ROUNDED_CORNERS, CssStyles.BACKGROUND_SUB_CRITERIA, CssStyles.VSPACE_3, "v-scrollable");
 
-		Label importedPersonLabel = new Label(I18nProperties.getText("importedPersonInfo"));
+		Label importedPersonLabel = new Label(I18nProperties.getString(Strings.importedPersonInfo));
 		CssStyles.style(importedPersonLabel, CssStyles.LABEL_BOLD, CssStyles.VSPACE_4);
 		outerPersonInfoLayout.addComponent(importedPersonLabel);
 
@@ -166,61 +167,61 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 		personInfoLayout.setSizeUndefined();
 		{
 			Label firstNameField = new Label();
-			firstNameField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
+			firstNameField.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
 			firstNameField.setValue(importedPerson.getFirstName());
 			firstNameField.setWidthUndefined();
 			personInfoLayout.addComponent(firstNameField);
 
 			Label lastNameField = new Label();
-			lastNameField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
+			lastNameField.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
 			lastNameField.setValue(importedPerson.getLastName());
 			lastNameField.setWidthUndefined();
 			personInfoLayout.addComponent(lastNameField);
 
 			Label nicknameField = new Label();
-			nicknameField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.NICKNAME));
+			nicknameField.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.NICKNAME));
 			nicknameField.setValue(importedPerson.getNickname());
 			nicknameField.setWidthUndefined();
 			personInfoLayout.addComponent(nicknameField);
 
 			Label ageField = new Label();
-			ageField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.APPROXIMATE_AGE));
+			ageField.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.APPROXIMATE_AGE));
 			ageField.setValue(PersonHelper.buildAgeString(importedPerson.getApproximateAge(), importedPerson.getApproximateAgeType()));
 			ageField.setWidthUndefined();
 			personInfoLayout.addComponent(ageField);
 
 			Label sexField = new Label();
-			sexField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
+			sexField.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
 			sexField.setValue(importedPerson.getSex() != null ? importedPerson.getSex().toString() : "");
 			sexField.setWidthUndefined();
 			personInfoLayout.addComponent(sexField);
 
 			Label presentConditionField = new Label();
-			presentConditionField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
+			presentConditionField.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
 			presentConditionField.setValue(importedPerson.getPresentCondition() != null ? importedPerson.getPresentCondition().toString() : null);
 			presentConditionField.setWidthUndefined();
 			personInfoLayout.addComponent(presentConditionField);
 
 			Label regionField = new Label();
-			regionField.setCaption(I18nProperties.getPrefixFieldCaption(LocationDto.I18N_PREFIX, LocationDto.REGION));
+			regionField.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.REGION));
 			regionField.setValue(importedPerson.getAddress().getRegion() != null ? importedPerson.getAddress().getRegion().toString() : "");
 			regionField.setWidthUndefined();
 			personInfoLayout.addComponent(regionField);
 
 			Label districtField = new Label();
-			districtField.setCaption(I18nProperties.getPrefixFieldCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT));
+			districtField.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT));
 			districtField.setValue(importedPerson.getAddress().getDistrict() != null ? importedPerson.getAddress().getDistrict().toString() : "");
 			districtField.setWidthUndefined();
 			personInfoLayout.addComponent(districtField);
 
 			Label communityField = new Label();
-			communityField.setCaption(I18nProperties.getPrefixFieldCaption(LocationDto.I18N_PREFIX, LocationDto.COMMUNITY));
+			communityField.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.COMMUNITY));
 			communityField.setValue(importedPerson.getAddress().getCommunity() != null ? importedPerson.getAddress().getCommunity().toString() : "");
 			communityField.setWidthUndefined();
 			personInfoLayout.addComponent(communityField);
 
 			Label cityField = new Label();
-			cityField.setCaption(I18nProperties.getPrefixFieldCaption(LocationDto.I18N_PREFIX, LocationDto.CITY));
+			cityField.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CITY));
 			cityField.setValue(importedPerson.getAddress().getCity());
 			cityField.setWidthUndefined();
 			personInfoLayout.addComponent(cityField);
@@ -232,7 +233,7 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 		// Person selection/creation
 		selectPerson = new OptionGroup(null);
 		selectPerson.addItem(SELECT_PERSON);
-		selectPerson.setItemCaption(SELECT_PERSON, I18nProperties.getFragment("Person.select"));
+		selectPerson.setItemCaption(SELECT_PERSON, I18nProperties.getCaption("Person.select"));
 		CssStyles.style(selectPerson, CssStyles.VSPACE_NONE);
 		selectPerson.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
@@ -247,7 +248,7 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 		layout.addComponent(selectPerson);
 
 		mergeCheckBox = new CheckBox();
-		mergeCheckBox.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, "mergeCase"));
+		mergeCheckBox.setCaption(I18nProperties.getPrefixCaption(I18N_PREFIX, "mergeCase"));
 		CssStyles.style(mergeCheckBox, CssStyles.VSPACE_3);
 		layout.addComponent(mergeCheckBox);
 
@@ -269,7 +270,7 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 
 		createNewPerson = new OptionGroup(null);
 		createNewPerson.addItem(CREATE_PERSON);
-		createNewPerson.setItemCaption(CREATE_PERSON, I18nProperties.getFragment("Person.createNew"));
+		createNewPerson.setItemCaption(CREATE_PERSON, I18nProperties.getCaption("Person.createNew"));
 		// Deselect grid when "create new" is selected
 		createNewPerson.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {

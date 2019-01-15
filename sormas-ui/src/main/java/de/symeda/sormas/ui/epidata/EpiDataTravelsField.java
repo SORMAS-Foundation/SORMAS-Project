@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -74,7 +74,7 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 		table.setColumnExpandRatio(PERIOD, 0);
 		
 		for (Object columnId : table.getVisibleColumns()) {
-			table.setColumnHeader(columnId, I18nProperties.getPrefixFieldCaption(EpiDataTravelDto.I18N_PREFIX, (String) columnId));
+			table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(EpiDataTravelDto.I18N_PREFIX, (String) columnId));
 		}
 	}
 	
@@ -123,7 +123,7 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 					popupWindow.close();
 					EpiDataTravelsField.this.removeEntry(entry);
 				}
-			}, I18nProperties.getFieldCaption("EpiDataTravel"));
+			}, I18nProperties.getCaption("EpiDataTravel"));
 		}
 	}
 	

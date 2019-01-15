@@ -18,7 +18,7 @@
 
 package de.symeda.sormas.app.core;
 
-import android.databinding.ViewDataBinding;
+import androidx.databinding.ViewDataBinding;
 
 /**
  * Created by Orson on 12/02/2018.

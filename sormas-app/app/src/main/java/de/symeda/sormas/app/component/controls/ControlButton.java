@@ -32,7 +32,7 @@ import android.view.ViewGroup;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.StateDrawableBuilder;
 
-public class ControlButton extends android.support.v7.widget.AppCompatButton {
+public class ControlButton extends androidx.appcompat.widget.AppCompatButton {
 
     private ControlButtonType buttonType;
     private Drawable iconStart;

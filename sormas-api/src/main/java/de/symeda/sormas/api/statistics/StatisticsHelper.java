@@ -42,9 +42,9 @@ import de.symeda.sormas.api.utils.EpiWeek;
 
 public class StatisticsHelper {
 
-	public static final String UNKNOWN = "Unknown";
-	public static final String TOTAL = "Total";
-	public static final String CASE_COUNT = "CaseCount";
+	public static final String UNKNOWN = "unknown";
+	public static final String TOTAL = "total";
+	public static final String CASE_COUNT = "caseCount";
 	
 	public static StatisticsGroupingKey buildGroupingKey(Object attributeValue, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
 		if (subAttribute != null) {

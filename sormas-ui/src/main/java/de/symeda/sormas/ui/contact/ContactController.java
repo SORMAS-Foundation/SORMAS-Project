@@ -30,7 +30,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -226,7 +227,7 @@ public class ContactController {
 					FacadeProvider.getContactFacade().deleteContact(contact.toReference(), CurrentUser.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
 				}
-			}, I18nProperties.getFieldCaption("Contact"));
+			}, I18nProperties.getString(Strings.contact));
 		}
 
 		return editComponent;

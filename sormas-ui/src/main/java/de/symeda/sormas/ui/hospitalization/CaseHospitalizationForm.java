@@ -25,7 +25,8 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
@@ -95,12 +96,12 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 
 		// Validations
 		admissionDateField.addValidator(new DateComparisonValidator(admissionDateField, caze.getSymptoms().getOnsetDate(), false, false, 
-				I18nProperties.getValidationError("afterDateSoft", admissionDateField.getCaption(), I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE))));
+				I18nProperties.getValidationError(Validations.afterDateSoft, admissionDateField.getCaption(), I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE))));
 		admissionDateField.addValidator(new DateComparisonValidator(admissionDateField, dischargeDateField, true, false, 
-				I18nProperties.getValidationError("beforeDate", admissionDateField.getCaption(), dischargeDateField.getCaption())));
+				I18nProperties.getValidationError(Validations.beforeDate, admissionDateField.getCaption(), dischargeDateField.getCaption())));
 		admissionDateField.setInvalidCommitted(true);
 		dischargeDateField.addValidator(new DateComparisonValidator(dischargeDateField, admissionDateField, false, false, 
-				I18nProperties.getValidationError("afterDate", dischargeDateField.getCaption(), admissionDateField.getCaption())));
+				I18nProperties.getValidationError(Validations.afterDate, dischargeDateField.getCaption(), admissionDateField.getCaption())));
 
 		hospitalizedPreviouslyField.addValueChangeListener(e -> {
 			updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField);

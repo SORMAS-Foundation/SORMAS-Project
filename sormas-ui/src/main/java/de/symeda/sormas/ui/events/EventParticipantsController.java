@@ -30,7 +30,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -112,7 +112,7 @@ public class EventParticipantsController {
 					UI.getCurrent().removeWindow(window);
 					refreshView();
 				}
-			}, I18nProperties.getFieldCaption("EventParticipant"));
+			}, I18nProperties.getCaption("EventParticipant"));
 		}
 	}
 	

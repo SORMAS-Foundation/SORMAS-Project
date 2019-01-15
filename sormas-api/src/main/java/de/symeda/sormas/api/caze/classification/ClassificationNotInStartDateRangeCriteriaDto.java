@@ -22,9 +22,10 @@ import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -75,8 +76,8 @@ public class ClassificationNotInStartDateRangeCriteriaDto extends Classification
 	@Override
 	public String buildDescription() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, propertyId));
-		stringBuilder.append(" ").append(I18nProperties.getText("notWithin")).append(" ").append(daysBeforeStartDate).append(" ").append(I18nProperties.getText("daysBeforeCaseStart"));
+		stringBuilder.append(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId));
+		stringBuilder.append(" ").append(I18nProperties.getString(Strings.notWithin)).append(" ").append(daysBeforeStartDate).append(" ").append(I18nProperties.getString(Strings.daysBeforeCaseStart));
 		return stringBuilder.toString();
 	}
 
