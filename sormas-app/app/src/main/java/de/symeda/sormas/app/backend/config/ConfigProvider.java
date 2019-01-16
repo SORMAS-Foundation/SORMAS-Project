@@ -46,6 +46,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.crypto.Cipher;
@@ -576,5 +577,47 @@ public final class ConfigProvider {
         DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_ACCESS_GRANTED, String.valueOf(accessGranted)));
     }
 
+    public static String getLocale() {
+        if (instance.locale == null)
+            synchronized (ConfigProvider.class) {
+                if (instance.locale == null) {
+                    Config config = DatabaseHelper.getConfigDao().queryForId(LOCALE);
+                    if (config != null) {
+                        instance.locale = config.getValue();
+                    }
+
+                    if (instance.locale == null) {
+                        setLocale(Locale.getDefault().toString());
+//                        setLocale(SormasProperties.getServerUrlDefault());
+                    }
+                }
+            }
+        return instance.locale;
+    }
+
+    public static void setLocale(String locale) {
+        if (locale != null && locale.isEmpty()) {
+            locale = null;
+        }
+
+        if (locale == instance.locale
+                || (locale != null && locale.equals(instance.locale)))
+            return;
+
+//        boolean wasNull = instance.locale == null;
+        instance.locale = locale;
+
+        if (locale == null) {
+            DatabaseHelper.getConfigDao().delete(new Config(LOCALE, ""));
+        } else {
+            DatabaseHelper.getConfigDao().createOrUpdate(new Config(LOCALE, locale));
+        }
+
+//        if (!wasNull) {
+//            // clear everything
+//            clearUsernameAndPassword();
+//            DatabaseHelper.clearTables(true);
+//        }
+    }
 
 }

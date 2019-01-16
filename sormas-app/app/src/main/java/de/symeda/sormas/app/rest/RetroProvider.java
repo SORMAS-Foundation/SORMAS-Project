@@ -239,6 +239,7 @@ public final class RetroProvider {
         if (localeResponse.isSuccessful()) {
             // success - now check compatibility
             String localeStr = localeResponse.body();
+            ConfigProvider.setLocale(localeStr);
         } else {
             throwException(localeResponse);
         }
