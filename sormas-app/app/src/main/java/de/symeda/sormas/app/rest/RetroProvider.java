@@ -43,6 +43,7 @@ import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCriteriaDto;
@@ -206,6 +207,40 @@ public final class RetroProvider {
             }
         } else {
             throwException(compatibilityResponse);
+        }
+
+
+        // get locale
+        Response<String> localeResponse;
+        try {
+
+            // make call to get version info
+            infoFacadeRetro = retrofit.create(InfoFacadeRetro.class);
+            AsyncTask<Void, Void, Response<String>> asyncTask = new AsyncTask<Void, Void, Response<String>>() {
+
+                @Override
+                protected Response<String> doInBackground(Void... params) {
+                    Call<String> localeCall = infoFacadeRetro.getLocale();
+                    try {
+                        return localeCall.execute();
+                    } catch (IOException e) {
+                        Log.w(RetroProvider.class.getSimpleName(), e.getMessage());
+                        // wrap the exception message inside a response object
+                        return Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), e.getMessage()));
+                    }
+                }
+            };
+            localeResponse = asyncTask.execute().get();
+
+        } catch (InterruptedException | ExecutionException e) {
+            throw new ServerCommunicationException(e);
+        }
+
+        if (localeResponse.isSuccessful()) {
+            // success - now check compatibility
+            String localeStr = localeResponse.body();
+        } else {
+            throwException(localeResponse);
         }
     }
 

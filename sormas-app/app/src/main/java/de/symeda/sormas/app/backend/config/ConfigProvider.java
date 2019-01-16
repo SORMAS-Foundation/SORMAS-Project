@@ -74,6 +74,7 @@ public final class ConfigProvider {
     private static String LAST_NOTIFICATION_DATE = "lastNotificationDate";
     private static String LAST_ARCHIVED_SYNC_DATE = "lastArchivedSyncDate";
     private static String CURRENT_APP_DOWNLOAD_ID = "currentAppDownloadId";
+    private static String LOCALE = "locale";
 
     public static ConfigProvider instance = null;
 
@@ -96,6 +97,7 @@ public final class ConfigProvider {
     private Date lastArchivedSyncDate;
     private Long currentAppDownloadId;
     private Boolean accessGranted;
+    private String locale;
 
     private ConfigProvider(Context context) {
         this.context = context;
