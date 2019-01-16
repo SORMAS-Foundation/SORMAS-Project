@@ -604,7 +604,6 @@ public final class ConfigProvider {
                 || (locale != null && locale.equals(instance.locale)))
             return;
 
-//        boolean wasNull = instance.locale == null;
         instance.locale = locale;
 
         if (locale == null) {
@@ -612,12 +611,6 @@ public final class ConfigProvider {
         } else {
             DatabaseHelper.getConfigDao().createOrUpdate(new Config(LOCALE, locale));
         }
-
-//        if (!wasNull) {
-//            // clear everything
-//            clearUsernameAndPassword();
-//            DatabaseHelper.clearTables(true);
-//        }
     }
 
 }
