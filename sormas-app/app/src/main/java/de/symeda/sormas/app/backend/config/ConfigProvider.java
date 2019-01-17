@@ -602,6 +602,9 @@ public final class ConfigProvider {
         return instance.locale;
     }
 
+    /**
+     * Note: This will only take effect after the app has been restarted
+     */
     public static void setLocale(String locale) {
         if (locale != null && locale.isEmpty()) {
             locale = null;

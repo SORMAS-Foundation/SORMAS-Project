@@ -52,18 +52,31 @@ public class SormasApplication extends Application implements Application.Activi
     }
 
     @Override
-    public void onCreate() {
-        DatabaseHelper.init(this);
-        ConfigProvider.init(this);
-        LocationService.init(this);
+    protected void attachBaseContext(Context base) {
+        DatabaseHelper.init(base);
+        ConfigProvider.init(base);
+        super.attachBaseContext(buildLanguageContext(base));
+    }
 
+    private static Context buildLanguageContext(Context context) {
+        Locale locale = new Locale(ConfigProvider.getLocale());
+        Locale.setDefault(locale);
+        I18nProperties.setLocale(locale.toString());
+
+        Configuration configuration = context.getResources().getConfiguration();
+        configuration.setLocale(locale);
+        configuration.setLayoutDirection(locale);
+
+        return context.createConfigurationContext(configuration);
+    }
+
+    @Override
+    public void onCreate() {
+        LocationService.init(this);
         VibrationHelper.getInstance(this);
 
         // Make sure the Enter Pin Activity is shown when the app has just started
         ConfigProvider.setAccessGranted(false);
-
-        // Set locale
-        I18nProperties.setLocale(ConfigProvider.getLocale());
 
         TaskNotificationService.startTaskNotificationAlarm(this);
 
@@ -76,8 +89,6 @@ public class SormasApplication extends Application implements Application.Activi
         Thread.UncaughtExceptionHandler handler = Thread.getDefaultUncaughtExceptionHandler();
         ExceptionReporter reporter = (ExceptionReporter) handler;
         reporter.setExceptionParser(new UncaughtExceptionParser());
-
-        ConfigProvider.updateLocale(getApplicationContext());
 
         super.onCreate();
 
