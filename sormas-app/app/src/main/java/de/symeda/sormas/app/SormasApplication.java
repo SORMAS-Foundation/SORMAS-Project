@@ -33,6 +33,8 @@ import com.google.android.gms.analytics.Tracker;
 
 import java.util.Locale;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.core.TaskNotificationService;
@@ -59,6 +61,9 @@ public class SormasApplication extends Application implements Application.Activi
 
         // Make sure the Enter Pin Activity is shown when the app has just started
         ConfigProvider.setAccessGranted(false);
+
+        // Set locale
+        I18nProperties.setLocale(ConfigProvider.getLocale());
 
         TaskNotificationService.startTaskNotificationAlarm(this);
 

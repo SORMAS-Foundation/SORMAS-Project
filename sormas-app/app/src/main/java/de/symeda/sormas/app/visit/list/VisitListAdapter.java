@@ -16,11 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.contact.edit;
+package de.symeda.sormas.app.visit.list;
 
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
-import androidx.core.content.ContextCompat;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -32,16 +29,15 @@ import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.RowReadFollowupListItemLayoutBinding;
-import de.symeda.sormas.app.event.read.EventReadTaskListAdapter;
 
-public class ContactEditVisitsListAdapter extends DataBoundAdapter<RowReadFollowupListItemLayoutBinding> {
+public class VisitListAdapter extends DataBoundAdapter<RowReadFollowupListItemLayoutBinding> {
 
-    private static final String TAG = EventReadTaskListAdapter.class.getSimpleName();
+    private static final String TAG = VisitListAdapter.class.getSimpleName();
 
     private List<Visit> data;
     private OnListItemClickListener mOnListItemClickListener;
 
-    public ContactEditVisitsListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Visit> data) {
+    public VisitListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Visit> data) {
         super(rowLayout);
         this.mOnListItemClickListener = onListItemClickListener;
 
@@ -88,4 +84,13 @@ public class ContactEditVisitsListAdapter extends DataBoundAdapter<RowReadFollow
 //            }
 //        }
 //    }
+
+    public void replaceAll(List<Visit> data) {
+        if (data == null)
+            return;
+
+        this.data.clear();
+        this.data.addAll(data);
+    }
+
 }

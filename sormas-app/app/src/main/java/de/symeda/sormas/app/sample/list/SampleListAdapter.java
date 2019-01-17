@@ -46,20 +46,19 @@ public class SampleListAdapter extends DataBoundAdapter<RowSampleListItemLayoutB
     private List<Sample> data;
     private OnListItemClickListener mOnListItemClickListener;
 
-    public SampleListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Sample> data) {
+    SampleListAdapter(int rowLayout) {
+        this(rowLayout, null);
+    }
+
+    public SampleListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener) {
         super(rowLayout);
         this.mOnListItemClickListener = onListItemClickListener;
-
-        if (data == null)
-            this.data = new ArrayList<>();
-        else
-            this.data = new ArrayList<>(data);
+        this.data = new ArrayList<>();
     }
 
     @Override
     protected void bindItem(DataBoundViewHolder<RowSampleListItemLayoutBinding> holder,
                             int position, List<Object> payloads) {
-
         Sample record = data.get(position);
         holder.setData(record);
         holder.binding.setTestResultMessage(getSampleTestResultMessage(holder.context, record));

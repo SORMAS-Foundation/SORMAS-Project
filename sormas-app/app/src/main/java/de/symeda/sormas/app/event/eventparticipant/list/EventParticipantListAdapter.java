@@ -16,32 +16,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.event.edit;
+package de.symeda.sormas.app.event.eventparticipant.list;
 
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
-import androidx.core.content.ContextCompat;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.RowReadPersonsInvolvedListItemLayoutBinding;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import de.symeda.sormas.app.backend.event.EventParticipant;
-
-public class EventEditPersonsInvolvedListAdapter extends DataBoundAdapter<RowReadPersonsInvolvedListItemLayoutBinding> {
-
-    private static final String TAG = EventEditPersonsInvolvedListAdapter.class.getSimpleName();
+public class EventParticipantListAdapter extends DataBoundAdapter<RowReadPersonsInvolvedListItemLayoutBinding> {
 
     private List<EventParticipant> data;
     private OnListItemClickListener mOnListItemClickListener;
 
-    public EventEditPersonsInvolvedListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<EventParticipant> data) {
+    public EventParticipantListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<EventParticipant> data) {
         super(rowLayout);
         this.mOnListItemClickListener = onListItemClickListener;
 
@@ -54,7 +48,6 @@ public class EventEditPersonsInvolvedListAdapter extends DataBoundAdapter<RowRea
     @Override
     protected void bindItem(DataBoundViewHolder<RowReadPersonsInvolvedListItemLayoutBinding> holder,
                             int position, List<Object> payloads) {
-
         EventParticipant record = data.get(position);
         holder.setData(record);
         holder.setOnListItemClickListener(this.mOnListItemClickListener);
@@ -88,4 +81,13 @@ public class EventEditPersonsInvolvedListAdapter extends DataBoundAdapter<RowRea
 //            }
 //        }
 //    }
+
+    public void replaceAll(List<EventParticipant> data) {
+        if (data == null)
+            return;
+
+        this.data.clear();
+        this.data.addAll(data);
+    }
+
 }
