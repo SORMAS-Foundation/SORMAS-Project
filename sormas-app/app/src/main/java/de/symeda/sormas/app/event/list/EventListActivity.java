@@ -19,6 +19,7 @@
 package de.symeda.sormas.app.event.list;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.Menu;
 import android.widget.AdapterView;
 
@@ -27,6 +28,7 @@ import org.joda.time.DateTime;
 import java.util.List;
 import java.util.Random;
 
+import androidx.lifecycle.ViewModelProviders;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivity;
@@ -40,9 +42,29 @@ import de.symeda.sormas.app.event.edit.EventNewActivity;
 public class EventListActivity extends BaseListActivity {
 
     private EventStatus statusFilters[] = new EventStatus[]{EventStatus.POSSIBLE, EventStatus.CONFIRMED, EventStatus.NO_EVENT};
+    private EventListViewModel model;
 
     public static void startActivity(Context context, EventStatus listFilter) {
         BaseListActivity.startActivity(context, EventListActivity.class, buildBundle(listFilter));
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        showPreloader();
+        adapter = new EventListAdapter(R.layout.row_event_list_item_layout);
+        model = ViewModelProviders.of(this).get(EventListViewModel.class);
+        model.getEvents().observe(this, event -> {
+            ((EventListAdapter) adapter).replaceAll(event);
+            adapter.notifyDataSetChanged();
+            hidePreloader();
+        });
+        setOpenPageCallback(p -> {
+            showPreloader();
+            model.setEventStatusAndReload(statusFilters[p.getKey()]);
+            adapter.notifyDataSetChanged();
+        });
     }
 
     @Override
@@ -86,4 +108,5 @@ public class EventListActivity extends BaseListActivity {
     public void goToNewView() {
         EventNewActivity.startActivity(this);
     }
+
 }

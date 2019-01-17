@@ -97,27 +97,25 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
                     "implement ISetOnListItemClickListener");
         }
 
-        jobTask = new DefaultAsyncTask(getContext()) {
-            @Override
-            public void onPreExecute() {
-                getBaseActivity().showPreloader();
-            }
-
-            @Override
-            public void doInBackground(final TaskResultHolder resultHolder) {
-                prepareFragmentData();
-            }
-
-            @Override
-            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-                getBaseActivity().hidePreloader();
-            }
-        }.executeOnThreadPool();
+//        jobTask = new DefaultAsyncTask(getContext()) {
+//            @Override
+//            public void onPreExecute() {
+//                getBaseActivity().showPreloader();
+//            }
+//
+//            @Override
+//            public void doInBackground(final TaskResultHolder resultHolder) {
+//                prepareFragmentData();
+//            }
+//
+//            @Override
+//            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+//                getBaseActivity().hidePreloader();
+//            }
+//        }.executeOnThreadPool();
 
         return view;
     }
-
-    protected abstract void prepareFragmentData();
 
     @Override
     public void onResume() {
@@ -158,9 +156,15 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
     }
 
     protected void updateEmptyListHint() {
-        TextView emptyListHintView = (TextView) getView().findViewById(R.id.emptyListHint);
-        if (emptyListHintView == null)
+        if (getView() == null) {
             return;
+        }
+
+        TextView emptyListHintView = (TextView) getView().findViewById(R.id.emptyListHint);
+
+        if (emptyListHintView == null) {
+            return;
+        }
 
         if (adapter.getItemCount() == 0) {
             emptyListHintView.setText(getResources().getString(canAddToList() ? R.string.hint_no_records_found_add_new : R.string.hint_no_records_found));

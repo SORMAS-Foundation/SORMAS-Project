@@ -20,49 +20,64 @@ package de.symeda.sormas.app.contact.read;
 
 import android.content.res.Resources;
 import android.os.Bundle;
+
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import android.view.View;
 
 import java.util.List;
 
+import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.visit.VisitSection;
+import de.symeda.sormas.app.visit.list.VisitListAdapter;
+import de.symeda.sormas.app.visit.list.VisitListViewModel;
 import de.symeda.sormas.app.visit.read.VisitReadActivity;
 
-public class ContactReadFollowUpVisitListFragment extends BaseReadFragment<FragmentFormListLayoutBinding, List<Visit>, Contact> implements OnListItemClickListener {
+public class ContactReadVisitsListFragment extends BaseReadFragment<FragmentFormListLayoutBinding, List<Visit>, Contact> implements OnListItemClickListener {
 
     private List<Visit> record;
 
-    private ContactReadFollowupListAdapter adapter;
+    private VisitListAdapter adapter;
+    private VisitListViewModel model;
     private LinearLayoutManager linearLayoutManager;
 
-    public static ContactReadFollowUpVisitListFragment newInstance(Contact activityRootData) {
-        return newInstance(ContactReadFollowUpVisitListFragment.class, null, activityRootData);
+    public static ContactReadVisitsListFragment newInstance(Contact activityRootData) {
+        return newInstance(ContactReadVisitsListFragment.class, null, activityRootData);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        ((ContactReadActivity) getActivity()).showPreloader();
+        adapter = new VisitListAdapter(R.layout.row_read_followup_list_item_layout, this,null);
+        model = ViewModelProviders.of(this).get(VisitListViewModel.class);
+        model.getVisits(getActivityRootData()).observe(this, visits -> {
+            adapter.replaceAll(visits);
+            adapter.notifyDataSetChanged();
+            updateEmptyListHint(visits);
+            ((ContactReadActivity) getActivity()).hidePreloader();
+        });
     }
 
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
-        Contact contact = getActivityRootData();
-        record = DatabaseHelper.getVisitDao().getByContact(contact);
+//        Contact contact = getActivityRootData();
+//        record = DatabaseHelper.getVisitDao().getByContact(contact);
     }
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        updateEmptyListHint(record);
-
-        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        adapter = new ContactReadFollowupListAdapter(
-                R.layout.row_read_followup_list_item_layout, ContactReadFollowUpVisitListFragment.this, record);
-
+        linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -88,8 +103,8 @@ public class ContactReadFollowUpVisitListFragment extends BaseReadFragment<Fragm
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
-        Visit vist = (Visit) item;
-        VisitReadActivity.startActivity(getActivity(), vist.getUuid(), getActivityRootData().getUuid(), VisitSection.VISIT_INFO);
+        Visit visit = (Visit) item;
+        VisitReadActivity.startActivity(getActivity(), visit.getUuid(), getActivityRootData().getUuid(), VisitSection.VISIT_INFO);
     }
 
 }

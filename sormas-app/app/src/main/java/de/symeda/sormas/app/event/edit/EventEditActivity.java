@@ -40,7 +40,7 @@ import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.event.EventSection;
-import de.symeda.sormas.app.event.edit.eventparticipant.EventParticipantNewActivity;
+import de.symeda.sormas.app.event.eventparticipant.edit.EventParticipantNewActivity;
 import de.symeda.sormas.app.task.edit.TaskNewActivity;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
@@ -88,7 +88,7 @@ public class EventEditActivity extends BaseEditActivity<Event> {
                 fragment = EventEditPersonsInvolvedListFragment.newInstance(activityRootData);
                 break;
             case TASKS:
-                fragment = EventEditTaskListFragement.newInstance(activityRootData);
+                fragment = EventEditTaskListFragment.newInstance(activityRootData);
                 break;
             default:
                 throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));

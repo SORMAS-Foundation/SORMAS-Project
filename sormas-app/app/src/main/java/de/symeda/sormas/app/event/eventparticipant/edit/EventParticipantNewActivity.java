@@ -16,49 +16,48 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.event.edit.eventparticipant;
+package de.symeda.sormas.app.event.eventparticipant.edit;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 
-import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.util.Bundler;
+import de.symeda.sormas.app.util.Consumer;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
+public class EventParticipantNewActivity extends BaseEditActivity<EventParticipant> {
 
-public class EventParticipantEditActivity extends BaseEditActivity<EventParticipant> {
+    public static final String TAG = EventParticipantNewActivity.class.getSimpleName();
 
     private AsyncTask saveTask;
-    private String eventUuid;
 
-    public static void startActivity(Context context, String rootUuid, String eventUuid) {
-        BaseEditActivity.startActivity(context, EventParticipantEditActivity.class, buildBundle(rootUuid, eventUuid));
+    private String eventUuid = null;
+
+    public static void startActivity(Context context, String eventUuid) {
+        BaseEditActivity.startActivity(context, EventParticipantNewActivity.class, buildBundle(eventUuid));
     }
 
-    public static Bundler buildBundle(String rootUuid, String eventUuid) {
-        return buildBundle(rootUuid, 0).setEventUuid(eventUuid);
-    }
-
-    @Override
-    public EventStatus getPageStatus() {
-        return null;
+    public static Bundler buildBundle(String eventUuid) {
+        return buildBundle(null, 0).setEventUuid(eventUuid);
     }
 
     @Override
@@ -75,29 +74,39 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 
     @Override
     protected EventParticipant queryRootEntity(String recordUuid) {
-        return DatabaseHelper.getEventParticipantDao().queryUuid(recordUuid);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     protected EventParticipant buildRootEntity() {
-        throw new UnsupportedOperationException();
+        Person person = DatabaseHelper.getPersonDao().build();
+        EventParticipant eventParticipant = DatabaseHelper.getEventParticipantDao().build();
+        eventParticipant.setPerson(person);
+        return eventParticipant;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         boolean result = super.onCreateOptionsMenu(menu);
-        getSaveMenu().setTitle(R.string.action_save_participant);
+        getSaveMenu().setTitle(R.string.action_save_event);
         return result;
     }
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, EventParticipant activityRootData) {
-        return EventParticipantEditFragment.newInstance(activityRootData);
+        BaseEditFragment fragment = EventParticipantNewFragment.newInstance(activityRootData);
+        fragment.setLiveValidationDisabled(true);
+        return fragment;
     }
 
     @Override
     protected int getActivityTitle() {
-        return R.string.heading_level4_event_edit;
+        return R.string.heading_person_involved_new;
+    }
+
+    @Override
+    public Enum getPageStatus() {
+        return null;
     }
 
     @Override
@@ -108,8 +117,10 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
             return; // don't save multiple times
         }
 
-        final EventParticipant eventParticipant = (EventParticipant) getActiveFragment().getPrimaryData();
-        EventParticipantEditFragment fragment = (EventParticipantEditFragment) getActiveFragment();
+        final EventParticipant eventParticipantToSave = (EventParticipant) getActiveFragment().getPrimaryData();
+        EventParticipantNewFragment fragment = (EventParticipantNewFragment) getActiveFragment();
+
+        fragment.setLiveValidationDisabled(false);
 
         try {
             FragmentValidator.validate(getContext(), fragment.getContentBinding());
@@ -118,32 +129,37 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
             return;
         }
 
-        saveTask = new SavingAsyncTask(getRootView(), eventParticipant) {
-
+        SelectOrCreatePersonDialog.selectOrCreatePerson(eventParticipantToSave.getPerson(), new Consumer<Person>() {
             @Override
-            protected void onPreExecute() {
-                showPreloader();
-            }
+            public void accept(Person person) {
+                eventParticipantToSave.setPerson(person);
 
-            @Override
-            public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
-                DatabaseHelper.getPersonDao().saveAndSnapshot(eventParticipant.getPerson());
-                DatabaseHelper.getEventParticipantDao().saveAndSnapshot(eventParticipant);
-            }
+                saveTask = new SavingAsyncTask(getRootView(), eventParticipantToSave) {
+                    @Override
+                    protected void onPreExecute() {
+                        showPreloader();
+                    }
 
-            @Override
-            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-                hidePreloader();
-                super.onPostExecute(taskResult);
+                    @Override
+                    protected void doInBackground(TaskResultHolder resultHolder) throws Exception {
+                        DatabaseHelper.getPersonDao().saveAndSnapshot(eventParticipantToSave.getPerson());
+                        final Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
+                        eventParticipantToSave.setEvent(event);
+                        DatabaseHelper.getEventParticipantDao().saveAndSnapshot(eventParticipantToSave);
+                    }
 
-                if (taskResult.getResultStatus().isSuccess()) {
-                    finish();
-                } else {
-                    onResume(); // reload data
-                }
-                saveTask = null;
+                    @Override
+                    protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                        hidePreloader();
+                        super.onPostExecute(taskResult);
+                        if (taskResult.getResultStatus().isSuccess()) {
+                            EventParticipantEditActivity.startActivity(getContext(), getRootUuid(), eventUuid);
+                        }
+                        saveTask = null;
+                    }
+                }.executeOnThreadPool();
             }
-        }.executeOnThreadPool();
+        });
     }
 
     @Override

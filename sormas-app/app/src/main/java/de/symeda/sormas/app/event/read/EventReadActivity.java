@@ -69,7 +69,7 @@ public class EventReadActivity extends BaseReadActivity<Event> {
                 fragment = EventReadPersonsInvolvedListFragment.newInstance(activityRootData);
                 break;
             case TASKS:
-                fragment = EventReadTaskListFragement.newInstance(activityRootData);
+                fragment = EventReadTaskListFragment.newInstance(activityRootData);
                 break;
             default:
                 throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));

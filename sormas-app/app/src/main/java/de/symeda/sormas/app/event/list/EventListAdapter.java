@@ -40,25 +40,17 @@ import de.symeda.sormas.app.databinding.RowEventListItemLayoutBinding;
 
 public class EventListAdapter extends DataBoundAdapter<RowEventListItemLayoutBinding> implements ISetOnListItemClickListener {
 
-    private static final String TAG = EventListAdapter.class.getSimpleName();
-
     private List<Event> data;
     private OnListItemClickListener mOnListItemClickListener;
 
-    public EventListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Event> data) {
+    public EventListAdapter(int rowLayout) {
         super(rowLayout);
-        this.mOnListItemClickListener = onListItemClickListener;
-
-        if (data == null)
-            this.data = new ArrayList<>();
-        else
-            this.data = new ArrayList<>(data);
+        this.data = new ArrayList<>();
     }
 
     @Override
     protected void bindItem(DataBoundViewHolder<RowEventListItemLayoutBinding> holder,
                             int position, List<Object> payloads) {
-
         Event record = data.get(position);
         holder.setData(record);
         holder.setOnListItemClickListener(this.mOnListItemClickListener);
@@ -97,7 +89,7 @@ public class EventListAdapter extends DataBoundAdapter<RowEventListItemLayoutBin
 
     public void indicateEventType(ImageView imgEventTypeIcon, Event eventRecord) {
         Resources resources = imgEventTypeIcon.getContext().getResources();
-        Drawable drw = (Drawable) ContextCompat.getDrawable(imgEventTypeIcon.getContext(), R.drawable.indicator_status_circle);
+        Drawable drw = ContextCompat.getDrawable(imgEventTypeIcon.getContext(), R.drawable.indicator_status_circle);
         if (eventRecord.getEventType() == EventType.RUMOR) {
             drw.setColorFilter(resources.getColor(R.color.indicatorRumorEvent), PorterDuff.Mode.SRC_OVER);
         } else if (eventRecord.getEventType() == EventType.OUTBREAK) {

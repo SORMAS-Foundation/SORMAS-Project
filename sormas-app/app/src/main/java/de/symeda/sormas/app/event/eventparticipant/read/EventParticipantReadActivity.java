@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.event.read.eventparticipant;
+package de.symeda.sormas.app.event.eventparticipant.read;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -27,7 +27,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.event.edit.eventparticipant.EventParticipantEditActivity;
+import de.symeda.sormas.app.event.eventparticipant.edit.EventParticipantEditActivity;
 import de.symeda.sormas.app.util.Bundler;
 
 public class EventParticipantReadActivity extends BaseReadActivity<EventParticipant> {

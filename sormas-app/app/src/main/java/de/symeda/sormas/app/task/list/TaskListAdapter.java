@@ -41,31 +41,22 @@ import de.symeda.sormas.app.databinding.RowTaskListItemLayoutBinding;
 
 public class TaskListAdapter extends DataBoundAdapter<RowTaskListItemLayoutBinding> implements ISetOnListItemClickListener {
 
-    private static final String TAG = TaskListAdapter.class.getSimpleName();
-
-    private final Context context;
-    private List<Task> data = new ArrayList<>();
+    private List<Task> data;
     private OnListItemClickListener mOnListItemClickListener;
 
-    public TaskListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener) {
-        this(context, rowLayout, onListItemClickListener, new ArrayList<Task>());
+    public TaskListAdapter(int rowLayout) {
+        this(rowLayout, null);
     }
 
-    public TaskListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<Task> data) {
+    public TaskListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener) {
         super(rowLayout);
-        this.context = context;
         this.mOnListItemClickListener = onListItemClickListener;
-
-        if (data == null)
-            this.data = new ArrayList<>();
-        else
-            this.data = new ArrayList<>(data);
+        this.data = new ArrayList<>();
     }
 
     @Override
     protected void bindItem(DataBoundViewHolder<RowTaskListItemLayoutBinding> holder,
                             int position, List<Object> payloads) {
-
         Task record = data.get(position);
         holder.setData(record);
         holder.setOnListItemClickListener(this.mOnListItemClickListener);

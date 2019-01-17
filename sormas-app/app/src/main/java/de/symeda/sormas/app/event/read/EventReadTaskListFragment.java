@@ -19,48 +19,59 @@
 package de.symeda.sormas.app.event.read;
 
 import android.os.Bundle;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import android.view.View;
 
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.task.edit.TaskEditActivity;
+import de.symeda.sormas.app.task.list.TaskListAdapter;
+import de.symeda.sormas.app.task.list.TaskListViewModel;
 
-public class EventReadTaskListFragement extends BaseReadFragment<FragmentFormListLayoutBinding, List<Task>, Event> implements OnListItemClickListener {
+public class EventReadTaskListFragment extends BaseReadFragment<FragmentFormListLayoutBinding, List<Task>, Event> implements OnListItemClickListener {
 
-    private List<Task> record;
-
-    private EventReadTaskListAdapter adapter;
+    private TaskListAdapter adapter;
+    private TaskListViewModel model;
     private LinearLayoutManager linearLayoutManager;
 
-    public static EventReadTaskListFragement newInstance(Event activityRootData) {
-        return newInstance(EventReadTaskListFragement.class, null, activityRootData);
+    public static EventReadTaskListFragment newInstance(Event activityRootData) {
+        return newInstance(EventReadTaskListFragment.class, null, activityRootData);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        ((EventReadActivity) getActivity()).showPreloader();
+        adapter = new TaskListAdapter(R.layout.row_task_list_item_layout, this);
+        model = ViewModelProviders.of(this).get(TaskListViewModel.class);
+        model.getTasks(getActivityRootData()).observe(this, tasks -> {
+            adapter.replaceAll(tasks);
+            adapter.notifyDataSetChanged();
+            updateEmptyListHint(tasks);
+            ((EventReadActivity) getActivity()).hidePreloader();
+        });
     }
 
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
-        Event event = getActivityRootData();
-        record = DatabaseHelper.getTaskDao().queryByEvent(event);
+
     }
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        updateEmptyListHint(record);
-
-        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        adapter = new EventReadTaskListAdapter(
-                R.layout.row_read_event_task_list_item_layout, EventReadTaskListFragement.this, record);
-
+        linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         getContentBinding().recyclerViewForList.setLayoutManager(linearLayoutManager);
         getContentBinding().recyclerViewForList.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -70,7 +81,7 @@ public class EventReadTaskListFragement extends BaseReadFragment<FragmentFormLis
 
     @Override
     public List<Task> getPrimaryData() {
-        return null;
+        throw new UnsupportedOperationException("Sub list fragments don't hold their data");
     }
 
     @Override

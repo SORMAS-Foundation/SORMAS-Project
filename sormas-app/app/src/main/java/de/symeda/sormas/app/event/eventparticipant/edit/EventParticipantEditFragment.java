@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.event.edit.eventparticipant;
+package de.symeda.sormas.app.event.eventparticipant.edit;
 
 import android.view.View;
 

@@ -20,16 +20,22 @@ package de.symeda.sormas.app.caze.read;
 
 import android.content.res.Resources;
 import android.os.Bundle;
+
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import android.view.View;
 
 import java.util.List;
 
+import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.contact.list.ContactListAdapter;
+import de.symeda.sormas.app.contact.list.ContactListViewModel;
 import de.symeda.sormas.app.contact.read.ContactReadActivity;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
@@ -38,9 +44,8 @@ public class CaseReadContactListFragment extends BaseReadFragment<FragmentFormLi
 
     public static final String TAG = CaseReadContactListFragment.class.getSimpleName();
 
-    private List<Contact> record;
-
-    private CaseReadContactListAdapter adapter;
+    private ContactListAdapter adapter;
+    private ContactListViewModel model;
     private LinearLayoutManager linearLayoutManager;
 
     public static CaseReadContactListFragment newInstance(Case activityRootData) {
@@ -48,20 +53,30 @@ public class CaseReadContactListFragment extends BaseReadFragment<FragmentFormLi
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        ((CaseReadActivity) getActivity()).showPreloader();
+        adapter = new ContactListAdapter(R.layout.row_read_contact_list_item_layout, this);
+        model = ViewModelProviders.of(this).get(ContactListViewModel.class);
+        model.getContacts(getActivityRootData()).observe(this, contacts -> {
+            adapter.replaceAll(contacts);
+            adapter.notifyDataSetChanged();
+            updateEmptyListHint(contacts);
+            ((CaseReadActivity) getActivity()).hidePreloader();
+        });
+    }
+
+    @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
-        Case caze = getActivityRootData();
-        record = DatabaseHelper.getContactDao().getByCase(caze);
+
     }
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        updateEmptyListHint(record);
-
-        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        adapter = new CaseReadContactListAdapter(R.layout.row_read_contact_list_item_layout, this, record);
+        linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -72,7 +87,7 @@ public class CaseReadContactListFragment extends BaseReadFragment<FragmentFormLi
 
     @Override
     public List<Contact> getPrimaryData() {
-        return record;
+        throw new UnsupportedOperationException("Sub list fragments don't hold their data");
     }
 
     @Override
