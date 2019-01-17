@@ -60,6 +60,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.security.auth.x500.X500Principal;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
@@ -79,7 +80,7 @@ public final class ConfigProvider {
     private static String LAST_NOTIFICATION_DATE = "lastNotificationDate";
     private static String LAST_ARCHIVED_SYNC_DATE = "lastArchivedSyncDate";
     private static String CURRENT_APP_DOWNLOAD_ID = "currentAppDownloadId";
-    private static String APP_LOCALE = "appLocale";
+    private static String LOCALE = "locale";
 
     public static ConfigProvider instance = null;
 
@@ -102,7 +103,7 @@ public final class ConfigProvider {
     private Date lastArchivedSyncDate;
     private Long currentAppDownloadId;
     private Boolean accessGranted;
-    private String appLocale;
+    private String locale;
 
     private ConfigProvider(Context context) {
         this.context = context;
@@ -581,21 +582,24 @@ public final class ConfigProvider {
         DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_ACCESS_GRANTED, String.valueOf(accessGranted)));
     }
 
+    /**
+     * When no locale is set Locale.getDefault is set.
+     */
     public static String getLocale() {
-        if (instance.appLocale == null)
+        if (instance.locale == null)
             synchronized (ConfigProvider.class) {
-                if (instance.appLocale == null) {
-                    Config config = DatabaseHelper.getConfigDao().queryForId(APP_LOCALE);
+                if (instance.locale == null) {
+                    Config config = DatabaseHelper.getConfigDao().queryForId(LOCALE);
                     if (config != null) {
-                        instance.appLocale = config.getValue();
+                        instance.locale = config.getValue();
                     }
 
-                    if (instance.appLocale == null) {
-                        setLocale(java.util.Locale.getDefault().toString());/*SormasProperties.getAppLocaleDefault()*/;
+                    if (instance.locale == null) {
+                        setLocale(Locale.getDefault().toString());
                     }
                 }
             }
-        return instance.appLocale;
+        return instance.locale;
     }
 
     public static void setLocale(String locale) {
@@ -603,39 +607,16 @@ public final class ConfigProvider {
             locale = null;
         }
 
-        if (locale == instance.appLocale
-                || (locale != null && locale.equals(instance.appLocale)))
+        if (locale == instance.locale
+                || (locale != null && locale.equals(instance.locale)))
             return;
 
-        boolean wasNull = instance.appLocale == null;
-        instance.appLocale = locale;
+        instance.locale = locale;
 
         if (locale == null) {
-            DatabaseHelper.getConfigDao().delete(new Config(APP_LOCALE, ""));
+            DatabaseHelper.getConfigDao().delete(new Config(LOCALE, ""));
         } else {
-            DatabaseHelper.getConfigDao().createOrUpdate(new Config(APP_LOCALE, locale));
+            DatabaseHelper.getConfigDao().createOrUpdate(new Config(LOCALE, locale));
         }
-
-        if (!wasNull) {
-            // clear everything
-            clearUsernameAndPassword();
-            DatabaseHelper.clearTables(true);
-        }
-    }
-
-    public static void updateLocale(Context ctx) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-        String lang = prefs.getString("locale_override", "");
-        updateLocal(ctx, lang);
-    }
-
-    public static void updateLocal(Context ctx, String lang) {
-        Configuration cfg = new Configuration();
-        if (!TextUtils.isEmpty(lang))
-            cfg.locale = new Locale(lang);
-        else
-            cfg.locale = Locale.getDefault();
-
-        ctx.getResources().updateConfiguration(cfg, null);
     }
 }
