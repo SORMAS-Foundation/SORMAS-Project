@@ -112,6 +112,24 @@ public class DashboardSurveillanceStatisticsComponent extends AbstractDashboardS
 
 	@Override
 	protected void addFirstComponent() {
+		//firstComponent = new DashboardStatisticsSubComponent();
+
+		// Header
+		//firstComponent.addHeader("Disease Burden Information", null, true);
+
+		
+
+		//subComponentsLayout.addComponent(firstComponent, FIRST_LOC);
+	}
+
+	@Override
+	protected void updateFirstComponent(int visibleDiseasesCount) {
+		//List<DashboardTaskDto> dashboardTaskDtos = dashboardDataProvider.getDiseasesBurden()();
+		
+	}
+
+	//@Override
+	protected void addFirstComponent_() {
 		firstComponent = new DashboardStatisticsSubComponent();
 
 		// Header
@@ -154,8 +172,8 @@ public class DashboardSurveillanceStatisticsComponent extends AbstractDashboardS
 		subComponentsLayout.addComponent(firstComponent, FIRST_LOC);
 	}
 
-	@Override
-	protected void updateFirstComponent(int visibleDiseasesCount) {
+	//@Override
+	protected void updateFirstComponent_(int visibleDiseasesCount) {
 		List<DashboardTaskDto> dashboardTaskDtos = dashboardDataProvider.getTasks();
 		List<DashboardTaskDto> dashboardPendingTasks = dashboardDataProvider.getPendingTasks();
 
