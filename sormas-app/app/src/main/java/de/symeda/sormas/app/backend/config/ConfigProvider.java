@@ -56,6 +56,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.security.auth.x500.X500Principal;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
@@ -577,6 +578,9 @@ public final class ConfigProvider {
         DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_ACCESS_GRANTED, String.valueOf(accessGranted)));
     }
 
+    /**
+     * When no locale is set Locale.getDefault is set.
+     */
     public static String getLocale() {
         if (instance.locale == null)
             synchronized (ConfigProvider.class) {
@@ -588,7 +592,6 @@ public final class ConfigProvider {
 
                     if (instance.locale == null) {
                         setLocale(Locale.getDefault().toString());
-//                        setLocale(SormasProperties.getServerUrlDefault());
                     }
                 }
             }
@@ -612,5 +615,4 @@ public final class ConfigProvider {
             DatabaseHelper.getConfigDao().createOrUpdate(new Config(LOCALE, locale));
         }
     }
-
 }
