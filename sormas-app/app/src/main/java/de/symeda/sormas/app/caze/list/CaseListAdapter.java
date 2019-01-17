@@ -22,47 +22,35 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
-import androidx.core.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import androidx.core.content.ContextCompat;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
 import de.symeda.sormas.app.core.adapter.databinding.ISetOnListItemClickListener;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.RowCaseListItemLayoutBinding;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.app.backend.caze.Case;
-
 public class CaseListAdapter extends DataBoundAdapter<RowCaseListItemLayoutBinding> implements ISetOnListItemClickListener {
 
-    private static final String TAG = CaseListAdapter.class.getSimpleName();
-
-    private final Context context;
     private List<Case> data;
     private OnListItemClickListener mOnListItemClickListener;
 
-    public CaseListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<Case> data) {
+    CaseListAdapter(int rowLayout) {
         super(rowLayout);
-        this.context = context;
-        this.mOnListItemClickListener = onListItemClickListener;
-
-        if (data == null)
-            this.data = new ArrayList<>();
-        else
-            this.data = new ArrayList<>(data);
+        this.data = new ArrayList<>();
     }
 
     @Override
     protected void bindItem(DataBoundViewHolder<RowCaseListItemLayoutBinding> holder,
                             int position, List<Object> payloads) {
-
         Case record = data.get(position);
         holder.setData(record);
         holder.setOnListItemClickListener(this.mOnListItemClickListener);
@@ -101,7 +89,7 @@ public class CaseListAdapter extends DataBoundAdapter<RowCaseListItemLayoutBindi
 
     public void indicateCaseClassification(ImageView imgCaseClassificationIcon, Case item) {
         Resources resources = imgCaseClassificationIcon.getContext().getResources();
-        Drawable drw = (Drawable)ContextCompat.getDrawable(imgCaseClassificationIcon.getContext(), R.drawable.indicator_status_circle);
+        Drawable drw = ContextCompat.getDrawable(imgCaseClassificationIcon.getContext(), R.drawable.indicator_status_circle);
 
         if (item.getCaseClassification() == CaseClassification.NOT_CLASSIFIED) {
             drw.setColorFilter(resources.getColor(R.color.indicatorCaseNotYetClassified), PorterDuff.Mode.SRC_OVER);

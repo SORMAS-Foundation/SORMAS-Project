@@ -214,6 +214,12 @@ public class AbstractDomainObject extends BaseObservable implements Serializable
 		this.changeDate = new Date(0);
 	}
 
+	/**
+	 * Checks if object has been synchronized to the server
+	 *
+	 * @return
+	 */
+	//
 	public boolean isNew() {
 		return changeDate == null || creationDate == null || changeDate.getTime() == 0;
 	}

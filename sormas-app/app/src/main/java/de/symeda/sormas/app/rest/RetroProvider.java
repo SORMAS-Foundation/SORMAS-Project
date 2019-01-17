@@ -249,6 +249,38 @@ public final class RetroProvider {
         } else {
             throwException(compatibilityResponse);
         }
+
+        //get app's locale
+        Response<String> localeResponse;
+        try {
+            // make call to get locale
+            AsyncTask<Void, Void, Response<String>> asyncTask = new AsyncTask<Void, Void, Response<String>>() {
+
+                @Override
+                protected Response<String> doInBackground(Void... params) {
+                    Call<String> localeCall = infoFacadeRetro.getLocale();
+                    try {
+                        return localeCall.execute();
+                    } catch (IOException e) {
+                        Log.w(RetroProvider.class.getSimpleName(), e.getMessage());
+                        // wrap the exception message inside a response object
+                        return Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), e.getMessage()));
+                    }
+                }
+            };
+            localeResponse = asyncTask.execute().get();
+
+        } catch (InterruptedException | ExecutionException e) {
+            throw new ServerCommunicationException(e);
+        }
+
+        if (localeResponse.isSuccessful()) {
+            // success - now check compatibility
+            String localeStr = localeResponse.body();
+            ConfigProvider.updateLocal(context, localeStr);
+        } else {
+            throwException(localeResponse);
+        }
     }
 
     public static boolean isConnectedToNetwork(Context context) {

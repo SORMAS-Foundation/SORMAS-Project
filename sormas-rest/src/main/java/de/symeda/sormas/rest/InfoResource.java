@@ -63,6 +63,12 @@ public class InfoResource {
 	}
 	
 	@GET
+	@Path("/locale")
+	public String getLocale() {
+		return FacadeProvider.getConfigFacade().getCountryLocale();
+	}
+	
+	@GET
 	@Path("/checkcompatibility")
 	public CompatibilityCheckResponse isCompatibleToApi(@QueryParam("appVersion") String appVersion) {
 		return InfoProvider.get().isCompatibleToApi(appVersion);

@@ -67,6 +67,13 @@
             android:launchMode="singleTop">
         </activity>
 
+        <activity android:name=".task.edit.TaskNewActivity"
+            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:parentActivityName=".task.list.TaskListActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
         <activity
             android:name=".sample.list.SampleListActivity"
             android:theme="@style/ActivityWithOverflowMenuTheme"
@@ -196,7 +203,7 @@
             android:launchMode="singleTop">
         </activity>
 
-        <activity android:name=".event.read.eventparticipant.EventParticipantReadActivity"
+        <activity android:name=".event.eventparticipant.read.EventParticipantReadActivity"
             android:theme="@style/ActivityWithOverflowMenuTheme"
             android:parentActivityName=".event.read.EventReadActivity"
             android:screenOrientation="portrait"
@@ -210,14 +217,14 @@
             android:launchMode="singleTop">
         </activity>
 
-        <activity android:name=".event.edit.eventparticipant.EventParticipantNewActivity"
+        <activity android:name=".event.eventparticipant.edit.EventParticipantNewActivity"
             android:theme="@style/ActivityWithOverflowMenuTheme"
             android:parentActivityName=".event.edit.EventEditActivity"
             android:screenOrientation="portrait"
             android:launchMode="singleTop">
         </activity>
 
-        <activity android:name=".event.edit.eventparticipant.EventParticipantEditActivity"
+        <activity android:name=".event.eventparticipant.edit.EventParticipantEditActivity"
             android:theme="@style/ActivityWithOverflowMenuTheme"
             android:parentActivityName=".event.edit.EventEditActivity"
             android:screenOrientation="portrait"

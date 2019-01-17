@@ -42,6 +42,7 @@ import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
+import de.symeda.sormas.app.task.edit.TaskNewActivity;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.visit.edit.VisitNewActivity;
 
@@ -164,6 +165,9 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
         switch (activeSection) {
             case VISITS:
                 VisitNewActivity.startActivity(this, getRootUuid());
+                break;
+            case TASKS:
+                TaskNewActivity.startActivityFromContact(getContext(), getRootUuid());
                 break;
             default:
                 throw new IllegalArgumentException(activeSection.toString());

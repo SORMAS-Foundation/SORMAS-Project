@@ -19,12 +19,15 @@
 package de.symeda.sormas.app.caze.list;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.Menu;
 import android.widget.AdapterView;
 
 import java.util.List;
 import java.util.Random;
 
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivity;
@@ -38,9 +41,27 @@ import de.symeda.sormas.app.component.menu.PageMenuItem;
 public class CaseListActivity extends BaseListActivity {
 
     private InvestigationStatus statusFilters[] = new InvestigationStatus[]{InvestigationStatus.PENDING, InvestigationStatus.DONE, InvestigationStatus.DISCARDED};
+    private CaseListViewModel model;
 
     public static void startActivity(Context context, InvestigationStatus listFilter) {
         BaseListActivity.startActivity(context, CaseListActivity.class, buildBundle(listFilter));
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        showPreloader();
+        adapter = new CaseListAdapter(R.layout.row_case_list_item_layout);
+        model = ViewModelProviders.of(this).get(CaseListViewModel.class);
+        model.getCases().observe(this, cases -> {
+            ((CaseListAdapter) adapter).replaceAll(cases);
+            hidePreloader();
+        });
+        setOpenPageCallback(p -> {
+            showPreloader();
+            model.setInvestigationStatusAndReload(statusFilters[p.getKey()]);
+        });
     }
 
     @Override
@@ -85,4 +106,5 @@ public class CaseListActivity extends BaseListActivity {
     public boolean isEntryCreateAllowed() {
         return ConfigProvider.hasUserRight(UserRight.CASE_CREATE);
     }
+
 }

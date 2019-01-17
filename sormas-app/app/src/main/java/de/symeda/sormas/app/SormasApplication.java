@@ -77,6 +77,8 @@ public class SormasApplication extends Application implements Application.Activi
         ExceptionReporter reporter = (ExceptionReporter) handler;
         reporter.setExceptionParser(new UncaughtExceptionParser());
 
+        ConfigProvider.updateLocale(getApplicationContext());
+
         super.onCreate();
 
         this.registerActivityLifecycleCallbacks(this);

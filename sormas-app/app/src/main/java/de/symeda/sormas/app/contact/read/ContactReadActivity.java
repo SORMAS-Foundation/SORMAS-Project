@@ -71,7 +71,7 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
                 fragment = PersonReadFragment.newInstance(activityRootData);
                 break;
             case VISITS:
-                fragment = ContactReadFollowUpVisitListFragment.newInstance(activityRootData);
+                fragment = ContactReadVisitsListFragment.newInstance(activityRootData);
                 break;
             case TASKS:
                 fragment = ContactReadTaskListFragment.newInstance(activityRootData);

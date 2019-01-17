@@ -46,27 +46,28 @@ import de.symeda.sormas.app.databinding.RowReadContactListItemLayoutBinding;
 
 public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemLayoutBinding> implements ISetOnListItemClickListener {
 
-    private static final String TAG = ContactListAdapter.class.getSimpleName();
-
     private List<Contact> data;
     private OnListItemClickListener mOnListItemClickListener;
     private FollowUpStatus listFilter;
 
-    public ContactListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Contact> data, FollowUpStatus listFilter) {
+    public ContactListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener) {
+        this(rowLayout, onListItemClickListener, null);
+    }
+
+    public ContactListAdapter(int rowLayout, FollowUpStatus listFilter) {
+        this(rowLayout, null, listFilter);
+    }
+
+    public ContactListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, FollowUpStatus listFilter) {
         super(rowLayout);
         this.mOnListItemClickListener = onListItemClickListener;
         this.listFilter = listFilter;
-
-        if (data == null)
-            this.data = new ArrayList<>();
-        else
-            this.data = new ArrayList<>(data);
+        this.data = new ArrayList<>();
     }
 
     @Override
     protected void bindItem(DataBoundViewHolder<RowReadContactListItemLayoutBinding> holder,
                             int position, List<Object> payloads) {
-
         Contact record = data.get(position);
         holder.setData(record);
         holder.setOnListItemClickListener(this.mOnListItemClickListener);
@@ -75,7 +76,7 @@ public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemL
 
 
         //Sync Icon
-        if (record.isModified() || record.getPerson().isModified()) {
+        if (record.isModifiedOrChildModified()) {
             holder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
             holder.binding.imgSyncIcon.setImageResource(R.drawable.ic_sync_blue_24dp);
         } else {
@@ -83,14 +84,28 @@ public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemL
         }
 
         // Number of visits
-        if (listFilter != FollowUpStatus.NO_FOLLOW_UP && DiseaseHelper.hasContactFollowUp(record.getCaseDisease(), null)) {
-            int numberOfVisits = DatabaseHelper.getVisitDao().getVisitCount(record, null);
-            int numberOfCooperativeVisits = DatabaseHelper.getVisitDao().getVisitCount(record, VisitStatus.COOPERATIVE);
+        if (listFilter != null) {
+            // General contact list
+            if (listFilter != FollowUpStatus.NO_FOLLOW_UP && DiseaseHelper.hasContactFollowUp(record.getCaseDisease(), null)) {
+                int numberOfVisits = DatabaseHelper.getVisitDao().getVisitCount(record, null);
+                int numberOfCooperativeVisits = DatabaseHelper.getVisitDao().getVisitCount(record, VisitStatus.COOPERATIVE);
 
-            holder.binding.numberOfVisits.setText(String.format(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, "numberOfVisitsLongFormat"),
-                    numberOfCooperativeVisits, numberOfVisits - numberOfCooperativeVisits));
+                holder.binding.numberOfVisits.setText(String.format(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, "numberOfVisitsLongFormat"),
+                        numberOfCooperativeVisits, numberOfVisits - numberOfCooperativeVisits));
+            } else {
+                holder.binding.numberOfVisits.setVisibility(View.GONE);
+            }
         } else {
-            holder.binding.numberOfVisits.setVisibility(View.GONE);
+            // Sub contact list
+            if (DiseaseHelper.hasContactFollowUp(record.getCaseDisease(), null)) {
+                int numberOfVisits = DatabaseHelper.getVisitDao().getVisitCount(record, null);
+                int numberOfCooperativeVisits = DatabaseHelper.getVisitDao().getVisitCount(record, VisitStatus.COOPERATIVE);
+
+                holder.binding.numberOfVisits.setText(String.format(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, "numberOfVisitsLongFormat"),
+                        numberOfCooperativeVisits, numberOfVisits - numberOfCooperativeVisits));
+            } else {
+                holder.binding.numberOfVisits.setVisibility(View.GONE);
+            }
         }
 
         // TODO #704
@@ -117,7 +132,7 @@ public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemL
 
     public void indicateContactClassification(ImageView img, Contact record) {
         Resources resources = img.getContext().getResources();
-        Drawable drw = (Drawable) ContextCompat.getDrawable(img.getContext(), R.drawable.indicator_status_circle);
+        Drawable drw = ContextCompat.getDrawable(img.getContext(), R.drawable.indicator_status_circle);
         StatusElaborator elaborator = StatusElaboratorFactory.getElaborator(record.getContactClassification());
         drw.setColorFilter(resources.getColor(elaborator.getColorIndicatorResource()), PorterDuff.Mode.SRC_OVER);
         img.setBackground(drw);

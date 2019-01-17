@@ -37,7 +37,6 @@ import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 
 public class CaseListFragment extends BaseListFragment<CaseListAdapter> implements OnListItemClickListener {
 
-    private List<Case> cases;
     private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerViewForList;
 
@@ -48,15 +47,15 @@ public class CaseListFragment extends BaseListFragment<CaseListAdapter> implemen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
-        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        recyclerViewForList = (RecyclerView) view.findViewById(R.id.recyclerViewForList);
+        linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
+        recyclerViewForList = view.findViewById(R.id.recyclerViewForList);
 
         return view;
     }
 
     @Override
     public CaseListAdapter getNewListAdapter() {
-        return new CaseListAdapter(this.getActivity(), R.layout.row_case_list_item_layout, this, this.cases);
+        return (CaseListAdapter) ((CaseListActivity) getActivity()).getAdapter();
     }
 
     @Override
@@ -77,12 +76,6 @@ public class CaseListFragment extends BaseListFragment<CaseListAdapter> implemen
         getSubHeadingHandler().updateSubHeadingTitle();
 
 //        getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), SearchBy.BY_FILTER_STATUS, getListFilter(), "Case"));
-    }
-
-    @Override
-    protected void prepareFragmentData() {
-        cases = DatabaseHelper.getCaseDao().queryForEq(Case.INVESTIGATION_STATUS, getListFilter(), Case.REPORT_DATE, false);
-        getListAdapter().replaceAll(cases);
     }
 
     @Override
