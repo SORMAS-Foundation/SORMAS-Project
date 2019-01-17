@@ -15,22 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api;
+package de.symeda.sormas.api.disease;
 
 import java.io.Serializable;
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import de.symeda.sormas.api.Disease;
 
-/**
- * @JsonInclude We don't need to transfer properties with a null value. This
- *              will reduce data transferred to something between 20% and 50% -
- *              especially for fields that are not needed for all diseases
- */
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class DiseaseBurdenDto {
+public class DiseaseBurdenDto  implements Serializable {
+	
 	private Disease disease;
 	private int caseCount;
 	private int previousCaseCount;

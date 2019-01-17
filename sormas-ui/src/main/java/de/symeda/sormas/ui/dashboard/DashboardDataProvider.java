@@ -25,6 +25,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.contact.DashboardContactDto;
+import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -58,6 +59,7 @@ public class DashboardDataProvider {
 	private List<DashboardTaskDto> pendingTasks = new ArrayList<>();
 	private List<DashboardContactDto> contacts = new ArrayList<>();
 	private List<DashboardContactDto> previousContacts = new ArrayList<>();
+	private List<DiseaseBurdenDto> diseasesBurden = new ArrayList<>();
 	
 	public void refreshData() {
 		// Update the entities lists according to the filters
@@ -84,6 +86,8 @@ public class DashboardDataProvider {
 		// Contacts
 		setContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, fromDate, toDate, userUuid));
 		setPreviousContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, previousFromDate, previousToDate, userUuid));
+		// Disease burden
+		setDiseasesBurden(FacadeProvider.getDiseaseFacade().getDiseaseBurdenForDashboard(region, district, fromDate, toDate, userUuid));
 	}
 
 	public List<DashboardCaseDto> getCases() {
@@ -170,6 +174,13 @@ public class DashboardDataProvider {
 	public void setDisease(Disease disease) {
 		this.disease = disease;
 	}
+	public List<DiseaseBurdenDto> getDiseasesBurden() {
+		return diseasesBurden;
+	}
+	public void setDiseasesBurden(List<DiseaseBurdenDto> diseasesBurden) {
+		this.diseasesBurden = diseasesBurden;
+	}
+
 	public DateFilterOption getDateFilterOption() {
 		return dateFilterOption;
 	}

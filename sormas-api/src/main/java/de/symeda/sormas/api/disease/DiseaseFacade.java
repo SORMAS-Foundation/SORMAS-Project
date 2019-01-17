@@ -15,14 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api;
+package de.symeda.sormas.api.disease;
 
 import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
+
 @Remote
 public interface DiseaseFacade {	
-	List<DiseaseBurdenDto> getDiseaseBurdenForDashboard(Date date);	
+	List<DiseaseBurdenDto> getDiseaseBurdenForDashboard(
+			RegionReferenceDto regionRef,
+			DistrictReferenceDto districtRef, 
+			Date from, 
+			Date to, 
+			String userUuid);
 }
