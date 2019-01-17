@@ -23,9 +23,11 @@ import android.view.View;
 
 import java.util.List;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
@@ -85,7 +87,7 @@ public class EventEditTaskListFragement extends BaseEditFragment<FragmentFormLis
 
     @Override
     public boolean isShowNewAction() {
-        return false;
+        return ConfigProvider.hasUserRight(UserRight.TASK_CREATE);
     }
 
     @Override

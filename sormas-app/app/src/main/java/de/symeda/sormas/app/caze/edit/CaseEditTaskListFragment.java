@@ -24,10 +24,12 @@ import android.view.View;
 
 import java.util.List;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
@@ -35,8 +37,9 @@ import de.symeda.sormas.app.task.edit.TaskEditActivity;
 
 public class CaseEditTaskListFragment extends BaseEditFragment<FragmentFormListLayoutBinding, List<Task>, Case> implements OnListItemClickListener {
 
-    private List<Task> record;
+    public static final String TAG = CaseEditTaskListFragment.class.getSimpleName();
 
+    private List<Task> record;
     private CaseEditTaskListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
 
@@ -88,7 +91,7 @@ public class CaseEditTaskListFragment extends BaseEditFragment<FragmentFormListL
 
     @Override
     public boolean isShowNewAction() {
-        return false;
+        return ConfigProvider.hasUserRight(UserRight.TASK_CREATE);
     }
 
     @Override

@@ -72,25 +72,11 @@ public class SormasApplication extends Application implements Application.Activi
         ExceptionReporter reporter = (ExceptionReporter) handler;
         reporter.setExceptionParser(new UncaughtExceptionParser());
 
+        ConfigProvider.updateLocale(getApplicationContext());
+
         super.onCreate();
 
         this.registerActivityLifecycleCallbacks(this);
-    }
-
-    public static void updateLocale(Context ctx) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-        String lang = prefs.getString("locale_override", "");
-        updateLocal(ctx, lang);
-    }
-
-    public static void updateLocal(Context ctx, String lang) {
-        Configuration cfg = new Configuration();
-        if (!TextUtils.isEmpty(lang))
-            cfg.locale = new Locale(lang);
-        else
-            cfg.locale = Locale.getDefault();
-
-        ctx.getResources().updateConfiguration(cfg, null);
     }
 
     @Override
