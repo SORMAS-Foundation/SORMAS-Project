@@ -49,6 +49,7 @@ public class CaseCriteria implements Serializable, Cloneable {
 	private PersonReferenceDto person;
 	private Boolean mustHaveNoGeoCoordinates;
 	private Boolean archived;
+	private String[] nameUuidEpidNumberLike;
 
 	@Override
 	public CaseCriteria clone() {
@@ -198,4 +199,15 @@ public class CaseCriteria implements Serializable, Cloneable {
 		return this;
 	}
 	
+	/**
+	 * returns all entries that match ALL of the passed strings
+	 */
+	public CaseCriteria nameUuidEpidNumberLike(String[] nameUuidEpidNumberLike) {
+		this.nameUuidEpidNumberLike = nameUuidEpidNumberLike;
+		return this;
+	}
+
+	public String[] getNameUuidEpidNumberLike() {
+		return nameUuidEpidNumberLike;
+	}
 }

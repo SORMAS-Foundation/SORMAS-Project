@@ -42,6 +42,7 @@ public class SampleCriteria implements Serializable {
 	private SpecimenCondition specimenCondition;
 	private CaseReferenceDto caze;
 	private Boolean archived;
+	private String[] caseCodeIdLike;
 
 	public RegionReferenceDto getRegion() {
 		return region;
@@ -149,5 +150,17 @@ public class SampleCriteria implements Serializable {
 	public SampleCriteria archived(Boolean archived) {
 		this.archived = archived;
 		return this;
+	}
+	
+	/**
+	 * returns all entries that match ALL of the passed strings
+	 */
+	public SampleCriteria caseCodeIdLike(String[] caseCodeIdLike) {
+		this.caseCodeIdLike = caseCodeIdLike;
+		return this;
+	}
+
+	public String[] getCaseCodeIdLike() {
+		return caseCodeIdLike;
 	}
 }

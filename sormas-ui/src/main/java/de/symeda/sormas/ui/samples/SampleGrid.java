@@ -25,8 +25,6 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.MethodProperty;
 import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.data.util.filter.Or;
-import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
@@ -34,10 +32,10 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -222,16 +220,9 @@ public class SampleGrid extends Grid {
 		reload();
 	}
 	
-	public void filterByText(String text) {
-		getContainer().removeContainerFilters(SampleIndexDto.SAMPLE_CODE);
-		getContainer().removeContainerFilters(SampleIndexDto.UUID);
-		getContainer().removeContainerFilters(SampleIndexDto.ASSOCIATED_CASE);
-		if(text != null && !text.isEmpty()) {
-			Or textFilter = new Or(new SimpleStringFilter(SampleIndexDto.SAMPLE_CODE, text, true, false), 
-					new SimpleStringFilter(SampleIndexDto.UUID, text, true, false), 
-					new SimpleStringFilter(SampleIndexDto.ASSOCIATED_CASE, text, true, false));
-			getContainer().addContainerFilter(textFilter);
-		}
+	public void setCaseCodeIdLike(String text) {
+		sampleCriteria.caseCodeIdLike(text.split("\\s+"));
+		reload();
 	}
 	
 	@SuppressWarnings("unchecked")

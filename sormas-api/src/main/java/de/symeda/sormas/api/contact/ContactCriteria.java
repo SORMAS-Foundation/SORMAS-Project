@@ -47,6 +47,7 @@ public class ContactCriteria implements Serializable {
 	private Date followUpUntilFrom;
 	private Date followUpUntilTo;
 	private Boolean archived;
+	private String[] nameUuidCaseLike;
 
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -175,4 +176,15 @@ public class ContactCriteria implements Serializable {
 		return this;
 	}
 	
+	/**
+	 * returns all entries that match ALL of the passed strings
+	 */
+	public ContactCriteria nameUuidCaseLike(String[] nameUuidCaseLike) {
+		this.nameUuidCaseLike = nameUuidCaseLike;
+		return this;
+	}
+
+	public String[] getNameUuidCaseLike() {
+		return nameUuidCaseLike;
+	}
 }

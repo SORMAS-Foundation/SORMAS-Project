@@ -298,7 +298,7 @@ public class ContactsView extends AbstractView {
 		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, SEARCH_FIELD));
 		searchField.addTextChangeListener(e -> {
-			grid.filterByText(e.getText());
+			grid.setNameUuidCaseLike(e.getText());
 		});
 		filterLayout.addComponent(searchField);
 

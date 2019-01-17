@@ -17,24 +17,19 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.data.util.filter.Or;
-import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
@@ -42,6 +37,7 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -51,7 +47,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.CurrentUser;
-import de.symeda.sormas.ui.utils.DateFilter;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 @SuppressWarnings("serial")
@@ -196,27 +191,9 @@ public class CaseGrid extends Grid {
 		reload();
 	}
 	
-	public void filterByText(String text) {
-		getContainer().removeContainerFilters(CaseIndexDto.UUID);
-		getContainer().removeContainerFilters(CaseIndexDto.PERSON_FIRST_NAME);
-		getContainer().removeContainerFilters(CaseIndexDto.PERSON_LAST_NAME);
-    	getContainer().removeContainerFilters(CaseIndexDto.EPID_NUMBER);
-    	getContainer().removeContainerFilters(CaseIndexDto.REPORT_DATE);
-    	getContainer().removeContainerFilters(CaseIndexDto.CREATION_DATE);
-
-    	if (text != null && !text.isEmpty()) {
-    		List<Filter> orFilters = new ArrayList<Filter>();
-    		String[] words = text.split("\\s+");
-    		for (String word : words) {
-    			orFilters.add(new SimpleStringFilter(CaseIndexDto.UUID, word, true, false));
-    			orFilters.add(new SimpleStringFilter(CaseIndexDto.PERSON_FIRST_NAME, word, true, false));
-    			orFilters.add(new SimpleStringFilter(CaseIndexDto.PERSON_LAST_NAME, word, true, false));
-    			orFilters.add(new SimpleStringFilter(CaseIndexDto.EPID_NUMBER, word, true, false));
-    		}
-    		orFilters.add(new DateFilter(CaseIndexDto.REPORT_DATE, text));
-    		orFilters.add(new DateFilter(CaseIndexDto.CREATION_DATE, text));
-            getContainer().addContainerFilter(new Or(orFilters.stream().toArray(Filter[]::new)));
-		}
+	public void setNameUuidEpidNumberLike(String text) {
+		caseCriteria.nameUuidEpidNumberLike(text.split("\\s+"));
+		reload();
 	}
 	
 	public CaseCriteria getFilterCriteria() {

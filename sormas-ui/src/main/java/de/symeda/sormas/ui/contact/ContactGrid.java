@@ -17,22 +17,17 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.data.util.filter.Or;
-import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Grid;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -41,6 +36,7 @@ import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -203,21 +199,9 @@ public class ContactGrid extends Grid {
 		reload();
 	}
 
-	public void filterByText(String text) {
-		getContainer().removeContainerFilters(ContactIndexDto.UUID);
-		getContainer().removeContainerFilters(ContactIndexDto.PERSON);
-		getContainer().removeContainerFilters(ContactIndexDto.CAZE);
-
-		if (text != null && !text.isEmpty()) {
-			List<Filter> orFilters = new ArrayList<Filter>();
-			String[] words = text.split("\\s+");
-			for (String word : words) {
-				orFilters.add(new SimpleStringFilter(ContactIndexDto.UUID, word, true, false));
-				orFilters.add(new SimpleStringFilter(ContactIndexDto.PERSON, word, true, false));
-				orFilters.add(new SimpleStringFilter(ContactIndexDto.CAZE, word, true, false));
-			}
-			getContainer().addContainerFilter(new Or(orFilters.stream().toArray(Filter[]::new)));
-		}
+	public void setNameUuidCaseLike(String text) {
+		contactCriteria.nameUuidCaseLike(text.split("\\s+"));
+		reload();
 	}
 
 	public ContactCriteria getFilterCriteria() {

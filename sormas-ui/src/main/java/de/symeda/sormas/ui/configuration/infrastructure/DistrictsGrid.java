@@ -17,16 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.data.util.filter.Or;
-import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
@@ -35,7 +31,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictCriteria;
 import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -105,19 +100,9 @@ public class DistrictsGrid extends Grid {
 		getContainer().addAll(districts);
 	}
 
-	public void filterByText(String text) {
-		getContainer().removeContainerFilters(RegionDto.NAME);
-		getContainer().removeContainerFilters(RegionDto.EPID_CODE);
-
-		if (text != null && !text.isEmpty()) {
-			List<Filter> orFilters = new ArrayList<Filter>();
-			String[] words = text.split("\\s+");
-			for (String word : words) {
-				orFilters.add(new SimpleStringFilter(DistrictDto.NAME, word, true, false));
-				orFilters.add(new SimpleStringFilter(DistrictDto.EPID_CODE, word, true, false));
-			}
-			getContainer().addContainerFilter(new Or(orFilters.stream().toArray(Filter[]::new)));
-		}
+	public void setNameEpidLikeFilter(String text) {
+		districtCriteria.nameEpidLike(text.split("\\s+"));
+		reload();
 	}
 
 	public void setRegionFilter(RegionReferenceDto region) {

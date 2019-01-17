@@ -213,7 +213,7 @@ public class SampleGridComponent extends VerticalLayout {
 		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setInputPrompt(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, SEARCH_FIELD));
 		searchField.addTextChangeListener(e -> {
-			grid.filterByText(e.getText());
+			grid.setCaseCodeIdLike(e.getText());
 		});
 		filterLayout.addComponent(searchField);
 

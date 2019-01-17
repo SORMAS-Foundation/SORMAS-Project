@@ -28,6 +28,8 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.region.RegionCriteria;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.user.User;
@@ -76,6 +78,23 @@ public class RegionService extends AbstractAdoService<Region> {
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Region, Region> from, User user) {
 		// no fitler by user needed
 		return null;
+	}
+	
+	public Predicate buildCriteriaFilter(RegionCriteria criteria, CriteriaBuilder cb, Root<Region> from) {
+		Predicate filter = null;
+		if (criteria.getNameEpidLike() != null) {
+			for (int i=0; i<criteria.getNameEpidLike().length; i++)
+			{
+				String likeFilterText = "%" + criteria.getNameEpidLike()[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(likeFilterText)) {
+					Predicate likeFilters = cb.or(
+							cb.like(cb.lower(from.get(Region.NAME)), likeFilterText),
+							cb.like(cb.lower(from.get(Region.EPID_CODE)), likeFilterText));
+					filter = and(cb, filter, likeFilters);
+				}
+			}
+		}
+		return filter;
 	}
 	
 	public void importRegions(String countryName, List<Region> regions) {

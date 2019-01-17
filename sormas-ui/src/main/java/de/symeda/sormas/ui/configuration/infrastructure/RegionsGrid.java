@@ -17,22 +17,19 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.data.util.filter.Or;
-import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.region.RegionCriteria;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -44,6 +41,8 @@ public class RegionsGrid extends Grid {
 
 	public static final String EDIT_BTN_ID = "edit";
 	
+	private RegionCriteria regionCriteria = new RegionCriteria();
+
 	public RegionsGrid() {
 		setSizeFull();
 		setSelectionMode(SelectionMode.NONE);
@@ -95,24 +94,13 @@ public class RegionsGrid extends Grid {
 	}
 	
 	public void reload() {
-		List<RegionDto> regions = FacadeProvider.getRegionFacade().getIndexList();
+		List<RegionDto> regions = FacadeProvider.getRegionFacade().getIndexList(regionCriteria);
 		getContainer().removeAllItems();
 		getContainer().addAll(regions);
 	}
 	
-	public void filterByText(String text) {
-		getContainer().removeContainerFilters(RegionDto.NAME);
-		getContainer().removeContainerFilters(RegionDto.EPID_CODE);
-
-		if (text != null && !text.isEmpty()) {
-			List<Filter> orFilters = new ArrayList<Filter>();
-			String[] words = text.split("\\s+");
-			for (String word : words) {
-				orFilters.add(new SimpleStringFilter(RegionDto.NAME, word, true, false));
-				orFilters.add(new SimpleStringFilter(RegionDto.EPID_CODE, word, true, false));
-			}
-			getContainer().addContainerFilter(new Or(orFilters.stream().toArray(Filter[]::new)));
-		}
+	public void setNameEpidLikeFilter(String text) {
+		regionCriteria.nameEpidLike(text.split("\\s+"));
+		reload();
 	}
-	
 }

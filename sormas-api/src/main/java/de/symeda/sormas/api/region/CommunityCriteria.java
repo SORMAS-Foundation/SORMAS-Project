@@ -25,6 +25,7 @@ public class CommunityCriteria implements Serializable, Cloneable {
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	private String[] nameLike;
 	
 	public CommunityCriteria regionEquals(RegionReferenceDto region) {
 		this.region = region;
@@ -42,6 +43,15 @@ public class CommunityCriteria implements Serializable, Cloneable {
 	
 	public DistrictReferenceDto getDistrict() {
 		return district;
+	}
+
+	public String[] getNameLike() {
+		return nameLike;
+	}
+
+	public CommunityCriteria nameLike(String[] nameLike) {
+		this.nameLike = nameLike;
+		return this;
 	}	
 	
 }

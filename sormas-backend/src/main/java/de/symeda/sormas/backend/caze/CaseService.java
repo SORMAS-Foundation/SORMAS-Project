@@ -46,6 +46,7 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -740,6 +741,21 @@ public class CaseService extends AbstractAdoService<Case> {
 				filter = and(cb, filter, cb.equal(from.get(Case.ARCHIVED), true));
 			} else {
 				filter = and(cb, filter, cb.or(cb.equal(from.get(Case.ARCHIVED), false), cb.isNull(from.get(Case.ARCHIVED))));
+			}
+		}
+
+		if (caseCriteria.getNameUuidEpidNumberLike() != null) {
+			for (int i=0; i<caseCriteria.getNameUuidEpidNumberLike().length; i++)
+			{
+				String likeFilterText = "%" + caseCriteria.getNameUuidEpidNumberLike()[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(likeFilterText)) {
+					Predicate likeFilters = cb.or(
+							cb.like(cb.lower(person.get(Person.FIRST_NAME)), likeFilterText),
+							cb.like(cb.lower(person.get(Person.LAST_NAME)), likeFilterText),
+							cb.like(cb.lower(from.get(Case.UUID)), likeFilterText),
+							cb.like(cb.lower(from.get(Case.EPID_NUMBER)), likeFilterText));
+					filter = and(cb, filter, likeFilters);
+				}
 			}
 		}
 		return filter;

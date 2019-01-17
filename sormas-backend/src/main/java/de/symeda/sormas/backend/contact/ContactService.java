@@ -737,7 +737,25 @@ public class ContactService extends AbstractAdoService<Contact> {
 				filter = and(cb, filter, cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED))));
 			}
 		}
-
+		if (contactCriteria.getNameUuidCaseLike() != null) {
+			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
+			Join<Case, Person> casePerson = caze.join(Case.PERSON, JoinType.LEFT);
+			for (int i=0; i<contactCriteria.getNameUuidCaseLike().length; i++)
+			{
+				String likeFilterText = "%" + contactCriteria.getNameUuidCaseLike()[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(likeFilterText)) {
+					Predicate likeFilters = cb.or(
+							cb.like(cb.lower(from.get(Contact.UUID)), likeFilterText),
+							cb.like(cb.lower(person.get(Person.FIRST_NAME)), likeFilterText),
+							cb.like(cb.lower(person.get(Person.LAST_NAME)), likeFilterText),
+							cb.like(cb.lower(caze.get(Case.UUID)), likeFilterText),
+							cb.like(cb.lower(casePerson.get(Person.FIRST_NAME)), likeFilterText),
+							cb.like(cb.lower(casePerson.get(Person.LAST_NAME)), likeFilterText));
+					filter = and(cb, filter, likeFilters);
+				}
+			}
+		}
+		
 		return filter;
 	}
 }

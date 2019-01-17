@@ -17,16 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.data.util.filter.Or;
-import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
@@ -121,17 +117,9 @@ public class CommunitiesGrid extends Grid {
 		getContainer().addAll(districts);
 	}
 	
-	public void filterByText(String text) {
-		getContainer().removeContainerFilters(CommunityDto.NAME);
-
-		if (text != null && !text.isEmpty()) {
-			List<Filter> orFilters = new ArrayList<Filter>();
-			String[] words = text.split("\\s+");
-			for (String word : words) {
-				orFilters.add(new SimpleStringFilter(CommunityDto.NAME, word, true, false));
-			}
-			getContainer().addContainerFilter(new Or(orFilters.stream().toArray(Filter[]::new)));
-		}
+	public void setNameLikeFilter(String text) {
+		communityCriteria.nameLike(text.split("\\s+"));
+		reload();
 	}
 	
 	public void setRegionFilter(RegionReferenceDto region) {

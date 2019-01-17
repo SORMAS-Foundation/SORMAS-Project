@@ -94,7 +94,7 @@ public class RegionsView extends AbstractConfigurationView {
 		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setInputPrompt(I18nProperties.getCaption(SEARCH));
 		searchField.addTextChangeListener(e -> {
-			grid.filterByText(e.getText());
+			grid.setNameEpidLikeFilter(e.getText());
 		});
 		CssStyles.style(searchField, CssStyles.FORCE_CAPTION);
 		filterLayout.addComponent(searchField);

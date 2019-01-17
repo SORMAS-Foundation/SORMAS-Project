@@ -40,10 +40,12 @@ import de.symeda.sormas.api.sample.DashboardSampleDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
@@ -337,6 +339,23 @@ public class SampleService extends AbstractAdoService<Sample> {
 			}
 		}
 
+		if (sampleCriteria.getCaseCodeIdLike() != null) {
+			Join<Case, Person> casePerson = caze.join(Case.PERSON, JoinType.LEFT);
+			for (int i=0; i<sampleCriteria.getCaseCodeIdLike().length; i++)
+			{
+				String likeFilterText = "%" + sampleCriteria.getCaseCodeIdLike()[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(likeFilterText)) {
+					Predicate likeFilters = cb.or(
+							cb.like(cb.lower(caze.get(Case.UUID)), likeFilterText),
+							cb.like(cb.lower(casePerson.get(Person.FIRST_NAME)), likeFilterText),
+							cb.like(cb.lower(casePerson.get(Person.LAST_NAME)), likeFilterText),
+							cb.like(cb.lower(from.get(Sample.LAB_SAMPLE_ID)), likeFilterText),
+							cb.like(cb.lower(from.get(Sample.SAMPLE_CODE)), likeFilterText));
+					filter = and(cb, filter, likeFilters);
+				}
+			}
+		}
+		
 		return filter;
 	}
 }
