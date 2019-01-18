@@ -100,7 +100,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 137;
+	public static final int DATABASE_VERSION = 138;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -627,6 +627,16 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							"SELECT id, uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, snapshot, weeklyReport_id, disease, numberOfCases " +
 							"FROM tmp_weeklyreportentry;");
 					getDao(WeeklyReportEntry.class).executeRaw("DROP TABLE tmp_weeklyreportentry;");
+				case 137:
+					currentVersion = 137;
+					try {
+						getDao(DiseaseClassificationCriteria.class).executeRaw("DROP TABLE diseaseClassificationCriteria");
+						getDao(DiseaseClassificationCriteria.class).executeRaw("DROP TABLE diseaseClassification");
+					} catch (SQLException e) { } // one of the tables won't exist
+					getDao(DiseaseClassificationCriteria.class).executeRaw("CREATE TABLE diseaseClassificationCriteria (disease VARCHAR, suspectCriteria TEXT, " +
+							"probableCriteria TEXT, confirmedCriteria TEXT, changeDate BIGINT NOT NULL, creationDate BIGINT NOT NULL, " +
+							"id INTEGER PRIMARY KEY AUTOINCREMENT, localChangeDate BIGINT NOT NULL, modified SMALLINT, lastOpenedDate timestamp, snapshot SMALLINT, uuid VARCHAR NOT NULL, " +
+							"UNIQUE(snapshot, uuid));");
 
 					// ATTENTION: break should only be done after last version
 					break;
