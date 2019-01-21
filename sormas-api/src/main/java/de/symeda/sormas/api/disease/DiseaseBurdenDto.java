@@ -29,9 +29,12 @@ public class DiseaseBurdenDto  implements Serializable {
 	
 	private static final long serialVersionUID = 2430932452606853497L;
 	
+	public static final String I18N_PREFIX = "DiseaseBurdenInformation";
+	
 	public static final String DISEASE = "disease";
 	public static final String CASE_COUNT = "caseCount";
 	public static final String PREVIOUS_CASE_COUNT = "previousCaseCount";
+	public static final String CASES_DIFFERENCE = "casesDifference";
 	public static final String EVENT_COUNT = "eventCount";
 	public static final String OUTBREAK_DISTRICT_COUNT = "outbreakDistrictCount";
 	public static final String CASE_FATALITY_RATE = "caseFatalityRate";
@@ -39,6 +42,7 @@ public class DiseaseBurdenDto  implements Serializable {
 	private Disease disease;
 	private int caseCount;
 	private int previousCaseCount;
+	private int casesDifference;
 	private int eventCount;
 	private int outbreakDistrictCount;
 	private Float caseFatalityRate;
@@ -89,6 +93,10 @@ public class DiseaseBurdenDto  implements Serializable {
 	}
 	public void setPreviousCaseCount(int previousCaseCount) {
 		this.previousCaseCount = previousCaseCount;
+	}
+	
+	public int getCasesDifference() {
+		return getCaseCount() - getPreviousCaseCount();
 	}
 	
 	public int getEventCount() {

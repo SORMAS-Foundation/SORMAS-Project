@@ -62,8 +62,8 @@ public abstract class AbstractDashboardView extends AbstractView {
 	protected HorizontalLayout epiCurveAndMapLayout;
 	private VerticalLayout epiCurveLayout;
 	private VerticalLayout mapLayout;
-//	protected DiseaseBurdenGrid diseaseBurdenComponent;
-	protected DiseaseBurdenSurveillanceComponent/*AbstractDiseaseBurdenComponent*/ diseaseBurdenComponent;
+	protected DiseaseBurdenGrid diseaseBurdenGrid;
+//	protected DiseaseBurdenSurveillanceComponent/*AbstractDiseaseBurdenComponent*/ diseaseBurdenComponent;
 	protected HorizontalLayout diseaseBurdenAndCasesLayout;
 	private VerticalLayout diseaseBurdenLayout;
 
@@ -223,8 +223,8 @@ public abstract class AbstractDashboardView extends AbstractView {
 		Label title = new Label("Disease Burden Information");
 		CssStyles.style(title, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 
-		DiseaseBurdenGrid grid = new DiseaseBurdenGrid();
-		grid.setHeightMode(HeightMode.UNDEFINED);
+		diseaseBurdenGrid = new DiseaseBurdenGrid();
+		diseaseBurdenGrid.setHeightMode(HeightMode.UNDEFINED);
 		
 		//layout
 		VerticalLayout layout = new VerticalLayout();
@@ -232,11 +232,11 @@ public abstract class AbstractDashboardView extends AbstractView {
 		layout.setHeight(400, Unit.PIXELS);
 		
 		layout.addComponent(title);
-		layout.addComponent(grid);
+		layout.addComponent(diseaseBurdenGrid);
 		layout.setMargin(true);
 		layout.setSpacing(false);
 		layout.setSizeFull();
-		layout.setExpandRatio(grid, 1);
+		layout.setExpandRatio(diseaseBurdenGrid, 1);
 
 //		diseaseBurdenComponent.setSizeFull();
 
@@ -318,7 +318,8 @@ public abstract class AbstractDashboardView extends AbstractView {
 		// Epi curve chart has to be created again due to a canvas resizing issue when simply refreshing the component
 		epiCurveComponent.clearAndFillEpiCurveChart();
 		
-		diseaseBurdenComponent.clearAndFillEpiCurveChart();
+		diseaseBurdenGrid.reload(dashboardDataProvider.getDiseasesBurden());
+		// diseaseBurdenComponent.clearAndFillEpiCurveChart();
 	}
 
 	@Override

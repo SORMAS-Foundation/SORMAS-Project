@@ -91,6 +91,7 @@ public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
 				DiseaseBurdenDto.DISEASE,
 				DiseaseBurdenDto.CASE_COUNT,
 				DiseaseBurdenDto.PREVIOUS_CASE_COUNT, 
+				DiseaseBurdenDto.CASES_DIFFERENCE, 
 				DiseaseBurdenDto.EVENT_COUNT, 
 				DiseaseBurdenDto.OUTBREAK_DISTRICT_COUNT,
 				DiseaseBurdenDto.CASE_FATALITY_RATE);
@@ -99,7 +100,7 @@ public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
 			if (column.getPropertyId().equals(VIEW_DETAILS_BTN_ID)) {
 				column.setHeaderCaption("");
 			} else {
-				column.setHeaderCaption(I18nProperties.getPrefixCaption(WeeklyReportOfficerSummaryDto.I18N_PREFIX,
+				column.setHeaderCaption(I18nProperties.getPrefixCaption(DiseaseBurdenDto.I18N_PREFIX,
 						column.getPropertyId().toString(), column.getHeaderCaption()));
 			}
 		}
@@ -119,17 +120,21 @@ public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
 //		preHeaderCell.setHtml(I18nProperties.getPrefixCaption(WeeklyReportOfficerSummaryDto.I18N_PREFIX, "officerInformants"));
 //		preHeaderCell.setStyleName(CssStyles.GRID_CELL_ODD);
 		
+		//rename columns
 		getColumn(DiseaseBurdenDto.PREVIOUS_CASE_COUNT).setHeaderCaption("PREVIOUS NUMBER OF CASES");
+		getColumn(DiseaseBurdenDto.CASES_DIFFERENCE).setHeaderCaption("DYNAMIC");
 		getColumn(DiseaseBurdenDto.EVENT_COUNT).setHeaderCaption("NUMBER OF EVENTS");
 		getColumn(DiseaseBurdenDto.OUTBREAK_DISTRICT_COUNT).setHeaderCaption("OUTBREAK DISTRICTS");
 		getColumn(DiseaseBurdenDto.CASE_FATALITY_RATE).setHeaderCaption("CFR");
+		
+		//format columns
+		getColumn(DiseaseBurdenDto.CASE_FATALITY_RATE).setRenderer(new PercentageRenderer());
 		
 //		getColumn(VIEW_DETAILS_BTN_ID).setRenderer(new HtmlRenderer());
 //		getColumn(VIEW_DETAILS_BTN_ID).setWidth(60);
 
 //		getColumn(WeeklyReportOfficerSummaryDto.OFFICER_REPORT_DATE).setRenderer(new HtmlRenderer(
 //				I18nProperties.getPrefixCaption(WeeklyReportDto.I18N_PREFIX, "noReport")));
-//		getColumn(WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE).setRenderer(new PercentageRenderer());
 		
 //		setCellStyleGenerator(new WeeklyReportGridCellStyleGenerator());
 
@@ -138,22 +143,13 @@ public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
 	}
 
 	@SuppressWarnings("unchecked")
-	private BeanItemContainer<WeeklyReportOfficerSummaryDto> getContainer() {
+	private BeanItemContainer<DiseaseBurdenDto> getContainer() {
 		GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
-		return (BeanItemContainer<WeeklyReportOfficerSummaryDto>) container.getWrappedContainer();
+		return (BeanItemContainer<DiseaseBurdenDto>) container.getWrappedContainer();
 	}
 
-	public void reload(RegionReferenceDto region, int year, int week) {
-
-		this.region = region;
-		this.week = week;
-		this.year = year;
-
+	public void reload(List<DiseaseBurdenDto> summaryDtos) {
 		getContainer().removeAllItems();
-		EpiWeek epiWeek = new EpiWeek(year, week);
-		
-		List<WeeklyReportOfficerSummaryDto> summaryDtos = FacadeProvider.getWeeklyReportFacade()
-				.getSummariesPerOfficer(region, epiWeek);
 		summaryDtos.forEach(s -> getContainer().addItem(s));
 	}
 
