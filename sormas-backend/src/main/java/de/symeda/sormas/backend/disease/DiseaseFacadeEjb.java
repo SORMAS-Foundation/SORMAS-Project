@@ -74,9 +74,9 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		//caze.get(Case.DISEASE);
 		
 		cq.multiselect(
-			caze.get(Case.DISEASE),
-			cb.count(caze.get(Case.ID))
-			//0, 0, 0, 0, 0.00
+			caze.get(Case.DISEASE)
+			//cb.count(caze)
+			//0, 0, 0, 0.00f
 		);
 		
 		cq.groupBy(caze.get(Case.DISEASE));

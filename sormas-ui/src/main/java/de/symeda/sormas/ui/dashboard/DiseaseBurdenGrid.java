@@ -31,6 +31,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.report.WeeklyReportDto;
@@ -80,21 +81,19 @@ public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
 	public DiseaseBurdenGrid() {
 		setSizeFull();
 
-		BeanItemContainer<WeeklyReportOfficerSummaryDto> container = new BeanItemContainer<WeeklyReportOfficerSummaryDto>(
-				WeeklyReportOfficerSummaryDto.class);
+		BeanItemContainer<DiseaseBurdenDto> container = new BeanItemContainer<DiseaseBurdenDto>(
+				DiseaseBurdenDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
-		VaadinUiUtil.addIconColumn(generatedContainer, VIEW_DETAILS_BTN_ID, FontAwesome.EYE);
+//		VaadinUiUtil.addIconColumn(generatedContainer, VIEW_DETAILS_BTN_ID, FontAwesome.EYE);
 		setContainerDataSource(generatedContainer);
 
-		setColumns(VIEW_DETAILS_BTN_ID, 
-				WeeklyReportOfficerSummaryDto.OFFICER, 
-				WeeklyReportOfficerSummaryDto.DISTRICT,
-				WeeklyReportOfficerSummaryDto.OFFICER_REPORT_DATE, 
-				WeeklyReportOfficerSummaryDto.TOTAL_CASE_COUNT, 
-				WeeklyReportOfficerSummaryDto.INFORMANTS,
-				WeeklyReportOfficerSummaryDto.INFORMANT_REPORTS,
-				WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE,
-				WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS);
+		setColumns(/*VIEW_DETAILS_BTN_ID, */
+				DiseaseBurdenDto.DISEASE,
+				DiseaseBurdenDto.CASE_COUNT,
+				DiseaseBurdenDto.PREVIOUS_CASE_COUNT, 
+				DiseaseBurdenDto.EVENT_COUNT, 
+				DiseaseBurdenDto.OUTBREAK_DISTRICT_COUNT,
+				DiseaseBurdenDto.CASE_FATALITY_RATE);
 
 		for (Column column : getColumns()) {
 			if (column.getPropertyId().equals(VIEW_DETAILS_BTN_ID)) {
@@ -105,32 +104,37 @@ public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
 			}
 		}
 
-		HeaderRow headerRow = getHeaderRow(0);
-		headerRow.getCell(WeeklyReportOfficerSummaryDto.INFORMANTS).setStyleName(CssStyles.GRID_CELL_ODD);
-		headerRow.getCell(WeeklyReportOfficerSummaryDto.INFORMANT_REPORTS).setStyleName(CssStyles.GRID_CELL_ODD);
-		headerRow.getCell(WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE).setStyleName(CssStyles.GRID_CELL_ODD);
-		headerRow.getCell(WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS).setStyleName(CssStyles.GRID_CELL_ODD);
-
-		HeaderRow preHeaderRow = prependHeaderRow();
-		HeaderCell preHeaderCell = preHeaderRow.join(
-				WeeklyReportOfficerSummaryDto.INFORMANTS, 
-				WeeklyReportOfficerSummaryDto.INFORMANT_REPORTS,
-				WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE,
-				WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS);
-		preHeaderCell.setHtml(I18nProperties.getPrefixCaption(WeeklyReportOfficerSummaryDto.I18N_PREFIX, "officerInformants"));
-		preHeaderCell.setStyleName(CssStyles.GRID_CELL_ODD);
+//		HeaderRow headerRow = getHeaderRow(0);
+//		headerRow.getCell(WeeklyReportOfficerSummaryDto.INFORMANTS).setStyleName(CssStyles.GRID_CELL_ODD);
+//		headerRow.getCell(WeeklyReportOfficerSummaryDto.INFORMANT_REPORTS).setStyleName(CssStyles.GRID_CELL_ODD);
+//		headerRow.getCell(WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE).setStyleName(CssStyles.GRID_CELL_ODD);
+//		headerRow.getCell(WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS).setStyleName(CssStyles.GRID_CELL_ODD);
+//
+//		HeaderRow preHeaderRow = prependHeaderRow();
+//		HeaderCell preHeaderCell = preHeaderRow.join(
+//				WeeklyReportOfficerSummaryDto.INFORMANTS, 
+//				WeeklyReportOfficerSummaryDto.INFORMANT_REPORTS,
+//				WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE,
+//				WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS);
+//		preHeaderCell.setHtml(I18nProperties.getPrefixCaption(WeeklyReportOfficerSummaryDto.I18N_PREFIX, "officerInformants"));
+//		preHeaderCell.setStyleName(CssStyles.GRID_CELL_ODD);
 		
-		getColumn(VIEW_DETAILS_BTN_ID).setRenderer(new HtmlRenderer());
-		getColumn(VIEW_DETAILS_BTN_ID).setWidth(60);
-
-		getColumn(WeeklyReportOfficerSummaryDto.OFFICER_REPORT_DATE).setRenderer(new HtmlRenderer(
-				I18nProperties.getPrefixCaption(WeeklyReportDto.I18N_PREFIX, "noReport")));
-		getColumn(WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE).setRenderer(new PercentageRenderer());
+		getColumn(DiseaseBurdenDto.PREVIOUS_CASE_COUNT).setHeaderCaption("PREVIOUS NUMBER OF CASES");
+		getColumn(DiseaseBurdenDto.EVENT_COUNT).setHeaderCaption("NUMBER OF EVENTS");
+		getColumn(DiseaseBurdenDto.OUTBREAK_DISTRICT_COUNT).setHeaderCaption("OUTBREAK DISTRICTS");
+		getColumn(DiseaseBurdenDto.CASE_FATALITY_RATE).setHeaderCaption("CFR");
 		
-		setCellStyleGenerator(new WeeklyReportGridCellStyleGenerator());
+//		getColumn(VIEW_DETAILS_BTN_ID).setRenderer(new HtmlRenderer());
+//		getColumn(VIEW_DETAILS_BTN_ID).setWidth(60);
+
+//		getColumn(WeeklyReportOfficerSummaryDto.OFFICER_REPORT_DATE).setRenderer(new HtmlRenderer(
+//				I18nProperties.getPrefixCaption(WeeklyReportDto.I18N_PREFIX, "noReport")));
+//		getColumn(WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE).setRenderer(new PercentageRenderer());
+		
+//		setCellStyleGenerator(new WeeklyReportGridCellStyleGenerator());
 
 		setSelectionMode(SelectionMode.NONE);
-		addItemClickListener(this);
+//		addItemClickListener(this);
 	}
 
 	@SuppressWarnings("unchecked")

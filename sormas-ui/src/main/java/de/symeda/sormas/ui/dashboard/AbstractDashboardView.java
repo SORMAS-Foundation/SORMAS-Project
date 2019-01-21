@@ -18,20 +18,30 @@
 package de.symeda.sormas.ui.dashboard;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.dashboard.contacts.DashboardContactsView;
 import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 import de.symeda.sormas.ui.dashboard.statistics.AbstractDashboardStatisticsComponent;
+import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsSubComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.DashboardSurveillanceView;
+import de.symeda.sormas.ui.dashboard.surveillance.DiseaseBurdenSurveillanceComponent;
+import de.symeda.sormas.ui.reports.WeeklyReportOfficersGrid;
+import de.symeda.sormas.ui.reports.WeeklyReportRegionsGrid;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -52,6 +62,10 @@ public abstract class AbstractDashboardView extends AbstractView {
 	protected HorizontalLayout epiCurveAndMapLayout;
 	private VerticalLayout epiCurveLayout;
 	private VerticalLayout mapLayout;
+//	protected DiseaseBurdenGrid diseaseBurdenComponent;
+	protected DiseaseBurdenSurveillanceComponent/*AbstractDiseaseBurdenComponent*/ diseaseBurdenComponent;
+	protected HorizontalLayout diseaseBurdenAndCasesLayout;
+	private VerticalLayout diseaseBurdenLayout;
 
 	protected AbstractDashboardView(String viewName, DashboardType dashboardType) {
 		super(viewName);	
@@ -183,6 +197,114 @@ public abstract class AbstractDashboardView extends AbstractView {
 
 		return layout;
 	}
+	
+
+	protected HorizontalLayout createDiseaseBurdenAndCasesLayout() {
+		HorizontalLayout layout = new HorizontalLayout();
+		layout.setWidth(100, Unit.PERCENTAGE);
+		layout.setMargin(false);
+
+		// Epi curve layout
+		diseaseBurdenLayout = createDiseaseBurdenLayout();
+		layout.addComponent(diseaseBurdenLayout);
+
+		// Map layout	
+		VerticalLayout _mapLayout = createCasesLayout();
+		layout.addComponent(_mapLayout);
+
+		return layout;
+	}
+	
+	protected VerticalLayout createDiseaseBurdenLayout() {
+//		if (diseaseBurdenComponent == null) {
+//			throw new UnsupportedOperationException("DiseaseBurdenComponent needs to be initialized before calling createDiseaseBurdenLayout");
+//		}
+		
+		Label title = new Label("Disease Burden Information");
+		CssStyles.style(title, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+
+		DiseaseBurdenGrid grid = new DiseaseBurdenGrid();
+		grid.setHeightMode(HeightMode.UNDEFINED);
+		
+		//layout
+		VerticalLayout layout = new VerticalLayout();
+		layout.setWidth(100, Unit.PERCENTAGE);
+		layout.setHeight(400, Unit.PIXELS);
+		
+		layout.addComponent(title);
+		layout.addComponent(grid);
+		layout.setMargin(true);
+		layout.setSpacing(false);
+		layout.setSizeFull();
+		layout.setExpandRatio(grid, 1);
+
+//		diseaseBurdenComponent.setSizeFull();
+
+//		DashboardStatisticsSubComponent _epiCurveComponent = new DashboardStatisticsSubComponent();
+//		_epiCurveComponent.setSizeFull();
+//		_epiCurveComponent.addHeader("Disease Burden Information", null, true);
+//		layout.addComponent(_epiCurveComponent);
+//		layout.setExpandRatio(_epiCurveComponent, 1);
+		
+//		layout.addComponent(diseaseBurdenComponent);
+//		layout.setExpandRatio(diseaseBurdenComponent, 1);
+//
+//		epiCurveComponent.setExpandListener(e -> {
+//			dashboardLayout.removeComponent(statisticsComponent);
+//			epiCurveAndMapLayout.removeComponent(mapLayout);
+//			AbstractDashboardView.this.setHeight(100, Unit.PERCENTAGE);
+//			epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
+//			epiCurveLayout.setSizeFull();			
+//		});
+//
+//		epiCurveComponent.setCollapseListener(e -> {
+//			dashboardLayout.addComponent(statisticsComponent, 1);
+//			epiCurveAndMapLayout.addComponent(mapLayout, 1);
+//			epiCurveLayout.setHeight(400, Unit.PIXELS);
+//			AbstractDashboardView.this.setHeightUndefined();
+//			epiCurveAndMapLayout.setHeightUndefined();
+//		});
+
+		return layout;
+	}
+
+	protected VerticalLayout createCasesLayout() {
+//		if (mapComponent == null) {
+//			throw new UnsupportedOperationException("MapComponent needs to be initialized before calling createMapLayout");
+//		}
+		VerticalLayout layout = new VerticalLayout();
+		layout.setWidth(100, Unit.PERCENTAGE);
+		layout.setHeight(400, Unit.PIXELS);
+
+//		mapComponent.setSizeFull();
+		
+		DashboardStatisticsSubComponent _mapComponent = new DashboardStatisticsSubComponent();
+		_mapComponent.setSizeFull();
+		_mapComponent.addHeader("Difference in number of cases", null, true);
+		layout.addComponent(_mapComponent);
+		layout.setExpandRatio(_mapComponent, 1);
+
+//		layout.addComponent(mapComponent);
+//		layout.setExpandRatio(mapComponent, 1);
+//
+//		mapComponent.setExpandListener(e -> {
+//			dashboardLayout.removeComponent(statisticsComponent);
+//			epiCurveAndMapLayout.removeComponent(epiCurveLayout);
+//			AbstractDashboardView.this.setHeight(100, Unit.PERCENTAGE);
+//			epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
+//			mapLayout.setSizeFull();
+//		});
+//
+//		mapComponent.setCollapseListener(e -> {
+//			dashboardLayout.addComponent(statisticsComponent, 1);
+//			epiCurveAndMapLayout.addComponent(epiCurveLayout, 0);
+//			mapLayout.setHeight(400, Unit.PIXELS);
+//			AbstractDashboardView.this.setHeightUndefined();
+//			epiCurveAndMapLayout.setHeightUndefined();
+//		});
+
+		return layout;
+	}
 
 	public void refreshDashboard() {		
 		dashboardDataProvider.refreshData();
@@ -195,6 +317,8 @@ public abstract class AbstractDashboardView extends AbstractView {
 
 		// Epi curve chart has to be created again due to a canvas resizing issue when simply refreshing the component
 		epiCurveComponent.clearAndFillEpiCurveChart();
+		
+		diseaseBurdenComponent.clearAndFillEpiCurveChart();
 	}
 
 	@Override
