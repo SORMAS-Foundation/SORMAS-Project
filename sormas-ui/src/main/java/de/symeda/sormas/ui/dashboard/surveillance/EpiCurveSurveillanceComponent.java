@@ -132,9 +132,9 @@ public class EpiCurveSurveillanceComponent extends AbstractEpiCurveComponent {
 				Date date = filteredDates.get(i);
 
 				CaseCriteria caseCriteria = new CaseCriteria()
-						.diseaseEquals(dashboardDataProvider.getDisease())
-						.regionEquals(dashboardDataProvider.getRegion())
-						.districtEquals(dashboardDataProvider.getDistrict());
+						.disease(dashboardDataProvider.getDisease())
+						.region(dashboardDataProvider.getRegion())
+						.district(dashboardDataProvider.getDistrict());
 				if (epiCurveGrouping == EpiCurveGrouping.DAY) {
 					caseCriteria.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date), NewCaseDateType.MOST_RELEVANT);
 				} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
@@ -198,9 +198,9 @@ public class EpiCurveSurveillanceComponent extends AbstractEpiCurveComponent {
 				Date date = filteredDates.get(i);
 
 				CaseCriteria caseCriteria = new CaseCriteria()
-						.diseaseEquals(dashboardDataProvider.getDisease())
-						.regionEquals(dashboardDataProvider.getRegion())
-						.districtEquals(dashboardDataProvider.getDistrict());
+						.disease(dashboardDataProvider.getDisease())
+						.region(dashboardDataProvider.getRegion())
+						.district(dashboardDataProvider.getDistrict());
 				if (epiCurveGrouping == EpiCurveGrouping.DAY) {
 					caseCriteria.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date), NewCaseDateType.MOST_RELEVANT);
 				} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {

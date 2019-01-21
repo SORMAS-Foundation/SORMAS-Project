@@ -285,72 +285,73 @@ public class SampleService extends AbstractAdoService<Sample> {
 		return filter;
 	}
 
-	public Predicate buildCriteriaFilter(SampleCriteria sampleCriteria, CriteriaBuilder cb, Root<Sample> from) {
+	public Predicate buildCriteriaFilter(SampleCriteria criteria, CriteriaBuilder cb, Root<Sample> from) {
 
 		Join<Sample, Case> caze = from.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 
 		Predicate filter = null;
-		if (sampleCriteria.getRegion() != null) {
-			filter = and(cb, filter, cb.equal(caze.join(Case.REGION, JoinType.LEFT).get(Region.UUID), sampleCriteria.getRegion().getUuid()));
+		if (criteria.getRegion() != null) {
+			filter = and(cb, filter, cb.equal(caze.join(Case.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
 		}
-		if (sampleCriteria.getDistrict() != null) {
-			filter = and(cb, filter, cb.equal(caze.join(Case.DISTRICT, JoinType.LEFT).get(District.UUID), sampleCriteria.getDistrict().getUuid()));
+		if (criteria.getDistrict() != null) {
+			filter = and(cb, filter, cb.equal(caze.join(Case.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
 		}
-		if (sampleCriteria.getLaboratory() != null) {
-			filter = and(cb, filter, cb.equal(from.join(Sample.LAB, JoinType.LEFT).get(Facility.UUID), sampleCriteria.getLaboratory().getUuid()));
+		if (criteria.getLaboratory() != null) {
+			filter = and(cb, filter, cb.equal(from.join(Sample.LAB, JoinType.LEFT).get(Facility.UUID), criteria.getLaboratory().getUuid()));
 		}
-		if (sampleCriteria.getShipped() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Sample.SHIPPED), sampleCriteria.getShipped()));
+		if (criteria.getShipped() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Sample.SHIPPED), criteria.getShipped()));
 		}
-		if (sampleCriteria.getReceived() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Sample.RECEIVED), sampleCriteria.getReceived()));
+		if (criteria.getReceived() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Sample.RECEIVED), criteria.getReceived()));
 		}
-		if (sampleCriteria.getReferred() != null) {
-			if (sampleCriteria.getReferred().equals(Boolean.TRUE)) {
+		if (criteria.getReferred() != null) {
+			if (criteria.getReferred().equals(Boolean.TRUE)) {
 				filter = and(cb, filter, cb.isNotNull(from.get(Sample.REFERRED_TO)));
 			} else {
 				filter = and(cb, filter, cb.isNull(from.get(Sample.REFERRED_TO)));
 			}
 		}
-		if (sampleCriteria.getTestResult() != null) {
-			Predicate subFilter = cb.equal(from.join(Sample.MAIN_SAMPLE_TEST, JoinType.LEFT).get(SampleTest.TEST_RESULT), sampleCriteria.getTestResult());
-			if (sampleCriteria.getTestResult() == SampleTestResultType.PENDING) {
+		if (criteria.getTestResult() != null) {
+			Predicate subFilter = cb.equal(from.join(Sample.MAIN_SAMPLE_TEST, JoinType.LEFT).get(SampleTest.TEST_RESULT), criteria.getTestResult());
+			if (criteria.getTestResult() == SampleTestResultType.PENDING) {
 				subFilter = or(cb, subFilter, cb.isNull(from.join(Sample.MAIN_SAMPLE_TEST, JoinType.LEFT).get(SampleTest.TEST_RESULT)));
 			}
 			filter = and(cb, filter, subFilter);
 		}
-		if (sampleCriteria.getCaseClassification() != null) {
-			filter = and(cb, filter, cb.equal(caze.get(Case.CASE_CLASSIFICATION), sampleCriteria.getCaseClassification()));
+		if (criteria.getCaseClassification() != null) {
+			filter = and(cb, filter, cb.equal(caze.get(Case.CASE_CLASSIFICATION), criteria.getCaseClassification()));
 		}		
-		if (sampleCriteria.getDisease() != null) {
-			filter = and(cb, filter, cb.equal(caze.get(Case.DISEASE), sampleCriteria.getDisease()));
+		if (criteria.getDisease() != null) {
+			filter = and(cb, filter, cb.equal(caze.get(Case.DISEASE), criteria.getDisease()));
 		}
-		if (sampleCriteria.getCaze() != null) {
-			filter = and(cb, filter, cb.equal(caze.get(Case.UUID), sampleCriteria.getCaze().getUuid()));
+		if (criteria.getCaze() != null) {
+			filter = and(cb, filter, cb.equal(caze.get(Case.UUID), criteria.getCaze().getUuid()));
 		}
-		if (sampleCriteria.getSpecimenCondition() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Sample.SPECIMEN_CONDITION), sampleCriteria.getSpecimenCondition()));
+		if (criteria.getSpecimenCondition() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Sample.SPECIMEN_CONDITION), criteria.getSpecimenCondition()));
 		}
-		if (sampleCriteria.getArchived() != null) {
-			if (sampleCriteria.getArchived() == true) {
+		if (criteria.getArchived() != null) {
+			if (criteria.getArchived() == true) {
 				filter = and(cb, filter, cb.equal(caze.get(Case.ARCHIVED), true));
 			} else {
 				filter = and(cb, filter, cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED))));
 			}
 		}
 
-		if (sampleCriteria.getCaseCodeIdLike() != null) {
+		if (criteria.getCaseCodeIdLike() != null) {
 			Join<Case, Person> casePerson = caze.join(Case.PERSON, JoinType.LEFT);
-			for (int i=0; i<sampleCriteria.getCaseCodeIdLike().length; i++)
+			String[] textFilters = criteria.getCaseCodeIdLike().split("\\s+");
+			for (int i=0; i<textFilters.length; i++)
 			{
-				String likeFilterText = "%" + sampleCriteria.getCaseCodeIdLike()[i].toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(likeFilterText)) {
+				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
-							cb.like(cb.lower(caze.get(Case.UUID)), likeFilterText),
-							cb.like(cb.lower(casePerson.get(Person.FIRST_NAME)), likeFilterText),
-							cb.like(cb.lower(casePerson.get(Person.LAST_NAME)), likeFilterText),
-							cb.like(cb.lower(from.get(Sample.LAB_SAMPLE_ID)), likeFilterText),
-							cb.like(cb.lower(from.get(Sample.SAMPLE_CODE)), likeFilterText));
+							cb.like(cb.lower(caze.get(Case.UUID)), textFilter),
+							cb.like(cb.lower(casePerson.get(Person.FIRST_NAME)), textFilter),
+							cb.like(cb.lower(casePerson.get(Person.LAST_NAME)), textFilter),
+							cb.like(cb.lower(from.get(Sample.LAB_SAMPLE_ID)), textFilter),
+							cb.like(cb.lower(from.get(Sample.SAMPLE_CODE)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}

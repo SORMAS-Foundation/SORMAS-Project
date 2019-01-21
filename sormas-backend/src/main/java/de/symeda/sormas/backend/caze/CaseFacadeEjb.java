@@ -456,8 +456,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		Date newCaseDate = CaseLogic.getStartDate(importCaze.getSymptoms().getOnsetDate(), importCaze.getReceptionDate(), importCaze.getReportDate());
 
 		CaseCriteria criteria = new CaseCriteria()
-				.personEquals(existingPerson)
-				.diseaseEquals(importCaze.getDisease())
+				.person(existingPerson)
+				.disease(importCaze.getDisease())
 				.archived(false)
 				.newCaseDateBetween(DateHelper.subtractMonths(newCaseDate, 2), DateHelper.addMonths(newCaseDate, 2), null);
 
@@ -480,7 +480,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	public List<CaseDataDto> getAllCasesOfPerson(String personUuid, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
-		return caseService.findBy(new CaseCriteria().personEquals(new PersonReferenceDto(personUuid)), user)
+		return caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(personUuid)), user)
 				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
@@ -801,7 +801,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (Sample sample : samples) {
 			sampleService.delete(sample);
 		}
-		List<Task> tasks = taskService.findBy(new TaskCriteria().cazeEquals(caseRef));
+		List<Task> tasks = taskService.findBy(new TaskCriteria().caze(caseRef));
 		for (Task task : tasks) {
 			taskService.delete(task);
 		}
@@ -951,8 +951,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			// Set the task status of all investigation tasks to "Removed" because
 			// the case status has been updated manually
-			List<Task> pendingTasks = taskService.findBy(new TaskCriteria().taskTypeEquals(TaskType.CASE_INVESTIGATION)
-					.cazeEquals(caseRef).taskStatusEquals(TaskStatus.PENDING));
+			List<Task> pendingTasks = taskService.findBy(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION)
+					.caze(caseRef).taskStatuses(TaskStatus.PENDING));
 			for (Task task : pendingTasks) {
 				task.setTaskStatus(TaskStatus.REMOVED);
 				task.setStatusChangeDate(new Date());
@@ -967,8 +967,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			caze.setInvestigatedDate(null);
 
 			// Create a new investigation task if none is present
-			long pendingCount = taskService.getCount(new TaskCriteria().taskTypeEquals(TaskType.CASE_INVESTIGATION)
-					.cazeEquals(caseRef).taskStatusEquals(TaskStatus.PENDING));
+			long pendingCount = taskService.getCount(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION)
+					.caze(caseRef).taskStatuses(TaskStatus.PENDING));
 
 			if (pendingCount == 0) {
 				createInvestigationTask(caze);
@@ -980,8 +980,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		CaseReferenceDto caseRef = caze.toReference();
 
 		// any pending case investigation task?
-		long pendingCount = taskService.getCount(new TaskCriteria().taskTypeEquals(TaskType.CASE_INVESTIGATION)
-				.cazeEquals(caseRef).taskStatusEquals(TaskStatus.PENDING));
+		long pendingCount = taskService.getCount(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION)
+				.caze(caseRef).taskStatuses(TaskStatus.PENDING));
 
 		if (pendingCount > 0) {
 			// set status to investigation pending
@@ -991,7 +991,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		} else {
 			// get "case investigation" task created last
 			List<Task> cazeTasks = taskService
-					.findBy(new TaskCriteria().taskTypeEquals(TaskType.CASE_INVESTIGATION).cazeEquals(caseRef));
+					.findBy(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION).caze(caseRef));
 
 			Task youngestTask = cazeTasks.stream().max(new Comparator<Task>() {
 				@Override

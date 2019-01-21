@@ -83,13 +83,14 @@ public class RegionService extends AbstractAdoService<Region> {
 	public Predicate buildCriteriaFilter(RegionCriteria criteria, CriteriaBuilder cb, Root<Region> from) {
 		Predicate filter = null;
 		if (criteria.getNameEpidLike() != null) {
-			for (int i=0; i<criteria.getNameEpidLike().length; i++)
+			String[] textFilters = criteria.getNameEpidLike().split("\\s+");
+			for (int i=0; i<textFilters.length; i++)
 			{
-				String likeFilterText = "%" + criteria.getNameEpidLike()[i].toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(likeFilterText)) {
+				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
-							cb.like(cb.lower(from.get(Region.NAME)), likeFilterText),
-							cb.like(cb.lower(from.get(Region.EPID_CODE)), likeFilterText));
+							cb.like(cb.lower(from.get(Region.NAME)), textFilter),
+							cb.like(cb.lower(from.get(Region.EPID_CODE)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}

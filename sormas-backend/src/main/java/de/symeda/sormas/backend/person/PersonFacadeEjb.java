@@ -224,7 +224,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	public void onPersonChanged(PersonDto existingPerson, Person newPerson) {
-		List<Case> personCases = caseService.findBy(new CaseCriteria().personEquals(new PersonReferenceDto(newPerson.getUuid())), null);
+		List<Case> personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), null);
 		// Call onCaseChanged once for every case to update case classification
 		// Attention: this may lead to infinite recursion when not properly implemented
 		for (Case personCase : personCases) {
@@ -237,7 +237,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			if (newPerson.getPresentCondition() != null 
 					&& existingPerson.getPresentCondition() != newPerson.getPresentCondition()) {
 				// Update case list after previous onCaseChanged
-				personCases = caseService.findBy(new CaseCriteria().personEquals(new PersonReferenceDto(newPerson.getUuid())), null);
+				personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), null);
 				for (Case personCase : personCases) {
 					if (newPerson.getPresentCondition().isDeceased()) {
 						if (personCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
@@ -262,7 +262,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		if ((existingPerson == null && newPerson.getApproximateAge() != null) || 
 				(existingPerson != null && existingPerson.getApproximateAge() != newPerson.getApproximateAge())) {
 			// Update case list after previous onCaseChanged
-			personCases = caseService.findBy(new CaseCriteria().personEquals(new PersonReferenceDto(newPerson.getUuid())), null);
+			personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), null);
 			for (Case personCase : personCases) {
 				CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
 				if (newPerson.getApproximateAgeType() == ApproximateAgeType.MONTHS) {

@@ -28,6 +28,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.PojoUrlParamConverter;
 
 public class CaseCriteria implements Serializable, Cloneable {
 
@@ -49,7 +50,7 @@ public class CaseCriteria implements Serializable, Cloneable {
 	private PersonReferenceDto person;
 	private Boolean mustHaveNoGeoCoordinates;
 	private Boolean archived;
-	private String[] nameUuidEpidNumberLike;
+	private String nameUuidEpidNumberLike;
 
 	@Override
 	public CaseCriteria clone() {
@@ -59,32 +60,60 @@ public class CaseCriteria implements Serializable, Cloneable {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	public String toUrlParams() {
+		return PojoUrlParamConverter.toUrlParams(this);
+	}
+	
+	public static CaseCriteria fromUrlParams(String urlParams) {
+		return PojoUrlParamConverter.fromUrlParams(new CaseCriteria(), urlParams);
+	}
 
-	public CaseCriteria reportingUserHasRole(UserRole reportingUserRole) {
+	public CaseCriteria reportingUserRole(UserRole reportingUserRole) {
 		this.reportingUserRole = reportingUserRole;
 		return this;
 	}
 
-	public CaseCriteria outcomeEquals(CaseOutcome outcome) {
+	public UserRole getReportingUserRole() {
+		return reportingUserRole;
+	}
+
+	public CaseCriteria outcome(CaseOutcome outcome) {
 		this.outcome = outcome;
 		return this;
 	}
 	
-	public CaseCriteria diseaseEquals(Disease disease) {
+	public CaseOutcome getOutcome( ){
+		return outcome;
+	}
+
+	public CaseCriteria disease(Disease disease) {
 		this.disease = disease;
 		return this;
 	}
 	
-	public CaseCriteria regionEquals(RegionReferenceDto region) {
+	public Disease getDisease() {
+		return disease;
+	}
+
+	public CaseCriteria region(RegionReferenceDto region) {
 		this.region = region;
 		return this;
 	}
 	
-	public CaseCriteria districtEquals(DistrictReferenceDto district) {
+	public RegionReferenceDto getRegion() {
+		return region;
+	}
+
+	public CaseCriteria district(DistrictReferenceDto district) {
 		this.district = district;
 		return this;
 	}
 	
+	public DistrictReferenceDto getDistrict() {
+		return district;
+	}
+
 	/**
 	 * @param newCaseDateTo will automatically be set to the end of the day
 	 */
@@ -95,67 +124,58 @@ public class CaseCriteria implements Serializable, Cloneable {
 		return this;
 	}
 	
-	public CaseCriteria personEquals(PersonReferenceDto person) {
-		this.person = person;
+	public CaseCriteria newCaseDateFrom(Date newCaseDateFrom) {
+		this.newCaseDateFrom = newCaseDateFrom;
 		return this;
-	}
-	
-	public CaseCriteria mustHaveNoGeoCoordinatesEquals(Boolean mustHaveNoGeoCoordinates) {
-		this.mustHaveNoGeoCoordinates = mustHaveNoGeoCoordinates;
-		return this;
-	}
-	
-	public UserRole getReportingUserRole() {
-		return reportingUserRole;
-	}
-
-	public CaseOutcome getOutcome( ){
-		return outcome;
-	}
-	
-	public Disease getDisease() {
-		return disease;
-	}
-	
-	public RegionReferenceDto getRegion() {
-		return region;
-	}
-	
-	public DistrictReferenceDto getDistrict() {
-		return district;
 	}
 
 	public Date getNewCaseDateFrom() {
 		return newCaseDateFrom;
 	}
 
+	public CaseCriteria newCaseDateTo(Date newCaseDateTo) {
+		this.newCaseDateTo = newCaseDateTo;
+		return this;
+	}
+
 	public Date getNewCaseDateTo() {
 		return newCaseDateTo;
 	}
-	
+
+	public CaseCriteria newCaseDateType(NewCaseDateType newCaseDateType) {
+		this.newCaseDateType = newCaseDateType;
+		return this;
+	}
+
 	public NewCaseDateType getNewCaseDateType() {
 		return newCaseDateType;
 	}
 
+	public CaseCriteria person(PersonReferenceDto person) {
+		this.person = person;
+		return this;
+	}
+	
 	public PersonReferenceDto getPerson() {
 		return person;
 	}
 
+	public CaseCriteria mustHaveNoGeoCoordinates(Boolean mustHaveNoGeoCoordinates) {
+		this.mustHaveNoGeoCoordinates = mustHaveNoGeoCoordinates;
+		return this;
+	}
+	
 	public Boolean isMustHaveNoGeoCoordinates() {
 		return mustHaveNoGeoCoordinates;
 	}
 	
-	public CaseClassification getCaseClassification() {
-		return caseClassification;
-	}
-
 	public CaseCriteria caseClassification(CaseClassification caseClassification) {
 		this.caseClassification = caseClassification;
 		return this;
 	}
 
-	public InvestigationStatus getInvestigationStatus() {
-		return investigationStatus;
+	public CaseClassification getCaseClassification() {
+		return caseClassification;
 	}
 
 	public CaseCriteria investigationStatus(InvestigationStatus investigationStatus) {
@@ -163,8 +183,8 @@ public class CaseCriteria implements Serializable, Cloneable {
 		return this;
 	}
 
-	public PresentCondition getPresentCondition() {
-		return presentCondition;
+	public InvestigationStatus getInvestigationStatus() {
+		return investigationStatus;
 	}
 
 	public CaseCriteria presentCondition(PresentCondition presentCondition) {
@@ -172,8 +192,8 @@ public class CaseCriteria implements Serializable, Cloneable {
 		return this;
 	}
 
-	public FacilityReferenceDto getHealthFacility() {
-		return healthFacility;
+	public PresentCondition getPresentCondition() {
+		return presentCondition;
 	}
 
 	public CaseCriteria healthFacility(FacilityReferenceDto healthFacility) {
@@ -181,8 +201,8 @@ public class CaseCriteria implements Serializable, Cloneable {
 		return this;
 	}
 
-	public UserReferenceDto getSurveillanceOfficer() {
-		return surveillanceOfficer;
+	public FacilityReferenceDto getHealthFacility() {
+		return healthFacility;
 	}
 
 	public CaseCriteria surveillanceOfficer(UserReferenceDto surveillanceOfficer) {
@@ -190,8 +210,8 @@ public class CaseCriteria implements Serializable, Cloneable {
 		return this;
 	}
 
-	public Boolean getArchived() {
-		return archived;
+	public UserReferenceDto getSurveillanceOfficer() {
+		return surveillanceOfficer;
 	}
 
 	public CaseCriteria archived(Boolean archived) {
@@ -199,15 +219,19 @@ public class CaseCriteria implements Serializable, Cloneable {
 		return this;
 	}
 	
+	public Boolean getArchived() {
+		return archived;
+	}
+
 	/**
-	 * returns all entries that match ALL of the passed strings
+	 * returns all entries that match ALL of the passed words
 	 */
-	public CaseCriteria nameUuidEpidNumberLike(String[] nameUuidEpidNumberLike) {
+	public CaseCriteria nameUuidEpidNumberLike(String nameUuidEpidNumberLike) {
 		this.nameUuidEpidNumberLike = nameUuidEpidNumberLike;
 		return this;
 	}
 
-	public String[] getNameUuidEpidNumberLike() {
+	public String getNameUuidEpidNumberLike() {
 		return nameUuidEpidNumberLike;
 	}
 }

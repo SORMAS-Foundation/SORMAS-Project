@@ -25,6 +25,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.PojoUrlParamConverter;
 
 public class SampleCriteria implements Serializable {
 
@@ -42,8 +43,16 @@ public class SampleCriteria implements Serializable {
 	private SpecimenCondition specimenCondition;
 	private CaseReferenceDto caze;
 	private Boolean archived;
-	private String[] caseCodeIdLike;
+	private String caseCodeIdLike;
 
+	public String toUrlParams() {
+		return PojoUrlParamConverter.toUrlParams(this);
+	}
+	
+	public static SampleCriteria fromUrlParams(String urlParams) {
+		return PojoUrlParamConverter.fromUrlParams(new SampleCriteria(), urlParams);
+	}
+	
 	public RegionReferenceDto getRegion() {
 		return region;
 	}
@@ -153,14 +162,14 @@ public class SampleCriteria implements Serializable {
 	}
 	
 	/**
-	 * returns all entries that match ALL of the passed strings
+	 * returns all entries that match ALL of the passed words
 	 */
-	public SampleCriteria caseCodeIdLike(String[] caseCodeIdLike) {
+	public SampleCriteria caseCodeIdLike(String caseCodeIdLike) {
 		this.caseCodeIdLike = caseCodeIdLike;
 		return this;
 	}
 
-	public String[] getCaseCodeIdLike() {
+	public String getCaseCodeIdLike() {
 		return caseCodeIdLike;
 	}
 }

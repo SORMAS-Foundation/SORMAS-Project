@@ -22,6 +22,7 @@ import java.io.Serializable;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.PojoUrlParamConverter;
 
 public class FacilityCriteria implements Serializable, Cloneable {
 
@@ -34,7 +35,15 @@ public class FacilityCriteria implements Serializable, Cloneable {
 	private FacilityType type;
 	private Boolean excludeStaticFacilities;
 
-	public FacilityCriteria regionEquals(RegionReferenceDto region) {
+	public String toUrlParams() {
+		return PojoUrlParamConverter.toUrlParams(this);
+	}
+	
+	public static FacilityCriteria fromUrlParams(String urlParams) {
+		return PojoUrlParamConverter.fromUrlParams(new FacilityCriteria(), urlParams);
+	}
+	
+	public FacilityCriteria region(RegionReferenceDto region) {
 		this.region = region;
 		return this;
 	}
@@ -43,39 +52,39 @@ public class FacilityCriteria implements Serializable, Cloneable {
 		return region;
 	}
 
+	public FacilityCriteria district(DistrictReferenceDto district) {
+		this.district = district;
+		return this;
+	}
+
 	public DistrictReferenceDto getDistrict() {
 		return district;
+	}
+
+	public FacilityCriteria community(CommunityReferenceDto community) {
+		this.community = community;
+		return this;
 	}
 
 	public CommunityReferenceDto getCommunity() {
 		return community;
 	}
 
-	public FacilityType getType() {
-		return type;
-	}
-	
-	public Boolean isExcludeStaticFacilities() {
-		return excludeStaticFacilities;
-	}
-
-	public FacilityCriteria districtEquals(DistrictReferenceDto district) {
-		this.district = district;
-		return this;
-	}
-
-	public FacilityCriteria communityEquals(CommunityReferenceDto community) {
-		this.community = community;
-		return this;
-	}
-
-	public FacilityCriteria typeEquals(FacilityType type) {
+	public FacilityCriteria type(FacilityType type) {
 		this.type = type;
 		return this;
 	}
 	
-	public FacilityCriteria excludeStaticFacilitesEquals(boolean excludeStaticFacilities) {
+	public FacilityType getType() {
+		return type;
+	}
+
+	public FacilityCriteria excludeStaticFacilites(boolean excludeStaticFacilities) {
 		this.excludeStaticFacilities = excludeStaticFacilities;
 		return this;
+	}
+
+	public Boolean isExcludeStaticFacilities() {
+		return excludeStaticFacilities;
 	}
 }

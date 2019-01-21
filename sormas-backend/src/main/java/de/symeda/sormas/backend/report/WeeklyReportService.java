@@ -112,7 +112,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 		List<WeeklyReportOfficerSummaryDto> summaryDtos = new ArrayList<>();
 
 		WeeklyReportCriteria officerReportCriteria = new WeeklyReportCriteria().epiWeek(epiWeek);
-		WeeklyReportCriteria informantsReportCriteria = new WeeklyReportCriteria().epiWeek(epiWeek).isOfficer(false);
+		WeeklyReportCriteria informantsReportCriteria = new WeeklyReportCriteria().epiWeek(epiWeek).officerReport(false);
 
 		List<User> officers = userService.getAllByRegionAndUserRoles(region, UserRole.SURVEILLANCE_OFFICER);
 
@@ -134,11 +134,11 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 			summaryDto.setInformants(informants.intValue());
 
 			informantsReportCriteria.assignedOfficer(summaryDto.getOfficer());
-			informantsReportCriteria.isZeroReport(false);
+			informantsReportCriteria.zeroReport(false);
 			Long informantCaseReports = countByCriteria(informantsReportCriteria, null);
 			summaryDto.setInformantCaseReports(informantCaseReports.intValue());
 
-			informantsReportCriteria.isZeroReport(true);
+			informantsReportCriteria.zeroReport(true);
 			Long informantZeroReports = countByCriteria(informantsReportCriteria, null);
 			summaryDto.setInformantZeroReports(informantZeroReports.intValue());
 
@@ -250,13 +250,13 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 			filter = and(cb, filter, cb.equal(from.join(WeeklyReport.ASSIGNED_OFFICER, JoinType.LEFT).get(User.UUID),
 					criteria.getAssignedOfficer().getUuid()));
 		}
-		if (criteria.getIsOfficer() != null) {
-			filter = and(cb, filter, criteria.getIsOfficer() ? cb.isNull(from.get(WeeklyReport.ASSIGNED_OFFICER))
+		if (criteria.getOfficerReport() != null) {
+			filter = and(cb, filter, criteria.getOfficerReport() ? cb.isNull(from.get(WeeklyReport.ASSIGNED_OFFICER))
 					: cb.isNotNull(from.get(WeeklyReport.ASSIGNED_OFFICER)));
 		}
-		if (criteria.getIsZeroReport() != null) {
+		if (criteria.getZeroReport() != null) {
 			filter = and(cb, filter,
-					criteria.getIsZeroReport() ? cb.equal(from.get(WeeklyReport.TOTAL_NUMBER_OF_CASES), 0)
+					criteria.getZeroReport() ? cb.equal(from.get(WeeklyReport.TOTAL_NUMBER_OF_CASES), 0)
 							: cb.notEqual(from.get(WeeklyReport.TOTAL_NUMBER_OF_CASES), 0));
 		}
 		return filter;

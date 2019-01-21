@@ -143,13 +143,14 @@ public class DistrictService extends AbstractAdoService<District> {
 			filter = and(cb, filter, cb.equal(from.join(District.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
 		}
 		if (criteria.getNameEpidLike() != null) {
-			for (int i=0; i<criteria.getNameEpidLike().length; i++)
+			String[] textFilters = criteria.getNameEpidLike().split("\\s+");
+			for (int i=0; i<textFilters.length; i++)
 			{
-				String likeFilterText = "%" + criteria.getNameEpidLike()[i].toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(likeFilterText)) {
+				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
-							cb.like(cb.lower(from.get(District.NAME)), likeFilterText),
-							cb.like(cb.lower(from.get(District.EPID_CODE)), likeFilterText));
+							cb.like(cb.lower(from.get(District.NAME)), textFilter),
+							cb.like(cb.lower(from.get(District.EPID_CODE)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}

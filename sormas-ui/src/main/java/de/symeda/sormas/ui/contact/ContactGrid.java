@@ -145,17 +145,17 @@ public class ContactGrid extends Grid {
 	}
 
 	public void setCaseFilter(CaseReferenceDto caseRef) {
-		contactCriteria.caseEquals(caseRef);
+		contactCriteria.caze(caseRef);
 		reload();
 	}
 
 	public void setDiseaseFilter(Disease disease) {
-		contactCriteria.caseDiseaseEquals(disease);
+		contactCriteria.caseDisease(disease);
 		reload();
 	}
 
 	public void setReportedByFilter(UserRole reportingUserRole) {
-		contactCriteria.reportingUserHasRole(reportingUserRole);
+		contactCriteria.reportingUserRole(reportingUserRole);
 		reload();
 	}
 
@@ -200,7 +200,7 @@ public class ContactGrid extends Grid {
 	}
 
 	public void setNameUuidCaseLike(String text) {
-		contactCriteria.nameUuidCaseLike(text.split("\\s+"));
+		contactCriteria.nameUuidCaseLike(text);
 		reload();
 	}
 

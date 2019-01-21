@@ -236,7 +236,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		for (Visit visit : visits) {
 			visitService.delete(visit);
 		}
-		List<Task> tasks = taskService.findBy(new TaskCriteria().contactEquals(contactRef));
+		List<Task> tasks = taskService.findBy(new TaskCriteria().contact(contactRef));
 		for (Task task : tasks) {
 			taskService.delete(task);
 		}
@@ -527,10 +527,10 @@ public class ContactFacadeEjb implements ContactFacade {
 
 			// find already existing tasks
 			TaskCriteria pendingUserTaskCriteria = new TaskCriteria()
-					.contactEquals(contact.toReference())
-					.taskTypeEquals(TaskType.CONTACT_FOLLOW_UP)
-					.assigneeUserEquals(assignee.toReference())
-					.taskStatusEquals(TaskStatus.PENDING);
+					.contact(contact.toReference())
+					.taskType(TaskType.CONTACT_FOLLOW_UP)
+					.assigneeUser(assignee.toReference())
+					.taskStatuses(TaskStatus.PENDING);
 			List<Task> pendingUserTasks = taskService.findBy(pendingUserTaskCriteria);
 
 			if (!pendingUserTasks.isEmpty()) {
@@ -539,8 +539,8 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 
 			TaskCriteria dayTaskCriteria = new TaskCriteria()
-					.contactEquals(contact.toReference())
-					.taskTypeEquals(TaskType.CONTACT_FOLLOW_UP)
+					.contact(contact.toReference())
+					.taskType(TaskType.CONTACT_FOLLOW_UP)
 					.dueDateBetween(DateHelper8.toDate(fromDateTime), DateHelper8.toDate(toDateTime));
 			List<Task> dayTasks = taskService.findBy(dayTaskCriteria);
 

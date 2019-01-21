@@ -142,7 +142,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 				Date date = datesGroupedBy.get(i);
 
 				ContactCriteria contactCriteria = new ContactCriteria()
-						.caseDiseaseEquals(dashboardDataProvider.getDisease())
+						.caseDisease(dashboardDataProvider.getDisease())
 						.caseRegion(dashboardDataProvider.getRegion())
 						.caseDistrict(dashboardDataProvider.getDistrict());
 				if (epiCurveGrouping == EpiCurveGrouping.DAY) {
@@ -190,7 +190,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 				Date date = datesGroupedBy.get(i);
 
 				ContactCriteria contactCriteria = new ContactCriteria()
-						.caseDiseaseEquals(dashboardDataProvider.getDisease())
+						.caseDisease(dashboardDataProvider.getDisease())
 						.caseRegion(dashboardDataProvider.getRegion())
 						.caseDistrict(dashboardDataProvider.getDistrict());
 				if (epiCurveGrouping == EpiCurveGrouping.DAY) {
@@ -267,7 +267,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 				Date date = datesGroupedBy.get(i);
 
 				ContactCriteria contactCriteria = new ContactCriteria()
-						.caseDiseaseEquals(dashboardDataProvider.getDisease())
+						.caseDisease(dashboardDataProvider.getDisease())
 						.caseRegion(dashboardDataProvider.getRegion())
 						.caseDistrict(dashboardDataProvider.getDistrict());
 				if (epiCurveGrouping == EpiCurveGrouping.DAY) {

@@ -221,7 +221,7 @@ public class SampleGrid extends Grid {
 	}
 	
 	public void setCaseCodeIdLike(String text) {
-		sampleCriteria.caseCodeIdLike(text.split("\\s+"));
+		sampleCriteria.caseCodeIdLike(text);
 		reload();
 	}
 	

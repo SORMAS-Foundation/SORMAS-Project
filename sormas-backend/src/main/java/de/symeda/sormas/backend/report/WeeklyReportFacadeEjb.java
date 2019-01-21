@@ -157,19 +157,19 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			summaryDto.setInformants(informants.intValue());
 
 			regionReportCriteria.reportingUserRegion(summaryDto.getRegion());
-			regionReportCriteria.isOfficer(true);
-			regionReportCriteria.isZeroReport(false);
+			regionReportCriteria.officerReport(true);
+			regionReportCriteria.zeroReport(false);
 			Long officerCaseReports = weeklyReportService.countByCriteria(regionReportCriteria, null);
 			summaryDto.setOfficerCaseReports(officerCaseReports.intValue());
-			regionReportCriteria.isZeroReport(true);
+			regionReportCriteria.zeroReport(true);
 			Long officerZeroReports = weeklyReportService.countByCriteria(regionReportCriteria, null);
 			summaryDto.setOfficerZeroReports(officerZeroReports.intValue());
 
-			regionReportCriteria.isOfficer(false);
-			regionReportCriteria.isZeroReport(false);
+			regionReportCriteria.officerReport(false);
+			regionReportCriteria.zeroReport(false);
 			Long informantCaseReports = weeklyReportService.countByCriteria(regionReportCriteria, null);
 			summaryDto.setInformantCaseReports(informantCaseReports.intValue());
-			regionReportCriteria.isZeroReport(true);
+			regionReportCriteria.zeroReport(true);
 			Long informantZeroReports = weeklyReportService.countByCriteria(regionReportCriteria, null);
 			summaryDto.setInformantZeroReports(informantZeroReports.intValue());
 
@@ -185,7 +185,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 		List<WeeklyReportOfficerSummaryDto> summaryDtos = new ArrayList<>();
 
 		WeeklyReportCriteria officerReportCriteria = new WeeklyReportCriteria().epiWeek(epiWeek);
-		WeeklyReportCriteria informantsReportCriteria = new WeeklyReportCriteria().epiWeek(epiWeek).isOfficer(false);
+		WeeklyReportCriteria informantsReportCriteria = new WeeklyReportCriteria().epiWeek(epiWeek).officerReport(false);
 
 		Region region = regionService.getByReferenceDto(regionRef);
 		List<User> officers = userService.getAllByRegionAndUserRoles(region, UserRole.SURVEILLANCE_OFFICER);
@@ -211,11 +211,11 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			summaryDto.setInformants(informants.intValue());
 
 			informantsReportCriteria.assignedOfficer(summaryDto.getOfficer());
-			informantsReportCriteria.isZeroReport(false);
+			informantsReportCriteria.zeroReport(false);
 			Long informantCaseReports = weeklyReportService.countByCriteria(informantsReportCriteria, null);
 			summaryDto.setInformantCaseReports(informantCaseReports.intValue());
 
-			informantsReportCriteria.isZeroReport(true);
+			informantsReportCriteria.zeroReport(true);
 			Long informantZeroReports = weeklyReportService.countByCriteria(informantsReportCriteria, null);
 			summaryDto.setInformantZeroReports(informantZeroReports.intValue());
 
@@ -354,8 +354,8 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 				continue;
 			} else {
 				TaskCriteria pendingUserTaskCriteria = new TaskCriteria()
-						.taskTypeEquals(TaskType.WEEKLY_REPORT_GENERATION).assigneeUserEquals(user.toReference())
-						.taskStatusEquals(TaskStatus.PENDING);
+						.taskType(TaskType.WEEKLY_REPORT_GENERATION).assigneeUser(user.toReference())
+						.taskStatuses(TaskStatus.PENDING);
 				List<Task> existingTasks = taskService.findBy(pendingUserTaskCriteria);
 
 				if (!existingTasks.isEmpty()) {

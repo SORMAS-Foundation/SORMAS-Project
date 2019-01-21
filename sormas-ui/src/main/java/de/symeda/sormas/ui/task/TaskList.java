@@ -50,13 +50,13 @@ public class TaskList extends PaginationList<TaskIndexDto> {
 
 		switch (context) {
 		case CASE:
-			taskCriteria.cazeEquals((CaseReferenceDto) entityRef);
+			taskCriteria.caze((CaseReferenceDto) entityRef);
 			break;
 		case CONTACT:
-			taskCriteria.contactEquals((ContactReferenceDto) entityRef);
+			taskCriteria.contact((ContactReferenceDto) entityRef);
 			break;
 		case EVENT:
-			taskCriteria.eventEquals((EventReferenceDto) entityRef);
+			taskCriteria.event((EventReferenceDto) entityRef);
 			break;
 		default:
 			throw new IndexOutOfBoundsException(context.toString());

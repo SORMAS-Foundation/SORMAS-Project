@@ -138,12 +138,13 @@ public class CommunityService extends AbstractAdoService<Community> {
 			filter = and(cb, filter, cb.equal(district.get(District.UUID), criteria.getDistrict().getUuid()));
 		}
 		if (criteria.getNameLike() != null) {
-			for (int i=0; i<criteria.getNameLike().length; i++)
+			String[] textFilters = criteria.getNameLike().split("\\s+");
+			for (int i=0; i<textFilters.length; i++)
 			{
-				String likeFilterText = "%" + criteria.getNameLike()[i].toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(likeFilterText)) {
+				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
-							cb.like(cb.lower(from.get(District.NAME)), likeFilterText));
+							cb.like(cb.lower(from.get(District.NAME)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}

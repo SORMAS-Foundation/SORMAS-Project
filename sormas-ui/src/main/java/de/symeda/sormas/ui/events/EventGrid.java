@@ -127,22 +127,22 @@ public class EventGrid extends Grid {
 	}
 	
 	public void setStatusFilter(EventStatus eventStatus) {
-		eventCriteria.eventStatusEquals(eventStatus);
+		eventCriteria.eventStatus(eventStatus);
 		reload();
 	}
 	
 	public void setEventTypeFilter(EventType eventType) {
-		eventCriteria.eventTypeEquals(eventType);
+		eventCriteria.eventType(eventType);
 		reload();
 	}
 	
 	public void setDiseaseFilter(Disease disease) {
-		eventCriteria.diseaseEquals(disease);
+		eventCriteria.disease(disease);
 		reload();
 	}
 	
     public void setReportedByFilter(UserRole reportingUserRole) {
-    	eventCriteria.reportingUserHasRole(reportingUserRole);
+    	eventCriteria.reportingUserRole(reportingUserRole);
     	reload();
     }
     

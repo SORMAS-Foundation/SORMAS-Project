@@ -32,10 +32,10 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -56,7 +56,7 @@ public class FacilitiesGrid extends Grid {
 		setSelectionMode(SelectionMode.NONE);
 
 		// Hides "Other facility" and "Home or other place"
-		facilityCriteria.excludeStaticFacilitesEquals(true);
+		facilityCriteria.excludeStaticFacilites(true);
 
 		BeanItemContainer<FacilityDto> container = new BeanItemContainer<FacilityDto>(FacilityDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
@@ -116,27 +116,27 @@ public class FacilitiesGrid extends Grid {
 	}
 
 	public void setRegionFilter(RegionReferenceDto region) {
-		facilityCriteria.regionEquals(region);
+		facilityCriteria.region(region);
 		reload();
 	}
 
 	public void setDistrictFilter(DistrictReferenceDto district) {
-		facilityCriteria.districtEquals(district);
+		facilityCriteria.district(district);
 		reload();
 	}
 
 	public void setCommunityFilter(CommunityReferenceDto community) {
-		facilityCriteria.communityEquals(community);
+		facilityCriteria.community(community);
 		reload();
 	}
 
 	public void setTypeFilter(boolean showLaboratories) {
 		if (showLaboratories) {
-			facilityCriteria.typeEquals(FacilityType.LABORATORY);
+			facilityCriteria.type(FacilityType.LABORATORY);
 		} else {
 			// TODO: Workaround; only works because normal health facilities currently don't
 			// have a type
-			facilityCriteria.typeEquals(null);
+			facilityCriteria.type(null);
 		}
 	}
 

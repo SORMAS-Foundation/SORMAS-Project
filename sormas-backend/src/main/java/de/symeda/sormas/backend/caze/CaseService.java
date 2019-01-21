@@ -745,15 +745,16 @@ public class CaseService extends AbstractAdoService<Case> {
 		}
 
 		if (caseCriteria.getNameUuidEpidNumberLike() != null) {
-			for (int i=0; i<caseCriteria.getNameUuidEpidNumberLike().length; i++)
+			String[] textFilters = caseCriteria.getNameUuidEpidNumberLike().split("\\s+");
+			for (int i=0; i<textFilters.length; i++)
 			{
-				String likeFilterText = "%" + caseCriteria.getNameUuidEpidNumberLike()[i].toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(likeFilterText)) {
+				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
-							cb.like(cb.lower(person.get(Person.FIRST_NAME)), likeFilterText),
-							cb.like(cb.lower(person.get(Person.LAST_NAME)), likeFilterText),
-							cb.like(cb.lower(from.get(Case.UUID)), likeFilterText),
-							cb.like(cb.lower(from.get(Case.EPID_NUMBER)), likeFilterText));
+							cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
+							cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
+							cb.like(cb.lower(from.get(Case.UUID)), textFilter),
+							cb.like(cb.lower(from.get(Case.EPID_NUMBER)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}

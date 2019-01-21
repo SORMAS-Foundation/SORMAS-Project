@@ -172,13 +172,13 @@ public class TaskGrid extends Grid implements ItemClickListener {
 		filterTaskStatus(null, false);
 		switch (context) {
 		case CASE:
-			taskCriteria.cazeEquals((CaseReferenceDto) entityRef);
+			taskCriteria.caze((CaseReferenceDto) entityRef);
 			break;
 		case CONTACT:
-			taskCriteria.contactEquals((ContactReferenceDto) entityRef);
+			taskCriteria.contact((ContactReferenceDto) entityRef);
 			break;
 		case EVENT:
-			taskCriteria.eventEquals((EventReferenceDto) entityRef);
+			taskCriteria.event((EventReferenceDto) entityRef);
 			break;
 		case GENERAL:
 		default:

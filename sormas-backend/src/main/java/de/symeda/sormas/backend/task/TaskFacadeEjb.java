@@ -314,7 +314,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 
-		return taskService.findBy(new TaskCriteria().cazeEquals(caseRef))
+		return taskService.findBy(new TaskCriteria().caze(caseRef))
 				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
@@ -326,7 +326,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 
-		return taskService.findBy(new TaskCriteria().contactEquals(contactRef))
+		return taskService.findBy(new TaskCriteria().contact(contactRef))
 				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
@@ -338,7 +338,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 
-		return taskService.findBy(new TaskCriteria().eventEquals(eventRef))
+		return taskService.findBy(new TaskCriteria().event(eventRef))
 				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
@@ -358,7 +358,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 
-		return taskService.findBy(new TaskCriteria().cazeEquals(caseRef).taskStatusEquals(TaskStatus.PENDING))
+		return taskService.findBy(new TaskCriteria().caze(caseRef).taskStatuses(TaskStatus.PENDING))
 				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
@@ -371,9 +371,9 @@ public class TaskFacadeEjb implements TaskFacade {
 		CriteriaQuery<DashboardTaskDto> cq = cb.createQuery(DashboardTaskDto.class);
 		Root<Task> task = cq.from(Task.class);
 
-		TaskCriteria taskCriteria = new TaskCriteria().assigneeUserEquals(new UserReferenceDto(userUuid));
+		TaskCriteria taskCriteria = new TaskCriteria().assigneeUser(new UserReferenceDto(userUuid));
 		if (taskStatus != null) {
-			taskCriteria.taskStatusEquals(taskStatus);
+			taskCriteria.taskStatuses(taskStatus);
 		}
 		if (from != null || to != null) {
 			taskCriteria.statusChangeDateBetween(from, to);
@@ -403,7 +403,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return 0;
 		}
 
-		return taskService.getCount(new TaskCriteria().cazeEquals(caseRef).taskStatusEquals(TaskStatus.PENDING));
+		return taskService.getCount(new TaskCriteria().caze(caseRef).taskStatuses(TaskStatus.PENDING));
 	}
 
 	@Override
@@ -412,7 +412,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return 0;
 		}
 
-		return taskService.getCount(new TaskCriteria().contactEquals(contactRef).taskStatusEquals(TaskStatus.PENDING));
+		return taskService.getCount(new TaskCriteria().contact(contactRef).taskStatuses(TaskStatus.PENDING));
 	}
 
 	@Override
@@ -421,12 +421,12 @@ public class TaskFacadeEjb implements TaskFacade {
 			return 0;
 		}
 
-		return taskService.getCount(new TaskCriteria().eventEquals(eventRef).taskStatusEquals(TaskStatus.PENDING));
+		return taskService.getCount(new TaskCriteria().event(eventRef).taskStatuses(TaskStatus.PENDING));
 	}
 
 	@Override
 	public long getPendingTaskCount(String userUuid) {
-		return taskService.getCount(new TaskCriteria().taskStatusEquals(TaskStatus.PENDING).assigneeUserEquals(new UserReferenceDto(userUuid)));
+		return taskService.getCount(new TaskCriteria().taskStatuses(TaskStatus.PENDING).assigneeUser(new UserReferenceDto(userUuid)));
 	}
 
 	@Override
@@ -453,7 +453,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		calendar.add(Calendar.MINUTE, CronService.REPEATEDLY_PER_HOUR_INTERVAL * -1);
 		Date before = calendar.getTime();
 
-		List<Task> startingTasks = taskService.findBy(new TaskCriteria().taskStatusEquals(TaskStatus.PENDING).startDateBetween(before, now));
+		List<Task> startingTasks = taskService.findBy(new TaskCriteria().taskStatuses(TaskStatus.PENDING).startDateBetween(before, now));
 		for (Task task : startingTasks) {
 			TaskContext context = task.getTaskContext();
 			AbstractDomainObject associatedEntity = context == TaskContext.CASE ? task.getCaze() : 
@@ -475,7 +475,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			}
 		}
 
-		List<Task> dueTasks = taskService.findBy(new TaskCriteria().taskStatusEquals(TaskStatus.PENDING).dueDateBetween(before, now));
+		List<Task> dueTasks = taskService.findBy(new TaskCriteria().taskStatuses(TaskStatus.PENDING).dueDateBetween(before, now));
 		for (Task task : dueTasks) {
 			TaskContext context = task.getTaskContext();
 			AbstractDomainObject associatedEntity = context == TaskContext.CASE ? task.getCaze() : 

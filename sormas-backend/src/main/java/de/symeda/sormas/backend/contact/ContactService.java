@@ -740,17 +740,18 @@ public class ContactService extends AbstractAdoService<Contact> {
 		if (contactCriteria.getNameUuidCaseLike() != null) {
 			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
 			Join<Case, Person> casePerson = caze.join(Case.PERSON, JoinType.LEFT);
-			for (int i=0; i<contactCriteria.getNameUuidCaseLike().length; i++)
+			String[] textFilters = contactCriteria.getNameUuidCaseLike().split("\\s+");
+			for (int i=0; i<textFilters.length; i++)
 			{
-				String likeFilterText = "%" + contactCriteria.getNameUuidCaseLike()[i].toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(likeFilterText)) {
+				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
-							cb.like(cb.lower(from.get(Contact.UUID)), likeFilterText),
-							cb.like(cb.lower(person.get(Person.FIRST_NAME)), likeFilterText),
-							cb.like(cb.lower(person.get(Person.LAST_NAME)), likeFilterText),
-							cb.like(cb.lower(caze.get(Case.UUID)), likeFilterText),
-							cb.like(cb.lower(casePerson.get(Person.FIRST_NAME)), likeFilterText),
-							cb.like(cb.lower(casePerson.get(Person.LAST_NAME)), likeFilterText));
+							cb.like(cb.lower(from.get(Contact.UUID)), textFilter),
+							cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
+							cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
+							cb.like(cb.lower(caze.get(Case.UUID)), textFilter),
+							cb.like(cb.lower(casePerson.get(Person.FIRST_NAME)), textFilter),
+							cb.like(cb.lower(casePerson.get(Person.LAST_NAME)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}

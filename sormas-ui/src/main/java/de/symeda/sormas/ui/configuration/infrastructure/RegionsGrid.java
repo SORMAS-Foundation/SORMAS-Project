@@ -100,7 +100,7 @@ public class RegionsGrid extends Grid {
 	}
 	
 	public void setNameEpidLikeFilter(String text) {
-		regionCriteria.nameEpidLike(text.split("\\s+"));
+		regionCriteria.nameEpidLike(text);
 		reload();
 	}
 }

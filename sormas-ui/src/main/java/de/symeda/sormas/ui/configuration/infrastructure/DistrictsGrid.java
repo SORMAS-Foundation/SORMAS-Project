@@ -101,12 +101,12 @@ public class DistrictsGrid extends Grid {
 	}
 
 	public void setNameEpidLikeFilter(String text) {
-		districtCriteria.nameEpidLike(text.split("\\s+"));
+		districtCriteria.nameEpidLike(text);
 		reload();
 	}
 
 	public void setRegionFilter(RegionReferenceDto region) {
-		districtCriteria.regionEquals(region);
+		districtCriteria.region(region);
 		reload();
 	}
 	

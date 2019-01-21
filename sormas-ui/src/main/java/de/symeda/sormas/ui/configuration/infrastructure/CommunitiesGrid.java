@@ -118,17 +118,17 @@ public class CommunitiesGrid extends Grid {
 	}
 	
 	public void setNameLikeFilter(String text) {
-		communityCriteria.nameLike(text.split("\\s+"));
+		communityCriteria.nameLike(text);
 		reload();
 	}
 	
 	public void setRegionFilter(RegionReferenceDto region) {
-		communityCriteria.regionEquals(region);
+		communityCriteria.region(region);
 		reload();
 	}
 
 	public void setDistrictFilter(DistrictReferenceDto district) {
-		communityCriteria.districtEquals(district);
+		communityCriteria.district(district);
 		reload();
 	}
 	

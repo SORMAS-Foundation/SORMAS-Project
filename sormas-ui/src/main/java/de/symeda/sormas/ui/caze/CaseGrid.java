@@ -132,22 +132,22 @@ public class CaseGrid extends Grid {
 		} else if (this.getColumn(CaseIndexDto.OUTCOME) != null) {
 			this.getColumn(CaseIndexDto.OUTCOME).setHidden(true);
 		}
-		caseCriteria.outcomeEquals(outcome);
+		caseCriteria.outcome(outcome);
 		reload();
 	}
     
     public void setDiseaseFilter(Disease disease) {
-		caseCriteria.diseaseEquals(disease);
+		caseCriteria.disease(disease);
 		reload();
 	}
 
     public void setRegionFilter(RegionReferenceDto region) {
-		caseCriteria.regionEquals(region);
+		caseCriteria.region(region);
 		reload();
 	}
 
     public void setDistrictFilter(DistrictReferenceDto district) {
-		caseCriteria.districtEquals(district);
+		caseCriteria.district(district);
 		reload();
 	}
 
@@ -162,7 +162,7 @@ public class CaseGrid extends Grid {
 	}
     
     public void setReportedByFilter(UserRole reportingUserRole) {
-    	caseCriteria.reportingUserHasRole(reportingUserRole);
+    	caseCriteria.reportingUserRole(reportingUserRole);
     	reload();
     }
 
@@ -182,7 +182,7 @@ public class CaseGrid extends Grid {
     }
 	
 	public void setNoGeoCoordinatesFilter(boolean showOnlyCasesWithoutGPSCoords) {
-		caseCriteria.mustHaveNoGeoCoordinatesEquals(showOnlyCasesWithoutGPSCoords);
+		caseCriteria.mustHaveNoGeoCoordinates(showOnlyCasesWithoutGPSCoords);
 		reload();
 	}
 	
@@ -192,7 +192,7 @@ public class CaseGrid extends Grid {
 	}
 	
 	public void setNameUuidEpidNumberLike(String text) {
-		caseCriteria.nameUuidEpidNumberLike(text.split("\\s+"));
+		caseCriteria.nameUuidEpidNumberLike(text);
 		reload();
 	}
 	
