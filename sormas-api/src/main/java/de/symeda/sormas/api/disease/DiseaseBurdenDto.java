@@ -40,14 +40,14 @@ public class DiseaseBurdenDto  implements Serializable {
 	public static final String CASE_FATALITY_RATE = "caseFatalityRate";
 	
 	private Disease disease;
-	private int caseCount;
-	private int previousCaseCount;
-	private int casesDifference;
-	private int eventCount;
-	private int outbreakDistrictCount;
+	private Long caseCount;
+	private Long previousCaseCount;
+	private Long casesDifference;
+	private Long eventCount;
+	private Long outbreakDistrictCount;
 	private Float caseFatalityRate;
 	
-	public DiseaseBurdenDto(Disease disease, int caseCount, int previousCaseCount, int eventCount, int outbreakDistrictCount, Float caseFatalityRate) {
+	public DiseaseBurdenDto(Disease disease, Long caseCount, Long previousCaseCount, Long eventCount, Long outbreakDistrictCount, Float caseFatalityRate) {
 		this.disease = disease;
 		this.caseCount = caseCount;
 		this.previousCaseCount = previousCaseCount;
@@ -56,21 +56,21 @@ public class DiseaseBurdenDto  implements Serializable {
 		this.caseFatalityRate = caseFatalityRate;
 	}
 	
-	public DiseaseBurdenDto(Disease disease, int caseCount) {
+	public DiseaseBurdenDto(Disease disease, Long caseCount, Long eventCount) {
 		this.disease = disease;
 		this.caseCount = caseCount;
-		this.previousCaseCount = 0;
-		this.eventCount = 0;
-		this.outbreakDistrictCount = 0;
+		this.previousCaseCount = 0L;
+		this.eventCount = eventCount;
+		this.outbreakDistrictCount = 0L;
 		this.caseFatalityRate = 0.00f;
 	}
 	
-	public DiseaseBurdenDto(Disease disease) {
+	public DiseaseBurdenDto(Disease disease, Long caseCount) {
 		this.disease = disease;
-		this.caseCount = 0;
-		this.previousCaseCount = 0;
-		this.eventCount = 0;
-		this.outbreakDistrictCount = 0;
+		this.caseCount = caseCount;
+		this.previousCaseCount = 0L;
+		this.eventCount = 0L;
+		this.outbreakDistrictCount = 0L;
 		this.caseFatalityRate = 0.00f;
 	}
 	
@@ -81,35 +81,35 @@ public class DiseaseBurdenDto  implements Serializable {
 		this.disease = disease;
 	}
 	
-	public int getCaseCount() {
+	public Long getCaseCount() {
 		return caseCount;
 	}
-	public void setCaseCount(int caseCount) {
+	public void setCaseCount(Long caseCount) {
 		this.caseCount = caseCount;
 	}
 	
-	public int getPreviousCaseCount() {
+	public Long getPreviousCaseCount() {
 		return previousCaseCount;
 	}
-	public void setPreviousCaseCount(int previousCaseCount) {
+	public void setPreviousCaseCount(Long previousCaseCount) {
 		this.previousCaseCount = previousCaseCount;
 	}
 	
-	public int getCasesDifference() {
+	public Long getCasesDifference() {
 		return getCaseCount() - getPreviousCaseCount();
 	}
 	
-	public int getEventCount() {
+	public Long getEventCount() {
 		return eventCount;
 	}
-	public void setEventCount(int eventCount) {
+	public void setEventCount(Long eventCount) {
 		this.eventCount = eventCount;
 	}
 	
-	public int getOutbreakDistrictCount() {
+	public Long getOutbreakDistrictCount() {
 		return outbreakDistrictCount;
 	}
-	public void setOutbreakDistrictCount(int outbreakDistrictCount) {
+	public void setOutbreakDistrictCount(Long outbreakDistrictCount) {
 		this.outbreakDistrictCount = outbreakDistrictCount;
 	}
 	
