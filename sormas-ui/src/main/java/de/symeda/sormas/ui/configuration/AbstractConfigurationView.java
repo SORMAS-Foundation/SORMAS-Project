@@ -25,7 +25,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.SubNavigationMenu;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.DistrictsView;
@@ -48,7 +48,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 	@Override
 	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		menu.removeAllViews();
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
 			menu.addView(RegionsView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
 					RegionsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
 			menu.addView(DistrictsView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
@@ -70,7 +70,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 	}
 
 	public static void registerViews(Navigator navigator) {
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
 			navigator.addView(RegionsView.VIEW_NAME, RegionsView.class);
 			navigator.addView(DistrictsView.VIEW_NAME, DistrictsView.class);
 			navigator.addView(CommunitiesView.VIEW_NAME, CommunitiesView.class);

@@ -41,7 +41,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -104,11 +104,11 @@ public class EventParticipantsController {
 			}
 		});
 		
-		if (CurrentUser.getCurrent().hasUserRole(UserRole.ADMIN)) {
+		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getEventParticipantFacade().deleteEventParticipant(editForm.getValue().toReference(), CurrentUser.getCurrent().getUserReference().getUuid());
+					FacadeProvider.getEventParticipantFacade().deleteEventParticipant(editForm.getValue().toReference(), UserProvider.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().removeWindow(window);
 					refreshView();
 				}
@@ -124,7 +124,7 @@ public class EventParticipantsController {
 	}
 	
 	public List<EventParticipantDto> getEventParticipantIndexListByEvent(EventReferenceDto eventRef) {
-		UserDto user = CurrentUser.getCurrent().getUser();
+		UserDto user = UserProvider.getCurrent().getUser();
 		return FacadeProvider.getEventParticipantFacade().getAllEventParticipantsByEventAfter(null, eventRef.getUuid(), user.getUuid());
 	}
 	
@@ -143,7 +143,7 @@ public class EventParticipantsController {
 			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected event participants?", new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getEventParticipantFacade().deleteEventParticipant(new EventParticipantReferenceDto(((EventParticipantDto) selectedRow).getUuid()), CurrentUser.getCurrent().getUuid());
+						FacadeProvider.getEventParticipantFacade().deleteEventParticipant(new EventParticipantReferenceDto(((EventParticipantDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification("Event participants deleted", "All selected event participants have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());

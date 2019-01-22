@@ -1,8 +1,5 @@
 package de.symeda.sormas.api.i18n;
 
-/**
- * To update this file run the I18nConstantGenerator unit test
- */
 public interface Strings {
 
 	public static String visitCompletedSubject = "visitCompletedSubject";

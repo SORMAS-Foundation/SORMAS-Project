@@ -25,7 +25,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractView;
 
 @SuppressWarnings("serial")
@@ -41,7 +41,7 @@ public class TasksView extends AbstractView {
         taskListComponent = new TaskGridComponent(getViewTitleLabel());
         addComponent(taskListComponent);
         
-    	if (CurrentUser.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
+    	if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
 	    	Button createButton = new Button("New task");
 	        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 	        createButton.setIcon(FontAwesome.PLUS_CIRCLE);

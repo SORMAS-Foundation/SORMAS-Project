@@ -32,7 +32,7 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
@@ -144,7 +144,7 @@ public class EpiCurveSurveillanceComponent extends AbstractEpiCurveComponent {
 				}
 
 				Map<CaseClassification, Long> caseCounts = FacadeProvider.getCaseFacade()
-						.getNewCaseCountPerClassification(caseCriteria, CurrentUser.getCurrent().getUuid());
+						.getNewCaseCountPerClassification(caseCriteria, UserProvider.getCurrent().getUuid());
 
 				Long confirmedCount = caseCounts.get(CaseClassification.CONFIRMED);
 				Long probableCount = caseCounts.get(CaseClassification.PROBABLE);
@@ -210,7 +210,7 @@ public class EpiCurveSurveillanceComponent extends AbstractEpiCurveComponent {
 				}
 
 				Map<PresentCondition, Long> caseCounts = FacadeProvider.getCaseFacade()
-						.getNewCaseCountPerPersonCondition(caseCriteria, CurrentUser.getCurrent().getUuid());
+						.getNewCaseCountPerPersonCondition(caseCriteria, UserProvider.getCurrent().getUuid());
 
 				Long aliveCount = caseCounts.get(PresentCondition.ALIVE);
 				Long deadCount = caseCounts.get(PresentCondition.DEAD);

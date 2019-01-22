@@ -49,7 +49,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.HtmlReferenceDtoConverter;
 import de.symeda.sormas.ui.utils.ShortStringRenderer;
@@ -157,7 +157,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
         			TaskIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
         
-        if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+        if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
         	setSelectionMode(SelectionMode.MULTI);
         } else {
         	setSelectionMode(SelectionMode.NONE);
@@ -226,7 +226,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
     }
     
     public void reload() {
-    	List<TaskIndexDto> tasks = FacadeProvider.getTaskFacade().getIndexList(CurrentUser.getCurrent().getUserReference().getUuid(),
+    	List<TaskIndexDto> tasks = FacadeProvider.getTaskFacade().getIndexList(UserProvider.getCurrent().getUserReference().getUuid(),
     			taskCriteria);
     	
     	tasks.sort(new Comparator<TaskIndexDto>() {

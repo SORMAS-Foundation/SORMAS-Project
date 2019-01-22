@@ -17,9 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
-import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -28,9 +28,9 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.PojoUrlParamConverter;
+import de.symeda.sormas.api.utils.DataHelper;
 
-public class CaseCriteria implements Serializable, Cloneable {
+public class CaseCriteria extends BaseCriteria implements Cloneable  {
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -61,12 +61,23 @@ public class CaseCriteria implements Serializable, Cloneable {
 		}
 	}
 	
-	public String toUrlParams() {
-		return PojoUrlParamConverter.toUrlParams(this);
-	}
-	
-	public static CaseCriteria fromUrlParams(String urlParams) {
-		return PojoUrlParamConverter.fromUrlParams(new CaseCriteria(), urlParams);
+	public boolean hasAnyFilterActive() {
+		return reportingUserRole != null 
+				|| disease != null
+				|| outcome != null
+				|| caseClassification != null
+				|| investigationStatus != null
+				|| presentCondition != null
+				|| region != null
+				|| district != null
+				|| healthFacility != null
+				|| surveillanceOfficer != null
+				|| newCaseDateFrom != null
+				|| newCaseDateTo != null
+				|| person != null
+				|| mustHaveNoGeoCoordinates == Boolean.TRUE
+				|| archived == Boolean.TRUE
+				|| !DataHelper.isNullOrEmpty(nameUuidEpidNumberLike);
 	}
 
 	public CaseCriteria reportingUserRole(UserRole reportingUserRole) {

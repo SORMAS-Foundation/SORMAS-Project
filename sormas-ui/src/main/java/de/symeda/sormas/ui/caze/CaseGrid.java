@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import java.util.Date;
 import java.util.List;
 
 import com.vaadin.data.Item;
@@ -25,28 +24,18 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.SelectionModel.HasUserSelectionAllowed;
 import com.vaadin.ui.renderers.DateRenderer;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
-import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.caze.NewCaseDateType;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 @SuppressWarnings("serial")
@@ -63,7 +52,7 @@ public class CaseGrid extends Grid {
         
         caseCriteria.archived(false);
 
-        if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+        if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
         	setSelectionMode(SelectionMode.MULTI);
         } else {
         	setSelectionMode(SelectionMode.NONE);
@@ -108,7 +97,7 @@ public class CaseGrid extends Grid {
         getColumn(CaseIndexDto.UUID).setRenderer(new UuidRenderer());
         getColumn(CaseIndexDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
         
-        if (CurrentUser.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
+        if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
             getColumn(CaseIndexDto.CREATION_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
         } else {
         	removeColumn(CaseIndexDto.CREATION_DATE);
@@ -126,77 +115,11 @@ public class CaseGrid extends Grid {
         });
 	}
 	
-	public void setOutcomeFilter(CaseOutcome outcome) {
-		if (outcome == null) {
-			this.getColumn(CaseIndexDto.OUTCOME).setHidden(false);
-		} else if (this.getColumn(CaseIndexDto.OUTCOME) != null) {
-			this.getColumn(CaseIndexDto.OUTCOME).setHidden(true);
-		}
-		caseCriteria.outcome(outcome);
-		reload();
-	}
-    
-    public void setDiseaseFilter(Disease disease) {
-		caseCriteria.disease(disease);
-		reload();
-	}
-
-    public void setRegionFilter(RegionReferenceDto region) {
-		caseCriteria.region(region);
-		reload();
-	}
-
-    public void setDistrictFilter(DistrictReferenceDto district) {
-		caseCriteria.district(district);
-		reload();
-	}
-
-    public void setHealthFacilityFilter(FacilityReferenceDto facility) {
-		caseCriteria.healthFacility(facility);
-		reload();
-	}
-    
-    public void setSurveillanceOfficerFilter(UserReferenceDto surveillanceOfficer) {
-    	caseCriteria.surveillanceOfficer(surveillanceOfficer);
-    	reload();
-	}
-    
-    public void setReportedByFilter(UserRole reportingUserRole) {
-    	caseCriteria.reportingUserRole(reportingUserRole);
-    	reload();
-    }
-
-	public void setClassificationFilter(CaseClassification classficiation) {
-    	caseCriteria.caseClassification(classficiation);
-    	reload();
-    }
-
-	public void setInvestigationFilter(InvestigationStatus status) {
-    	caseCriteria.investigationStatus(status);
-    	reload();
-    }
-	
-	public void setPresentConditionFilter(PresentCondition presentCondition) {
-    	caseCriteria.presentCondition(presentCondition);
-    	reload();
-    }
-	
-	public void setNoGeoCoordinatesFilter(boolean showOnlyCasesWithoutGPSCoords) {
-		caseCriteria.mustHaveNoGeoCoordinates(showOnlyCasesWithoutGPSCoords);
-		reload();
+	public void setFilterCriteria(CaseCriteria caseCriteria) {
+		this.caseCriteria = caseCriteria;
 	}
 	
-	public void setDateFilter(Date fromDate, Date toDate, NewCaseDateType newCaseDateType) {
-		caseCriteria.newCaseDateBetween(fromDate, toDate, newCaseDateType);
-		reload();
-	}
-	
-	public void setNameUuidEpidNumberLike(String text) {
-		caseCriteria.nameUuidEpidNumberLike(text);
-		reload();
-	}
-	
-	public CaseCriteria getFilterCriteria() {
+	public CaseCriteria getCriteria() {
 		return caseCriteria;
 	}
 	
@@ -208,11 +131,22 @@ public class CaseGrid extends Grid {
     
     public void reload() {
     	if (reloadEnabled) {
+    		if (getSelectionModel() instanceof HasUserSelectionAllowed) {
+    			deselectAll();
+    		}
+    		
 	    	List<CaseIndexDto> cases = FacadeProvider.getCaseFacade().getIndexList(
-	    			CurrentUser.getCurrent().getUuid(), 
+	    			UserProvider.getCurrent().getUuid(), 
 	    			caseCriteria);
 	
 	    	getContainer().removeAllItems();
+	    	
+			if (caseCriteria.getOutcome() == null) {
+				this.getColumn(CaseIndexDto.OUTCOME).setHidden(false);
+			} else if (this.getColumn(CaseIndexDto.OUTCOME) != null) {
+				this.getColumn(CaseIndexDto.OUTCOME).setHidden(true);
+			}
+	    	
 	        getContainer().addAll(cases);
     	}
     }

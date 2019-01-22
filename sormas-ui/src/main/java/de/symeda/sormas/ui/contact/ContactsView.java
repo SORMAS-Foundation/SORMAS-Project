@@ -62,7 +62,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -122,7 +122,7 @@ public class ContactsView extends AbstractView {
 			updateActiveStatusButtonCaption();
 		});
 
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
 
 			PopupButton exportButton = new PopupButton("Export"); 
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
@@ -153,7 +153,7 @@ public class ContactsView extends AbstractView {
 			exportLayout.addComponent(extendedExportButton);
 
 			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(ContactExportDto.class,
-					(Integer start, Integer max) -> FacadeProvider.getContactFacade().getExportList(CurrentUser.getCurrent().getUuid(), grid.getFilterCriteria(), start, max), 
+					(Integer start, Integer max) -> FacadeProvider.getContactFacade().getExportList(UserProvider.getCurrent().getUuid(), grid.getFilterCriteria(), start, max), 
 					propertyId -> {
 						return I18nProperties.getPrefixCaption(ContactExportDto.I18N_PREFIX, propertyId,
 								I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, propertyId,
@@ -201,7 +201,7 @@ public class ContactsView extends AbstractView {
 		});
 		filterLayout.addComponent(diseaseFilter);
 
-		UserDto user = CurrentUser.getCurrent().getUser();
+		UserDto user = UserProvider.getCurrent().getUser();
 
 		regionFilter = new ComboBox();
 		if (user.getRegion() == null) {
@@ -331,7 +331,7 @@ public class ContactsView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show archived/active cases button
-			if (CurrentUser.getCurrent().hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
 				Button switchArchivedActiveButton = new Button(I18nProperties.getCaption("showArchivedContacts"));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
@@ -354,7 +354,7 @@ public class ContactsView extends AbstractView {
 			}
 
 			// Bulk operation dropdown
-			if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 				MenuBar bulkOperationsDropdown = new MenuBar();	

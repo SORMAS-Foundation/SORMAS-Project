@@ -93,16 +93,20 @@ public class PojoUrlParamConverter {
 				if (params.containsKey(propertyName)) {
 					List<String> fieldParams = params.get(propertyName);
 					
-					Object value;
+					Object value = null;
 					if (ReferenceDto.class.isAssignableFrom(type)) {
 						value = type.newInstance();
 						((ReferenceDto)value).setUuid(fieldParams.get(0));
 					} else if (Date.class.isAssignableFrom(type)) {
-						value = new Date(Long.valueOf(fieldParams.get(0)).longValue());
+						try {
+							value = new Date(Long.valueOf(fieldParams.get(0)).longValue());
+						} catch (NumberFormatException e) { } // ignore
 					} else if (Boolean.class.isAssignableFrom(type)) {
 						value = Boolean.valueOf(fieldParams.get(0));
 					} else if (Enum.class.isAssignableFrom(type)) {
-						value = Enum.valueOf((Class<? extends Enum>)type, fieldParams.get(0));
+						try {
+							value = Enum.valueOf((Class<? extends Enum>)type, fieldParams.get(0));
+						} catch (IllegalArgumentException e) { } // ignore
 					} else if (String.class.isAssignableFrom(type)) {
 						value = fieldParams.get(0);
 					} else {

@@ -47,7 +47,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -66,7 +66,7 @@ public class SampleGrid extends Grid {
 		
 		sampleCriteria.archived(false);
 		
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
         	setSelectionMode(SelectionMode.MULTI);
         } else {
         	setSelectionMode(SelectionMode.NONE);
@@ -133,13 +133,13 @@ public class SampleGrid extends Grid {
 	       	}
 		});
 		
-		if (CurrentUser.getCurrent().hasUserRole(UserRole.LAB_USER) || CurrentUser.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
+		if (UserProvider.getCurrent().hasUserRole(UserRole.LAB_USER) || UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
 			removeColumn(SampleIndexDto.SHIPMENT_DATE);
 		} else {
 			removeColumn(SampleIndexDto.RECEIVED_DATE);
 		}
 		
-		if (CurrentUser.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
+		if (UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
 			removeColumn(SampleIndexDto.ASSOCIATED_CASE);
 		}
 	}
@@ -233,7 +233,7 @@ public class SampleGrid extends Grid {
 	
 	public void reload() {
     	List<SampleIndexDto> samples = FacadeProvider.getSampleFacade().getIndexList(
-    			CurrentUser.getCurrent().getUuid(), 
+    			UserProvider.getCurrent().getUuid(), 
     			sampleCriteria);
     	
 		getContainer().removeAllItems();

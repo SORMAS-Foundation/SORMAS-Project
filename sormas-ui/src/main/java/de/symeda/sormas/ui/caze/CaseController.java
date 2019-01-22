@@ -67,7 +67,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.epidata.EpiDataView;
@@ -93,7 +93,7 @@ public class CaseController {
 		navigator.addView(CaseDataView.VIEW_NAME, CaseDataView.class);
 		navigator.addView(CasePersonView.VIEW_NAME, CasePersonView.class);
 		navigator.addView(CaseSymptomsView.VIEW_NAME, CaseSymptomsView.class);
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 			navigator.addView(CaseContactsView.VIEW_NAME, CaseContactsView.class);
 		}
 		navigator.addView(CaseHospitalizationView.VIEW_NAME, CaseHospitalizationView.class);
@@ -175,8 +175,8 @@ public class CaseController {
 	private CaseDataDto createNewCase(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = CaseDataDto.build(person, disease);
 
-		UserDto user = CurrentUser.getCurrent().getUser();
-		UserReferenceDto userReference = CurrentUser.getCurrent().getUserReference();
+		UserDto user = UserProvider.getCurrent().getUser();
+		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
 		caze.setReportingUser(userReference);
 		caze.setRegion(user.getRegion());
 		caze.setDistrict(user.getDistrict());
@@ -380,18 +380,18 @@ public class CaseController {
 	}
 
 	private void appendSpecialCommands(CaseReferenceDto cazeRef, CommitDiscardWrapperComponent<? extends Component> editView) {
-		if (CurrentUser.getCurrent().hasUserRole(UserRole.ADMIN)) {
+		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getCaseFacade().deleteCase(cazeRef, CurrentUser.getCurrent().getUserReference().getUuid());
+					FacadeProvider.getCaseFacade().deleteCase(cazeRef, UserProvider.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
 				}
 			}, I18nProperties.getString(Strings.caze));
 		}
 
 		// Initialize 'Archive' button
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.CASE_ARCHIVE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_ARCHIVE)) {
 			boolean archived = FacadeProvider.getCaseFacade().isArchived(cazeRef.getUuid());
 			Button archiveCaseButton = new Button();
 			archiveCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
@@ -410,7 +410,7 @@ public class CaseController {
 		}
 
 		// Initialize 'Transfer case' button
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.CASE_TRANSFER)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_TRANSFER)) {
 			Button transferCaseButton = new Button();
 			transferCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
 			transferCaseButton.setCaption("Transfer case");
@@ -520,7 +520,7 @@ public class CaseController {
 		// classification
 		if (changedCase.getCaseClassification() != existingCase.getCaseClassification()) {
 			changedCase.setClassificationDate(new Date());
-			changedCase.setClassificationUser(CurrentUser.getCurrent().getUserReference());
+			changedCase.setClassificationUser(UserProvider.getCurrent().getUserReference());
 		}
 	}
 
@@ -637,7 +637,7 @@ public class CaseController {
 			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected cases?", new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getCaseFacade().deleteCase(new CaseReferenceDto(((CaseIndexDto) selectedRow).getUuid()), CurrentUser.getCurrent().getUuid());
+						FacadeProvider.getCaseFacade().deleteCase(new CaseReferenceDto(((CaseIndexDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification("Cases deleted", "All selected cases have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());

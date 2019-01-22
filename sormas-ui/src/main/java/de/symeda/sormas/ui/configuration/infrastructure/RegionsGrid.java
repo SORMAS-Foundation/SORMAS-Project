@@ -33,7 +33,7 @@ import de.symeda.sormas.api.region.RegionCriteria;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 
 public class RegionsGrid extends Grid {
 
@@ -51,7 +51,7 @@ public class RegionsGrid extends Grid {
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		setContainerDataSource(generatedContainer);
 		
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			generatedContainer.addGeneratedProperty(EDIT_BTN_ID, new PropertyValueGenerator<String>() {
 				private static final long serialVersionUID = -7255691609662228895L;
 
@@ -74,7 +74,7 @@ public class RegionsGrid extends Grid {
         			RegionDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
         
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addColumn(EDIT_BTN_ID);
 			getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
 			getColumn(EDIT_BTN_ID).setWidth(40);

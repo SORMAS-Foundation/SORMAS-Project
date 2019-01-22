@@ -30,7 +30,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
@@ -53,7 +53,7 @@ public class TaskListComponent extends VerticalLayout {
 		Label tasksHeader = new Label(LayoutUtil.h3("Tasks"), ContentMode.HTML);
 		componentHeader.addComponent(tasksHeader);
 
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
 			createButton = new Button("New task");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);

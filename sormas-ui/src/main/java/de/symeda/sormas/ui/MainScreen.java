@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
+import java.util.Collection;
+
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -25,6 +27,7 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 
+import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.caze.CasesView;
@@ -95,46 +98,46 @@ public class MainScreen extends HorizontalLayout {
 		});
 
 		menu = new Menu(navigator);
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.DASHBOARD_VIEW)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_VIEW)) {
 			ControllerProvider.getDashboardController().registerViews(navigator);
 		}
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
 			menu.addView(DashboardSurveillanceView.class, AbstractDashboardView.ROOT_VIEW_NAME, "Dashboard", FontAwesome.DASHBOARD);
-		} else if (CurrentUser.getCurrent().hasUserRight(UserRight.DASHBOARD_CONTACT_ACCESS)) {
+		} else if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_CONTACT_ACCESS)) {
 			menu.addView(DashboardContactsView.class, AbstractDashboardView.ROOT_VIEW_NAME, "Dashboard", FontAwesome.DASHBOARD);
 		}
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
 			menu.addView(TasksView.class, TasksView.VIEW_NAME, "Tasks", FontAwesome.TASKS);
 		}
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 			ControllerProvider.getCaseController().registerViews(navigator);
 			menu.addView(CasesView.class, CasesView.VIEW_NAME, "Cases", FontAwesome.EDIT);
 		}
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 			ControllerProvider.getContactController().registerViews(navigator);
 			menu.addView(ContactsView.class, ContactsView.VIEW_NAME, "Contacts", FontAwesome.HAND_PAPER_O);
 		}
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
 			ControllerProvider.getEventController().registerViews(navigator);
 			menu.addView(EventsView.class, EventsView.VIEW_NAME, "Events", FontAwesome.PHONE);
 		}
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
 			ControllerProvider.getSampleController().registerViews(navigator);
 			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, "Samples", FontAwesome.DATABASE);
 		}
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.WEEKLYREPORT_VIEW)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.WEEKLYREPORT_VIEW)) {
 			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, "Reports", FontAwesome.FILE_TEXT);
 		}
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.STATISTICS_ACCESS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.STATISTICS_ACCESS)) {
 			ControllerProvider.getStatisticsController().registerViews(navigator);
 			menu.addView(StatisticsView.class, AbstractStatisticsView.ROOT_VIEW_NAME, "Statistics", FontAwesome.BAR_CHART);
 		}
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.USER_VIEW)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.USER_VIEW)) {
 			menu.addView(UsersView.class, UsersView.VIEW_NAME, "Users", FontAwesome.USERS);
 		}
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.CONFIGURATION_ACCESS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONFIGURATION_ACCESS)) {
 			AbstractConfigurationView.registerViews(navigator);
-			if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
 				menu.addView(RegionsView.class, AbstractConfigurationView.ROOT_VIEW_NAME, "Configuration", FontAwesome.COGS);
 			} else {
 				menu.addView(OutbreaksView.class, AbstractConfigurationView.ROOT_VIEW_NAME, "Configuration", FontAwesome.COGS);
@@ -143,7 +146,7 @@ public class MainScreen extends HorizontalLayout {
 		menu.addView(AboutView.class, AboutView.VIEW_NAME, "About", FontAwesome.INFO_CIRCLE);
 
 		navigator.addViewChangeListener(viewChangeListener);
-
+				
 		ui.setNavigator(navigator);
 
 		addComponent(menu);
@@ -158,19 +161,42 @@ public class MainScreen extends HorizontalLayout {
 
 		@Override
 		public boolean beforeViewChange(ViewChangeEvent event) {
+
+			// Would be better to do this check BEFORE the view is created, but the Navigator can't be extended that way
+			
+			if (!event.getParameters().contains("?")) {
+				StringBuilder urlParams = new StringBuilder();
+				Collection<Object> viewModels = ViewModelProviders.of(event.getNewView().getClass()).getAll();
+				for (Object viewModel : viewModels) {
+					if (viewModel instanceof BaseCriteria) {
+						if (urlParams.length() > 0) {
+							urlParams.append('&');
+						}
+						urlParams.append(((BaseCriteria)viewModel).toUrlParams());
+						if (urlParams.length() > 0 && urlParams.charAt(urlParams.length()-1) == '&') {
+							urlParams.deleteCharAt(urlParams.length()-1);
+						}
+					}
+				}
+				if (urlParams.length() > 0) {
+					SormasUI.get().getNavigator().navigateTo(event.getViewName() + "/?" + urlParams.toString());
+					return false;
+				}
+			}
+			
 			if (event.getViewName().isEmpty()) {
 				// redirect to default view
-				if (CurrentUser.getCurrent().hasUserRight(UserRight.DASHBOARD_VIEW)) {
+				if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_VIEW)) {
 					SormasUI.get().getNavigator().navigateTo(DashboardSurveillanceView.VIEW_NAME);
-				} else if (CurrentUser.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
+				} else if (UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
 					SormasUI.get().getNavigator().navigateTo(SamplesView.VIEW_NAME);
-				} else if (CurrentUser.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
+				} else if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
 					SormasUI.get().getNavigator().navigateTo(TasksView.VIEW_NAME);
 				} else {
 					SormasUI.get().getNavigator().navigateTo(AboutView.VIEW_NAME);
 				}
 				return false;
-			}
+			}	
 			return true;
 		}
 

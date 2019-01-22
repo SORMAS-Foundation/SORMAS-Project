@@ -25,7 +25,7 @@ import com.vaadin.server.StreamResource;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 
 public class HealthFacilitiesView extends AbstractFacilitiesView {
@@ -41,7 +41,7 @@ public class HealthFacilitiesView extends AbstractFacilitiesView {
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
 		fileDownloader.extend(exportButton);
 
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton.setCaption("New entry");
 			createButton.addClickListener(
 					e -> ControllerProvider.getInfrastructureController().createHealthFacility(false));

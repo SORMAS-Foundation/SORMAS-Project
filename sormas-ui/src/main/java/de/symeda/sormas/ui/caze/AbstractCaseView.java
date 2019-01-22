@@ -91,7 +91,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 	@Override
 	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		
-		String[] passedParams = params.split("/");
+		String[] passedParams = params.split("\\?");
 		if (passedParams.length > 0) {
 			caseRef = FacadeProvider.getCaseFacade().getReferenceByUuid(passedParams[0]);
 		}

@@ -32,7 +32,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 
 @SuppressWarnings("serial")
 public class CaseInfoLayout extends HorizontalLayout {
@@ -58,7 +58,7 @@ public class CaseInfoLayout extends HorizontalLayout {
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.UUID))
 			.setDescription(caseDto.getUuid());
 
-			if (CurrentUser.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 				addDescLabel(leftColumnLayout, caseDto.getPerson(),
 						I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON));
 
@@ -83,7 +83,7 @@ public class CaseInfoLayout extends HorizontalLayout {
 							: DataHelper.toStringNullable(caseDto.getDiseaseDetails()),
 							I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
 
-			if (CurrentUser.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 				addDescLabel(rightColumnLayout, caseDto.getCaseClassification(),
 						I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
 				addDescLabel(rightColumnLayout, DateHelper.formatLocalShortDate(caseDto.getSymptoms().getOnsetDate()),

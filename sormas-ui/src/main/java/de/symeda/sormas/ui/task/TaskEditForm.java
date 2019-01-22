@@ -42,7 +42,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
@@ -145,7 +145,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	    		district = eventDto.getEventLocation().getDistrict();
 	    		region = eventDto.getEventLocation().getRegion();
 	    	} else {
-	    		UserDto userDto = CurrentUser.getCurrent().getUser();
+	    		UserDto userDto = UserProvider.getCurrent().getUser();
 	    		district = userDto.getDistrict();
 	    		region = userDto.getRegion();
 	    	}
@@ -180,7 +180,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		if (value != null) {
 			boolean creating = value.getCreationDate() == null;
 	
-			UserDto user = CurrentUser.getCurrent().getUser();
+			UserDto user = UserProvider.getCurrent().getUser();
 			boolean creator = user.equals(value.getCreatorUser());
 			boolean supervisor = UserRole.isSupervisor(user.getUserRoles());
 			boolean assignee = user.equals(getFieldGroup().getField(TaskDto.ASSIGNEE_USER).getValue());
@@ -190,7 +190,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				discard(TaskDto.ASSIGNEE_REPLY, TaskDto.TASK_STATUS);
 			}
 			
-			if (CurrentUser.getCurrent().hasUserRight(editOrCreateUserRight)) {
+			if (UserProvider.getCurrent().hasUserRight(editOrCreateUserRight)) {
 				setReadOnly(!(assignee || creator), TaskDto.TASK_STATUS);
 				setReadOnly(!assignee, TaskDto.ASSIGNEE_REPLY);
 				setReadOnly(!creator, TaskDto.TASK_TYPE, TaskDto.PRIORITY, 

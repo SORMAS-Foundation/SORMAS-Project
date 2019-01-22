@@ -19,7 +19,8 @@ public class CaseCriteriaTest {
 		criteria.nameUuidEpidNumberLike("test AHSDBSD-ADS");
 		criteria.disease(Disease.CSM);
 		
-		CaseCriteria generatedCriteria = CaseCriteria.fromUrlParams(criteria.toUrlParams());
+		CaseCriteria generatedCriteria = new CaseCriteria();
+		generatedCriteria.fromUrlParams(criteria.toUrlParams());
 		assertEquals(criteria.getArchived(), generatedCriteria.getArchived());
 		assertEquals(criteria.getDistrict(), generatedCriteria.getDistrict());
 		assertEquals(criteria.getNameUuidEpidNumberLike(), generatedCriteria.getNameUuidEpidNumberLike());

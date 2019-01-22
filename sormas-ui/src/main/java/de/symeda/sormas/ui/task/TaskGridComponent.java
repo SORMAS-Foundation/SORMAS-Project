@@ -41,7 +41,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -137,7 +137,7 @@ public class TaskGridComponent extends VerticalLayout {
 			initializeStatusButton(myTasks, buttonFilterLayout, "My tasks");
 
 			// Default filter for lab users (that don't have any other role) is "My tasks"
-			if ((CurrentUser.getCurrent().hasUserRole(UserRole.LAB_USER) || CurrentUser.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) && CurrentUser.getCurrent().getUserRoles().size() == 1) {
+			if ((UserProvider.getCurrent().hasUserRole(UserRole.LAB_USER) || UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) && UserProvider.getCurrent().getUserRoles().size() == 1) {
 				processAssigneeFilterChange(false, true, myTasks);
 			} else {
 				CssStyles.removeStyles(allTasks, CssStyles.BUTTON_FILTER_LIGHT);
@@ -150,7 +150,7 @@ public class TaskGridComponent extends VerticalLayout {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show archived/active cases button
-			if (CurrentUser.getCurrent().hasUserRight(UserRight.TASK_VIEW_ARCHIVED)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW_ARCHIVED)) {
 				Button switchArchivedActiveButton = new Button(I18nProperties.getCaption("showArchivedTasks"));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
@@ -172,7 +172,7 @@ public class TaskGridComponent extends VerticalLayout {
 				actionButtonsLayout.addComponent(switchArchivedActiveButton);
 			}
 			// Bulk operation dropdown
-			if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				assigneeFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 				MenuBar bulkOperationsDropdown = new MenuBar();	
@@ -222,7 +222,7 @@ public class TaskGridComponent extends VerticalLayout {
 		filterLayout.addComponent(buttonFilterLayout);
 
 		// Bulk operation dropdown
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			filterLayout.setWidth(100, Unit.PERCENTAGE);
 
 			MenuBar bulkOperationsDropdown = new MenuBar();	
@@ -243,7 +243,7 @@ public class TaskGridComponent extends VerticalLayout {
 			filterLayout.setExpandRatio(bulkOperationsDropdown, 1);
 		}
 
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
 			createButton = new Button("New task");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
@@ -270,9 +270,9 @@ public class TaskGridComponent extends VerticalLayout {
 
 	private void processAssigneeFilterChange(boolean officerTasks, boolean myTasks, Button button) {
 		if (officerTasks) {
-			grid.filterExcludeAssignee(CurrentUser.getCurrent().getUserReference(), true);
+			grid.filterExcludeAssignee(UserProvider.getCurrent().getUserReference(), true);
 		} else if (myTasks) {
-			grid.filterAssignee(CurrentUser.getCurrent().getUserReference(), true);
+			grid.filterAssignee(UserProvider.getCurrent().getUserReference(), true);
 		} else {
 			grid.filterAssignee(null, true);
 		}

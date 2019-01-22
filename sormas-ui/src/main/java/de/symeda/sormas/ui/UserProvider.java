@@ -27,7 +27,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 
-public class CurrentUser {
+public class UserProvider {
 
 	private UserDto user;
 	private UserReferenceDto userReference;
@@ -88,31 +88,15 @@ public class CurrentUser {
 	 *
 	 * @return the current user instance if available, otherwise <code>null</code>
 	 */
-	public static CurrentUser getCurrent() {
+	public static UserProvider getCurrent() {
 		UI currentUI = UI.getCurrent();
-		if (currentUI instanceof HasCurrentUser) {
-			return ((HasCurrentUser) currentUI).getCurrentUser();
+		if (currentUI instanceof HasUserProvider) {
+			return ((HasUserProvider) currentUI).getUserProvider();
 		}
 		return null;
 	}
 
-//
-//	public static boolean isCurrentUser(String userName) {
-//
-//		Principal activeUserPrincipal = VaadinServletService.getCurrentServletRequest().getUserPrincipal();
-//		return isCurrentUser(userName, activeUserPrincipal);
-//	}
-//
-//	private static boolean isCurrentUser(String userName, Principal activeUserPrincipal) {
-//
-//		if (activeUserPrincipal == null) {
-//			return false;
-//		} else {
-//			return activeUserPrincipal.getName().equalsIgnoreCase(userName);
-//		}
-//	}
-
-	public interface HasCurrentUser {
-		CurrentUser getCurrentUser();
+	public interface HasUserProvider {
+		UserProvider getUserProvider();
 	}
 }

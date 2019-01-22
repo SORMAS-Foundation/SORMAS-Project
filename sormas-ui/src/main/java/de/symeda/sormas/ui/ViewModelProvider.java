@@ -15,28 +15,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.dashboard;
+package de.symeda.sormas.ui;
 
-import com.vaadin.navigator.Navigator;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.dashboard.contacts.DashboardContactsView;
-import de.symeda.sormas.ui.dashboard.surveillance.DashboardSurveillanceView;
+public class ViewModelProvider {
 
-public class DashboardController {
+	private Map<Class<?>, Object> viewModels = new HashMap<Class<?>, Object>();
 
-	public DashboardController() {
-		
-	}
-
-	public void registerViews(Navigator navigator) {
-		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
-			navigator.addView(DashboardSurveillanceView.VIEW_NAME, DashboardSurveillanceView.class);
+	@SuppressWarnings("unchecked")
+	public <M extends Object> M get(Class<M> modelClass) {
+		if (!viewModels.containsKey(modelClass)) {
+			try {
+				viewModels.put(modelClass, modelClass.newInstance());
+			} catch (InstantiationException | IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
 		}
-		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_CONTACT_ACCESS)) {
-			navigator.addView(DashboardContactsView.VIEW_NAME, DashboardContactsView.class);
+		return (M)viewModels.get(modelClass);
+	}
+	
+	public <M extends Object> void remove(Class<M> modelClass) {
+		if (viewModels.containsKey(modelClass)) {
+			viewModels.remove(modelClass);
 		}
 	}
 	
+	public Collection<Object> getAll() {
+		return viewModels.values();
+	}
 }

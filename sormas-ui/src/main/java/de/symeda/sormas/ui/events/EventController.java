@@ -45,7 +45,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -143,18 +143,18 @@ public class EventController {
 			}
 		});
 
-		if (CurrentUser.getCurrent().hasUserRole(UserRole.ADMIN)) {
+		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getEventFacade().deleteEvent(event.toReference(), CurrentUser.getCurrent().getUserReference().getUuid());
+					FacadeProvider.getEventFacade().deleteEvent(event.toReference(), UserProvider.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
 				}
 			}, I18nProperties.getString(Strings.event));
 		}
 
 		// Initialize 'Archive' button
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
 			boolean archived = FacadeProvider.getEventFacade().isArchived(eventUuid);
 			Button archiveEventButton = new Button();
 			archiveEventButton.addStyleName(ValoTheme.BUTTON_LINK);
@@ -229,11 +229,11 @@ public class EventController {
 		event.setEventStatus(EventStatus.POSSIBLE);
 		LocationDto location = new LocationDto();
 		location.setUuid(DataHelper.createUuid());
-		location.setRegion(CurrentUser.getCurrent().getUser().getRegion());
+		location.setRegion(UserProvider.getCurrent().getUser().getRegion());
 		event.setEventLocation(location);
 
 		event.setReportDateTime(new Date());
-		UserReferenceDto userReference = CurrentUser.getCurrent().getUserReference();
+		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
 		event.setReportingUser(userReference);
 
 		return event;
@@ -268,7 +268,7 @@ public class EventController {
 			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected events?", new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getEventFacade().deleteEvent(new EventReferenceDto(((EventIndexDto) selectedRow).getUuid()), CurrentUser.getCurrent().getUuid());
+						FacadeProvider.getEventFacade().deleteEvent(new EventReferenceDto(((EventIndexDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification("Events deleted", "All selected events have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
