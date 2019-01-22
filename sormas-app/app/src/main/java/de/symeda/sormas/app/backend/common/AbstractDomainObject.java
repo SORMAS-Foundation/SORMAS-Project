@@ -18,6 +18,7 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import androidx.annotation.NonNull;
 import androidx.databinding.BaseObservable;
 import android.util.Log;
 
@@ -34,6 +35,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import androidx.recyclerview.widget.DiffUtil;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 @MappedSuperclass
@@ -280,4 +282,17 @@ public class AbstractDomainObject extends BaseObservable implements Serializable
 	public String getEntityName() {
 		return I18nProperties.getCaption(getI18nPrefix());
 	}
+
+	public static DiffUtil.ItemCallback<AbstractDomainObject> DIFF_CALLBACK = new DiffUtil.ItemCallback<AbstractDomainObject>() {
+		@Override
+		public boolean areItemsTheSame(@NonNull AbstractDomainObject oldItem, @NonNull AbstractDomainObject newItem) {
+			return oldItem.getId().equals(newItem.getId());
+		}
+
+		@Override
+		public boolean areContentsTheSame(@NonNull AbstractDomainObject oldItem, @NonNull AbstractDomainObject newItem) {
+			return oldItem.equals(newItem);
+		}
+	};
+
 }

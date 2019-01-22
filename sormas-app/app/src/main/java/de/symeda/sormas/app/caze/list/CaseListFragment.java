@@ -25,17 +25,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.List;
-
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.app.BaseListFragment;
+import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 
-public class CaseListFragment extends BaseListFragment<CaseListAdapter> implements OnListItemClickListener {
+public class CaseListFragment extends PagedBaseListFragment<CaseListAdapter> implements OnListItemClickListener {
 
     private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerViewForList;
@@ -81,7 +79,7 @@ public class CaseListFragment extends BaseListFragment<CaseListAdapter> implemen
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        recyclerViewForList.setLayoutManager(linearLayoutManager);
         recyclerViewForList.setAdapter(getListAdapter());
+        recyclerViewForList.setLayoutManager(linearLayoutManager);
     }
 }

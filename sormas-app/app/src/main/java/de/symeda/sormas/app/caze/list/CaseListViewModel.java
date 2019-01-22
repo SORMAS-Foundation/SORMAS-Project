@@ -21,61 +21,91 @@ package de.symeda.sormas.app.caze.list;
 import android.os.AsyncTask;
 
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
 class CaseListViewModel extends ViewModel {
 
-    private MutableLiveData<List<Case>> cases;
+    //    private MutableLiveData<List<Case>> cases;
+    private LiveData<PagedList<Case>> casesLiveData;
     private InvestigationStatus investigationStatus = InvestigationStatus.PENDING;
+    private Executor executor;
 
-    LiveData<List<Case>> getCases() {
-        if (cases == null) {
-            cases = new MutableLiveData<>();
-            loadCases();
-        }
-
-        return cases;
+    public CaseListViewModel() {
+        init();
     }
 
-    void setInvestigationStatusAndReload(InvestigationStatus investigationStatus) {
-        if (cases == null) {
-            throw new RuntimeException("Cases must be initialized before calling setInvestigationStatusAndReload");
-        }
+    private void init() {
+        executor = Executors.newFixedThreadPool(5);
 
-        if (this.investigationStatus == investigationStatus) {
-            return;
-        }
+        CaseDataFactory caseDataFactory = new CaseDataFactory();
+        PagedList.Config config =
+                (new PagedList.Config.Builder())
+                        .setEnablePlaceholders(false)
+                        .setInitialLoadSizeHint((int) CaseDataSource.STEP_SIZE)
+                        .setPageSize((int) CaseDataSource.STEP_SIZE).build();
 
-        this.investigationStatus = investigationStatus;
-        loadCases();
+        casesLiveData = (new LivePagedListBuilder(caseDataFactory, config))
+                .setFetchExecutor(executor)
+                .build();
     }
 
-    private void loadCases() {
-        new LoadCasesTask(this).execute();
+    public LiveData<PagedList<Case>> getCasesLiveData() {
+        return casesLiveData;
     }
 
-    private static class LoadCasesTask extends AsyncTask<Void, Void, List<Case>> {
-        private CaseListViewModel model;
-
-        LoadCasesTask(CaseListViewModel model) {
-            this.model = model;
-        }
-
-        @Override
-        protected List<Case> doInBackground(Void... args) {
-            return DatabaseHelper.getCaseDao().queryForEq(Case.INVESTIGATION_STATUS, model.investigationStatus, Case.REPORT_DATE, false);
-        }
-
-        @Override
-        protected void onPostExecute(List<Case> data) {
-            model.cases.setValue(data);
-        }
-    }
+//
+//    LiveData<List<Case>> getCases() {
+//        if (cases == null) {
+//            cases = new MutableLiveData<>();
+//            loadCases();
+//        }
+//
+//        return cases;
+//    }
+//
+//    void setInvestigationStatusAndReload(InvestigationStatus investigationStatus) {
+//        if (cases == null) {
+//            throw new RuntimeException("Cases must be initialized before calling setInvestigationStatusAndReload");
+//        }
+//
+//        if (this.investigationStatus == investigationStatus) {
+//            return;
+//        }
+//
+//        this.investigationStatus = investigationStatus;
+//        loadCases();
+//    }
+//
+//    private void loadCases() {
+//        new LoadCasesTask(this).execute();
+//    }
+//
+//    private static class LoadCasesTask extends AsyncTask<Void, Void, List<Case>> {
+//        private CaseListViewModel model;
+//
+//        LoadCasesTask(CaseListViewModel model) {
+//            this.model = model;
+//        }
+//
+//        @Override
+//        protected List<Case> doInBackground(Void... args) {
+//            return DatabaseHelper.getCaseDao().queryForEq(Case.INVESTIGATION_STATUS, model.investigationStatus, Case.REPORT_DATE, false);
+//        }
+//
+//        @Override
+//        protected void onPostExecute(List<Case> data) {
+//            model.cases.setValue(data);
+//        }
+//    }
 
 }

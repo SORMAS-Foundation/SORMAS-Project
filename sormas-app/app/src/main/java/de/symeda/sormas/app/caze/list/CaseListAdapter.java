@@ -18,7 +18,6 @@
 
 package de.symeda.sormas.app.caze.list;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -32,13 +31,13 @@ import androidx.core.content.ContextCompat;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
-import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
+import de.symeda.sormas.app.core.adapter.databinding.BasePagedDataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.ISetOnListItemClickListener;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.core.adapter.databinding.PagedDataBoundViewHolder;
 import de.symeda.sormas.app.databinding.RowCaseListItemLayoutBinding;
 
-public class CaseListAdapter extends DataBoundAdapter<RowCaseListItemLayoutBinding> implements ISetOnListItemClickListener {
+public class CaseListAdapter extends BasePagedDataBoundAdapter<Case, RowCaseListItemLayoutBinding> implements ISetOnListItemClickListener {
 
     private List<Case> data;
     private OnListItemClickListener mOnListItemClickListener;
@@ -49,7 +48,7 @@ public class CaseListAdapter extends DataBoundAdapter<RowCaseListItemLayoutBindi
     }
 
     @Override
-    protected void bindItem(DataBoundViewHolder<RowCaseListItemLayoutBinding> holder,
+    protected void bindItem(PagedDataBoundViewHolder<RowCaseListItemLayoutBinding> holder,
                             int position, List<Object> payloads) {
         Case record = data.get(position);
         holder.setData(record);

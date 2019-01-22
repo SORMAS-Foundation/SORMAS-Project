@@ -26,19 +26,21 @@ import android.widget.AdapterView;
 import java.util.List;
 import java.util.Random;
 
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.paging.PagedList;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListFragment;
+import de.symeda.sormas.app.PagedBaseListActivity;
+import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 
-public class CaseListActivity extends BaseListActivity {
+public class CaseListActivity extends PagedBaseListActivity {
 
     private InvestigationStatus statusFilters[] = new InvestigationStatus[]{InvestigationStatus.PENDING, InvestigationStatus.DONE, InvestigationStatus.DISCARDED};
     private CaseListViewModel model;
@@ -54,14 +56,15 @@ public class CaseListActivity extends BaseListActivity {
         showPreloader();
         adapter = new CaseListAdapter(R.layout.row_case_list_item_layout);
         model = ViewModelProviders.of(this).get(CaseListViewModel.class);
-        model.getCases().observe(this, cases -> {
-            ((CaseListAdapter) adapter).replaceAll(cases);
+        model.getCasesLiveData().observe(this, cases -> {
+            adapter.submitList(cases);
+//            ((CaseListAdapter) adapter).replaceAll(cases);
             hidePreloader();
         });
-        setOpenPageCallback(p -> {
-            showPreloader();
-            model.setInvestigationStatusAndReload(statusFilters[p.getKey()]);
-        });
+//        setOpenPageCallback(p -> {
+//            showPreloader();
+//            model.setInvestigationStatusAndReload(statusFilters[p.getKey()]);
+//        });
     }
 
     @Override
@@ -77,7 +80,7 @@ public class CaseListActivity extends BaseListActivity {
     }
 
     @Override
-    protected BaseListFragment buildListFragment(PageMenuItem menuItem) {
+    protected PagedBaseListFragment buildListFragment(PageMenuItem menuItem) {
         if (menuItem != null) {
             InvestigationStatus listFilter = statusFilters[menuItem.getKey()];
             return CaseListFragment.newInstance(listFilter);

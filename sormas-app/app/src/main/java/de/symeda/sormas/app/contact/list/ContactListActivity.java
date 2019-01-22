@@ -33,7 +33,6 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.caze.list.CaseListAdapter;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 
 public class ContactListActivity extends BaseListActivity {
