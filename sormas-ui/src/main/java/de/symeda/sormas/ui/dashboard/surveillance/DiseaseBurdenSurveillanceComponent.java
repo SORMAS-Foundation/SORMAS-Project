@@ -20,44 +20,90 @@ package de.symeda.sormas.ui.dashboard.surveillance;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Stream;
 
+import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.disease.DiseaseBurdenDto;
+import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.task.DashboardTaskDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
+import de.symeda.sormas.ui.dashboard.DiseaseBurdenGrid;
 import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class DiseaseBurdenSurveillanceComponent extends AbstractEpiCurveComponent {
+public class DiseaseBurdenSurveillanceComponent extends VerticalLayout {
 
 	private static final long serialVersionUID = 6582975657305031105L;
 
-	private EpiCurveSurveillanceMode epiCurveSurveillanceMode;
+	private DashboardDataProvider dashboardDataProvider;
+	private DiseaseBurdenGrid grid;
 	
 	public DiseaseBurdenSurveillanceComponent(DashboardDataProvider dashboardDataProvider) {
-		super(dashboardDataProvider);
+		this.dashboardDataProvider = dashboardDataProvider;
+		
+		Label title = new Label("Disease Burden Information");
+		CssStyles.style(title, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+
+		grid = new DiseaseBurdenGrid();
+		grid.setHeightMode(HeightMode.UNDEFINED);
+		
+		//layout
+		setWidth(100, Unit.PERCENTAGE);
+		setHeight(400, Unit.PIXELS);
+		
+		addComponent(title);
+		addComponent(grid);
+		setMargin(true);
+		setSpacing(false);
+		setSizeFull();
+		setExpandRatio(grid, 1);
 	}
 
-	@Override
-	protected OptionGroup createEpiCurveModeSelector() {
-		OptionGroup epiCurveModeOptionGroup = new OptionGroup();
-		return epiCurveModeOptionGroup;
-	}
-	
-	@Override
-	public void clearAndFillEpiCurveChart() {
-		StringBuilder hcjs = new StringBuilder();
-
-		epiCurveChart.setHcjs(hcjs.toString());	
+	public void refresh() {
+		List<DashboardCaseDto> cases = dashboardDataProvider.getCases();
+		List<DashboardCaseDto> previousCases = dashboardDataProvider.getPreviousCases();
+		List<DashboardEventDto> events = dashboardDataProvider.getEvents();
+		
+		List<DiseaseBurdenDto> diseasesBurden = new ArrayList<>();
+		
+		//build diseases burden
+		for (Disease disease : Disease.values()) {
+			DiseaseBurdenDto diseaseBurden = new DiseaseBurdenDto(disease);
+			
+			Stream<DashboardCaseDto> _cases = cases.stream().filter(c -> c.getDisease() == diseaseBurden.getDisease());
+			diseaseBurden.setCaseCount(_cases.count());
+			diseaseBurden.setOutbreakDistrictCount(0L);
+			diseaseBurden.setCaseDeathCount(cases.stream().filter(c -> c.getCauseOfDeathDisease() != null).count());
+			
+			_cases = previousCases.stream().filter(c -> c.getDisease() == diseaseBurden.getDisease());
+			diseaseBurden.setPreviousCaseCount(_cases.count());
+			
+			Stream<DashboardEventDto> _events = events.stream().filter(e -> e.getDisease() == diseaseBurden.getDisease());
+			diseaseBurden.setEventCount(_events.count());
+			
+			diseasesBurden.add(diseaseBurden);
+		}
+		
+		grid.reload(diseasesBurden);
 	}
 }

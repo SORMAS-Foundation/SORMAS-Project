@@ -17,7 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
@@ -51,40 +53,12 @@ public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
 	private int week;
 	private int year;
 
-	private final class WeeklyReportGridCellStyleGenerator implements CellStyleGenerator {
-		@Override
-		public String getStyle(CellReference cell) {
-			String css;
-			if (WeeklyReportOfficerSummaryDto.INFORMANTS.equals(cell.getPropertyId())
-					|| WeeklyReportOfficerSummaryDto.INFORMANT_REPORTS.equals(cell.getPropertyId())
-					|| WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE.equals(cell.getPropertyId())
-					|| WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS.equals(cell.getPropertyId())) {
-				css = CssStyles.GRID_CELL_ODD;
-			} else {
-				css = "";
-			}
-				
-			if (WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE.equals(cell.getPropertyId())) {
-				Integer reportPercentage = (Integer) cell.getProperty().getValue();
-				if (reportPercentage >= 90) {
-					css += " " + CssStyles.GRID_CELL_PRIORITY_LOW;
-				} else if (reportPercentage >= 60) {
-					css += " " + CssStyles.GRID_CELL_PRIORITY_NORMAL;
-				} else {
-					css += " " + CssStyles.GRID_CELL_PRIORITY_HIGH;
-				}
-			}
-			return css;
-		}
-	}
-
 	public DiseaseBurdenGrid() {
 		setSizeFull();
 
 		BeanItemContainer<DiseaseBurdenDto> container = new BeanItemContainer<DiseaseBurdenDto>(
 				DiseaseBurdenDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
-//		VaadinUiUtil.addIconColumn(generatedContainer, VIEW_DETAILS_BTN_ID, FontAwesome.EYE);
 		setContainerDataSource(generatedContainer);
 
 		setColumns(/*VIEW_DETAILS_BTN_ID, */
@@ -105,21 +79,6 @@ public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
 			}
 		}
 
-//		HeaderRow headerRow = getHeaderRow(0);
-//		headerRow.getCell(WeeklyReportOfficerSummaryDto.INFORMANTS).setStyleName(CssStyles.GRID_CELL_ODD);
-//		headerRow.getCell(WeeklyReportOfficerSummaryDto.INFORMANT_REPORTS).setStyleName(CssStyles.GRID_CELL_ODD);
-//		headerRow.getCell(WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE).setStyleName(CssStyles.GRID_CELL_ODD);
-//		headerRow.getCell(WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS).setStyleName(CssStyles.GRID_CELL_ODD);
-//
-//		HeaderRow preHeaderRow = prependHeaderRow();
-//		HeaderCell preHeaderCell = preHeaderRow.join(
-//				WeeklyReportOfficerSummaryDto.INFORMANTS, 
-//				WeeklyReportOfficerSummaryDto.INFORMANT_REPORTS,
-//				WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE,
-//				WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS);
-//		preHeaderCell.setHtml(I18nProperties.getPrefixCaption(WeeklyReportOfficerSummaryDto.I18N_PREFIX, "officerInformants"));
-//		preHeaderCell.setStyleName(CssStyles.GRID_CELL_ODD);
-		
 		//rename columns
 		getColumn(DiseaseBurdenDto.PREVIOUS_CASE_COUNT).setHeaderCaption("PREVIOUS NUMBER OF CASES");
 		getColumn(DiseaseBurdenDto.CASES_DIFFERENCE).setHeaderCaption("DYNAMIC");
@@ -129,14 +88,6 @@ public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
 		
 		//format columns
 		getColumn(DiseaseBurdenDto.CASE_FATALITY_RATE).setRenderer(new PercentageRenderer());
-		
-//		getColumn(VIEW_DETAILS_BTN_ID).setRenderer(new HtmlRenderer());
-//		getColumn(VIEW_DETAILS_BTN_ID).setWidth(60);
-
-//		getColumn(WeeklyReportOfficerSummaryDto.OFFICER_REPORT_DATE).setRenderer(new HtmlRenderer(
-//				I18nProperties.getPrefixCaption(WeeklyReportDto.I18N_PREFIX, "noReport")));
-		
-//		setCellStyleGenerator(new WeeklyReportGridCellStyleGenerator());
 
 		setSelectionMode(SelectionMode.NONE);
 //		addItemClickListener(this);
@@ -150,7 +101,14 @@ public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
 
 	public void reload(List<DiseaseBurdenDto> summaryDtos) {
 		getContainer().removeAllItems();
-		summaryDtos.forEach(s -> getContainer().addItem(s));
+		
+		//sort and filter
+		summaryDtos = summaryDtos.stream()
+								 //.filter((dto) -> dto.hasCount())
+								 .sorted((dto1, dto2) -> (int)(dto2.getCaseCount() - dto1.getCaseCount()))
+								 .collect(Collectors.toList());
+		
+		getContainer().addAll(summaryDtos);
 	}
 
 	@Override

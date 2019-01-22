@@ -42,18 +42,19 @@ public class DiseaseBurdenDto  implements Serializable {
 	private Disease disease;
 	private Long caseCount;
 	private Long previousCaseCount;
-	private Long casesDifference;
+	//private Long casesDifference;
 	private Long eventCount;
 	private Long outbreakDistrictCount;
-	private Float caseFatalityRate;
+	private Long caseDeathCount;
+	//private Float caseFatalityRate;
 	
-	public DiseaseBurdenDto(Disease disease, Long caseCount, Long previousCaseCount, Long eventCount, Long outbreakDistrictCount, Float caseFatalityRate) {
+	public DiseaseBurdenDto(Disease disease, Long caseCount, Long previousCaseCount, Long eventCount, Long outbreakDistrictCount, Long caseDeathCount) {
 		this.disease = disease;
 		this.caseCount = caseCount;
 		this.previousCaseCount = previousCaseCount;
 		this.eventCount = eventCount;
 		this.outbreakDistrictCount = outbreakDistrictCount;
-		this.caseFatalityRate = caseFatalityRate;
+		this.caseDeathCount = caseDeathCount;
 	}
 	
 	public DiseaseBurdenDto(Disease disease, Long caseCount, Long eventCount) {
@@ -62,7 +63,7 @@ public class DiseaseBurdenDto  implements Serializable {
 		this.previousCaseCount = 0L;
 		this.eventCount = eventCount;
 		this.outbreakDistrictCount = 0L;
-		this.caseFatalityRate = 0.00f;
+		this.caseDeathCount = 0L;
 	}
 	
 	public DiseaseBurdenDto(Disease disease, Long caseCount) {
@@ -71,9 +72,17 @@ public class DiseaseBurdenDto  implements Serializable {
 		this.previousCaseCount = 0L;
 		this.eventCount = 0L;
 		this.outbreakDistrictCount = 0L;
-		this.caseFatalityRate = 0.00f;
+		this.caseDeathCount = 0L;
 	}
 	
+	public DiseaseBurdenDto(Disease disease) {
+		this.disease = disease;
+		this.caseCount = 0L;
+		this.previousCaseCount = 0L;
+		this.eventCount = 0L;
+		this.outbreakDistrictCount = 0L;
+		this.caseDeathCount = 0L;
+	}	
 	public Disease getDisease() {
 		return disease;
 	}
@@ -113,10 +122,19 @@ public class DiseaseBurdenDto  implements Serializable {
 		this.outbreakDistrictCount = outbreakDistrictCount;
 	}
 	
-	public Float getCaseFatalityRate() {
-		return caseFatalityRate;
+	public Long getCaseDeathCount() {
+		return caseDeathCount;
 	}
-	public void setCaseFatalityRate(Float caseFatalityRate) {
-		this.caseFatalityRate = caseFatalityRate;
+	public void setCaseDeathCount(Long caseDeathCount) {
+		this.caseDeathCount = caseDeathCount;
+	}
+	
+	public Float getCaseFatalityRate() {
+		return ((float)getCaseDeathCount() / (float)(getCaseCount() == 0 ? 1 : getCaseCount()));
+	}
+
+	
+	public Boolean hasCount () {
+		return (caseCount + previousCaseCount + eventCount + outbreakDistrictCount) > 0;
 	}
 }

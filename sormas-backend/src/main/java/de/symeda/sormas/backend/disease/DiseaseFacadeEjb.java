@@ -62,45 +62,6 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
 	
-	@EJB
-	private EventService eventService;
-	
-	//@Override
-	public Map<RegionDto, Long> getDiseaseBurdenForDashboard_(	
-			RegionReferenceDto regionRef,
-			DistrictReferenceDto districtRef, 
-			Date from, 
-			Date to, 
-			String userUuid) {
-		
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Case> caze = cq.from(Case.class);
-
-		Predicate filter = null;
-//		if (fromDate != null || toDate != null) {
-//			filter = caseService.createActiveCaseFilter(cb, from, fromDate, toDate);
-//		}
-//
-//		if (disease != null) {
-//			Predicate diseaseFilter = cb.equal(from.get(Case.DISEASE), disease);
-//			filter = filter != null ? cb.and(filter, diseaseFilter) : diseaseFilter;
-//		}
-//
-//		if (filter != null) {
-//			cq.where(filter);
-//		}
-
-		cq.groupBy(caze.get(Case.DISEASE));
-		cq.multiselect(caze.get(Case.DISEASE), cb.count(caze));
-		List<Object[]> results = em.createQuery(cq).getResultList();
-
-		Map<RegionDto, Long> resultMap = results.stream()
-				.collect(Collectors.toMap(e -> RegionFacadeEjb.toDto((Region) e[0]), e -> (Long) e[1]));
-		
-		return resultMap;
-	}
-		
 	//@Override
 	public List<DiseaseBurdenDto> getDiseaseBurdenForDashboard(
 			RegionReferenceDto regionRef,
@@ -144,7 +105,7 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		
 		List<DiseaseBurdenDto> cases = em.createQuery(cq).getResultList();
 		
-		//previous cases cases
+		//previous cases
 		caze = cq.from(Case.class);
 		district = caze.join(Case.DISTRICT, JoinType.LEFT);
 		cq.multiselect(caze.get(Case.DISEASE), cb.count(caze), cb.count(district));

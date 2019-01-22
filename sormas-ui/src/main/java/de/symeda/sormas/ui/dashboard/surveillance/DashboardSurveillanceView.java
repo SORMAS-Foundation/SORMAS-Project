@@ -31,9 +31,10 @@ public class DashboardSurveillanceView extends AbstractDashboardView {
 
 		filterLayout.setInfoLabelText("All Dashboard elements that display cases (the 'New Cases' statistics, the Epidemiological Curve and the Case Status Map) use the onset date of the first symptom for the date/epi week filter. If this date is not available, the reception date or date of report is used instead.");
 
-		//diseaseBurdenComponent = new DiseaseBurdenSurveillanceComponent(dashboardDataProvider);
 		
 		// add disease burden and cases
+		diseaseBurdenComponent = new DiseaseBurdenSurveillanceComponent(dashboardDataProvider);
+		
 		diseaseBurdenAndCasesLayout = createDiseaseBurdenAndCasesLayout();
 		dashboardLayout.addComponent(diseaseBurdenAndCasesLayout);
 		dashboardLayout.setExpandRatio(diseaseBurdenAndCasesLayout, 1);

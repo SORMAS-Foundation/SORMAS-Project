@@ -63,7 +63,7 @@ public abstract class AbstractDashboardView extends AbstractView {
 	private VerticalLayout epiCurveLayout;
 	private VerticalLayout mapLayout;
 	protected DiseaseBurdenGrid diseaseBurdenGrid;
-//	protected DiseaseBurdenSurveillanceComponent/*AbstractDiseaseBurdenComponent*/ diseaseBurdenComponent;
+	protected DiseaseBurdenSurveillanceComponent diseaseBurdenComponent;
 	protected HorizontalLayout diseaseBurdenAndCasesLayout;
 	private VerticalLayout diseaseBurdenLayout;
 
@@ -216,6 +216,42 @@ public abstract class AbstractDashboardView extends AbstractView {
 	}
 	
 	protected VerticalLayout createDiseaseBurdenLayout() {
+		if (diseaseBurdenComponent == null) {
+			throw new UnsupportedOperationException("DiseaseBurdenComponent needs to be initialized before calling createDiseaseBurdenLayout");
+		}
+		
+		DiseaseBurdenSurveillanceComponent layout = diseaseBurdenComponent;
+//		diseaseBurdenComponent.setSizeFull();
+
+//		DashboardStatisticsSubComponent _epiCurveComponent = new DashboardStatisticsSubComponent();
+//		_epiCurveComponent.setSizeFull();
+//		_epiCurveComponent.addHeader("Disease Burden Information", null, true);
+//		layout.addComponent(_epiCurveComponent);
+//		layout.setExpandRatio(_epiCurveComponent, 1);
+		
+//		layout.addComponent(diseaseBurdenComponent);
+//		layout.setExpandRatio(diseaseBurdenComponent, 1);
+//
+//		epiCurveComponent.setExpandListener(e -> {
+//			dashboardLayout.removeComponent(statisticsComponent);
+//			epiCurveAndMapLayout.removeComponent(mapLayout);
+//			AbstractDashboardView.this.setHeight(100, Unit.PERCENTAGE);
+//			epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
+//			epiCurveLayout.setSizeFull();			
+//		});
+//
+//		epiCurveComponent.setCollapseListener(e -> {
+//			dashboardLayout.addComponent(statisticsComponent, 1);
+//			epiCurveAndMapLayout.addComponent(mapLayout, 1);
+//			epiCurveLayout.setHeight(400, Unit.PIXELS);
+//			AbstractDashboardView.this.setHeightUndefined();
+//			epiCurveAndMapLayout.setHeightUndefined();
+//		});
+
+		return layout;
+	}
+	
+	protected VerticalLayout createDiseaseBurdenLayout_old() {
 //		if (diseaseBurdenComponent == null) {
 //			throw new UnsupportedOperationException("DiseaseBurdenComponent needs to be initialized before calling createDiseaseBurdenLayout");
 //		}
@@ -318,8 +354,8 @@ public abstract class AbstractDashboardView extends AbstractView {
 		// Epi curve chart has to be created again due to a canvas resizing issue when simply refreshing the component
 		epiCurveComponent.clearAndFillEpiCurveChart();
 		
-		diseaseBurdenGrid.reload(dashboardDataProvider.getDiseasesBurden());
-		// diseaseBurdenComponent.clearAndFillEpiCurveChart();
+		diseaseBurdenComponent.refresh();
+		//diseaseBurdenGrid.reload(dashboardDataProvider.getDiseasesBurden());
 	}
 
 	@Override
