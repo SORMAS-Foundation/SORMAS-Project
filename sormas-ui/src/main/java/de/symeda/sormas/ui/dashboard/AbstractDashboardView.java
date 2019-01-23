@@ -40,6 +40,7 @@ import de.symeda.sormas.ui.dashboard.statistics.AbstractDashboardStatisticsCompo
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsSubComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.DashboardSurveillanceView;
 import de.symeda.sormas.ui.dashboard.surveillance.DiseaseBurdenSurveillanceComponent;
+import de.symeda.sormas.ui.dashboard.surveillance.DiseaseDifferenceSurveillanceComponent;
 import de.symeda.sormas.ui.reports.WeeklyReportOfficersGrid;
 import de.symeda.sormas.ui.reports.WeeklyReportRegionsGrid;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -62,10 +63,12 @@ public abstract class AbstractDashboardView extends AbstractView {
 	protected HorizontalLayout epiCurveAndMapLayout;
 	private VerticalLayout epiCurveLayout;
 	private VerticalLayout mapLayout;
-	protected DiseaseBurdenGrid diseaseBurdenGrid;
+//	protected DiseaseBurdenGrid diseaseBurdenGrid;
 	protected DiseaseBurdenSurveillanceComponent diseaseBurdenComponent;
+	protected DiseaseDifferenceSurveillanceComponent diseaseDifferenceComponent;
 	protected HorizontalLayout diseaseBurdenAndCasesLayout;
 	private VerticalLayout diseaseBurdenLayout;
+	private VerticalLayout diseaseDifferenceLayout;
 
 	protected AbstractDashboardView(String viewName, DashboardType dashboardType) {
 		super(viewName);	
@@ -204,13 +207,11 @@ public abstract class AbstractDashboardView extends AbstractView {
 		layout.setWidth(100, Unit.PERCENTAGE);
 		layout.setMargin(false);
 
-		// Epi curve layout
 		diseaseBurdenLayout = createDiseaseBurdenLayout();
 		layout.addComponent(diseaseBurdenLayout);
 
-		// Map layout	
-		VerticalLayout _mapLayout = createCasesLayout();
-		layout.addComponent(_mapLayout);
+		diseaseDifferenceLayout = createDiseaseDifferenceLayout();
+		layout.addComponent(diseaseDifferenceLayout);
 
 		return layout;
 	}
@@ -221,124 +222,17 @@ public abstract class AbstractDashboardView extends AbstractView {
 		}
 		
 		DiseaseBurdenSurveillanceComponent layout = diseaseBurdenComponent;
-//		diseaseBurdenComponent.setSizeFull();
-
-//		DashboardStatisticsSubComponent _epiCurveComponent = new DashboardStatisticsSubComponent();
-//		_epiCurveComponent.setSizeFull();
-//		_epiCurveComponent.addHeader("Disease Burden Information", null, true);
-//		layout.addComponent(_epiCurveComponent);
-//		layout.setExpandRatio(_epiCurveComponent, 1);
-		
-//		layout.addComponent(diseaseBurdenComponent);
-//		layout.setExpandRatio(diseaseBurdenComponent, 1);
-//
-//		epiCurveComponent.setExpandListener(e -> {
-//			dashboardLayout.removeComponent(statisticsComponent);
-//			epiCurveAndMapLayout.removeComponent(mapLayout);
-//			AbstractDashboardView.this.setHeight(100, Unit.PERCENTAGE);
-//			epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
-//			epiCurveLayout.setSizeFull();			
-//		});
-//
-//		epiCurveComponent.setCollapseListener(e -> {
-//			dashboardLayout.addComponent(statisticsComponent, 1);
-//			epiCurveAndMapLayout.addComponent(mapLayout, 1);
-//			epiCurveLayout.setHeight(400, Unit.PIXELS);
-//			AbstractDashboardView.this.setHeightUndefined();
-//			epiCurveAndMapLayout.setHeightUndefined();
-//		});
-
-		return layout;
-	}
-	
-	protected VerticalLayout createDiseaseBurdenLayout_old() {
-//		if (diseaseBurdenComponent == null) {
-//			throw new UnsupportedOperationException("DiseaseBurdenComponent needs to be initialized before calling createDiseaseBurdenLayout");
-//		}
-		
-		Label title = new Label("Disease Burden Information");
-		CssStyles.style(title, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
-
-		diseaseBurdenGrid = new DiseaseBurdenGrid();
-		diseaseBurdenGrid.setHeightMode(HeightMode.UNDEFINED);
-		
-		//layout
-		VerticalLayout layout = new VerticalLayout();
-		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setHeight(400, Unit.PIXELS);
-		
-		layout.addComponent(title);
-		layout.addComponent(diseaseBurdenGrid);
-		layout.setMargin(true);
-		layout.setSpacing(false);
-		layout.setSizeFull();
-		layout.setExpandRatio(diseaseBurdenGrid, 1);
-
-//		diseaseBurdenComponent.setSizeFull();
-
-//		DashboardStatisticsSubComponent _epiCurveComponent = new DashboardStatisticsSubComponent();
-//		_epiCurveComponent.setSizeFull();
-//		_epiCurveComponent.addHeader("Disease Burden Information", null, true);
-//		layout.addComponent(_epiCurveComponent);
-//		layout.setExpandRatio(_epiCurveComponent, 1);
-		
-//		layout.addComponent(diseaseBurdenComponent);
-//		layout.setExpandRatio(diseaseBurdenComponent, 1);
-//
-//		epiCurveComponent.setExpandListener(e -> {
-//			dashboardLayout.removeComponent(statisticsComponent);
-//			epiCurveAndMapLayout.removeComponent(mapLayout);
-//			AbstractDashboardView.this.setHeight(100, Unit.PERCENTAGE);
-//			epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
-//			epiCurveLayout.setSizeFull();			
-//		});
-//
-//		epiCurveComponent.setCollapseListener(e -> {
-//			dashboardLayout.addComponent(statisticsComponent, 1);
-//			epiCurveAndMapLayout.addComponent(mapLayout, 1);
-//			epiCurveLayout.setHeight(400, Unit.PIXELS);
-//			AbstractDashboardView.this.setHeightUndefined();
-//			epiCurveAndMapLayout.setHeightUndefined();
-//		});
 
 		return layout;
 	}
 
-	protected VerticalLayout createCasesLayout() {
-//		if (mapComponent == null) {
-//			throw new UnsupportedOperationException("MapComponent needs to be initialized before calling createMapLayout");
-//		}
-		VerticalLayout layout = new VerticalLayout();
-		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setHeight(400, Unit.PIXELS);
-
-//		mapComponent.setSizeFull();
+	protected VerticalLayout createDiseaseDifferenceLayout() {
+		if (diseaseDifferenceComponent == null) {
+			throw new UnsupportedOperationException("DiseaseDifferenceComponent needs to be initialized before calling createDiseaseDifferenceLayout");
+		}
 		
-		DashboardStatisticsSubComponent _mapComponent = new DashboardStatisticsSubComponent();
-		_mapComponent.setSizeFull();
-		_mapComponent.addHeader("Difference in number of cases", null, true);
-		layout.addComponent(_mapComponent);
-		layout.setExpandRatio(_mapComponent, 1);
-
-//		layout.addComponent(mapComponent);
-//		layout.setExpandRatio(mapComponent, 1);
-//
-//		mapComponent.setExpandListener(e -> {
-//			dashboardLayout.removeComponent(statisticsComponent);
-//			epiCurveAndMapLayout.removeComponent(epiCurveLayout);
-//			AbstractDashboardView.this.setHeight(100, Unit.PERCENTAGE);
-//			epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
-//			mapLayout.setSizeFull();
-//		});
-//
-//		mapComponent.setCollapseListener(e -> {
-//			dashboardLayout.addComponent(statisticsComponent, 1);
-//			epiCurveAndMapLayout.addComponent(epiCurveLayout, 0);
-//			mapLayout.setHeight(400, Unit.PIXELS);
-//			AbstractDashboardView.this.setHeightUndefined();
-//			epiCurveAndMapLayout.setHeightUndefined();
-//		});
-
+		DiseaseDifferenceSurveillanceComponent layout = diseaseDifferenceComponent;
+		
 		return layout;
 	}
 
@@ -355,7 +249,7 @@ public abstract class AbstractDashboardView extends AbstractView {
 		epiCurveComponent.clearAndFillEpiCurveChart();
 		
 		diseaseBurdenComponent.refresh();
-		//diseaseBurdenGrid.reload(dashboardDataProvider.getDiseasesBurden());
+		diseaseDifferenceComponent.refresh();
 	}
 
 	@Override

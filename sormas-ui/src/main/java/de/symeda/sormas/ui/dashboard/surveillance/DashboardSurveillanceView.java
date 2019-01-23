@@ -34,6 +34,7 @@ public class DashboardSurveillanceView extends AbstractDashboardView {
 		
 		// add disease burden and cases
 		diseaseBurdenComponent = new DiseaseBurdenSurveillanceComponent(dashboardDataProvider);
+		diseaseDifferenceComponent = new DiseaseDifferenceSurveillanceComponent(dashboardDataProvider);
 		
 		diseaseBurdenAndCasesLayout = createDiseaseBurdenAndCasesLayout();
 		dashboardLayout.addComponent(diseaseBurdenAndCasesLayout);
