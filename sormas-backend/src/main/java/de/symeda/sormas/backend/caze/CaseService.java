@@ -45,6 +45,7 @@ import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -249,6 +250,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		Root<Case> caze = cq.from(getElementClass());
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
+		Join<Case, District> cazeDistrict = caze.join(Case.DISTRICT, JoinType.LEFT);
 
 		Predicate filter = createUserFilter(cb, cq, caze, user);
 
@@ -298,7 +300,8 @@ public class CaseService extends AbstractAdoService<Case> {
 					caze.get(Case.DISEASE),
 					caze.get(Case.INVESTIGATION_STATUS),
 					person.get(Person.PRESENT_CONDITION),
-					person.get(Person.CAUSE_OF_DEATH_DISEASE)
+					person.get(Person.CAUSE_OF_DEATH_DISEASE),
+					cazeDistrict.get(District.UUID)
 					);
 
 			result = em.createQuery(cq).getResultList();

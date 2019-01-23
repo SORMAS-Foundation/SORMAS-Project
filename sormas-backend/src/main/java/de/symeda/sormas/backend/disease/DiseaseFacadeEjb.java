@@ -205,7 +205,6 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 			return dateFromFilter != null ? dateFromFilter : dateToFilter != null ? dateToFilter : null;
 		}
 	}
-
 	
 	@LocalBean
 	@Stateless

@@ -19,15 +19,19 @@ package de.symeda.sormas.ui.dashboard;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
+import com.vaadin.data.util.converter.StringToIntegerConverter;
+import com.vaadin.data.util.converter.StringToLongConverter;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.renderers.HtmlRenderer;
@@ -56,19 +60,14 @@ public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
 	public DiseaseBurdenGrid() {
 		setSizeFull();
 
-		BeanItemContainer<DiseaseBurdenDto> container = new BeanItemContainer<DiseaseBurdenDto>(
-				DiseaseBurdenDto.class);
+		BeanItemContainer<DiseaseBurdenDto> container = new BeanItemContainer<DiseaseBurdenDto>(DiseaseBurdenDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		setContainerDataSource(generatedContainer);
 
-		setColumns(/*VIEW_DETAILS_BTN_ID, */
-				DiseaseBurdenDto.DISEASE,
-				DiseaseBurdenDto.CASE_COUNT,
-				DiseaseBurdenDto.PREVIOUS_CASE_COUNT, 
-				DiseaseBurdenDto.CASES_DIFFERENCE, 
-				DiseaseBurdenDto.EVENT_COUNT, 
-				DiseaseBurdenDto.OUTBREAK_DISTRICT_COUNT,
-				DiseaseBurdenDto.CASE_FATALITY_RATE);
+		setColumns(/* VIEW_DETAILS_BTN_ID, */
+				DiseaseBurdenDto.DISEASE, DiseaseBurdenDto.CASE_COUNT, DiseaseBurdenDto.PREVIOUS_CASE_COUNT,
+				DiseaseBurdenDto.CASES_DIFFERENCE, DiseaseBurdenDto.EVENT_COUNT,
+				DiseaseBurdenDto.OUTBREAK_DISTRICT_COUNT, DiseaseBurdenDto.CASE_FATALITY_RATE);
 
 		for (Column column : getColumns()) {
 			if (column.getPropertyId().equals(VIEW_DETAILS_BTN_ID)) {
@@ -79,16 +78,55 @@ public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
 			}
 		}
 
-		//rename columns
+		// rename columns
 		getColumn(DiseaseBurdenDto.PREVIOUS_CASE_COUNT).setHeaderCaption("PREVIOUS NUMBER OF CASES");
 		getColumn(DiseaseBurdenDto.CASES_DIFFERENCE).setHeaderCaption("DYNAMIC");
 		getColumn(DiseaseBurdenDto.EVENT_COUNT).setHeaderCaption("NUMBER OF EVENTS");
 		getColumn(DiseaseBurdenDto.OUTBREAK_DISTRICT_COUNT).setHeaderCaption("OUTBREAK DISTRICTS");
 		getColumn(DiseaseBurdenDto.CASE_FATALITY_RATE).setHeaderCaption("CFR");
-		
-		//format columns
+
+		// format columns
 		getColumn(DiseaseBurdenDto.CASE_FATALITY_RATE).setRenderer(new PercentageRenderer());
 
+		// format casesGrowth column with chevrons
+		getColumn(DiseaseBurdenDto.CASES_DIFFERENCE)
+			.setConverter(new StringToLongConverter() {
+				@Override
+				public String convertToPresentation(Long value, Class<? extends String> targetType, Locale locale)
+						throws ConversionException {
+	
+					String stringRepresentation = super.convertToPresentation(value, targetType, locale);
+					String chevronType = "";
+					String criticalLevel = "";
+	
+					if (value > 0) {
+						chevronType = FontAwesome.CHEVRON_UP.getHtml();
+						criticalLevel = CssStyles.LABEL_CRITICAL;
+					} else if (value < 0) {
+						chevronType = FontAwesome.CHEVRON_DOWN.getHtml();
+						criticalLevel = CssStyles.LABEL_POSITIVE;
+					} else {
+						chevronType = FontAwesome.CHEVRON_RIGHT.getHtml();
+						criticalLevel = CssStyles.LABEL_IMPORTANT;
+					}
+					
+//					Label growthLabel = new Label(chevronType);
+//					CssStyles.style(growthLabel, criticalLevel);
+//					return growthLabel;
+	
+					stringRepresentation = 
+						"<div class=\"v-label v-widget " + criticalLevel + " v-label-" + criticalLevel + " align-center v-label-align-center bold v-label-bold large v-label-large v-has-width\" " +
+						"	  style=\"width: 15px;\">" +
+						"		<span class=\"v-icon\" style=\"font-family: FontAwesome;\">" + 
+									chevronType + 
+						"		</span>" + 
+						"</div>";
+					
+					return stringRepresentation;
+				}
+			})
+			.setRenderer(new HtmlRenderer());
+		
 		setSelectionMode(SelectionMode.NONE);
 //		addItemClickListener(this);
 	}
@@ -101,14 +139,16 @@ public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
 
 	public void reload(List<DiseaseBurdenDto> summaryDtos) {
 		getContainer().removeAllItems();
+
+		// sort and filter
+		List<DiseaseBurdenDto> list = summaryDtos.stream().filter((dto) -> dto.hasCount())
+				.sorted((dto1, dto2) -> (int) (dto2.getCaseCount() - dto1.getCaseCount())).collect(Collectors.toList());
+
+		//show at least 3 items
+		if (list.size() < 3) 
+			list = summaryDtos.stream().limit(3L).collect(Collectors.toList());
 		
-		//sort and filter
-		summaryDtos = summaryDtos.stream()
-								 //.filter((dto) -> dto.hasCount())
-								 .sorted((dto1, dto2) -> (int)(dto2.getCaseCount() - dto1.getCaseCount()))
-								 .collect(Collectors.toList());
-		
-		getContainer().addAll(summaryDtos);
+		getContainer().addAll(list);
 	}
 
 	@Override

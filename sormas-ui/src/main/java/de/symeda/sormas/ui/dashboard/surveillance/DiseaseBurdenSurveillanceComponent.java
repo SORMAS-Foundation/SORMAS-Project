@@ -19,11 +19,13 @@ package de.symeda.sormas.ui.dashboard.surveillance;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.vaadin.server.Sizeable.Unit;
@@ -90,16 +92,16 @@ public class DiseaseBurdenSurveillanceComponent extends VerticalLayout {
 		for (Disease disease : Disease.values()) {
 			DiseaseBurdenDto diseaseBurden = new DiseaseBurdenDto(disease);
 			
-			Stream<DashboardCaseDto> _cases = cases.stream().filter(c -> c.getDisease() == diseaseBurden.getDisease());
-			diseaseBurden.setCaseCount(_cases.count());
-			diseaseBurden.setOutbreakDistrictCount(0L);
-			diseaseBurden.setCaseDeathCount(cases.stream().filter(c -> c.getCauseOfDeathDisease() != null).count());
+			List<DashboardCaseDto> _cases = cases.stream().filter(c -> c.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());
+			diseaseBurden.setCaseCount(Long.valueOf(_cases.size()));
+			diseaseBurden.setOutbreakDistrictCount(_cases.stream().map((c) -> c.getDistrictUuid()).distinct().count());
+			diseaseBurden.setCaseDeathCount(_cases.stream().filter(c -> c.getCauseOfDeathDisease() != null).count());
 			
-			_cases = previousCases.stream().filter(c -> c.getDisease() == diseaseBurden.getDisease());
-			diseaseBurden.setPreviousCaseCount(_cases.count());
+			_cases = previousCases.stream().filter(c -> c.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());
+			diseaseBurden.setPreviousCaseCount(Long.valueOf(_cases.size()));
 			
-			Stream<DashboardEventDto> _events = events.stream().filter(e -> e.getDisease() == diseaseBurden.getDisease());
-			diseaseBurden.setEventCount(_events.count());
+			List<DashboardEventDto> _events = events.stream().filter(e -> e.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());
+			diseaseBurden.setEventCount(Long.valueOf(_events.size()));
 			
 			diseasesBurden.add(diseaseBurden);
 		}
