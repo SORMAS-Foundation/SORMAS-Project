@@ -94,7 +94,7 @@ public class DiseaseBurdenSurveillanceComponent extends VerticalLayout {
 			
 			List<DashboardCaseDto> _cases = cases.stream().filter(c -> c.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());
 			diseaseBurden.setCaseCount(Long.valueOf(_cases.size()));
-			diseaseBurden.setOutbreakDistrictCount(_cases.stream().map((c) -> c.getDistrictUuid()).distinct().count());
+			diseaseBurden.setOutbreakDistrictCount(_cases.stream().map((c) -> c.getDistrict().getUuid()).distinct().count());
 			diseaseBurden.setCaseDeathCount(_cases.stream().filter(c -> c.getCauseOfDeathDisease() != null).count());
 			
 			_cases = previousCases.stream().filter(c -> c.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());

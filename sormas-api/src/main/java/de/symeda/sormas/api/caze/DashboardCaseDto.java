@@ -22,6 +22,8 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 
 public class DashboardCaseDto implements Serializable {
 
@@ -37,7 +39,7 @@ public class DashboardCaseDto implements Serializable {
 	private InvestigationStatus investigationStatus;
 	private PresentCondition casePersonCondition;
 	private Disease causeOfDeathDisease;
-	private String districtUuid;
+	private DistrictReferenceDto district;
 	
 	public DashboardCaseDto(Date reportDate, Date onsetDate, Date receptionDate, CaseClassification caseClassification, Disease disease, 
 			InvestigationStatus investigationStatus, PresentCondition casePersonCondition, Disease causeOfDeathDisease, String districtUuid) {
@@ -49,7 +51,7 @@ public class DashboardCaseDto implements Serializable {
 		this.investigationStatus = investigationStatus;
 		this.casePersonCondition = casePersonCondition;
 		this.causeOfDeathDisease = causeOfDeathDisease;
-		this.districtUuid = districtUuid;
+		this.district = new DistrictReferenceDto(districtUuid);
 	}
 	
 	public Date getReportDate() {
@@ -101,12 +103,12 @@ public class DashboardCaseDto implements Serializable {
 		this.causeOfDeathDisease = causeOfDeathDisease;
 	}
 
-	public String getDistrictUuid() {
-		return districtUuid;
+	public DistrictReferenceDto getDistrict() {
+		return district;
 	}
 
-	public void setDistrict(String districtUuid) {
-		this.districtUuid = districtUuid;
+	public void setDistrict(DistrictReferenceDto district) {
+		this.district = district;
 	}
 	
 }
