@@ -64,7 +64,7 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 	public DiseaseDifferenceSurveillanceComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
 		
-		Label title = new Label("Disease Burden Information");
+		Label title = new Label("Difference in number of cases");
 		CssStyles.style(title, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 
 		chart = new HighChart();
@@ -123,7 +123,7 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 						+ "},"
 						+ "credits:{ enabled: false },"
 						+ "exporting:{ "
-						+ " enabled: true,"
+						+ " enabled: false,"
 						+ " buttons:{ contextButton:{ theme:{ fill: 'transparent' } } }"
 						+ "},"
 						+ "title:{ text: '' },"
@@ -145,8 +145,8 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 				+ "enabled: true, formatter: function() { if (this.y > 0) return this.y; },"
 				+ "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } } },");
 		
-		Long diff = 10L;
-		//data = data.stream().limit(4).collect(Collectors.toList());
+		Long diff = 5L;
+		data = data.stream().limit(5).collect(Collectors.toList());
 		for (DiseaseBurdenDto s : data) {
 			s.setCaseCount(0L);
 			s.setPreviousCaseCount(0L);

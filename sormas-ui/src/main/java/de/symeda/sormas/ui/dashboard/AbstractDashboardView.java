@@ -206,12 +206,13 @@ public abstract class AbstractDashboardView extends AbstractView {
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.setWidth(100, Unit.PERCENTAGE);
 		layout.setMargin(false);
+		//layout.setHeight(700, Unit.PIXELS);
 
 		diseaseBurdenLayout = createDiseaseBurdenLayout();
 		layout.addComponent(diseaseBurdenLayout);
 
 		diseaseDifferenceLayout = createDiseaseDifferenceLayout();
-		layout.addComponent(diseaseDifferenceLayout);
+		layout.addComponent(diseaseDifferenceLayout);		
 
 		return layout;
 	}
@@ -232,6 +233,7 @@ public abstract class AbstractDashboardView extends AbstractView {
 		}
 		
 		DiseaseDifferenceSurveillanceComponent layout = diseaseDifferenceComponent;
+		layout.setHeight(250, Unit.PIXELS);
 		
 		return layout;
 	}
