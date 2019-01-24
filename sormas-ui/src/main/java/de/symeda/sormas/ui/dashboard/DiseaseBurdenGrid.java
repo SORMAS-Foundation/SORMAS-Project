@@ -142,12 +142,12 @@ public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
 
 		// sort and filter
 		List<DiseaseBurdenDto> list = summaryDtos.stream()
-				.filter((dto) -> dto.hasCount())
+				//.filter((dto) -> dto.hasCount())
 				.sorted((dto1, dto2) -> (int) (dto2.getCaseCount() - dto1.getCaseCount())).collect(Collectors.toList());
 
 		//show at least 3 items
-		if (list.size() < 3) 
-			list = summaryDtos.stream().limit(3L).collect(Collectors.toList());
+		if (list.size() > 7) 
+			list = summaryDtos.stream().limit(7L).collect(Collectors.toList());
 		
 		getContainer().addAll(list);
 	}

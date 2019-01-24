@@ -38,19 +38,27 @@ public class DashboardSurveillanceView extends AbstractDashboardView {
 		
 		diseaseBurdenAndCasesLayout = createDiseaseBurdenAndCasesLayout();
 		dashboardLayout.addComponent(diseaseBurdenAndCasesLayout);
-		dashboardLayout.setExpandRatio(diseaseBurdenAndCasesLayout, 1);
+		//dashboardLayout.setExpandRatio(diseaseBurdenAndCasesLayout, 1);
 		
 		// Add statistics
 		statisticsComponent = new DashboardSurveillanceStatisticsComponent(dashboardDataProvider);
-		dashboardLayout.addComponent(statisticsComponent);
+//		dashboardLayout.addComponent(statisticsComponent);
 
+		// Add epi curve and map
 		epiCurveComponent = new EpiCurveSurveillanceComponent(dashboardDataProvider);
 		mapComponent = new DashboardMapComponent(dashboardDataProvider);
 		
-		// Add epi curve and map
 		epiCurveAndMapLayout = createEpiCurveAndMapLayout();
-		dashboardLayout.addComponent(epiCurveAndMapLayout);
-		dashboardLayout.setExpandRatio(epiCurveAndMapLayout, 1);
+//		dashboardLayout.addComponent(epiCurveAndMapLayout);
+//		dashboardLayout.setExpandRatio(epiCurveAndMapLayout, 1);
+		
+		// Add diseaseCarousel and map
+		diseaseCarouselComponent = new EpiCurveSurveillanceComponent(dashboardDataProvider);
+		//mapComponent = new DashboardMapComponent(dashboardDataProvider);
+		
+		diseaseCarouselAndMapLayout = createDiseaseCarouselAndMapLayout();
+		dashboardLayout.addComponent(diseaseCarouselAndMapLayout);
+		dashboardLayout.setExpandRatio(diseaseCarouselAndMapLayout, 1);
 	}
 
 }

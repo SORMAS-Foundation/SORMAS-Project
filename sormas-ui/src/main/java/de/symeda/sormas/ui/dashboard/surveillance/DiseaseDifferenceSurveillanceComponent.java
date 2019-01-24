@@ -72,7 +72,7 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 		
 		//layout
 		setWidth(100, Unit.PERCENTAGE);
-		setHeight(400, Unit.PIXELS);
+		//setHeight(400, Unit.PIXELS);
 		
 		addComponent(title);
 		addComponent(chart);
@@ -143,10 +143,11 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 				+ "tooltip: { headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'},"
 				+ "plotOptions: { column: { borderWidth: 0, stacking: 'normal', groupPadding: 0, pointPadding: 0, dataLabels: {"
 				+ "enabled: true, formatter: function() { if (this.y > 0) return this.y; },"
-				+ "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } } },");
+				+ "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } }, series: { pointWidth: 20 } },");
 		
-		Long diff = 5L;
-		data = data.stream().limit(5).collect(Collectors.toList());
+		//data mockup: manipulate the data
+		Long diff = 6L;
+		//data = data.stream().limit(5).collect(Collectors.toList());
 		for (DiseaseBurdenDto s : data) {
 			s.setCaseCount(0L);
 			s.setPreviousCaseCount(0L);
