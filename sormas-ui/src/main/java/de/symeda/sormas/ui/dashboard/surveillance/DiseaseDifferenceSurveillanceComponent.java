@@ -43,6 +43,7 @@ import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.DashboardEventDto;
+import de.symeda.sormas.api.outbreak.DashboardOutbreakDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.task.DashboardTaskDto;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -86,6 +87,7 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 		List<DashboardCaseDto> cases = dashboardDataProvider.getCases();
 		List<DashboardCaseDto> previousCases = dashboardDataProvider.getPreviousCases();
 		List<DashboardEventDto> events = dashboardDataProvider.getEvents();
+		List<DashboardOutbreakDto> outbreaks = dashboardDataProvider.getOutbreaks();
 		
 		List<DiseaseBurdenDto> diseasesBurden = new ArrayList<>();
 		
@@ -95,7 +97,6 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 			
 			List<DashboardCaseDto> _cases = cases.stream().filter(c -> c.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());
 			diseaseBurden.setCaseCount(Long.valueOf(_cases.size()));
-			diseaseBurden.setOutbreakDistrictCount(_cases.stream().map((c) -> c.getDistrict().getUuid()).distinct().count());
 			diseaseBurden.setCaseDeathCount(_cases.stream().filter(c -> c.getCauseOfDeathDisease() != null).count());
 			
 			_cases = previousCases.stream().filter(c -> c.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());
@@ -103,6 +104,9 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 			
 			List<DashboardEventDto> _events = events.stream().filter(e -> e.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());
 			diseaseBurden.setEventCount(Long.valueOf(_events.size()));
+			
+			List<DashboardOutbreakDto> _outbreaks = outbreaks.stream().filter(e -> e.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());
+			diseaseBurden.setOutbreakDistrictCount(Long.valueOf(_outbreaks.size()));
 			
 			diseasesBurden.add(diseaseBurden);
 		}
