@@ -28,27 +28,21 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.app.BR;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
-/**
- * Created by Orson on 27/12/2017.
- *
- * @deprecated Use {@link BindingViewHolder}
- */
-@Deprecated
-public class DataBoundViewHolder<T extends ViewDataBinding> extends RecyclerView.ViewHolder implements OnListItemClickListener.HasOnListItemClickListener, View.OnClickListener {
-    public final T binding;
+public class BindingViewHolder<T extends AbstractDomainObject, V extends ViewDataBinding> extends RecyclerView.ViewHolder implements OnListItemClickListener.HasOnListItemClickListener, View.OnClickListener  {
+
+    public final V binding;
     public final View layout;
     public final Context context;
     private OnListItemClickListener mOnListItemClickListener;
-    private Object data;
-    private OnListItemClickListener callback;
+    private T data;
 
-    public DataBoundViewHolder(T binding, View layout) {
+    public BindingViewHolder(V binding, View layout) {
         super(binding.getRoot());
         this.binding = binding;
         this.layout = layout;
         this.context = layout.getContext();
-
         itemView.setOnClickListener(this);
     }
 
@@ -62,15 +56,11 @@ public class DataBoundViewHolder<T extends ViewDataBinding> extends RecyclerView
      * @param <T> The type of the Binding class that will be generated for the <code>layoutId</code>.
      * @return A new ViewHolder that has a reference to the binding class
      */
-    public static <T extends ViewDataBinding> DataBoundViewHolder<T> create(ViewGroup parent,
-                                                                            @LayoutRes int layoutId) {
+    public static <T extends AbstractDomainObject, V extends ViewDataBinding> BindingViewHolder<T,V>
+            create(ViewGroup parent, @LayoutRes int layoutId) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        //View layoutView = inflater.inflate(layoutId, parent, false);
-
-
-
-        T binding = DataBindingUtil.inflate(inflater, layoutId, parent, false);
-        return new DataBoundViewHolder<>(binding, binding.getRoot()); // layoutView);
+        V binding = DataBindingUtil.inflate(inflater, layoutId, parent, false);
+        return new BindingViewHolder<T,V>(binding, binding.getRoot());
     }
 
     @Override
@@ -86,28 +76,8 @@ public class DataBoundViewHolder<T extends ViewDataBinding> extends RecyclerView
         this.mOnListItemClickListener = onListItemClickListener;
     }
 
-    public void setData(Object data) {
+    public void bind(T data) {
         this.data = data;
         this.binding.setVariable(BR.data, data);
     }
-
-    /*@Override
-    public void setOnListItemClickListener(OnListItemClickListener onListItemClickListener) {
-        this.mOnListItemClickListener = onListItemClickListener;
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (this.mOnListItemClickListener != null) {
-            int p = getLayoutPosition();
-            this.mOnListItemClickListener.onListItemClick(v, p, this.data);
-        }
-    }
-
-
-
-    public void setCallback(OnListItemClickListener callback) {
-        this.callback = callback;
-        this.binding.setVariable(BR.callback, callback);
-    }*/
 }

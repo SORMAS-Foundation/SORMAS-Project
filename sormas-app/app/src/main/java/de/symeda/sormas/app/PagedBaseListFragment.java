@@ -34,15 +34,15 @@ import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.util.Bundler;
 
-public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter> extends BaseFragment implements OnListItemClickListener {
+public abstract class PagedBaseListFragment<TListAdapter extends RecyclerView.Adapter> extends BaseFragment implements OnListItemClickListener {
 
     private AsyncTask jobTask;
-    private BaseListActivity baseListActivity;
+    private PagedBaseListActivity baseListActivity;
     private IUpdateSubHeadingTitle subHeadingHandler;
     private TListAdapter adapter;
     private Enum listFilter;
 
-    protected static <TFragment extends BaseListFragment> TFragment newInstance(Class<TFragment> fragmentClass, Bundle data, Enum listFilter) {
+    protected static <TFragment extends PagedBaseListFragment> TFragment newInstance(Class<TFragment> fragmentClass, Bundle data, Enum listFilter) {
         data = new Bundler(data).setListFilter(listFilter).get();
         TFragment fragment = newInstance(fragmentClass, data);
         return fragment;
@@ -65,8 +65,8 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(this.getRootListLayout(), container, false);
 
-        if (getActivity() instanceof BaseListActivity) {
-            this.baseListActivity = (BaseListActivity) this.getActivity();
+        if (getActivity() instanceof PagedBaseListActivity) {
+            this.baseListActivity = (PagedBaseListActivity) this.getActivity();
         } else {
             throw new NotImplementedException("The list activity for fragment must implement BaseListActivity");
         }
@@ -82,7 +82,7 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
         this.adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
-                updateEmptyListHint();
+            updateEmptyListHint();
             }
         });
 
@@ -92,23 +92,6 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
             throw new NotImplementedException("setOnListItemClickListener is not supported by the adapter; " +
                     "implement HasOnListItemClickListener");
         }
-
-//        jobTask = new DefaultAsyncTask(getContext()) {
-//            @Override
-//            public void onPreExecute() {
-//                getBaseActivity().showPreloader();
-//            }
-//
-//            @Override
-//            public void doInBackground(final TaskResultHolder resultHolder) {
-//                prepareFragmentData();
-//            }
-//
-//            @Override
-//            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-//                getBaseActivity().hidePreloader();
-//            }
-//        }.executeOnThreadPool();
 
         return view;
     }

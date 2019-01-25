@@ -18,11 +18,19 @@
 
 package de.symeda.sormas.app.core.adapter.databinding;
 
-/**
- * Created by Orson on 06/12/2017.
- */
+import androidx.recyclerview.widget.RecyclerView;
+import de.symeda.sormas.app.databinding.RowLoadingListItemLayoutBinding;
 
-public interface ISetOnListItemClickListener {
+public class ProgressItemViewHolder extends RecyclerView.ViewHolder {
 
-    void setOnListItemClickListener(OnListItemClickListener onListItemClickListener);
+    private RowLoadingListItemLayoutBinding binding;
+
+    public ProgressItemViewHolder(RowLoadingListItemLayoutBinding binding) {
+        super(binding.getRoot());
+        this.binding = binding;
+    }
+
+    public void setPosition(int position, int totalCount) {
+        binding.positionTextView.setText(position + "/" + totalCount);
+    }
 }

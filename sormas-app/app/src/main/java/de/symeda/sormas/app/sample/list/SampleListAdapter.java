@@ -19,13 +19,7 @@
 package de.symeda.sormas.app.sample.list;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
-import androidx.core.content.ContextCompat;
 import android.view.View;
-import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,11 +31,10 @@ import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
-import de.symeda.sormas.app.core.adapter.databinding.ISetOnListItemClickListener;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.RowSampleListItemLayoutBinding;
 
-public class SampleListAdapter extends DataBoundAdapter<RowSampleListItemLayoutBinding> implements ISetOnListItemClickListener {
+public class SampleListAdapter extends DataBoundAdapter<RowSampleListItemLayoutBinding> implements OnListItemClickListener.HasOnListItemClickListener {
 
     private List<Sample> data;
     private OnListItemClickListener mOnListItemClickListener;

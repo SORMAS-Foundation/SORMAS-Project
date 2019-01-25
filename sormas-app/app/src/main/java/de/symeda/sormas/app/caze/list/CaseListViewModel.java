@@ -18,64 +18,104 @@
 
 package de.symeda.sormas.app.caze.list;
 
-import android.os.AsyncTask;
-
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.paging.DataSource;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
+import androidx.paging.PositionalDataSource;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
 class CaseListViewModel extends ViewModel {
 
-    private MutableLiveData<List<Case>> cases;
-    private InvestigationStatus investigationStatus = InvestigationStatus.PENDING;
+    private LiveData<PagedList<Case>> casesList;
+    private CaseDataFactory caseDataFactory;
 
-    LiveData<List<Case>> getCases() {
-        if (cases == null) {
-            cases = new MutableLiveData<>();
-            loadCases();
-        }
+    public CaseListViewModel() {
 
-        return cases;
+        caseDataFactory = new CaseDataFactory();
+        caseDataFactory.setInvestigationStatus(InvestigationStatus.PENDING);
+        PagedList.Config config = new PagedList.Config.Builder()
+                        .setEnablePlaceholders(true)
+                        .setInitialLoadSizeHint(16)
+                        .setPageSize(8).build();
+
+        LivePagedListBuilder casesListBuilder = new LivePagedListBuilder(caseDataFactory, config);
+        casesList = casesListBuilder.build();
     }
 
-    void setInvestigationStatusAndReload(InvestigationStatus investigationStatus) {
-        if (cases == null) {
-            throw new RuntimeException("Cases must be initialized before calling setInvestigationStatusAndReload");
-        }
-
-        if (this.investigationStatus == investigationStatus) {
-            return;
-        }
-
-        this.investigationStatus = investigationStatus;
-        loadCases();
+    public LiveData<PagedList<Case>> getCases() {
+        return casesList;
     }
 
-    private void loadCases() {
-        new LoadCasesTask(this).execute();
+    public void setInvestigationStatus(InvestigationStatus investigationStatus) {
+        caseDataFactory.setInvestigationStatus(investigationStatus);
+        if (casesList.getValue() != null
+            && casesList.getValue().getDataSource() != null) {
+            casesList.getValue().getDataSource().invalidate();
+        }
     }
 
-    private static class LoadCasesTask extends AsyncTask<Void, Void, List<Case>> {
-        private CaseListViewModel model;
+    public InvestigationStatus getInvestigationStatus() {
+        return caseDataFactory.getInvestigationStatus();
+    }
 
-        LoadCasesTask(CaseListViewModel model) {
-            this.model = model;
+    public static class CaseDataSource extends PositionalDataSource<Case> {
+
+        private InvestigationStatus investigationStatus;
+
+        public CaseDataSource(InvestigationStatus investigationStatus) {
+            this.investigationStatus = investigationStatus;
         }
 
         @Override
-        protected List<Case> doInBackground(Void... args) {
-            return DatabaseHelper.getCaseDao().queryForEq(Case.INVESTIGATION_STATUS, model.investigationStatus, Case.REPORT_DATE, false);
+        public void loadInitial(@NonNull LoadInitialParams params, @NonNull LoadInitialCallback<Case> callback) {
+            long totalCount = DatabaseHelper.getCaseDao().countOfEq(Case.INVESTIGATION_STATUS, investigationStatus);
+            int offset = params.requestedStartPosition;
+            int count = params.requestedLoadSize;
+            if (offset + count > totalCount) {
+                offset = (int)Math.max(0, totalCount - count);
+            }
+            List<Case> cases = DatabaseHelper.getCaseDao().queryForEq(Case.INVESTIGATION_STATUS, investigationStatus, Case.REPORT_DATE, false, offset, count);
+            callback.onResult(cases, offset, (int)totalCount);
         }
 
         @Override
-        protected void onPostExecute(List<Case> data) {
-            model.cases.setValue(data);
+        public void loadRange(@NonNull LoadRangeParams params, @NonNull LoadRangeCallback<Case> callback) {
+            List<Case> cases = DatabaseHelper.getCaseDao().queryForEq(Case.INVESTIGATION_STATUS, investigationStatus, Case.REPORT_DATE, false, params.startPosition, params.loadSize);
+            callback.onResult(cases);
         }
     }
 
+    public static class CaseDataFactory extends DataSource.Factory {
+
+        private MutableLiveData<CaseDataSource> mutableDataSource;
+        private CaseDataSource caseDataSource;
+        private InvestigationStatus investigationStatus;
+
+        public CaseDataFactory() {
+            this.mutableDataSource = new MutableLiveData<>();
+        }
+
+        @Override
+        public DataSource create() {
+            caseDataSource = new CaseDataSource(investigationStatus);
+            mutableDataSource.postValue(caseDataSource);
+            return caseDataSource;
+        }
+
+        public void setInvestigationStatus(InvestigationStatus investigationStatus) {
+            this.investigationStatus = investigationStatus;
+        }
+
+        public InvestigationStatus getInvestigationStatus() {
+            return investigationStatus;
+        }
+    }
 }
