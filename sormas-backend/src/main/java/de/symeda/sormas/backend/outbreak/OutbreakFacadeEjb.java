@@ -25,16 +25,25 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.disease.DiseaseBurdenDto;
+import de.symeda.sormas.api.outbreak.DashboardOutbreakDto;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -188,6 +197,19 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 		target.setReportDate(source.getReportDate());
 
 		return target;
+	}
+	
+	@Override
+	public List<DashboardOutbreakDto> getOutbreaksForDashboard(
+			RegionReferenceDto regionRef,
+			DistrictReferenceDto districtRef, 
+			Date from, 
+			Date to, 
+			String userUuid) {
+		
+		List<DashboardOutbreakDto> result = outbreakService.getOutbreaksForDashboard(regionRef, districtRef, from, to, userUuid);
+
+		return result;
 	}
 
 	@LocalBean

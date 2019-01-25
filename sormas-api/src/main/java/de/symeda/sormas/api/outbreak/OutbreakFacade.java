@@ -23,6 +23,7 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 
@@ -56,4 +57,11 @@ public interface OutbreakFacade {
 	 * @return The ended outbreak or null if none was active
 	 */
 	OutbreakDto endOutbreak(DistrictReferenceDto district, Disease disease);
+	
+	List<DashboardOutbreakDto> getOutbreaksForDashboard(
+			RegionReferenceDto regionRef,
+			DistrictReferenceDto districtRef, 
+			Date from, 
+			Date to, 
+			String userUuid);
 }

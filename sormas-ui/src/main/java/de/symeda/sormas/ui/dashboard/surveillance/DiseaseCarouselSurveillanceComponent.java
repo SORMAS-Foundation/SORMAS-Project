@@ -46,6 +46,8 @@ import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.outbreak.DashboardOutbreakDto;
+import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.SampleTestResultType;
@@ -268,10 +270,10 @@ public class DiseaseCarouselSurveillanceComponent extends VerticalLayout {
 	}
 	
 	private void updateOutbreakDistrictComponent (Disease disease) {
-		List<DashboardTestResultDto> testResults = dashboardDataProvider.getTestResults();
-		testResults = testResults.stream().filter(c -> c.getDisease() == disease).collect(Collectors.toList());
+		List<DashboardOutbreakDto> outbreaks = dashboardDataProvider.getOutbreaks();
+		outbreaks = outbreaks.stream().filter(c -> c.getDisease() == disease).collect(Collectors.toList());
 		
-		outbreakDistrictCountLabel.setValue(Integer.toString(testResults.size()).toString());
+		outbreakDistrictCountLabel.setValue(Integer.toString(outbreaks.size()).toString());
 	}
 	
 	private void updateCaseComponent (Disease disease) {

@@ -27,6 +27,8 @@ import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.contact.DashboardContactDto;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.DashboardEventDto;
+import de.symeda.sormas.api.outbreak.DashboardOutbreakDto;
+import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardSampleDto;
@@ -60,6 +62,7 @@ public class DashboardDataProvider {
 	private List<DashboardContactDto> contacts = new ArrayList<>();
 	private List<DashboardContactDto> previousContacts = new ArrayList<>();
 	private List<DiseaseBurdenDto> diseasesBurden = new ArrayList<>();
+	private List<DashboardOutbreakDto> outbreaks = new ArrayList<>();
 	
 	public void refreshData() {
 		// Update the entities lists according to the filters
@@ -87,7 +90,9 @@ public class DashboardDataProvider {
 		setContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, fromDate, toDate, userUuid));
 		setPreviousContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, previousFromDate, previousToDate, userUuid));
 		// Disease burden
-		setDiseasesBurden(FacadeProvider.getDiseaseFacade().getDiseaseBurdenForDashboard(region, district, fromDate, toDate, userUuid));
+		//setDiseasesBurden(FacadeProvider.getDiseaseFacade().getDiseaseBurdenForDashboard(region, district, fromDate, toDate, userUuid));
+		// Outbreaks
+		setOutbreaks(FacadeProvider.getOutbreakFacade().getOutbreaksForDashboard(region, district, fromDate, toDate, userUuid));
 	}
 
 	public List<DashboardCaseDto> getCases() {
@@ -156,6 +161,19 @@ public class DashboardDataProvider {
 	public void setPreviousContacts(List<DashboardContactDto> previousContacts) {
 		this.previousContacts = previousContacts;
 	}
+	public List<DiseaseBurdenDto> getDiseasesBurden() {
+		return diseasesBurden;
+	}
+	public void setDiseasesBurden(List<DiseaseBurdenDto> diseasesBurden) {
+		this.diseasesBurden = diseasesBurden;
+	}
+	public List<DashboardOutbreakDto> getOutbreaks() {
+		return outbreaks;
+	}
+	public void setOutbreaks(List<DashboardOutbreakDto> outbreaks) {
+		this.outbreaks = outbreaks;
+	}
+	
 	public RegionReferenceDto getRegion() {
 		return region;
 	}
@@ -173,12 +191,6 @@ public class DashboardDataProvider {
 	}
 	public void setDisease(Disease disease) {
 		this.disease = disease;
-	}
-	public List<DiseaseBurdenDto> getDiseasesBurden() {
-		return diseasesBurden;
-	}
-	public void setDiseasesBurden(List<DiseaseBurdenDto> diseasesBurden) {
-		this.diseasesBurden = diseasesBurden;
 	}
 
 	public DateFilterOption getDateFilterOption() {
