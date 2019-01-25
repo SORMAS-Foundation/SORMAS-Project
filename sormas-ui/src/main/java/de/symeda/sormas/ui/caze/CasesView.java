@@ -66,7 +66,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -95,7 +94,6 @@ public class CasesView extends AbstractView {
 	public static final String SEARCH_FIELD = "searchField";
 
 	private CaseCriteria criteria;
-	private boolean applyingCriteria = false;
 	
 	private CaseGrid grid;    
 	private Button createButton;
@@ -139,7 +137,7 @@ public class CasesView extends AbstractView {
 		criteria = ViewModelProviders.of(CasesView.class).get(CaseCriteria.class);
 		
 		grid = new CaseGrid();
-		grid.setFilterCriteria(criteria);
+		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
@@ -227,29 +225,6 @@ public class CasesView extends AbstractView {
 		}
 
 		addComponent(gridLayout);
-		grid.setReloadEnabled(true);
-	}
-
-	private void applyCriteria() {
-		if (applyingCriteria) {
-			return;
-		}
-		applyingCriteria = true;
-
-		String state = getUI().getNavigator().getState();
-		int paramsIndex = state.lastIndexOf('?');
-		if (paramsIndex >= 0) {
-			state = state.substring(0, paramsIndex);
-		}
-		if (state.charAt(state.length()-1) != '/')
-			state += "/";
-		String params = grid.getCriteria().toUrlParams();
-		if (!DataHelper.isNullOrEmpty(params)) {
-			state += "?" + params;
-		}
-		getUI().getNavigator().navigateTo(state);
-		
-		applyingCriteria = false;
 	}
 
 	public VerticalLayout createFilterBar() {
@@ -266,7 +241,7 @@ public class CasesView extends AbstractView {
 			outcomeFilter.addItems((Object[]) CaseOutcome.values());
 			outcomeFilter.addValueChangeListener(e -> {
 				criteria.outcome(((CaseOutcome) e.getProperty().getValue()));
-				applyCriteria();
+				navigateTo(criteria);
 			});
 			firstFilterRowLayout.addComponent(outcomeFilter);
 
@@ -276,7 +251,7 @@ public class CasesView extends AbstractView {
 			diseaseFilter.addItems((Object[])Disease.values());
 			diseaseFilter.addValueChangeListener(e -> {
 				criteria.disease(((Disease)e.getProperty().getValue()));
-				applyCriteria();
+				navigateTo(criteria);
 			});
 			firstFilterRowLayout.addComponent(diseaseFilter);
 
@@ -286,7 +261,7 @@ public class CasesView extends AbstractView {
 			classificationFilter.addItems((Object[])CaseClassification.values());
 			classificationFilter.addValueChangeListener(e -> {
 				criteria.caseClassification(((CaseClassification)e.getProperty().getValue()));
-				applyCriteria();
+				navigateTo(criteria);
 			});
 			firstFilterRowLayout.addComponent(classificationFilter);
 
@@ -296,7 +271,7 @@ public class CasesView extends AbstractView {
 			searchField.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, SEARCH_FIELD));
 			searchField.addTextChangeListener(e -> {
 				criteria.nameUuidEpidNumberLike(e.getText());
-				applyCriteria();
+				navigateTo(criteria);
 			});
 			firstFilterRowLayout.addComponent(searchField);
 
@@ -306,9 +281,7 @@ public class CasesView extends AbstractView {
 			resetButton.setVisible(false);
 			resetButton.addClickListener(event -> {
 				ViewModelProviders.of(CasesView.class).remove(CaseCriteria.class);
-				criteria = ViewModelProviders.of(CasesView.class).get(CaseCriteria.class);
-				grid.setFilterCriteria(criteria);
-				applyCriteria();
+				navigateTo(null);
 			});
 			firstFilterRowLayout.addComponent(resetButton);
 		}
@@ -324,7 +297,7 @@ public class CasesView extends AbstractView {
 			presentConditionFilter.addItems((Object[])PresentCondition.values());
 			presentConditionFilter.addValueChangeListener(e -> {
 				criteria.presentCondition(((PresentCondition)e.getProperty().getValue()));
-				applyCriteria();
+				navigateTo(criteria);
 			});
 			secondFilterRowLayout.addComponent(presentConditionFilter);      
 
@@ -338,7 +311,7 @@ public class CasesView extends AbstractView {
 				regionFilter.addValueChangeListener(e -> {
 					RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
 					criteria.region(region);
-					applyCriteria();
+					navigateTo(criteria);
 				});
 				secondFilterRowLayout.addComponent(regionFilter);
 			}
@@ -350,7 +323,7 @@ public class CasesView extends AbstractView {
 			districtFilter.addValueChangeListener(e -> {
 				DistrictReferenceDto district = (DistrictReferenceDto)e.getProperty().getValue();
 				criteria.district(district);
-				applyCriteria();
+				navigateTo(criteria);
 			});
 
 			if (user.getRegion() != null && user.getDistrict() == null) {
@@ -377,7 +350,7 @@ public class CasesView extends AbstractView {
 			facilityFilter.setDescription("Select a facility in the LGA");
 			facilityFilter.addValueChangeListener(e -> {
 				criteria.healthFacility(((FacilityReferenceDto)e.getProperty().getValue()));
-				applyCriteria();
+				navigateTo(criteria);
 			});
 			facilityFilter.setEnabled(false);
 			secondFilterRowLayout.addComponent(facilityFilter);
@@ -401,7 +374,7 @@ public class CasesView extends AbstractView {
 			}
 			officerFilter.addValueChangeListener(e -> {
 				criteria.surveillanceOfficer(((UserReferenceDto)e.getProperty().getValue()));
-				applyCriteria();
+				navigateTo(criteria);
 			});
 			secondFilterRowLayout.addComponent(officerFilter);
 
@@ -411,7 +384,7 @@ public class CasesView extends AbstractView {
 			reportedByFilter.addItems((Object[]) UserRole.values());
 			reportedByFilter.addValueChangeListener(e -> {
 				criteria.reportingUserRole((UserRole) e.getProperty().getValue());
-				applyCriteria();
+				navigateTo(criteria);
 			});
 			secondFilterRowLayout.addComponent(reportedByFilter);
 
@@ -421,7 +394,7 @@ public class CasesView extends AbstractView {
 			casesWithoutGeoCoordsFilter.setDescription("Only list cases that don't have address or report geo coordinates");
 			casesWithoutGeoCoordsFilter.addValueChangeListener(e -> {
 				criteria.mustHaveNoGeoCoordinates((Boolean) e.getProperty().getValue());
-				applyCriteria();
+				navigateTo(criteria);
 			});
 			secondFilterRowLayout.addComponent(casesWithoutGeoCoordsFilter);
 		}
@@ -485,7 +458,7 @@ public class CasesView extends AbstractView {
 
 		Button statusAll = new Button("All", e -> {
 			criteria.investigationStatus(null);
-			applyCriteria();
+			navigateTo(criteria);
 		});
 		CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 		statusAll.setCaptionAsHtml(true);
@@ -496,7 +469,7 @@ public class CasesView extends AbstractView {
 		for (InvestigationStatus status : InvestigationStatus.values()) {
 			Button statusButton = new Button(status.toString(), e -> {
 				criteria.investigationStatus(status);
-				applyCriteria();
+				navigateTo(criteria);
 			});
 			statusButton.setData(status);
 			CssStyles.style(statusButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
@@ -514,8 +487,7 @@ public class CasesView extends AbstractView {
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
 					criteria.archived(Boolean.TRUE.equals(criteria.getArchived()) ? null : Boolean.TRUE);
-					applyCriteria();
-
+					navigateTo(criteria);
 				});
 				actionButtonsLayout.addComponent(switchArchivedActiveButton);
 			}
@@ -602,14 +574,13 @@ public class CasesView extends AbstractView {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);
 		}
-		updateFiterComponents();
+		updateFilterComponents();
 		grid.reload();
 	}
 	
-	public void updateFiterComponents() {
+	public void updateFilterComponents() {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
-		grid.setReloadEnabled(false);
 		
 		resetButton.setVisible(criteria.hasAnyFilterActive());
 		
@@ -632,7 +603,6 @@ public class CasesView extends AbstractView {
 		weekAndDateFilter.getDateToFilter().setValue(criteria.getNewCaseDateTo());
 		weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.DATE);
 		
-		grid.setReloadEnabled(true);
 		applyingCriteria = false;
 	}
 

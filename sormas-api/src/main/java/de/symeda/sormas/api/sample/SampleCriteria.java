@@ -19,15 +19,16 @@ package de.symeda.sormas.api.sample;
 
 import java.io.Serializable;
 
+import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.utils.PojoUrlParamConverter;
+import de.symeda.sormas.api.utils.IgnoreForUrl;
 
-public class SampleCriteria implements Serializable {
+public class SampleCriteria extends BaseCriteria implements Serializable {
 
 	private static final long serialVersionUID = -4649293670201029461L;
 
@@ -45,14 +46,6 @@ public class SampleCriteria implements Serializable {
 	private Boolean archived;
 	private String caseCodeIdLike;
 
-	public String toUrlParams() {
-		return PojoUrlParamConverter.toUrlParams(this);
-	}
-	
-	public static SampleCriteria fromUrlParams(String urlParams) {
-		return PojoUrlParamConverter.fromUrlParams(new SampleCriteria(), urlParams);
-	}
-	
 	public RegionReferenceDto getRegion() {
 		return region;
 	}
@@ -169,6 +162,7 @@ public class SampleCriteria implements Serializable {
 		return this;
 	}
 
+	@IgnoreForUrl
 	public String getCaseCodeIdLike() {
 		return caseCodeIdLike;
 	}

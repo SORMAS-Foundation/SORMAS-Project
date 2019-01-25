@@ -135,9 +135,9 @@ public class CaseController {
 	public void navigateToView(String viewName, String caseUuid, ViewMode viewMode, boolean openTab) {
 
 		String navigationState = viewName + "/" + caseUuid;
-		if (viewMode == ViewMode.FULL) {
+		if (viewMode == ViewMode.NORMAL) {
 			// pass full view mode as param so it's also used for other views when switching
-			navigationState	+= "/" + AbstractCaseView.VIEW_MODE_URL_PREFIX + "=" + viewMode.toString();
+			navigationState	+= "?" + AbstractCaseView.VIEW_MODE_URL_PREFIX + "=" + viewMode.toString();
 		}
 		
 		if (openTab) {

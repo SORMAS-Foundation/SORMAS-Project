@@ -25,6 +25,7 @@ import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.SelectionModel.HasUserSelectionAllowed;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -34,8 +35,9 @@ import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.AbstractGrid;
 
-public class RegionsGrid extends Grid {
+public class RegionsGrid extends Grid implements AbstractGrid<RegionCriteria> {
 
 	private static final long serialVersionUID = 6289713952342575369L;
 
@@ -94,13 +96,22 @@ public class RegionsGrid extends Grid {
 	}
 	
 	public void reload() {
+		if (getSelectionModel() instanceof HasUserSelectionAllowed) {
+			deselectAll();
+		}
+		
 		List<RegionDto> regions = FacadeProvider.getRegionFacade().getIndexList(regionCriteria);
 		getContainer().removeAllItems();
 		getContainer().addAll(regions);
 	}
+
+	@Override
+	public RegionCriteria getCriteria() {
+		return regionCriteria;
+	}
 	
-	public void setNameEpidLikeFilter(String text) {
-		regionCriteria.nameEpidLike(text);
-		reload();
+	@Override
+	public void setCriteria(RegionCriteria regionCriteria) {
+		this.regionCriteria = regionCriteria;
 	}
 }

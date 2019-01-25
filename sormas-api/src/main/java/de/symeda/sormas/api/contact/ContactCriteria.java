@@ -20,6 +20,7 @@ package de.symeda.sormas.api.contact;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -27,9 +28,9 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.PojoUrlParamConverter;
+import de.symeda.sormas.api.utils.IgnoreForUrl;
 
-public class ContactCriteria implements Serializable {
+public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -49,14 +50,6 @@ public class ContactCriteria implements Serializable {
 	private Date followUpUntilTo;
 	private Boolean archived;
 	private String nameUuidCaseLike;
-	
-	public String toUrlParams() {
-		return PojoUrlParamConverter.toUrlParams(this);
-	}
-	
-	public static ContactCriteria fromUrlParams(String urlParams) {
-		return PojoUrlParamConverter.fromUrlParams(new ContactCriteria(), urlParams);
-	}
 	
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -213,7 +206,9 @@ public class ContactCriteria implements Serializable {
 		return this;
 	}
 
+	@IgnoreForUrl
 	public String getNameUuidCaseLike() {
 		return nameUuidCaseLike;
 	}
+	
 }

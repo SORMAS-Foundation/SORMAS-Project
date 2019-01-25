@@ -19,23 +19,16 @@ package de.symeda.sormas.api.region;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.utils.PojoUrlParamConverter;
+import de.symeda.sormas.api.BaseCriteria;
+import de.symeda.sormas.api.utils.IgnoreForUrl;
 
-public class CommunityCriteria implements Serializable, Cloneable {
+public class CommunityCriteria extends BaseCriteria implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 7815180508529134182L;
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private String nameLike;
-	
-	public String toUrlParams() {
-		return PojoUrlParamConverter.toUrlParams(this);
-	}
-	
-	public static CommunityCriteria fromUrlParams(String urlParams) {
-		return PojoUrlParamConverter.fromUrlParams(new CommunityCriteria(), urlParams);
-	}
 	
 	public CommunityCriteria region(RegionReferenceDto region) {
 		this.region = region;
@@ -55,6 +48,7 @@ public class CommunityCriteria implements Serializable, Cloneable {
 		return district;
 	}
 
+	@IgnoreForUrl
 	public String getNameLike() {
 		return nameLike;
 	}

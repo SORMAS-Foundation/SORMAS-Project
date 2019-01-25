@@ -24,31 +24,33 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.SelectionModel.HasUserSelectionAllowed;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.AbstractGrid;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 @SuppressWarnings("serial")
-public class EventGrid extends Grid {
+public class EventGrid extends Grid implements AbstractGrid<EventCriteria> {
 	
 	public static final String INFORMATION_SOURCE = "informationSource";
 	public static final String PENDING_EVENT_TASKS = "pendingEventTasks";
 	public static final String DISEASE_SHORT = "diseaseShort";
 
-	private final EventCriteria eventCriteria = new EventCriteria();
+	private EventCriteria eventCriteria = new EventCriteria();
 	
 	public EventGrid() {
 		setSizeFull();
@@ -153,13 +155,24 @@ public class EventGrid extends Grid {
 	}
 	
 	public void reload() {
+		if (getSelectionModel() instanceof HasUserSelectionAllowed) {
+			deselectAll();
+		}
+		
 		List<EventIndexDto> events = FacadeProvider.getEventFacade().getIndexList(UserProvider.getCurrent().getUserReference().getUuid(), eventCriteria);
 		getContainer().removeAllItems();
 		getContainer().addAll(events);
 	}
 
-	public EventCriteria getEventCriteria() {
+	@Override
+	public EventCriteria getCriteria() {
 		return eventCriteria;
 	}
+	
+	@Override
+	public void setCriteria(EventCriteria eventCriteria) {
+		this.eventCriteria = eventCriteria;
+	}
+
 	
 }

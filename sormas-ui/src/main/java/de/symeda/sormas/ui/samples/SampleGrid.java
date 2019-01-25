@@ -20,20 +20,18 @@ package de.symeda.sormas.ui.samples;
 import java.util.List;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.data.util.MethodProperty;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.SelectionModel.HasUserSelectionAllowed;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -48,11 +46,12 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.AbstractGrid;
 import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
-public class SampleGrid extends Grid {
+public class SampleGrid extends Grid implements AbstractGrid<SampleCriteria> {
 
 	public static final String EDIT_BTN_ID = "edit";
 	
@@ -144,47 +143,6 @@ public class SampleGrid extends Grid {
 		}
 	}
 	
-	public SampleGrid(CaseReferenceDto caseRef) {
-		this();
-		removeColumn(SampleIndexDto.ASSOCIATED_CASE);
-		removeColumn(DISEASE_SHORT);
-		removeColumn(SampleIndexDto.CASE_DISTRICT);
-		sampleCriteria.caze(caseRef);
-	}
-	
-	public void clearShipmentFilters(boolean reload) {
-		sampleCriteria.shipped(null);
-		sampleCriteria.received(null);
-		sampleCriteria.referred(null);
-		if (reload) {
-			reload();
-		}
-	}
-
-	public void filterForNotShipped() {
-		clearShipmentFilters(false);
-		sampleCriteria.shipped(false);
-		reload();
-	}
-	
-	public void filterForShipped() {
-		clearShipmentFilters(false);
-		sampleCriteria.shipped(true);
-		reload();
-	}
-	
-	public void filterForReceived() {
-		clearShipmentFilters(false);
-		sampleCriteria.received(true);
-		reload();
-	}
-	
-	public void filterForReferred() {
-		clearShipmentFilters(false);
-		sampleCriteria.referred(true);
-		reload();
-	}
-	
 	public void setRegionFilter(RegionReferenceDto region) {
 		sampleCriteria.region(region);
 		reload();
@@ -232,39 +190,30 @@ public class SampleGrid extends Grid {
 	}
 	
 	public void reload() {
+		if (getSelectionModel() instanceof HasUserSelectionAllowed) {
+			deselectAll();
+		}
+		
     	List<SampleIndexDto> samples = FacadeProvider.getSampleFacade().getIndexList(
     			UserProvider.getCurrent().getUuid(), 
     			sampleCriteria);
     	
 		getContainer().removeAllItems();
 		getContainer().addAll(samples);
-		
-		if(sampleCriteria.getCaze() != null) {
-			this.setHeightByRows(getContainer().size() < 10 ? (getContainer().size() > 0 ? getContainer().size() : 1) : 10);
-		}
-	}
-	
-	public void refresh(SampleIndexDto sample) {
-        // We avoid updating the whole table through the backend here so we can
-        // get a partial update for the grid
-		BeanItem<SampleIndexDto> item = getContainer().getItem(sample);
-		if(item != null) {
-            // Updated product
-			@SuppressWarnings("rawtypes")
-			MethodProperty p = (MethodProperty) item.getItemProperty(SampleIndexDto.UUID);
-			p.fireValueChange();
-		} else {
-            // New product
-			getContainer().addBean(sample);
-		}
 	}
 
 	public void remove(SampleIndexDto sample) {
 		getContainer().removeItem(sample);
 	}
 
-	public SampleCriteria getSampleCriteria() {
+	@Override
+	public SampleCriteria getCriteria() {
 		return sampleCriteria;
+	}
+	
+	@Override
+	public void setCriteria(SampleCriteria sampleCriteria) {
+		this.sampleCriteria = sampleCriteria;
 	}
 	
 }

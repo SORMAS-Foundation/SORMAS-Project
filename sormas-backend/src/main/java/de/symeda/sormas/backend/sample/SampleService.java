@@ -331,12 +331,10 @@ public class SampleService extends AbstractAdoService<Sample> {
 		if (criteria.getSpecimenCondition() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Sample.SPECIMEN_CONDITION), criteria.getSpecimenCondition()));
 		}
-		if (criteria.getArchived() != null) {
-			if (criteria.getArchived() == true) {
-				filter = and(cb, filter, cb.equal(caze.get(Case.ARCHIVED), true));
-			} else {
-				filter = and(cb, filter, cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED))));
-			}
+		if (Boolean.TRUE.equals(criteria.getArchived())) {
+			filter = and(cb, filter, cb.equal(caze.get(Case.ARCHIVED), true));
+		} else {
+			filter = and(cb, filter, cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED))));
 		}
 
 		if (criteria.getCaseCodeIdLike() != null) {
@@ -356,7 +354,7 @@ public class SampleService extends AbstractAdoService<Sample> {
 				}
 			}
 		}
-		
+
 		return filter;
 	}
 }

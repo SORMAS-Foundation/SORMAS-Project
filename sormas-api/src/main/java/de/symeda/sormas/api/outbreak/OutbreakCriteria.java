@@ -20,12 +20,12 @@ package de.symeda.sormas.api.outbreak;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.utils.PojoUrlParamConverter;
 
-public class OutbreakCriteria implements Serializable {
+public class OutbreakCriteria extends BaseCriteria implements Serializable {
 
 	private static final long serialVersionUID = 326691431810294295L;
 
@@ -34,14 +34,6 @@ public class OutbreakCriteria implements Serializable {
 	private Disease disease;
 	private Boolean active;
 	private Date changeDateAfter;
-	
-	public String toUrlParams() {
-		return PojoUrlParamConverter.toUrlParams(this);
-	}
-	
-	public static OutbreakCriteria fromUrlParams(String urlParams) {
-		return PojoUrlParamConverter.fromUrlParams(new OutbreakCriteria(), urlParams);
-	}
 	
 	public RegionReferenceDto getRegion() {
 		return region;

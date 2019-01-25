@@ -17,33 +17,27 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.data.util.filter.Or;
-import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.SelectionModel.HasUserSelectionAllowed;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.AbstractGrid;
 
-public class FacilitiesGrid extends Grid {
+public class FacilitiesGrid extends Grid implements AbstractGrid<FacilityCriteria> {
 
 	private static final long serialVersionUID = 4488941182432777837L;
 
@@ -54,9 +48,6 @@ public class FacilitiesGrid extends Grid {
 	public FacilitiesGrid() {
 		setSizeFull();
 		setSelectionMode(SelectionMode.NONE);
-
-		// Hides "Other facility" and "Home or other place"
-		facilityCriteria.excludeStaticFacilites(true);
 
 		BeanItemContainer<FacilityDto> container = new BeanItemContainer<FacilityDto>(FacilityDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
@@ -107,52 +98,24 @@ public class FacilitiesGrid extends Grid {
 	}
 
 	public void reload() {
-		getContainer().removeAllItems();
-
+		if (getSelectionModel() instanceof HasUserSelectionAllowed) {
+			deselectAll();
+		}
+		
 		List<FacilityDto> facilities = FacadeProvider.getFacilityFacade()
 				.getIndexList(UserProvider.getCurrent().getUuid(), facilityCriteria);
-
+		getContainer().removeAllItems();
 		getContainer().addAll(facilities);
 	}
 
-	public void setRegionFilter(RegionReferenceDto region) {
-		facilityCriteria.region(region);
-		reload();
+	@Override
+	public FacilityCriteria getCriteria() {
+		return facilityCriteria;
 	}
-
-	public void setDistrictFilter(DistrictReferenceDto district) {
-		facilityCriteria.district(district);
-		reload();
-	}
-
-	public void setCommunityFilter(CommunityReferenceDto community) {
-		facilityCriteria.community(community);
-		reload();
-	}
-
-	public void setTypeFilter(boolean showLaboratories) {
-		if (showLaboratories) {
-			facilityCriteria.type(FacilityType.LABORATORY);
-		} else {
-			// TODO: Workaround; only works because normal health facilities currently don't
-			// have a type
-			facilityCriteria.type(null);
-		}
-	}
-
-	public void filterByText(String text) {
-		getContainer().removeContainerFilters(FacilityDto.NAME);
-		getContainer().removeContainerFilters(FacilityDto.CITY);
-
-		if (text != null && !text.isEmpty()) {
-			List<Filter> orFilters = new ArrayList<Filter>();
-			String[] words = text.split("\\s+");
-			for (String word : words) {
-				orFilters.add(new SimpleStringFilter(FacilityDto.NAME, word, true, false));
-				orFilters.add(new SimpleStringFilter(FacilityDto.CITY, word, true, false));
-			}
-			getContainer().addContainerFilter(new Or(orFilters.stream().toArray(Filter[]::new)));
-		}
+	
+	@Override
+	public void setCriteria(FacilityCriteria facilityCriteria) {
+		this.facilityCriteria = facilityCriteria;
 	}
 
 }

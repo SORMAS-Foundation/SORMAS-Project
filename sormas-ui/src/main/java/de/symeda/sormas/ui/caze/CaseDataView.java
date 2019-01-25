@@ -71,13 +71,13 @@ public class CaseDataView extends AbstractCaseView {
 		container.addComponent(layout);
 
 		CommitDiscardWrapperComponent<?> editComponent;
-		if (getViewMode() == ViewMode.FULL) {
-			editComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid(),
-					getViewMode());
-		} else {
+		if (isHasOutbreak() && getViewMode() == ViewMode.SIMPLE) {
 			editComponent = ControllerProvider.getCaseController().getCaseCombinedEditComponent(getCaseRef().getUuid(),
-					getViewMode());
+					ViewMode.SIMPLE);
+		} else {
+			editComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid(), ViewMode.NORMAL);
 		}
+		
 		// setSubComponent(editComponent);
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);

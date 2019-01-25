@@ -17,14 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
-import java.util.Date;
 import java.util.HashMap;
 
-import com.vaadin.server.FileDownloader;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.StreamResource;
-import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -39,13 +35,14 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
@@ -53,11 +50,11 @@ import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
@@ -65,55 +62,58 @@ public class SampleGridComponent extends VerticalLayout {
 
 	public static final String LGA = "lga";
 	public static final String SEARCH_FIELD = "searchField";
+	
+	private static final String NOT_SHIPPED = "notShipped";
+	private static final String SHIPPED = "shipped";
+	private static final String RECEIVED = "received";
+	private static final String REFERRED = "referred";
+
+	private SampleCriteria criteria;
 
 	private SampleGrid grid;
+	private AbstractView samplesView;
 
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
 
+	// Filter
+	private ComboBox testResultFilter;
+	private ComboBox specimenConditionFilter;
+	private ComboBox classificationFilter;
+	private ComboBox diseaseFilter;
+	private ComboBox regionFilter;
+	private ComboBox districtFilter;
+	private ComboBox labFilter;
+	TextField searchField;
+	private Button resetButton;
+
 	private VerticalLayout gridLayout;
-	
-	private boolean showArchivedSamples;
+
+	private Button switchArchivedActiveButton;
 	private Label viewTitleLabel;
 	private String originalViewTitle;
 
-	public SampleGridComponent(Label viewTitleLabel) {
+	public SampleGridComponent(Label viewTitleLabel, AbstractView samplesView) {
 		setSizeFull();
-		
+
 		this.viewTitleLabel = viewTitleLabel;
+		this.samplesView = samplesView;
 		originalViewTitle = viewTitleLabel.getValue();
 
+		criteria = ViewModelProviders.of(SamplesView.class).get(SampleCriteria.class);
+
 		grid = new SampleGrid();
+		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createShipmentFilterBar());
 		gridLayout.addComponent(grid);
 		grid.getContainer().addItemSetChangeListener(e -> {
-			updateActiveStatusButtonCaption();
+			updateStatusButtons();
 		});
 
 		styleGridLayout(gridLayout);
 		gridLayout.setMargin(true);
-
-		addComponent(gridLayout);
-	}
-
-	public SampleGridComponent(CaseReferenceDto caseRef) {
-		setSizeFull();
-		setMargin(true);
-
-		grid = new SampleGrid(caseRef);
-		grid.setHeightMode(HeightMode.ROW);
-
-		gridLayout = new VerticalLayout();
-		gridLayout.addComponent(createShipmentFilterBarForCase(caseRef));
-		gridLayout.addComponent(grid);
-		grid.getContainer().addItemSetChangeListener(e -> {
-			updateActiveStatusButtonCaption();
-		});
-
-		gridLayout.setMargin(new MarginInfo(true, false, false, false));
-		styleGridLayout(gridLayout);
 
 		addComponent(gridLayout);
 	}
@@ -125,61 +125,66 @@ public class SampleGridComponent extends VerticalLayout {
 
 		UserDto user = UserProvider.getCurrent().getUser();
 
-		ComboBox testResultFilter = new ComboBox();
+		testResultFilter = new ComboBox();
 		testResultFilter.setWidth(140, Unit.PIXELS);
 		testResultFilter.setInputPrompt(I18nProperties.getPrefixCaption(SampleTestDto.I18N_PREFIX, SampleTestDto.TEST_RESULT));
 		testResultFilter.addItems((Object[])SampleTestResultType.values());
 		testResultFilter.addValueChangeListener(e -> {
-			grid.setTestResultFilter(((SampleTestResultType)e.getProperty().getValue()));
+			criteria.testResult(((SampleTestResultType)e.getProperty().getValue()));
+			samplesView.navigateTo(criteria);
 		});
 		filterLayout.addComponent(testResultFilter);        
 
-		ComboBox specimenConditionFilter = new ComboBox();
+		specimenConditionFilter = new ComboBox();
 		specimenConditionFilter.setWidth(140, Unit.PIXELS);
 		specimenConditionFilter.setInputPrompt(I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SPECIMEN_CONDITION));
 		specimenConditionFilter.addItems((Object[])SpecimenCondition.values());
 		specimenConditionFilter.addValueChangeListener(e -> {
-			grid.setSpecimenConditionFilter(((SpecimenCondition)e.getProperty().getValue()));
+			criteria.specimenCondition(((SpecimenCondition)e.getProperty().getValue()));
+			samplesView.navigateTo(criteria);
 		});
 		filterLayout.addComponent(specimenConditionFilter);        
 
-		ComboBox classificationFilter = new ComboBox();
+		classificationFilter = new ComboBox();
 		classificationFilter.setWidth(140, Unit.PIXELS);
 		classificationFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
 		classificationFilter.addItems((Object[])CaseClassification.values());
 		classificationFilter.addValueChangeListener(e -> {
-			grid.setCaseClassificationFilter(((CaseClassification)e.getProperty().getValue()));
+			criteria.caseClassification(((CaseClassification)e.getProperty().getValue()));
+			samplesView.navigateTo(criteria);
 		});
 		filterLayout.addComponent(classificationFilter);        
 
-		ComboBox diseaseFilter = new ComboBox();
+		diseaseFilter = new ComboBox();
 		diseaseFilter.setWidth(140, Unit.PIXELS);
 		diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
 		diseaseFilter.addItems((Object[])Disease.values());
 		diseaseFilter.addValueChangeListener(e -> {
-			grid.setDiseaseFilter(((Disease)e.getProperty().getValue()));
+			criteria.disease(((Disease)e.getProperty().getValue()));
+			samplesView.navigateTo(criteria);
 		});
 		filterLayout.addComponent(diseaseFilter);        
 
-
-		ComboBox regionFilter = new ComboBox();
+		regionFilter = new ComboBox();
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(140, Unit.PIXELS);
 			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
-				grid.setRegionFilter(region);
+				criteria.region(region);
+				samplesView.navigateTo(criteria);
 			});
 			filterLayout.addComponent(regionFilter);
 		}
 
-		ComboBox districtFilter = new ComboBox();
+		districtFilter = new ComboBox();
 		districtFilter.setWidth(140, Unit.PIXELS);
 		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
 		districtFilter.setDescription("Select a district in the state");
 		districtFilter.addValueChangeListener(e -> {
-			grid.setDistrictFilter(((DistrictReferenceDto)e.getProperty().getValue()));
+			criteria.district(((DistrictReferenceDto)e.getProperty().getValue()));
+			samplesView.navigateTo(criteria);
 		});
 
 		if (user.getRegion() != null) {
@@ -200,22 +205,33 @@ public class SampleGridComponent extends VerticalLayout {
 		}
 		filterLayout.addComponent(districtFilter);
 
-		ComboBox labFilter = new ComboBox();
+		labFilter = new ComboBox();
 		labFilter.setWidth(140, Unit.PIXELS);
 		labFilter.setInputPrompt(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, SampleIndexDto.LAB));
 		labFilter.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(true));
 		labFilter.addValueChangeListener(e -> {
-			grid.setLabFilter(((FacilityReferenceDto)e.getProperty().getValue()));
+			criteria.laboratory(((FacilityReferenceDto)e.getProperty().getValue()));
+			samplesView.navigateTo(criteria);
 		});
 		filterLayout.addComponent(labFilter);
 
-		TextField searchField = new TextField();
+		searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
+		searchField.setNullRepresentation("");
 		searchField.setInputPrompt(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, SEARCH_FIELD));
 		searchField.addTextChangeListener(e -> {
-			grid.setCaseCodeIdLike(e.getText());
+			criteria.caseCodeIdLike(e.getText());
+			samplesView.navigateTo(criteria);
 		});
 		filterLayout.addComponent(searchField);
+
+		resetButton = new Button(I18nProperties.getCaption(Captions.resetFilters));
+		resetButton.setVisible(false);
+		resetButton.addClickListener(event -> {
+			ViewModelProviders.of(SamplesView.class).remove(SampleCriteria.class);
+			samplesView.navigateTo(null);
+		});
+		filterLayout.addComponent(resetButton);
 
 		return filterLayout;
 	}
@@ -231,19 +247,21 @@ public class SampleGridComponent extends VerticalLayout {
 		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
 		buttonFilterLayout.setSpacing(true);
 		{
-			Button statusAll = new Button("All", e -> processStatusChange(false, false, false, false, e.getButton()));
-			initializeStatusButton(statusAll, buttonFilterLayout, "All");
-			CssStyles.removeStyles(statusAll, CssStyles.BUTTON_FILTER_LIGHT);
+			Button statusAll = new Button("All", e -> processStatusChange(null));
+			CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
+			statusAll.setCaptionAsHtml(true);
+			buttonFilterLayout.addComponent(statusAll);
+			statusButtons.put(statusAll, "All");
 			activeStatusButton = statusAll;
 
-			Button notShippedButton = new Button("Not shipped", e -> processStatusChange(true, false, false, false, e.getButton()));
-			initializeStatusButton(notShippedButton, buttonFilterLayout, "Not shipped");
-			Button shippedButton = new Button("Shipped", e -> processStatusChange(false, true, false, false, e.getButton()));
-			initializeStatusButton(shippedButton, buttonFilterLayout, "Shipped");
-			Button receivedButton = new Button("Received", e -> processStatusChange(false, false, true, false, e.getButton()));
-			initializeStatusButton(receivedButton, buttonFilterLayout, "Received");
-			Button referredButton = new Button("Referred to other lab", e -> processStatusChange(false, false, false, true, e.getButton()));
-			initializeStatusButton(referredButton, buttonFilterLayout, "Referred to other lab");
+			Button notShippedButton = new Button("Not shipped", e -> processStatusChange(NOT_SHIPPED));
+			initializeStatusButton(notShippedButton, buttonFilterLayout, NOT_SHIPPED, "Not shipped");
+			Button shippedButton = new Button("Shipped", e -> processStatusChange(SHIPPED));
+			initializeStatusButton(shippedButton, buttonFilterLayout, SHIPPED, "Shipped");
+			Button receivedButton = new Button("Received", e -> processStatusChange(RECEIVED));
+			initializeStatusButton(receivedButton, buttonFilterLayout, RECEIVED, "Received");
+			Button referredButton = new Button("Referred to other lab", e -> processStatusChange(REFERRED));
+			initializeStatusButton(referredButton, buttonFilterLayout, REFERRED, "Referred to other lab");
 		}
 
 		shipmentFilterLayout.addComponent(buttonFilterLayout);
@@ -253,23 +271,11 @@ public class SampleGridComponent extends VerticalLayout {
 		{
 			// Show archived/active cases button
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
-				Button switchArchivedActiveButton = new Button(I18nProperties.getCaption("showArchivedSamples"));
+				switchArchivedActiveButton = new Button(I18nProperties.getCaption("showArchivedSamples"));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
-					showArchivedSamples = !showArchivedSamples;
-					if (!showArchivedSamples) {
-						viewTitleLabel.setValue(originalViewTitle);
-						switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showArchivedSamples"));
-						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
-						grid.getSampleCriteria().archived(false);
-						grid.reload();
-					} else {
-						viewTitleLabel.setValue(I18nProperties.getPrefixCaption("View", SamplesView.VIEW_NAME.replaceAll("/", ".") + ".archive"));
-						switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showActiveSamples"));
-						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
-						grid.getSampleCriteria().archived(true);
-						grid.reload();
-					}
+					criteria.archived(Boolean.TRUE.equals(criteria.getArchived()) ? null : Boolean.TRUE);
+					samplesView.navigateTo(criteria);
 				});
 				actionButtonsLayout.addComponent(switchArchivedActiveButton);
 			}
@@ -284,13 +290,12 @@ public class SampleGridComponent extends VerticalLayout {
 				Command deleteCommand = selectedItem -> {
 					ControllerProvider.getSampleController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
 						public void run() {
-							grid.deselectAll();
 							grid.reload();
 						}
 					});
 				};
 				bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
-				
+
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
 			}
 		}
@@ -301,84 +306,13 @@ public class SampleGridComponent extends VerticalLayout {
 		return shipmentFilterLayout;
 	}
 
-	public HorizontalLayout createShipmentFilterBarForCase(CaseReferenceDto caseRef) {
-		HorizontalLayout shipmentFilterLayout = new HorizontalLayout();
-		shipmentFilterLayout.setSpacing(true);
-		shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
-		shipmentFilterLayout.addStyleName(CssStyles.VSPACE_3);
-
-		statusButtons = new HashMap<>();
-
-		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
-		buttonFilterLayout.setSpacing(true);
-		{
-			Button statusAll = new Button("All", e -> processStatusChange(false, false, false, false, e.getButton()));
-			initializeStatusButton(statusAll, buttonFilterLayout, "All");
-			CssStyles.removeStyles(statusAll, CssStyles.BUTTON_FILTER_LIGHT);
-			activeStatusButton = statusAll;
-
-			Button notShippedButton = new Button("Not shipped", e -> processStatusChange(true, false, false, false, e.getButton()));
-			initializeStatusButton(notShippedButton, buttonFilterLayout, "Not shipped");
-			Button shippedButton = new Button("Shipped", e -> processStatusChange(false, true, false, false, e.getButton()));
-			initializeStatusButton(shippedButton, buttonFilterLayout, "Shipped");
-			Button receivedButton = new Button("Received", e -> processStatusChange(false, false, true, false, e.getButton()));
-			initializeStatusButton(receivedButton, buttonFilterLayout, "Received");
-			Button referredButton = new Button("Referred to other lab", e -> processStatusChange(false, false, false, true, e.getButton()));
-			initializeStatusButton(referredButton, buttonFilterLayout, "Referred to other lab");
+	public void reload(ViewChangeEvent event) {
+		String params = event.getParameters().trim();
+		if (params.startsWith("?")) {
+			params = params.substring(1);
+			criteria.fromUrlParams(params);
 		}
-		shipmentFilterLayout.addComponent(buttonFilterLayout);
-
-		// Bulk operation dropdown
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
-
-			MenuBar bulkOperationsDropdown = new MenuBar();	
-			MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
-
-			Command deleteCommand = selectedItem -> {
-				ControllerProvider.getSampleController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
-					public void run() {
-						grid.deselectAll();
-						grid.reload();
-					}
-				});
-			};
-			bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
-
-			shipmentFilterLayout.addComponent(bulkOperationsDropdown);
-			shipmentFilterLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
-			shipmentFilterLayout.setExpandRatio(bulkOperationsDropdown, 1);
-		}
-
-		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EXPORT)) {
-			Button exportButton = new Button("Export");
-			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			exportButton.setIcon(FontAwesome.DOWNLOAD);
-
-			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), grid.getColumns(), "sormas_samples", "sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv", SampleGrid.EDIT_BTN_ID);
-			FileDownloader fileDownloader = new FileDownloader(streamResource);
-			fileDownloader.extend(exportButton);
-
-			shipmentFilterLayout.addComponent(exportButton);
-			shipmentFilterLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
-			if (!UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				shipmentFilterLayout.setExpandRatio(exportButton, 1);
-			}
-		}
-
-		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
-			Button createButton = new Button("New sample");
-			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
-			createButton.addClickListener(e -> ControllerProvider.getSampleController().create(caseRef, this::reload));
-			shipmentFilterLayout.addComponent(createButton);
-			shipmentFilterLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
-		}
-
-		return shipmentFilterLayout;
-	}
-
-	public void reload() {
+		updateFilterComponents();
 		grid.reload();
 	}
 
@@ -392,40 +326,93 @@ public class SampleGridComponent extends VerticalLayout {
 	public SampleGrid getGrid() {
 		return grid;
 	}
+	
+	public void updateFilterComponents() {
+		// TODO replace with Vaadin 8 databinding
+		samplesView.setApplyingCriteria(true);
 
-	public void updateActiveStatusButtonCaption() {
+		resetButton.setVisible(criteria.hasAnyFilterActive());
+		
+		updateStatusButtons();
+		updateArchivedButton();
+
+		testResultFilter.setValue(criteria.getTestResult());
+		specimenConditionFilter.setValue(criteria.getSpecimenCondition());
+		classificationFilter.setValue(criteria.getCaseClassification());
+		diseaseFilter.setValue(criteria.getDisease());
+		regionFilter.setValue(criteria.getRegion());
+		districtFilter.setValue(criteria.getDistrict());
+		labFilter.setValue(criteria.getLaboratory());
+		searchField.setValue(criteria.getCaseCodeIdLike());
+
+		samplesView.setApplyingCriteria(false);
+	}
+
+	private void processStatusChange(String status) {
+		if (NOT_SHIPPED.equals(status)) {
+			criteria.shipped(false);
+			criteria.received(null);
+			criteria.referred(null);
+		} else if (SHIPPED.equals(status)) {
+			criteria.shipped(true);
+			criteria.received(null);
+			criteria.referred(null);
+		} else if (RECEIVED.equals(status)) {
+			criteria.shipped(null);
+			criteria.received(true);
+			criteria.referred(null);
+		} else if (REFERRED.equals(status)) {
+			criteria.shipped(null);
+			criteria.received(null);
+			criteria.referred(true);
+		} else {
+			criteria.shipped(null);
+			criteria.received(null);
+			criteria.referred(null);
+		}
+
+		samplesView.navigateTo(criteria);
+	}
+
+	private void initializeStatusButton(Button button, HorizontalLayout filterLayout, String status, String caption) {
+		button.setData(status);
+		CssStyles.style(button, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
+		button.setCaptionAsHtml(true);
+		filterLayout.addComponent(button);
+		statusButtons.put(button, caption);
+	}
+
+	private void updateStatusButtons() {
+		statusButtons.keySet().forEach(b -> {
+			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
+			b.setCaption(statusButtons.get(b));
+			if ((NOT_SHIPPED.equals(b.getData()) && criteria.getShipped() == Boolean.FALSE)
+					|| (SHIPPED.equals(b.getData()) && criteria.getShipped() == Boolean.TRUE)
+					|| (RECEIVED.equals(b.getData()) && criteria.getReceived() == Boolean.TRUE)
+					|| (REFERRED.equals(b.getData()) && criteria.getReferred() == Boolean.TRUE)) {
+				activeStatusButton = b;
+			}
+		});
+		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 		if (activeStatusButton != null) {
 			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getContainer().size())));
 		}
 	}
 
-	private void processStatusChange(boolean notShipped, boolean shipped, boolean received, boolean referred, Button button) {
-		if (notShipped) {
-			grid.filterForNotShipped();
-		} else if (shipped) {
-			grid.filterForShipped();
-		} else if (received) {
-			grid.filterForReceived();
-		} else if (referred) {
-			grid.filterForReferred();
-		} else {
-			grid.clearShipmentFilters(true);
+	private void updateArchivedButton() {
+		if (switchArchivedActiveButton == null) {
+			return;
 		}
-
-		statusButtons.keySet().forEach(b -> {
-			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
-			b.setCaption(statusButtons.get(b));
-		});
-		CssStyles.removeStyles(button, CssStyles.BUTTON_FILTER_LIGHT);
-		activeStatusButton = button;
-		updateActiveStatusButtonCaption();
-	}
-
-	private void initializeStatusButton(Button button, HorizontalLayout filterLayout, String caption) {
-		CssStyles.style(button, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
-		button.setCaptionAsHtml(true);
-		filterLayout.addComponent(button);
-		statusButtons.put(button, caption);
+		
+		if (Boolean.TRUE.equals(criteria.getArchived())) {
+			viewTitleLabel.setValue(I18nProperties.getPrefixCaption("View", SamplesView.VIEW_NAME.replaceAll("/", ".") + ".archive"));
+			switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showActiveSamples"));
+			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
+		} else {
+			viewTitleLabel.setValue(originalViewTitle);
+			switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showArchivedSamples"));
+			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
+		} 
 	}
 
 }

@@ -427,12 +427,17 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		if (facilityCriteria.getCommunity() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Facility.COMMUNITY, JoinType.LEFT).get(District.UUID), facilityCriteria.getCommunity().getUuid()));
 		}
-		if (facilityCriteria.isExcludeStaticFacilities() != null && facilityCriteria.isExcludeStaticFacilities()) {
-			Predicate excludeFilter = cb.and(
-					cb.notEqual(from.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
-					cb.notEqual(from.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID),
-					cb.notEqual(from.get(Facility.UUID), FacilityDto.OTHER_LABORATORY_UUID));
-			filter = and(cb, filter, excludeFilter);
+		if (facilityCriteria.getNameCityLike() != null) {
+			String[] textFilters = facilityCriteria.getNameCityLike().split("\\s+");
+			for (int i = 0; i < textFilters.length; i++) {
+				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+							cb.like(cb.lower(from.get(Facility.NAME)), textFilter),
+							cb.like(cb.lower(from.get(Facility.CITY)), textFilter));
+					filter = and(cb, filter, likeFilters);
+				}
+			}
 		}
 		filter = and(cb, filter, cb.equal(from.get(Facility.TYPE), facilityCriteria.getType()));
 		return filter;

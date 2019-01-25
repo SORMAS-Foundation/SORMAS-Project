@@ -25,6 +25,7 @@ import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.SelectionModel.HasUserSelectionAllowed;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -32,14 +33,14 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.CommunityCriteria;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.AbstractGrid;
 
 @SuppressWarnings("serial")
-public class CommunitiesGrid extends Grid {
+public class CommunitiesGrid extends Grid implements AbstractGrid<CommunityCriteria> {
 
 	private static final long serialVersionUID = 3355810665696318673L;
 
@@ -112,24 +113,23 @@ public class CommunitiesGrid extends Grid {
 	}
 	
 	public void reload() {
+		if (getSelectionModel() instanceof HasUserSelectionAllowed) {
+			deselectAll();
+		}
+		
 		List<CommunityDto> districts = FacadeProvider.getCommunityFacade().getIndexList(communityCriteria);
 		getContainer().removeAllItems();
 		getContainer().addAll(districts);
 	}
-	
-	public void setNameLikeFilter(String text) {
-		communityCriteria.nameLike(text);
-		reload();
-	}
-	
-	public void setRegionFilter(RegionReferenceDto region) {
-		communityCriteria.region(region);
-		reload();
-	}
 
-	public void setDistrictFilter(DistrictReferenceDto district) {
-		communityCriteria.district(district);
-		reload();
+	@Override
+	public CommunityCriteria getCriteria() {
+		return communityCriteria;
 	}
+	
+	@Override
+	public void setCriteria(CommunityCriteria communityCriteria) {
+		this.communityCriteria = communityCriteria;
+	}	
 	
 }

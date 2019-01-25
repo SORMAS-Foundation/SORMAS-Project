@@ -530,7 +530,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					.contact(contact.toReference())
 					.taskType(TaskType.CONTACT_FOLLOW_UP)
 					.assigneeUser(assignee.toReference())
-					.taskStatuses(TaskStatus.PENDING);
+					.taskStatus(TaskStatus.PENDING);
 			List<Task> pendingUserTasks = taskService.findBy(pendingUserTaskCriteria);
 
 			if (!pendingUserTasks.isEmpty()) {

@@ -355,7 +355,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			} else {
 				TaskCriteria pendingUserTaskCriteria = new TaskCriteria()
 						.taskType(TaskType.WEEKLY_REPORT_GENERATION).assigneeUser(user.toReference())
-						.taskStatuses(TaskStatus.PENDING);
+						.taskStatus(TaskStatus.PENDING);
 				List<Task> existingTasks = taskService.findBy(pendingUserTaskCriteria);
 
 				if (!existingTasks.isEmpty()) {

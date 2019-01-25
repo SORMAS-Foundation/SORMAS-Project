@@ -19,22 +19,16 @@ package de.symeda.sormas.api.region;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.utils.PojoUrlParamConverter;
+import de.symeda.sormas.api.BaseCriteria;
+import de.symeda.sormas.api.utils.IgnoreForUrl;
 
-public class RegionCriteria implements Serializable, Cloneable {
+public class RegionCriteria extends BaseCriteria implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 5249729838631831239L;
 
 	private String nameEpidLike;
-	
-	public String toUrlParams() {
-		return PojoUrlParamConverter.toUrlParams(this);
-	}
-	
-	public static RegionCriteria fromUrlParams(String urlParams) {
-		return PojoUrlParamConverter.fromUrlParams(new RegionCriteria(), urlParams);
-	}
-	
+
+	@IgnoreForUrl
 	public String getNameEpidLike() {
 		return nameEpidLike;
 	}

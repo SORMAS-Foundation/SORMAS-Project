@@ -952,7 +952,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			// Set the task status of all investigation tasks to "Removed" because
 			// the case status has been updated manually
 			List<Task> pendingTasks = taskService.findBy(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION)
-					.caze(caseRef).taskStatuses(TaskStatus.PENDING));
+					.caze(caseRef).taskStatus(TaskStatus.PENDING));
 			for (Task task : pendingTasks) {
 				task.setTaskStatus(TaskStatus.REMOVED);
 				task.setStatusChangeDate(new Date());
@@ -968,7 +968,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			// Create a new investigation task if none is present
 			long pendingCount = taskService.getCount(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION)
-					.caze(caseRef).taskStatuses(TaskStatus.PENDING));
+					.caze(caseRef).taskStatus(TaskStatus.PENDING));
 
 			if (pendingCount == 0) {
 				createInvestigationTask(caze);
@@ -981,7 +981,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		// any pending case investigation task?
 		long pendingCount = taskService.getCount(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION)
-				.caze(caseRef).taskStatuses(TaskStatus.PENDING));
+				.caze(caseRef).taskStatus(TaskStatus.PENDING));
 
 		if (pendingCount > 0) {
 			// set status to investigation pending

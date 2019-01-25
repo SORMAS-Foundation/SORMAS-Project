@@ -20,20 +20,21 @@ package de.symeda.sormas.api.task;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.PojoUrlParamConverter;
 
-public class TaskCriteria implements Serializable {
+public class TaskCriteria extends BaseCriteria implements Serializable {
 
 	private static final long serialVersionUID = -9174165215694877625L;
 
-	private TaskStatus[] taskStatuses;
+	private TaskStatus taskStatus;
 	private TaskType taskType;
 	private UserReferenceDto assigneeUser;
+	private UserReferenceDto excludeAssigneeUser;
 	private CaseReferenceDto caze;
 	private ContactReferenceDto contact;
 	private PersonReferenceDto contactPerson;
@@ -46,21 +47,13 @@ public class TaskCriteria implements Serializable {
 	private Date statusChangeDateTo;
 	private Boolean archived;
 
-	public String toUrlParams() {
-		return PojoUrlParamConverter.toUrlParams(this);
-	}
-	
-	public static TaskCriteria fromUrlParams(String urlParams) {
-		return PojoUrlParamConverter.fromUrlParams(new TaskCriteria(), urlParams);
-	}
-	
-	public TaskCriteria taskStatuses(TaskStatus ...taskStatuses) {
-		this.taskStatuses = taskStatuses;
+	public TaskCriteria taskStatus(TaskStatus taskStatus) {
+		this.taskStatus = taskStatus;
 		return this;
 	}
 	
-	public TaskStatus[] getTaskStatuses() {
-		return taskStatuses;
+	public TaskStatus getTaskStatus() {
+		return taskStatus;
 	}
 
 	public TaskCriteria taskType(TaskType taskType) {
@@ -77,6 +70,14 @@ public class TaskCriteria implements Serializable {
 	}
 	public UserReferenceDto getAssigneeUser() {
 		return assigneeUser;
+	}
+	
+	public TaskCriteria excludeAssigneeUser(UserReferenceDto excludeAssigneeUser) {
+		this.excludeAssigneeUser = excludeAssigneeUser;
+		return this;
+	}
+	public UserReferenceDto getExcludeAssigneeUser() {
+		return excludeAssigneeUser;
 	}
 
 	public TaskCriteria caze(CaseReferenceDto caze) {

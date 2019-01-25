@@ -24,6 +24,7 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.SelectionModel.HasUserSelectionAllowed;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
@@ -45,16 +46,17 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.AbstractGrid;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 @SuppressWarnings("serial")
-public class ContactGrid extends Grid {
+public class ContactGrid extends Grid implements AbstractGrid<ContactCriteria> {
 
 	public static final String NUMBER_OF_VISITS = "numberOfVisits";
 	public static final String NUMBER_OF_PENDING_TASKS = "numberOfPendingTasks";
 	public static final String DISEASE_SHORT = "diseaseShort";
 
-	private final ContactCriteria contactCriteria = new ContactCriteria();
+	private ContactCriteria contactCriteria = new ContactCriteria();
 
 	public ContactGrid(boolean isSubList) {
 		setSizeFull();
@@ -204,10 +206,6 @@ public class ContactGrid extends Grid {
 		reload();
 	}
 
-	public ContactCriteria getFilterCriteria() {
-		return contactCriteria;
-	}
-
 	@SuppressWarnings("unchecked")
 	public BeanItemContainer<ContactIndexDto> getContainer() {
 		GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
@@ -215,11 +213,26 @@ public class ContactGrid extends Grid {
 	}
 
 	public void reload() {
+		if (getSelectionModel() instanceof HasUserSelectionAllowed) {
+			deselectAll();
+		}
+		
 		List<ContactIndexDto> entries = FacadeProvider.getContactFacade().getIndexList(UserProvider.getCurrent().getUserReference().getUuid(), contactCriteria);
 
 		getContainer().removeAllItems();
 		getContainer().addAll(entries);  
 	}
+
+	@Override
+	public void setCriteria(ContactCriteria contactCriteria) {
+		this.contactCriteria = contactCriteria;
+	}
+	
+	@Override
+	public ContactCriteria getCriteria() {
+		return contactCriteria;
+	}
+
 }
 
 

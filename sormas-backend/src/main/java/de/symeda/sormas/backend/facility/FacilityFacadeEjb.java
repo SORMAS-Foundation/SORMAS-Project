@@ -224,7 +224,13 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			Predicate criteriaFilter = facilityService.buildCriteriaFilter(facilityCriteria, cb, facility);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
-
+		
+		Predicate excludeFilter = cb.and(
+				cb.notEqual(facility.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
+				cb.notEqual(facility.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID),
+				cb.notEqual(facility.get(Facility.UUID), FacilityDto.OTHER_LABORATORY_UUID));
+		filter = AbstractAdoService.and(cb, filter, excludeFilter);
+		
 		if (filter != null) {
 			cq.where(filter);
 		}

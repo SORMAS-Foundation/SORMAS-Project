@@ -136,15 +136,15 @@ public class ContactService extends AbstractAdoService<Contact> {
 		Predicate filter = cb.or(
 				cb.equal(caze.get(Case.ARCHIVED), false),
 				cb.isNull(caze.get(Case.ARCHIVED)));
-		
+
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
 			filter = cb.and(filter, userFilter);
 		}
-		
+
 		cq.where(filter);
 		cq.select(from.get(Contact.UUID));
-		
+
 		return em.createQuery(cq).getResultList();
 	}
 
@@ -400,12 +400,12 @@ public class ContactService extends AbstractAdoService<Contact> {
 
 		return result;
 	}
-	
+
 	public Map<ContactStatus, Long> getNewContactCountPerStatus(ContactCriteria contactCriteria, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Contact> contact = cq.from(getElementClass());
-		
+
 		Predicate filter = createUserFilter(cb, cq, contact, user);
 		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, cb, contact);
 		if (filter != null) {
@@ -413,15 +413,15 @@ public class ContactService extends AbstractAdoService<Contact> {
 		} else {
 			filter = criteriaFilter;
 		}
-		
+
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		cq.groupBy(contact.get(Contact.CONTACT_STATUS));
 		cq.multiselect(contact.get(Contact.CONTACT_STATUS), cb.count(contact));
 		List<Object[]> results = em.createQuery(cq).getResultList();
-		
+
 		Map<ContactStatus, Long> resultMap = results.stream().collect(
 				Collectors.toMap(e -> (ContactStatus) e[0], e -> (Long) e[1]));
 		return resultMap;
@@ -431,7 +431,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Contact> contact = cq.from(getElementClass());
-		
+
 		Predicate filter = createUserFilter(cb, cq, contact, user);
 		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, cb, contact);
 		if (filter != null) {
@@ -439,15 +439,15 @@ public class ContactService extends AbstractAdoService<Contact> {
 		} else {
 			filter = criteriaFilter;
 		}
-		
+
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		cq.groupBy(contact.get(Contact.CONTACT_CLASSIFICATION));
 		cq.multiselect(contact.get(Contact.CONTACT_CLASSIFICATION), cb.count(contact));
 		List<Object[]> results = em.createQuery(cq).getResultList();
-		
+
 		Map<ContactClassification, Long> resultMap = results.stream().collect(
 				Collectors.toMap(e -> (ContactClassification) e[0], e -> (Long) e[1]));
 		return resultMap;
@@ -457,7 +457,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Contact> contact = cq.from(getElementClass());
-		
+
 		Predicate filter = createUserFilter(cb, cq, contact, user);
 		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, cb, contact);
 		if (filter != null) {
@@ -465,25 +465,25 @@ public class ContactService extends AbstractAdoService<Contact> {
 		} else {
 			filter = criteriaFilter;
 		}
-		
+
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		cq.groupBy(contact.get(Contact.FOLLOW_UP_STATUS));
 		cq.multiselect(contact.get(Contact.FOLLOW_UP_STATUS), cb.count(contact));
 		List<Object[]> results = em.createQuery(cq).getResultList();
-		
+
 		Map<FollowUpStatus, Long> resultMap = results.stream().collect(
 				Collectors.toMap(e -> (FollowUpStatus) e[0], e -> (Long) e[1]));
 		return resultMap;
 	}
-	
+
 	public int getFollowUpUntilCount(ContactCriteria contactCriteria, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Contact> contact = cq.from(getElementClass());
-		
+
 		Predicate filter = createUserFilter(cb, cq, contact, user);
 		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, cb, contact);
 		if (filter != null) {
@@ -493,14 +493,14 @@ public class ContactService extends AbstractAdoService<Contact> {
 		}
 
 		cq.select(cb.count(contact));
-		
+
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		return em.createQuery(cq).getSingleResult().intValue();
 	}
-	
+
 	/**
 	 * Calculates resultingCase and contact status based on: - existing disease
 	 * cases (and classification) of the person - the incubation period and - the
@@ -730,12 +730,10 @@ public class ContactService extends AbstractAdoService<Contact> {
 		if (contactCriteria.getFollowUpUntilFrom() != null && contactCriteria.getFollowUpUntilTo() != null) {
 			filter = and(cb, filter, cb.between(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilFrom(), contactCriteria.getFollowUpUntilTo()));
 		}
-		if (contactCriteria.getArchived() != null) {
-			if (contactCriteria.getArchived() == true) {
-				filter = and(cb, filter, cb.equal(caze.get(Case.ARCHIVED), true));
-			} else {
-				filter = and(cb, filter, cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED))));
-			}
+		if (Boolean.TRUE.equals(contactCriteria.getArchived())) {
+			filter = and(cb, filter, cb.equal(caze.get(Case.ARCHIVED), true));
+		} else {
+			filter = and(cb, filter, cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED))));
 		}
 		if (contactCriteria.getNameUuidCaseLike() != null) {
 			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
@@ -756,7 +754,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 				}
 			}
 		}
-		
+
 		return filter;
 	}
 }

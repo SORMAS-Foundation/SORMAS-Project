@@ -22,25 +22,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.data.util.filter.Compare.Equal;
-import com.vaadin.data.util.filter.Not;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.SelectionModel.HasUserSelectionAllowed;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskPriority;
@@ -50,17 +44,18 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.AbstractGrid;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.HtmlReferenceDtoConverter;
 import de.symeda.sormas.ui.utils.ShortStringRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
-public class TaskGrid extends Grid implements ItemClickListener {
+public class TaskGrid extends Grid implements ItemClickListener, AbstractGrid<TaskCriteria> {
 
 	private static final String EDIT_BTN_ID = "edit";
 	
-	private final TaskCriteria taskCriteria = new TaskCriteria();
+	private TaskCriteria taskCriteria = new TaskCriteria();
 
 	private final class TaskGridRowStyleGenerator implements RowStyleGenerator {
 		@Override
@@ -166,54 +161,22 @@ public class TaskGrid extends Grid implements ItemClickListener {
 		addItemClickListener(this);
 	}
 	
-	public TaskGrid(TaskContext context, ReferenceDto entityRef) {
-		this();
-		removeColumn(TaskIndexDto.CONTEXT_REFERENCE);
-		filterTaskStatus(null, false);
-		switch (context) {
-		case CASE:
-			taskCriteria.caze((CaseReferenceDto) entityRef);
-			break;
-		case CONTACT:
-			taskCriteria.contact((ContactReferenceDto) entityRef);
-			break;
-		case EVENT:
-			taskCriteria.event((EventReferenceDto) entityRef);
-			break;
-		case GENERAL:
-		default:
-			throw new IndexOutOfBoundsException(context.toString());
-		}
-	}
-	
     public void filterAssignee(UserReferenceDto userDto, boolean reload) {
-		getContainer().removeContainerFilters(TaskIndexDto.ASSIGNEE_USER);
-		if (userDto != null) {
-			Filter filter = new Equal(TaskIndexDto.ASSIGNEE_USER, userDto);  
-	        getContainer().addContainerFilter(filter);
-		}
-		if (reload) {
-			reload();
-		}
+    	taskCriteria.assigneeUser(userDto);
+    	if (reload) {
+    		reload();
+    	}
 	}
 
-    public void filterExcludeAssignee(UserReferenceDto userDto, boolean reload) {
-		getContainer().removeContainerFilters(TaskIndexDto.ASSIGNEE_USER);
-		if (userDto != null) {
-	    	Filter filter = new Not(new Equal(TaskIndexDto.ASSIGNEE_USER, userDto));  
-	        getContainer().addContainerFilter(filter);
-		}
+    public void filterExcludeAssignee(UserReferenceDto userDto, boolean reload) {    	
+    	taskCriteria.excludeAssigneeUser(userDto);
 		if (reload) {
 			reload();
 		}
 	}
 
 	public void filterTaskStatus(TaskStatus statusToFilter, boolean reload) {
-    	getContainer().removeContainerFilters(TaskIndexDto.TASK_STATUS);
-    	if (statusToFilter != null) {
-    		Filter filter = new Equal(TaskIndexDto.TASK_STATUS, statusToFilter);  
-	        getContainer().addContainerFilter(filter);
-    	}
+		taskCriteria.taskStatus(statusToFilter);
 		if (reload) {
 			reload();
 		}
@@ -226,11 +189,14 @@ public class TaskGrid extends Grid implements ItemClickListener {
     }
     
     public void reload() {
+		if (getSelectionModel() instanceof HasUserSelectionAllowed) {
+			deselectAll();
+		}
+		
     	List<TaskIndexDto> tasks = FacadeProvider.getTaskFacade().getIndexList(UserProvider.getCurrent().getUserReference().getUuid(),
     			taskCriteria);
     	
     	tasks.sort(new Comparator<TaskIndexDto>() {
-
 			@Override
 			public int compare(TaskIndexDto o1, TaskIndexDto o2) {
 				if (o1.getTaskStatus() != o2.getTaskStatus()) {
@@ -253,10 +219,6 @@ public class TaskGrid extends Grid implements ItemClickListener {
 		});
         getContainer().removeAllItems();
         getContainer().addAll(tasks); 
-        
-        if (taskCriteria.hasContextCriteria()) {
-        	this.setHeightByRows(getContainer().size() < 10 ? (getContainer().size() > 0 ? getContainer().size() : 1) : 10);
-        }
     }
 
 	@Override
@@ -287,8 +249,14 @@ public class TaskGrid extends Grid implements ItemClickListener {
 		}
 	}
 
-	public TaskCriteria getTaskCriteria() {
+	@Override
+	public TaskCriteria getCriteria() {
 		return taskCriteria;
+	}
+	
+	@Override
+	public void setCriteria(TaskCriteria taskCriteria) {
+		this.taskCriteria = taskCriteria;
 	}
 
 }

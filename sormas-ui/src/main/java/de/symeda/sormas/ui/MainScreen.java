@@ -30,6 +30,7 @@ import com.vaadin.ui.HorizontalLayout;
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.caze.CasesView;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
@@ -179,7 +180,12 @@ public class MainScreen extends HorizontalLayout {
 					}
 				}
 				if (urlParams.length() > 0) {
-					SormasUI.get().getNavigator().navigateTo(event.getViewName() + "/?" + urlParams.toString());
+					String url = event.getViewName() + "/";
+					if (!DataHelper.isNullOrEmpty(event.getParameters())) {
+						url += event.getParameters();
+					}
+					url += "?" + urlParams.toString();
+					SormasUI.get().getNavigator().navigateTo(url);
 					return false;
 				}
 			}

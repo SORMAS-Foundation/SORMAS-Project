@@ -19,12 +19,12 @@ package de.symeda.sormas.api.report;
 
 import java.io.Serializable;
 
+import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.api.utils.PojoUrlParamConverter;
 
-public class WeeklyReportCriteria implements Serializable, Cloneable {
+public class WeeklyReportCriteria extends BaseCriteria implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -35,14 +35,6 @@ public class WeeklyReportCriteria implements Serializable, Cloneable {
 	private Boolean officerReport;
 	private Boolean zeroReport;
 
-	public String toUrlParams() {
-		return PojoUrlParamConverter.toUrlParams(this);
-	}
-	
-	public static WeeklyReportCriteria fromUrlParams(String urlParams) {
-		return PojoUrlParamConverter.fromUrlParams(new WeeklyReportCriteria(), urlParams);
-	}
-	
 	@Override
 	public WeeklyReportCriteria clone() {
 		try {

@@ -25,18 +25,19 @@ import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.SelectionModel.HasUserSelectionAllowed;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictCriteria;
 import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.AbstractGrid;
 
-public class DistrictsGrid extends Grid {
+public class DistrictsGrid extends Grid implements AbstractGrid<DistrictCriteria> {
 
 	private static final long serialVersionUID = -4437531618828715458L;
 
@@ -95,19 +96,23 @@ public class DistrictsGrid extends Grid {
 	}
 
 	public void reload() {
+		if (getSelectionModel() instanceof HasUserSelectionAllowed) {
+			deselectAll();
+		}
+		
 		List<DistrictDto> districts = FacadeProvider.getDistrictFacade().getIndexList(districtCriteria);
 		getContainer().removeAllItems();
 		getContainer().addAll(districts);
 	}
-
-	public void setNameEpidLikeFilter(String text) {
-		districtCriteria.nameEpidLike(text);
-		reload();
+	
+	@Override
+	public DistrictCriteria getCriteria() {
+		return districtCriteria;
 	}
-
-	public void setRegionFilter(RegionReferenceDto region) {
-		districtCriteria.region(region);
-		reload();
+	
+	@Override
+	public void setCriteria(DistrictCriteria districtCriteria) {
+		this.districtCriteria = districtCriteria;
 	}
 	
 }

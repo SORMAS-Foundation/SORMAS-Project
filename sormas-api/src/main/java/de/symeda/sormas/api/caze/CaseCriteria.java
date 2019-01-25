@@ -28,7 +28,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.IgnoreForUrl;
 
 public class CaseCriteria extends BaseCriteria implements Cloneable  {
 
@@ -61,25 +61,6 @@ public class CaseCriteria extends BaseCriteria implements Cloneable  {
 		}
 	}
 	
-	public boolean hasAnyFilterActive() {
-		return reportingUserRole != null 
-				|| disease != null
-				|| outcome != null
-				|| caseClassification != null
-				|| investigationStatus != null
-				|| presentCondition != null
-				|| region != null
-				|| district != null
-				|| healthFacility != null
-				|| surveillanceOfficer != null
-				|| newCaseDateFrom != null
-				|| newCaseDateTo != null
-				|| person != null
-				|| mustHaveNoGeoCoordinates == Boolean.TRUE
-				|| archived == Boolean.TRUE
-				|| !DataHelper.isNullOrEmpty(nameUuidEpidNumberLike);
-	}
-
 	public CaseCriteria reportingUserRole(UserRole reportingUserRole) {
 		this.reportingUserRole = reportingUserRole;
 		return this;
@@ -242,6 +223,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable  {
 		return this;
 	}
 
+	@IgnoreForUrl
 	public String getNameUuidEpidNumberLike() {
 		return nameUuidEpidNumberLike;
 	}

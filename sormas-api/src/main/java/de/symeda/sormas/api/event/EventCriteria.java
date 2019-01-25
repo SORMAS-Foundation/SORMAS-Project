@@ -19,11 +19,11 @@ package de.symeda.sormas.api.event;
 
 import java.io.Serializable;
 
+import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.PojoUrlParamConverter;
 
-public class EventCriteria implements Serializable {
+public class EventCriteria extends BaseCriteria implements Serializable {
 
 	private static final long serialVersionUID = 2194071020732246594L;
 	
@@ -32,14 +32,6 @@ public class EventCriteria implements Serializable {
 	private Disease disease;
 	private UserRole reportingUserRole;
 	private Boolean archived;
-	
-	public String toUrlParams() {
-		return PojoUrlParamConverter.toUrlParams(this);
-	}
-	
-	public static EventCriteria fromUrlParams(String urlParams) {
-		return PojoUrlParamConverter.fromUrlParams(new EventCriteria(), urlParams);
-	}
 	
 	public EventStatus getEventStatus() {
 		return eventStatus;

@@ -42,7 +42,7 @@ public class SamplesView extends AbstractView {
 	public SamplesView() {
     	super(VIEW_NAME);
     	
-		sampleListComponent = new SampleGridComponent(getViewTitleLabel());
+		sampleListComponent = new SampleGridComponent(getViewTitleLabel(), this);
 		setSizeFull();
 		addComponent(sampleListComponent);
 		
@@ -61,8 +61,7 @@ public class SamplesView extends AbstractView {
 	
 	@Override
 	public void enter(ViewChangeEvent event) {
-		sampleListComponent.reload();
-		sampleListComponent.updateActiveStatusButtonCaption();
+		sampleListComponent.reload(event);
 	}
 
 }

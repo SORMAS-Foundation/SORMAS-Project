@@ -25,22 +25,34 @@ public class ViewModelProvider {
 
 	private Map<Class<?>, Object> viewModels = new HashMap<Class<?>, Object>();
 
-	@SuppressWarnings("unchecked")
 	public <M extends Object> M get(Class<M> modelClass) {
+		return get(modelClass, null);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <M extends Object> M get(Class<M> modelClass, M defaultModel) {
 		if (!viewModels.containsKey(modelClass)) {
 			try {
-				viewModels.put(modelClass, modelClass.newInstance());
+				if (defaultModel != null) {
+					viewModels.put(modelClass, defaultModel);					
+				} else {
+					viewModels.put(modelClass, modelClass.newInstance());
+				}
 			} catch (InstantiationException | IllegalAccessException e) {
 				throw new RuntimeException(e);
 			}
 		}
 		return (M)viewModels.get(modelClass);
 	}
-	
+
 	public <M extends Object> void remove(Class<M> modelClass) {
 		if (viewModels.containsKey(modelClass)) {
 			viewModels.remove(modelClass);
 		}
+	}
+
+	public <M extends Object> boolean has(Class<M> modelClass) {
+		return viewModels.containsKey(modelClass);
 	}
 	
 	public Collection<Object> getAll() {

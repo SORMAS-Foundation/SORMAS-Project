@@ -736,12 +736,10 @@ public class CaseService extends AbstractAdoService<Case> {
 							)
 					);
 		}
-		if (caseCriteria.getArchived() != null) {
-			if (caseCriteria.getArchived() == true) {
-				filter = and(cb, filter, cb.equal(from.get(Case.ARCHIVED), true));
-			} else {
-				filter = and(cb, filter, cb.or(cb.equal(from.get(Case.ARCHIVED), false), cb.isNull(from.get(Case.ARCHIVED))));
-			}
+		if (Boolean.TRUE.equals(caseCriteria.getArchived())) {
+			filter = and(cb, filter, cb.equal(from.get(Case.ARCHIVED), true));
+		} else {
+			filter = and(cb, filter, cb.or(cb.equal(from.get(Case.ARCHIVED), false), cb.isNull(from.get(Case.ARCHIVED))));
 		}
 
 		if (caseCriteria.getNameUuidEpidNumberLike() != null) {

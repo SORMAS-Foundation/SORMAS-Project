@@ -50,15 +50,15 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		menu.removeAllViews();
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
 			menu.addView(RegionsView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
-					RegionsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
+					RegionsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
 			menu.addView(DistrictsView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
-					DistrictsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
+					DistrictsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
 			menu.addView(CommunitiesView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
-					CommunitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
+					CommunitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
 			menu.addView(HealthFacilitiesView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
-					HealthFacilitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
+					HealthFacilitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
 			menu.addView(LaboratoriesView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
-					LaboratoriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
+					LaboratoriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
 		}
 //		if (LoginHelper.hasUserRight(UserRight.USER_RIGHTS_MANAGE)) {
 //			menu.addView(UserRightsView.VIEW_NAME, I18nProperties.getPrefixFragment("View", 
