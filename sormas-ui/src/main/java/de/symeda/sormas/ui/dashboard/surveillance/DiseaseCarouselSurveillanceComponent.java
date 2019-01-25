@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -85,8 +86,9 @@ public class DiseaseCarouselSurveillanceComponent extends VerticalLayout {
 	private DashboardStatisticsCountElement caseClassificationSuspect;
 	private DashboardStatisticsCountElement caseClassificationNotACase;
 	private DashboardStatisticsCountElement caseClassificationNotYetClassified;
-	
-	
+	private Label caseFatalityRateLabel;
+	private Label caseFatalityCountLabel;
+		
 	// "New Events" elements
 	private DashboardStatisticsSubComponent eventComponent;
 	private Label eventCountLabel;
@@ -108,7 +110,7 @@ public class DiseaseCarouselSurveillanceComponent extends VerticalLayout {
 		
 		//layout
 		setWidth(100, Unit.PERCENTAGE);
-		setHeight(400, Unit.PIXELS);
+		//setHeight(600, Unit.PIXELS);
 		setMargin(true);
 		setSpacing(false);
 		setSizeFull();
@@ -137,7 +139,7 @@ public class DiseaseCarouselSurveillanceComponent extends VerticalLayout {
 		headerLayout.addComponent(outbreakDistrictCountLabel);
 			//title
 		Label titleLabel = new Label("Outbreak Districts");
-		CssStyles.style(titleLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+		CssStyles.style(titleLabel, CssStyles.H2, CssStyles.HSPACE_LEFT_4);
 		headerLayout.addComponent(titleLabel);
 		
 		outbreakDistrictComponent.addComponent(headerLayout);
@@ -154,7 +156,7 @@ public class DiseaseCarouselSurveillanceComponent extends VerticalLayout {
 		headerLayout.addComponent(caseCountLabel);
 			//title
 		caseDiseaseLabel = new Label("New Cases");
-		CssStyles.style(caseDiseaseLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+		CssStyles.style(caseDiseaseLabel, CssStyles.H2, CssStyles.HSPACE_LEFT_4);
 		headerLayout.addComponent(caseDiseaseLabel);
 		
 		caseComponent.addComponent(headerLayout);
@@ -172,6 +174,43 @@ public class DiseaseCarouselSurveillanceComponent extends VerticalLayout {
 		caseClassificationNotYetClassified = new DashboardStatisticsCountElement("Not Yet Classified", CountElementStyle.MINOR);
 		caseComponent.addComponentToCountLayout(countLayout, caseClassificationNotYetClassified);
 		caseComponent.addComponent(countLayout);
+		
+		//Case Fatality Rate
+		HorizontalLayout cfrLayout = new HorizontalLayout();
+			//rate
+		VerticalLayout cfrRateLayout = new VerticalLayout();
+				//value
+		caseFatalityRateLabel = new Label("CFR 00.0%");
+		CssStyles.style(caseFatalityRateLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE);
+		cfrRateLayout.addComponent(caseFatalityRateLabel);
+				//caption
+		Label caseFatalityRateCaption = new Label("CASE FATALITY RATE");
+		cfrRateLayout.addComponent(caseFatalityRateCaption);
+		CssStyles.style(caseFatalityRateCaption, CssStyles.LABEL_CRITICAL);
+		
+		cfrLayout.addComponent(cfrRateLayout);
+			//~rate
+			//count
+		VerticalLayout cfrCountLayout = new VerticalLayout();
+				//value
+		caseFatalityCountLabel = new Label("0 >");
+		cfrCountLayout.addComponent(caseFatalityCountLabel);
+		cfrCountLayout.setComponentAlignment(caseFatalityCountLabel, Alignment.MIDDLE_RIGHT);
+		caseFatalityCountLabel.setWidthUndefined();
+		CssStyles.style(caseFatalityCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE);
+				//caption
+		Label caseFatalityCountCaption = new Label("FATALITIES");
+		cfrCountLayout.addComponent(caseFatalityCountCaption);
+		cfrCountLayout.setComponentAlignment(caseFatalityCountCaption, Alignment.MIDDLE_RIGHT);
+		caseFatalityCountCaption.setWidthUndefined();
+		CssStyles.style(caseFatalityCountCaption, CssStyles.LABEL_CRITICAL);
+		
+		cfrLayout.addComponent(cfrCountLayout);
+			//~count
+		
+		caseComponent.addComponent(cfrLayout);
+		cfrLayout.setWidth(100, Unit.PERCENTAGE);
+		//~CFR
 	}
 	
 	private void createEventComponent () {
@@ -185,7 +224,7 @@ public class DiseaseCarouselSurveillanceComponent extends VerticalLayout {
 		headerLayout.addComponent(eventCountLabel);
 			//title
 		Label titleLabel = new Label("New Events");
-		CssStyles.style(titleLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+		CssStyles.style(titleLabel, CssStyles.H2, CssStyles.HSPACE_LEFT_4);
 		headerLayout.addComponent(titleLabel);
 		
 		eventComponent.addComponent(headerLayout);
@@ -212,7 +251,7 @@ public class DiseaseCarouselSurveillanceComponent extends VerticalLayout {
 		headerLayout.addComponent(testResultCountLabel);
 			//title
 		Label titleLabel = new Label("New Test Results");
-		CssStyles.style(titleLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+		CssStyles.style(titleLabel, CssStyles.H2, CssStyles.HSPACE_LEFT_4);
 		headerLayout.addComponent(titleLabel);
 		
 		testResultComponent.addComponent(headerLayout);
@@ -231,37 +270,8 @@ public class DiseaseCarouselSurveillanceComponent extends VerticalLayout {
 	}
 
 	public void refresh() {
-//		List<DashboardCaseDto> cases = dashboardDataProvider.getCases();
-//		List<DashboardCaseDto> previousCases = dashboardDataProvider.getPreviousCases();
-//		List<DashboardEventDto> events = dashboardDataProvider.getEvents();
-		
 		//todo: get selected disease
 		Disease disease = Disease.values()[0];
-		
-		
-//		events = events.stream().filter(c -> c.getDisease() == disease).collect(Collectors.toList());
-		
-		//List<DiseaseBurdenDto> diseasesBurden = new ArrayList<>();
-		
-		//build diseases burden
-		//for (Disease disease : Disease.values()) {
-//			Disease disease = Disease.values()[0];
-//			
-//			DiseaseBurdenDto diseaseBurden = new DiseaseBurdenDto(disease);
-//			
-//			List<DashboardCaseDto> _cases = cases.stream().filter(c -> c.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());
-//			diseaseBurden.setCaseCount(Long.valueOf(_cases.size()));
-//			diseaseBurden.setOutbreakDistrictCount(_cases.stream().map((c) -> c.getDistrict().getUuid()).distinct().count());
-//			diseaseBurden.setCaseDeathCount(_cases.stream().filter(c -> c.getCauseOfDeathDisease() != null).count());
-//			
-//			_cases = previousCases.stream().filter(c -> c.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());
-//			diseaseBurden.setPreviousCaseCount(Long.valueOf(_cases.size()));
-//			
-//			List<DashboardEventDto> _events = events.stream().filter(e -> e.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());
-//			diseaseBurden.setEventCount(Long.valueOf(_events.size()));
-			
-			//diseasesBurden.add(diseaseBurden);
-		//}
 		
 		updateOutbreakDistrictComponent(disease);
 		updateCaseComponent(disease);

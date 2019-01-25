@@ -251,6 +251,7 @@ public abstract class AbstractDashboardView extends AbstractView {
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.addStyleName(DashboardCssStyles.CURVE_AND_MAP_LAYOUT);
 		layout.setWidth(100, Unit.PERCENTAGE);
+		layout.setHeight(470, Unit.PIXELS);
 		layout.setMargin(false);
 
 		// Disease carousel layout
