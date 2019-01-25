@@ -97,13 +97,13 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 
-		// TODO: Workaround until cases and other data is properly transfered when infrastructure data changes
 		if (!create) {
 			if (!laboratory) {
+				// Disable editing of region, etc. so case references stay correct
 				region.setEnabled(false);
+				district.setEnabled(false);
+				community.setEnabled(false);
 			}
-			district.setEnabled(false);
-			community.setEnabled(false);
 		}
 	}
 
