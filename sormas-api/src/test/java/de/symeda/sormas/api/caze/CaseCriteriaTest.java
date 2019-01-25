@@ -23,7 +23,6 @@ public class CaseCriteriaTest {
 		generatedCriteria.fromUrlParams(criteria.toUrlParams());
 		assertEquals(criteria.getArchived(), generatedCriteria.getArchived());
 		assertEquals(criteria.getDistrict(), generatedCriteria.getDistrict());
-		assertEquals(criteria.getNameUuidEpidNumberLike(), generatedCriteria.getNameUuidEpidNumberLike());
 		assertEquals(criteria.getDisease(), generatedCriteria.getDisease());
 	}
 }
