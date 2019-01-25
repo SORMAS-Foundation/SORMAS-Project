@@ -30,4 +30,7 @@ public class ProgressItemViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
+    public void setPosition(int position, int totalCount) {
+        binding.positionTextView.setText(position + "/" + totalCount);
+    }
 }

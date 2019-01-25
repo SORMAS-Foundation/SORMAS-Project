@@ -20,20 +20,27 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="fill"
+        android:layout_marginTop="@dimen/margin_default"
+        android:layout_marginBottom="@dimen/margin_default"
+        android:gravity="center"
+        android:background="@drawable/selector_list_activity_row_background"
+        android:orientation="horizontal"
         android:paddingLeft="@dimen/rowListItemHorizontalMargin"
-        android:paddingRight="@dimen/rowListItemHorizontalMargin"
-        android:background="@drawable/selector_list_activity_row_background">
+        android:paddingRight="@dimen/rowListItemHorizontalMargin">
 
         <ProgressBar
             android:id="@+id/progress_bar"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            />
+
+        <TextView
+            android:id="@+id/positionTextView"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            style="?android:attr/progressBarStyle" />
+            />
 
     </LinearLayout>
 

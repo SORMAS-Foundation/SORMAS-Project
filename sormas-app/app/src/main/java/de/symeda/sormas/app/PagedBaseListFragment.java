@@ -31,7 +31,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
-import de.symeda.sormas.app.core.adapter.databinding.ISetOnListItemClickListener;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.util.Bundler;
 
@@ -83,33 +82,16 @@ public abstract class PagedBaseListFragment<TListAdapter extends RecyclerView.Ad
         this.adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
-                updateEmptyListHint();
+            updateEmptyListHint();
             }
         });
 
-        if (this.adapter instanceof ISetOnListItemClickListener) {
-            ((ISetOnListItemClickListener) this.adapter).setOnListItemClickListener(this);
+        if (this.adapter instanceof HasOnListItemClickListener) {
+            ((HasOnListItemClickListener) this.adapter).setOnListItemClickListener(this);
         } else {
             throw new NotImplementedException("setOnListItemClickListener is not supported by the adapter; " +
-                    "implement ISetOnListItemClickListener");
+                    "implement HasOnListItemClickListener");
         }
-
-//        jobTask = new DefaultAsyncTask(getContext()) {
-//            @Override
-//            public void onPreExecute() {
-//                getBaseActivity().showPreloader();
-//            }
-//
-//            @Override
-//            public void doInBackground(final TaskResultHolder resultHolder) {
-//                prepareFragmentData();
-//            }
-//
-//            @Override
-//            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-//                getBaseActivity().hidePreloader();
-//            }
-//        }.executeOnThreadPool();
 
         return view;
     }

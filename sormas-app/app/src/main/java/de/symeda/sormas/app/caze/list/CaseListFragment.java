@@ -70,9 +70,7 @@ public class CaseListFragment extends PagedBaseListFragment<CaseListAdapter> imp
     @Override
     public void onResume() {
         super.onResume();
-
         getSubHeadingHandler().updateSubHeadingTitle();
-
 //        getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), SearchBy.BY_FILTER_STATUS, getListFilter(), "Case"));
     }
 

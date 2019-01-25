@@ -21,24 +21,22 @@ package de.symeda.sormas.app.event.list;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
-import androidx.core.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.core.content.ContextCompat;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
-import de.symeda.sormas.app.core.adapter.databinding.ISetOnListItemClickListener;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.RowEventListItemLayoutBinding;
 
-public class EventListAdapter extends DataBoundAdapter<RowEventListItemLayoutBinding> implements ISetOnListItemClickListener {
+public class EventListAdapter extends DataBoundAdapter<RowEventListItemLayoutBinding> implements OnListItemClickListener.HasOnListItemClickListener {
 
     private List<Event> data;
     private OnListItemClickListener mOnListItemClickListener;

@@ -18,28 +18,26 @@
 
 package de.symeda.sormas.app.task.list;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import androidx.core.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.core.content.ContextCompat;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
-import de.symeda.sormas.app.core.adapter.databinding.ISetOnListItemClickListener;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.RowTaskListItemLayoutBinding;
 
-public class TaskListAdapter extends DataBoundAdapter<RowTaskListItemLayoutBinding> implements ISetOnListItemClickListener {
+public class TaskListAdapter extends DataBoundAdapter<RowTaskListItemLayoutBinding> implements OnListItemClickListener.HasOnListItemClickListener {
 
     private List<Task> data;
     private OnListItemClickListener mOnListItemClickListener;

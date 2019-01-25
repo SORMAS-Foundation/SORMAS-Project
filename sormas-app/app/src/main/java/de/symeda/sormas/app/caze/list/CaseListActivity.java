@@ -27,18 +27,16 @@ import java.util.List;
 import java.util.Random;
 
 import androidx.lifecycle.ViewModelProviders;
-import androidx.paging.PagedList;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivity;
-import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.util.Consumer;
 
 public class CaseListActivity extends PagedBaseListActivity {
 
@@ -54,17 +52,20 @@ public class CaseListActivity extends PagedBaseListActivity {
         super.onCreate(savedInstanceState);
 
         showPreloader();
-        adapter = new CaseListAdapter(R.layout.row_case_list_item_layout);
+        adapter = new CaseListAdapter();
         model = ViewModelProviders.of(this).get(CaseListViewModel.class);
-        model.getCasesLiveData().observe(this, cases -> {
-            adapter.submitList(cases);
-//            ((CaseListAdapter) adapter).replaceAll(cases);
+        model.getCases().observe(this, cases -> {
             hidePreloader();
+            adapter.submitList(cases);
         });
-//        setOpenPageCallback(p -> {
-//            showPreloader();
-//            model.setInvestigationStatusAndReload(statusFilters[p.getKey()]);
-//        });
+
+        setOpenPageCallback(new Consumer<PageMenuItem>() {
+            @Override
+            public void accept(PageMenuItem pageMenuItem) {
+                showPreloader();
+                model.setInvestigationStatus(statusFilters[pageMenuItem.getKey()]);
+            }
+        });
     }
 
     @Override
@@ -109,5 +110,4 @@ public class CaseListActivity extends PagedBaseListActivity {
     public boolean isEntryCreateAllowed() {
         return ConfigProvider.hasUserRight(UserRight.CASE_CREATE);
     }
-
 }

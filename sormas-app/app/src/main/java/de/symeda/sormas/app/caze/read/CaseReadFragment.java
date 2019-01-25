@@ -30,6 +30,7 @@ import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelper;
+import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteria;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.databinding.DialogClassificationRulesLayoutBinding;
@@ -65,7 +66,8 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
         }
 
         // Button panel
-        if (!DatabaseHelper.getDiseaseClassificationCriteriaDao().getByDisease(record.getDisease()).hasAnyCriteria()) {
+        DiseaseClassificationCriteria diseaseClassificationCriteria = DatabaseHelper.getDiseaseClassificationCriteriaDao().getByDisease(record.getDisease());
+        if (diseaseClassificationCriteria == null || !diseaseClassificationCriteria.hasAnyCriteria()) {
             contentBinding.caseButtonsPanel.setVisibility(GONE);
         }
     }

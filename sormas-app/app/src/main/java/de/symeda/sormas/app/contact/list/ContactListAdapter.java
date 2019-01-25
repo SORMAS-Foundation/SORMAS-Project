@@ -21,30 +21,29 @@ package de.symeda.sormas.app.contact.list;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import androidx.core.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.core.content.ContextCompat;
 import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
-import de.symeda.sormas.app.core.adapter.databinding.ISetOnListItemClickListener;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.enumeration.StatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.databinding.RowReadContactListItemLayoutBinding;
 
-public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemLayoutBinding> implements ISetOnListItemClickListener {
+public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemLayoutBinding> implements OnListItemClickListener.HasOnListItemClickListener {
 
     private List<Contact> data;
     private OnListItemClickListener mOnListItemClickListener;

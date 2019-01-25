@@ -20,22 +20,18 @@ package de.symeda.sormas.app;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
-import de.symeda.sormas.app.core.adapter.databinding.ISetOnListItemClickListener;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.core.async.AsyncTaskResult;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.util.Bundler;
 
 public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter> extends BaseFragment implements OnListItemClickListener {
@@ -90,11 +86,11 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
             }
         });
 
-        if (this.adapter instanceof ISetOnListItemClickListener) {
-            ((ISetOnListItemClickListener) this.adapter).setOnListItemClickListener(this);
+        if (this.adapter instanceof HasOnListItemClickListener) {
+            ((HasOnListItemClickListener) this.adapter).setOnListItemClickListener(this);
         } else {
             throw new NotImplementedException("setOnListItemClickListener is not supported by the adapter; " +
-                    "implement ISetOnListItemClickListener");
+                    "implement HasOnListItemClickListener");
         }
 
 //        jobTask = new DefaultAsyncTask(getContext()) {
