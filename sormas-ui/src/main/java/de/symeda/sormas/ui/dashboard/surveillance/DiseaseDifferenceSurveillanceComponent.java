@@ -131,7 +131,7 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 
 		hcjs.append("xAxis: { categories: [");
 		for (DiseaseBurdenDto s : data) {
-			hcjs.append("'" + s.getDisease().getName() + "', ");
+			hcjs.append("'" + s.getDisease().toString() + "', ");
 		}
 		hcjs.append("]},");
 

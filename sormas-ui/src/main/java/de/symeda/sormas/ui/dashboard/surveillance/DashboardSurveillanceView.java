@@ -42,7 +42,7 @@ public class DashboardSurveillanceView extends AbstractDashboardView {
 		
 		// Add statistics
 		statisticsComponent = new DashboardSurveillanceStatisticsComponent(dashboardDataProvider);
-//		dashboardLayout.addComponent(statisticsComponent);
+		dashboardLayout.addComponent(statisticsComponent);
 
 		// Add epi curve and map
 		epiCurveComponent = new EpiCurveSurveillanceComponent(dashboardDataProvider);
@@ -53,7 +53,7 @@ public class DashboardSurveillanceView extends AbstractDashboardView {
 //		dashboardLayout.setExpandRatio(epiCurveAndMapLayout, 1);
 		
 		// Add diseaseCarousel and map
-		diseaseCarouselComponent = new EpiCurveSurveillanceComponent(dashboardDataProvider);
+		diseaseCarouselComponent = new DiseaseCarouselSurveillanceComponent(dashboardDataProvider);
 		//mapComponent = new DashboardMapComponent(dashboardDataProvider);
 		
 		diseaseCarouselAndMapLayout = createDiseaseCarouselAndMapLayout();

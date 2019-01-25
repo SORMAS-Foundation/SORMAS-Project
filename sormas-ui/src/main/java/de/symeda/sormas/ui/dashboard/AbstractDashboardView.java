@@ -40,6 +40,7 @@ import de.symeda.sormas.ui.dashboard.statistics.AbstractDashboardStatisticsCompo
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsSubComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.DashboardSurveillanceView;
 import de.symeda.sormas.ui.dashboard.surveillance.DiseaseBurdenSurveillanceComponent;
+import de.symeda.sormas.ui.dashboard.surveillance.DiseaseCarouselSurveillanceComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.DiseaseDifferenceSurveillanceComponent;
 import de.symeda.sormas.ui.reports.WeeklyReportOfficersGrid;
 import de.symeda.sormas.ui.reports.WeeklyReportRegionsGrid;
@@ -71,10 +72,10 @@ public abstract class AbstractDashboardView extends AbstractView {
 	private VerticalLayout diseaseDifferenceLayout;
 	protected HorizontalLayout diseaseBurdenAndCasesLayout;
 	
-	protected AbstractEpiCurveComponent diseaseCarouselComponent;
+	protected DiseaseCarouselSurveillanceComponent diseaseCarouselComponent;
 	//protected DashboardMapComponent mapComponent;
 	protected HorizontalLayout diseaseCarouselAndMapLayout;
-	private VerticalLayout diseaseCarouselLayout;
+	private HorizontalLayout diseaseCarouselLayout;
 	//private VerticalLayout mapLayout;
 
 	protected AbstractDashboardView(String viewName, DashboardType dashboardType) {
@@ -263,35 +264,28 @@ public abstract class AbstractDashboardView extends AbstractView {
 		return layout;
 	}
 	
-	protected VerticalLayout createDiseaseCarouselLayout() {
+	protected HorizontalLayout createDiseaseCarouselLayout() {
 		if (diseaseCarouselComponent == null) {
 			throw new UnsupportedOperationException("diseaseCarouselComponent needs to be initialized before calling createDiseaseCarouselLayout");
 		}
 
-		VerticalLayout layout = new VerticalLayout();
+		HorizontalLayout layout = new HorizontalLayout();
 		layout.setWidth(100, Unit.PERCENTAGE);
 		layout.setHeight(400, Unit.PIXELS);
 
-		diseaseCarouselComponent.setSizeFull();
+		//diseaseCarouselComponent.setSizeFull();
+		
+		
+		//Stats carousel
+		VerticalLayout statsLayout = new VerticalLayout();
+		statsLayout.addComponent(diseaseCarouselComponent);
+		
+		layout.addComponent(statsLayout);
+		//statsLayout.setWidth(50, Unit.PERCENTAGE);
 
-		layout.addComponent(diseaseCarouselComponent);
-		layout.setExpandRatio(diseaseCarouselComponent, 1);
-
-		diseaseCarouselComponent.setExpandListener(e -> {
-			dashboardLayout.removeComponent(statisticsComponent);
-			epiCurveAndMapLayout.removeComponent(mapLayout);
-			AbstractDashboardView.this.setHeight(100, Unit.PERCENTAGE);
-			epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
-			epiCurveLayout.setSizeFull();			
-		});
-
-		diseaseCarouselComponent.setCollapseListener(e -> {
-			dashboardLayout.addComponent(statisticsComponent, 1);
-			epiCurveAndMapLayout.addComponent(mapLayout, 1);
-			epiCurveLayout.setHeight(400, Unit.PIXELS);
-			AbstractDashboardView.this.setHeightUndefined();
-			epiCurveAndMapLayout.setHeightUndefined();
-		});
+		//EpiCurve
+		layout.addComponent(epiCurveComponent);
+		//epiCurveComponent.setWidth(50, Unit.PERCENTAGE);
 
 		return layout;
 	}
@@ -309,8 +303,12 @@ public abstract class AbstractDashboardView extends AbstractView {
 		// Epi curve chart has to be created again due to a canvas resizing issue when simply refreshing the component
 		epiCurveComponent.clearAndFillEpiCurveChart();
 		
+		// Update disease burden
 		diseaseBurdenComponent.refresh();
 		diseaseDifferenceComponent.refresh();
+		
+		// Update disease carousel
+		diseaseCarouselComponent.refresh();
 	}
 
 	@Override
