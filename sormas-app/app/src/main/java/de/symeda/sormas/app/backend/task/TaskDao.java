@@ -168,15 +168,18 @@ public class TaskDao extends AbstractAdoDao<Task> {
     /**
      * Gets all pending tasks.
      * Ordered by priority, then due date - oldest (most due) first
+     * TODO split - #942
      * @return
      */
-    public List<Task> queryMyPending() {
+    public List<Task> queryAllPending() {
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
                     where.eq(AbstractDomainObject.SNAPSHOT, false),
-                    where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
+                    where.or(
+                            where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
+                            where.eq(Task.CREATOR_USER + "_id", ConfigProvider.getUser())),
                     where.eq(Task.TASK_STATUS, TaskStatus.PENDING)
             );
 
@@ -184,7 +187,7 @@ public class TaskDao extends AbstractAdoDao<Task> {
                     .orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true)
                     .query();
         } catch (SQLException e) {
-            android.util.Log.e(getTableName(), "Could not perform queryMyPending on Task");
+            android.util.Log.e(getTableName(), "Could not perform queryAllPending on Task");
             throw new RuntimeException(e);
         }
     }
@@ -192,15 +195,18 @@ public class TaskDao extends AbstractAdoDao<Task> {
     /**
      * Gets all not executable tasks.
      * Ordered by due date - newest first
+     * TODO split - #942
      * @return
      */
-    public List<Task> queryMyNotExecutable() {
+    public List<Task> queryAllNotExecutable() {
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
                     where.eq(AbstractDomainObject.SNAPSHOT, false),
-                    where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
+                    where.or(
+                            where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
+                            where.eq(Task.CREATOR_USER + "_id", ConfigProvider.getUser())),
                     where.eq(Task.TASK_STATUS, TaskStatus.NOT_EXECUTABLE)
             );
 
@@ -208,29 +214,32 @@ public class TaskDao extends AbstractAdoDao<Task> {
                     .orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true)
                     .query();
         } catch (SQLException e) {
-            android.util.Log.e(getTableName(), "Could not perform queryMyNotExecutable on Task");
+            android.util.Log.e(getTableName(), "Could not perform queryAllNotExecutable on Task");
             throw new RuntimeException(e);
         }
     }
     /**
      * Gets all done and discarded tasks.
      * Ordered by due date - newest first
+     * TODO split - #942
      * @return
      */
-    public List<Task> queryMyDoneOrRemoved() {
+    public List<Task> queryAllDoneOrRemoved() {
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
                     where.eq(AbstractDomainObject.SNAPSHOT, false),
-                    where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
+                    where.or(
+                            where.eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser()),
+                            where.eq(Task.CREATOR_USER + "_id", ConfigProvider.getUser())),
                     where.eq(Task.TASK_STATUS, TaskStatus.DONE).or().eq(Task.TASK_STATUS, TaskStatus.REMOVED));
 
             return builder
                     .orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true)
                     .query();
         } catch (SQLException e) {
-            android.util.Log.e(getTableName(), "Could not perform queryMyDoneOrRemoved on Task");
+            android.util.Log.e(getTableName(), "Could not perform queryAllDoneOrRemoved on Task");
             throw new RuntimeException(e);
         }
     }

@@ -95,12 +95,12 @@ public class TaskListViewModel extends ViewModel {
             } else {
                 switch (model.taskStatus) {
                     case PENDING:
-                        return DatabaseHelper.getTaskDao().queryMyPending();
+                        return DatabaseHelper.getTaskDao().queryAllPending();
                     case DONE:
                     case REMOVED:
-                        return DatabaseHelper.getTaskDao().queryMyDoneOrRemoved();
+                        return DatabaseHelper.getTaskDao().queryAllDoneOrRemoved();
                     case NOT_EXECUTABLE:
-                        return DatabaseHelper.getTaskDao().queryMyNotExecutable();
+                        return DatabaseHelper.getTaskDao().queryAllNotExecutable();
                     default:
                         throw new IllegalArgumentException(model.taskStatus.toString());
                 }
