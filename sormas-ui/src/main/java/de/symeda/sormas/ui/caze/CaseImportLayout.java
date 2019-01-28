@@ -52,14 +52,14 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.importer.CaseImportProgressLayout;
 import de.symeda.sormas.ui.importer.CaseImportResult;
 import de.symeda.sormas.ui.importer.CaseImporter;
@@ -82,7 +82,7 @@ public class CaseImportLayout extends VerticalLayout {
 	private final UI currentUI;
 
 	public CaseImportLayout() {
-		currentUser = CurrentUser.getCurrent().getUserReference();
+		currentUser = UserProvider.getCurrent().getUserReference();
 		currentUI = UI.getCurrent();
 		
 		setMargin(true);
@@ -194,7 +194,7 @@ public class CaseImportLayout extends VerticalLayout {
 
 			FileOutputStream fos = null;
 			try {
-				String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + "_case_import_" + DateHelper.formatDateForExport(new Date()) + "_" + DataHelper.getShortUuid(CurrentUser.getCurrent().getUuid()) + ".csv";
+				String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + "_case_import_" + DateHelper.formatDateForExport(new Date()) + "_" + DataHelper.getShortUuid(UserProvider.getCurrent().getUuid()) + ".csv";
 				file = new File(Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath()).resolve(newFileName).toString());
 				fos = new FileOutputStream(file);
 			} catch (FileNotFoundException e) {
@@ -302,9 +302,9 @@ public class CaseImportLayout extends VerticalLayout {
 					}
 				};
 				selectOrCreateComponent.addDiscardListener(discardListener);
-				selectOrCreateComponent.getDiscardButton().setCaption(I18nProperties.getText("cancel"));
+				selectOrCreateComponent.getDiscardButton().setCaption(I18nProperties.getCaption("cancel"));
 
-				Button skipButton = new Button(I18nProperties.getText("skip"));
+				Button skipButton = new Button(I18nProperties.getCaption("skip"));
 				skipButton.addClickListener(e -> {
 					currentUI.accessSynchronously(new Runnable() {
 						@Override

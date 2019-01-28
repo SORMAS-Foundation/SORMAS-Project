@@ -19,29 +19,52 @@
 package de.symeda.sormas.app.contact.edit;
 
 import android.content.res.Resources;
-import android.support.v7.widget.LinearLayoutManager;
+
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
+import android.os.Bundle;
 import android.view.View;
 
 import java.util.List;
 
-import de.symeda.sormas.app.BaseEditFragment;
+import de.symeda.sormas.api.user.UserRight;
+import androidx.recyclerview.widget.RecyclerView;import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.task.edit.TaskEditActivity;
+import de.symeda.sormas.app.task.list.TaskListAdapter;
+import de.symeda.sormas.app.task.list.TaskListViewModel;
 
 public class ContactEditTaskListFragment extends BaseEditFragment<FragmentFormListLayoutBinding, List<Task>, Contact> implements OnListItemClickListener {
 
-    private List<Task> record;
-
-    private ContactEditTaskListAdapter adapter;
+    private TaskListAdapter adapter;
+    private TaskListViewModel model;
     private LinearLayoutManager linearLayoutManager;
 
     public static ContactEditTaskListFragment newInstance(Contact activityRootData) {
         return newInstance(ContactEditTaskListFragment.class, null, activityRootData);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        ((ContactEditActivity) getActivity()).showPreloader();
+        adapter = new TaskListAdapter(R.layout.row_task_list_item_layout, this);
+        model = ViewModelProviders.of(this).get(TaskListViewModel.class);
+        model.getTasks(getActivityRootData()).observe(this, tasks -> {
+            adapter.replaceAll(tasks);
+            adapter.notifyDataSetChanged();
+            updateEmptyListHint(tasks);
+            ((ContactEditActivity) getActivity()).hidePreloader();
+        });
     }
 
     @Override
@@ -52,23 +75,19 @@ public class ContactEditTaskListFragment extends BaseEditFragment<FragmentFormLi
 
     @Override
     public List<Task> getPrimaryData() {
-        return null;
+        throw new UnsupportedOperationException("Sub list fragments don't hold their data");
     }
 
     @Override
     protected void prepareFragmentData() {
-        Contact contact = getActivityRootData();
-        record = DatabaseHelper.getTaskDao().queryByContact(contact);
+
     }
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        updateEmptyListHint(record);
-        adapter = new ContactEditTaskListAdapter(R.layout.row_edit_task_list_item_layout, this, record);
-        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -84,6 +103,11 @@ public class ContactEditTaskListFragment extends BaseEditFragment<FragmentFormLi
     @Override
     public boolean isShowSaveAction() {
         return false;
+    }
+
+    @Override
+    public boolean isShowNewAction() {
+        return ConfigProvider.hasUserRight(UserRight.TASK_CREATE);
     }
 
     @Override

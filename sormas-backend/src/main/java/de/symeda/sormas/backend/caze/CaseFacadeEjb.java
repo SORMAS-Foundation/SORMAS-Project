@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.Month;
 import de.symeda.sormas.api.MonthOfYear;
@@ -72,6 +71,7 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.facility.FacilityHelper;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
@@ -128,6 +128,7 @@ import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.HospitalizationService;
+import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalizationService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.LocationService;
@@ -312,6 +313,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				person.get(Person.ID),
 				epiData.get(EpiData.ID),
 				symptoms.get(Symptoms.ID),
+				hospitalization.get(Hospitalization.ID),
 				caze.get(Case.UUID),
 				caze.get(Case.EPID_NUMBER),
 				caze.get(Case.DISEASE),
@@ -325,6 +327,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				region.get(Region.NAME),
 				district.get(District.NAME),
 				community.get(Community.NAME),
+				hospitalization.get(Hospitalization.ADMITTED_TO_HEALTH_FACILITY),
 				hospitalization.get(Hospitalization.ADMISSION_DATE),
 				facility.get(Facility.NAME),
 				facility.get(Facility.UUID),
@@ -343,7 +346,11 @@ public class CaseFacadeEjb implements CaseFacade {
 				person.get(Person.OCCUPATION_FACILITY_DETAILS),
 				epiData.get(EpiData.RODENTS),
 				epiData.get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE),
-				symptoms.get(Symptoms.ONSET_DATE));
+				symptoms.get(Symptoms.ONSET_DATE),
+				caze.get(Case.VACCINATION),
+				caze.get(Case.VACCINATION_DOSES),
+				caze.get(Case.VACCINATION_DATE),
+				caze.get(Case.VACCINATION_INFO_SOURCE));
 
 		User user = userService.getByUuid(userUuid);
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
@@ -362,7 +369,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<CaseExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
 		for (CaseExportDto exportDto : resultList) {
-			// TODO: Speed up this code, e.g. by persisting symtoms, lab results, etc. as a String in the database
+			// TODO: Speed up this code, e.g. by persisting symptoms, lab results, etc. as a String in the database
 			List<Date> sampleDates = sampleService.getSampleDatesForCase(exportDto.getId());
 			exportDto.setSampleTaken((sampleDates == null || sampleDates.isEmpty()) ? YesNoUnknown.NO : YesNoUnknown.YES);
 			exportDto.setSampleDates(sampleDates);
@@ -383,6 +390,14 @@ public class CaseFacadeEjb implements CaseFacade {
 						travel.getTravelDateFrom(), travel.getTravelDateTo()));
 			}
 			exportDto.setTravelHistory(travelHistoryBuilder.toString());
+			
+			// Place of initial detection
+			PreviousHospitalization firstPrevHosp = previousHospitalizationService.getInitialHospitalization(exportDto.getHospitalizationId());
+			if (firstPrevHosp != null) {
+				exportDto.setInitialDetectionPlace(firstPrevHosp.getHealthFacility().toString());
+			} else {
+				exportDto.setInitialDetectionPlace(exportDto.getHealthFacility());
+			}
 		}
 
 		return resultList;
@@ -441,8 +456,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		Date newCaseDate = CaseLogic.getStartDate(importCaze.getSymptoms().getOnsetDate(), importCaze.getReceptionDate(), importCaze.getReportDate());
 
 		CaseCriteria criteria = new CaseCriteria()
-				.personEquals(existingPerson)
-				.diseaseEquals(importCaze.getDisease())
+				.person(existingPerson)
+				.disease(importCaze.getDisease())
 				.archived(false)
 				.newCaseDateBetween(DateHelper.subtractMonths(newCaseDate, 2), DateHelper.addMonths(newCaseDate, 2), null);
 
@@ -465,7 +480,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	public List<CaseDataDto> getAllCasesOfPerson(String personUuid, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
-		return caseService.findBy(new CaseCriteria().personEquals(new PersonReferenceDto(personUuid)), user)
+		return caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(personUuid)), user)
 				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
@@ -673,9 +688,9 @@ public class CaseFacadeEjb implements CaseFacade {
 			for (User recipient : messageRecipients) {
 				try {
 					messagingService.sendMessage(recipient,
-							I18nProperties.getMessage(MessagingService.SUBJECT_CASE_CLASSIFICATION_CHANGED),
+							I18nProperties.getString(MessagingService.SUBJECT_CASE_CLASSIFICATION_CHANGED),
 							String.format(
-									I18nProperties.getMessage(MessagingService.CONTENT_CASE_CLASSIFICATION_CHANGED),
+									I18nProperties.getString(MessagingService.CONTENT_CASE_CLASSIFICATION_CHANGED),
 									DataHelper.getShortUuid(newCase.getUuid()),
 									newCase.getCaseClassification().toString()),
 							MessageType.EMAIL, MessageType.SMS);
@@ -786,7 +801,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (Sample sample : samples) {
 			sampleService.delete(sample);
 		}
-		List<Task> tasks = taskService.findBy(new TaskCriteria().cazeEquals(caseRef));
+		List<Task> tasks = taskService.findBy(new TaskCriteria().caze(caseRef));
 		for (Task task : tasks) {
 			taskService.delete(task);
 		}
@@ -936,8 +951,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			// Set the task status of all investigation tasks to "Removed" because
 			// the case status has been updated manually
-			List<Task> pendingTasks = taskService.findBy(new TaskCriteria().taskTypeEquals(TaskType.CASE_INVESTIGATION)
-					.cazeEquals(caseRef).taskStatusEquals(TaskStatus.PENDING));
+			List<Task> pendingTasks = taskService.findBy(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION)
+					.caze(caseRef).taskStatus(TaskStatus.PENDING));
 			for (Task task : pendingTasks) {
 				task.setTaskStatus(TaskStatus.REMOVED);
 				task.setStatusChangeDate(new Date());
@@ -952,8 +967,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			caze.setInvestigatedDate(null);
 
 			// Create a new investigation task if none is present
-			long pendingCount = taskService.getCount(new TaskCriteria().taskTypeEquals(TaskType.CASE_INVESTIGATION)
-					.cazeEquals(caseRef).taskStatusEquals(TaskStatus.PENDING));
+			long pendingCount = taskService.getCount(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION)
+					.caze(caseRef).taskStatus(TaskStatus.PENDING));
 
 			if (pendingCount == 0) {
 				createInvestigationTask(caze);
@@ -965,8 +980,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		CaseReferenceDto caseRef = caze.toReference();
 
 		// any pending case investigation task?
-		long pendingCount = taskService.getCount(new TaskCriteria().taskTypeEquals(TaskType.CASE_INVESTIGATION)
-				.cazeEquals(caseRef).taskStatusEquals(TaskStatus.PENDING));
+		long pendingCount = taskService.getCount(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION)
+				.caze(caseRef).taskStatus(TaskStatus.PENDING));
 
 		if (pendingCount > 0) {
 			// set status to investigation pending
@@ -976,7 +991,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		} else {
 			// get "case investigation" task created last
 			List<Task> cazeTasks = taskService
-					.findBy(new TaskCriteria().taskTypeEquals(TaskType.CASE_INVESTIGATION).cazeEquals(caseRef));
+					.findBy(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION).caze(caseRef));
 
 			Task youngestTask = cazeTasks.stream().max(new Comparator<Task>() {
 				@Override
@@ -1152,8 +1167,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (User recipient : messageRecipients) {
 			try {
 				messagingService.sendMessage(recipient,
-						I18nProperties.getMessage(MessagingService.SUBJECT_CASE_INVESTIGATION_DONE),
-						String.format(I18nProperties.getMessage(MessagingService.CONTENT_CASE_INVESTIGATION_DONE),
+						I18nProperties.getString(MessagingService.SUBJECT_CASE_INVESTIGATION_DONE),
+						String.format(I18nProperties.getString(MessagingService.CONTENT_CASE_INVESTIGATION_DONE),
 								DataHelper.getShortUuid(caze.getUuid())),
 						MessageType.EMAIL, MessageType.SMS);
 			} catch (NotificationDeliveryFailedException e) {

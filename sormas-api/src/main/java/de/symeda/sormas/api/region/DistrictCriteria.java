@@ -19,13 +19,17 @@ package de.symeda.sormas.api.region;
 
 import java.io.Serializable;
 
-public class DistrictCriteria implements Serializable, Cloneable {
+import de.symeda.sormas.api.BaseCriteria;
+import de.symeda.sormas.api.utils.IgnoreForUrl;
+
+public class DistrictCriteria extends BaseCriteria implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -1794892073657582900L;
 	
 	private RegionReferenceDto region;
-
-	public DistrictCriteria regionEquals(RegionReferenceDto region) {
+	private String nameEpidLike;
+	
+	public DistrictCriteria region(RegionReferenceDto region) {
 		this.region = region;
 		return this;
 	}
@@ -34,4 +38,13 @@ public class DistrictCriteria implements Serializable, Cloneable {
 		return region;
 	}
 
+	@IgnoreForUrl
+	public String getNameEpidLike() {
+		return nameEpidLike;
+	}
+
+	public DistrictCriteria nameEpidLike(String nameEpidLike) {
+		this.nameEpidLike = nameEpidLike;
+		return this;
+	}
 }

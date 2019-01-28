@@ -19,19 +19,18 @@
 package de.symeda.sormas.app.person;
 
 import android.content.Context;
-import android.databinding.Observable;
-import android.databinding.ObservableArrayList;
-import android.databinding.ObservableField;
-import android.databinding.ViewDataBinding;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
-
-import com.android.databinding.library.baseAdapters.BR;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.databinding.Observable;
+import androidx.databinding.ObservableArrayList;
+import androidx.databinding.ObservableField;
+import androidx.databinding.ViewDataBinding;
+import androidx.databinding.library.baseAdapters.BR;
+import androidx.fragment.app.FragmentActivity;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.app.BaseActivity;

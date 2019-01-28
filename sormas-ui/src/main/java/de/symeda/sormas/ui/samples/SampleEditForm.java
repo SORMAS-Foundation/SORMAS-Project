@@ -32,7 +32,8 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -43,7 +44,7 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -103,17 +104,17 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 
 		// Validators
 		sampleDateField.addValidator(new DateComparisonValidator(sampleDateField, shipmentDate, true, false,
-				I18nProperties.getValidationError("beforeDate", sampleDateField.getCaption(), shipmentDate.getCaption())));
+				I18nProperties.getValidationError(Validations.beforeDate, sampleDateField.getCaption(), shipmentDate.getCaption())));
 		sampleDateField.addValidator(new DateComparisonValidator(sampleDateField, receivedDate, true, false,
-				I18nProperties.getValidationError("beforeDate", sampleDateField.getCaption(), receivedDate.getCaption())));
+				I18nProperties.getValidationError(Validations.beforeDate, sampleDateField.getCaption(), receivedDate.getCaption())));
 		shipmentDate.addValidator(new DateComparisonValidator(shipmentDate, sampleDateField, false, false,
-				I18nProperties.getValidationError("afterDate", shipmentDate.getCaption(), sampleDateField.getCaption())));
+				I18nProperties.getValidationError(Validations.afterDate, shipmentDate.getCaption(), sampleDateField.getCaption())));
 		shipmentDate.addValidator(new DateComparisonValidator(shipmentDate, receivedDate, true, false,
-				I18nProperties.getValidationError("beforeDate", shipmentDate.getCaption(), receivedDate.getCaption())));
+				I18nProperties.getValidationError(Validations.beforeDate, shipmentDate.getCaption(), receivedDate.getCaption())));
 		receivedDate.addValidator(new DateComparisonValidator(receivedDate, sampleDateField, false, false,
-				I18nProperties.getValidationError("afterDate", receivedDate.getCaption(), sampleDateField.getCaption())));
+				I18nProperties.getValidationError(Validations.afterDate, receivedDate.getCaption(), sampleDateField.getCaption())));
 		receivedDate.addValidator(new DateComparisonValidator(receivedDate, shipmentDate, false, false,
-				I18nProperties.getValidationError("afterDate", receivedDate.getCaption(), shipmentDate.getCaption())));
+				I18nProperties.getValidationError(Validations.afterDate, receivedDate.getCaption(), shipmentDate.getCaption())));
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.SAMPLE_MATERIAL_TEXT, SampleDto.SAMPLE_MATERIAL, Arrays.asList(SampleMaterial.OTHER), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.NO_TEST_POSSIBLE_REASON, SampleDto.SPECIMEN_CONDITION, Arrays.asList(SpecimenCondition.NOT_ADEQUATE), true);
@@ -129,7 +130,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			if (caze.getDisease() != Disease.NEW_INFLUENCA) {
 				sampleSource.setVisible(false);
 			}
-			if ((CurrentUser.getCurrent().getUuid().equals(getValue().getReportingUser().getUuid()))) {
+			if ((UserProvider.getCurrent().getUuid().equals(getValue().getReportingUser().getUuid()))) {
 				FieldHelper.setEnabledWhen(getFieldGroup(), shipped, Arrays.asList(true), Arrays.asList(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS), true);
 				FieldHelper.setRequiredWhen(getFieldGroup(), shipped, Arrays.asList(SampleDto.SHIPMENT_DATE), Arrays.asList(true));
 				setRequired(true, SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_MATERIAL, SampleDto.LAB);

@@ -19,10 +19,10 @@
 package de.symeda.sormas.app.component.controls;
 
 import android.content.Context;
-import android.databinding.BindingMethod;
-import android.databinding.BindingMethods;
-import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
+import androidx.databinding.BindingMethod;
+import androidx.databinding.BindingMethods;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;

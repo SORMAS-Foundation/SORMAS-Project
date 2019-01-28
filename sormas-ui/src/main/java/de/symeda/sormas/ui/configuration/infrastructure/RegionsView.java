@@ -17,28 +17,44 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import java.util.Date;
+
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.region.RegionCriteria;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DownloadUtil;
 
 public class RegionsView extends AbstractConfigurationView {
 
 	private static final long serialVersionUID = -3487830069266335042L;
-	
+
 	public static final String SEARCH = "search";
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/regions";
 	
+	private RegionCriteria criteria;
+	
+	// Filter
+	private TextField searchField;
+	private Button resetButton;
+
 	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;
 	private RegionsGrid grid;	
@@ -46,7 +62,11 @@ public class RegionsView extends AbstractConfigurationView {
 
 	public RegionsView() {
 		super(VIEW_NAME);
+		
+		criteria = ViewModelProviders.of(RegionsView.class).get(RegionCriteria.class);
+		
 		grid = new RegionsGrid();
+		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(grid);
@@ -55,9 +75,18 @@ public class RegionsView extends AbstractConfigurationView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
-		grid.reload();
-		
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
+
+		Button exportButton = new Button("Export");
+		exportButton.setDescription("Export the columns and rows that are shown in the table below.");
+		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		exportButton.setIcon(FontAwesome.TABLE);
+		addHeaderComponent(exportButton);
+
+		StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), grid.getColumns(), "sormas_regions", "sormas_regions_" + DateHelper.formatDateForExport(new Date()) + ".csv", RegionsGrid.EDIT_BTN_ID);
+		FileDownloader fileDownloader = new FileDownloader(streamResource);
+		fileDownloader.extend(exportButton);
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = new Button("New entry");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
@@ -65,25 +94,59 @@ public class RegionsView extends AbstractConfigurationView {
 					e -> ControllerProvider.getInfrastructureController().createRegion());
 			addHeaderComponent(createButton);
 		}
-		
+
 		addComponent(gridLayout);
 	}
-	
+
 	private HorizontalLayout createFilterBar() {
 		filterLayout = new HorizontalLayout();
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
 
-		TextField searchField = new TextField();
+		searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
-		searchField.setInputPrompt(I18nProperties.getText(SEARCH));
+		searchField.setInputPrompt(I18nProperties.getCaption(SEARCH));
+		searchField.setNullRepresentation("");
 		searchField.addTextChangeListener(e -> {
-			grid.filterByText(e.getText());
+			criteria.nameEpidLike(e.getText());
+			navigateTo(criteria);
 		});
 		CssStyles.style(searchField, CssStyles.FORCE_CAPTION);
 		filterLayout.addComponent(searchField);
-		
+
+		resetButton = new Button(I18nProperties.getCaption(Captions.resetFilters));
+		resetButton.setVisible(false);
+		CssStyles.style(resetButton, CssStyles.FORCE_CAPTION);
+		resetButton.addClickListener(event -> {
+			ViewModelProviders.of(RegionsView.class).remove(RegionCriteria.class);
+			navigateTo(null);
+		});
+		filterLayout.addComponent(resetButton);
+
 		return filterLayout;
+	}
+
+	@Override
+	public void enter(ViewChangeEvent event) {
+		super.enter(event);
+		String params = event.getParameters().trim();
+		if (params.startsWith("?")) {
+			params = params.substring(1);
+			criteria.fromUrlParams(params);
+		}
+		updateFilterComponents();
+		grid.reload();
+	}
+	
+	public void updateFilterComponents() {
+		// TODO replace with Vaadin 8 databinding
+		applyingCriteria = true;
+
+		resetButton.setVisible(criteria.hasAnyFilterActive());
+		
+		searchField.setValue(criteria.getNameEpidLike());
+		
+		applyingCriteria = false;
 	}
 	
 }

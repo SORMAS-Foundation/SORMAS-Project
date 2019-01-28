@@ -27,7 +27,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleTestResultType;
@@ -61,7 +61,7 @@ public class SampleListEntry extends HorizontalLayout {
 		labelLayout.addComponent(topLabelLayout);
 		String htmlLeft = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE,
 				DataHelper.toStringNullable(sample.getSampleMaterial()))
-				+ LayoutUtil.div(I18nProperties.getPrefixFieldCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME)
+				+ LayoutUtil.div(I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME)
 						+ ": " + DateHelper.formatLocalShortDate(sample.getSampleDateTime()));
 		Label labelLeft = new Label(htmlLeft, ContentMode.HTML);
 		topLabelLayout.addComponent(labelLeft);

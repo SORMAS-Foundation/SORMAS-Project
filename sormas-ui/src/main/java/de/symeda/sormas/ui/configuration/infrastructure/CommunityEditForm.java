@@ -21,7 +21,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -59,7 +59,7 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 	protected void addFields() {		
 		addField(CommunityDto.NAME, TextField.class);
 		ComboBox region = new ComboBox();
-		region.setCaption(I18nProperties.getPrefixFieldCaption(CommunityDto.I18N_PREFIX, REGION_LOC));
+		region.setCaption(I18nProperties.getPrefixCaption(CommunityDto.I18N_PREFIX, REGION_LOC));
 		region.setWidth(100, Unit.PERCENTAGE);
 		getContent().addComponent(region, REGION_LOC);
 		ComboBox district = addField(CommunityDto.DISTRICT, ComboBox.class);

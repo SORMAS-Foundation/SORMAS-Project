@@ -19,15 +19,14 @@
 package de.symeda.sormas.app.component.dialog;
 
 import android.content.Context;
-import android.databinding.ViewDataBinding;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.android.databinding.library.baseAdapters.BR;
-
 import java.util.List;
 
+import androidx.databinding.ViewDataBinding;
+import androidx.databinding.library.baseAdapters.BR;
+import androidx.fragment.app.FragmentActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;

@@ -20,22 +20,18 @@ package de.symeda.sormas.app;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
-import de.symeda.sormas.app.core.adapter.databinding.ISetOnListItemClickListener;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.core.async.AsyncTaskResult;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.util.Bundler;
 
 public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter> extends BaseFragment implements OnListItemClickListener {
@@ -90,34 +86,32 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
             }
         });
 
-        if (this.adapter instanceof ISetOnListItemClickListener) {
-            ((ISetOnListItemClickListener) this.adapter).setOnListItemClickListener(this);
+        if (this.adapter instanceof HasOnListItemClickListener) {
+            ((HasOnListItemClickListener) this.adapter).setOnListItemClickListener(this);
         } else {
             throw new NotImplementedException("setOnListItemClickListener is not supported by the adapter; " +
-                    "implement ISetOnListItemClickListener");
+                    "implement HasOnListItemClickListener");
         }
 
-        jobTask = new DefaultAsyncTask(getContext()) {
-            @Override
-            public void onPreExecute() {
-                getBaseActivity().showPreloader();
-            }
-
-            @Override
-            public void doInBackground(final TaskResultHolder resultHolder) {
-                prepareFragmentData();
-            }
-
-            @Override
-            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-                getBaseActivity().hidePreloader();
-            }
-        }.executeOnThreadPool();
+//        jobTask = new DefaultAsyncTask(getContext()) {
+//            @Override
+//            public void onPreExecute() {
+//                getBaseActivity().showPreloader();
+//            }
+//
+//            @Override
+//            public void doInBackground(final TaskResultHolder resultHolder) {
+//                prepareFragmentData();
+//            }
+//
+//            @Override
+//            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+//                getBaseActivity().hidePreloader();
+//            }
+//        }.executeOnThreadPool();
 
         return view;
     }
-
-    protected abstract void prepareFragmentData();
 
     @Override
     public void onResume() {
@@ -158,9 +152,15 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
     }
 
     protected void updateEmptyListHint() {
-        TextView emptyListHintView = (TextView) getView().findViewById(R.id.emptyListHint);
-        if (emptyListHintView == null)
+        if (getView() == null) {
             return;
+        }
+
+        TextView emptyListHintView = (TextView) getView().findViewById(R.id.emptyListHint);
+
+        if (emptyListHintView == null) {
+            return;
+        }
 
         if (adapter.getItemCount() == 0) {
             emptyListHintView.setText(getResources().getString(canAddToList() ? R.string.hint_no_records_found_add_new : R.string.hint_no_records_found));

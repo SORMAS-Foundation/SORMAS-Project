@@ -34,7 +34,7 @@ import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -93,7 +93,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	addField(UserDto.USER_ROLES, OptionGroup.class).addValidator(new UserRolesValidator());
     	OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
     	userRoles.setMultiSelect(true);
-    	userRoles.addItems(UserRole.getAssignableRoles(CurrentUser.getCurrent().getUserRoles()));
+    	userRoles.addItems(UserRole.getAssignableRoles(UserProvider.getCurrent().getUserRoles()));
     	
     	ComboBox region = addField(UserDto.REGION, ComboBox.class);
     	ComboBox community = addField(UserDto.COMMUNITY, ComboBox.class);

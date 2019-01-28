@@ -22,7 +22,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentActivity;
+import androidx.fragment.app.FragmentActivity;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -43,6 +43,7 @@ import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCriteriaDto;
@@ -54,6 +55,7 @@ import de.symeda.sormas.api.caze.classification.ClassificationSampleTestCriteria
 import de.symeda.sormas.api.caze.classification.ClassificationSampleTestPositiveResultCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
@@ -163,15 +165,54 @@ public final class RetroProvider {
             httpClient.addInterceptor(additionalInterceptor);
         }
 
-        // check rest api version
+        retrofit = new Retrofit.Builder()
+                .baseUrl(ConfigProvider.getServerRestUrl())
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .client(httpClient.build())
+                .build();
+
+        checkCompatibility();
+
+        updateLocale();
+    }
+
+    private void updateLocale() throws ServerCommunicationException, ServerConnectionException {
+        Response<String> localeResponse;
+        try {
+            infoFacadeRetro = retrofit.create(InfoFacadeRetro.class);
+            AsyncTask<Void, Void, Response<String>> asyncTask = new AsyncTask<Void, Void, Response<String>>() {
+
+                @Override
+                protected Response<String> doInBackground(Void... params) {
+                    Call<String> localeCall = infoFacadeRetro.getLocale();
+                    try {
+                        return localeCall.execute();
+                    } catch (IOException e) {
+                        Log.w(RetroProvider.class.getSimpleName(), e.getMessage());
+                        // wrap the exception message inside a response object
+                        return Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), e.getMessage()));
+                    }
+                }
+            };
+            localeResponse = asyncTask.execute().get();
+
+        } catch (InterruptedException | ExecutionException e) {
+            throw new ServerCommunicationException(e);
+        }
+
+        if (localeResponse.isSuccessful()) {
+            // success - now check compatibility
+            String localeStr = localeResponse.body();
+            ConfigProvider.setLocale(localeStr);
+        } else {
+            throwException(localeResponse);
+        }
+    }
+
+    private void checkCompatibility() throws ServerCommunicationException, ServerConnectionException, ApiVersionException {
+
         Response<CompatibilityCheckResponse> compatibilityResponse;
         try {
-
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(ConfigProvider.getServerRestUrl())
-                    .addConverterFactory(GsonConverterFactory.create(gson))
-                    .client(httpClient.build())
-                    .build();
 
             // make call to get version info
             infoFacadeRetro = retrofit.create(InfoFacadeRetro.class);

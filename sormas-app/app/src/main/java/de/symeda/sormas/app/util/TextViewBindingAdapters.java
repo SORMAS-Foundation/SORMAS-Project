@@ -20,8 +20,8 @@ package de.symeda.sormas.app.util;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.databinding.BindingAdapter;
-import android.databinding.ObservableList;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.ObservableList;
 import android.graphics.Typeface;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,7 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
@@ -385,7 +385,7 @@ public class TextViewBindingAdapters {
         } else {
             String val = yesNoUnknown.toString();
             String fieldId = textField.getResources().getResourceName(textField.getId());
-            String caption = I18nProperties.getFieldCaption(ControlPropertyField.toPrefixPropertyId(fieldId));
+            String caption = I18nProperties.getCaption(ControlPropertyField.toPrefixPropertyId(fieldId));
 
             if (DataHelper.isNullOrEmpty(caption)) {
                 textField.setText(val);
@@ -911,7 +911,7 @@ public class TextViewBindingAdapters {
             if (record.getEvent().getEventLocation().getCity() != null && !record.getEvent().getEventLocation().getCity().isEmpty()) {
                 sb.append(", " + record.getEvent().getEventLocation().getCity());
             }
-            sb.append(", " + record.getEvent().getEventDesc().substring(0, 15) + (record.getEvent().getEventDesc().length() > 15 ? "..." : ""));
+            sb.append(", " + StringUtils.substring(record.getEvent().getEventDesc(), 0, 15) + (record.getEvent().getEventDesc().length() > 15 ? "..." : ""));
             result = sb.toString();
         }
 

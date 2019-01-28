@@ -29,11 +29,11 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class EventParticipantsView extends AbstractEventView {
@@ -72,13 +72,13 @@ public class EventParticipantsView extends AbstractEventView {
 		topLayout.setSpacing(true);
 		topLayout.setWidth("100%");
 
-		Label header = new Label(I18nProperties.getPrefixFieldCaption(EventDto.I18N_PREFIX, EventDto.EVENT_PERSONS));
+		Label header = new Label(I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.EVENT_PERSONS));
 		header.setSizeUndefined();
 		CssStyles.style(header, CssStyles.H2, CssStyles.VSPACE_NONE);
 		topLayout.addComponent(header);
 
 		// Bulk operation dropdown
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
 			MenuBar bulkOperationsDropdown = new MenuBar();	
@@ -99,7 +99,7 @@ public class EventParticipantsView extends AbstractEventView {
 			topLayout.setExpandRatio(bulkOperationsDropdown, 1);
 		}
 
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
 			addButton = new Button("Add person");
 			addButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			addButton.setIcon(FontAwesome.PLUS_CIRCLE);

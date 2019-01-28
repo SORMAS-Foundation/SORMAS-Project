@@ -6,17 +6,17 @@ ext.keystoreProperties = loadKeystoreProperties()
 android {
     // https://medium.com/google-developers/picking-your-compilesdkversion-minsdkversion-targetsdkversion-a098a0341ebd
     // ideally: minSdkVersion (lowest possible) <= targetSdkVersion == compileSdkVersion (latest SDK)
-    compileSdkVersion 27
+    compileSdkVersion 28
     // always use the latest
     buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "de.symeda.sormas.app"
         minSdkVersion 21
-        targetSdkVersion 24
+        targetSdkVersion 26
         versionCode buildVersionCode()
         versionName "$sormasVersion"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         setProperty("archivesBaseName", "sormas-$versionName")
         multiDexEnabled true
     }
@@ -51,6 +51,15 @@ android {
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    // needed for pre androidx testing. This will not make it's way into the apk
+    useLibrary 'android.test.runner'
+    useLibrary 'android.test.base'
+    useLibrary 'android.test.mock'
 }
 
 repositories {
@@ -59,38 +68,39 @@ repositories {
     maven { url "https://maven.repository.redhat.com/ga/" }
 }
 
-configurations.all {
-    resolutionStrategy {
-        force 'com.android.support:support-annotations:27.1.1'
-    }
-}
-
 dependencies {
+    def lifecycle_version = "2.0.0"
+    def paging_version = "2.1.0-rc01"
+
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:design:27.1.1'
-    implementation 'com.android.support:percent:27.1.1'
+    implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
+    implementation 'com.google.android.material:material:1.1.0-alpha02'
+    implementation 'androidx.percentlayout:percentlayout:1.0.0'
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
     implementation 'com.j256.ormlite:ormlite-core:5.1'
     implementation 'com.j256.ormlite:ormlite-android:5.1'
     implementation 'javax.persistence:persistence-api:1.0.2'
     implementation "de.symeda.sormas:sormas-api:$sormasVersion"
-    implementation 'com.google.android.gms:play-services-analytics:16.0.1'
+    implementation 'com.google.android.gms:play-services-analytics:16.0.6'
     implementation 'com.googlecode:openbeans:1.0'
     implementation files('libs/MPAndroidChart-v3.0.2.jar')
     implementation(name: 'CircleProgress-v1.2.1', ext: 'aar')
     implementation 'io.reactivex:rxandroid:1.0.1'
     implementation 'io.reactivex:rxjava:1.0.14'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.9.8'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.9.8'
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    implementation "androidx.paging:paging-runtime:$paging_version"
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.hamcrest:hamcrest-library:1.3'
     testImplementation 'org.robolectric:robolectric:3.0'
     testImplementation 'org.mockito:mockito-core:1.10.19'
-    androidTestImplementation 'com.android.support:support-annotations:27.1.1'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test:rules:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.3'
+    androidTestImplementation 'androidx.annotation:annotation:1.0.0'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test:rules:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

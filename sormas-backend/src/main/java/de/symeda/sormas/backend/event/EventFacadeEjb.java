@@ -183,7 +183,7 @@ public class EventFacadeEjb implements EventFacade {
 		for (EventParticipant eventParticipant : eventParticipants) {
 			eventParticipantService.delete(eventParticipant);
 		}
-		List<Task> tasks = taskService.findBy(new TaskCriteria().eventEquals(eventRef));
+		List<Task> tasks = taskService.findBy(new TaskCriteria().event(eventRef));
 		for (Task task : tasks) {
 			taskService.delete(task);
 		}

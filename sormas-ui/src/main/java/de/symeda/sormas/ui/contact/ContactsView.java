@@ -20,7 +20,6 @@ package de.symeda.sormas.ui.contact;
 import java.util.Date;
 import java.util.HashMap;
 
-import org.apache.commons.lang3.StringUtils;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -42,9 +41,9 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
@@ -52,6 +51,8 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -62,7 +63,8 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -83,6 +85,8 @@ public class ContactsView extends AbstractView {
 
 	public static final String SEARCH_FIELD = "searchField";
 
+	private ContactCriteria criteria;
+
 	private ContactGrid grid;    
 	private VerticalLayout gridLayout;
 
@@ -99,16 +103,20 @@ public class ContactsView extends AbstractView {
 	private ComboBox followUpStatusFilter;
 	private ComboBox reportedByFilter;
 	private TextField searchField;
-	
-	private boolean showArchivedContacts = false;
+	private Button resetButton;
+
+	private Button switchArchivedActiveButton;
 	private String originalViewTitle;
 
 	public ContactsView() {
 		super(VIEW_NAME);
-		
+
 		originalViewTitle = getViewTitleLabel().getValue();
 
-		grid = new ContactGrid(false);        
+		criteria = ViewModelProviders.of(ContactsView.class).get(ContactCriteria.class);
+
+		grid = new ContactGrid(false);  
+		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
@@ -119,10 +127,10 @@ public class ContactsView extends AbstractView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
 		grid.getContainer().addItemSetChangeListener(e -> {
-			updateActiveStatusButtonCaption();
+			updateStatusButtons();
 		});
 
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
 
 			PopupButton exportButton = new PopupButton("Export"); 
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
@@ -153,14 +161,14 @@ public class ContactsView extends AbstractView {
 			exportLayout.addComponent(extendedExportButton);
 
 			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(ContactExportDto.class,
-					(Integer start, Integer max) -> FacadeProvider.getContactFacade().getExportList(CurrentUser.getCurrent().getUuid(), grid.getFilterCriteria(), start, max), 
+					(Integer start, Integer max) -> FacadeProvider.getContactFacade().getExportList(UserProvider.getCurrent().getUuid(), grid.getCriteria(), start, max), 
 					propertyId -> {
-						return I18nProperties.getPrefixFieldCaption(ContactExportDto.I18N_PREFIX, propertyId,
-								I18nProperties.getPrefixFieldCaption(ContactDto.I18N_PREFIX, propertyId,
-										I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, propertyId,
-												I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, propertyId,
-														I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, propertyId,
-																I18nProperties.getPrefixFieldCaption(HospitalizationDto.I18N_PREFIX, propertyId))))));
+						return I18nProperties.getPrefixCaption(ContactExportDto.I18N_PREFIX, propertyId,
+								I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, propertyId,
+										I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
+												I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, propertyId,
+														I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId,
+																I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId))))));
 					},
 					"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
@@ -171,7 +179,7 @@ public class ContactsView extends AbstractView {
 			warningLabel.setVisible(false);
 
 			exportButton.addClickListener(e -> {
-				warningLabel.setVisible(!isAnyFilterEnabled());
+				warningLabel.setVisible(!criteria.hasAnyFilterActive());
 			});
 		}
 
@@ -185,43 +193,47 @@ public class ContactsView extends AbstractView {
 
 		classificationFilter = new ComboBox();
 		classificationFilter.setWidth(140, Unit.PIXELS);
-		classificationFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CLASSIFICATION));
+		classificationFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CLASSIFICATION));
 		classificationFilter.addItems((Object[]) ContactClassification.values());
 		classificationFilter.addValueChangeListener(e -> {
-			grid.setClassificationFilter((ContactClassification) e.getProperty().getValue());
+			criteria.contactClassification((ContactClassification) e.getProperty().getValue());
+			navigateTo(criteria);
 		});
 		filterLayout.addComponent(classificationFilter);
 
 		diseaseFilter = new ComboBox();
 		diseaseFilter.setWidth(140, Unit.PIXELS);
-		diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISEASE));
+		diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISEASE));
 		diseaseFilter.addItems((Object[])Disease.values());
 		diseaseFilter.addValueChangeListener(e -> {
-			grid.setDiseaseFilter(((Disease)e.getProperty().getValue()));
+			criteria.caseDisease(((Disease)e.getProperty().getValue()));
+			navigateTo(criteria);
 		});
 		filterLayout.addComponent(diseaseFilter);
 
-		UserDto user = CurrentUser.getCurrent().getUser();
+		UserDto user = UserProvider.getCurrent().getUser();
 
 		regionFilter = new ComboBox();
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(140, Unit.PIXELS);
-			regionFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_REGION_UUID));
+			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_REGION_UUID));
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
-				grid.setRegionFilter(region);
+				criteria.caseRegion(region);
+				navigateTo(criteria);
 			});
 			filterLayout.addComponent(regionFilter);
 		}
 
 		districtFilter = new ComboBox();
 		districtFilter.setWidth(140, Unit.PIXELS);
-		districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISTRICT_UUID));
+		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISTRICT_UUID));
 		districtFilter.setDescription("Select a district in the state");
 		districtFilter.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
-			grid.setDistrictFilter(district);
+			criteria.caseDistrict(district);
+			navigateTo(criteria);
 		});
 
 		if (user.getRegion() != null && user.getDistrict() == null) {	
@@ -244,11 +256,12 @@ public class ContactsView extends AbstractView {
 
 		facilityFilter = new ComboBox();
 		facilityFilter.setWidth(140, Unit.PIXELS);
-		facilityFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_HEALTH_FACILITY_UUID));
+		facilityFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_HEALTH_FACILITY_UUID));
 		facilityFilter.setDescription("Select a facility in the LGA");
 		facilityFilter.addValueChangeListener(e -> {
 			FacilityReferenceDto facility = (FacilityReferenceDto) e.getProperty().getValue();
-			grid.setHealthFacilityFilter(facility);
+			criteria.caseFacility(facility);
+			navigateTo(criteria);
 		});
 		facilityFilter.setEnabled(false);
 		filterLayout.addComponent(facilityFilter);
@@ -266,22 +279,24 @@ public class ContactsView extends AbstractView {
 
 		officerFilter = new ComboBox();
 		officerFilter.setWidth(140, Unit.PIXELS);
-		officerFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
+		officerFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
 		if (user.getRegion() != null) {
 			officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.CONTACT_OFFICER));
 		}
 		officerFilter.addValueChangeListener(e -> {
 			UserReferenceDto officer = (UserReferenceDto) e.getProperty().getValue();
-			grid.setContactOfficerFilter(officer);
+			criteria.contactOfficer(officer);
+			navigateTo(criteria);
 		});
 		filterLayout.addComponent(officerFilter);
 
 		followUpStatusFilter = new ComboBox();
 		followUpStatusFilter.setWidth(140, Unit.PIXELS);
-		followUpStatusFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.FOLLOW_UP_STATUS));
+		followUpStatusFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.FOLLOW_UP_STATUS));
 		followUpStatusFilter.addItems((Object[])FollowUpStatus.values());
 		followUpStatusFilter.addValueChangeListener(e -> {
-			grid.setFollowUpStatusFilter(((FollowUpStatus)e.getProperty().getValue()));
+			criteria.followUpStatus(((FollowUpStatus)e.getProperty().getValue()));
+			navigateTo(criteria);
 		});
 		filterLayout.addComponent(followUpStatusFilter);
 
@@ -290,17 +305,28 @@ public class ContactsView extends AbstractView {
 		reportedByFilter.setInputPrompt("Reported By");
 		reportedByFilter.addItems((Object[]) UserRole.values());
 		reportedByFilter.addValueChangeListener(e -> {
-			grid.setReportedByFilter((UserRole) e.getProperty().getValue());
+			criteria.reportingUserRole((UserRole) e.getProperty().getValue());
+			navigateTo(criteria);
 		});
 		filterLayout.addComponent(reportedByFilter);
 
 		searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
-		searchField.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, SEARCH_FIELD));
+		searchField.setNullRepresentation("");
+		searchField.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, SEARCH_FIELD));
 		searchField.addTextChangeListener(e -> {
-			grid.filterByText(e.getText());
+			criteria.nameUuidCaseLike(e.getText());
+			navigateTo(criteria);
 		});
 		filterLayout.addComponent(searchField);
+		
+		resetButton = new Button(I18nProperties.getCaption(Captions.resetFilters));
+		resetButton.setVisible(false);
+		resetButton.addClickListener(event -> {
+			ViewModelProviders.of(ContactsView.class).remove(ContactCriteria.class);
+			navigateTo(null);
+		});
+		filterLayout.addComponent(resetButton);
 
 		return filterLayout;
 	}
@@ -313,14 +339,22 @@ public class ContactsView extends AbstractView {
 
 		statusButtons = new HashMap<>();
 
-		Button statusAll = new Button("All", e -> processStatusChange(null, e.getButton()));
+		Button statusAll = new Button("All", e -> {
+			criteria.contactStatus(null);
+			navigateTo(criteria);
+		});
 		CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 		statusAll.setCaptionAsHtml(true);
 		statusFilterLayout.addComponent(statusAll);
 		statusButtons.put(statusAll, "All");
+		activeStatusButton = statusAll;
 
 		for (ContactStatus status : ContactStatus.values()) {
-			Button statusButton = new Button(status.toString(), e -> processStatusChange(status, e.getButton()));
+			Button statusButton = new Button(status.toString(), e -> {
+				criteria.contactStatus(status);
+				navigateTo(criteria);
+			});
+			statusButton.setData(status);
 			CssStyles.style(statusButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 			statusButton.setCaptionAsHtml(true);
 			statusFilterLayout.addComponent(statusButton);
@@ -331,30 +365,18 @@ public class ContactsView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show archived/active cases button
-			if (CurrentUser.getCurrent().hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
-				Button switchArchivedActiveButton = new Button(I18nProperties.getText("showArchivedContacts"));
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
+				switchArchivedActiveButton = new Button(I18nProperties.getCaption("showArchivedContacts"));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
-					showArchivedContacts = !showArchivedContacts;
-					if (!showArchivedContacts) {
-						getViewTitleLabel().setValue(originalViewTitle);
-						switchArchivedActiveButton.setCaption(I18nProperties.getText("showArchivedContacts"));
-						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
-						grid.getFilterCriteria().archived(false);
-						grid.reload();
-					} else {
-						getViewTitleLabel().setValue(I18nProperties.getPrefixFragment("View", viewName.replaceAll("/", ".") + ".archive"));
-						switchArchivedActiveButton.setCaption(I18nProperties.getText("showActiveContacts"));
-						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
-						grid.getFilterCriteria().archived(true);
-						grid.reload();
-					}
+					criteria.archived(Boolean.TRUE.equals(criteria.getArchived()) ? null : Boolean.TRUE);
+					navigateTo(criteria);
 				});
 				actionButtonsLayout.addComponent(switchArchivedActiveButton);
 			}
 
 			// Bulk operation dropdown
-			if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 				MenuBar bulkOperationsDropdown = new MenuBar();	
@@ -368,7 +390,6 @@ public class ContactsView extends AbstractView {
 				Command cancelFollowUpCommand = selectedItem -> {
 					ControllerProvider.getContactController().cancelFollowUpOfAllSelectedItems(grid.getSelectedRows(), new Runnable() {
 						public void run() {
-							grid.deselectAll();
 							grid.reload();
 						}
 					});
@@ -378,7 +399,6 @@ public class ContactsView extends AbstractView {
 				Command lostToFollowUpCommand = selectedItem -> {
 					ControllerProvider.getContactController().setAllSelectedItemsToLostToFollowUp(grid.getSelectedRows(), new Runnable() {
 						public void run() {
-							grid.deselectAll();
 							grid.reload();
 						}
 					});
@@ -388,7 +408,6 @@ public class ContactsView extends AbstractView {
 				Command deleteCommand = selectedItem -> {
 					ControllerProvider.getContactController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
 						public void run() {
-							grid.deselectAll();
 							grid.reload();
 						}
 					});
@@ -402,37 +421,69 @@ public class ContactsView extends AbstractView {
 		statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
 		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 
-		activeStatusButton = statusAll;
 		return statusFilterLayout;
 	}
 
-	private void updateActiveStatusButtonCaption() {
+	public void enter(ViewChangeEvent event) {
+		String params = event.getParameters().trim();
+		if (params.startsWith("?")) {
+			params = params.substring(1);
+			criteria.fromUrlParams(params);
+		}
+		updateFilterComponents();
+		grid.reload();
+	}
+	
+	public void updateFilterComponents() {
+		// TODO replace with Vaadin 8 databinding
+		applyingCriteria = true;
+		
+		resetButton.setVisible(criteria.hasAnyFilterActive());
+		
+		updateStatusButtons();
+		updateArchivedButton();
+		
+		classificationFilter.setValue(criteria.getContactClassification());
+		diseaseFilter.setValue(criteria.getCaseDisease());
+		regionFilter.setValue(criteria.getCaseRegion());
+		districtFilter.setValue(criteria.getCaseDistrict());
+		facilityFilter.setValue(criteria.getCaseFacility());
+		officerFilter.setValue(criteria.getContactOfficer());
+		followUpStatusFilter.setValue(criteria.getFollowUpStatus());
+		reportedByFilter.setValue(criteria.getReportingUserRole());
+		searchField.setValue(criteria.getNameUuidCaseLike());
+		
+		applyingCriteria = false;
+	}
+	
+	private void updateStatusButtons() {
+		statusButtons.keySet().forEach(b -> {
+			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
+			b.setCaption(statusButtons.get(b));
+			if (b.getData() == criteria.getContactStatus()) {
+				activeStatusButton = b;
+			}
+		});
+		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 		if (activeStatusButton != null) {
 			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getContainer().size())));
 		}
 	}
-
-	private void processStatusChange(ContactStatus contactStatus, Button button) {
-		grid.setStatusFilter(contactStatus);
-		statusButtons.keySet().forEach(b -> {
-			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
-			b.setCaption(statusButtons.get(b));
-		});
-		CssStyles.removeStyles(button, CssStyles.BUTTON_FILTER_LIGHT);
-		activeStatusButton = button;
-		updateActiveStatusButtonCaption();
+	
+	private void updateArchivedButton() {
+		if (switchArchivedActiveButton == null) {
+			return;
+		}
+		
+		if (Boolean.TRUE.equals(criteria.getArchived())) {
+			getViewTitleLabel().setValue(I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", ".") + ".archive"));
+			switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showActiveContacts"));
+			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
+		} else {
+			getViewTitleLabel().setValue(originalViewTitle);
+			switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showArchivedContacts"));
+			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
+		} 
 	}
-
-	private boolean isAnyFilterEnabled() {
-		return classificationFilter.getValue() != null || diseaseFilter.getValue() != null || !StringUtils.isEmpty(searchField.getValue())
-				|| (regionFilter.isVisible() && regionFilter.getValue() != null) || (districtFilter.isVisible() && districtFilter.getValue() != null) 
-				|| facilityFilter.getValue() != null || officerFilter.getValue() != null || reportedByFilter.getValue() != null 
-				|| followUpStatusFilter.getValue() != null;
-	}
-
-	@Override
-	public void enter(ViewChangeEvent event) {
-		grid.reload();
-		updateActiveStatusButtonCaption();
-	}
+	
 }

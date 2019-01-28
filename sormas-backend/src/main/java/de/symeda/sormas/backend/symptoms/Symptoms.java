@@ -27,7 +27,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
@@ -1027,7 +1027,7 @@ public class Symptoms extends AbstractDomainObject {
 			if (stringBuilder.length() > 0) {
 				stringBuilder.append(", ");
 			}
-			stringBuilder.append(I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, dtoPropertyId, null))
+			stringBuilder.append(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, dtoPropertyId, null))
 				.append(": ");
 			if (value instanceof Date) {
 				stringBuilder.append(DateHelper.formatLocalShortDate((Date)value));
@@ -1042,7 +1042,7 @@ public class Symptoms extends AbstractDomainObject {
 			if (stringBuilder.length() > 0) {
 				stringBuilder.append(", ");
 			}
-			stringBuilder.append(I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, dtoPropertyId, null));
+			stringBuilder.append(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, dtoPropertyId, null));
 		}
 	}
 
@@ -1051,7 +1051,7 @@ public class Symptoms extends AbstractDomainObject {
 			if (stringBuilder.length() > 0) {
 				stringBuilder.append(", ");
 			}
-			stringBuilder.append(I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, dtoPropertyId, null));
+			stringBuilder.append(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, dtoPropertyId, null));
 		}
 	}
 

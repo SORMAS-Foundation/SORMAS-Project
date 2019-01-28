@@ -18,7 +18,7 @@
 
 package de.symeda.sormas.app.sample;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum ShipmentStatus {
 

@@ -38,7 +38,8 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -49,7 +50,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -127,7 +128,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	    	}
     	    	else if (getValue().getContactClassification() == ContactClassification.CONFIRMED) {
     	    		// only when confirmed
-    	    		if (CurrentUser.getCurrent().hasUserRight(UserRight.CONTACT_CONVERT)) {
+    	    		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CONVERT)) {
 	    		    	Button toCaseButton = new Button("Create a case for this contact person");
 	    				toCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
 	    				
@@ -159,11 +160,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		Field<FollowUpStatus> statusField = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
 		boolean followUpVisible = getValue() != null && statusField.isVisible();
-		if (followUpVisible && CurrentUser.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
+		if (followUpVisible && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
 			FollowUpStatus followUpStatus = statusField.getValue();
 			if (followUpStatus == FollowUpStatus.FOLLOW_UP) {
 				
-		    	Button cancelButton = new Button(I18nProperties.getFragment("Contact.cancelFollowUp"));
+		    	Button cancelButton = new Button(I18nProperties.getCaption("Contact.cancelFollowUp"));
 		    	cancelButton.setWidth(100, Unit.PERCENTAGE);
 		    	cancelButton.addClickListener(new ClickListener() {
 					@Override
@@ -177,7 +178,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				});
 				getContent().addComponent(cancelButton, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
 
-		    	Button lostButton = new Button(I18nProperties.getFragment("Contact.lostToFollowUp"));
+		    	Button lostButton = new Button(I18nProperties.getCaption("Contact.lostToFollowUp"));
 		    	lostButton.setWidth(100, Unit.PERCENTAGE);
 		    	lostButton.addClickListener(new ClickListener() {
 					@Override
@@ -194,7 +195,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			} else if (followUpStatus == FollowUpStatus.CANCELED
 					|| followUpStatus == FollowUpStatus.LOST) {
 
-		    	Button resumeButton = new Button(I18nProperties.getFragment("Contact.resumeFollowUp"));
+		    	Button resumeButton = new Button(I18nProperties.getCaption("Contact.resumeFollowUp"));
 		    	resumeButton.addStyleName(CssStyles.FORCE_CAPTION);
 		    	resumeButton.setWidth(100, Unit.PERCENTAGE);
 		    	resumeButton.addClickListener(new ClickListener() {
@@ -220,7 +221,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     		}
     	}
     	if (getValue() != null) {
-	    	dateField.addValidator(new DateRangeValidator(I18nProperties.getValidationError("beforeDate", dateField.getCaption(), getField(ContactDto.REPORT_DATE_TIME).getCaption()),
+	    	dateField.addValidator(new DateRangeValidator(I18nProperties.getValidationError(Validations.beforeDate, dateField.getCaption(), getField(ContactDto.REPORT_DATE_TIME).getCaption()),
 	    			null, new LocalDate(getValue().getReportDateTime()).plusDays(1).toDate(), Resolution.SECOND));
     	}
     }

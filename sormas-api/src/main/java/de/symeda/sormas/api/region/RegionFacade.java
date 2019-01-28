@@ -29,7 +29,7 @@ public interface RegionFacade {
 
 	List<RegionDto> getAllAfter(Date date);
 	
-	List<RegionDto> getIndexList();
+	List<RegionDto> getIndexList(RegionCriteria criteria);
 	
 	RegionDto getRegionByUuid(String uuid);
 	
@@ -46,5 +46,5 @@ public interface RegionFacade {
 	void saveRegion(RegionDto dto);
 	
 	List<RegionReferenceDto> getByName(String name);
-	
+
 }

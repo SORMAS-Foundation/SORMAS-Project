@@ -19,9 +19,9 @@
 package de.symeda.sormas.app.component.controls;
 
 import android.content.Context;
-import android.databinding.BindingAdapter;
-import android.databinding.InverseBindingAdapter;
-import android.databinding.InverseBindingListener;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.InverseBindingAdapter;
+import androidx.databinding.InverseBindingListener;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -250,9 +250,9 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 
     @Override
     public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled); // this has to be called first
         input.setEnabled(enabled);
         label.setEnabled(enabled);
-        super.setEnabled(enabled);
     }
 
     @Override

@@ -19,21 +19,23 @@
 package de.symeda.sormas.app.core.adapter.databinding;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
-import android.support.annotation.LayoutRes;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.LayoutRes;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
+import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.app.BR;
 
 /**
  * Created by Orson on 27/12/2017.
+ *
+ * @deprecated Use {@link BindingViewHolder}
  */
-
-public class DataBoundViewHolder<T extends ViewDataBinding> extends RecyclerView.ViewHolder implements ISetOnListItemClickListener, View.OnClickListener {
+@Deprecated
+public class DataBoundViewHolder<T extends ViewDataBinding> extends RecyclerView.ViewHolder implements OnListItemClickListener.HasOnListItemClickListener, View.OnClickListener {
     public final T binding;
     public final View layout;
     public final Context context;

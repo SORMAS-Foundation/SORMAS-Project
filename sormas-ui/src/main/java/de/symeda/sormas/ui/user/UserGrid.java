@@ -31,7 +31,7 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.utils.RoleFilter;
@@ -79,7 +79,7 @@ public class UserGrid extends Grid {
         getColumn(UserDto.USER_ROLES).setConverter(new StringToCollectionConverter());
 
         for (Column column : getColumns()) {
-        	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
+        	column.setHeaderCaption(I18nProperties.getPrefixCaption(
         			UserDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
 	}

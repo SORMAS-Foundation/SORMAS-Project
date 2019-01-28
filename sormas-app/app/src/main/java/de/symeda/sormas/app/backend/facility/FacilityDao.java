@@ -106,27 +106,35 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
             return facilities;
 
         } catch (SQLException | IllegalArgumentException e) {
-            Log.e(getTableName(), "Could not perform queryForEq");
+            Log.e(getTableName(), "Could not perform getHealthFacilitiesByDistrict");
             throw new RuntimeException(e);
         }
     }
 
     public List<Facility> getHealthFacilitiesByCommunity(Community community, boolean includeOtherFacility, boolean includeOtherPlace) {
-        List<Facility> facilities = queryForEq(Facility.COMMUNITY, community, Facility.NAME, true);
-        for (Facility facility : facilities) {
-            if (facility.getType() == FacilityType.LABORATORY) {
-                facilities.remove(facility);
+
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.and(
+                    where.eq(Facility.COMMUNITY, community),
+                    where.eq(AbstractDomainObject.SNAPSHOT, false),
+                    where.or(where.ne(Facility.TYPE, FacilityType.LABORATORY), where.isNull(Facility.TYPE)));
+            List<Facility> facilities = builder.orderBy(Facility.NAME, true).query();
+
+            if (includeOtherFacility) {
+                facilities.add(queryUuid(FacilityDto.OTHER_FACILITY_UUID));
             }
-        }
+            if (includeOtherPlace) {
+                facilities.add(queryUuid(FacilityDto.NONE_FACILITY_UUID));
+            }
 
-        if (includeOtherFacility) {
-            facilities.add(queryUuid(FacilityDto.OTHER_FACILITY_UUID));
-        }
-        if (includeOtherPlace) {
-            facilities.add(queryUuid(FacilityDto.NONE_FACILITY_UUID));
-        }
+            return facilities;
 
-        return facilities;
+        } catch (SQLException | IllegalArgumentException e) {
+            Log.e(getTableName(), "Could not perform getHealthFacilitiesByCommunity");
+            throw new RuntimeException(e);
+        }
     }
 
     public List<Facility> getLaboratories(boolean includeOtherLaboratory) {
@@ -143,6 +151,7 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
             }
 
             return facilities;
+
         } catch (SQLException | IllegalArgumentException e) {
             Log.e(getTableName(), "Could not perform queryForEq");
             throw new RuntimeException(e);

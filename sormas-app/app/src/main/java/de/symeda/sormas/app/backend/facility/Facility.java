@@ -18,7 +18,7 @@
 
 package de.symeda.sormas.app.backend.facility;
 
-import android.databinding.Bindable;
+import androidx.databinding.Bindable;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -30,7 +30,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityType;

@@ -24,7 +24,7 @@
     android:layout_height="match_parent"
     android:id="@+id/base_layout">
 
-    <android.support.v4.widget.DrawerLayout
+    <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -36,12 +36,12 @@
             android:orientation="vertical"
             >
 
-            <android.support.v7.widget.Toolbar
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/applicationToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/sormasToolBarHeight"
                 style="@style/ToolBarStyle">
-            </android.support.v7.widget.Toolbar>
+            </androidx.appcompat.widget.Toolbar>
 
             <include
                 android:id="@+id/applicationTitleBar"
@@ -129,7 +129,7 @@
             </ScrollView>
         </LinearLayout>
 
-        <android.support.design.widget.NavigationView
+        <com.google.android.material.navigation.NavigationView
             android:id="@+id/main_navigation_view"
             android:layout_width="@dimen/drawerWidth"
             android:layout_height="match_parent"
@@ -173,8 +173,8 @@
 
             </LinearLayout>
 
-        </android.support.design.widget.NavigationView>
+        </com.google.android.material.navigation.NavigationView>
 
-    </android.support.v4.widget.DrawerLayout>
+    </androidx.drawerlayout.widget.DrawerLayout>
 
 </LinearLayout>

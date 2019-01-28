@@ -30,13 +30,13 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -65,11 +65,11 @@ public class SampleTestGrid extends Grid implements ItemClickListener {
 		getColumn(SampleTestDto.TEST_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalShortDateTimeFormat()));
 
 		for(Column column : getColumns()) {
-			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
+			column.setHeaderCaption(I18nProperties.getPrefixCaption(
 					SampleTestDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setSelectionMode(SelectionMode.MULTI);
 		} else {
 			setSelectionMode(SelectionMode.NONE);

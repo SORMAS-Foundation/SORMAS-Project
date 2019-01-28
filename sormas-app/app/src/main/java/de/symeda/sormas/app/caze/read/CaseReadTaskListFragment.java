@@ -20,11 +20,14 @@ package de.symeda.sormas.app.caze.read;
 
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -33,12 +36,13 @@ import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.task.edit.TaskEditActivity;
+import de.symeda.sormas.app.task.list.TaskListAdapter;
+import de.symeda.sormas.app.task.list.TaskListViewModel;
 
 public class CaseReadTaskListFragment extends BaseReadFragment<FragmentFormListLayoutBinding, List<Task>, Case> implements OnListItemClickListener {
 
-    private List<Task> record;
-
-    private CaseReadTaskListAdapter adapter;
+    private TaskListAdapter adapter;
+    private TaskListViewModel model;
     private LinearLayoutManager linearLayoutManager;
 
     public static CaseReadTaskListFragment newInstance(Case activityRootData) {
@@ -46,20 +50,30 @@ public class CaseReadTaskListFragment extends BaseReadFragment<FragmentFormListL
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        ((CaseReadActivity) getActivity()).showPreloader();
+        adapter = new TaskListAdapter(R.layout.row_task_list_item_layout, this);
+        model = ViewModelProviders.of(this).get(TaskListViewModel.class);
+        model.getTasks(getActivityRootData()).observe(this, tasks -> {
+            adapter.replaceAll(tasks);
+            adapter.notifyDataSetChanged();
+            updateEmptyListHint(tasks);
+            ((CaseReadActivity) getActivity()).hidePreloader();
+        });
+    }
+
+    @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
-        Case caze = getActivityRootData();
-        record = DatabaseHelper.getTaskDao().queryByCase(caze);
+
     }
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        updateEmptyListHint(record);
-
-        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        adapter = new CaseReadTaskListAdapter(R.layout.row_read_case_task_list_item_layout, this, record);
+        linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         getContentBinding().recyclerViewForList.setLayoutManager(linearLayoutManager);
         getContentBinding().recyclerViewForList.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -70,7 +84,7 @@ public class CaseReadTaskListFragment extends BaseReadFragment<FragmentFormListL
 
     @Override
     public List<Task> getPrimaryData() {
-        return null;
+        throw new UnsupportedOperationException("Sub list fragments don't hold their data");
     }
 
     @Override

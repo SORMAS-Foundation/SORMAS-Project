@@ -42,8 +42,8 @@ import org.slf4j.LoggerFactory;
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardSampleDto;
@@ -358,14 +358,14 @@ public class SampleFacadeEjb implements SampleFacade {
 			for (User recipient : messageRecipients) {
 				try {
 					if (!StringUtils.isEmpty(newSample.getSampleCode())) {
-						messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_LAB_SAMPLE_SHIPPED), 
-								String.format(I18nProperties.getMessage(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED), 
+						messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_LAB_SAMPLE_SHIPPED), 
+								String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED), 
 										newSample.getSampleCode(), 
 										DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid())), 
 								MessageType.EMAIL, MessageType.SMS);
 					} else {
-						messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_LAB_SAMPLE_SHIPPED), 
-								String.format(I18nProperties.getMessage(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT), 
+						messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_LAB_SAMPLE_SHIPPED), 
+								String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT), 
 										DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid())), 
 								MessageType.EMAIL, MessageType.SMS);
 					}

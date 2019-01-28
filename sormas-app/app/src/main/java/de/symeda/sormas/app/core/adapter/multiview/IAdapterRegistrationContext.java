@@ -18,7 +18,7 @@
 
 package de.symeda.sormas.app.core.adapter.multiview;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by Orson on 28/11/2017.

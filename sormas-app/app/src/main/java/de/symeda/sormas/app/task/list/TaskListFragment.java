@@ -19,8 +19,8 @@
 package de.symeda.sormas.app.task.list;
 
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +37,6 @@ import de.symeda.sormas.app.task.edit.TaskEditActivity;
 
 public class TaskListFragment extends BaseListFragment<TaskListAdapter> implements OnListItemClickListener {
 
-    private List<Task> tasks;
     private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerViewForList;
 
@@ -48,34 +47,15 @@ public class TaskListFragment extends BaseListFragment<TaskListAdapter> implemen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
-        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         recyclerViewForList = view.findViewById(R.id.recyclerViewForList);
 
         return view;
     }
 
     @Override
-    protected void prepareFragmentData() {
-        switch ((TaskStatus) getListFilter()) {
-            case PENDING:
-                tasks = DatabaseHelper.getTaskDao().queryMyPending();
-                break;
-            case DONE:
-            case REMOVED:
-                tasks = DatabaseHelper.getTaskDao().queryMyDoneOrRemoved();
-                break;
-            case NOT_EXECUTABLE:
-                tasks = DatabaseHelper.getTaskDao().queryMyNotExecutable();
-                break;
-            default:
-                throw new IllegalArgumentException(getListFilter().toString());
-        }
-        getListAdapter().replaceAll(tasks);
-    }
-
-    @Override
     public TaskListAdapter getNewListAdapter() {
-        return new TaskListAdapter(this.getActivity(), R.layout.row_task_list_item_layout, this, this.tasks);
+        return (TaskListAdapter) ((TaskListActivity) getActivity()).getAdapter();
     }
 
     @Override

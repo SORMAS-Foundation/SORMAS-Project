@@ -32,7 +32,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -76,7 +76,7 @@ public class SampleTestGridComponent extends VerticalLayout {
 		topLayout.addStyleName(CssStyles.VSPACE_3);
 
 		// Bulk operation dropdown
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
 			MenuBar bulkOperationsDropdown = new MenuBar();	

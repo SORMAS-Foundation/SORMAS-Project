@@ -19,7 +19,7 @@
 package de.symeda.sormas.app;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
+import androidx.fragment.app.FragmentTransaction;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;

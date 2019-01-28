@@ -33,7 +33,7 @@ import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.task.DashboardTaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 
 public class DashboardDataProvider {
 
@@ -61,7 +61,7 @@ public class DashboardDataProvider {
 	
 	public void refreshData() {
 		// Update the entities lists according to the filters
-		String userUuid = CurrentUser.getCurrent().getUuid();
+		String userUuid = UserProvider.getCurrent().getUuid();
 
 		int period = DateHelper.getDaysBetween(fromDate, toDate);
 		previousFromDate = DateHelper.getStartOfDay(DateHelper.subtractDays(fromDate, period));

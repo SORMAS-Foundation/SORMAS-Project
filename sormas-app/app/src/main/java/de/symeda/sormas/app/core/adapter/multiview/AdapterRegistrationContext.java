@@ -19,7 +19,7 @@
 package de.symeda.sormas.app.core.adapter.multiview;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.app.core.ClassUtil;
 

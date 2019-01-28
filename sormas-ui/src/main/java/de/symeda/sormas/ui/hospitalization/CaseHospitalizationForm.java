@@ -25,7 +25,8 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
@@ -33,7 +34,7 @@ import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -86,12 +87,6 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 
 		initializeVisibilitiesAndAllowedVisibilities(null, viewMode);
 
-		if (isVisibleAllowed(HospitalizationDto.ISOLATED)) {
-			FieldHelper.setVisibleWhen(getFieldGroup(), HospitalizationDto.ISOLATED, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, Arrays.asList(YesNoUnknown.YES), true);
-		}
-		if (isVisibleAllowed(HospitalizationDto.DISCHARGE_DATE)) {
-			FieldHelper.setVisibleWhen(getFieldGroup(), HospitalizationDto.DISCHARGE_DATE, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, Arrays.asList(YesNoUnknown.YES), true);
-		}
 		if (isVisibleAllowed(HospitalizationDto.ISOLATION_DATE)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), HospitalizationDto.ISOLATION_DATE, HospitalizationDto.ISOLATED, Arrays.asList(YesNoUnknown.YES), true);
 		}
@@ -101,12 +96,12 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 
 		// Validations
 		admissionDateField.addValidator(new DateComparisonValidator(admissionDateField, caze.getSymptoms().getOnsetDate(), false, false, 
-				I18nProperties.getValidationError("afterDateSoft", admissionDateField.getCaption(), I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE))));
+				I18nProperties.getValidationError(Validations.afterDateSoft, admissionDateField.getCaption(), I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE))));
 		admissionDateField.addValidator(new DateComparisonValidator(admissionDateField, dischargeDateField, true, false, 
-				I18nProperties.getValidationError("beforeDate", admissionDateField.getCaption(), dischargeDateField.getCaption())));
+				I18nProperties.getValidationError(Validations.beforeDate, admissionDateField.getCaption(), dischargeDateField.getCaption())));
 		admissionDateField.setInvalidCommitted(true);
 		dischargeDateField.addValidator(new DateComparisonValidator(dischargeDateField, admissionDateField, false, false, 
-				I18nProperties.getValidationError("afterDate", dischargeDateField.getCaption(), admissionDateField.getCaption())));
+				I18nProperties.getValidationError(Validations.afterDate, dischargeDateField.getCaption(), admissionDateField.getCaption())));
 
 		hospitalizedPreviouslyField.addValueChangeListener(e -> {
 			updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField);
@@ -119,7 +114,7 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 	private void updatePrevHospHint(OptionGroup hospitalizedPreviouslyField, PreviousHospitalizationsField previousHospitalizationsField) {
 		YesNoUnknown value = (YesNoUnknown) hospitalizedPreviouslyField.getValue();
 		Collection<PreviousHospitalizationDto> previousHospitalizations = previousHospitalizationsField.getValue();
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.CASE_EDIT) && value == YesNoUnknown.YES && (previousHospitalizations == null || previousHospitalizations.size() == 0)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT) && value == YesNoUnknown.YES && (previousHospitalizations == null || previousHospitalizations.size() == 0)) {
 			hospitalizedPreviouslyField.setComponentError(new UserError("Please add an entry to the list below if there is any data available to you."));
 		} else {
 			hospitalizedPreviouslyField.setComponentError(null);

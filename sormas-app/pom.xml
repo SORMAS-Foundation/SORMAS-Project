@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>sormas-base</artifactId>
 		<groupId>de.symeda.sormas</groupId>
-		<version>1.10.2</version>
+		<version>1.11.0</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -14,7 +14,7 @@
 
 	<properties>
 		<android.manifestFile>${project.basedir}/app/src/main/AndroidManifest.xml</android.manifestFile>
-		<gradle.version>4.6</gradle.version>
+		<gradle.version>4.10.1</gradle.version>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
 	</properties>

@@ -30,7 +30,8 @@ import com.vaadin.ui.ProgressBar;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -74,7 +75,7 @@ public class CaseImportProgressLayout extends VerticalLayout {
 		initializeInfoComponents();
 		currentInfoComponent = progressCircle;
 		infoLayout.addComponent(currentInfoComponent);
-		infoLabel = new Label(String.format(I18nProperties.getText("importInfo"), totalCasesCount), ContentMode.HTML);
+		infoLabel = new Label(String.format(I18nProperties.getString(Strings.importInfo), totalCasesCount), ContentMode.HTML);
 		infoLabel.setContentMode(ContentMode.HTML);
 		infoLayout.addComponent(infoLabel);
 		infoLayout.setExpandRatio(infoLabel, 1);
@@ -91,15 +92,15 @@ public class CaseImportProgressLayout extends VerticalLayout {
 		HorizontalLayout progressInfoLayout = new HorizontalLayout();
 		CssStyles.style(progressInfoLayout, CssStyles.VSPACE_TOP_5);
 		progressInfoLayout.setSpacing(true);
-		processedCasesLabel = new Label(String.format(I18nProperties.getText("importsProcessed"), 0, totalCasesCount));
+		processedCasesLabel = new Label(String.format(I18nProperties.getString(Strings.importProcessed), 0, totalCasesCount));
 		progressInfoLayout.addComponent(processedCasesLabel);
-		importedCasesLabel = new Label(String.format(I18nProperties.getText("importImports"), 0));
+		importedCasesLabel = new Label(String.format(I18nProperties.getString(Strings.importImports), 0));
 		CssStyles.style(importedCasesLabel, CssStyles.LABEL_POSITIVE);
 		progressInfoLayout.addComponent(importedCasesLabel);
-		importErrorsLabel = new Label(String.format(I18nProperties.getText("importErrors"), 0));
+		importErrorsLabel = new Label(String.format(I18nProperties.getString(Strings.importErrors), 0));
 		CssStyles.style(importErrorsLabel, CssStyles.LABEL_CRITICAL);
 		progressInfoLayout.addComponent(importErrorsLabel);
-		importSkipsLabel = new Label(String.format(I18nProperties.getText("importSkips"), 0));
+		importSkipsLabel = new Label(String.format(I18nProperties.getString(Strings.importSkips), 0));
 		CssStyles.style(importSkipsLabel, CssStyles.LABEL_MINOR);
 		progressInfoLayout.addComponent(importSkipsLabel);
 		addComponent(progressInfoLayout);
@@ -139,15 +140,15 @@ public class CaseImportProgressLayout extends VerticalLayout {
 				processedCasesCount++;
 				if (result == CaseImportResult.SUCCESS) {
 					importedCasesCount++;
-					importedCasesLabel.setValue(String.format(I18nProperties.getText("importImports"), importedCasesCount));
+					importedCasesLabel.setValue(String.format(I18nProperties.getString(Strings.importImports), importedCasesCount));
 				} else if (result == CaseImportResult.ERROR) {
 					importErrorsCount++;
-					importErrorsLabel.setValue(String.format(I18nProperties.getText("importErrors"), importErrorsCount));
+					importErrorsLabel.setValue(String.format(I18nProperties.getString(Strings.importErrors), importErrorsCount));
 				} else {
 					importSkipsCount++;
-					importSkipsLabel.setValue(String.format(I18nProperties.getText("importSkips"), importSkipsCount));
+					importSkipsLabel.setValue(String.format(I18nProperties.getString(Strings.importSkips), importSkipsCount));
 				}
-				processedCasesLabel.setValue(String.format(I18nProperties.getText("importsProcessed"), processedCasesCount, totalCasesCount));
+				processedCasesLabel.setValue(String.format(I18nProperties.getString(Strings.importProcessed), processedCasesCount, totalCasesCount));
 				progressBar.setValue((float) processedCasesCount / (float) totalCasesCount);
 			}
 		});

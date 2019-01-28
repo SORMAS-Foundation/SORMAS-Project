@@ -33,6 +33,8 @@ import com.google.android.gms.analytics.Tracker;
 
 import java.util.Locale;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.core.TaskNotificationService;
@@ -50,11 +52,27 @@ public class SormasApplication extends Application implements Application.Activi
     }
 
     @Override
-    public void onCreate() {
-        DatabaseHelper.init(this);
-        ConfigProvider.init(this);
-        LocationService.init(this);
+    protected void attachBaseContext(Context base) {
+        DatabaseHelper.init(base);
+        ConfigProvider.init(base);
+        super.attachBaseContext(buildLanguageContext(base));
+    }
 
+    private static Context buildLanguageContext(Context context) {
+        Locale locale = new Locale(ConfigProvider.getLocale());
+        Locale.setDefault(locale);
+        I18nProperties.setLocale(locale.toString());
+
+        Configuration configuration = context.getResources().getConfiguration();
+        configuration.setLocale(locale);
+        configuration.setLayoutDirection(locale);
+
+        return context.createConfigurationContext(configuration);
+    }
+
+    @Override
+    public void onCreate() {
+        LocationService.init(this);
         VibrationHelper.getInstance(this);
 
         // Make sure the Enter Pin Activity is shown when the app has just started
@@ -75,22 +93,6 @@ public class SormasApplication extends Application implements Application.Activi
         super.onCreate();
 
         this.registerActivityLifecycleCallbacks(this);
-    }
-
-    public static void updateLocale(Context ctx) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-        String lang = prefs.getString("locale_override", "");
-        updateLocal(ctx, lang);
-    }
-
-    public static void updateLocal(Context ctx, String lang) {
-        Configuration cfg = new Configuration();
-        if (!TextUtils.isEmpty(lang))
-            cfg.locale = new Locale(lang);
-        else
-            cfg.locale = Locale.getDefault();
-
-        ctx.getResources().updateConfiguration(cfg, null);
     }
 
     @Override

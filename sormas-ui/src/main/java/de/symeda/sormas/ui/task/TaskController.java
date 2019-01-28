@@ -26,7 +26,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -43,7 +44,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
@@ -126,15 +127,15 @@ public class TaskController {
 			}
 		});
 
-		if (CurrentUser.getCurrent().hasUserRole(UserRole.ADMIN)) {
+		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getTaskFacade().deleteTask(newDto, CurrentUser.getCurrent().getUserReference().getUuid());
+					FacadeProvider.getTaskFacade().deleteTask(newDto, UserProvider.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().removeWindow(popupWindow);
 					callback.run();
 				}
-			}, I18nProperties.getFieldCaption("Task"));
+			}, I18nProperties.getString(Strings.task));
 		}
 	}
 
@@ -143,7 +144,7 @@ public class TaskController {
 		task.setUuid(DataHelper.createUuid());
 		task.setSuggestedStart(TaskHelper.getDefaultSuggestedStart());
 		task.setDueDate(TaskHelper.getDefaultDueDate());
-		task.setCreatorUser(CurrentUser.getCurrent().getUserReference());
+		task.setCreatorUser(UserProvider.getCurrent().getUserReference());
 		task.setTaskStatus(TaskStatus.PENDING);
 		task.setPriority(TaskPriority.NORMAL);
 		task.setTaskContext(context);
@@ -175,7 +176,7 @@ public class TaskController {
 			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected tasks?", new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getTaskFacade().deleteTask(FacadeProvider.getTaskFacade().getByUuid(((TaskIndexDto) selectedRow).getUuid()), CurrentUser.getCurrent().getUuid());
+						FacadeProvider.getTaskFacade().deleteTask(FacadeProvider.getTaskFacade().getByUuid(((TaskIndexDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification("Tasks deleted", "All selected tasks have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());

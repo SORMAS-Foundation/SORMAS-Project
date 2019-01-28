@@ -60,6 +60,8 @@
                 android:focusableInTouchMode="true"
                 android:id="@+id/main_content">
 
+                <requestFocus/>
+
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/caseData_epidNumber"
                     app:value="@={data.epidNumber}"

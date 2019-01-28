@@ -21,7 +21,7 @@ package de.symeda.sormas.app.component.controls;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.databinding.BindingAdapter;
+import androidx.databinding.BindingAdapter;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -33,7 +33,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.util.ControlLabelOnTouchListener;
 
@@ -105,8 +105,8 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
     // Instance methods
 
     private void initializePropertyField(Context context, AttributeSet attrs) {
-        caption = I18nProperties.getFieldCaption(getFieldCaptionPropertyId());
-        description = I18nProperties.getFieldDescription(getFieldCaptionPropertyId());
+        caption = I18nProperties.getCaption(getCaptionPropertyId());
+        description = I18nProperties.getDescription(getCaptionPropertyId());
 
         if (attrs != null) {
             TypedArray a = context.getTheme().obtainStyledAttributes(
@@ -162,7 +162,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
         return fieldId.substring(separatorIndex + 1);
     }
 
-    public String getFieldCaptionPropertyId() {
+    public String getCaptionPropertyId() {
         String fieldId = getFieldIdString();
         return toPrefixPropertyId(fieldId);
     }

@@ -22,8 +22,9 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestType;
@@ -84,9 +85,9 @@ public class ClassificationSampleTestCriteriaDto extends ClassificationCaseCrite
 	@Override
 	public String buildDescription() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(I18nProperties.getPrefixFieldCaption(SampleTestDto.I18N_PREFIX, propertyId));
+		stringBuilder.append(I18nProperties.getPrefixCaption(SampleTestDto.I18N_PREFIX, propertyId));
 		if (testTypes != null && !testTypes.isEmpty()) {
-			stringBuilder.append(" ").append(I18nProperties.getText("criteriaForTestType")).append(" ");
+			stringBuilder.append(" ").append(I18nProperties.getString(Strings.criteriaForTestType)).append(" ");
 			for (int i = 0; i < testTypes.size(); i++) {
 				if (i > 0) {
 					if (i == testTypes.size() - 1) {

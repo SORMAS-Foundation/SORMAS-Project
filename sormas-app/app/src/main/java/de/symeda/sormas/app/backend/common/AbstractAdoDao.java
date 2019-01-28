@@ -42,7 +42,7 @@ import java.util.concurrent.Callable;
 
 import javax.persistence.NonUniqueResultException;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -192,6 +192,33 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             where.eq(fieldName, value);
             where.and().eq(AbstractDomainObject.SNAPSHOT, false).query();
             return builder.orderBy(orderBy, ascending).query();
+        } catch (SQLException | IllegalArgumentException e) {
+            Log.e(getTableName(), "Could not perform queryForEq");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<ADO> queryForEq(String fieldName, Object value, String orderBy, boolean ascending, long offset, long limit) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.eq(fieldName, value);
+            where.and().eq(AbstractDomainObject.SNAPSHOT, false).query();
+            return builder.orderBy(orderBy, ascending).offset(offset).limit(limit).query();
+        } catch (SQLException | IllegalArgumentException e) {
+            Log.e(getTableName(), "Could not perform queryForEq");
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public long countOfEq(String fieldName, Object value) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.eq(fieldName, value);
+            where.and().eq(AbstractDomainObject.SNAPSHOT, false).query();
+            return builder.countOf();
         } catch (SQLException | IllegalArgumentException e) {
             Log.e(getTableName(), "Could not perform queryForEq");
             throw new RuntimeException(e);
@@ -590,7 +617,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                                     "'; Yours: '" + DataHelper.toStringNullable(currentFieldValue) +
                                     "'; Server: '" + DataHelper.toStringNullable(sourceFieldValue) + "'");
 
-                            conflictStringBuilder.append(I18nProperties.getFieldCaption(source.getI18nPrefix() + "." + property.getName()));
+                            conflictStringBuilder.append(I18nProperties.getCaption(source.getI18nPrefix() + "." + property.getName()));
                             conflictStringBuilder.append("<br/><i>");
                             conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_yours));
                             conflictStringBuilder.append("</i>");

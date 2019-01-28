@@ -34,7 +34,8 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -44,7 +45,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -142,25 +143,25 @@ public class EventController {
 			}
 		});
 
-		if (CurrentUser.getCurrent().hasUserRole(UserRole.ADMIN)) {
+		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getEventFacade().deleteEvent(event.toReference(), CurrentUser.getCurrent().getUserReference().getUuid());
+					FacadeProvider.getEventFacade().deleteEvent(event.toReference(), UserProvider.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
 				}
-			}, I18nProperties.getFieldCaption("Event"));
+			}, I18nProperties.getString(Strings.event));
 		}
 
 		// Initialize 'Archive' button
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
 			boolean archived = FacadeProvider.getEventFacade().isArchived(eventUuid);
 			Button archiveEventButton = new Button();
 			archiveEventButton.addStyleName(ValoTheme.BUTTON_LINK);
 			if (archived) {
-				archiveEventButton.setCaption(I18nProperties.getText("dearchive"));
+				archiveEventButton.setCaption(I18nProperties.getCaption("dearchive"));
 			} else {
-				archiveEventButton.setCaption(I18nProperties.getText("archive"));
+				archiveEventButton.setCaption(I18nProperties.getCaption("archive"));
 			}
 			archiveEventButton.addClickListener(e -> {
 				editView.commit();
@@ -228,11 +229,11 @@ public class EventController {
 		event.setEventStatus(EventStatus.POSSIBLE);
 		LocationDto location = new LocationDto();
 		location.setUuid(DataHelper.createUuid());
-		location.setRegion(CurrentUser.getCurrent().getUser().getRegion());
+		location.setRegion(UserProvider.getCurrent().getUser().getRegion());
 		event.setEventLocation(location);
 
 		event.setReportDateTime(new Date());
-		UserReferenceDto userReference = CurrentUser.getCurrent().getUserReference();
+		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
 		event.setReportingUser(userReference);
 
 		return event;
@@ -240,20 +241,20 @@ public class EventController {
 
 	private void archiveOrDearchiveEvent(String eventUuid, boolean archive) {
 		if (archive) {
-			Label contentLabel = new Label(String.format(I18nProperties.getText("archivePrompt"), I18nProperties.getText("event").toLowerCase(), I18nProperties.getText("event").toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(I18nProperties.getText("archiveEvent"), contentLabel, I18nProperties.getText("yes"), I18nProperties.getText("no"), 640, e -> {
+			Label contentLabel = new Label(String.format(I18nProperties.getString(Strings.archivePrompt), I18nProperties.getString(Strings.event).toLowerCase(), I18nProperties.getString(Strings.event).toLowerCase()));
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.archiveEvent), contentLabel, I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 640, e -> {
 				if (e.booleanValue() == true) {
 					FacadeProvider.getEventFacade().archiveOrDearchiveEvent(eventUuid, true);
-					Notification.show(String.format(I18nProperties.getText("archiveNotification"), I18nProperties.getText("event")), Type.ASSISTIVE_NOTIFICATION);
+					Notification.show(String.format(I18nProperties.getString(Strings.archiveNotification), I18nProperties.getString(Strings.event)), Type.ASSISTIVE_NOTIFICATION);
 					navigateToData(eventUuid);
 				}
 			});
 		} else {
-			Label contentLabel = new Label(String.format(I18nProperties.getText("dearchivePrompt"), I18nProperties.getText("event").toLowerCase(), I18nProperties.getText("event").toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(I18nProperties.getText("dearchiveEvent"), contentLabel, I18nProperties.getText("yes"), I18nProperties.getText("no"), 640, e -> {
+			Label contentLabel = new Label(String.format(I18nProperties.getString(Strings.dearchivePrompt), I18nProperties.getString(Strings.event).toLowerCase(), I18nProperties.getString(Strings.event).toLowerCase()));
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.dearchiveEvent), contentLabel, I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 640, e -> {
 				if (e.booleanValue()) {
 					FacadeProvider.getEventFacade().archiveOrDearchiveEvent(eventUuid, false);
-					Notification.show(String.format(I18nProperties.getText("dearchiveNotification"), I18nProperties.getText("event")), Type.ASSISTIVE_NOTIFICATION);
+					Notification.show(String.format(I18nProperties.getString(Strings.dearchiveNotification), I18nProperties.getString(Strings.event)), Type.ASSISTIVE_NOTIFICATION);
 					navigateToData(eventUuid);
 				}
 			});
@@ -267,7 +268,7 @@ public class EventController {
 			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected events?", new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getEventFacade().deleteEvent(new EventReferenceDto(((EventIndexDto) selectedRow).getUuid()), CurrentUser.getCurrent().getUuid());
+						FacadeProvider.getEventFacade().deleteEvent(new EventReferenceDto(((EventIndexDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification("Events deleted", "All selected events have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());

@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -26,13 +27,17 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -42,32 +47,48 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 	private static final long serialVersionUID = -2015225571046243640L;
 
 	public static final String SEARCH = "search";
+	
+	private FacilityCriteria criteria;
 
-//	private HorizontalLayout headerLayout;
-	private HorizontalLayout filterLayout;
-	private VerticalLayout gridLayout;
-	private FacilitiesGrid grid;
-	protected Button createButton;
-
+	// Filter
+	private TextField searchField;
+	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private ComboBox communityFilter;
+	private Button resetButton;	
+	
+	//	private HorizontalLayout headerLayout;
+	private HorizontalLayout filterLayout;
+	private VerticalLayout gridLayout;
+	protected FacilitiesGrid grid;
+	protected Button createButton;
+	protected Button exportButton;
 
 	protected AbstractFacilitiesView(String viewName, boolean showLaboratories) {
 		super(viewName);
+		
+		criteria = ViewModelProviders.of(AbstractFacilitiesView.class).get(FacilityCriteria.class);
+		criteria.type(showLaboratories ? FacilityType.LABORATORY : null);
+		
 		grid = new FacilitiesGrid();
+		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
-//		gridLayout.addComponent(createHeaderBar());
+		//		gridLayout.addComponent(createHeaderBar());
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(grid);
-		grid.setTypeFilter(showLaboratories);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
-		grid.reload();
 
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
+		exportButton = new Button("Export");
+		exportButton.setDescription("Export the columns and rows that are shown in the table below.");
+		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		exportButton.setIcon(FontAwesome.TABLE);
+		addHeaderComponent(exportButton);
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = new Button();
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
@@ -77,35 +98,38 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		addComponent(gridLayout);
 	}
 
-//	TODO additional filter bar (active, archived and other)
-//	private HorizontalLayout createHeaderBar() {
-//		headerLayout = new HorizontalLayout();
-//		headerLayout.setSpacing(true);
-//		headerLayout.setWidth(100, Unit.PERCENTAGE);
-//
-//		return headerLayout;
-//	}
+	//	TODO additional filter bar (active, archived and other)
+	//	private HorizontalLayout createHeaderBar() {
+	//		headerLayout = new HorizontalLayout();
+	//		headerLayout.setSpacing(true);
+	//		headerLayout.setWidth(100, Unit.PERCENTAGE);
+	//
+	//		return headerLayout;
+	//	}
 
 	private HorizontalLayout createFilterBar() {
 		filterLayout = new HorizontalLayout();
 		filterLayout.setSpacing(true);
 
-		TextField searchField = new TextField();
+		searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
-		searchField.setInputPrompt(I18nProperties.getText(SEARCH));
+		searchField.setNullRepresentation("");
+		searchField.setInputPrompt(I18nProperties.getCaption(SEARCH));
 		searchField.addTextChangeListener(e -> {
-			grid.filterByText(e.getText());
+			criteria.nameCityLike(e.getText());
+			navigateTo(criteria);
 		});
 		CssStyles.style(searchField, CssStyles.FORCE_CAPTION);
 		filterLayout.addComponent(searchField);
 
-		ComboBox regionFilter = new ComboBox();
+		regionFilter = new ComboBox();
 		regionFilter.setWidth(140, Unit.PIXELS);
-		regionFilter.setCaption(I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX, FacilityDto.REGION));
+		regionFilter.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.REGION));
 		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 		regionFilter.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
-			grid.setRegionFilter(region);
+			criteria.region(region);
+			navigateTo(criteria);
 			FieldHelper.updateItems(districtFilter,
 					region != null ? FacadeProvider.getDistrictFacade().getAllByRegion(region.getUuid()) : null);
 
@@ -114,10 +138,11 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 
 		districtFilter = new ComboBox();
 		districtFilter.setWidth(140, Unit.PIXELS);
-		districtFilter.setCaption(I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX, FacilityDto.DISTRICT));
+		districtFilter.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.DISTRICT));
 		districtFilter.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
-			grid.setDistrictFilter(district);
+			criteria.district(district);
+			navigateTo(criteria);
 			FieldHelper.updateItems(communityFilter,
 					district != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(district.getUuid()) : null);
 		});
@@ -125,14 +150,49 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 
 		communityFilter = new ComboBox();
 		communityFilter.setWidth(140, Unit.PIXELS);
-		communityFilter.setCaption(I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX, FacilityDto.COMMUNITY));
+		communityFilter.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.COMMUNITY));
 		communityFilter.addValueChangeListener(e -> {
-			CommunityReferenceDto community = (CommunityReferenceDto) e.getProperty().getValue();
-			grid.setCommunityFilter(community);
+			criteria.community((CommunityReferenceDto) e.getProperty().getValue());
+			navigateTo(criteria);
 		});
 		filterLayout.addComponent(communityFilter);
+		
+		resetButton = new Button(I18nProperties.getCaption(Captions.resetFilters));
+		resetButton.setVisible(false);
+		CssStyles.style(resetButton, CssStyles.FORCE_CAPTION);
+		resetButton.addClickListener(event -> {
+			ViewModelProviders.of(AbstractFacilitiesView.class).remove(FacilityCriteria.class);
+			navigateTo(null);
+		});
+		filterLayout.addComponent(resetButton);
 
 		return filterLayout;
 	}
 
+	@Override
+	public void enter(ViewChangeEvent event) {
+		super.enter(event);
+		String params = event.getParameters().trim();
+		if (params.startsWith("?")) {
+			params = params.substring(1);
+			criteria.fromUrlParams(params);
+		}
+		updateFilterComponents();
+		grid.reload();
+	}
+
+	public void updateFilterComponents() {
+		// TODO replace with Vaadin 8 databinding
+		applyingCriteria = true;
+
+		resetButton.setVisible(criteria.hasAnyFilterActive());
+		
+		searchField.setValue(criteria.getNameCityLike());
+		regionFilter.setValue(criteria.getRegion());
+		districtFilter.setValue(criteria.getDistrict());
+		communityFilter.setValue(criteria.getCommunity());
+		
+		applyingCriteria = false;
+	}
+	
 }

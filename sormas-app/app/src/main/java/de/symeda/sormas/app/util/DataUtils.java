@@ -21,8 +21,11 @@ package de.symeda.sormas.app.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.I18nProperties;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.Month;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.component.Item;
 
 /**
@@ -111,4 +114,5 @@ public class DataUtils {
         }
         return items;
     }
+
 }

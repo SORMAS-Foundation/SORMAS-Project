@@ -369,6 +369,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
     @Override
     public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
         if (enabled) {
             if (hasError) {
                 changeVisualState(VisualState.ERROR);

@@ -19,8 +19,8 @@
 package de.symeda.sormas.app.sample.list;
 
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +37,6 @@ import de.symeda.sormas.app.sample.read.SampleReadActivity;
 
 public class SampleListFragment extends BaseListFragment<SampleListAdapter> implements OnListItemClickListener {
 
-    private List<Sample> samples;
     private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerViewForList;
 
@@ -48,37 +47,15 @@ public class SampleListFragment extends BaseListFragment<SampleListAdapter> impl
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
-        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        recyclerViewForList = (RecyclerView) view.findViewById(R.id.recyclerViewForList);
+        linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
+        recyclerViewForList = view.findViewById(R.id.recyclerViewForList);
 
         return view;
     }
 
     @Override
-    protected void prepareFragmentData() {
-
-        switch ((ShipmentStatus) getListFilter()) {
-            case NOT_SHIPPED:
-                samples = DatabaseHelper.getSampleDao().queryNotShipped();
-                break;
-            case SHIPPED:
-                samples = DatabaseHelper.getSampleDao().queryShipped();
-                break;
-            case RECEIVED:
-                samples = DatabaseHelper.getSampleDao().queryReceived();
-                break;
-            case REFERRED_OTHER_LAB:
-                samples = DatabaseHelper.getSampleDao().queryReferred();
-                break;
-            default:
-                throw new IllegalArgumentException(getListFilter().toString());
-        }
-        getListAdapter().replaceAll(samples);
-    }
-
-    @Override
     public SampleListAdapter getNewListAdapter() {
-        return new SampleListAdapter(R.layout.row_sample_list_item_layout, this, samples);
+        return (SampleListAdapter) ((SampleListActivity) getActivity()).getAdapter();
     }
 
     @Override

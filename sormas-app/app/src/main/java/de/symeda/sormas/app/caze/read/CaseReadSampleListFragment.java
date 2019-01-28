@@ -20,11 +20,14 @@ package de.symeda.sormas.app.caze.read;
 
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -32,13 +35,14 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
+import de.symeda.sormas.app.sample.list.SampleListAdapter;
+import de.symeda.sormas.app.sample.list.SampleListViewModel;
 import de.symeda.sormas.app.sample.read.SampleReadActivity;
 
 public class CaseReadSampleListFragment extends BaseReadFragment<FragmentFormListLayoutBinding, List<Sample>, Case> implements OnListItemClickListener {
 
-    private List<Sample> record;
-
-    private CaseReadSampleListAdapter adapter;
+    private SampleListAdapter adapter;
+    private SampleListViewModel model;
     private LinearLayoutManager linearLayoutManager;
 
     public static CaseReadSampleListFragment newInstance(Case activityRootData) {
@@ -46,20 +50,30 @@ public class CaseReadSampleListFragment extends BaseReadFragment<FragmentFormLis
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        ((CaseReadActivity) getActivity()).showPreloader();
+        adapter = new SampleListAdapter(R.layout.row_sample_list_item_layout, this);
+        model = ViewModelProviders.of(this).get(SampleListViewModel.class);
+        model.getSamples(getActivityRootData()).observe(this, samples -> {
+            adapter.replaceAll(samples);
+            adapter.notifyDataSetChanged();
+            updateEmptyListHint(samples);
+            ((CaseReadActivity) getActivity()).hidePreloader();
+        });
+    }
+
+    @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
-        Case caze = getActivityRootData();
-        record = DatabaseHelper.getSampleDao().queryByCase(caze);
+
     }
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        updateEmptyListHint(record);
-
-        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        adapter = new CaseReadSampleListAdapter(R.layout.row_read_case_sample_list_item_layout, this, record);
+        linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -70,7 +84,7 @@ public class CaseReadSampleListFragment extends BaseReadFragment<FragmentFormLis
 
     @Override
     public List<Sample> getPrimaryData() {
-        return record;
+        throw new UnsupportedOperationException("Sub list fragments don't hold their data");
     }
 
     @Override

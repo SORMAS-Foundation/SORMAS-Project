@@ -22,13 +22,13 @@ import java.util.function.Consumer;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -39,7 +39,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringDto> {
 	
 	private static final String CITY = "city";
-	private static final String LGA = "lga";
+	private static final String DISTRICT = "district";
 	private static final String GATHERING_DAY = "gatheringDay";
 	
 	@Override
@@ -60,7 +60,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 			}
 		});
 		
-		table.addGeneratedColumn(LGA, new Table.ColumnGenerator() {
+		table.addGeneratedColumn(DISTRICT, new Table.ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataGatheringDto gathering = (EpiDataGatheringDto) itemId;
@@ -86,16 +86,16 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 				EpiDataGatheringDto.DESCRIPTION,
 				GATHERING_DAY,
 				CITY,
-				LGA);
+				DISTRICT);
 
 		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
 		table.setColumnExpandRatio(EpiDataGatheringDto.DESCRIPTION, 0);
 		table.setColumnExpandRatio(GATHERING_DAY, 0);
 		table.setColumnExpandRatio(CITY, 0);
-		table.setColumnExpandRatio(LGA, 0);
+		table.setColumnExpandRatio(DISTRICT, 0);
 		
 		for (Object columnId : table.getVisibleColumns()) {
-			table.setColumnHeader(columnId, I18nProperties.getPrefixFieldCaption(EpiDataGatheringDto.I18N_PREFIX, (String) columnId));
+			table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(EpiDataGatheringDto.I18N_PREFIX, (String) columnId));
 		}
 	}
 	
@@ -142,7 +142,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 					popupWindow.close();
 					EpiDataGatheringsField.this.removeEntry(entry);
 				}
-			}, I18nProperties.getFieldCaption("EpiDataGathering"));
+			}, I18nProperties.getCaption("EpiDataGathering"));
 		}
 	}
 	
@@ -152,7 +152,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 		gathering.setUuid(DataHelper.createUuid());
 		LocationDto location = new LocationDto();
 		location.setUuid(DataHelper.createUuid());
-		location.setRegion(CurrentUser.getCurrent().getUser().getRegion());
+		location.setRegion(UserProvider.getCurrent().getUser().getRegion());
 		gathering.setGatheringAddress(location);
 		return gathering;
 	}

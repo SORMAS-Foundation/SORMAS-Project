@@ -26,7 +26,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
@@ -225,10 +225,10 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
         if (selectedCauseOfDeath == CauseOfDeath.OTHER_CAUSE) {
             causeOfDeathDetailsField.setVisibility(VISIBLE);
-            causeOfDeathDetailsField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.CAUSE_OF_DEATH_DETAILS));
+            causeOfDeathDetailsField.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.CAUSE_OF_DEATH_DETAILS));
         } else if (selectedCauseOfDeathDisease == Disease.OTHER) {
             causeOfDeathDetailsField.setVisibility(VISIBLE);
-            causeOfDeathDetailsField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.CAUSE_OF_DEATH_DISEASE_DETAILS));
+            causeOfDeathDetailsField.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.CAUSE_OF_DEATH_DISEASE_DETAILS));
         } else {
             causeOfDeathDetailsField.setVisibility(GONE);
         }
@@ -254,19 +254,19 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
             switch (selectedOccupationType) {
                 case BUSINESSMAN_WOMAN:
                     occupationDetailsField.setVisibility(VISIBLE);
-                    occupationDetailsField.setCaption(I18nProperties.getFieldCaption(PersonDto.I18N_PREFIX + ".business." + PersonDto.OCCUPATION_DETAILS));
+                    occupationDetailsField.setCaption(I18nProperties.getCaption(PersonDto.I18N_PREFIX + ".business." + PersonDto.OCCUPATION_DETAILS));
                     break;
                 case TRANSPORTER:
                     occupationDetailsField.setVisibility(VISIBLE);
-                    occupationDetailsField.setCaption(I18nProperties.getFieldCaption(PersonDto.I18N_PREFIX + ".transporter." + PersonDto.OCCUPATION_DETAILS));
+                    occupationDetailsField.setCaption(I18nProperties.getCaption(PersonDto.I18N_PREFIX + ".transporter." + PersonDto.OCCUPATION_DETAILS));
                     break;
                 case HEALTHCARE_WORKER:
                     occupationDetailsField.setVisibility(VISIBLE);
-                    occupationDetailsField.setCaption(I18nProperties.getFieldCaption(PersonDto.I18N_PREFIX + ".healthcare." + PersonDto.OCCUPATION_DETAILS));
+                    occupationDetailsField.setCaption(I18nProperties.getCaption(PersonDto.I18N_PREFIX + ".healthcare." + PersonDto.OCCUPATION_DETAILS));
                     break;
                 case OTHER:
                     occupationDetailsField.setVisibility(VISIBLE);
-                    occupationDetailsField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.OCCUPATION_DETAILS));
+                    occupationDetailsField.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.OCCUPATION_DETAILS));
                     break;
                 default:
                     occupationDetailsField.setVisibility(GONE);

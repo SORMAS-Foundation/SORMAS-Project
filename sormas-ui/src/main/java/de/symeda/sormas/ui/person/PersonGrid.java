@@ -32,7 +32,7 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.person.PersonDto;
@@ -41,7 +41,7 @@ import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 
 @SuppressWarnings("serial")
 public class PersonGrid extends Grid {
@@ -71,7 +71,7 @@ public class PersonGrid extends Grid {
 	 * the list of person names.
 	 */
 	public PersonGrid(String firstName, String lastName) {
-		persons = FacadeProvider.getPersonFacade().getNameDtos(CurrentUser.getCurrent().getUserReference());
+		persons = FacadeProvider.getPersonFacade().getNameDtos(UserProvider.getCurrent().getUserReference());
 		buildGrid();
 		reload(firstName, lastName);
 	}
@@ -109,14 +109,14 @@ public class PersonGrid extends Grid {
 				CASE_LOC);
 
 		for (Column column : getColumns()) {
-			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
+			column.setHeaderCaption(I18nProperties.getPrefixCaption(
 					PersonIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 
 		getColumn(PersonIndexDto.FIRST_NAME).setMinimumWidth(150);
 		getColumn(PersonIndexDto.LAST_NAME).setMinimumWidth(150);
 		getColumn(CASE_LOC).setRenderer(new HtmlRenderer());
-		getColumn(CASE_LOC).setHeaderCaption(I18nProperties.getPrefixFieldCaption(PersonIndexDto.I18N_PREFIX, 
+		getColumn(CASE_LOC).setHeaderCaption(I18nProperties.getPrefixCaption(PersonIndexDto.I18N_PREFIX, 
 				associatedCase == null ? "lastDisease" : "matchingCase"));
 	}
 
@@ -133,7 +133,7 @@ public class PersonGrid extends Grid {
 				PersonIndexDto indexDto = FacadeProvider.getPersonFacade().getIndexDto(person.getUuid());
 				CaseDataDto caze = null;
 				if (associatedCase == null) {
-					caze = FacadeProvider.getCaseFacade().getLatestCaseByPerson(indexDto.getUuid(), CurrentUser.getCurrent().getUserReference().getUuid());
+					caze = FacadeProvider.getCaseFacade().getLatestCaseByPerson(indexDto.getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
 				} else {
 					caze = FacadeProvider.getCaseFacade().getMatchingCaseForImport(associatedCase, indexDto.toReference(), currentUser.getUuid());
 				}

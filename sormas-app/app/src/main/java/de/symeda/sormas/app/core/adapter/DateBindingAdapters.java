@@ -18,7 +18,7 @@
 
 package de.symeda.sormas.app.core.adapter;
 
-import android.databinding.BindingAdapter;
+import androidx.databinding.BindingAdapter;
 import android.widget.TextView;
 
 import java.util.Date;

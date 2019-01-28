@@ -20,9 +20,9 @@ package de.symeda.sormas.app.component.controls;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.databinding.BindingAdapter;
-import android.databinding.InverseBindingAdapter;
-import android.databinding.InverseBindingListener;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.InverseBindingAdapter;
+import androidx.databinding.InverseBindingListener;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -37,7 +37,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.VisualState;
@@ -203,7 +203,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 
     @Override
     public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
+        super.setEnabled(enabled); // this has to be called first
         input.setEnabled(enabled);
         label.setEnabled(enabled);
     }
@@ -297,7 +297,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         super.onAttachedToWindow();
 
         if (getHint() == null) {
-            setHint(I18nProperties.getFieldCaption(getFieldCaptionPropertyId()));
+            setHint(I18nProperties.getCaption(getCaptionPropertyId()));
         }
     }
 

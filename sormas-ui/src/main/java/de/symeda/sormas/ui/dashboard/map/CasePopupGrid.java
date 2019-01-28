@@ -29,7 +29,7 @@ import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -110,7 +110,7 @@ public class CasePopupGrid extends Grid {
         }
         
         for (Column column : getColumns()) {
-        	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
+        	column.setHeaderCaption(I18nProperties.getPrefixCaption(
         			CaseDataDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
         

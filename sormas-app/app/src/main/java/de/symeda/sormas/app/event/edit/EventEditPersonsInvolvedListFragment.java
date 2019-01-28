@@ -18,11 +18,16 @@
 
 package de.symeda.sormas.app.event.edit;
 
-import android.support.v7.widget.LinearLayoutManager;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
+import android.os.Bundle;
 import android.view.View;
 
 import java.util.List;
 
+import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -30,16 +35,34 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
-import de.symeda.sormas.app.event.edit.eventparticipant.EventParticipantEditActivity;
+import de.symeda.sormas.app.event.eventparticipant.edit.EventParticipantEditActivity;
+import de.symeda.sormas.app.event.eventparticipant.list.EventParticipantListAdapter;
+import de.symeda.sormas.app.event.eventparticipant.list.EventParticipantListViewModel;
+import de.symeda.sormas.app.event.list.EventListViewModel;
 
 public class EventEditPersonsInvolvedListFragment extends BaseEditFragment<FragmentFormListLayoutBinding, List<EventParticipant>, Event> implements OnListItemClickListener {
 
-    private List<EventParticipant> record;
-    private EventEditPersonsInvolvedListAdapter adapter;
+    private EventParticipantListAdapter adapter;
+    private EventParticipantListViewModel model;
     private LinearLayoutManager linearLayoutManager;
 
     public static EventEditPersonsInvolvedListFragment newInstance(Event activityRootData) {
         return newInstance(EventEditPersonsInvolvedListFragment.class, null, activityRootData);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        ((EventEditActivity) getActivity()).showPreloader();
+        adapter = new EventParticipantListAdapter(R.layout.row_read_persons_involved_list_item_layout, this, null);
+        model = ViewModelProviders.of(this).get(EventParticipantListViewModel.class);
+        model.getEventParticipants(getActivityRootData()).observe(this, eventParticipants -> {
+            adapter.replaceAll(eventParticipants);
+            adapter.notifyDataSetChanged();
+            updateEmptyListHint(eventParticipants);
+            ((EventEditActivity) getActivity()).hidePreloader();
+        });
     }
 
     @Override
@@ -49,23 +72,19 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditFragment<Fragm
 
     @Override
     public List<EventParticipant> getPrimaryData() {
-        return null;
+        throw new UnsupportedOperationException("Sub list fragments don't hold their data");
     }
 
     @Override
     protected void prepareFragmentData() {
-        Event event = getActivityRootData();
-        record = DatabaseHelper.getEventParticipantDao().getByEvent(event);
+
     }
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        updateEmptyListHint(record);
-        adapter = new EventEditPersonsInvolvedListAdapter(R.layout.row_read_persons_involved_list_item_layout, this, record);
-        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
     }
 
     @Override

@@ -31,9 +31,9 @@
 
         <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiData" />
         <variable name="waterSourceClass" type="Class" />
-        <variable name="gatheringList" type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataGathering&gt;" />
-        <variable name="travelList" type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataTravel&gt;" />
-        <variable name="burialList" type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataBurial&gt;" />
+        <variable name="gatheringList" type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataGathering&gt;" />
+        <variable name="travelList" type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataTravel&gt;" />
+        <variable name="burialList" type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataBurial&gt;" />
         <variable name="gatheringItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
         <variable name="travelItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
         <variable name="burialItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />

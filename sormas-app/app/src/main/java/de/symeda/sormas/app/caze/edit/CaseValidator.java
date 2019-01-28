@@ -25,7 +25,8 @@ import org.joda.time.DateTimeComparator;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
@@ -44,7 +45,7 @@ final class CaseValidator {
                 if (contentBinding.epiDataBurialBurialDateFrom.getValue() != null && contentBinding.epiDataBurialBurialDateTo.getValue() != null) {
                     if (contentBinding.epiDataBurialBurialDateFrom.getValue().after(contentBinding.epiDataBurialBurialDateTo.getValue())) {
                         contentBinding.epiDataBurialBurialDateFrom.enableErrorState(
-                                I18nProperties.getValidationError("beforeDate",
+                                I18nProperties.getValidationError(Validations.beforeDate,
                                         contentBinding.epiDataBurialBurialDateFrom.getCaption(),
                                         contentBinding.epiDataBurialBurialDateTo.getCaption()));
                     }
@@ -57,7 +58,7 @@ final class CaseValidator {
                 if (contentBinding.epiDataBurialBurialDateTo.getValue() != null && contentBinding.epiDataBurialBurialDateFrom.getValue() != null) {
                     if (contentBinding.epiDataBurialBurialDateTo.getValue().before(contentBinding.epiDataBurialBurialDateFrom.getValue())) {
                         contentBinding.epiDataBurialBurialDateTo.enableErrorState(
-                                I18nProperties.getValidationError("afterDate",
+                                I18nProperties.getValidationError(Validations.afterDate,
                                         contentBinding.epiDataBurialBurialDateTo.getCaption(),
                                         contentBinding.epiDataBurialBurialDateFrom.getCaption()));
                     }
@@ -76,7 +77,7 @@ final class CaseValidator {
                 if (contentBinding.epiDataTravelTravelDateFrom.getValue() != null && contentBinding.epiDataTravelTravelDateTo.getValue() != null) {
                     if (contentBinding.epiDataTravelTravelDateFrom.getValue().after(contentBinding.epiDataTravelTravelDateTo.getValue())) {
                         contentBinding.epiDataTravelTravelDateFrom.enableErrorState(
-                                I18nProperties.getValidationError("beforeDate",
+                                I18nProperties.getValidationError(Validations.beforeDate,
                                         contentBinding.epiDataTravelTravelDateFrom.getCaption(),
                                         contentBinding.epiDataTravelTravelDateTo.getCaption()));
                     }
@@ -90,7 +91,7 @@ final class CaseValidator {
                 if (contentBinding.epiDataTravelTravelDateTo.getValue() != null && contentBinding.epiDataTravelTravelDateFrom.getValue() != null) {
                     if (contentBinding.epiDataTravelTravelDateTo.getValue().before(contentBinding.epiDataTravelTravelDateFrom.getValue())) {
                         contentBinding.epiDataTravelTravelDateTo.enableErrorState(
-                                I18nProperties.getValidationError("afterDate",
+                                I18nProperties.getValidationError(Validations.afterDate,
                                         contentBinding.epiDataTravelTravelDateTo.getCaption(),
                                         contentBinding.epiDataTravelTravelDateFrom.getCaption()));
                     }
@@ -109,8 +110,8 @@ final class CaseValidator {
                 Date value = (Date) field.getValue();
                 if (caze.getSymptoms().getOnsetDate() != null && DateTimeComparator.getDateOnlyInstance().compare(value, caze.getSymptoms().getOnsetDate()) <= 0) {
                     contentBinding.caseHospitalizationAdmissionDate.enableWarningState(
-                            I18nProperties.getValidationError("afterDateSoft", contentBinding.caseHospitalizationAdmissionDate.getCaption(),
-                                    I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE)));
+                            I18nProperties.getValidationError(Validations.afterDateSoft, contentBinding.caseHospitalizationAdmissionDate.getCaption(),
+                                    I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE)));
                 } else {
                     contentBinding.caseHospitalizationAdmissionDate.disableWarningState();
                 }
@@ -123,7 +124,7 @@ final class CaseValidator {
                 if (contentBinding.caseHospitalizationAdmissionDate.getValue() != null && contentBinding.caseHospitalizationDischargeDate.getValue() != null) {
                     if (contentBinding.caseHospitalizationAdmissionDate.getValue().after(contentBinding.caseHospitalizationDischargeDate.getValue())) {
                         contentBinding.caseHospitalizationAdmissionDate.enableErrorState(
-                                I18nProperties.getValidationError("beforeDate",
+                                I18nProperties.getValidationError(Validations.beforeDate,
                                         contentBinding.caseHospitalizationAdmissionDate.getCaption(),
                                         contentBinding.caseHospitalizationDischargeDate.getCaption()));
                     }
@@ -137,7 +138,7 @@ final class CaseValidator {
                 if (contentBinding.caseHospitalizationDischargeDate.getValue() != null && contentBinding.caseHospitalizationAdmissionDate.getValue() != null) {
                     if (contentBinding.caseHospitalizationDischargeDate.getValue().before(contentBinding.caseHospitalizationAdmissionDate.getValue())) {
                         contentBinding.caseHospitalizationDischargeDate.enableErrorState(
-                                I18nProperties.getValidationError("afterDate",
+                                I18nProperties.getValidationError(Validations.afterDate,
                                         contentBinding.caseHospitalizationDischargeDate.getCaption(),
                                         contentBinding.caseHospitalizationAdmissionDate.getCaption()));
                     }
@@ -156,7 +157,7 @@ final class CaseValidator {
                 if (contentBinding.casePreviousHospitalizationAdmissionDate.getValue() != null && contentBinding.casePreviousHospitalizationDischargeDate.getValue() != null) {
                     if (contentBinding.casePreviousHospitalizationAdmissionDate.getValue().after(contentBinding.casePreviousHospitalizationDischargeDate.getValue())) {
                         contentBinding.casePreviousHospitalizationAdmissionDate.enableErrorState(
-                                I18nProperties.getValidationError("beforeDate",
+                                I18nProperties.getValidationError(Validations.beforeDate,
                                         contentBinding.casePreviousHospitalizationAdmissionDate.getCaption(),
                                         contentBinding.casePreviousHospitalizationDischargeDate.getCaption()));
                     }
@@ -170,7 +171,7 @@ final class CaseValidator {
                 if (contentBinding.casePreviousHospitalizationDischargeDate.getValue() != null && contentBinding.casePreviousHospitalizationAdmissionDate.getValue() != null) {
                     if (contentBinding.casePreviousHospitalizationDischargeDate.getValue().before(contentBinding.casePreviousHospitalizationAdmissionDate.getValue())) {
                         contentBinding.casePreviousHospitalizationDischargeDate.enableErrorState(
-                                I18nProperties.getValidationError("afterDate",
+                                I18nProperties.getValidationError(Validations.afterDate,
                                         contentBinding.casePreviousHospitalizationDischargeDate.getCaption(),
                                         contentBinding.casePreviousHospitalizationAdmissionDate.getCaption()));
                     }

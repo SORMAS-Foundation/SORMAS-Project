@@ -39,6 +39,7 @@ All commands mentioned are linux commands.
 For information on what libs are used see pom.xml in sormas-base project: https://git.symeda/sormas/sormas/blob/development/sormas-base/pom.xml
 * stop server: ``service payara-sormas stop``
 * ``rm /opt/domains/sormas/lib/*.jar``
+* ``cd /root/deploy/sormas/$(date +%F)`` (just to make sure you're in the right directory)
 * ``cp ./serverlibs/* /opt/domains/sormas/lib/``
 
 ## OSGi Bundles 
@@ -54,7 +55,9 @@ Only when SORMAS versions pre 1.10 where installed on the server.
 * Create a backup of the database
     * ``cd /root/deploy/sormas/backup``
     * ``sudo -u postgres pg_dump -Fc -b sormas_db > "sormas_db_"`date +"%Y-%m-%d_%H-%M-%S"`".dump"`` \
-     (to restore the data you can use: sudo -u postgres pg_restore -Fc -d sormas_db sormas_db_....dump)
+     To restore the data you can use: ``sudo -u postgres pg_restore -Fc -d sormas_db sormas_db_....dump`` \
+     You can ignore the following warning/error
+     > could not change directory to "/root/deploy/sormas/backup": Permission denied
     * ``sudo -u postgres pg_dump -Fc -b sormas_audit_db > "sormas_audit_db_"`date +"%Y-%m-%d_%H-%M-%S"`".dump"``
     * ``cd /root/deploy/sormas/$(date +%F)``	
 * Update the database schema
@@ -75,7 +78,7 @@ Only when SORMAS versions pre 1.10 where installed on the server.
 
 ## Web Applications
 * ``service payara-sormas start``
-* ``cd /root/deploy/sormas/$(date +%F) (just to make sure you're in the right directory)``
+* ``cd /root/deploy/sormas/$(date +%F)`` (just to make sure you're in the right directory)
 * ``cp apps/*.ear /opt/domains/sormas/autodeploy/``
 * ``cp apps/*.war /opt/domains/sormas/autodeploy/``
 * ``cp android/release/*.apk /var/www/sormas/downloads/``

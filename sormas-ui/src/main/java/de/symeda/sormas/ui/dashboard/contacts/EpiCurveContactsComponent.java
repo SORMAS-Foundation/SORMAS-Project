@@ -34,7 +34,7 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
@@ -142,7 +142,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 				Date date = datesGroupedBy.get(i);
 
 				ContactCriteria contactCriteria = new ContactCriteria()
-						.caseDiseaseEquals(dashboardDataProvider.getDisease())
+						.caseDisease(dashboardDataProvider.getDisease())
 						.caseRegion(dashboardDataProvider.getRegion())
 						.caseDistrict(dashboardDataProvider.getDistrict());
 				if (epiCurveGrouping == EpiCurveGrouping.DAY) {
@@ -154,7 +154,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 				}
 
 				Map<ContactClassification, Long> contactCounts = FacadeProvider.getContactFacade()
-						.getNewContactCountPerClassification(contactCriteria, CurrentUser.getCurrent().getUuid());
+						.getNewContactCountPerClassification(contactCriteria, UserProvider.getCurrent().getUuid());
 
 				Long unconfirmedCount = contactCounts.get(ContactClassification.UNCONFIRMED);
 				Long confirmedCount = contactCounts.get(ContactClassification.CONFIRMED);
@@ -190,7 +190,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 				Date date = datesGroupedBy.get(i);
 
 				ContactCriteria contactCriteria = new ContactCriteria()
-						.caseDiseaseEquals(dashboardDataProvider.getDisease())
+						.caseDisease(dashboardDataProvider.getDisease())
 						.caseRegion(dashboardDataProvider.getRegion())
 						.caseDistrict(dashboardDataProvider.getDistrict());
 				if (epiCurveGrouping == EpiCurveGrouping.DAY) {
@@ -202,9 +202,9 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 				}
 
 				Map<FollowUpStatus, Long> contactCounts = FacadeProvider.getContactFacade()
-						.getNewContactCountPerFollowUpStatus(contactCriteria, CurrentUser.getCurrent().getUuid());
+						.getNewContactCountPerFollowUpStatus(contactCriteria, UserProvider.getCurrent().getUuid());
 				Map<ContactStatus, Long> contactStatusCounts = FacadeProvider.getContactFacade()
-						.getNewContactCountPerStatus(contactCriteria, CurrentUser.getCurrent().getUuid());
+						.getNewContactCountPerStatus(contactCriteria, UserProvider.getCurrent().getUuid());
 
 				Long underFollowUpCount = contactCounts.get(FollowUpStatus.FOLLOW_UP);
 				Long lostToFollowUpCount = contactCounts.get(FollowUpStatus.LOST);
@@ -267,7 +267,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 				Date date = datesGroupedBy.get(i);
 
 				ContactCriteria contactCriteria = new ContactCriteria()
-						.caseDiseaseEquals(dashboardDataProvider.getDisease())
+						.caseDisease(dashboardDataProvider.getDisease())
 						.caseRegion(dashboardDataProvider.getRegion())
 						.caseDistrict(dashboardDataProvider.getDistrict());
 				if (epiCurveGrouping == EpiCurveGrouping.DAY) {
@@ -278,7 +278,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 					contactCriteria.followUpUntilBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date));
 				}
 
-				followUpUntilNumbers[i] = FacadeProvider.getContactFacade().getFollowUpUntilCount(contactCriteria, CurrentUser.getCurrent().getUuid());
+				followUpUntilNumbers[i] = FacadeProvider.getContactFacade().getFollowUpUntilCount(contactCriteria, UserProvider.getCurrent().getUuid());
 			}
 
 			hcjs.append("series: [");

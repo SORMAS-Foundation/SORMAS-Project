@@ -20,18 +20,29 @@ package de.symeda.sormas.app.task.edit;
 
 import android.view.View;
 
+import java.util.List;
+
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
+import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.contact.read.ContactReadActivity;
 import de.symeda.sormas.app.databinding.FragmentTaskEditLayoutBinding;
 import de.symeda.sormas.app.event.read.EventReadActivity;
+import de.symeda.sormas.app.util.DataUtils;
 
 import static android.view.View.GONE;
 
@@ -39,8 +50,24 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
 
     private Task record;
 
+    private List<Item> taskTypeList;
+    private List<Item> priorityList;
+    private List<Item> assigneeList;
+
     public static TaskEditFragment newInstance(Task activityRootData) {
-        return newInstance(TaskEditFragment.class, null, activityRootData);
+        return newInstance(TaskEditFragment.class, activityRootData.getId() == null ? TaskNewActivity.buildBundle().get() : null, activityRootData);
+    }
+
+    public static TaskEditFragment newInstanceFromCase(Task activityRootData, String caseUuid) {
+        return newInstance(TaskEditFragment.class, TaskNewActivity.buildBundleWithCase(caseUuid).get(), activityRootData);
+    }
+
+    public static TaskEditFragment newInstanceFromContact(Task activityRootData, String contactUuid) {
+        return newInstance(TaskEditFragment.class, TaskNewActivity.buildBundleWithContact(contactUuid).get(), activityRootData);
+    }
+
+    public static TaskEditFragment newInstanceFromEvent(Task activityRootData, String eventUuid) {
+        return newInstance(TaskEditFragment.class, TaskNewActivity.buildBundleWithEvent(eventUuid).get(), activityRootData);
     }
 
     private void setUpControlListeners(FragmentTaskEditLayoutBinding contentBinding) {
@@ -59,42 +86,6 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
                 getBaseEditActivity().saveData();
             }
         });
-
-        if (record.getCaze() != null) {
-            contentBinding.taskCaze.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Case caze = record.getCaze();
-                    if (caze != null) {
-                        CaseReadActivity.startActivity(getActivity(), caze.getUuid(), true);
-                    }
-                }
-            });
-        }
-
-        if (record.getContact() != null) {
-            contentBinding.taskContact.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Contact contact = record.getContact();
-                    if (contact != null) {
-                        ContactReadActivity.startActivity(getActivity(), contact.getUuid(), true);
-                    }
-                }
-            });
-        }
-
-        if (record.getEvent() != null) {
-            contentBinding.taskEvent.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Event event = record.getEvent();
-                    if (event != null) {
-                        EventReadActivity.startActivity(getActivity(), event.getUuid(), true);
-                    }
-                }
-            });
-        }
     }
 
     // Overrides
@@ -111,17 +102,49 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
 
     @Override
     public boolean isShowSaveAction() {
-        return false;
+        return ConfigProvider.getUser().equals(record.getCreatorUser());
     }
 
     @Override
     protected void prepareFragmentData() {
         record = getActivityRootData();
+
+        taskTypeList = DataUtils.toItems(TaskType.getTaskTypes(record.getTaskContext()), true);
+        priorityList = DataUtils.getEnumItems(TaskPriority.class, true);
+        assigneeList = DataUtils.toItems(DatabaseHelper.getUserDao().queryForAll(), true);
     }
 
     @Override
-    public void onLayoutBinding(FragmentTaskEditLayoutBinding contentBinding) {
+    public void onLayoutBinding(final FragmentTaskEditLayoutBinding contentBinding) {
         setUpControlListeners(contentBinding);
+
+        // Initialize ControlSpinnerFields
+        contentBinding.taskTaskType.initializeSpinner(taskTypeList);
+        contentBinding.taskPriority.initializeSpinner(priorityList);
+        contentBinding.taskAssigneeUser.initializeSpinner(assigneeList);
+
+        // Initialize ControlDateFields and ControlDateTimeFields
+        contentBinding.taskSuggestedStart.initializeDateTimeField(getFragmentManager());
+        contentBinding.taskDueDate.initializeDateTimeField(getFragmentManager());
+
+        //creatorComment should be required when task type is OTHER
+        contentBinding.taskTaskType.addValueChangedListener(new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+            contentBinding.taskCreatorComment.setRequired(field.getValue() == TaskType.OTHER);
+            }
+        });
+
+        contentBinding.setData(record);
+    }
+
+    @Override
+    protected void onAfterLayoutBinding(FragmentTaskEditLayoutBinding contentBinding) {
+        super.onAfterLayoutBinding(contentBinding);
+
+        if (record.getId() == null) {
+            contentBinding.taskAssigneeReply.setVisibility(GONE);
+        }
 
         // Saving and editing the assignee reply is only allowed when the task is assigned to the user;
         // Additionally, the save option is hidden for pending tasks because those should be saved
@@ -135,13 +158,10 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
                 contentBinding.taskButtonPanel.setVisibility(GONE);
             }
         }
-
-        contentBinding.setData(record);
     }
 
     @Override
     public int getEditLayout() {
         return R.layout.fragment_task_edit_layout;
     }
-
 }

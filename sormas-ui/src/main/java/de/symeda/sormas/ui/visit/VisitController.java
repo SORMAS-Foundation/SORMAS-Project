@@ -29,7 +29,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Notification.Type;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -41,7 +41,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
@@ -81,17 +81,17 @@ public class VisitController {
         	}
         });
         
-        if (CurrentUser.getCurrent().hasUserRole(UserRole.ADMIN)) {
+        if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getVisitFacade().deleteVisit(referenceDto, CurrentUser.getCurrent().getUuid());
+					FacadeProvider.getVisitFacade().deleteVisit(referenceDto, UserProvider.getCurrent().getUuid());
 					UI.getCurrent().removeWindow(window);
         			if (doneConsumer != null) {
         				doneConsumer.accept(referenceDto);
         			}
 				}
-			}, I18nProperties.getFieldCaption("Visit"));
+			}, I18nProperties.getCaption("Visit"));
 		}
 	}
 
@@ -137,7 +137,7 @@ public class VisitController {
     	visit.setSymptoms(symptoms);
     	
     	visit.setVisitDateTime(new Date());
-    	UserReferenceDto userReference = CurrentUser.getCurrent().getUserReference();
+    	UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
     	visit.setVisitUser(userReference);
     	
     	return visit;
@@ -150,7 +150,7 @@ public class VisitController {
 			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected visits?", new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getVisitFacade().deleteVisit(new VisitReferenceDto(((VisitDto) selectedRow).getUuid()), CurrentUser.getCurrent().getUuid());
+						FacadeProvider.getVisitFacade().deleteVisit(new VisitReferenceDto(((VisitDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification("Visits deleted", "All selected visits have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());

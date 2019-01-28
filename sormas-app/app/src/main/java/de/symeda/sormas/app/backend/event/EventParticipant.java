@@ -18,7 +18,7 @@
 
 package de.symeda.sormas.app.backend.event;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.googlecode.openbeans.PropertyDescriptor;
 import com.j256.ormlite.field.DatabaseField;

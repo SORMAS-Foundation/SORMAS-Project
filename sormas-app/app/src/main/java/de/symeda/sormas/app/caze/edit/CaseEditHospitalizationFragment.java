@@ -19,14 +19,14 @@
 package de.symeda.sormas.app.caze.edit;
 
 import android.content.res.Resources;
-import android.databinding.ObservableArrayList;
+import androidx.databinding.ObservableArrayList;
 import android.view.View;
 
 import org.joda.time.DateTimeComparator;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseEditFragment;

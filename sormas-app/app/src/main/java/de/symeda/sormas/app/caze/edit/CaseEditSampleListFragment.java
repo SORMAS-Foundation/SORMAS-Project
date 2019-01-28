@@ -19,11 +19,17 @@
 package de.symeda.sormas.app.caze.edit;
 
 import android.content.res.Resources;
-import android.support.v7.widget.LinearLayoutManager;
+
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
+import android.os.Bundle;
 import android.view.View;
 
 import java.util.List;
 
+import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -32,15 +38,32 @@ import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.sample.edit.SampleEditActivity;
+import de.symeda.sormas.app.sample.list.SampleListAdapter;
+import de.symeda.sormas.app.sample.list.SampleListViewModel;
 
 public class CaseEditSampleListFragment extends BaseEditFragment<FragmentFormListLayoutBinding, List<Sample>, Case> implements OnListItemClickListener {
 
-    private List<Sample> record;
-    private CaseEditSampleListAdapter adapter;
+    private SampleListAdapter adapter;
+    private SampleListViewModel model;
     private LinearLayoutManager linearLayoutManager;
 
     public static CaseEditSampleListFragment newInstance(Case activityRootData) {
         return newInstance(CaseEditSampleListFragment.class, null, activityRootData);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        ((CaseEditActivity) getActivity()).showPreloader();
+        adapter = new SampleListAdapter(R.layout.row_sample_list_item_layout, this);
+        model = ViewModelProviders.of(this).get(SampleListViewModel.class);
+        model.getSamples(getActivityRootData()).observe(this, samples -> {
+            adapter.replaceAll(samples);
+            adapter.notifyDataSetChanged();
+            updateEmptyListHint(samples);
+            ((CaseEditActivity) getActivity()).hidePreloader();
+        });
     }
 
     @Override
@@ -51,23 +74,19 @@ public class CaseEditSampleListFragment extends BaseEditFragment<FragmentFormLis
 
     @Override
     public List<Sample> getPrimaryData() {
-        return record;
+        throw new UnsupportedOperationException("Sub list fragments don't hold their data");
     }
 
     @Override
     protected void prepareFragmentData() {
-        Case caze = getActivityRootData();
-        record = DatabaseHelper.getSampleDao().queryByCase(caze);
+
     }
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        updateEmptyListHint(record);
-        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        adapter = new CaseEditSampleListAdapter(R.layout.row_edit_sample_list_item_layout, this, record);
+        linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
     }
 
     @Override

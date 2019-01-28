@@ -30,7 +30,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -47,7 +48,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -134,7 +135,7 @@ public class ContactController {
 		contact.setCaze(caze);
 
 		contact.setReportDateTime(new Date());
-		UserReferenceDto userReference = CurrentUser.getCurrent().getUserReference();
+		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
 		contact.setReportingUser(userReference);
 		contact.setContactClassification(ContactClassification.UNCONFIRMED);
 		contact.setContactStatus(ContactStatus.ACTIVE);
@@ -219,14 +220,14 @@ public class ContactController {
 			}
 		});
 
-		if (CurrentUser.getCurrent().hasUserRole(UserRole.ADMIN)) {
+		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			editComponent.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getContactFacade().deleteContact(contact.toReference(), CurrentUser.getCurrent().getUserReference().getUuid());
+					FacadeProvider.getContactFacade().deleteContact(contact.toReference(), UserProvider.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
 				}
-			}, I18nProperties.getFieldCaption("Contact"));
+			}, I18nProperties.getString(Strings.contact));
 		}
 
 		return editComponent;
@@ -302,7 +303,7 @@ public class ContactController {
 			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected contacts?", new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getContactFacade().deleteContact(new ContactReferenceDto(((ContactIndexDto) selectedRow).getUuid()), CurrentUser.getCurrent().getUuid());
+						FacadeProvider.getContactFacade().deleteContact(new ContactReferenceDto(((ContactIndexDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification("Contacts deleted", "All selected contacts have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
@@ -322,7 +323,7 @@ public class ContactController {
 						if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 							ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
 							contactDto.setFollowUpStatus(FollowUpStatus.CANCELED);
-							contactDto.setFollowUpComment("Canceled by " + CurrentUser.getCurrent().getUserName() + " using bulk action");
+							contactDto.setFollowUpComment("Canceled by " + UserProvider.getCurrent().getUserName() + " using bulk action");
 							FacadeProvider.getContactFacade().saveContact(contactDto);
 						}
 					}
@@ -344,7 +345,7 @@ public class ContactController {
 						if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 							ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
 							contactDto.setFollowUpStatus(FollowUpStatus.LOST);
-							contactDto.setFollowUpComment("Set to lost to follow-up by " + CurrentUser.getCurrent().getUserName() + " using bulk action");
+							contactDto.setFollowUpComment("Set to lost to follow-up by " + UserProvider.getCurrent().getUserName() + " using bulk action");
 							FacadeProvider.getContactFacade().saveContact(contactDto);
 						}
 					}

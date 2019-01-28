@@ -23,9 +23,9 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.SubNavigationMenu;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.DistrictsView;
@@ -48,29 +48,29 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 	@Override
 	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		menu.removeAllViews();
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
-			menu.addView(RegionsView.VIEW_NAME, I18nProperties.getPrefixFragment("View",
-					RegionsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
-			menu.addView(DistrictsView.VIEW_NAME, I18nProperties.getPrefixFragment("View",
-					DistrictsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
-			menu.addView(CommunitiesView.VIEW_NAME, I18nProperties.getPrefixFragment("View",
-					CommunitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
-			menu.addView(HealthFacilitiesView.VIEW_NAME, I18nProperties.getPrefixFragment("View",
-					HealthFacilitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
-			menu.addView(LaboratoriesView.VIEW_NAME, I18nProperties.getPrefixFragment("View",
-					LaboratoriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
+			menu.addView(RegionsView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
+					RegionsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
+			menu.addView(DistrictsView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
+					DistrictsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
+			menu.addView(CommunitiesView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
+					CommunitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
+			menu.addView(HealthFacilitiesView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
+					HealthFacilitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
+			menu.addView(LaboratoriesView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
+					LaboratoriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
 		}
 //		if (LoginHelper.hasUserRight(UserRight.USER_RIGHTS_MANAGE)) {
 //			menu.addView(UserRightsView.VIEW_NAME, I18nProperties.getPrefixFragment("View", 
 //					UserRightsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
 //		}
 		menu.addView(OutbreaksView.VIEW_NAME,
-				I18nProperties.getPrefixFragment("View", OutbreaksView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				I18nProperties.getPrefixCaption("View", OutbreaksView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 				params);
 	}
 
 	public static void registerViews(Navigator navigator) {
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
 			navigator.addView(RegionsView.VIEW_NAME, RegionsView.class);
 			navigator.addView(DistrictsView.VIEW_NAME, DistrictsView.class);
 			navigator.addView(CommunitiesView.VIEW_NAME, CommunitiesView.class);

@@ -71,8 +71,8 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		longitude.setConversionError("Only geo coordinate values are allowed for " + longitude.getCaption());
 
 		name.setRequired(true);
-		region.setRequired(true);
 		if (!laboratory) {
+			region.setRequired(true);
 			district.setRequired(true);
 			community.setRequired(true);
 		}
@@ -97,11 +97,13 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 
-		// TODO: Workaround until cases and other data is properly transfered when infrastructure data changes
 		if (!create) {
-			region.setEnabled(false);
-			district.setEnabled(false);
-			community.setEnabled(false);
+			if (!laboratory) {
+				// Disable editing of region, etc. so case references stay correct
+				region.setEnabled(false);
+				district.setEnabled(false);
+				community.setEnabled(false);
+			}
 		}
 	}
 

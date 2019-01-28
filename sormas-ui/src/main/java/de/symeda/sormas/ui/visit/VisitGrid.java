@@ -27,7 +27,7 @@ import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -35,7 +35,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -53,7 +53,7 @@ public class VisitGrid extends Grid {
 	public VisitGrid() {
 		setSizeFull();
 
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
         	setSelectionMode(SelectionMode.MULTI);
         } else {
         	setSelectionMode(SelectionMode.NONE);
@@ -77,7 +77,7 @@ public class VisitGrid extends Grid {
 		getColumn(VisitDto.VISIT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
 
 		for (Column column : getColumns()) {
-			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
+			column.setHeaderCaption(I18nProperties.getPrefixCaption(
 					VisitDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 

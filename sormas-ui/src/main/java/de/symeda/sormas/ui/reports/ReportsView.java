@@ -37,7 +37,7 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -55,7 +55,7 @@ public class ReportsView extends AbstractView {
 	public ReportsView() {
 		super(VIEW_NAME);
 
-		if (UserRole.isNational(CurrentUser.getCurrent().getUserRoles())) {
+		if (UserRole.isNational(UserProvider.getCurrent().getUserRoles())) {
 			grid = new WeeklyReportRegionsGrid();
 		} else {
 			grid = new WeeklyReportOfficersGrid();
@@ -160,7 +160,7 @@ public class ReportsView extends AbstractView {
 		if (grid instanceof WeeklyReportRegionsGrid) {
 			((WeeklyReportRegionsGrid) grid).reload((int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
 		} else {
-			((WeeklyReportOfficersGrid) grid).reload(CurrentUser.getCurrent().getUser().getRegion(),
+			((WeeklyReportOfficersGrid) grid).reload(UserProvider.getCurrent().getUser().getRegion(),
 					(int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
 		}
 	}

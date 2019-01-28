@@ -39,12 +39,12 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 
@@ -82,29 +82,29 @@ public class DashboardFilterLayout extends HorizontalLayout {
 
 	private void createRegionAndDistrictFilter() {
 		// Region filter
-		if (CurrentUser.getCurrent().getUser().getRegion() == null) {
+		if (UserProvider.getCurrent().getUser().getRegion() == null) {
 			regionFilter.setWidth(200, Unit.PIXELS);
-			regionFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(AbstractDashboardView.I18N_PREFIX, "region"));
+			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(AbstractDashboardView.I18N_PREFIX, "region"));
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 			regionFilter.addValueChangeListener(e -> {
 				dashboardDataProvider.setRegion((RegionReferenceDto) regionFilter.getValue());
 				dashboardView.refreshDashboard();
 			});
-			regionFilter.setCaption(I18nProperties.getPrefixFieldCaption(AbstractDashboardView.I18N_PREFIX, "region"));
+			regionFilter.setCaption(I18nProperties.getPrefixCaption(AbstractDashboardView.I18N_PREFIX, "region"));
 			addComponent(regionFilter);
 			dashboardDataProvider.setRegion((RegionReferenceDto) regionFilter.getValue());
 		}
 
 		// District filter
-		if (CurrentUser.getCurrent().getUser().getRegion() != null && CurrentUser.getCurrent().getUser().getDistrict() == null) {
+		if (UserProvider.getCurrent().getUser().getRegion() != null && UserProvider.getCurrent().getUser().getDistrict() == null) {
 			districtFilter.setWidth(200, Unit.PIXELS);
-			districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(AbstractDashboardView.I18N_PREFIX, "district"));
-			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(CurrentUser.getCurrent().getUser().getRegion().getUuid()));
+			districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(AbstractDashboardView.I18N_PREFIX, "district"));
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(UserProvider.getCurrent().getUser().getRegion().getUuid()));
 			districtFilter.addValueChangeListener(e -> {
 				dashboardDataProvider.setDistrict((DistrictReferenceDto) districtFilter.getValue());
 				dashboardView.refreshDashboard();
 			});
-			districtFilter.setCaption(I18nProperties.getPrefixFieldCaption(AbstractDashboardView.I18N_PREFIX, "district"));
+			districtFilter.setCaption(I18nProperties.getPrefixCaption(AbstractDashboardView.I18N_PREFIX, "district"));
 			addComponent(districtFilter);
 			dashboardDataProvider.setDistrict((DistrictReferenceDto) districtFilter.getValue());
 		}
@@ -112,7 +112,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 
 	private void createDiseaseFilter() {
 		diseaseFilter.setWidth(200, Unit.PIXELS);
-		diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(AbstractDashboardView.I18N_PREFIX, "disease"));
+		diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(AbstractDashboardView.I18N_PREFIX, "disease"));
 		if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
 			diseaseFilter.addItems(DiseaseHelper.getAllDiseasesWithFollowUp());
 		} else {
@@ -122,7 +122,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 			dashboardDataProvider.setDisease((Disease) diseaseFilter.getValue());
 			dashboardView.refreshDashboard();
 		});
-		diseaseFilter.setCaption(I18nProperties.getPrefixFieldCaption(AbstractDashboardView.I18N_PREFIX, "disease"));
+		diseaseFilter.setCaption(I18nProperties.getPrefixCaption(AbstractDashboardView.I18N_PREFIX, "disease"));
 		addComponent(diseaseFilter);
 	}
 

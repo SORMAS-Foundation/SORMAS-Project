@@ -22,7 +22,8 @@ import org.joda.time.DateTimeComparator;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
@@ -43,7 +44,7 @@ final class PersonValidator {
                 if (contentBinding.personDeathDate.getValue() != null && birthDate != null) {
                     if (contentBinding.personDeathDate.getValue().before(birthDate)) {
                         contentBinding.personDeathDate.enableErrorState(
-                                I18nProperties.getValidationError("afterDate",
+                                I18nProperties.getValidationError(Validations.afterDate,
                                         contentBinding.personDeathDate.getCaption(),
                                         contentBinding.personBirthdateLabel.getText()));
                     }
@@ -56,7 +57,7 @@ final class PersonValidator {
                 if (contentBinding.personBurialDate.getValue() != null && contentBinding.personDeathDate.getValue() != null) {
                     if (contentBinding.personBurialDate.getValue().before(contentBinding.personDeathDate.getValue())) {
                         contentBinding.personBurialDate.enableErrorState(
-                                I18nProperties.getValidationError("afterDate",
+                                I18nProperties.getValidationError(Validations.afterDate,
                                         contentBinding.personBurialDate.getCaption(),
                                         contentBinding.personDeathDate.getCaption()));
                     }

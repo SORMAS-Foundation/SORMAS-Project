@@ -20,7 +20,6 @@ package de.symeda.sormas.ui.caze;
 import java.util.Date;
 import java.util.HashMap;
 
-import org.apache.commons.lang3.StringUtils;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -47,8 +46,8 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -56,6 +55,8 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -68,7 +69,8 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.dashboard.DateFilterOption;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -91,6 +93,8 @@ public class CasesView extends AbstractView {
 
 	public static final String SEARCH_FIELD = "searchField";
 
+	private CaseCriteria criteria;
+	
 	private CaseGrid grid;    
 	private Button createButton;
 	private HashMap<Button, String> statusButtons;
@@ -101,11 +105,6 @@ public class CasesView extends AbstractView {
 	private HorizontalLayout secondFilterRowLayout;
 	private HorizontalLayout dateFilterRowLayout;
 
-	private DateFilterOption dateFilterOption;
-	private Date fromDate = null;
-	private Date toDate = null;
-
-	private boolean showArchivedCases = false;
 	private String originalViewTitle;
 
 	// Filters
@@ -126,12 +125,19 @@ public class CasesView extends AbstractView {
 	private MenuItem archiveItem;
 	private MenuItem dearchiveItem;
 
+	private Button switchArchivedActiveButton;
+
+	private Button resetButton;
+
 	public CasesView() {
 		super(VIEW_NAME);
 
 		originalViewTitle = getViewTitleLabel().getValue();
 		
+		criteria = ViewModelProviders.of(CasesView.class).get(CaseCriteria.class);
+		
 		grid = new CaseGrid();
+		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
@@ -142,10 +148,10 @@ public class CasesView extends AbstractView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
 		grid.getContainer().addItemSetChangeListener(e -> {
-			updateActiveStatusButtonCaption();
+			updateStatusButtons();
 		});
 
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
 			Button importButton = new Button("Import");
 			importButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			importButton.setIcon(FontAwesome.UPLOAD);
@@ -159,7 +165,7 @@ public class CasesView extends AbstractView {
 			addHeaderComponent(importButton);
 		}
 
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.CASE_EXPORT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EXPORT)) {
 			PopupButton exportButton = new PopupButton("Export"); 
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
 			VerticalLayout exportLayout = new VerticalLayout();
@@ -189,13 +195,13 @@ public class CasesView extends AbstractView {
 			exportLayout.addComponent(extendedExportButton);
 
 			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class,
-					(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(CurrentUser.getCurrent().getUuid(), grid.getFilterCriteria(), start, max), 
+					(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(UserProvider.getCurrent().getUuid(), grid.getCriteria(), start, max), 
 					propertyId -> {
-						return I18nProperties.getPrefixFieldCaption(CaseExportDto.I18N_PREFIX, propertyId,
-								I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, propertyId,
-										I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, propertyId,
-												I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, propertyId,
-														I18nProperties.getPrefixFieldCaption(HospitalizationDto.I18N_PREFIX, propertyId)))));
+						return I18nProperties.getPrefixCaption(CaseExportDto.I18N_PREFIX, propertyId,
+								I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
+										I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, propertyId,
+												I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId,
+														I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId)))));
 					},
 					"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
@@ -206,11 +212,11 @@ public class CasesView extends AbstractView {
 			warningLabel.setVisible(false);
 
 			exportButton.addClickListener(e -> {
-				warningLabel.setVisible(!isAnyFilterEnabled());
+				warningLabel.setVisible(!criteria.hasAnyFilterActive());
 			});
 		}
 
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
 			createButton = new Button("New case");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
@@ -219,7 +225,6 @@ public class CasesView extends AbstractView {
 		}
 
 		addComponent(gridLayout);
-		grid.setReloadEnabled(true);
 	}
 
 	public VerticalLayout createFilterBar() {
@@ -228,44 +233,57 @@ public class CasesView extends AbstractView {
 
 		firstFilterRowLayout = new HorizontalLayout();
 		firstFilterRowLayout.setSpacing(true);
-		firstFilterRowLayout.setWidth(100, Unit.PERCENTAGE);
+		firstFilterRowLayout.setSizeUndefined();
 		{
 			outcomeFilter = new ComboBox();
 			outcomeFilter.setWidth(140, Unit.PIXELS);
-			outcomeFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.OUTCOME));
+			outcomeFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.OUTCOME));
 			outcomeFilter.addItems((Object[]) CaseOutcome.values());
 			outcomeFilter.addValueChangeListener(e -> {
-				grid.setOutcomeFilter(((CaseOutcome) e.getProperty().getValue()));
+				criteria.outcome(((CaseOutcome) e.getProperty().getValue()));
+				navigateTo(criteria);
 			});
 			firstFilterRowLayout.addComponent(outcomeFilter);
 
 			diseaseFilter = new ComboBox();
 			diseaseFilter.setWidth(140, Unit.PIXELS);
-			diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
+			diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
 			diseaseFilter.addItems((Object[])Disease.values());
 			diseaseFilter.addValueChangeListener(e -> {
-				grid.setDiseaseFilter(((Disease)e.getProperty().getValue()));
+				criteria.disease(((Disease)e.getProperty().getValue()));
+				navigateTo(criteria);
 			});
 			firstFilterRowLayout.addComponent(diseaseFilter);
 
 			classificationFilter = new ComboBox();
 			classificationFilter.setWidth(140, Unit.PIXELS);
-			classificationFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
+			classificationFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
 			classificationFilter.addItems((Object[])CaseClassification.values());
 			classificationFilter.addValueChangeListener(e -> {
-				grid.setClassificationFilter(((CaseClassification)e.getProperty().getValue()));
+				criteria.caseClassification(((CaseClassification)e.getProperty().getValue()));
+				navigateTo(criteria);
 			});
 			firstFilterRowLayout.addComponent(classificationFilter);
 
 			searchField = new TextField();
 			searchField.setWidth(200, Unit.PIXELS);
-			searchField.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, SEARCH_FIELD));
+			searchField.setNullRepresentation("");
+			searchField.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, SEARCH_FIELD));
 			searchField.addTextChangeListener(e -> {
-				grid.filterByText(e.getText());
+				criteria.nameUuidEpidNumberLike(e.getText());
+				navigateTo(criteria);
 			});
 			firstFilterRowLayout.addComponent(searchField);
 
 			addShowMoreOrLessFiltersButtons(firstFilterRowLayout);
+			
+			resetButton = new Button(I18nProperties.getCaption(Captions.resetFilters));
+			resetButton.setVisible(false);
+			resetButton.addClickListener(event -> {
+				ViewModelProviders.of(CasesView.class).remove(CaseCriteria.class);
+				navigateTo(null);
+			});
+			firstFilterRowLayout.addComponent(resetButton);
 		}
 		filterLayout.addComponent(firstFilterRowLayout);
 
@@ -275,33 +293,37 @@ public class CasesView extends AbstractView {
 		{
 			presentConditionFilter = new ComboBox();
 			presentConditionFilter.setWidth(140, Unit.PIXELS);
-			presentConditionFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
+			presentConditionFilter.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
 			presentConditionFilter.addItems((Object[])PresentCondition.values());
 			presentConditionFilter.addValueChangeListener(e -> {
-				grid.setPresentConditionFilter(((PresentCondition)e.getProperty().getValue()));
+				criteria.presentCondition(((PresentCondition)e.getProperty().getValue()));
+				navigateTo(criteria);
 			});
 			secondFilterRowLayout.addComponent(presentConditionFilter);      
 
-			UserDto user = CurrentUser.getCurrent().getUser();
+			UserDto user = UserProvider.getCurrent().getUser();
 
 			regionFilter = new ComboBox();
 			if (user.getRegion() == null) {
 				regionFilter.setWidth(140, Unit.PIXELS);
-				regionFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
+				regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
 				regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 				regionFilter.addValueChangeListener(e -> {
 					RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
-					grid.setRegionFilter(region);
+					criteria.region(region);
+					navigateTo(criteria);
 				});
 				secondFilterRowLayout.addComponent(regionFilter);
 			}
 
 			districtFilter = new ComboBox();
 			districtFilter.setWidth(140, Unit.PIXELS);
-			districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
+			districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
 			districtFilter.setDescription("Select a district in the state");
 			districtFilter.addValueChangeListener(e -> {
-				grid.setDistrictFilter(((DistrictReferenceDto)e.getProperty().getValue()));
+				DistrictReferenceDto district = (DistrictReferenceDto)e.getProperty().getValue();
+				criteria.district(district);
+				navigateTo(criteria);
 			});
 
 			if (user.getRegion() != null && user.getDistrict() == null) {
@@ -324,10 +346,11 @@ public class CasesView extends AbstractView {
 
 			facilityFilter = new ComboBox();
 			facilityFilter.setWidth(140, Unit.PIXELS);
-			facilityFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
+			facilityFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
 			facilityFilter.setDescription("Select a facility in the LGA");
 			facilityFilter.addValueChangeListener(e -> {
-				grid.setHealthFacilityFilter(((FacilityReferenceDto)e.getProperty().getValue()));
+				criteria.healthFacility(((FacilityReferenceDto)e.getProperty().getValue()));
+				navigateTo(criteria);
 			});
 			facilityFilter.setEnabled(false);
 			secondFilterRowLayout.addComponent(facilityFilter);
@@ -345,12 +368,13 @@ public class CasesView extends AbstractView {
 
 			officerFilter = new ComboBox();
 			officerFilter.setWidth(140, Unit.PIXELS);
-			officerFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SURVEILLANCE_OFFICER));
+			officerFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SURVEILLANCE_OFFICER));
 			if (user.getRegion() != null) {
 				officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.SURVEILLANCE_OFFICER));
 			}
 			officerFilter.addValueChangeListener(e -> {
-				grid.setSurveillanceOfficerFilter(((UserReferenceDto)e.getProperty().getValue()));
+				criteria.surveillanceOfficer(((UserReferenceDto)e.getProperty().getValue()));
+				navigateTo(criteria);
 			});
 			secondFilterRowLayout.addComponent(officerFilter);
 
@@ -359,7 +383,8 @@ public class CasesView extends AbstractView {
 			reportedByFilter.setInputPrompt("Reported By");
 			reportedByFilter.addItems((Object[]) UserRole.values());
 			reportedByFilter.addValueChangeListener(e -> {
-				grid.setReportedByFilter((UserRole) e.getProperty().getValue());
+				criteria.reportingUserRole((UserRole) e.getProperty().getValue());
+				navigateTo(criteria);
 			});
 			secondFilterRowLayout.addComponent(reportedByFilter);
 
@@ -368,7 +393,8 @@ public class CasesView extends AbstractView {
 			casesWithoutGeoCoordsFilter.setCaption("Only cases without geo coordinates");
 			casesWithoutGeoCoordsFilter.setDescription("Only list cases that don't have address or report geo coordinates");
 			casesWithoutGeoCoordsFilter.addValueChangeListener(e -> {
-				grid.setNoGeoCoordinatesFilter((boolean) e.getProperty().getValue());
+				criteria.mustHaveNoGeoCoordinates((Boolean) e.getProperty().getValue());
+				navigateTo(criteria);
 			});
 			secondFilterRowLayout.addComponent(casesWithoutGeoCoordsFilter);
 		}
@@ -390,7 +416,8 @@ public class CasesView extends AbstractView {
 			dateFilterRowLayout.addComponent(applyButton);
 
 			applyButton.addClickListener(e -> {
-				dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
+				DateFilterOption dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
+				Date fromDate, toDate;
 				if (dateFilterOption == DateFilterOption.DATE) {
 					fromDate = weekAndDateFilter.getDateFromFilter().getValue();
 					toDate = weekAndDateFilter.getDateToFilter().getValue();
@@ -401,7 +428,7 @@ public class CasesView extends AbstractView {
 				if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
 					applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
 					NewCaseDateType newCaseDateType = (NewCaseDateType) weekAndDateFilter.getNewCaseDateTypeSelector().getValue();
-					grid.setDateFilter(fromDate, toDate, newCaseDateType != null ? newCaseDateType : NewCaseDateType.MOST_RELEVANT);
+					criteria.newCaseDateBetween(fromDate, toDate, newCaseDateType != null ? newCaseDateType : NewCaseDateType.MOST_RELEVANT);
 				} else {
 					if (dateFilterOption == DateFilterOption.DATE) {
 						Notification notification = new Notification("Missing date filter", "Please fill in both date filter fields", Type.WARNING_MESSAGE, false);
@@ -430,7 +457,8 @@ public class CasesView extends AbstractView {
 		statusButtons = new HashMap<>();
 
 		Button statusAll = new Button("All", e -> {
-			processStatusChange(null, e.getButton());
+			criteria.investigationStatus(null);
+			navigateTo(criteria);
 		});
 		CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 		statusAll.setCaptionAsHtml(true);
@@ -440,8 +468,10 @@ public class CasesView extends AbstractView {
 
 		for (InvestigationStatus status : InvestigationStatus.values()) {
 			Button statusButton = new Button(status.toString(), e -> {
-				processStatusChange(status, e.getButton());
+				criteria.investigationStatus(status);
+				navigateTo(criteria);
 			});
+			statusButton.setData(status);
 			CssStyles.style(statusButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 			statusButton.setCaptionAsHtml(true);
 			statusFilterLayout.addComponent(statusButton);
@@ -452,41 +482,18 @@ public class CasesView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show archived/active cases button
-			if (CurrentUser.getCurrent().hasUserRight(UserRight.CASE_VIEW_ARCHIVED)) {
-				Button switchArchivedActiveButton = new Button(I18nProperties.getText("showArchivedCases"));
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW_ARCHIVED)) {
+				switchArchivedActiveButton = new Button(I18nProperties.getCaption("showArchivedCases"));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
-					if (!grid.getSelectedRows().isEmpty()) {
-						grid.deselectAll();
-					}
-					showArchivedCases = !showArchivedCases;
-					if (!showArchivedCases) {
-						getViewTitleLabel().setValue(originalViewTitle);
-						switchArchivedActiveButton.setCaption(I18nProperties.getText("showArchivedCases"));
-						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
-						if (archiveItem != null && dearchiveItem != null) {
-							dearchiveItem.setVisible(false);
-							archiveItem.setVisible(true);
-						}
-						grid.getFilterCriteria().archived(false);
-						grid.reload();
-					} else {
-						getViewTitleLabel().setValue(I18nProperties.getPrefixFragment("View", viewName.replaceAll("/", ".") + ".archive"));
-						switchArchivedActiveButton.setCaption(I18nProperties.getText("showActiveCases"));
-						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
-						if (archiveItem != null && dearchiveItem != null) {
-							archiveItem.setVisible(false);
-							dearchiveItem.setVisible(true);
-						}
-						grid.getFilterCriteria().archived(true);
-						grid.reload();
-					}
+					criteria.archived(Boolean.TRUE.equals(criteria.getArchived()) ? null : Boolean.TRUE);
+					navigateTo(criteria);
 				});
 				actionButtonsLayout.addComponent(switchArchivedActiveButton);
 			}
 
 			// Bulk operation dropdown
-			if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				MenuBar bulkOperationsDropdown = new MenuBar();	
 				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
 
@@ -498,7 +505,6 @@ public class CasesView extends AbstractView {
 				Command deleteCommand = selectedItem -> {
 					ControllerProvider.getCaseController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
 						public void run() {
-							grid.deselectAll();
 							grid.reload();
 						}
 					});
@@ -508,22 +514,20 @@ public class CasesView extends AbstractView {
 				Command archiveCommand = selectedItem -> {
 					ControllerProvider.getCaseController().archiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
 						public void run() {
-							grid.deselectAll();
 							grid.reload();
 						}
 					});
 				};
-				archiveItem = bulkOperationsItem.addItem(I18nProperties.getText("archive"), FontAwesome.ARCHIVE, archiveCommand);
+				archiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption("archive"), FontAwesome.ARCHIVE, archiveCommand);
 
 				Command dearchiveCommand = selectedItem -> {
 					ControllerProvider.getCaseController().dearchiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
 						public void run() {
-							grid.deselectAll();
 							grid.reload();
 						}
 					});
 				};
-				dearchiveItem = bulkOperationsItem.addItem(I18nProperties.getText("dearchive"), FontAwesome.ARCHIVE, dearchiveCommand);
+				dearchiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption("dearchive"), FontAwesome.ARCHIVE, dearchiveCommand);
 				dearchiveItem.setVisible(false);
 
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
@@ -560,44 +564,88 @@ public class CasesView extends AbstractView {
 		parentLayout.addComponent(showLessButton);
 		parentLayout.setComponentAlignment(showMoreButton, Alignment.TOP_LEFT);
 		parentLayout.setComponentAlignment(showLessButton, Alignment.TOP_LEFT);
-		parentLayout.setExpandRatio(showMoreButton, 1);
-		parentLayout.setExpandRatio(showLessButton, 1);
 		showLessButton.setVisible(false);
 	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+		String params = event.getParameters().trim();
+		if (params.startsWith("?")) {
+			params = params.substring(1);
+			criteria.fromUrlParams(params);
+		}
+		updateFilterComponents();
 		grid.reload();
-		updateActiveStatusButtonCaption();
+	}
+	
+	public void updateFilterComponents() {
+		// TODO replace with Vaadin 8 databinding
+		applyingCriteria = true;
+		
+		resetButton.setVisible(criteria.hasAnyFilterActive());
+		
+		updateStatusButtons();
+		updateArchivedButton();
+
+		outcomeFilter.setValue(criteria.getOutcome());
+		diseaseFilter.setValue(criteria.getDisease());
+		classificationFilter.setValue(criteria.getCaseClassification());
+		searchField.setValue(criteria.getNameUuidEpidNumberLike());
+		presentConditionFilter.setValue(criteria.getPresentCondition());
+		regionFilter.setValue(criteria.getRegion());
+		districtFilter.setValue(criteria.getDistrict());
+		facilityFilter.setValue(criteria.getHealthFacility());
+		officerFilter.setValue(criteria.getSurveillanceOfficer());
+		reportedByFilter.setValue(criteria.getReportingUserRole());
+		casesWithoutGeoCoordsFilter.setValue(criteria.isMustHaveNoGeoCoordinates());
+		weekAndDateFilter.getNewCaseDateTypeSelector().setValue(criteria.getNewCaseDateType());
+		weekAndDateFilter.getDateFromFilter().setValue(criteria.getNewCaseDateFrom());
+		weekAndDateFilter.getDateToFilter().setValue(criteria.getNewCaseDateTo());
+		weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.DATE);
+		
+		applyingCriteria = false;
 	}
 
 	public void clearSelection() {
 		grid.getSelectionModel().reset();
 	}
 
-	private void updateActiveStatusButtonCaption() {
+	private void updateStatusButtons() {
+		statusButtons.keySet().forEach(b -> {
+			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
+			b.setCaption(statusButtons.get(b));
+			if (b.getData() == criteria.getInvestigationStatus()) {
+				activeStatusButton = b;
+			}
+		});
+		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 		if (activeStatusButton != null) {
 			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getContainer().size())));
 		}
 	}
 
-	private void processStatusChange(InvestigationStatus investigationStatus, Button button) {
-		grid.setInvestigationFilter(investigationStatus);
-		statusButtons.keySet().forEach(b -> {
-			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
-			b.setCaption(statusButtons.get(b));
-		});
-		CssStyles.removeStyles(button, CssStyles.BUTTON_FILTER_LIGHT);
-		activeStatusButton = button;
-		updateActiveStatusButtonCaption();
-	}
-
-	private boolean isAnyFilterEnabled() {
-		return outcomeFilter.getValue() != null || diseaseFilter.getValue() != null || classificationFilter.getValue() != null
-				|| !StringUtils.isEmpty(searchField.getValue()) || presentConditionFilter.getValue() != null
-				|| (regionFilter.isVisible() && regionFilter.getValue() != null) || (districtFilter.isVisible() && districtFilter.getValue() != null) 
-				|| facilityFilter.getValue() != null || officerFilter.getValue() != null || reportedByFilter.getValue() != null 
-				|| casesWithoutGeoCoordsFilter.getValue() == true || fromDate != null || toDate != null;
+	private void updateArchivedButton() {
+		if (switchArchivedActiveButton == null) {
+			return;
+		}
+		
+		if (Boolean.TRUE.equals(criteria.getArchived())) {
+			getViewTitleLabel().setValue(I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", ".") + ".archive"));
+			switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showActiveCases"));
+			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
+			if (archiveItem != null && dearchiveItem != null) {
+				archiveItem.setVisible(false);
+				dearchiveItem.setVisible(true);
+			}
+		} else {
+			getViewTitleLabel().setValue(originalViewTitle);
+			switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showArchivedCases"));
+			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
+			if (archiveItem != null && dearchiveItem != null) {
+				dearchiveItem.setVisible(false);
+				archiveItem.setVisible(true);
+			}
+		} 
 	}
 
 }

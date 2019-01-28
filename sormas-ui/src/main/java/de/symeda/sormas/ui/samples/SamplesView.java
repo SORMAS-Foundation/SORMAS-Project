@@ -28,7 +28,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 
@@ -42,11 +42,11 @@ public class SamplesView extends AbstractView {
 	public SamplesView() {
     	super(VIEW_NAME);
     	
-		sampleListComponent = new SampleGridComponent(getViewTitleLabel());
+		sampleListComponent = new SampleGridComponent(getViewTitleLabel(), this);
 		setSizeFull();
 		addComponent(sampleListComponent);
 		
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.SAMPLE_EXPORT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EXPORT)) {
 			Button exportButton = new Button("Export");
 			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
@@ -61,8 +61,7 @@ public class SamplesView extends AbstractView {
 	
 	@Override
 	public void enter(ViewChangeEvent event) {
-		sampleListComponent.reload();
-		sampleListComponent.updateActiveStatusButtonCaption();
+		sampleListComponent.reload(event);
 	}
 
 }

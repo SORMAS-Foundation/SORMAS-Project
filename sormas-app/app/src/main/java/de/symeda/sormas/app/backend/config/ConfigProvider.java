@@ -19,10 +19,14 @@
 package de.symeda.sormas.app.backend.config;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.preference.PreferenceManager;
 import android.security.KeyPairGeneratorSpec;
-import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
@@ -46,6 +50,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.crypto.Cipher;
@@ -55,6 +60,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.security.auth.x500.X500Principal;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
@@ -74,6 +80,7 @@ public final class ConfigProvider {
     private static String LAST_NOTIFICATION_DATE = "lastNotificationDate";
     private static String LAST_ARCHIVED_SYNC_DATE = "lastArchivedSyncDate";
     private static String CURRENT_APP_DOWNLOAD_ID = "currentAppDownloadId";
+    private static String LOCALE = "locale";
 
     public static ConfigProvider instance = null;
 
@@ -96,6 +103,7 @@ public final class ConfigProvider {
     private Date lastArchivedSyncDate;
     private Long currentAppDownloadId;
     private Boolean accessGranted;
+    private String locale;
 
     private ConfigProvider(Context context) {
         this.context = context;
@@ -574,5 +582,44 @@ public final class ConfigProvider {
         DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_ACCESS_GRANTED, String.valueOf(accessGranted)));
     }
 
+    /**
+     * When no locale is set Locale.getDefault is set.
+     */
+    public static String getLocale() {
+        if (instance.locale == null)
+            synchronized (ConfigProvider.class) {
+                if (instance.locale == null) {
+                    Config config = DatabaseHelper.getConfigDao().queryForId(LOCALE);
+                    if (config != null) {
+                        instance.locale = config.getValue();
+                    }
 
+                    if (instance.locale == null) {
+                        setLocale(Locale.getDefault().toString());
+                    }
+                }
+            }
+        return instance.locale;
+    }
+
+    /**
+     * Note: This will only take effect after the app has been restarted
+     */
+    public static void setLocale(String locale) {
+        if (locale != null && locale.isEmpty()) {
+            locale = null;
+        }
+
+        if (locale == instance.locale
+                || (locale != null && locale.equals(instance.locale)))
+            return;
+
+        instance.locale = locale;
+
+        if (locale == null) {
+            DatabaseHelper.getConfigDao().delete(new Config(LOCALE, ""));
+        } else {
+            DatabaseHelper.getConfigDao().createOrUpdate(new Config(LOCALE, locale));
+        }
+    }
 }

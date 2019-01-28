@@ -70,7 +70,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.map.LeafletMap;
@@ -141,7 +141,7 @@ public class DashboardMapComponent extends VerticalLayout {
 			}
 		});
 
-		if (CurrentUser.getCurrent().hasUserRole(UserRole.NATIONAL_USER) || CurrentUser.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) {
+		if (UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER) || UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) {
 			showRegions = true;
 
 			map.setZoom(6);
@@ -162,7 +162,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				showUnconfirmedContacts = true;
 			}
 
-			UserDto user = CurrentUser.getCurrent().getUser();
+			UserDto user = UserProvider.getCurrent().getUser();
 			if (user.getRegion() != null) {
 				GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfRegion(user.getRegion());
 				map.setCenter(mapCenter.getLon(), mapCenter.getLat());
@@ -198,17 +198,17 @@ public class DashboardMapComponent extends VerticalLayout {
 		}
 		if (showCases) {
 			showCaseMarkers(FacadeProvider.getCaseFacade().getCasesForMap(region, district, disease, fromDate, toDate,
-					CurrentUser.getCurrent().getUuid()));
+					UserProvider.getCurrent().getUuid()));
 		}
 		if (showContacts) {
 			if (!showCases) {
 				// Case lists need to be filled even when cases are hidden because they are
 				// needed to retrieve the contacts
 				fillCaseLists(FacadeProvider.getCaseFacade().getCasesForMap(region, district, disease, fromDate, toDate,
-						CurrentUser.getCurrent().getUuid()));
+						UserProvider.getCurrent().getUuid()));
 			}
 			showContactMarkers(FacadeProvider.getContactFacade().getContactsForMap(region, district, disease, fromDate,
-					toDate, CurrentUser.getCurrent().getUuid(), mapAndFacilityCases));
+					toDate, UserProvider.getCurrent().getUuid(), mapAndFacilityCases));
 		}
 		if (showEvents) {
 			showEventMarkers(dashboardDataProvider.getEvents());
@@ -359,8 +359,8 @@ public class DashboardMapComponent extends VerticalLayout {
 				});
 				layersLayout.addComponent(showEventsCheckBox);
 
-				if (CurrentUser.getCurrent().hasUserRole(UserRole.NATIONAL_USER)
-						|| CurrentUser.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) {
+				if (UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER)
+						|| UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) {
 					OptionGroup regionMapVisualizationSelect = new OptionGroup();
 					regionMapVisualizationSelect.setWidth(100, Unit.PERCENTAGE);
 					regionMapVisualizationSelect.addItems((Object[]) CaseMeasure.values());

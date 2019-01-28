@@ -18,7 +18,7 @@
 
 package de.symeda.sormas.app.backend.person;
 
-import android.databinding.Bindable;
+import androidx.databinding.Bindable;
 
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;

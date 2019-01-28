@@ -17,22 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.data.util.filter.Or;
-import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.SelectionModel.HasUserSelectionAllowed;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -41,6 +37,7 @@ import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -48,17 +45,18 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.AbstractGrid;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 @SuppressWarnings("serial")
-public class ContactGrid extends Grid {
+public class ContactGrid extends Grid implements AbstractGrid<ContactCriteria> {
 
 	public static final String NUMBER_OF_VISITS = "numberOfVisits";
 	public static final String NUMBER_OF_PENDING_TASKS = "numberOfPendingTasks";
 	public static final String DISEASE_SHORT = "diseaseShort";
 
-	private final ContactCriteria contactCriteria = new ContactCriteria();
+	private ContactCriteria contactCriteria = new ContactCriteria();
 
 	public ContactGrid(boolean isSubList) {
 		setSizeFull();
@@ -67,7 +65,7 @@ public class ContactGrid extends Grid {
 			contactCriteria.archived(false);
 		}
 
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setSelectionMode(SelectionMode.MULTI);
 		} else {
 			setSelectionMode(SelectionMode.NONE);
@@ -90,7 +88,7 @@ public class ContactGrid extends Grid {
 						numberOfMissedVisits = 0;
 					}
 
-					return String.format(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, "numberOfVisitsFormat"),
+					return String.format(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, "numberOfVisitsFormat"),
 							numberOfVisits, numberOfMissedVisits);
 				} else {
 					return "-";
@@ -106,7 +104,7 @@ public class ContactGrid extends Grid {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				ContactIndexDto contactIndexDto = (ContactIndexDto)itemId;
-				return String.format(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, NUMBER_OF_PENDING_TASKS + "Format"), 
+				return String.format(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, NUMBER_OF_PENDING_TASKS + "Format"), 
 						FacadeProvider.getTaskFacade().getPendingTaskCountByContact(contactIndexDto.toReference()));
 			}
 			@Override
@@ -136,7 +134,7 @@ public class ContactGrid extends Grid {
 		getColumn(ContactIndexDto.UUID).setRenderer(new UuidRenderer());
 
 		for (Column column : getColumns()) {
-			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
+			column.setHeaderCaption(I18nProperties.getPrefixCaption(
 					ContactIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 
@@ -149,17 +147,17 @@ public class ContactGrid extends Grid {
 	}
 
 	public void setCaseFilter(CaseReferenceDto caseRef) {
-		contactCriteria.caseEquals(caseRef);
+		contactCriteria.caze(caseRef);
 		reload();
 	}
 
 	public void setDiseaseFilter(Disease disease) {
-		contactCriteria.caseDiseaseEquals(disease);
+		contactCriteria.caseDisease(disease);
 		reload();
 	}
 
 	public void setReportedByFilter(UserRole reportingUserRole) {
-		contactCriteria.reportingUserHasRole(reportingUserRole);
+		contactCriteria.reportingUserRole(reportingUserRole);
 		reload();
 	}
 
@@ -203,25 +201,9 @@ public class ContactGrid extends Grid {
 		reload();
 	}
 
-	public void filterByText(String text) {
-		getContainer().removeContainerFilters(ContactIndexDto.UUID);
-		getContainer().removeContainerFilters(ContactIndexDto.PERSON);
-		getContainer().removeContainerFilters(ContactIndexDto.CAZE);
-
-		if (text != null && !text.isEmpty()) {
-			List<Filter> orFilters = new ArrayList<Filter>();
-			String[] words = text.split("\\s+");
-			for (String word : words) {
-				orFilters.add(new SimpleStringFilter(ContactIndexDto.UUID, word, true, false));
-				orFilters.add(new SimpleStringFilter(ContactIndexDto.PERSON, word, true, false));
-				orFilters.add(new SimpleStringFilter(ContactIndexDto.CAZE, word, true, false));
-			}
-			getContainer().addContainerFilter(new Or(orFilters.stream().toArray(Filter[]::new)));
-		}
-	}
-
-	public ContactCriteria getFilterCriteria() {
-		return contactCriteria;
+	public void setNameUuidCaseLike(String text) {
+		contactCriteria.nameUuidCaseLike(text);
+		reload();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -231,11 +213,26 @@ public class ContactGrid extends Grid {
 	}
 
 	public void reload() {
-		List<ContactIndexDto> entries = FacadeProvider.getContactFacade().getIndexList(CurrentUser.getCurrent().getUserReference().getUuid(), contactCriteria);
+		if (getSelectionModel() instanceof HasUserSelectionAllowed) {
+			deselectAll();
+		}
+		
+		List<ContactIndexDto> entries = FacadeProvider.getContactFacade().getIndexList(UserProvider.getCurrent().getUserReference().getUuid(), contactCriteria);
 
 		getContainer().removeAllItems();
 		getContainer().addAll(entries);  
 	}
+
+	@Override
+	public void setCriteria(ContactCriteria contactCriteria) {
+		this.contactCriteria = contactCriteria;
+	}
+	
+	@Override
+	public ContactCriteria getCriteria() {
+		return contactCriteria;
+	}
+
 }
 
 

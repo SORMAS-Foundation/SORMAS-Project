@@ -33,7 +33,8 @@ import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -65,8 +66,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private static final String OCCUPATION_HEADER = "occupationHeader";
 	private static final String ADDRESS_HEADER = "addressHeader";
 
-	private Label occupationHeader = new Label(LayoutUtil.h3(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, "Occupation")), ContentMode.HTML);
-	private Label addressHeader = new Label(LayoutUtil.h3(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS)), ContentMode.HTML);
+	private Label occupationHeader = new Label(LayoutUtil.h3(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, "Occupation")), ContentMode.HTML);
+	private Label addressHeader = new Label(LayoutUtil.h3(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS)), ContentMode.HTML);
 
 	private boolean facilityFieldsInitialized = false;
 	private Disease disease;
@@ -154,7 +155,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		birthDateMonth.setPageLength(12);
 		setItemCaptionsForMonths(birthDateMonth);
 		ComboBox birthDateYear = addField(PersonDto.BIRTH_DATE_YYYY, ComboBox.class);
-		birthDateYear.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, "birthdate"));
+		birthDateYear.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, "birthdate"));
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
 		birthDateYear.setNullSelectionAllowed(true);
 		birthDateYear.addItems(DateHelper.getYearsToNow());
@@ -295,9 +296,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		});
 
 		deathDate.addValidator(new DateComparisonValidator(deathDate, this::calcBirthDateValue, false, false, 
-				I18nProperties.getValidationError("afterDate", deathDate.getCaption(), birthDateYear.getCaption())));
+				I18nProperties.getValidationError(Validations.afterDate, deathDate.getCaption(), birthDateYear.getCaption())));
 		burialDate.addValidator(new DateComparisonValidator(burialDate, deathDate, false, false, 
-				I18nProperties.getValidationError("afterDate", burialDate.getCaption(), deathDate.getCaption())));
+				I18nProperties.getValidationError(Validations.afterDate, burialDate.getCaption(), deathDate.getCaption())));
 	}
 
 	@Override
@@ -408,10 +409,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		occupationFacilityDetails.setVisible(visibleAndRequired);
 		
 		if (otherHealthFacility) {
-			occupationFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
+			occupationFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
 		}
 		if (noneHealthFacility) {
-			occupationFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
+			occupationFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
 		}
 		if (!visibleAndRequired) {
 			occupationFacilityDetails.clear();
@@ -528,19 +529,19 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			Field<?> od = getFieldGroup().getField(PersonDto.OCCUPATION_DETAILS);
 			switch(type) {
 			case BUSINESSMAN_WOMAN:
-				od.setCaption(I18nProperties.getFieldCaption(getPropertyI18nPrefix()+".business."+PersonDto.OCCUPATION_DETAILS));
+				od.setCaption(I18nProperties.getCaption(getPropertyI18nPrefix()+".business."+PersonDto.OCCUPATION_DETAILS));
 				break;
 			case TRANSPORTER:
-				od.setCaption(I18nProperties.getFieldCaption(getPropertyI18nPrefix()+".transporter."+PersonDto.OCCUPATION_DETAILS));
+				od.setCaption(I18nProperties.getCaption(getPropertyI18nPrefix()+".transporter."+PersonDto.OCCUPATION_DETAILS));
 				break;
 			case OTHER:
-				od.setCaption(I18nProperties.getFieldCaption(getPropertyI18nPrefix()+".other."+PersonDto.OCCUPATION_DETAILS));
+				od.setCaption(I18nProperties.getCaption(getPropertyI18nPrefix()+".other."+PersonDto.OCCUPATION_DETAILS));
 				break;
 			case HEALTHCARE_WORKER:
-				od.setCaption(I18nProperties.getFieldCaption(getPropertyI18nPrefix()+".healthcare."+PersonDto.OCCUPATION_DETAILS));
+				od.setCaption(I18nProperties.getCaption(getPropertyI18nPrefix()+".healthcare."+PersonDto.OCCUPATION_DETAILS));
 				break;
 			default:
-				od.setCaption(I18nProperties.getFieldCaption(getPropertyI18nPrefix()+"."+PersonDto.OCCUPATION_DETAILS));
+				od.setCaption(I18nProperties.getCaption(getPropertyI18nPrefix()+"."+PersonDto.OCCUPATION_DETAILS));
 				break;
 			}
 		}

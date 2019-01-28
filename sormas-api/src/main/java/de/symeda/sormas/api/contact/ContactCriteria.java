@@ -20,6 +20,7 @@ package de.symeda.sormas.api.contact;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -27,8 +28,9 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.IgnoreForUrl;
 
-public class ContactCriteria implements Serializable {
+public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -47,12 +49,13 @@ public class ContactCriteria implements Serializable {
 	private Date followUpUntilFrom;
 	private Date followUpUntilTo;
 	private Boolean archived;
-
+	private String nameUuidCaseLike;
+	
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
 	}
 
-	public ContactCriteria reportingUserHasRole(UserRole reportingUserRole) {
+	public ContactCriteria reportingUserRole(UserRole reportingUserRole) {
 		this.reportingUserRole = reportingUserRole;
 		return this;
 	}
@@ -61,7 +64,7 @@ public class ContactCriteria implements Serializable {
 		return caseDisease;
 	}
 
-	public ContactCriteria caseDiseaseEquals(Disease disease) {
+	public ContactCriteria caseDisease(Disease disease) {
 		this.caseDisease = disease;
 		return this;
 	}
@@ -70,7 +73,7 @@ public class ContactCriteria implements Serializable {
 		return caze;
 	}
 
-	public ContactCriteria caseEquals(CaseReferenceDto caze) {
+	public ContactCriteria caze(CaseReferenceDto caze) {
 		this.caze = caze;
 		return this;
 	}
@@ -144,8 +147,18 @@ public class ContactCriteria implements Serializable {
 		return this;
 	}
 
+	public ContactCriteria reportDateFrom(Date reportDateFrom) {
+		this.reportDateFrom = reportDateFrom;
+		return this;
+	}
+
 	public Date getReportDateFrom() {
 		return reportDateFrom;
+	}
+
+	public ContactCriteria reportDateTo(Date reportDateTo) {
+		this.reportDateTo = reportDateTo;
+		return this;
 	}
 
 	public Date getReportDateTo() {
@@ -157,9 +170,19 @@ public class ContactCriteria implements Serializable {
 		this.followUpUntilTo = followUpUntilTo;
 		return this;
 	}
+
+	public ContactCriteria followUpUntilFrom(Date followUpUntilFrom) {
+		this.followUpUntilFrom = followUpUntilFrom;
+		return this;
+	}
 	
 	public Date getFollowUpUntilFrom() {
 		return followUpUntilFrom;
+	}
+
+	public ContactCriteria followUpUntilTo(Date followUpUntilTo) {
+		this.followUpUntilTo = followUpUntilTo;
+		return this;
 	}
 	
 	public Date getFollowUpUntilTo() {
@@ -173,6 +196,19 @@ public class ContactCriteria implements Serializable {
 	public ContactCriteria archived(Boolean archived) {
 		this.archived = archived;
 		return this;
+	}
+	
+	/**
+	 * returns all entries that match ALL of the passed words
+	 */
+	public ContactCriteria nameUuidCaseLike(String nameUuidCaseLike) {
+		this.nameUuidCaseLike = nameUuidCaseLike;
+		return this;
+	}
+
+	@IgnoreForUrl
+	public String getNameUuidCaseLike() {
+		return nameUuidCaseLike;
 	}
 	
 }

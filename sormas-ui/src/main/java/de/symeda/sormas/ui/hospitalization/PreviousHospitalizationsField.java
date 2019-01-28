@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -94,7 +94,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 
 		for (Object columnId : table.getVisibleColumns()) {
 			table.setColumnHeader(columnId,
-					I18nProperties.getPrefixFieldCaption(PreviousHospitalizationDto.I18N_PREFIX, (String) columnId));
+					I18nProperties.getPrefixCaption(PreviousHospitalizationDto.I18N_PREFIX, (String) columnId));
 		}
 	}
 
@@ -148,7 +148,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 					popupWindow.close();
 					PreviousHospitalizationsField.this.removeEntry(entry);
 				}
-			}, I18nProperties.getFieldCaption("CasePreviousHospitalization"));
+			}, I18nProperties.getCaption("CasePreviousHospitalization"));
 		}
 
 	}

@@ -18,7 +18,6 @@
 
 package de.symeda.sormas.app;
 
-import android.support.test.InstrumentationRegistry;
 import android.test.RenamingDelegatingContext;
 import android.util.Log;
 
@@ -27,6 +26,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 
+import androidx.test.InstrumentationRegistry;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -36,10 +36,6 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.user.User;
-
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by Mate Strysewske on 14.06.2017.

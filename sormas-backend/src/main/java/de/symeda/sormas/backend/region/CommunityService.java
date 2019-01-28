@@ -32,6 +32,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.region.CommunityCriteria;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.InfrastructureDataImporter;
@@ -60,9 +61,10 @@ public class CommunityService extends AbstractAdoService<Community> {
 		return em.createQuery(cq).getResultList();
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Community, Community> from, User user) {
-		// no fitler by user needed
+		// no filter by user needed
 		return null;
 	}
 
@@ -125,15 +127,27 @@ public class CommunityService extends AbstractAdoService<Community> {
 		});
 	}
 
-	public Predicate buildCriteriaFilter(CommunityCriteria communityCriteria, CriteriaBuilder cb, Root<Community> from) {
+	public Predicate buildCriteriaFilter(CommunityCriteria criteria, CriteriaBuilder cb, Root<Community> from) {
 		Join<Community, District> district = from.join(Community.DISTRICT, JoinType.LEFT);
 		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
 		Predicate filter = null;
-		if (communityCriteria.getRegion() != null) {
-			filter = and(cb, filter, cb.equal(region.get(Region.UUID), communityCriteria.getRegion().getUuid()));
+		if (criteria.getRegion() != null) {
+			filter = and(cb, filter, cb.equal(region.get(Region.UUID), criteria.getRegion().getUuid()));
 		}
-		if (communityCriteria.getDistrict() != null) {
-			filter = and(cb, filter, cb.equal(district.get(District.UUID), communityCriteria.getDistrict().getUuid()));
+		if (criteria.getDistrict() != null) {
+			filter = and(cb, filter, cb.equal(district.get(District.UUID), criteria.getDistrict().getUuid()));
+		}
+		if (criteria.getNameLike() != null) {
+			String[] textFilters = criteria.getNameLike().split("\\s+");
+			for (int i=0; i<textFilters.length; i++)
+			{
+				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+							cb.like(cb.lower(from.get(District.NAME)), textFilter));
+					filter = and(cb, filter, likeFilters);
+				}
+			}
 		}
 		return filter;
 	}

@@ -24,8 +24,9 @@ import org.joda.time.DateTimeComparator;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -64,8 +65,8 @@ final class SymptomsValidator {
                     if (((Case) ado).getHospitalization().getAdmissionDate() != null
                             && DateTimeComparator.getDateOnlyInstance().compare(value, ((Case) ado).getHospitalization().getAdmissionDate()) >= 0) {
                         contentBinding.symptomsOnsetDate.enableWarningState(
-                                I18nProperties.getValidationError("beforeDateSoft", contentBinding.symptomsOnsetDate.getCaption(),
-                                        I18nProperties.getPrefixFieldCaption(HospitalizationDto.I18N_PREFIX, HospitalizationDto.ADMISSION_DATE)));
+                                I18nProperties.getValidationError(Validations.beforeDateSoft, contentBinding.symptomsOnsetDate.getCaption(),
+                                        I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, HospitalizationDto.ADMISSION_DATE)));
                     } else {
                         contentBinding.symptomsOnsetDate.disableWarningState();
                     }

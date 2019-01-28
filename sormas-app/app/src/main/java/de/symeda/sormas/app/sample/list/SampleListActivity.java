@@ -19,6 +19,7 @@
 package de.symeda.sormas.app.sample.list;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.Menu;
 import android.widget.AdapterView;
 
@@ -27,6 +28,7 @@ import org.joda.time.DateTime;
 import java.util.List;
 import java.util.Random;
 
+import androidx.lifecycle.ViewModelProviders;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
@@ -39,9 +41,27 @@ public class SampleListActivity extends BaseListActivity {
             ShipmentStatus.NOT_SHIPPED, ShipmentStatus.SHIPPED,
             ShipmentStatus.RECEIVED, ShipmentStatus.REFERRED_OTHER_LAB
     };
+    private SampleListViewModel model;
 
     public static void startActivity(Context context, ShipmentStatus listFilter) {
         BaseListActivity.startActivity(context, SampleListActivity.class, buildBundle(listFilter));
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        showPreloader();
+        adapter = new SampleListAdapter(R.layout.row_sample_list_item_layout);
+        model = ViewModelProviders.of(this).get(SampleListViewModel.class);
+        model.getSamples().observe(this, samples -> {
+            ((SampleListAdapter) adapter).replaceAll(samples);
+            hidePreloader();
+        });
+        setOpenPageCallback(p -> {
+            showPreloader();
+            model.setShipmentStatusAndReload(statusFilters[p.getKey()]);
+        });
     }
 
     @Override
@@ -75,4 +95,5 @@ public class SampleListActivity extends BaseListActivity {
     protected int getActivityTitle() {
         return R.string.heading_level2_samples_list;
     }
+
 }

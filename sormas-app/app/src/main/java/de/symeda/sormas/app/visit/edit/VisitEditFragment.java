@@ -20,8 +20,8 @@ package de.symeda.sormas.app.visit.edit;
 
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.BaseEditFragment;

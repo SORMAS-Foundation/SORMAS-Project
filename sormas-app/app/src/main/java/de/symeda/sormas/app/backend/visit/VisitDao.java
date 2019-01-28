@@ -19,7 +19,7 @@
 package de.symeda.sormas.app.backend.visit;
 
 import android.location.Location;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;

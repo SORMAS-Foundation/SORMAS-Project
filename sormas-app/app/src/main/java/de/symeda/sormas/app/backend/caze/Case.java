@@ -29,6 +29,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;

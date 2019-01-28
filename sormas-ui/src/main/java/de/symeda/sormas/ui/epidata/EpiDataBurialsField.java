@@ -22,13 +22,13 @@ import java.util.function.Consumer;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -42,7 +42,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 	
 	private static final String PERIOD = "period";
 	private static final String CITY = "city";
-	private static final String LGA = "lga";
+	private static final String DISTRICT = "district";
 	
 	@Override
 	public Class<EpiDataBurialDto> getEntryType() {
@@ -78,7 +78,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 			}
 		});
 		
-		table.addGeneratedColumn(LGA, new Table.ColumnGenerator() {
+		table.addGeneratedColumn(DISTRICT, new Table.ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataBurialDto burial = (EpiDataBurialDto) itemId;
@@ -93,7 +93,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 				EpiDataBurialDto.BURIAL_RELATION,
 				PERIOD,
 				CITY,
-				LGA,
+				DISTRICT,
 				EpiDataBurialDto.BURIAL_ILL,
 				EpiDataBurialDto.BURIAL_TOUCHING);
 
@@ -102,12 +102,12 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 		table.setColumnExpandRatio(EpiDataBurialDto.BURIAL_RELATION, 0);
 		table.setColumnExpandRatio(PERIOD, 0);
 		table.setColumnExpandRatio(CITY, 0);
-		table.setColumnExpandRatio(LGA, 0);
+		table.setColumnExpandRatio(DISTRICT, 0);
 		table.setColumnExpandRatio(EpiDataBurialDto.BURIAL_ILL, 0);
 		table.setColumnExpandRatio(EpiDataBurialDto.BURIAL_TOUCHING, 0);
 		
 		for (Object columnId : table.getVisibleColumns()) {
-			table.setColumnHeader(columnId, I18nProperties.getPrefixFieldCaption(EPI_DATA_BURIAL_TABLE_PREFIX, (String) columnId));
+			table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(EPI_DATA_BURIAL_TABLE_PREFIX, (String) columnId));
 		}
 	}
 	
@@ -162,7 +162,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 					popupWindow.close();
 					EpiDataBurialsField.this.removeEntry(entry);
 				}
-			}, I18nProperties.getFieldCaption("EpiDataBurial"));
+			}, I18nProperties.getCaption("EpiDataBurial"));
 		}
 	}
 	
@@ -172,7 +172,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 		burial.setUuid(DataHelper.createUuid());
 		LocationDto location = new LocationDto();
 		location.setUuid(DataHelper.createUuid());
-		location.setRegion(CurrentUser.getCurrent().getUser().getRegion());
+		location.setRegion(UserProvider.getCurrent().getUser().getRegion());
 		burial.setBurialAddress(location);
 		return burial;
 	}

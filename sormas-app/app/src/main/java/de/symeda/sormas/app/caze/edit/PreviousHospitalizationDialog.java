@@ -19,15 +19,13 @@
 package de.symeda.sormas.app.caze.edit;
 
 import android.content.Context;
-import android.databinding.ViewDataBinding;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.View;
-
-import com.android.databinding.library.baseAdapters.BR;
 
 import java.util.List;
 
+import androidx.databinding.ViewDataBinding;
+import androidx.databinding.library.baseAdapters.BR;
+import androidx.fragment.app.FragmentActivity;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
@@ -35,7 +33,6 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.dialog.AbstractDialog;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
-import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogPreviousHospitalizationLayoutBinding;
 import de.symeda.sormas.app.util.InfrastructureHelper;

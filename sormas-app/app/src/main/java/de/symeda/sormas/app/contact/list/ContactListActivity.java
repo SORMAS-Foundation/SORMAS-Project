@@ -19,6 +19,7 @@
 package de.symeda.sormas.app.contact.list;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.Menu;
 import android.widget.AdapterView;
 
@@ -27,6 +28,7 @@ import org.joda.time.DateTime;
 import java.util.List;
 import java.util.Random;
 
+import androidx.lifecycle.ViewModelProviders;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListFragment;
@@ -37,9 +39,27 @@ public class ContactListActivity extends BaseListActivity {
 
     private FollowUpStatus statusFilters[] = new FollowUpStatus[]{FollowUpStatus.FOLLOW_UP, FollowUpStatus.COMPLETED,
             FollowUpStatus.CANCELED, FollowUpStatus.LOST, FollowUpStatus.NO_FOLLOW_UP};
+    private ContactListViewModel model;
 
     public static void startActivity(Context context, FollowUpStatus listFilter) {
         BaseListActivity.startActivity(context, ContactListActivity.class, buildBundle(listFilter));
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        showPreloader();
+        adapter = new ContactListAdapter(R.layout.row_read_contact_list_item_layout, FollowUpStatus.FOLLOW_UP);
+        model = ViewModelProviders.of(this).get(ContactListViewModel.class);
+        model.getContacts().observe(this, contacts -> {
+            ((ContactListAdapter) adapter).replaceAll(contacts);
+            hidePreloader();
+        });
+        setOpenPageCallback(p -> {
+            showPreloader();
+            model.setFollowUpStatusAndReload(statusFilters[p.getKey()]);
+        });
     }
 
     @Override
@@ -73,4 +93,5 @@ public class ContactListActivity extends BaseListActivity {
     protected int getActivityTitle() {
         return R.string.heading_level2_contacts_list;
     }
+
 }

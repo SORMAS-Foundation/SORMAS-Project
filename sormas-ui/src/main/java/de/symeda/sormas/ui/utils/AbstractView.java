@@ -26,70 +26,103 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.BaseCriteria;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public abstract class AbstractView extends VerticalLayout implements View {
 
 	private static final long serialVersionUID = -1L;
-	
-    protected final String viewName;
+
+	protected final String viewName;
 	private final HorizontalLayout viewHeader;
 	private final Label viewTitleLabel;
 
-    protected AbstractView(String viewName) {
-        this.viewName = viewName;
-        
-        setSizeFull();
-        setMargin(false);
-        setSpacing(false);
-        
-        viewHeader = new HorizontalLayout();
-        viewHeader.setWidth(100, Unit.PERCENTAGE);
-        viewHeader.setHeightUndefined();
-        viewHeader.setMargin(new MarginInfo(false, true));
-        viewHeader.setSpacing(true);
-        CssStyles.style(viewHeader, "view-header");
+	protected boolean applyingCriteria;
 
-        VerticalLayout viewTitleLayout = new VerticalLayout();
-        {
-	        viewTitleLayout.setSizeUndefined();
-	        viewTitleLayout.setSpacing(false);
-	
-	        // note: splitting title and subtitle into labels does not work with the css
-	        String viewTitle = I18nProperties.getPrefixFragment("View", viewName.replaceAll("/", "."));
-	        String viewSubTitle = I18nProperties.getPrefixFragment("View", viewName.replaceAll("/", ".") + ".sub", "");
-	        viewTitleLabel = new Label(viewTitle);
-	        viewTitleLabel.setSizeUndefined();
-	        CssStyles.style(viewTitleLabel, CssStyles.H1, CssStyles.VSPACE_NONE);
-	        viewTitleLayout.addComponent(viewTitleLabel);
-	        Label viewSubTitleLabel = new Label(viewSubTitle);
-	        viewSubTitleLabel.setSizeUndefined();
-	        CssStyles.style(viewSubTitleLabel, CssStyles.H4, CssStyles.VSPACE_TOP_NONE);
-	        viewTitleLayout.addComponent(viewSubTitleLabel);
-        }
-        viewHeader.addComponent(viewTitleLayout);
-        viewHeader.setExpandRatio(viewTitleLayout, 1);
+	protected AbstractView(String viewName) {
+		this.viewName = viewName;
 
-        addComponent(viewHeader);
-        setExpandRatio(viewHeader, 0);
-    }
-    
-    protected void addHeaderComponent(Component c) {
-        viewHeader.addComponent(c);
-        viewHeader.setComponentAlignment(c, Alignment.MIDDLE_RIGHT);
-    }
-    
-    @Override
-    public void addComponent(Component c) {
-    	super.addComponent(c);
-    	// set expansion to 1 by default
-    	setExpandRatio(c, 1);
-    }
-    
-    @Override
-    public abstract void enter(ViewChangeEvent event);
-    
-    public Label getViewTitleLabel() {
-    	return viewTitleLabel;
-    }
+		setSizeFull();
+		setMargin(false);
+		setSpacing(false);
+
+		viewHeader = new HorizontalLayout();
+		viewHeader.setWidth(100, Unit.PERCENTAGE);
+		viewHeader.setHeightUndefined();
+		viewHeader.setMargin(new MarginInfo(false, true));
+		viewHeader.setSpacing(true);
+		CssStyles.style(viewHeader, "view-header");
+
+		VerticalLayout viewTitleLayout = new VerticalLayout();
+		{
+			viewTitleLayout.setSizeUndefined();
+			viewTitleLayout.setSpacing(false);
+
+			// note: splitting title and subtitle into labels does not work with the css
+			String viewTitle = I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", "."));
+			String viewSubTitle = I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", ".") + ".sub", "");
+			viewTitleLabel = new Label(viewTitle);
+			viewTitleLabel.setSizeUndefined();
+			CssStyles.style(viewTitleLabel, CssStyles.H1, CssStyles.VSPACE_NONE);
+			viewTitleLayout.addComponent(viewTitleLabel);
+			Label viewSubTitleLabel = new Label(viewSubTitle);
+			viewSubTitleLabel.setSizeUndefined();
+			CssStyles.style(viewSubTitleLabel, CssStyles.H4, CssStyles.VSPACE_TOP_NONE);
+			viewTitleLayout.addComponent(viewSubTitleLabel);
+		}
+		viewHeader.addComponent(viewTitleLayout);
+		viewHeader.setExpandRatio(viewTitleLayout, 1);
+
+		addComponent(viewHeader);
+		setExpandRatio(viewHeader, 0);
+	}
+
+	protected void addHeaderComponent(Component c) {
+		viewHeader.addComponent(c);
+		viewHeader.setComponentAlignment(c, Alignment.MIDDLE_RIGHT);
+	}
+
+	@Override
+	public void addComponent(Component c) {
+		super.addComponent(c);
+		// set expansion to 1 by default
+		setExpandRatio(c, 1);
+	}
+
+	@Override
+	public abstract void enter(ViewChangeEvent event);
+
+	public Label getViewTitleLabel() {
+		return viewTitleLabel;
+	}
+
+	public void navigateTo(BaseCriteria criteria) {
+		if (applyingCriteria) {
+			return;
+		}
+		applyingCriteria = true;
+
+		String state = getUI().getNavigator().getState();
+		int paramsIndex = state.lastIndexOf('?');
+		if (paramsIndex >= 0) {
+			state = state.substring(0, paramsIndex);
+		}
+		if (state.charAt(state.length()-1) != '/')
+			state += "/";
+		if (criteria != null) {
+			String params = criteria.toUrlParams();
+			if (!DataHelper.isNullOrEmpty(params)) {
+				state += "?" + params;
+			}
+		}
+		
+		getUI().getNavigator().navigateTo(state);
+
+		applyingCriteria = false;
+	}
+
+	public void setApplyingCriteria(boolean applyingCriteria) {
+		this.applyingCriteria = applyingCriteria;
+	}
 }
