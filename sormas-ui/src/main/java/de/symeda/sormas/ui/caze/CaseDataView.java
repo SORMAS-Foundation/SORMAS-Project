@@ -71,7 +71,7 @@ public class CaseDataView extends AbstractCaseView {
 		container.addComponent(layout);
 
 		CommitDiscardWrapperComponent<?> editComponent;
-		if (isHasOutbreak() && getViewMode() == ViewMode.SIMPLE) {
+		if (getViewMode() == ViewMode.SIMPLE) {
 			editComponent = ControllerProvider.getCaseController().getCaseCombinedEditComponent(getCaseRef().getUuid(),
 					ViewMode.SIMPLE);
 		} else {

@@ -49,7 +49,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 	public static final String ROOT_VIEW_NAME = CasesView.VIEW_NAME;
 
 	private CaseReferenceDto caseRef = null;
-	private boolean hasOutbreak;
+	private Boolean hasOutbreak;
 
 	private ViewConfiguration viewConfiguration;
 	private final OptionGroup viewModeToggle;
@@ -122,6 +122,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 			viewModeToggle.addValueChangeListener(viewModeToggleListener);
 			viewModeToggle.setVisible(true);
 		} else {
+			hasOutbreak = false;
 			viewModeToggle.setVisible(false);
 		}
 
@@ -155,6 +156,10 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 	}
 
 	public ViewMode getViewMode() {
+		if (Boolean.FALSE.equals(hasOutbreak)) {
+			return ViewMode.NORMAL;
+		}
+		
 		return viewConfiguration.getViewMode();
 	}
 }
