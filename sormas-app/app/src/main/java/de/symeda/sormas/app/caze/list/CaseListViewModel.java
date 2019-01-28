@@ -32,7 +32,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
-class CaseListViewModel extends ViewModel {
+public class CaseListViewModel extends ViewModel {
 
     private LiveData<PagedList<Case>> casesList;
     private CaseDataFactory caseDataFactory;
