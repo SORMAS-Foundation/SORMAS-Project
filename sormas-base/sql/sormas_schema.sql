@@ -2645,3 +2645,82 @@ FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'weeklyreportentry_histo
 ALTER TABLE weeklyreportentry_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (123, 'History table and change date for embedded weekly report lists #610');
+
+-- 2019-01-29 Therapy, treatment and prescription tables #936
+
+CREATE TABLE therapy(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+ALTER TABLE therapy OWNER TO sormas_user;
+
+CREATE TABLE therapy_history (LIKE therapy);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON therapy
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'therapy_history', true);
+ALTER TABLE therapy_history OWNER TO sormas_user;
+
+CREATE TABLE prescription(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	therapy_id bigint not null,
+	prescriptiondate timestamp not null,
+	prescriptionstart timestamp,
+	prescriptionend timestamp,
+	prescribingclinician varchar(512),
+	prescriptiontype varchar(255) not null,
+	prescriptiondetails varchar(512),
+	frequency varchar(512),
+	dose varchar(512),
+	route varchar(255),
+	routedetails varchar(512),
+	additionalnotes varchar(512),	
+	sys_period tstzrange not null,
+	primary key(id)
+);
+ALTER TABLE prescription OWNER TO sormas_user;
+ALTER TABLE prescription ADD CONSTRAINT fk_prescription_therapy_id FOREIGN KEY (therapy_id) REFERENCES therapy (id);
+
+CREATE TABLE prescription_history (LIKE prescription);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON prescription
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'prescription_history', true);
+ALTER TABLE prescription_history OWNER TO sormas_user;
+
+CREATE TABLE treatment(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	therapy_id bigint not null,
+	treatmentdatetime timestamp not null,
+	executingclinician varchar(512),
+	treatmenttype varchar(255) not null,
+	treatmentdetails varchar(512),
+	dose varchar(512),
+	route varchar(255),
+	routedetails varchar(512),
+	additionalnotes varchar(512),
+	sys_period tstzrange not null,
+	primary key(id)
+);
+ALTER TABLE treatment OWNER TO sormas_user;
+ALTER TABLE treatment ADD CONSTRAINT fk_treatment_therapy_id FOREIGN KEY (therapy_id) REFERENCES therapy (id);
+
+CREATE TABLE treatment_history (LIKE treatment);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON treatment
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'treatment_history', true);
+ALTER TABLE treatment_history OWNER TO sormas_user;
+
+ALTER TABLE cases ADD COLUMN therapy_id bigint;
+ALTER TABLE cases_history ADD COLUMN therapy_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_therapy_id FOREIGN KEY (therapy_id) REFERENCES therapy (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (125, 'Therapy, treatment and prescription tables #936');

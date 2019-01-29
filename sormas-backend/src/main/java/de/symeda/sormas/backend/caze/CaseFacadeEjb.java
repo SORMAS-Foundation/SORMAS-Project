@@ -158,6 +158,8 @@ import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLoca
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
+import de.symeda.sormas.backend.therapy.TherapyFacadeEjb;
+import de.symeda.sormas.backend.therapy.TherapyFacadeEjb.TherapyFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
@@ -237,6 +239,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private PersonFacadeEjbLocal personFacade;
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private TherapyFacadeEjbLocal therapyFacade;
 
 	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
 
@@ -845,6 +849,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setInvestigationStatus(source.getInvestigationStatus());
 		target.setHospitalization(hospitalizationFacade.fromDto(source.getHospitalization()));
 		target.setEpiData(epiDataFacade.fromDto(source.getEpiData()));
+		target.setTherapy(therapyFacade.fromDto(source.getTherapy()));
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
@@ -903,6 +908,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
 		target.setHospitalization(HospitalizationFacadeEjb.toDto(source.getHospitalization()));
 		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
+		target.setTherapy(TherapyFacadeEjb.toDto(source.getTherapy()));
 
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));

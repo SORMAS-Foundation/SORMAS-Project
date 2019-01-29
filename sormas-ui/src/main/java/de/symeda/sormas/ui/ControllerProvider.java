@@ -29,6 +29,7 @@ import de.symeda.sormas.ui.samples.SampleController;
 import de.symeda.sormas.ui.samples.SampleTestController;
 import de.symeda.sormas.ui.statistics.StatisticsController;
 import de.symeda.sormas.ui.task.TaskController;
+import de.symeda.sormas.ui.therapy.TherapyController;
 import de.symeda.sormas.ui.user.UserController;
 import de.symeda.sormas.ui.utils.BaseControllerProvider;
 import de.symeda.sormas.ui.visit.VisitController;
@@ -52,6 +53,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final OutbreakController outbreakController;
 	private final StatisticsController statisticsController;
 	private final DashboardController dashboardController;
+	private final TherapyController therapyController;
 
 	public ControllerProvider() {
 		super();
@@ -70,6 +72,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		outbreakController = new OutbreakController();
 		statisticsController = new StatisticsController();
 		dashboardController = new DashboardController();
+		therapyController = new TherapyController();
 	}
 
 	protected static ControllerProvider get() {
@@ -130,6 +133,10 @@ public class ControllerProvider extends BaseControllerProvider {
 	
 	public static DashboardController getDashboardController() {
 		return get().dashboardController;
+	}
+	
+	public static TherapyController getTherapyController() {
+		return get().therapyController;
 	}
 
 }

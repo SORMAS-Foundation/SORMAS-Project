@@ -15,40 +15,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.caze;
+package de.symeda.sormas.api.therapy;
 
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.utils.DataHelper;
+import org.apache.commons.lang3.StringUtils;
 
-public class CaseReferenceDto extends ReferenceDto {
+import de.symeda.sormas.api.i18n.I18nProperties;
 
-	private static final long serialVersionUID = 5007131477733638086L;
+public enum TreatmentType {
 	
-	public CaseReferenceDto() {
-		
-	}
+	DRUG_INTAKE,
+	ORAL_REHYDRATION_SALTS,
+	BLOOD_TRANSFUSION,
+	RENAL_REPLACEMENT_THERAPY,
+	IV_FLUID_THERAPY,
+	OXYGEN_THERAPY,
+	INVASIVE_MECHANICAL_VENTILATION,
+	VASOPRESSORS_INOTROPES,
+	OTHER;
 	
-	public CaseReferenceDto(String uuid) {
-		setUuid(uuid);
-	}
-	
-	public CaseReferenceDto(String uuid, String caption) {
-		setUuid(uuid);
-		setCaption(caption);
-	}
-
-	public CaseReferenceDto(String uuid, String firstName, String lastName) {
-		setUuid(uuid);
-		setCaption(buildCaption(uuid, firstName, lastName));
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
 	}
 	
-	public static String buildCaption(String uuid, String personName) {
-		return personName + " (" + DataHelper.getShortUuid(uuid) + ")";
-	}
-
-	public static String buildCaption(String uuid, String firstName, String lastName) {
-		return buildCaption(uuid, PersonDto.buildCaption(firstName, lastName));
+	public static String buildCaption(TreatmentType treatmentType, String treatmentDetails) {
+		if (StringUtils.isEmpty(treatmentDetails)) {
+			return treatmentType.toString();
+		} else {
+			return treatmentType.toString() + " - " + treatmentDetails;
+		}
 	}
 
 }

@@ -41,6 +41,7 @@ import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleTestFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.task.TaskFacade;
+import de.symeda.sormas.api.therapy.TherapyFacade;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
@@ -166,6 +167,10 @@ public class FacadeProvider {
 
 	public static CaseClassificationFacade getCaseClassificationFacade() {
 		return get().lookupEjbRemote(CaseClassificationFacade.class);
+	}
+	
+	public static TherapyFacade getTherapyFacade() {
+		return get().lookupEjbRemote(TherapyFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

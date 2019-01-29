@@ -15,40 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.caze;
+package de.symeda.sormas.api.therapy;
 
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
-public class CaseReferenceDto extends ReferenceDto {
+public class TherapyDto extends EntityDto {
 
-	private static final long serialVersionUID = 5007131477733638086L;
+	private static final long serialVersionUID = -1467303502817738376L;
 	
-	public CaseReferenceDto() {
-		
-	}
+	public static final String I18N_PREFIX = "Therapy";
 	
-	public CaseReferenceDto(String uuid) {
-		setUuid(uuid);
-	}
-	
-	public CaseReferenceDto(String uuid, String caption) {
-		setUuid(uuid);
-		setCaption(caption);
-	}
-
-	public CaseReferenceDto(String uuid, String firstName, String lastName) {
-		setUuid(uuid);
-		setCaption(buildCaption(uuid, firstName, lastName));
-	}
-	
-	public static String buildCaption(String uuid, String personName) {
-		return personName + " (" + DataHelper.getShortUuid(uuid) + ")";
-	}
-
-	public static String buildCaption(String uuid, String firstName, String lastName) {
-		return buildCaption(uuid, PersonDto.buildCaption(firstName, lastName));
+	public static TherapyDto build() {
+		TherapyDto therapy = new TherapyDto();
+		therapy.setUuid(DataHelper.createUuid());
+		return therapy;
 	}
 
 }

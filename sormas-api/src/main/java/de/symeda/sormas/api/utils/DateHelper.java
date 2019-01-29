@@ -681,7 +681,7 @@ public final class DateHelper {
 		}
 		return epiWeekList;
 	}
-	
+
 	private static EpiWeek getEpiWeekWithCorrectYear(Calendar calendar) {
 		// Year has to be manually increased for week 1 of the next year because Calendar chooses the year
 		// of the actual date; e.g., the 31st of December 2018 is technically in 2018, but already in epi week
@@ -968,6 +968,16 @@ public final class DateHelper {
 		}
 
 		return correctedValue;
+	}
+
+	public static String buildPeriodString(Date startDate, Date endDate) {
+		String startDateString = startDate != null ? formatLocalDate(startDate) : "?";
+		String endDateString = endDate != null ? formatLocalDate(endDate) : "?";
+		if (startDate.equals(endDate)) {
+			return startDateString;
+		} else {
+			return startDateString + " - " + endDateString;
+		}
 	}
 
 }

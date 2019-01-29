@@ -15,40 +15,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.caze;
+package de.symeda.sormas.ui.utils;
 
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.utils.DataHelper;
+import org.apache.commons.lang3.StringUtils;
 
-public class CaseReferenceDto extends ReferenceDto {
+import com.vaadin.ui.renderers.HtmlRenderer;
 
-	private static final long serialVersionUID = 5007131477733638086L;
-	
-	public CaseReferenceDto() {
-		
-	}
-	
-	public CaseReferenceDto(String uuid) {
-		setUuid(uuid);
-	}
-	
-	public CaseReferenceDto(String uuid, String caption) {
-		setUuid(uuid);
-		setCaption(caption);
-	}
+import elemental.json.JsonValue;
 
-	public CaseReferenceDto(String uuid, String firstName, String lastName) {
-		setUuid(uuid);
-		setCaption(buildCaption(uuid, firstName, lastName));
-	}
-	
-	public static String buildCaption(String uuid, String personName) {
-		return personName + " (" + DataHelper.getShortUuid(uuid) + ")";
-	}
+@SuppressWarnings("serial")
+public class LinkRenderer extends HtmlRenderer {
 
-	public static String buildCaption(String uuid, String firstName, String lastName) {
-		return buildCaption(uuid, PersonDto.buildCaption(firstName, lastName));
-	}
-
+    @Override
+    public JsonValue encode(String value) {
+    	if(!StringUtils.isEmpty(value)) {
+	    	value = "<a title='" + value + "'>" + value + "</a>";
+	        return super.encode(value);
+    	} else {
+    		return null;
+    	}
+    }
 }
