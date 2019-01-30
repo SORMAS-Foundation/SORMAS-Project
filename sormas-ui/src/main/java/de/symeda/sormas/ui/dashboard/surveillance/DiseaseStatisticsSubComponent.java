@@ -69,7 +69,7 @@ import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsSubComponent;
 import de.symeda.sormas.ui.dashboard.statistics.SvgCircleElement;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class DiseaseCarouselSurveillanceComponent extends VerticalLayout {
+public class DiseaseStatisticsSubComponent extends VerticalLayout {
 
 	private static final long serialVersionUID = 6582975657305031105L;
 
@@ -107,14 +107,14 @@ public class DiseaseCarouselSurveillanceComponent extends VerticalLayout {
 	private DashboardStatisticsCountElement testResultPending;
 	private DashboardStatisticsCountElement testResultIndeterminate;
 
-	public DiseaseCarouselSurveillanceComponent(DashboardDataProvider dashboardDataProvider) {
+	public DiseaseStatisticsSubComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
 
 		// layout
-		setWidth(100, Unit.PERCENTAGE);
-		setMargin(true);
-		setSpacing(false);
-		setSizeFull();
+//		setWidth(100, Unit.PERCENTAGE);
+//		setMargin(true);
+//		setSpacing(false);
+//		setSizeFull();
 
 		createOutbreakDistrictComponent();
 		addComponent(outbreakDistrictComponent);

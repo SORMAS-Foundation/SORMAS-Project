@@ -40,15 +40,19 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.SubNavigationMenu;
+import de.symeda.sormas.ui.SubNavigationMenu2;
+import de.symeda.sormas.ui.configuration.infrastructure.RegionsView;
 import de.symeda.sormas.ui.dashboard.contacts.DashboardContactsView;
 import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 import de.symeda.sormas.ui.dashboard.statistics.AbstractDashboardStatisticsComponent;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsSubComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.DashboardSurveillanceDiseaseBurdenLayout;
+import de.symeda.sormas.ui.dashboard.surveillance.DashboardSurveillanceDiseaseCarouselLayout;
 import de.symeda.sormas.ui.dashboard.surveillance.DashboardSurveillanceView;
 import de.symeda.sormas.ui.dashboard.surveillance.DiseaseBurdenSurveillanceComponent;
-import de.symeda.sormas.ui.dashboard.surveillance.DiseaseCarouselSurveillanceComponent;
+import de.symeda.sormas.ui.dashboard.surveillance.DiseaseStatisticsSubComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.DiseaseDifferenceSurveillanceComponent;
 import de.symeda.sormas.ui.reports.WeeklyReportOfficersGrid;
 import de.symeda.sormas.ui.reports.WeeklyReportRegionsGrid;
@@ -76,11 +80,8 @@ public abstract class AbstractDashboardView extends AbstractView {
 
 	protected DashboardSurveillanceDiseaseBurdenLayout diseaseBurdenAndDifferenceLayout;
 
-	protected DiseaseCarouselSurveillanceComponent diseaseCarouselComponent;
-	// protected DashboardMapComponent mapComponent;
-	protected HorizontalLayout diseaseCarouselAndMapLayout;
-	private VerticalLayout diseaseCarouselLayout;
-	// private VerticalLayout mapLayout;
+	protected DashboardSurveillanceDiseaseCarouselLayout diseaseCarouselLayout;
+
 
 	protected AbstractDashboardView(String viewName, DashboardType dashboardType) {
 		super(viewName);
@@ -192,7 +193,7 @@ public abstract class AbstractDashboardView extends AbstractView {
 		}
 		VerticalLayout layout = new VerticalLayout();
 		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setHeight(530, Unit.PIXELS);
+		layout.setHeight(555, Unit.PIXELS);
 
 		mapComponent.setSizeFull();
 
@@ -218,82 +219,6 @@ public abstract class AbstractDashboardView extends AbstractView {
 		return layout;
 	}
 
-	protected HorizontalLayout createDiseaseCarouselAndMapLayout() {
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.addStyleName(DashboardCssStyles.CURVE_AND_MAP_LAYOUT);
-		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setMargin(false);
-
-		// Disease carousel layout
-		diseaseCarouselLayout = createDiseaseCarouselLayout();
-		layout.addComponent(diseaseCarouselLayout);
-
-		// Map layout
-		mapLayout = createMapLayout();
-		layout.addComponent(mapLayout);
-
-		return layout;
-	}
-
-	protected VerticalLayout createDiseaseCarouselLayout() {
-		if (diseaseCarouselComponent == null) {
-			throw new UnsupportedOperationException(
-					"diseaseCarouselComponent needs to be initialized before calling createDiseaseCarouselLayout");
-		}
-
-		VerticalLayout layout = new VerticalLayout();
-
-		HorizontalLayout menuLayout = createDiseaseCarouselMenu();
-		layout.addComponent(menuLayout);
-
-		HorizontalLayout contentLayout = new HorizontalLayout();
-		contentLayout.setWidth(100, Unit.PERCENTAGE);
-		contentLayout.setHeight(400, Unit.PIXELS);
-
-		// Stats carousel
-		VerticalLayout statsLayout = new VerticalLayout();
-		statsLayout.addComponent(diseaseCarouselComponent);
-
-		contentLayout.addComponent(statsLayout);
-
-		// EpiCurve
-		contentLayout.addComponent(epiCurveComponent);
-
-		layout.addComponent(contentLayout);
-
-		return layout;
-	}
-
-	private HorizontalLayout createDiseaseCarouselMenu() {
-		HorizontalLayout layout = new HorizontalLayout();
-		CssStyles.style(layout, CssStyles.VSPACE_TOP_3);
-		
-		for (Disease disease : Disease.values()) {
-//			Link button = new Link(disease.toShortString(), new ExternalResource("#"));
-//			CssStyles.style(button, CssStyles.HSPACE_LEFT_4, CssStyles.LABEL_BOLD, CssStyles.LINK_ACTIVE);
-			
-			Button button = new Button(disease.toShortString());
-			CssStyles.style(button, ValoTheme.BUTTON_LINK, CssStyles.LINK_ACTIVE);
-			
-			layout.addComponent(button);		
-		}
-
-//		Button btn = new Button("Menu", new ClickListener() {
-//			@Override
-//			public void buttonClick(final ClickEvent event) {
-//				if (menuPart.getStyleName().contains(VALO_MENU_VISIBLE)) {
-//					menuPart.removeStyleName(VALO_MENU_VISIBLE);
-//				} else {
-//					menuPart.addStyleName(VALO_MENU_VISIBLE);
-//				}
-//			}
-//		});
-		
-		
-		
-		return layout;
-	}
-
 	public void refreshDashboard() {
 		dashboardDataProvider.refreshData();
 
@@ -301,19 +226,21 @@ public abstract class AbstractDashboardView extends AbstractView {
 		// statisticsComponent.updateStatistics(dashboardDataProvider.getDisease());
 
 		// Update cases and contacts shown on the map
-		mapComponent.refreshMap();
+		if (mapComponent != null)
+			mapComponent.refreshMap();
 
 		// Epi curve chart has to be created again due to a canvas resizing issue when
 		// simply refreshing the component
-		epiCurveComponent.clearAndFillEpiCurveChart();
+		if (epiCurveComponent != null)
+			epiCurveComponent.clearAndFillEpiCurveChart();
 
 		// Update disease burden
 		if (diseaseBurdenAndDifferenceLayout != null)
 			diseaseBurdenAndDifferenceLayout.refresh();
 
-		// Update disease carousel
-		if (diseaseCarouselComponent != null)
-			diseaseCarouselComponent.refresh();
+		//Update disease carousel
+		if (diseaseCarouselLayout != null)
+			diseaseCarouselLayout.refresh();
 	}
 
 	@Override
