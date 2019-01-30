@@ -57,12 +57,14 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 		this.dashboardDataProvider = dashboardDataProvider;
 		epiCurveChart = new HighChart();
 		epiCurveChart.setSizeFull();
+		//epiCurveChart.setHeight(0, Unit.PIXELS);
 		epiCurveGrouping = EpiCurveGrouping.WEEK;
 		showMinimumEntries = true;
 		this.setMargin(true);
 
 		addComponent(createHeader());
 		addComponent(epiCurveChart);
+		addComponent(createFooter());
 		setExpandRatio(epiCurveChart, 1);
 
 		clearAndFillEpiCurveChart();
@@ -85,10 +87,42 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 		epiCurveLabel = new Label("Epidemiological Curve");
 		epiCurveLabel.setSizeUndefined();
 		CssStyles.style(epiCurveLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
-		
+
 		epiCurveHeaderLayout.addComponent(epiCurveLabel);
 		epiCurveHeaderLayout.setComponentAlignment(epiCurveLabel, Alignment.BOTTOM_LEFT);
 		epiCurveHeaderLayout.setExpandRatio(epiCurveLabel, 1);
+
+		// "Expand" and "Collapse" buttons
+		Button expandEpiCurveButton = new Button("", FontAwesome.EXPAND);
+		CssStyles.style(expandEpiCurveButton, CssStyles.BUTTON_SUBTLE);
+		expandEpiCurveButton.addStyleName(CssStyles.VSPACE_NONE);
+		Button collapseEpiCurveButton = new Button("", FontAwesome.COMPRESS);
+		CssStyles.style(collapseEpiCurveButton, CssStyles.BUTTON_SUBTLE);
+		collapseEpiCurveButton.addStyleName(CssStyles.VSPACE_NONE);
+
+		expandEpiCurveButton.addClickListener(e -> {
+			externalExpandButtonListener.buttonClick(e);
+			epiCurveHeaderLayout.removeComponent(expandEpiCurveButton);
+			epiCurveHeaderLayout.addComponent(collapseEpiCurveButton);
+			epiCurveHeaderLayout.setComponentAlignment(collapseEpiCurveButton, Alignment.MIDDLE_RIGHT);
+		});
+		collapseEpiCurveButton.addClickListener(e -> {
+			externalCollapseButtonListener.buttonClick(e);
+			epiCurveHeaderLayout.removeComponent(collapseEpiCurveButton);
+			epiCurveHeaderLayout.addComponent(expandEpiCurveButton);
+			epiCurveHeaderLayout.setComponentAlignment(expandEpiCurveButton, Alignment.MIDDLE_RIGHT);
+		});
+		epiCurveHeaderLayout.addComponent(expandEpiCurveButton);
+		epiCurveHeaderLayout.setComponentAlignment(expandEpiCurveButton, Alignment.MIDDLE_RIGHT);
+
+		return epiCurveHeaderLayout;
+	}
+
+	private HorizontalLayout createFooter() {
+		HorizontalLayout epiCurveFooterHeaderLayout = new HorizontalLayout();
+		epiCurveFooterHeaderLayout.setWidth(100, Unit.PERCENTAGE);
+		epiCurveFooterHeaderLayout.setSpacing(true);
+		CssStyles.style(epiCurveFooterHeaderLayout, CssStyles.VSPACE_4);
 
 		// Grouping
 		PopupButton groupingDropdown = new PopupButton("Grouping");
@@ -122,46 +156,25 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 
 			groupingDropdown.setContent(groupingLayout);
 		}
-		epiCurveHeaderLayout.addComponent(groupingDropdown);
-		epiCurveHeaderLayout.setComponentAlignment(groupingDropdown, Alignment.MIDDLE_RIGHT);
+		epiCurveFooterHeaderLayout.addComponent(groupingDropdown);
+		epiCurveFooterHeaderLayout.setComponentAlignment(groupingDropdown, Alignment.MIDDLE_LEFT);
 
 		// Epi curve mode
 		AbstractComponent epiCurveModeSelector = createEpiCurveModeSelector();
-		epiCurveHeaderLayout.addComponent(epiCurveModeSelector);
-		epiCurveHeaderLayout.setComponentAlignment(epiCurveModeSelector, Alignment.MIDDLE_RIGHT);
+		epiCurveFooterHeaderLayout.addComponent(epiCurveModeSelector);
+		epiCurveFooterHeaderLayout.setComponentAlignment(epiCurveModeSelector, Alignment.MIDDLE_RIGHT);
 
-		// "Expand" and "Collapse" buttons
-		Button expandEpiCurveButton = new Button("", FontAwesome.EXPAND);
-		CssStyles.style(expandEpiCurveButton, CssStyles.BUTTON_SUBTLE);
-		expandEpiCurveButton.addStyleName(CssStyles.VSPACE_NONE);   
-		Button collapseEpiCurveButton = new Button("", FontAwesome.COMPRESS);
-		CssStyles.style(collapseEpiCurveButton, CssStyles.BUTTON_SUBTLE);
-		collapseEpiCurveButton.addStyleName(CssStyles.VSPACE_NONE);
-
-		expandEpiCurveButton.addClickListener(e -> {
-			externalExpandButtonListener.buttonClick(e);
-			epiCurveHeaderLayout.removeComponent(expandEpiCurveButton);
-			epiCurveHeaderLayout.addComponent(collapseEpiCurveButton);
-			epiCurveHeaderLayout.setComponentAlignment(collapseEpiCurveButton, Alignment.MIDDLE_RIGHT);
-		});
-		collapseEpiCurveButton.addClickListener(e -> {
-			externalCollapseButtonListener.buttonClick(e);
-			epiCurveHeaderLayout.removeComponent(collapseEpiCurveButton);
-			epiCurveHeaderLayout.addComponent(expandEpiCurveButton);
-			epiCurveHeaderLayout.setComponentAlignment(expandEpiCurveButton, Alignment.MIDDLE_RIGHT);
-		});
-		epiCurveHeaderLayout.addComponent(expandEpiCurveButton);
-		epiCurveHeaderLayout.setComponentAlignment(expandEpiCurveButton, Alignment.MIDDLE_RIGHT);
-
-		return epiCurveHeaderLayout;
+		return epiCurveFooterHeaderLayout;
 	}
-	
+
 	protected abstract AbstractComponent createEpiCurveModeSelector();
+
 	public abstract void clearAndFillEpiCurveChart();
 
 	/**
-	 * Builds a list that contains an object for each day, week or month between the from and to dates. 
-	 * Additional previous days, weeks or months might be added when showMinimumEntries is true.
+	 * Builds a list that contains an object for each day, week or month between the
+	 * from and to dates. Additional previous days, weeks or months might be added
+	 * when showMinimumEntries is true.
 	 */
 	protected List<Date> buildListOfFilteredDates() {
 		List<Date> filteredDates = new ArrayList<>();

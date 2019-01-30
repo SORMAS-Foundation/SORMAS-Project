@@ -61,77 +61,111 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 
 	private DashboardDataProvider dashboardDataProvider;
 	private HighChart chart;
-	
+
 	public DiseaseDifferenceSurveillanceComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
-		
+
 		Label title = new Label("Difference in number of cases");
 		CssStyles.style(title, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 
+		Label subtitle = new Label("Compared to previous time period");
+
 		chart = new HighChart();
 		chart.setSizeFull();
-		
-		//layout
+
+		// layout
 		setWidth(100, Unit.PERCENTAGE);
-		//setHeight(400, Unit.PIXELS);
-		
+		// setHeight(400, Unit.PIXELS);
+
 		addComponent(title);
+		addComponent(subtitle);
 		addComponent(chart);
+		setExpandRatio(chart, 1);
+
 		setMargin(true);
 		setSpacing(false);
 		setSizeFull();
-		setExpandRatio(chart, 1);
 	}
 
-	public void refresh() {
+	public void refresh(int visibleDiseasesCount) {
+		List<DiseaseBurdenDto> diseasesBurden = dashboardDataProvider.getDiseasesBurden();
+
+		// data mockup: manipulate the data
+		diseasesBurden = mockDataUp(diseasesBurden);
+
+		// sort, limit and filter
+		diseasesBurden = diseasesBurden.stream()
+									   .sorted((dto1, dto2) -> (int) (dto2.getCaseCount() - dto1.getCaseCount()))
+									   .limit(visibleDiseasesCount)
+									   //.filter((dto) -> dto.hasCount())
+									   .collect(Collectors.toList());
+
+		refreshChart(diseasesBurden);
+	}
+
+	private List<DiseaseBurdenDto> mockDataUp(List<DiseaseBurdenDto> data) {
+		List<DiseaseBurdenDto> newData = new ArrayList<DiseaseBurdenDto>();
+
+		Long diff = 6L;
+		for (DiseaseBurdenDto diseaseBurden : data) {
+			Long caseCount = 0L;
+			Long previousCaseCount = 0L;
+
+			if (diff >= 0)
+				caseCount = diff;
+			else
+				previousCaseCount = Math.abs(diff);
+
+			newData.add(new DiseaseBurdenDto(diseaseBurden.getDisease(), caseCount, previousCaseCount,
+					diseaseBurden.getEventCount(), diseaseBurden.getOutbreakDistrictCount(),
+					diseaseBurden.getCaseDeathCount()));
+
+			diff -= 2;
+		}
+
+		return newData;
+	}
+
+	public void refresh_old() {
 		List<DashboardCaseDto> cases = dashboardDataProvider.getCases();
 		List<DashboardCaseDto> previousCases = dashboardDataProvider.getPreviousCases();
 		List<DashboardEventDto> events = dashboardDataProvider.getEvents();
 		List<DashboardOutbreakDto> outbreaks = dashboardDataProvider.getOutbreaks();
-		
+
 		List<DiseaseBurdenDto> diseasesBurden = new ArrayList<>();
-		
-		//build diseases burden
+
+		// build diseases burden
 		for (Disease disease : Disease.values()) {
 			DiseaseBurdenDto diseaseBurden = new DiseaseBurdenDto(disease);
-			
-			List<DashboardCaseDto> _cases = cases.stream().filter(c -> c.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());
+
+			List<DashboardCaseDto> _cases = cases.stream().filter(c -> c.getDisease() == diseaseBurden.getDisease())
+					.collect(Collectors.toList());
 			diseaseBurden.setCaseCount(Long.valueOf(_cases.size()));
 			diseaseBurden.setCaseDeathCount(_cases.stream().filter(c -> c.getCauseOfDeathDisease() != null).count());
-			
-			_cases = previousCases.stream().filter(c -> c.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());
+
+			_cases = previousCases.stream().filter(c -> c.getDisease() == diseaseBurden.getDisease())
+					.collect(Collectors.toList());
 			diseaseBurden.setPreviousCaseCount(Long.valueOf(_cases.size()));
-			
-			List<DashboardEventDto> _events = events.stream().filter(e -> e.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());
+
+			List<DashboardEventDto> _events = events.stream().filter(e -> e.getDisease() == diseaseBurden.getDisease())
+					.collect(Collectors.toList());
 			diseaseBurden.setEventCount(Long.valueOf(_events.size()));
-			
-			List<DashboardOutbreakDto> _outbreaks = outbreaks.stream().filter(e -> e.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());
+
+			List<DashboardOutbreakDto> _outbreaks = outbreaks.stream()
+					.filter(e -> e.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());
 			diseaseBurden.setOutbreakDistrictCount(Long.valueOf(_outbreaks.size()));
-			
+
 			diseasesBurden.add(diseaseBurden);
 		}
-		
+
 		refreshChart(diseasesBurden);
 	}
-	
-	private void refreshChart(List<DiseaseBurdenDto> data) {
-		//sort
-		data = data.stream().sorted((dto1, dto2) -> (int) (dto2.getCaseCount() - dto1.getCaseCount())).collect(Collectors.toList());
 
+	private void refreshChart(List<DiseaseBurdenDto> data) {
 		StringBuilder hcjs = new StringBuilder();
-		hcjs.append(
-				"var options = {"
-						+ "chart:{ "
-						+ " type: 'bar', "
-						+ " backgroundColor: 'transparent' "
-						+ "},"
-						+ "credits:{ enabled: false },"
-						+ "exporting:{ "
-						+ " enabled: false,"
-						+ " buttons:{ contextButton:{ theme:{ fill: 'transparent' } } }"
-						+ "},"
-						+ "title:{ text: '' },"
-				);
+		hcjs.append("var options = {" + "chart:{ " + " type: 'bar', " + " backgroundColor: 'transparent' " + "},"
+				+ "credits:{ enabled: false }," + "exporting:{ " + " enabled: false,"
+				+ " buttons:{ contextButton:{ theme:{ fill: 'transparent' } } }" + "}," + "title:{ text: '' },");
 
 		hcjs.append("xAxis: { categories: [");
 		for (DiseaseBurdenDto s : data) {
@@ -139,8 +173,7 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 		}
 		hcjs.append("]},");
 
-		hcjs.append("yAxis: { title: { text: 'Difference' }, allowDecimals: false, "
-				+ "stackLabels: { enabled: true, "
+		hcjs.append("yAxis: { title: { text: 'Difference' }, allowDecimals: false, " + "stackLabels: { enabled: true, "
 				+ "style: {fontWeight: 'normal', textOutline: '0', gridLineColor: '#000000', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } } },"
 				+ "legend: { verticalAlign: 'middle', backgroundColor: 'transparent', align: 'right', layout: 'vertical', "
 				+ "borderWidth: 0, shadow: false, margin: 30, padding: 0 },"
@@ -148,60 +181,37 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 				+ "plotOptions: { column: { borderWidth: 0, stacking: 'normal', groupPadding: 0, pointPadding: 0, dataLabels: {"
 				+ "enabled: true, formatter: function() { if (this.y > 0) return this.y; },"
 				+ "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } }, series: { pointWidth: 20 } },");
-		
-		//data mockup: manipulate the data
-		Long diff = 6L;
-		//data = data.stream().limit(5).collect(Collectors.toList());
-		for (DiseaseBurdenDto s : data) {
-			s.setCaseCount(0L);
-			s.setPreviousCaseCount(0L);
-			
-			if (diff >= 0) s.setCaseCount(diff);
-			else s.setPreviousCaseCount(Math.abs(diff));
-			
-			diff -= 2;
-		}
-		
+
 		/*
-		 * split data into two groups (positive and negative)
-		 * positive group will be padded with zeros of negative group
-		 * and negative group will also be padded with zeros of positive group
+		 * split data into two groups (positive and negative) positive group will be
+		 * padded with zeros of negative group and negative group will also be padded
+		 * with zeros of positive group
 		 * 
 		 */
-		List<Long> positive_values = data.stream()
-							  .filter((d) -> d.getCasesDifference() >= 0)
-							  .map((d) -> d.getCasesDifference())
-							  .collect(Collectors.toList());
-		List<Long> negative_values = data.stream()
-							  .filter((d) -> d.getCasesDifference() < 0)
-							  .map((d) -> d.getCasesDifference())
-							  .collect(Collectors.toList());
-		
-		hcjs.append("series: [");
-		
-		hcjs.append("{ name: 'More than last year', color: '#FF4500', data: [");
-		hcjs.append(
-			Stream.concat(positive_values.stream(), negative_values.stream().map((v) -> 0)) //pad with negative group
-				  .map((d) -> d.toString())
-				  .reduce((fullText, nextText) -> fullText + ", " + nextText)
-				  .get()
-		);
-		hcjs.append("]},");
-		
-		hcjs.append("{ name: 'Less than last year', color: '#32CD32', data: [");
-		hcjs.append(
-			Stream.concat(positive_values.stream().map((v) -> 0), negative_values.stream()) //pad with positive group
-				  .map((d) -> d.toString())
-				  .reduce((fullText, nextText) -> fullText + ", " + nextText)
-				  .get()
-		);
-		hcjs.append("]},");
-		
-		hcjs.append("],"); //series: []
-		
-		hcjs.append("}"); //options: {}
+		List<Long> positive_values = data.stream().filter((d) -> d.getCasesDifference() >= 0)
+				.map((d) -> d.getCasesDifference()).collect(Collectors.toList());
+		List<Long> negative_values = data.stream().filter((d) -> d.getCasesDifference() < 0)
+				.map((d) -> d.getCasesDifference()).collect(Collectors.toList());
 
-		chart.setHcjs(hcjs.toString());	
+		hcjs.append("series: [");
+
+		hcjs.append("{ name: 'More than last year', color: '#FF4500', data: [");
+		hcjs.append(Stream.concat(positive_values.stream(), negative_values.stream().map((v) -> 0)) // pad with negative
+																									// group
+				.map((d) -> d.toString()).reduce((fullText, nextText) -> fullText + ", " + nextText).get());
+		hcjs.append("]},");
+
+		hcjs.append("{ name: 'Less than last year', color: '#32CD32', data: [");
+		hcjs.append(Stream.concat(positive_values.stream().map((v) -> 0), negative_values.stream()) // pad with positive
+																									// group
+				.map((d) -> d.toString()).reduce((fullText, nextText) -> fullText + ", " + nextText).get());
+		hcjs.append("]},");
+
+		hcjs.append("],"); // series: []
+
+		hcjs.append("}"); // options: {}
+
+		chart.setHcjs(hcjs.toString());
 	}
-	
+
 }

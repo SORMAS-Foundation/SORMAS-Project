@@ -89,44 +89,36 @@ public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
 		getColumn(DiseaseBurdenDto.CASE_FATALITY_RATE).setRenderer(new PercentageRenderer());
 
 		// format casesGrowth column with chevrons
-		getColumn(DiseaseBurdenDto.CASES_DIFFERENCE)
-			.setConverter(new StringToLongConverter() {
-				@Override
-				public String convertToPresentation(Long value, Class<? extends String> targetType, Locale locale)
-						throws ConversionException {
-	
-					String stringRepresentation = super.convertToPresentation(value, targetType, locale);
-					String chevronType = "";
-					String criticalLevel = "";
-	
-					if (value > 0) {
-						chevronType = FontAwesome.CHEVRON_UP.getHtml();
-						criticalLevel = CssStyles.LABEL_CRITICAL;
-					} else if (value < 0) {
-						chevronType = FontAwesome.CHEVRON_DOWN.getHtml();
-						criticalLevel = CssStyles.LABEL_POSITIVE;
-					} else {
-						chevronType = FontAwesome.CHEVRON_RIGHT.getHtml();
-						criticalLevel = CssStyles.LABEL_IMPORTANT;
-					}
-					
-//					Label growthLabel = new Label(chevronType);
-//					CssStyles.style(growthLabel, criticalLevel);
-//					return growthLabel;
-	
-					stringRepresentation = 
-						"<div class=\"v-label v-widget " + criticalLevel + " v-label-" + criticalLevel + " align-center v-label-align-center bold v-label-bold large v-label-large v-has-width\" " +
-						"	  style=\"width: 15px;\">" +
-						"		<span class=\"v-icon\" style=\"font-family: FontAwesome;\">" + 
-									chevronType + 
-						"		</span>" + 
-						"</div>";
-					
-					return stringRepresentation;
+		getColumn(DiseaseBurdenDto.CASES_DIFFERENCE).setConverter(new StringToLongConverter() {
+			@Override
+			public String convertToPresentation(Long value, Class<? extends String> targetType, Locale locale)
+					throws ConversionException {
+
+				String stringRepresentation = super.convertToPresentation(value, targetType, locale);
+				String chevronType = "";
+				String criticalLevel = "";
+
+				if (value > 0) {
+					chevronType = FontAwesome.CHEVRON_UP.getHtml();
+					criticalLevel = CssStyles.LABEL_CRITICAL;
+				} else if (value < 0) {
+					chevronType = FontAwesome.CHEVRON_DOWN.getHtml();
+					criticalLevel = CssStyles.LABEL_POSITIVE;
+				} else {
+					chevronType = FontAwesome.CHEVRON_RIGHT.getHtml();
+					criticalLevel = CssStyles.LABEL_IMPORTANT;
 				}
-			})
-			.setRenderer(new HtmlRenderer());
-		
+
+				stringRepresentation = "<div class=\"v-label v-widget " + criticalLevel + " v-label-" + criticalLevel
+						+ " align-center v-label-align-center bold v-label-bold large v-label-large v-has-width\" "
+						+ "	  style=\"width: 15px;\">"
+						+ "		<span class=\"v-icon\" style=\"font-family: FontAwesome;\">" + chevronType
+						+ "		</span>" + "</div>";
+
+				return stringRepresentation;
+			}
+		}).setRenderer(new HtmlRenderer());
+
 		setSelectionMode(SelectionMode.NONE);
 //		addItemClickListener(this);
 	}
@@ -137,19 +129,12 @@ public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
 		return (BeanItemContainer<DiseaseBurdenDto>) container.getWrappedContainer();
 	}
 
-	public void reload(List<DiseaseBurdenDto> summaryDtos) {
+	public void reload(List<DiseaseBurdenDto> items) {
 		getContainer().removeAllItems();
 
-		// sort and filter
-		List<DiseaseBurdenDto> list = summaryDtos.stream()
-				//.filter((dto) -> dto.hasCount())
-				.sorted((dto1, dto2) -> (int) (dto2.getCaseCount() - dto1.getCaseCount())).collect(Collectors.toList());
-
-		//show at least 3 items
-		if (list.size() > 7) 
-			list = summaryDtos.stream().limit(7L).collect(Collectors.toList());
+		getContainer().addAll(items);
 		
-		getContainer().addAll(list);
+		setSizeFull();
 	}
 
 	@Override

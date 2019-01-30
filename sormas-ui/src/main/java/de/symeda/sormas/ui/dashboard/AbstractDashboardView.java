@@ -18,16 +18,23 @@
 package de.symeda.sormas.ui.dashboard;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -38,6 +45,7 @@ import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 import de.symeda.sormas.ui.dashboard.statistics.AbstractDashboardStatisticsComponent;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsSubComponent;
+import de.symeda.sormas.ui.dashboard.surveillance.DashboardSurveillanceDiseaseBurdenLayout;
 import de.symeda.sormas.ui.dashboard.surveillance.DashboardSurveillanceView;
 import de.symeda.sormas.ui.dashboard.surveillance.DiseaseBurdenSurveillanceComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.DiseaseCarouselSurveillanceComponent;
@@ -59,27 +67,23 @@ public abstract class AbstractDashboardView extends AbstractView {
 	protected VerticalLayout dashboardLayout;
 	protected DashboardFilterLayout filterLayout;
 	protected AbstractDashboardStatisticsComponent statisticsComponent;
-	
+
 	protected AbstractEpiCurveComponent epiCurveComponent;
 	protected DashboardMapComponent mapComponent;
 	protected HorizontalLayout epiCurveAndMapLayout;
 	private VerticalLayout epiCurveLayout;
 	private VerticalLayout mapLayout;
-	
-	protected DiseaseBurdenSurveillanceComponent diseaseBurdenComponent;
-	protected DiseaseDifferenceSurveillanceComponent diseaseDifferenceComponent;
-	private VerticalLayout diseaseBurdenLayout;
-	private VerticalLayout diseaseDifferenceLayout;
-	protected HorizontalLayout diseaseBurdenAndCasesLayout;
-	
+
+	protected DashboardSurveillanceDiseaseBurdenLayout diseaseBurdenAndDifferenceLayout;
+
 	protected DiseaseCarouselSurveillanceComponent diseaseCarouselComponent;
-	//protected DashboardMapComponent mapComponent;
+	// protected DashboardMapComponent mapComponent;
 	protected HorizontalLayout diseaseCarouselAndMapLayout;
-	private HorizontalLayout diseaseCarouselLayout;
-	//private VerticalLayout mapLayout;
+	private VerticalLayout diseaseCarouselLayout;
+	// private VerticalLayout mapLayout;
 
 	protected AbstractDashboardView(String viewName, DashboardType dashboardType) {
-		super(viewName);	
+		super(viewName);
 
 		addStyleName(DashboardCssStyles.DASHBOARD_SCREEN);
 
@@ -89,14 +93,17 @@ public abstract class AbstractDashboardView extends AbstractView {
 		}
 
 		OptionGroup dashboardSwitcher = new OptionGroup();
-		CssStyles.style(dashboardSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
+		CssStyles.style(dashboardSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL,
+				CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
 		if (CurrentUser.getCurrent().hasUserRight(UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
 			dashboardSwitcher.addItem(DashboardType.SURVEILLANCE);
-			dashboardSwitcher.setItemCaption(DashboardType.SURVEILLANCE, I18nProperties.getEnumCaption(DashboardType.SURVEILLANCE));
+			dashboardSwitcher.setItemCaption(DashboardType.SURVEILLANCE,
+					I18nProperties.getEnumCaption(DashboardType.SURVEILLANCE));
 		}
 		if (CurrentUser.getCurrent().hasUserRight(UserRight.DASHBOARD_CONTACT_ACCESS)) {
 			dashboardSwitcher.addItem(DashboardType.CONTACTS);
-			dashboardSwitcher.setItemCaption(DashboardType.CONTACTS, I18nProperties.getEnumCaption(DashboardType.CONTACTS));
+			dashboardSwitcher.setItemCaption(DashboardType.CONTACTS,
+					I18nProperties.getEnumCaption(DashboardType.CONTACTS));
 		}
 		dashboardSwitcher.setValue(dashboardType);
 		dashboardSwitcher.addValueChangeListener(e -> {
@@ -108,7 +115,7 @@ public abstract class AbstractDashboardView extends AbstractView {
 			}
 		});
 		addHeaderComponent(dashboardSwitcher);
-		
+
 		// Hide the dashboard switcher if only one dashboard is accessible to the user
 		if (dashboardSwitcher.size() <= 1) {
 			dashboardSwitcher.setVisible(false);
@@ -137,7 +144,7 @@ public abstract class AbstractDashboardView extends AbstractView {
 		epiCurveLayout = createEpiCurveLayout();
 		layout.addComponent(epiCurveLayout);
 
-		// Map layout	
+		// Map layout
 		mapLayout = createMapLayout();
 		layout.addComponent(mapLayout);
 
@@ -146,7 +153,8 @@ public abstract class AbstractDashboardView extends AbstractView {
 
 	protected VerticalLayout createEpiCurveLayout() {
 		if (epiCurveComponent == null) {
-			throw new UnsupportedOperationException("EpiCurveComponent needs to be initialized before calling createEpiCurveLayout");
+			throw new UnsupportedOperationException(
+					"EpiCurveComponent needs to be initialized before calling createEpiCurveLayout");
 		}
 
 		VerticalLayout layout = new VerticalLayout();
@@ -163,7 +171,7 @@ public abstract class AbstractDashboardView extends AbstractView {
 			epiCurveAndMapLayout.removeComponent(mapLayout);
 			AbstractDashboardView.this.setHeight(100, Unit.PERCENTAGE);
 			epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
-			epiCurveLayout.setSizeFull();			
+			epiCurveLayout.setSizeFull();
 		});
 
 		epiCurveComponent.setCollapseListener(e -> {
@@ -179,11 +187,12 @@ public abstract class AbstractDashboardView extends AbstractView {
 
 	protected VerticalLayout createMapLayout() {
 		if (mapComponent == null) {
-			throw new UnsupportedOperationException("MapComponent needs to be initialized before calling createMapLayout");
+			throw new UnsupportedOperationException(
+					"MapComponent needs to be initialized before calling createMapLayout");
 		}
 		VerticalLayout layout = new VerticalLayout();
 		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setHeight(400, Unit.PIXELS);
+		layout.setHeight(530, Unit.PIXELS);
 
 		mapComponent.setSizeFull();
 
@@ -208,108 +217,103 @@ public abstract class AbstractDashboardView extends AbstractView {
 
 		return layout;
 	}
-	
 
-	protected HorizontalLayout createDiseaseBurdenAndCasesLayout() {
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setMargin(false);
-		//layout.setHeight(700, Unit.PIXELS);
-
-		diseaseBurdenLayout = createDiseaseBurdenLayout();
-		layout.addComponent(diseaseBurdenLayout);
-
-		diseaseDifferenceLayout = createDiseaseDifferenceLayout();
-		layout.addComponent(diseaseDifferenceLayout);		
-
-		return layout;
-	}
-	
-	protected VerticalLayout createDiseaseBurdenLayout() {
-		if (diseaseBurdenComponent == null) {
-			throw new UnsupportedOperationException("DiseaseBurdenComponent needs to be initialized before calling createDiseaseBurdenLayout");
-		}
-		
-		DiseaseBurdenSurveillanceComponent layout = diseaseBurdenComponent;
-
-		return layout;
-	}
-
-	protected VerticalLayout createDiseaseDifferenceLayout() {
-		if (diseaseDifferenceComponent == null) {
-			throw new UnsupportedOperationException("DiseaseDifferenceComponent needs to be initialized before calling createDiseaseDifferenceLayout");
-		}
-		
-		DiseaseDifferenceSurveillanceComponent layout = diseaseDifferenceComponent;
-		layout.setHeight(400, Unit.PIXELS);
-		
-		return layout;
-	}
-
-	
 	protected HorizontalLayout createDiseaseCarouselAndMapLayout() {
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.addStyleName(DashboardCssStyles.CURVE_AND_MAP_LAYOUT);
 		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setHeight(470, Unit.PIXELS);
 		layout.setMargin(false);
 
 		// Disease carousel layout
 		diseaseCarouselLayout = createDiseaseCarouselLayout();
 		layout.addComponent(diseaseCarouselLayout);
 
-		// Map layout	
-		//mapLayout = createMapLayout();
+		// Map layout
+		mapLayout = createMapLayout();
 		layout.addComponent(mapLayout);
 
 		return layout;
 	}
-	
-	protected HorizontalLayout createDiseaseCarouselLayout() {
+
+	protected VerticalLayout createDiseaseCarouselLayout() {
 		if (diseaseCarouselComponent == null) {
-			throw new UnsupportedOperationException("diseaseCarouselComponent needs to be initialized before calling createDiseaseCarouselLayout");
+			throw new UnsupportedOperationException(
+					"diseaseCarouselComponent needs to be initialized before calling createDiseaseCarouselLayout");
 		}
 
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setHeight(400, Unit.PIXELS);
+		VerticalLayout layout = new VerticalLayout();
 
-		//diseaseCarouselComponent.setSizeFull();
-		
-		
-		//Stats carousel
+		HorizontalLayout menuLayout = createDiseaseCarouselMenu();
+		layout.addComponent(menuLayout);
+
+		HorizontalLayout contentLayout = new HorizontalLayout();
+		contentLayout.setWidth(100, Unit.PERCENTAGE);
+		contentLayout.setHeight(400, Unit.PIXELS);
+
+		// Stats carousel
 		VerticalLayout statsLayout = new VerticalLayout();
 		statsLayout.addComponent(diseaseCarouselComponent);
-		
-		layout.addComponent(statsLayout);
-		//statsLayout.setWidth(50, Unit.PERCENTAGE);
 
-		//EpiCurve
-		layout.addComponent(epiCurveComponent);
-		//epiCurveComponent.setWidth(50, Unit.PERCENTAGE);
+		contentLayout.addComponent(statsLayout);
+
+		// EpiCurve
+		contentLayout.addComponent(epiCurveComponent);
+
+		layout.addComponent(contentLayout);
 
 		return layout;
 	}
-	
-	
-	public void refreshDashboard() {		
+
+	private HorizontalLayout createDiseaseCarouselMenu() {
+		HorizontalLayout layout = new HorizontalLayout();
+		CssStyles.style(layout, CssStyles.VSPACE_TOP_3);
+		
+		for (Disease disease : Disease.values()) {
+//			Link button = new Link(disease.toShortString(), new ExternalResource("#"));
+//			CssStyles.style(button, CssStyles.HSPACE_LEFT_4, CssStyles.LABEL_BOLD, CssStyles.LINK_ACTIVE);
+			
+			Button button = new Button(disease.toShortString());
+			CssStyles.style(button, ValoTheme.BUTTON_LINK, CssStyles.LINK_ACTIVE);
+			
+			layout.addComponent(button);		
+		}
+
+//		Button btn = new Button("Menu", new ClickListener() {
+//			@Override
+//			public void buttonClick(final ClickEvent event) {
+//				if (menuPart.getStyleName().contains(VALO_MENU_VISIBLE)) {
+//					menuPart.removeStyleName(VALO_MENU_VISIBLE);
+//				} else {
+//					menuPart.addStyleName(VALO_MENU_VISIBLE);
+//				}
+//			}
+//		});
+		
+		
+		
+		return layout;
+	}
+
+	public void refreshDashboard() {
 		dashboardDataProvider.refreshData();
 
 		// Updates statistics
-		statisticsComponent.updateStatistics(dashboardDataProvider.getDisease());
+		// statisticsComponent.updateStatistics(dashboardDataProvider.getDisease());
 
 		// Update cases and contacts shown on the map
 		mapComponent.refreshMap();
 
-		// Epi curve chart has to be created again due to a canvas resizing issue when simply refreshing the component
+		// Epi curve chart has to be created again due to a canvas resizing issue when
+		// simply refreshing the component
 		epiCurveComponent.clearAndFillEpiCurveChart();
-		
+
 		// Update disease burden
-		diseaseBurdenComponent.refresh();
-		diseaseDifferenceComponent.refresh();
-		
+		if (diseaseBurdenAndDifferenceLayout != null)
+			diseaseBurdenAndDifferenceLayout.refresh();
+
 		// Update disease carousel
-		diseaseCarouselComponent.refresh();
+		if (diseaseCarouselComponent != null)
+			diseaseCarouselComponent.refresh();
 	}
 
 	@Override

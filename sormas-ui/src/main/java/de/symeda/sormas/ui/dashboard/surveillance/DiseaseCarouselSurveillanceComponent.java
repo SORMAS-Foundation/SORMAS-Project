@@ -28,8 +28,10 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -72,11 +74,11 @@ public class DiseaseCarouselSurveillanceComponent extends VerticalLayout {
 	private static final long serialVersionUID = 6582975657305031105L;
 
 	private DashboardDataProvider dashboardDataProvider;
-	
+
 	// "Outbreak Districts" elements
 	private DashboardStatisticsSubComponent outbreakDistrictComponent;
 	private Label outbreakDistrictCountLabel;
-	
+
 	// "New Cases" elements
 	private DashboardStatisticsSubComponent caseComponent;
 	private Label caseCountLabel;
@@ -86,15 +88,16 @@ public class DiseaseCarouselSurveillanceComponent extends VerticalLayout {
 	private DashboardStatisticsCountElement caseClassificationSuspect;
 	private DashboardStatisticsCountElement caseClassificationNotACase;
 	private DashboardStatisticsCountElement caseClassificationNotYetClassified;
-	private Label caseFatalityRateLabel;
-	private Label caseFatalityCountLabel;
-		
+	private Label caseFatalityRateValue;
+	private Label caseFatalityCountValue;
+	private Label caseFatalityCountGrowth;
+
 	// "New Events" elements
 	private DashboardStatisticsSubComponent eventComponent;
 	private Label eventCountLabel;
 	private DashboardStatisticsCountElement eventStatusConfirmed;
 	private DashboardStatisticsCountElement eventStatusPossible;
-	private DashboardStatisticsCountElement eventStatusNotAnEvent;	
+	private DashboardStatisticsCountElement eventStatusNotAnEvent;
 
 	// "New Test Results" elements
 	private DashboardStatisticsSubComponent testResultComponent;
@@ -104,63 +107,63 @@ public class DiseaseCarouselSurveillanceComponent extends VerticalLayout {
 	private DashboardStatisticsCountElement testResultPending;
 	private DashboardStatisticsCountElement testResultIndeterminate;
 
-	
 	public DiseaseCarouselSurveillanceComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
-		
-		//layout
+
+		// layout
 		setWidth(100, Unit.PERCENTAGE);
-		//setHeight(600, Unit.PIXELS);
 		setMargin(true);
 		setSpacing(false);
 		setSizeFull();
-		
+
 		createOutbreakDistrictComponent();
 		addComponent(outbreakDistrictComponent);
-		
+
 		createCaseComponent();
 		addComponent(caseComponent);
-		
+
 		createEventComponent();
 		addComponent(eventComponent);
-		
+
 		createTestResultComponent();
 		addComponent(testResultComponent);
 	}
-	
-	private void createOutbreakDistrictComponent () {
+
+	private void createOutbreakDistrictComponent() {
 		outbreakDistrictComponent = new DashboardStatisticsSubComponent();
-		
+
 		// Header
 		HorizontalLayout headerLayout = new HorizontalLayout();
-			//count
+		// count
 		outbreakDistrictCountLabel = new Label();
-		CssStyles.style(outbreakDistrictCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_XXXLARGE, CssStyles.LABEL_BOLD, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+		CssStyles.style(outbreakDistrictCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_XXXLARGE,
+				CssStyles.LABEL_BOLD, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 		headerLayout.addComponent(outbreakDistrictCountLabel);
-			//title
+		// title
 		Label titleLabel = new Label("Outbreak Districts");
 		CssStyles.style(titleLabel, CssStyles.H2, CssStyles.HSPACE_LEFT_4);
 		headerLayout.addComponent(titleLabel);
-		
+
 		outbreakDistrictComponent.addComponent(headerLayout);
 	}
-	
-	private void createCaseComponent () {
+
+	private void createCaseComponent() {
 		caseComponent = new DashboardStatisticsSubComponent();
-		
+
 		// Header
 		HorizontalLayout headerLayout = new HorizontalLayout();
-			//count
+		// count
 		caseCountLabel = new Label();
-		CssStyles.style(caseCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_XXXLARGE, CssStyles.LABEL_BOLD, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+		CssStyles.style(caseCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_XXXLARGE, CssStyles.LABEL_BOLD,
+				CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 		headerLayout.addComponent(caseCountLabel);
-			//title
+		// title
 		caseDiseaseLabel = new Label("New Cases");
 		CssStyles.style(caseDiseaseLabel, CssStyles.H2, CssStyles.HSPACE_LEFT_4);
 		headerLayout.addComponent(caseDiseaseLabel);
-		
+
 		caseComponent.addComponent(headerLayout);
-		
+
 		// Count layout
 		CssLayout countLayout = caseComponent.createCountLayout(true);
 		caseClassificationConfirmed = new DashboardStatisticsCountElement("Confirmed", CountElementStyle.CRITICAL);
@@ -171,64 +174,74 @@ public class DiseaseCarouselSurveillanceComponent extends VerticalLayout {
 		caseComponent.addComponentToCountLayout(countLayout, caseClassificationSuspect);
 		caseClassificationNotACase = new DashboardStatisticsCountElement("Not A Case", CountElementStyle.POSITIVE);
 		caseComponent.addComponentToCountLayout(countLayout, caseClassificationNotACase);
-		caseClassificationNotYetClassified = new DashboardStatisticsCountElement("Not Yet Classified", CountElementStyle.MINOR);
+		caseClassificationNotYetClassified = new DashboardStatisticsCountElement("Not Yet Classified",
+				CountElementStyle.MINOR);
 		caseComponent.addComponentToCountLayout(countLayout, caseClassificationNotYetClassified);
 		caseComponent.addComponent(countLayout);
-		
-		//Case Fatality Rate
+
+		// Case Fatality Rate
 		HorizontalLayout cfrLayout = new HorizontalLayout();
-			//rate
+		// rate
 		VerticalLayout cfrRateLayout = new VerticalLayout();
-				//value
-		caseFatalityRateLabel = new Label("CFR 00.0%");
-		CssStyles.style(caseFatalityRateLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE);
-		cfrRateLayout.addComponent(caseFatalityRateLabel);
-				//caption
+		// value
+		caseFatalityRateValue = new Label("CFR 00.0%");
+		CssStyles.style(caseFatalityRateValue, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE);
+		cfrRateLayout.addComponent(caseFatalityRateValue);
+		// caption
 		Label caseFatalityRateCaption = new Label("CASE FATALITY RATE");
 		cfrRateLayout.addComponent(caseFatalityRateCaption);
 		CssStyles.style(caseFatalityRateCaption, CssStyles.LABEL_CRITICAL);
-		
+
 		cfrLayout.addComponent(cfrRateLayout);
-			//~rate
-			//count
+		// ~rate
+
+		// count
 		VerticalLayout cfrCountLayout = new VerticalLayout();
-				//value
-		caseFatalityCountLabel = new Label("0 >");
-		cfrCountLayout.addComponent(caseFatalityCountLabel);
-		cfrCountLayout.setComponentAlignment(caseFatalityCountLabel, Alignment.MIDDLE_RIGHT);
-		caseFatalityCountLabel.setWidthUndefined();
-		CssStyles.style(caseFatalityCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE);
-				//caption
+		// value
+		HorizontalLayout cfrCountValuesLayout = new HorizontalLayout();
+		// current
+		caseFatalityCountValue = new Label("0");
+		CssStyles.style(caseFatalityCountValue, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE);
+		cfrCountValuesLayout.addComponent(caseFatalityCountValue);
+		// growth
+		caseFatalityCountGrowth = new Label("", ContentMode.HTML);
+		cfrCountValuesLayout.addComponent(caseFatalityCountGrowth);
+
+		cfrCountLayout.addComponent(cfrCountValuesLayout);
+		cfrCountLayout.setComponentAlignment(cfrCountValuesLayout, Alignment.MIDDLE_RIGHT);
+		cfrCountValuesLayout.setWidthUndefined();
+		// caption
 		Label caseFatalityCountCaption = new Label("FATALITIES");
 		cfrCountLayout.addComponent(caseFatalityCountCaption);
 		cfrCountLayout.setComponentAlignment(caseFatalityCountCaption, Alignment.MIDDLE_RIGHT);
 		caseFatalityCountCaption.setWidthUndefined();
 		CssStyles.style(caseFatalityCountCaption, CssStyles.LABEL_CRITICAL);
-		
+
 		cfrLayout.addComponent(cfrCountLayout);
-			//~count
-		
+		// ~count
+
 		caseComponent.addComponent(cfrLayout);
 		cfrLayout.setWidth(100, Unit.PERCENTAGE);
-		//~CFR
+		// ~CFR
 	}
-	
-	private void createEventComponent () {
+
+	private void createEventComponent() {
 		eventComponent = new DashboardStatisticsSubComponent();
-		
+
 		// Header
 		HorizontalLayout headerLayout = new HorizontalLayout();
-			//count
+		// count
 		eventCountLabel = new Label();
-		CssStyles.style(eventCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_XXXLARGE, CssStyles.LABEL_BOLD, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+		CssStyles.style(eventCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_XXXLARGE, CssStyles.LABEL_BOLD,
+				CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 		headerLayout.addComponent(eventCountLabel);
-			//title
+		// title
 		Label titleLabel = new Label("New Events");
 		CssStyles.style(titleLabel, CssStyles.H2, CssStyles.HSPACE_LEFT_4);
 		headerLayout.addComponent(titleLabel);
-		
+
 		eventComponent.addComponent(headerLayout);
-		
+
 		// Count layout
 		CssLayout countLayout = eventComponent.createCountLayout(true);
 		eventStatusConfirmed = new DashboardStatisticsCountElement("Confirmed", CountElementStyle.CRITICAL);
@@ -239,23 +252,24 @@ public class DiseaseCarouselSurveillanceComponent extends VerticalLayout {
 		eventComponent.addComponentToCountLayout(countLayout, eventStatusNotAnEvent);
 		eventComponent.addComponent(countLayout);
 	}
-	
-	private void createTestResultComponent () {
+
+	private void createTestResultComponent() {
 		testResultComponent = new DashboardStatisticsSubComponent();
-		
+
 		// Header
 		HorizontalLayout headerLayout = new HorizontalLayout();
-			//count
+		// count
 		testResultCountLabel = new Label();
-		CssStyles.style(testResultCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_XXXLARGE, CssStyles.LABEL_BOLD, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+		CssStyles.style(testResultCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_XXXLARGE, CssStyles.LABEL_BOLD,
+				CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 		headerLayout.addComponent(testResultCountLabel);
-			//title
+		// title
 		Label titleLabel = new Label("New Test Results");
 		CssStyles.style(titleLabel, CssStyles.H2, CssStyles.HSPACE_LEFT_4);
 		headerLayout.addComponent(titleLabel);
-		
+
 		testResultComponent.addComponent(headerLayout);
-		
+
 		// Count layout
 		CssLayout countLayout = testResultComponent.createCountLayout(true);
 		testResultPositive = new DashboardStatisticsCountElement("Positive", CountElementStyle.CRITICAL);
@@ -270,68 +284,116 @@ public class DiseaseCarouselSurveillanceComponent extends VerticalLayout {
 	}
 
 	public void refresh() {
-		//todo: get selected disease
+		// todo: get selected disease
 		Disease disease = Disease.values()[0];
-		
+
 		updateOutbreakDistrictComponent(disease);
 		updateCaseComponent(disease);
 		updateEventComponent(disease);
 		updateTestResultComponent(disease);
 	}
-	
-	private void updateOutbreakDistrictComponent (Disease disease) {
+
+	private void updateOutbreakDistrictComponent(Disease disease) {
 		List<DashboardOutbreakDto> outbreaks = dashboardDataProvider.getOutbreaks();
 		outbreaks = outbreaks.stream().filter(c -> c.getDisease() == disease).collect(Collectors.toList());
-		
+
 		outbreakDistrictCountLabel.setValue(Integer.toString(outbreaks.size()).toString());
 	}
-	
-	private void updateCaseComponent (Disease disease) {
+
+	private void updateCaseComponent(Disease disease) {
 		List<DashboardCaseDto> cases = dashboardDataProvider.getCases();
 		cases = cases.stream().filter(c -> c.getDisease() == disease).collect(Collectors.toList());
-		
+
 		caseDiseaseLabel.setValue("New Cases (" + disease.toString() + ")");
 		caseCountLabel.setValue(Integer.toString(cases.size()).toString());
-		
-		int confirmedCasesCount = (int) cases.stream().filter(c -> c.getCaseClassification() == CaseClassification.CONFIRMED).count();
+
+		int confirmedCasesCount = (int) cases.stream()
+				.filter(c -> c.getCaseClassification() == CaseClassification.CONFIRMED).count();
 		caseClassificationConfirmed.updateCountLabel(confirmedCasesCount);
-		int probableCasesCount = (int) cases.stream().filter(c -> c.getCaseClassification() == CaseClassification.PROBABLE).count();
+		int probableCasesCount = (int) cases.stream()
+				.filter(c -> c.getCaseClassification() == CaseClassification.PROBABLE).count();
 		caseClassificationProbable.updateCountLabel(probableCasesCount);
-		int suspectCasesCount = (int) cases.stream().filter(c -> c.getCaseClassification() == CaseClassification.SUSPECT).count();
+		int suspectCasesCount = (int) cases.stream()
+				.filter(c -> c.getCaseClassification() == CaseClassification.SUSPECT).count();
 		caseClassificationSuspect.updateCountLabel(suspectCasesCount);
-		int notACaseCasesCount = (int) cases.stream().filter(c -> c.getCaseClassification() == CaseClassification.NO_CASE).count();
+		int notACaseCasesCount = (int) cases.stream()
+				.filter(c -> c.getCaseClassification() == CaseClassification.NO_CASE).count();
 		caseClassificationNotACase.updateCountLabel(notACaseCasesCount);
-		int notYetClassifiedCasesCount = (int) cases.stream().filter(c -> c.getCaseClassification() == CaseClassification.NOT_CLASSIFIED).count();
+		int notYetClassifiedCasesCount = (int) cases.stream()
+				.filter(c -> c.getCaseClassification() == CaseClassification.NOT_CLASSIFIED).count();
 		caseClassificationNotYetClassified.updateCountLabel(notYetClassifiedCasesCount);
+
+		// CFR
+		List<DashboardCaseDto> previousCases = dashboardDataProvider.getPreviousCases();
+		previousCases = previousCases.stream().filter(c -> c.getDisease() == disease).collect(Collectors.toList());
+
+		int casesCount = cases.size();
+		Long fatalCasesCount = cases.stream().filter((c) -> c.wasFatal()).count();
+		long previousFatalCasesCount = previousCases.stream().filter((c) -> c.wasFatal()).count();
+		long fatalCasesGrowth = fatalCasesCount - previousFatalCasesCount;
+		Float fatalityRate = ((float) fatalCasesCount / (float) (casesCount == 0 ? 1 : casesCount));
+
+		// count
+		// current
+		caseFatalityCountValue.setValue(fatalCasesCount.toString());
+		// growth
+		String chevronType = "";
+		String criticalLevel = "";
+
+		if (fatalCasesGrowth > 0) {
+			chevronType = FontAwesome.CHEVRON_UP.getHtml();
+			criticalLevel = CssStyles.LABEL_CRITICAL;
+		} else if (fatalCasesGrowth < 0) {
+			chevronType = FontAwesome.CHEVRON_DOWN.getHtml();
+			criticalLevel = CssStyles.LABEL_POSITIVE;
+		} else {
+			chevronType = FontAwesome.CHEVRON_RIGHT.getHtml();
+			criticalLevel = CssStyles.LABEL_IMPORTANT;
+		}
+
+		caseFatalityCountGrowth.setValue("<div class=\"v-label v-widget " + criticalLevel + " v-label-" + criticalLevel
+				+ " align-center v-label-align-center bold v-label-bold v-has-width\" "
+				+ "	  style=\"margin-top: 4px;margin-left: 5px;\">"
+				+ "		<span class=\"v-icon\" style=\"font-family: FontAwesome;\">" + chevronType + "		</span>"
+				+ "</div>");
+
+		// rate
+		caseFatalityRateValue.setValue("CFR " + fatalityRate.toString() + "%");
 	}
-	
-	private void updateEventComponent (Disease disease) {
+
+	private void updateEventComponent(Disease disease) {
 		List<DashboardEventDto> events = dashboardDataProvider.getEvents();
 		events = events.stream().filter(c -> c.getDisease() == disease).collect(Collectors.toList());
-		
+
 		eventCountLabel.setValue(Integer.toString(events.size()).toString());
-		
-		int confirmedEventsCount = (int) events.stream().filter(e -> e.getEventStatus() == EventStatus.CONFIRMED).count();
+
+		int confirmedEventsCount = (int) events.stream().filter(e -> e.getEventStatus() == EventStatus.CONFIRMED)
+				.count();
 		eventStatusConfirmed.updateCountLabel(confirmedEventsCount);
 		int possibleEventsCount = (int) events.stream().filter(e -> e.getEventStatus() == EventStatus.POSSIBLE).count();
 		eventStatusPossible.updateCountLabel(possibleEventsCount);
-		int notAnEventEventsCount = (int) events.stream().filter(e -> e.getEventStatus() == EventStatus.NO_EVENT).count();
+		int notAnEventEventsCount = (int) events.stream().filter(e -> e.getEventStatus() == EventStatus.NO_EVENT)
+				.count();
 		eventStatusNotAnEvent.updateCountLabel(notAnEventEventsCount);
 	}
-	
-	private void updateTestResultComponent (Disease disease) {
+
+	private void updateTestResultComponent(Disease disease) {
 		List<DashboardTestResultDto> testResults = dashboardDataProvider.getTestResults();
 		testResults = testResults.stream().filter(c -> c.getDisease() == disease).collect(Collectors.toList());
-		
+
 		testResultCountLabel.setValue(Integer.toString(testResults.size()).toString());
-		
-		int positiveTestResultsCount = (int) testResults.stream().filter(r -> r.getTestResult() == SampleTestResultType.POSITIVE).count();
+
+		int positiveTestResultsCount = (int) testResults.stream()
+				.filter(r -> r.getTestResult() == SampleTestResultType.POSITIVE).count();
 		testResultPositive.updateCountLabel(positiveTestResultsCount);
-		int negativeTestResultsCount = (int) testResults.stream().filter(r -> r.getTestResult() == SampleTestResultType.NEGATIVE).count();
+		int negativeTestResultsCount = (int) testResults.stream()
+				.filter(r -> r.getTestResult() == SampleTestResultType.NEGATIVE).count();
 		testResultNegative.updateCountLabel(negativeTestResultsCount);
-		int pendingTestResultsCount = (int) testResults.stream().filter(r -> r.getTestResult() == SampleTestResultType.PENDING).count();
+		int pendingTestResultsCount = (int) testResults.stream()
+				.filter(r -> r.getTestResult() == SampleTestResultType.PENDING).count();
 		testResultPending.updateCountLabel(pendingTestResultsCount);
-		int indeterminateTestResultsCount = (int) testResults.stream().filter(r -> r.getTestResult() == SampleTestResultType.INDETERMINATE).count();
+		int indeterminateTestResultsCount = (int) testResults.stream()
+				.filter(r -> r.getTestResult() == SampleTestResultType.INDETERMINATE).count();
 		testResultIndeterminate.updateCountLabel(indeterminateTestResultsCount);
 	}
 }

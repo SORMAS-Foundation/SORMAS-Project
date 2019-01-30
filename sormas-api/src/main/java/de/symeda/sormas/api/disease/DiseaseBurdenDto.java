@@ -42,11 +42,9 @@ public class DiseaseBurdenDto  implements Serializable {
 	private Disease disease;
 	private Long caseCount;
 	private Long previousCaseCount;
-	//private Long casesDifference;
 	private Long eventCount;
 	private Long outbreakDistrictCount;
 	private Long caseDeathCount;
-	//private Float caseFatalityRate;
 	
 	public DiseaseBurdenDto(Disease disease, Long caseCount, Long previousCaseCount, Long eventCount, Long outbreakDistrictCount, Long caseDeathCount) {
 		this.disease = disease;
@@ -82,7 +80,8 @@ public class DiseaseBurdenDto  implements Serializable {
 		this.eventCount = 0L;
 		this.outbreakDistrictCount = 0L;
 		this.caseDeathCount = 0L;
-	}	
+	}
+	
 	public Disease getDisease() {
 		return disease;
 	}

@@ -60,20 +60,20 @@ public class DiseaseBurdenSurveillanceComponent extends VerticalLayout {
 
 	private DashboardDataProvider dashboardDataProvider;
 	private DiseaseBurdenGrid grid;
-	
+
 	public DiseaseBurdenSurveillanceComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
-		
+
 		Label title = new Label("Disease Burden Information");
 		CssStyles.style(title, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 
 		grid = new DiseaseBurdenGrid();
 		grid.setHeightMode(HeightMode.UNDEFINED);
-		
-		//layout
+
+		// layout
 		setWidth(100, Unit.PERCENTAGE);
 		setHeight(400, Unit.PIXELS);
-		
+
 		addComponent(title);
 		addComponent(grid);
 		setMargin(true);
@@ -82,34 +82,77 @@ public class DiseaseBurdenSurveillanceComponent extends VerticalLayout {
 		setExpandRatio(grid, 1);
 	}
 
-	public void refresh() {
+	public void refresh(int visibleDiseasesCount) {
+		List<DiseaseBurdenDto> diseasesBurden = dashboardDataProvider.getDiseasesBurden();
+
+		// data mockup: manipulate the data
+		diseasesBurden = mockDataUp(diseasesBurden);
+		
+		// sort, limit and filter
+		diseasesBurden = diseasesBurden.stream()
+									   .sorted((dto1, dto2) -> (int) (dto2.getCaseCount() - dto1.getCaseCount()))
+									   .limit(visibleDiseasesCount)
+									   //.filter((dto) -> dto.hasCount())
+									   .collect(Collectors.toList());
+
+		grid.reload(diseasesBurden);
+	}
+	
+	private List<DiseaseBurdenDto> mockDataUp(List<DiseaseBurdenDto> data) {
+		List<DiseaseBurdenDto> newData = new ArrayList<DiseaseBurdenDto>();
+
+		Long diff = 6L;
+		for (DiseaseBurdenDto diseaseBurden : data) {
+			Long caseCount = 0L;
+			Long previousCaseCount = 0L;
+
+			if (diff >= 0)
+				caseCount = diff;
+			else
+				previousCaseCount = Math.abs(diff);
+
+			newData.add(new DiseaseBurdenDto(diseaseBurden.getDisease(), caseCount, previousCaseCount,
+					diseaseBurden.getEventCount(), diseaseBurden.getOutbreakDistrictCount(),
+					diseaseBurden.getCaseDeathCount()));
+
+			diff -= 2;
+		}
+
+		return newData;
+	}
+
+	public void refresh_old() {
 		List<DashboardCaseDto> cases = dashboardDataProvider.getCases();
 		List<DashboardCaseDto> previousCases = dashboardDataProvider.getPreviousCases();
 		List<DashboardEventDto> events = dashboardDataProvider.getEvents();
 		List<DashboardOutbreakDto> outbreaks = dashboardDataProvider.getOutbreaks();
-		
+
 		List<DiseaseBurdenDto> diseasesBurden = new ArrayList<>();
-		
-		//build diseases burden
+
+		// build diseases burden
 		for (Disease disease : Disease.values()) {
 			DiseaseBurdenDto diseaseBurden = new DiseaseBurdenDto(disease);
-			
-			List<DashboardCaseDto> _cases = cases.stream().filter(c -> c.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());
+
+			List<DashboardCaseDto> _cases = cases.stream().filter(c -> c.getDisease() == diseaseBurden.getDisease())
+					.collect(Collectors.toList());
 			diseaseBurden.setCaseCount(Long.valueOf(_cases.size()));
-			diseaseBurden.setCaseDeathCount(_cases.stream().filter(c -> c.getCauseOfDeathDisease() != null).count());
-			
-			_cases = previousCases.stream().filter(c -> c.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());
+			diseaseBurden.setCaseDeathCount(_cases.stream().filter(c -> c.wasFatal()).count());
+
+			_cases = previousCases.stream().filter(c -> c.getDisease() == diseaseBurden.getDisease())
+					.collect(Collectors.toList());
 			diseaseBurden.setPreviousCaseCount(Long.valueOf(_cases.size()));
-			
-			List<DashboardEventDto> _events = events.stream().filter(e -> e.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());
+
+			List<DashboardEventDto> _events = events.stream().filter(e -> e.getDisease() == diseaseBurden.getDisease())
+					.collect(Collectors.toList());
 			diseaseBurden.setEventCount(Long.valueOf(_events.size()));
 
-			List<DashboardOutbreakDto> _outbreaks = outbreaks.stream().filter(e -> e.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());
+			List<DashboardOutbreakDto> _outbreaks = outbreaks.stream()
+					.filter(e -> e.getDisease() == diseaseBurden.getDisease()).collect(Collectors.toList());
 			diseaseBurden.setOutbreakDistrictCount(Long.valueOf(_outbreaks.size()));
-			
+
 			diseasesBurden.add(diseaseBurden);
 		}
-		
+
 		grid.reload(diseasesBurden);
 	}
 }
