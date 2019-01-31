@@ -284,9 +284,8 @@ public class DiseaseStatisticsSubComponent extends VerticalLayout {
 	}
 
 	public void refresh() {
-		// todo: get selected disease
-		Disease disease = Disease.values()[0];
-
+		Disease disease = this.dashboardDataProvider.getDisease();
+		
 		updateOutbreakDistrictComponent(disease);
 		updateCaseComponent(disease);
 		updateEventComponent(disease);

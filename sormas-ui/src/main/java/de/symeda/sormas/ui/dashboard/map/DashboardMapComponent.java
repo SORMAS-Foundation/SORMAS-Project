@@ -218,8 +218,6 @@ public class DashboardMapComponent extends VerticalLayout {
 
 		// Re-create the map key layout to only show the keys for the selected layers
 		legendDropdown.setContent(createLegend());
-		
-		//this.setHeight(540, Unit.PIXELS);
 	}
 
 	public List<CaseDataDto> getCasesForFacility(FacilityReferenceDto facility) {

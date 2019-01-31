@@ -30,11 +30,15 @@ import de.symeda.sormas.ui.utils.CssStyles;
 @SuppressWarnings("serial")
 public class DashboardSurveillanceDiseaseCarouselLayout extends VerticalLayout {
 
+	private DashboardDataProvider dashboardDataProvider;
+	
 	private DiseaseStatisticsSubComponent statisticsComponent;
 	private EpiCurveSurveillanceComponent epiCurveComponent;
 	private DashboardMapComponent mapComponent;
 
 	public DashboardSurveillanceDiseaseCarouselLayout(DashboardDataProvider dashboardDataProvider) {
+		this.dashboardDataProvider = dashboardDataProvider;
+		
 		statisticsComponent = new DiseaseStatisticsSubComponent(dashboardDataProvider);
 		epiCurveComponent = new EpiCurveSurveillanceComponent(dashboardDataProvider);
 		mapComponent = new DashboardMapComponent(dashboardDataProvider);
@@ -67,10 +71,19 @@ public class DashboardSurveillanceDiseaseCarouselLayout extends VerticalLayout {
 		
 		SubNavigationMenu2 menu = new SubNavigationMenu2();
 		
-		for (Disease disease : Disease.values()) {
+		Disease[] diseases = Disease.values();
+		
+		for (Disease disease : diseases) {
 			menu.addView(disease.getName(), disease.toShortString(), (e) -> {
 				this.onDiseaseSelected(disease);
 			});
+		}
+		
+		if (diseases.length > 0) {
+			Disease selectedDisease = diseases[1];
+			
+			this.dashboardDataProvider.setDisease(selectedDisease);
+			menu.setActiveView(selectedDisease.getName());
 		}
 		
 		layout.addComponent(menu);
@@ -79,7 +92,9 @@ public class DashboardSurveillanceDiseaseCarouselLayout extends VerticalLayout {
 	}
 	
 	private void onDiseaseSelected(Disease disease) {
+		this.dashboardDataProvider.setDisease(disease);
 		
+		refresh();
 	}
 
 	protected HorizontalLayout createStatisticsAndEpiCurveLayout() {

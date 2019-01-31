@@ -34,6 +34,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.highcharts.HighChart;
@@ -67,7 +68,7 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 		addComponent(createFooter());
 		setExpandRatio(epiCurveChart, 1);
 
-		clearAndFillEpiCurveChart();
+		//clearAndFillEpiCurveChart();
 	}
 
 	public void setExpandListener(ClickListener listener) {
