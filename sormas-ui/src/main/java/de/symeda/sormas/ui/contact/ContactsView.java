@@ -316,7 +316,7 @@ public class ContactsView extends AbstractView {
 		searchField.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, SEARCH_FIELD));
 		searchField.addTextChangeListener(e -> {
 			criteria.nameUuidCaseLike(e.getText());
-			navigateTo(criteria);
+			grid.reload();
 		});
 		filterLayout.addComponent(searchField);
 		

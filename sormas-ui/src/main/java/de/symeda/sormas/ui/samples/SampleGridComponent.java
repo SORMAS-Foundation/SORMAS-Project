@@ -221,7 +221,7 @@ public class SampleGridComponent extends VerticalLayout {
 		searchField.setInputPrompt(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, SEARCH_FIELD));
 		searchField.addTextChangeListener(e -> {
 			criteria.caseCodeIdLike(e.getText());
-			samplesView.navigateTo(criteria);
+			grid.reload();
 		});
 		filterLayout.addComponent(searchField);
 
