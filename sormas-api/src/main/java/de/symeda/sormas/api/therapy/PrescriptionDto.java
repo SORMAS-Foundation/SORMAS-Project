@@ -34,6 +34,7 @@ public class PrescriptionDto extends EntityDto {
 	public static final String PRESCRIBING_CLINICIAN = "prescribingClinician";
 	public static final String PRESCRIPTION_TYPE = "prescriptionType";
 	public static final String PRESCRIPTION_DETAILS = "prescriptionDetails";
+	public static final String TYPE_OF_DRUG = "typeOfDrug";
 	public static final String FREQUENCY = "frequency";
 	public static final String DOSE = "dose";
 	public static final String ROUTE = "route";
@@ -47,6 +48,7 @@ public class PrescriptionDto extends EntityDto {
 	private String prescribingClinician;
 	private TreatmentType prescriptionType;
 	private String prescriptionDetails;
+	private TypeOfDrug typeOfDrug;
 	private String frequency;
 	private String dose;
 	private TreatmentRoute route;
@@ -60,6 +62,10 @@ public class PrescriptionDto extends EntityDto {
 		prescription.setPrescriptionDate(new Date());
 		
 		return prescription;
+	}
+	
+	public PrescriptionReferenceDto toReference() {
+		return new PrescriptionReferenceDto(getUuid(), toString());
 	}
 	
 	public TherapyDto getTherapy() {
@@ -103,6 +109,12 @@ public class PrescriptionDto extends EntityDto {
 	}
 	public void setPrescriptionDetails(String prescriptionDetails) {
 		this.prescriptionDetails = prescriptionDetails;
+	}
+	public TypeOfDrug getTypeOfDrug() {
+		return typeOfDrug;
+	}
+	public void setTypeOfDrug(TypeOfDrug typeOfDrug) {
+		this.typeOfDrug = typeOfDrug;
 	}
 	public String getFrequency() {
 		return frequency;

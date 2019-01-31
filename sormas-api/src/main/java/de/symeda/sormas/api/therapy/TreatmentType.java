@@ -37,12 +37,16 @@ public enum TreatmentType {
 		return I18nProperties.getEnumCaption(this);
 	}
 	
-	public static String buildCaption(TreatmentType treatmentType, String treatmentDetails) {
-		if (StringUtils.isEmpty(treatmentDetails)) {
-			return treatmentType.toString();
-		} else {
-			return treatmentType.toString() + " - " + treatmentDetails;
+	public static String buildCaption(TreatmentType treatmentType, String treatmentDetails, TypeOfDrug typeOfDrug) {
+		StringBuilder captionBuilder = new StringBuilder();
+		captionBuilder.append(treatmentType.toString());
+		if (!StringUtils.isEmpty(treatmentDetails)) {
+			captionBuilder.append(" - ").append(treatmentDetails);
 		}
+		if (typeOfDrug != null && typeOfDrug != TypeOfDrug.OTHER) {
+			captionBuilder.append(" - ").append(typeOfDrug.toString());
+		}
+		return captionBuilder.toString();
 	}
 
 }

@@ -22,10 +22,11 @@ public class TreatmentIndexDto implements Serializable {
 	private String route;
 	private String executingClinician;
 
-	public TreatmentIndexDto(String uuid, TreatmentType treatmentType, String treatmentDetails, Date treatmentDateTime,
-			String dose, TreatmentRoute route, String routeDetails, String executingClinician) {
+	public TreatmentIndexDto(String uuid, TreatmentType treatmentType, String treatmentDetails, TypeOfDrug typeOfDrug,
+			Date treatmentDateTime, String dose, TreatmentRoute route, String routeDetails, 
+			String executingClinician) {
 		this.uuid = uuid;
-		this.treatmentType = TreatmentType.buildCaption(treatmentType, treatmentDetails);
+		this.treatmentType = TreatmentType.buildCaption(treatmentType, treatmentDetails, typeOfDrug);
 		this.treatmentDateTime = treatmentDateTime;
 		this.dose = dose;
 		this.route = TreatmentRoute.buildCaption(route, routeDetails);

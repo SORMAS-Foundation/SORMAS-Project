@@ -87,7 +87,7 @@ public class PrescriptionGrid extends Grid implements AbstractGrid<PrescriptionC
 					}
 				});
 			} else if (EDIT_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
-				ControllerProvider.getTherapyController().openPrescriptionEditForm((PrescriptionIndexDto) e.getItemId(), this::reload);
+				ControllerProvider.getTherapyController().openPrescriptionEditForm((PrescriptionIndexDto) e.getItemId(), this::reload, false);
 			}
 		});
 	}

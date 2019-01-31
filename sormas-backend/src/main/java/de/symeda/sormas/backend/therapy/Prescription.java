@@ -14,6 +14,7 @@ import javax.persistence.TemporalType;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.therapy.TreatmentRoute;
 import de.symeda.sormas.api.therapy.TreatmentType;
+import de.symeda.sormas.api.therapy.TypeOfDrug;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity
@@ -31,6 +32,7 @@ public class Prescription extends AbstractDomainObject {
 	public static final String PRESCRIBING_CLINICIAN = "prescribingClinician";
 	public static final String PRESCRIPTION_TYPE = "prescriptionType";
 	public static final String PRESCRIPTION_DETAILS = "prescriptionDetails";
+	public static final String TYPE_OF_DRUG = "typeOfDrug";
 	public static final String FREQUENCY = "frequency";
 	public static final String DOSE = "dose";
 	public static final String ROUTE = "route";
@@ -44,6 +46,7 @@ public class Prescription extends AbstractDomainObject {
 	private String prescribingClinician;
 	private TreatmentType prescriptionType;
 	private String prescriptionDetails;
+	private TypeOfDrug typeOfDrug;
 	private String frequency;
 	private String dose;
 	private TreatmentRoute route;
@@ -109,6 +112,14 @@ public class Prescription extends AbstractDomainObject {
 		this.prescriptionDetails = prescriptionDetails;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public TypeOfDrug getTypeOfDrug() {
+		return typeOfDrug;
+	}
+	public void setTypeOfDrug(TypeOfDrug typeOfDrug) {
+		this.typeOfDrug = typeOfDrug;
+	}
+	
 	@Column(length=512)
 	public String getFrequency() {
 		return frequency;

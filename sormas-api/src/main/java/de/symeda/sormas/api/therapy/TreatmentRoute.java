@@ -25,6 +25,8 @@ public enum TreatmentRoute {
 	
 	ORAL,
 	IV,
+	RECTAL,
+	TOPICAL,
 	OTHER;
 
 	public String toString() {

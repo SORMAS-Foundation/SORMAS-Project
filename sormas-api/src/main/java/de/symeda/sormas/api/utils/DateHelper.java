@@ -973,7 +973,9 @@ public final class DateHelper {
 	public static String buildPeriodString(Date startDate, Date endDate) {
 		String startDateString = startDate != null ? formatLocalDate(startDate) : "?";
 		String endDateString = endDate != null ? formatLocalDate(endDate) : "?";
-		if (startDate.equals(endDate)) {
+		if (startDate == null && endDate == null) {
+			return "";
+		} else if (startDate != null && startDate.equals(endDate)) {
 			return startDateString;
 		} else {
 			return startDateString + " - " + endDateString;

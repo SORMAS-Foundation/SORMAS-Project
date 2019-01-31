@@ -2724,3 +2724,16 @@ ALTER TABLE cases_history ADD COLUMN therapy_id bigint;
 ALTER TABLE cases ADD CONSTRAINT fk_cases_therapy_id FOREIGN KEY (therapy_id) REFERENCES therapy (id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (125, 'Therapy, treatment and prescription tables #936');
+
+-- 2019-01-30 Type of drug and prescription link #936
+
+ALTER TABLE prescription ADD COLUMN typeofdrug varchar(255);
+ALTER TABLE prescription_history ADD COLUMN typeofdrug varchar(255);
+ALTER TABLE treatment ADD COLUMN typeofdrug varchar(255);
+ALTER TABLE treatment_history ADD COLUMN typeofdrug varchar(255);
+ALTER TABLE treatment ADD COLUMN prescription_id bigint;
+ALTER TABLE treatment_history ADD COLUMN prescription_id bigint;
+
+ALTER TABLE treatment ADD CONSTRAINT fk_treatment_prescription_id FOREIGN KEY (prescription_id) REFERENCES prescription (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (126, 'Type of drug and prescription link #936');

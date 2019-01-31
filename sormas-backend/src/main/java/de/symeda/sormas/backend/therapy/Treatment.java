@@ -14,6 +14,7 @@ import javax.persistence.TemporalType;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.therapy.TreatmentRoute;
 import de.symeda.sormas.api.therapy.TreatmentType;
+import de.symeda.sormas.api.therapy.TypeOfDrug;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity
@@ -29,20 +30,24 @@ public class Treatment extends AbstractDomainObject {
 	public static final String EXECUTING_CLINICIAN = "executingClinician";
 	public static final String TREATMENT_TYPE = "treatmentType";
 	public static final String TREATMENT_DETAILS = "treatmentDetails";
+	public static final String TYPE_OF_DRUG = "typeOfDrug";
 	public static final String DOSE = "dose";
 	public static final String ROUTE = "route";
 	public static final String ROUTE_DETAILS = "routeDetails";
 	public static final String ADDITIONAL_NOTES = "additionalNotes";
+	public static final String PRESCRIPTION = "prescription";
 	
 	private Therapy therapy;
 	private Date treatmentDateTime;
 	private String executingClinician;
 	private TreatmentType treatmentType;
 	private String treatmentDetails;
+	private TypeOfDrug typeOfDrug;
 	private String dose;
 	private TreatmentRoute route;
 	private String routeDetails;
 	private String additionalNotes;
+	private Prescription prescription;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable=false)
@@ -87,6 +92,14 @@ public class Treatment extends AbstractDomainObject {
 		this.treatmentDetails = treatmentDetails;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public TypeOfDrug getTypeOfDrug() {
+		return typeOfDrug;
+	}
+	public void setTypeOfDrug(TypeOfDrug typeOfDrug) {
+		this.typeOfDrug = typeOfDrug;
+	}
+	
 	@Column(length=512)
 	public String getDose() {
 		return dose;
@@ -117,6 +130,14 @@ public class Treatment extends AbstractDomainObject {
 	}
 	public void setAdditionalNotes(String additionalNotes) {
 		this.additionalNotes = additionalNotes;
+	}
+	
+	@ManyToOne(cascade = {})
+	public Prescription getPrescription() {
+		return prescription;
+	}
+	public void setPrescription(Prescription prescription) {
+		this.prescription = prescription;
 	}
 	
 }

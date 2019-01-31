@@ -32,20 +32,24 @@ public class TreatmentDto extends EntityDto {
 	public static final String EXECUTING_CLINICIAN = "executingClinician";
 	public static final String TREATMENT_TYPE = "treatmentType";
 	public static final String TREATMENT_DETAILS = "treatmentDetails";
+	public static final String TYPE_OF_DRUG = "typeOfDrug";
 	public static final String DOSE = "dose";
 	public static final String ROUTE = "route";
 	public static final String ROUTE_DETAILS = "routeDetails";
 	public static final String ADDITIONAL_NOTES = "additionalNotes";
+	public static final String PRESCRIPTION = "prescription";
 	
 	private TherapyDto therapy;
 	private Date treatmentDateTime;
 	private String executingClinician;
 	private TreatmentType treatmentType;
 	private String treatmentDetails;
+	private TypeOfDrug typeOfDrug;
 	private String dose;
 	private TreatmentRoute route;
 	private String routeDetails;
 	private String additionalNotes;
+	private PrescriptionReferenceDto prescription;
 	
 	public static TreatmentDto buildTreatment(TherapyDto therapy) {
 		TreatmentDto treatment = new TreatmentDto();
@@ -63,9 +67,11 @@ public class TreatmentDto extends EntityDto {
 		treatment.setTreatmentDateTime(new Date());
 		treatment.setTreatmentType(prescription.getPrescriptionType());
 		treatment.setTreatmentDetails(prescription.getPrescriptionDetails());
+		treatment.setTypeOfDrug(prescription.getTypeOfDrug());
 		treatment.setDose(prescription.getDose());
 		treatment.setRoute(prescription.getRoute());
 		treatment.setRouteDetails(prescription.getRouteDetails());
+		treatment.setPrescription(prescription.toReference());
 		
 		return treatment;
 	}
@@ -100,6 +106,12 @@ public class TreatmentDto extends EntityDto {
 	public void setTreatmentDetails(String treatmentDetails) {
 		this.treatmentDetails = treatmentDetails;
 	}
+	public TypeOfDrug getTypeOfDrug() {
+		return typeOfDrug;
+	}
+	public void setTypeOfDrug(TypeOfDrug typeOfDrug) {
+		this.typeOfDrug = typeOfDrug;
+	}
 	public String getDose() {
 		return dose;
 	}
@@ -123,6 +135,12 @@ public class TreatmentDto extends EntityDto {
 	}
 	public void setAdditionalNotes(String additionalNotes) {
 		this.additionalNotes = additionalNotes;
+	}
+	public PrescriptionReferenceDto getPrescription() {
+		return prescription;
+	}
+	public void setPrescription(PrescriptionReferenceDto prescription) {
+		this.prescription = prescription;
 	}
 	
 }

@@ -18,12 +18,16 @@
 package de.symeda.sormas.ui.therapy;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.Command;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -37,7 +41,9 @@ import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentType;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -93,12 +99,32 @@ public class TherapyView extends AbstractCaseView {
 		prescriptionsHeader.setWidth(100, Unit.PERCENTAGE);
 
 		HorizontalLayout headlineRow = new HorizontalLayout();
+		headlineRow.setSpacing(true);
 		headlineRow.setWidth(100, Unit.PERCENTAGE);
 		{
 			Label prescriptionsLabel = new Label(I18nProperties.getPrefixCaption(TherapyDto.I18N_PREFIX, "prescriptions"));
 			CssStyles.style(prescriptionsLabel, CssStyles.H3);
 			headlineRow.addComponent(prescriptionsLabel);
+			headlineRow.setExpandRatio(prescriptionsLabel, 1);
 
+			// Bulk operations
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				MenuBar bulkOperationsDropdown = new MenuBar();	
+				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
+
+				Command deleteCommand = selectedItem -> {
+					ControllerProvider.getTherapyController().deleteAllSelectedPrescriptions(prescriptionGrid.getSelectedRows(), new Runnable() {
+						public void run() {
+							prescriptionGrid.reload();
+						}
+					});
+				};
+				bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
+
+				headlineRow.addComponent(bulkOperationsDropdown);
+				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
+			}
+			
 			Button newPrescriptionButton = new Button(I18nProperties.getPrefixCaption(TherapyDto.I18N_PREFIX, "newPrescription"));
 			CssStyles.style(newPrescriptionButton, ValoTheme.BUTTON_PRIMARY);
 			newPrescriptionButton.addClickListener(e -> {
@@ -143,14 +169,33 @@ public class TherapyView extends AbstractCaseView {
 		treatmentsHeader.setWidth(100, Unit.PERCENTAGE);
 
 		HorizontalLayout headlineRow = new HorizontalLayout();
+		headlineRow.setSpacing(true);
 		headlineRow.setWidth(100, Unit.PERCENTAGE);
 		{
 			Label treatmentsLabel = new Label(I18nProperties.getPrefixCaption(TherapyDto.I18N_PREFIX, "treatments"));
 			CssStyles.style(treatmentsLabel, CssStyles.H3);
 			headlineRow.addComponent(treatmentsLabel);
+			headlineRow.setExpandRatio(treatmentsLabel, 1);
 
+			// Bulk operations
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				MenuBar bulkOperationsDropdown = new MenuBar();	
+				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
+
+				Command deleteCommand = selectedItem -> {
+					ControllerProvider.getTherapyController().deleteAllSelectedTreatments(treatmentGrid.getSelectedRows(), new Runnable() {
+						public void run() {
+							treatmentGrid.reload();
+						}
+					});
+				};
+				bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
+
+				headlineRow.addComponent(bulkOperationsDropdown);
+				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
+			}
+			
 			Button newTreatmentButton = new Button(I18nProperties.getPrefixCaption(TherapyDto.I18N_PREFIX, "newTreatment"));
-			CssStyles.style(newTreatmentButton, ValoTheme.BUTTON_PRIMARY);
 			newTreatmentButton.addClickListener(e -> {
 				ControllerProvider.getTherapyController().openTreatmentCreateForm(treatmentCriteria.getTherapy(), this::reloadTreatmentGrid);
 			});

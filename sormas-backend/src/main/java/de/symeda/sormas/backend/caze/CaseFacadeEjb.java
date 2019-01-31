@@ -394,7 +394,7 @@ public class CaseFacadeEjb implements CaseFacade {
 						travel.getTravelDateFrom(), travel.getTravelDateTo()));
 			}
 			exportDto.setTravelHistory(travelHistoryBuilder.toString());
-			
+
 			// Place of initial detection
 			PreviousHospitalization firstPrevHosp = previousHospitalizationService.getInitialHospitalization(exportDto.getHospitalizationId());
 			if (firstPrevHosp != null) {
@@ -529,7 +529,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		return toDto(caze);
 	}
-	
+
 	@Override
 	public void validate(CaseDataDto caze) throws ValidationRuntimeException {
 		// Check whether any required field that does not have a not null constraint in
@@ -654,8 +654,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				taskService.ensurePersisted(task);
 			}
 		}
-		
-		
+
+
 		// Create a task to search for other cases for new Plague cases
 		if (existingCase == null && newCase.getDisease() == Disease.PLAGUE) {
 			createActiveSearchForOtherCasesTask(newCase);
@@ -771,7 +771,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public CaseDataDto saveAndTransferCase(CaseDataDto caze) {
 		Case existingCase = caseService.getByUuid(caze.getUuid());
-		
+
 		// Only update Hospitalization when Health Facility has been changed
 		if (!existingCase.getHealthFacility().getUuid().equals(caze.getHealthFacility().getUuid())) {
 			caze.getHospitalization().getPreviousHospitalizations()
@@ -781,10 +781,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			caze.getHospitalization().setDischargeDate(null);
 			caze.getHospitalization().setIsolated(null);
 		}
-		
+
 		return saveCase(caze);
 	}
-	
+
 	@Override
 	public void deleteCase(CaseReferenceDto caseRef, String userUuid) {
 		User user = userService.getByUuid(userUuid);
@@ -849,7 +849,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setInvestigationStatus(source.getInvestigationStatus());
 		target.setHospitalization(hospitalizationFacade.fromDto(source.getHospitalization()));
 		target.setEpiData(epiDataFacade.fromDto(source.getEpiData()));
-		target.setTherapy(therapyFacade.fromDto(source.getTherapy()));
+		if (source.getTherapy() != null) {
+			target.setTherapy(therapyFacade.fromDto(source.getTherapy()));
+		}
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
@@ -908,7 +910,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
 		target.setHospitalization(HospitalizationFacadeEjb.toDto(source.getHospitalization()));
 		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
-		target.setTherapy(TherapyFacadeEjb.toDto(source.getTherapy()));
+		if (source.getTherapy() != null) {
+			target.setTherapy(TherapyFacadeEjb.toDto(source.getTherapy()));
+		}
 
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));

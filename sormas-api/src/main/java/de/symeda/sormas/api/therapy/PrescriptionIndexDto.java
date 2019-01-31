@@ -28,11 +28,11 @@ public class PrescriptionIndexDto implements Serializable {
 	private String route;
 	private String prescribingClinician;
 	
-	public PrescriptionIndexDto(String uuid, TreatmentType prescriptionType, String prescriptionDetails, Date prescriptionDate,
-			Date prescriptionStart, Date prescriptionEnd, String frequency, String dose, TreatmentRoute route,
-			String routeDetails, String prescribingClinician) {
+	public PrescriptionIndexDto(String uuid, TreatmentType prescriptionType, String prescriptionDetails, TypeOfDrug typeOfDrug,
+			Date prescriptionDate, Date prescriptionStart, Date prescriptionEnd, String frequency, String dose, 
+			TreatmentRoute route, String routeDetails, String prescribingClinician) {
 		this.uuid = uuid;
-		this.prescriptionType = TreatmentType.buildCaption(prescriptionType, prescriptionDetails);
+		this.prescriptionType = TreatmentType.buildCaption(prescriptionType, prescriptionDetails, typeOfDrug);
 		this.prescriptionDate = prescriptionDate;
 		this.prescriptionPeriod = DateHelper.buildPeriodString(prescriptionStart, prescriptionEnd);
 		this.frequency = frequency;

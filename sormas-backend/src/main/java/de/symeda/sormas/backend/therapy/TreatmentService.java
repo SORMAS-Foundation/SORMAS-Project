@@ -42,6 +42,7 @@ public class TreatmentService extends AbstractAdoService<Treatment> {
 					Predicate likeFilters = cb.or(
 							cb.like(cb.lower(treatment.get(Treatment.TREATMENT_TYPE)), textFilter),
 							cb.like(cb.lower(treatment.get(Treatment.TREATMENT_DETAILS)), textFilter),
+							cb.like(cb.lower(treatment.get(Treatment.TYPE_OF_DRUG)), textFilter),
 							cb.like(cb.lower(treatment.get(Treatment.EXECUTING_CLINICIAN)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}

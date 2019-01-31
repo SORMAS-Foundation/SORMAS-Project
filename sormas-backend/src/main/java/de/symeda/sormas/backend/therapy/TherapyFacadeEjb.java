@@ -16,6 +16,7 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.PrescriptionIndexDto;
+import de.symeda.sormas.api.therapy.PrescriptionReferenceDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.therapy.TherapyFacade;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
@@ -52,6 +53,7 @@ public class TherapyFacadeEjb implements TherapyFacade {
 				prescription.get(Prescription.UUID),
 				prescription.get(Prescription.PRESCRIPTION_TYPE),
 				prescription.get(Prescription.PRESCRIPTION_DETAILS),
+				prescription.get(Prescription.TYPE_OF_DRUG),
 				prescription.get(Prescription.PRESCRIPTION_DATE),
 				prescription.get(Prescription.PRESCRIPTION_START),
 				prescription.get(Prescription.PRESCRIPTION_END),
@@ -80,6 +82,7 @@ public class TherapyFacadeEjb implements TherapyFacade {
 				treatment.get(Treatment.UUID),
 				treatment.get(Treatment.TREATMENT_TYPE),
 				treatment.get(Treatment.TREATMENT_DETAILS),
+				treatment.get(Treatment.TYPE_OF_DRUG),
 				treatment.get(Treatment.TREATMENT_DATE_TIME),
 				treatment.get(Treatment.DOSE),
 				treatment.get(Treatment.ROUTE),
@@ -184,6 +187,7 @@ public class TherapyFacadeEjb implements TherapyFacade {
 		target.setTherapy(toDto(source.getTherapy()));
 		target.setPrescriptionType(source.getPrescriptionType());
 		target.setPrescriptionDetails(source.getPrescriptionDetails());
+		target.setTypeOfDrug(source.getTypeOfDrug());
 		target.setPrescriptionDate(source.getPrescriptionDate());
 		target.setPrescribingClinician(source.getPrescribingClinician());
 		target.setPrescriptionStart(source.getPrescriptionStart());
@@ -195,6 +199,15 @@ public class TherapyFacadeEjb implements TherapyFacade {
 		target.setAdditionalNotes(source.getAdditionalNotes());
 		
 		return target;
+	}
+	
+	public static PrescriptionReferenceDto toPrescriptionReferenceDto(Prescription source) {
+		if (source == null) {
+			return null;
+		}
+		
+		PrescriptionReferenceDto reference = new PrescriptionReferenceDto(source.getUuid(), source.toString());
+		return reference;
 	}
 	
 	public Prescription fromPrescriptionDto(@NotNull PrescriptionDto source) {
@@ -213,6 +226,7 @@ public class TherapyFacadeEjb implements TherapyFacade {
 		target.setTherapy(fromDto(source.getTherapy()));
 		target.setPrescriptionType(source.getPrescriptionType());
 		target.setPrescriptionDetails(source.getPrescriptionDetails());
+		target.setTypeOfDrug(source.getTypeOfDrug());
 		target.setPrescriptionDate(source.getPrescriptionDate());
 		target.setPrescribingClinician(source.getPrescribingClinician());
 		target.setPrescriptionStart(source.getPrescriptionStart());
@@ -237,12 +251,14 @@ public class TherapyFacadeEjb implements TherapyFacade {
 		target.setTherapy(toDto(source.getTherapy()));
 		target.setTreatmentType(source.getTreatmentType());
 		target.setTreatmentDetails(source.getTreatmentDetails());
+		target.setTypeOfDrug(source.getTypeOfDrug());
 		target.setTreatmentDateTime(source.getTreatmentDateTime());
 		target.setExecutingClinician(source.getExecutingClinician());
 		target.setDose(source.getDose());
 		target.setRoute(source.getRoute());
 		target.setRouteDetails(source.getRouteDetails());
 		target.setAdditionalNotes(source.getAdditionalNotes());
+		target.setPrescription(TherapyFacadeEjb.toPrescriptionReferenceDto(source.getPrescription()));
 		
 		return target;
 	}
@@ -263,12 +279,14 @@ public class TherapyFacadeEjb implements TherapyFacade {
 		target.setTherapy(fromDto(source.getTherapy()));
 		target.setTreatmentType(source.getTreatmentType());
 		target.setTreatmentDetails(source.getTreatmentDetails());
+		target.setTypeOfDrug(source.getTypeOfDrug());
 		target.setTreatmentDateTime(source.getTreatmentDateTime());
 		target.setExecutingClinician(source.getExecutingClinician());
 		target.setDose(source.getDose());
 		target.setRoute(source.getRoute());
 		target.setRouteDetails(source.getRouteDetails());
 		target.setAdditionalNotes(source.getAdditionalNotes());
+		target.setPrescription(prescriptionService.getByReferenceDto(source.getPrescription()));
 		
 		return target;
 	}
