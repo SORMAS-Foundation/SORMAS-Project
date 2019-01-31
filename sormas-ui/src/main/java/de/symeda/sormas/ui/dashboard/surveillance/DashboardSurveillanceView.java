@@ -35,36 +35,14 @@ public class DashboardSurveillanceView extends AbstractDashboardView {
 		filterLayout.setInfoLabelText(
 				"All Dashboard elements that display cases (the 'New Cases' statistics, the Epidemiological Curve and the Case Status Map) use the onset date of the first symptom for the date/epi week filter. If this date is not available, the reception date or date of report is used instead.");
 
-		// add disease burden and cases
+		//add disease burden and cases
 		diseaseBurdenAndDifferenceLayout = new DashboardSurveillanceDiseaseBurdenLayout(dashboardDataProvider);
 		dashboardLayout.addComponent(diseaseBurdenAndDifferenceLayout);
 		dashboardLayout.setExpandRatio(diseaseBurdenAndDifferenceLayout, 1);
 
-		// Add diseaseCarousel and map
+		//add diseaseCarousel and map
 		diseaseCarouselLayout = new DashboardSurveillanceDiseaseCarouselLayout(dashboardDataProvider);
-		//diseaseCarouselLayout.setHeight(556, Unit.PIXELS);
 		dashboardLayout.addComponent(diseaseCarouselLayout);
 		dashboardLayout.setExpandRatio(diseaseCarouselLayout, 1);
-		
-		
-		// Add statistics
-		// statisticsComponent = new
-		// DashboardSurveillanceStatisticsComponent(dashboardDataProvider);
-		// dashboardLayout.addComponent(statisticsComponent);
-
-		// Add epi curve and map
-		//epiCurveComponent = new EpiCurveSurveillanceComponent(dashboardDataProvider);
-		//mapComponent = new DashboardMapComponent(dashboardDataProvider);
-
-		// epiCurveAndMapLayout = createEpiCurveAndMapLayout();
-//		dashboardLayout.addComponent(epiCurveAndMapLayout);
-//		dashboardLayout.setExpandRatio(epiCurveAndMapLayout, 1);
-
-		// mapComponent = new DashboardMapComponent(dashboardDataProvider);
-
-//		diseaseCarouselAndMapLayout = createDiseaseCarouselAndMapLayout();
-//		diseaseCarouselAndMapLayout.setHeight(556, Unit.PIXELS);
-//		dashboardLayout.addComponent(diseaseCarouselAndMapLayout);
-//		dashboardLayout.setExpandRatio(diseaseCarouselAndMapLayout, 1);
 	}
 }

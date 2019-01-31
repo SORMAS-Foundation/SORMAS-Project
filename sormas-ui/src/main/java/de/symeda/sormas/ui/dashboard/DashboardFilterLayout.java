@@ -76,7 +76,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		setMargin(new MarginInfo(true, true, false, true));
 
 		createRegionAndDistrictFilter();
-		createDiseaseFilter();
+		//createDiseaseFilter();
 		createDateFilters();
 	}
 

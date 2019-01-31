@@ -61,6 +61,7 @@ public interface OutbreakFacade {
 	List<DashboardOutbreakDto> getOutbreaksForDashboard(
 			RegionReferenceDto regionRef,
 			DistrictReferenceDto districtRef, 
+			Disease disease,
 			Date from, 
 			Date to, 
 			String userUuid);

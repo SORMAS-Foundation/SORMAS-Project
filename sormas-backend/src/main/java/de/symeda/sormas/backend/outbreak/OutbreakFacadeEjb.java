@@ -203,11 +203,12 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	public List<DashboardOutbreakDto> getOutbreaksForDashboard(
 			RegionReferenceDto regionRef,
 			DistrictReferenceDto districtRef, 
+			Disease disease,
 			Date from, 
 			Date to, 
 			String userUuid) {
 		
-		List<DashboardOutbreakDto> result = outbreakService.getOutbreaksForDashboard(regionRef, districtRef, from, to, userUuid);
+		List<DashboardOutbreakDto> result = outbreakService.getOutbreaksForDashboard(regionRef, districtRef, disease, from, to, userUuid);
 
 		return result;
 	}

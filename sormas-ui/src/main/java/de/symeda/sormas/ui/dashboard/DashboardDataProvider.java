@@ -71,21 +71,7 @@ public class DashboardDataProvider {
 		int period = DateHelper.getDaysBetween(fromDate, toDate);
 		previousFromDate = DateHelper.getStartOfDay(DateHelper.subtractDays(fromDate, period));
 		previousToDate = DateHelper.getEndOfDay(DateHelper.subtractDays(toDate, period));
-		// Cases
-		setCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(region, district, disease, fromDate, toDate,
-				userUuid));
-		setPreviousCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(region, district, disease,
-				previousFromDate, previousToDate, userUuid));
-		// Events
-		setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(region, district, disease, fromDate, toDate,
-				userUuid));
-		setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(region, district, disease,
-				previousFromDate, previousToDate, userUuid));
-		// Test results
-		setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district, disease,
-				fromDate, toDate, userUuid));
-		setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district,
-				disease, previousFromDate, previousToDate, userUuid));
+
 		// Samples
 		setSamples(FacadeProvider.getSampleFacade().getNewSamplesForDashboard(region, district, disease, fromDate,
 				toDate, userUuid));
@@ -103,11 +89,42 @@ public class DashboardDataProvider {
 		// Disease burden
 		setDiseasesBurden(FacadeProvider.getDiseaseFacade().getDiseaseBurdenForDashboard(region, district, fromDate,
 				toDate, userUuid));
-		// Outbreaks
-		setOutbreaks(FacadeProvider.getOutbreakFacade().getOutbreaksForDashboard(region, district, fromDate, toDate,
-				userUuid));
+		
+		if (this.disease != null)
+			this.refreshDataForSelectedDisease();
 	}
 
+	private void refreshDataForSelectedDisease () {
+		// Update the entities lists according to the filters
+		String userUuid = CurrentUser.getCurrent().getUuid();
+
+		int period = DateHelper.getDaysBetween(fromDate, toDate);
+		previousFromDate = DateHelper.getStartOfDay(DateHelper.subtractDays(fromDate, period));
+		previousToDate = DateHelper.getEndOfDay(DateHelper.subtractDays(toDate, period));
+		
+		// Cases
+		setCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(region, district, disease, fromDate, toDate,
+				userUuid));
+		setPreviousCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(region, district, disease,
+				previousFromDate, previousToDate, userUuid));
+		
+		// Events
+		setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(region, district, disease, fromDate, toDate,
+				userUuid));
+		setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(region, district, disease,
+				previousFromDate, previousToDate, userUuid));
+		
+		// Test results
+		setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district, disease,
+				fromDate, toDate, userUuid));
+		setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district,
+				disease, previousFromDate, previousToDate, userUuid));
+		
+		// Outbreaks
+		setOutbreaks(FacadeProvider.getOutbreakFacade().getOutbreaksForDashboard(region, district, disease, fromDate, toDate,
+				userUuid));
+	}
+	
 	public List<DashboardCaseDto> getCases() {
 		return cases;
 	}
@@ -210,7 +227,7 @@ public class DashboardDataProvider {
 
 	public void setOutbreaks(List<DashboardOutbreakDto> outbreaks) {
 		this.outbreaks = outbreaks;
-	}
+	}	
 
 	public RegionReferenceDto getRegion() {
 		return region;
@@ -234,6 +251,8 @@ public class DashboardDataProvider {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+		
+		this.refreshDataForSelectedDisease();
 	}
 
 	public DateFilterOption getDateFilterOption() {

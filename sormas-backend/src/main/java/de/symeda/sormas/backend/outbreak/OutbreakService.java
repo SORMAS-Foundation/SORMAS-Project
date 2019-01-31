@@ -30,6 +30,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.outbreak.DashboardOutbreakDto;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
@@ -144,6 +145,7 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 	public List<DashboardOutbreakDto> getOutbreaksForDashboard(
 			RegionReferenceDto regionRef,
 			DistrictReferenceDto districtRef, 
+			Disease disease,
 			Date from, 
 			Date to, 
 			String userUuid) {
@@ -165,6 +167,9 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 		else if (regionRef != null) {
 			Predicate regionFilter = cb.equal(outbreak.join(Outbreak.DISTRICT, JoinType.LEFT).join(District.REGION, JoinType.LEFT).get(Region.UUID), regionRef.getUuid());
 			filter = filter != null ? cb.and(filter, regionFilter) : regionFilter;
+		}
+		if (disease != null) {
+			filter = and(cb, filter, cb.equal(outbreak.get(Outbreak.DISEASE), disease));
 		}
 		if (filter != null) {
 			cq.where(filter);

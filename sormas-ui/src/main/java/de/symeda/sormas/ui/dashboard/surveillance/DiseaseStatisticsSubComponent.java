@@ -110,12 +110,6 @@ public class DiseaseStatisticsSubComponent extends VerticalLayout {
 	public DiseaseStatisticsSubComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
 
-		// layout
-//		setWidth(100, Unit.PERCENTAGE);
-//		setMargin(true);
-//		setSpacing(false);
-//		setSizeFull();
-
 		createOutbreakDistrictComponent();
 		addComponent(outbreakDistrictComponent);
 
@@ -294,14 +288,19 @@ public class DiseaseStatisticsSubComponent extends VerticalLayout {
 
 	private void updateOutbreakDistrictComponent(Disease disease) {
 		List<DashboardOutbreakDto> outbreaks = dashboardDataProvider.getOutbreaks();
-		outbreaks = outbreaks.stream().filter(c -> c.getDisease() == disease).collect(Collectors.toList());
+		//outbreaks = outbreaks.stream().filter(c -> c.getDisease() == disease).collect(Collectors.toList());
+		
+		Long districtsCount = outbreaks.stream()
+									   .map(o -> o.getDistrict())
+									   .distinct()
+									   .count();
 
-		outbreakDistrictCountLabel.setValue(Integer.toString(outbreaks.size()).toString());
+		outbreakDistrictCountLabel.setValue(districtsCount.toString());
 	}
 
 	private void updateCaseComponent(Disease disease) {
 		List<DashboardCaseDto> cases = dashboardDataProvider.getCases();
-		cases = cases.stream().filter(c -> c.getDisease() == disease).collect(Collectors.toList());
+		//cases = cases.stream().filter(c -> c.getDisease() == disease).collect(Collectors.toList());
 
 		caseDiseaseLabel.setValue("New Cases (" + disease.toString() + ")");
 		caseCountLabel.setValue(Integer.toString(cases.size()).toString());
@@ -324,7 +323,7 @@ public class DiseaseStatisticsSubComponent extends VerticalLayout {
 
 		// CFR
 		List<DashboardCaseDto> previousCases = dashboardDataProvider.getPreviousCases();
-		previousCases = previousCases.stream().filter(c -> c.getDisease() == disease).collect(Collectors.toList());
+		//previousCases = previousCases.stream().filter(c -> c.getDisease() == disease).collect(Collectors.toList());
 
 		int casesCount = cases.size();
 		Long fatalCasesCount = cases.stream().filter((c) -> c.wasFatal()).count();
@@ -362,7 +361,7 @@ public class DiseaseStatisticsSubComponent extends VerticalLayout {
 
 	private void updateEventComponent(Disease disease) {
 		List<DashboardEventDto> events = dashboardDataProvider.getEvents();
-		events = events.stream().filter(c -> c.getDisease() == disease).collect(Collectors.toList());
+		//events = events.stream().filter(c -> c.getDisease() == disease).collect(Collectors.toList());
 
 		eventCountLabel.setValue(Integer.toString(events.size()).toString());
 
@@ -378,7 +377,7 @@ public class DiseaseStatisticsSubComponent extends VerticalLayout {
 
 	private void updateTestResultComponent(Disease disease) {
 		List<DashboardTestResultDto> testResults = dashboardDataProvider.getTestResults();
-		testResults = testResults.stream().filter(c -> c.getDisease() == disease).collect(Collectors.toList());
+		//testResults = testResults.stream().filter(c -> c.getDisease() == disease).collect(Collectors.toList());
 
 		testResultCountLabel.setValue(Integer.toString(testResults.size()).toString());
 

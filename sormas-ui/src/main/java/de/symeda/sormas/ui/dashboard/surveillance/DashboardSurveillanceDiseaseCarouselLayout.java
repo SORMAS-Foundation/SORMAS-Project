@@ -17,10 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.surveillance;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubNavigationMenu2;
 import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
@@ -35,6 +43,9 @@ public class DashboardSurveillanceDiseaseCarouselLayout extends VerticalLayout {
 	private DiseaseStatisticsSubComponent statisticsComponent;
 	private EpiCurveSurveillanceComponent epiCurveComponent;
 	private DashboardMapComponent mapComponent;
+	
+	private SubNavigationMenu2 carouselMenu;
+	private List<Disease> diseases;
 
 	public DashboardSurveillanceDiseaseCarouselLayout(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
@@ -42,6 +53,13 @@ public class DashboardSurveillanceDiseaseCarouselLayout extends VerticalLayout {
 		statisticsComponent = new DiseaseStatisticsSubComponent(dashboardDataProvider);
 		epiCurveComponent = new EpiCurveSurveillanceComponent(dashboardDataProvider);
 		mapComponent = new DashboardMapComponent(dashboardDataProvider);
+		
+		//convert diseases array to a list. needed for indexOf in auto-slideshow
+		Disease[] _diseases = Disease.values();
+		diseases = new ArrayList<Disease>(_diseases.length);
+		for (Disease disease : _diseases) {			
+			diseases.add(disease);
+		}
 
 		this.initLayout();
 	}
@@ -49,52 +67,89 @@ public class DashboardSurveillanceDiseaseCarouselLayout extends VerticalLayout {
 	private void initLayout() {
 		addStyleName(DashboardCssStyles.CURVE_AND_MAP_LAYOUT);
 		
-		HorizontalLayout carouselMenu = createCarouselMenu();
-		addComponent(carouselMenu);
-		
+		HorizontalLayout carouselOptions = createCarouselOptions();
+		addComponent(carouselOptions);
 				
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.setWidth(100, Unit.PERCENTAGE);
+		HorizontalLayout contentLayout = new HorizontalLayout();
+		contentLayout.setWidth(100, Unit.PERCENTAGE);
 
 		HorizontalLayout statisticsAndEpiCurveLayout = createStatisticsAndEpiCurveLayout();
-		layout.addComponent(statisticsAndEpiCurveLayout);
+		contentLayout.addComponent(statisticsAndEpiCurveLayout);
 		
-		layout.addComponent(mapComponent);
+		contentLayout.addComponent(mapComponent);
 		mapComponent.setHeight(100, Unit.PERCENTAGE);
 		
-		addComponent(layout);
+		addComponent(contentLayout);
 	}
 	
-	private HorizontalLayout createCarouselMenu() {
+	private HorizontalLayout createCarouselOptions() {
 		HorizontalLayout layout = new HorizontalLayout();
-		CssStyles.style(layout, CssStyles.VSPACE_TOP_4);
+		CssStyles.style(layout, CssStyles.VSPACE_TOP_4, CssStyles.HSPACE_LEFT_2);
 		
-		SubNavigationMenu2 menu = new SubNavigationMenu2();
+		CheckBox autoSlide = this.setupSlideShow();
+		layout.addComponent(autoSlide);
+		layout.setComponentAlignment(autoSlide, Alignment.MIDDLE_LEFT);
 		
-		Disease[] diseases = Disease.values();
+		carouselMenu = new SubNavigationMenu2();
 		
 		for (Disease disease : diseases) {
-			menu.addView(disease.getName(), disease.toShortString(), (e) -> {
-				this.onDiseaseSelected(disease);
+			carouselMenu.addView(disease.getName(), disease.toShortString(), (e) -> {
+				this.changeSelectedDisease(disease);
 			});
 		}
 		
-		if (diseases.length > 0) {
-			Disease selectedDisease = diseases[1];
-			
-			this.dashboardDataProvider.setDisease(selectedDisease);
-			menu.setActiveView(selectedDisease.getName());
+		if (diseases.size() > 0) {
+			this.setActiveDisease(diseases.get(0));
 		}
 		
-		layout.addComponent(menu);
+		layout.addComponent(carouselMenu);
 		
 		return layout;
 	}
 	
-	private void onDiseaseSelected(Disease disease) {
-		this.dashboardDataProvider.setDisease(disease);
+	private CheckBox setupSlideShow() {
+		//slideshow option
+		CheckBox autoSlide = new CheckBox("slide show");
+		autoSlide.addValueChangeListener(e -> {
+			this.changeAutoSlideOption(autoSlide.getValue());
+		});
 		
+		//set timer for slideshow
+		SormasUI.getCurrent().addPollListener(e -> {
+			Disease selectedDisease = dashboardDataProvider.getDisease();
+			int nextDiseaseIndex = 0;
+			
+			if (selectedDisease != null) {
+				nextDiseaseIndex = diseases.indexOf(selectedDisease) + 1;
+				
+				if (nextDiseaseIndex >= diseases.size()) {
+					nextDiseaseIndex = 0;
+				}
+			}
+			
+			this.setActiveDisease(diseases.get(nextDiseaseIndex));	
+		});
+		
+		return autoSlide;
+	}
+	
+	private void setActiveDisease(Disease selectedDisease) {
+		carouselMenu.setActiveView(selectedDisease.getName());
+		this.changeSelectedDisease(selectedDisease);
+	}
+	
+	private void changeSelectedDisease(Disease disease) {
+		this.dashboardDataProvider.setDisease(disease);
 		refresh();
+	}
+	
+	private void changeAutoSlideOption(boolean isActivated) {
+		if (isActivated) {			
+			SormasUI.getCurrent().setPollInterval(5000);
+		}
+		else {
+			SormasUI.getCurrent().setPollInterval(-1);
+		}
 	}
 
 	protected HorizontalLayout createStatisticsAndEpiCurveLayout() {
