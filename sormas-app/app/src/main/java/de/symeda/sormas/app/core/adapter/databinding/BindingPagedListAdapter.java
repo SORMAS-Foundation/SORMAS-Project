@@ -31,7 +31,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.databinding.RowLoadingListItemLayoutBinding;
 
-public abstract class BindingPagedListAdapterAdapter<T extends AbstractDomainObject, V extends ViewDataBinding>
+public abstract class BindingPagedListAdapter<T extends AbstractDomainObject, V extends ViewDataBinding>
         extends PagedListAdapter<T, RecyclerView.ViewHolder>
         implements OnListItemClickListener.HasOnListItemClickListener {
 
@@ -44,7 +44,7 @@ public abstract class BindingPagedListAdapterAdapter<T extends AbstractDomainObj
     @LayoutRes
     private final int layoutId;
 
-    public BindingPagedListAdapterAdapter(@LayoutRes int layoutId) {
+    public BindingPagedListAdapter(@LayoutRes int layoutId) {
         super(new DiffUtil.ItemCallback<T>() {
             @Override
             public boolean areItemsTheSame(@NonNull AbstractDomainObject oldItem, @NonNull AbstractDomainObject newItem) {

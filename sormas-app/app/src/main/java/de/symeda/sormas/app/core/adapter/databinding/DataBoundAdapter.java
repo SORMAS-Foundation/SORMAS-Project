@@ -30,7 +30,7 @@ import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * @deprecated Use {@link BindingPagedListAdapterAdapter}
+ * @deprecated Use {@link BindingPagedListAdapter}
  */
 @Deprecated
 public abstract class DataBoundAdapter<T extends ViewDataBinding>

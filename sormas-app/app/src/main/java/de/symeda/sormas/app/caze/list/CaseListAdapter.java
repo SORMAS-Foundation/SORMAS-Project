@@ -30,11 +30,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.core.adapter.databinding.BindingPagedListAdapterAdapter;
+import de.symeda.sormas.app.core.adapter.databinding.BindingPagedListAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.BindingViewHolder;
 import de.symeda.sormas.app.databinding.RowCaseListItemLayoutBinding;
 
-public class CaseListAdapter extends BindingPagedListAdapterAdapter<Case, RowCaseListItemLayoutBinding> {
+public class CaseListAdapter extends BindingPagedListAdapter<Case, RowCaseListItemLayoutBinding> {
 
     CaseListAdapter() {
         super(R.layout.row_case_list_item_layout);

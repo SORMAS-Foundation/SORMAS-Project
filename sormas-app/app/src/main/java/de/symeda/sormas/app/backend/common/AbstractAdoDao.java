@@ -220,7 +220,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             where.and().eq(AbstractDomainObject.SNAPSHOT, false).query();
             return builder.countOf();
         } catch (SQLException | IllegalArgumentException e) {
-            Log.e(getTableName(), "Could not perform queryForEq");
+            Log.e(getTableName(), "Could not perform countOfEq");
             throw new RuntimeException(e);
         }
     }

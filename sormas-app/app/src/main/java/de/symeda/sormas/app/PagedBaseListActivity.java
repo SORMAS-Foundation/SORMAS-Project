@@ -30,7 +30,7 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.component.menu.PageMenuControl;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
-import de.symeda.sormas.app.core.adapter.databinding.BindingPagedListAdapterAdapter;
+import de.symeda.sormas.app.core.adapter.databinding.BindingPagedListAdapter;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
 
@@ -41,7 +41,7 @@ public abstract class PagedBaseListActivity<T extends AbstractDomainObject> exte
     private PagedBaseListFragment activeFragment = null;
     private Consumer<PageMenuItem> openPageCallback;
 
-    protected BindingPagedListAdapterAdapter<T, ?> adapter;
+    protected BindingPagedListAdapter<T, ?> adapter;
 
     public static Bundler buildBundle(Enum listFilter) {
         return BaseActivity.buildBundle(listFilter.ordinal());
@@ -159,7 +159,7 @@ public abstract class PagedBaseListActivity<T extends AbstractDomainObject> exte
 
     protected abstract PagedBaseListFragment buildListFragment(PageMenuItem menuItem);
 
-    public BindingPagedListAdapterAdapter<?, ?> getAdapter() {
+    public BindingPagedListAdapter<?, ?> getAdapter() {
         return adapter;
     }
 }
