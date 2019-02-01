@@ -12,6 +12,7 @@ public interface Captions {
 	public static String Contact_cazeDistrict = "Contact.cazeDistrict";
 	public static String ContactExport_lastCooperativeVisitDate = "ContactExport.lastCooperativeVisitDate";
 	public static String Facility_longitude = "Facility.longitude";
+	public static String Therapy_prescriptions = "Therapy.prescriptions";
 	public static String WeeklyReportOfficerSummary_totalCaseCount = "WeeklyReportOfficerSummary.totalCaseCount";
 	public static String Sample_labDetails = "Sample.labDetails";
 	public static String Person_occupationCommunity = "Person.occupationCommunity";
@@ -21,6 +22,7 @@ public interface Captions {
 	public static String Event = "Event";
 	public static String Visit_visitUser = "Visit.visitUser";
 	public static String CaseData_classificationUser = "CaseData.classificationUser";
+	public static String Prescription_dose = "Prescription.dose";
 	public static String User_firstName = "User.firstName";
 	public static String Event_pendingEventTasksFormat = "Event.pendingEventTasksFormat";
 	public static String Event_eventParticipants = "Event.eventParticipants";
@@ -44,6 +46,8 @@ public interface Captions {
 	public static String View_users = "View.users";
 	public static String date = "date";
 	public static String CaseData_vaccinationInfoSource = "CaseData.vaccinationInfoSource";
+	public static String Treatment_treatmentType = "Treatment.treatmentType";
+	public static String Prescription_routeDetails = "Prescription.routeDetails";
 	public static String SampleTest_labDetails = "SampleTest.labDetails";
 	public static String Symptoms_abdominalPain = "Symptoms.abdominalPain";
 	public static String Symptoms_onsetSymptom = "Symptoms.onsetSymptom";
@@ -89,6 +93,7 @@ public interface Captions {
 	public static String Sample_casePersonName = "Sample.casePersonName";
 	public static String Contact_caseHealthFacilityUuid = "Contact.caseHealthFacilityUuid";
 	public static String EpiDataBurialTable_city = "EpiDataBurialTable.city";
+	public static String Therapy_documentTreatment = "Therapy.documentTreatment";
 	public static String name = "name";
 	public static String CaseData_districtName = "CaseData.districtName";
 	public static String WeeklyReportInformantSummary_totalCaseCount = "WeeklyReportInformantSummary.totalCaseCount";
@@ -97,7 +102,9 @@ public interface Captions {
 	public static String EpiData_otherAnimals = "EpiData.otherAnimals";
 	public static String CasePreviousHospitalization_editColumn = "CasePreviousHospitalization.editColumn";
 	public static String Person_burialPlaceDescription = "Person.burialPlaceDescription";
+	public static String Treatment_executingClinician = "Treatment.executingClinician";
 	public static String CaseData_numberOfPendingTasksFormat = "CaseData.numberOfPendingTasksFormat";
+	public static String Prescription_typeOfDrug = "Prescription.typeOfDrug";
 	public static String Person_deathPlaceDescription = "Person.deathPlaceDescription";
 	public static String EpiDataTravel_travelDateFrom = "EpiDataTravel.travelDateFrom";
 	public static String View_tasks_sub = "View.tasks.sub";
@@ -108,6 +115,7 @@ public interface Captions {
 	public static String CaseExport_sampleDates = "CaseExport.sampleDates";
 	public static String View_configuration_regions = "View.configuration.regions";
 	public static String region = "region";
+	public static String Treatment_drugIntakeDetails = "Treatment.drugIntakeDetails";
 	public static String Symptoms_lesionsThatItch = "Symptoms.lesionsThatItch";
 	public static String EventParticipant_personAge = "EventParticipant.personAge";
 	public static String Contact_caze = "Contact.caze";
@@ -117,6 +125,7 @@ public interface Captions {
 	public static String Statistics_databaseExport = "Statistics.databaseExport";
 	public static String View_statistics = "View.statistics";
 	public static String WeeklyReport_epiWeek = "WeeklyReport.epiWeek";
+	public static String Prescription_prescriptionDate = "Prescription.prescriptionDate";
 	public static String Contact_lastContactDate = "Contact.lastContactDate";
 	public static String User_healthFacility = "User.healthFacility";
 	public static String Task_contextReference = "Task.contextReference";
@@ -143,6 +152,7 @@ public interface Captions {
 	public static String Symptoms_otherNonHemorrhagicSymptoms = "Symptoms.otherNonHemorrhagicSymptoms";
 	public static String CaseData = "CaseData";
 	public static String View_cases_data = "View.cases.data";
+	public static String Prescription_prescribingClinician = "Prescription.prescribingClinician";
 	public static String Contact_reportDateTime = "Contact.reportDateTime";
 	public static String CaseExport_labResults = "CaseExport.labResults";
 	public static String User_lastName = "User.lastName";
@@ -165,10 +175,12 @@ public interface Captions {
 	public static String EpiDataGathering_editColumn = "EpiDataGathering.editColumn";
 	public static String Sample = "Sample";
 	public static String District_population = "District.population";
+	public static String View_cases_therapy = "View.cases.therapy";
 	public static String Visit_visitRemarks = "Visit.visitRemarks";
 	public static String EpiData_waterSource = "EpiData.waterSource";
 	public static String CasePreviousHospitalization_dischargeDate = "CasePreviousHospitalization.dischargeDate";
 	public static String CaseExport_travelHistory = "CaseExport.travelHistory";
+	public static String Treatment_additionalNotes = "Treatment.additionalNotes";
 	public static String Task_caze = "Task.caze";
 	public static String EpiDataTravel = "EpiDataTravel";
 	public static String CaseData_contactOfficer = "CaseData.contactOfficer";
@@ -178,7 +190,9 @@ public interface Captions {
 	public static String Person_firstName = "Person.firstName";
 	public static String Contact_caze_uuid = "Contact.caze.uuid";
 	public static String User_userName = "User.userName";
+	public static String Prescription_prescriptionDetails = "Prescription.prescriptionDetails";
 	public static String search = "search";
+	public static String Treatment_treatmentDetails = "Treatment.treatmentDetails";
 	public static String Contact_relationToCase = "Contact.relationToCase";
 	public static String CaseData_epidNumber = "CaseData.epidNumber";
 	public static String EpiData_swine = "EpiData.swine";
@@ -212,6 +226,7 @@ public interface Captions {
 	public static String Symptoms_unexplainedBleeding = "Symptoms.unexplainedBleeding";
 	public static String CaseData_outcomeDate = "CaseData.outcomeDate";
 	public static String Contact_followUpComment = "Contact.followUpComment";
+	public static String Prescription_textFilter = "Prescription.textFilter";
 	public static String Event_informationSource = "Event.informationSource";
 	public static String showActiveTasks = "showActiveTasks";
 	public static String Person_approximateAgeType = "Person.approximateAgeType";
@@ -256,6 +271,7 @@ public interface Captions {
 	public static String Statistics_statistics = "Statistics.statistics";
 	public static String View_configuration_healthFacilities = "View.configuration.healthFacilities";
 	public static String View_configuration_communities_short = "View.configuration.communities.short";
+	public static String Prescription_drugIntakeDetails = "Prescription.drugIntakeDetails";
 	public static String Symptoms_bloodUrine = "Symptoms.bloodUrine";
 	public static String ContactExport_lastCooperativeVisitSymptomatic = "ContactExport.lastCooperativeVisitSymptomatic";
 	public static String EpiData_closeContactProbableCase = "EpiData.closeContactProbableCase";
@@ -268,6 +284,7 @@ public interface Captions {
 	public static String CaseImport_mergeCase = "CaseImport.mergeCase";
 	public static String EpiDataBurialTable_burialPersonName = "EpiDataBurialTable.burialPersonName";
 	public static String Contact_contactProximity = "Contact.contactProximity";
+	public static String Treatment_route = "Treatment.route";
 	public static String CaseData_personFirstName = "CaseData.personFirstName";
 	public static String CaseData_surveillanceOfficer = "CaseData.surveillanceOfficer";
 	public static String Sample_sampleDateTime = "Sample.sampleDateTime";
@@ -280,6 +297,7 @@ public interface Captions {
 	public static String EpiData_areaInfectedAnimals = "EpiData.areaInfectedAnimals";
 	public static String Location_longitude = "Location.longitude";
 	public static String WeeklyReportInformantSummary_informantReportDate = "WeeklyReportInformantSummary.informantReportDate";
+	public static String Prescription_prescriptionEnd = "Prescription.prescriptionEnd";
 	public static String Person_city = "Person.city";
 	public static String showArchivedContacts = "showArchivedContacts";
 	public static String CaseData_dengueFeverType = "CaseData.dengueFeverType";
@@ -298,6 +316,7 @@ public interface Captions {
 	public static String Symptoms_jointPain = "Symptoms.jointPain";
 	public static String View_configuration_laboratories = "View.configuration.laboratories";
 	public static String Location_latLon = "Location.latLon";
+	public static String Prescription_additionalNotes = "Prescription.additionalNotes";
 	public static String Task_taskStatus = "Task.taskStatus";
 	public static String Symptoms_symptomsComments = "Symptoms.symptomsComments";
 	public static String EpiDataBurial_burialTouching = "EpiDataBurial.burialTouching";
@@ -320,6 +339,7 @@ public interface Captions {
 	public static String EpiDataTravel_travelDestination = "EpiDataTravel.travelDestination";
 	public static String Sample_sampleMaterialText = "Sample.sampleMaterialText";
 	public static String Region_population = "Region.population";
+	public static String Treatment_dose = "Treatment.dose";
 	public static String CaseExport_sampleTaken = "CaseExport.sampleTaken";
 	public static String EpiData_sickDeadAnimalsDetails = "EpiData.sickDeadAnimalsDetails";
 	public static String Person_birthdate = "Person.birthdate";
@@ -338,6 +358,7 @@ public interface Captions {
 	public static String Person_causeOfDeathDetails = "Person.causeOfDeathDetails";
 	public static String SampleTest_testResult = "SampleTest.testResult";
 	public static String Symptoms_fatigueWeakness = "Symptoms.fatigueWeakness";
+	public static String Treatment_routeDetails = "Treatment.routeDetails";
 	public static String EpiDataBurial_burialDateTo = "EpiDataBurial.burialDateTo";
 	public static String EpiData_gatherings = "EpiData.gatherings";
 	public static String View_cases_epidata = "View.cases.epidata";
@@ -347,6 +368,7 @@ public interface Captions {
 	public static String Sample_sampleMaterial = "Sample.sampleMaterial";
 	public static String WeeklyReportOfficerSummary_officerReportDate = "WeeklyReportOfficerSummary.officerReportDate";
 	public static String Symptoms_symptomsNotOccurred = "Symptoms.symptomsNotOccurred";
+	public static String Treatment_openPrescription = "Treatment.openPrescription";
 	public static String total = "total";
 	public static String Contact_caseRegionUuid = "Contact.caseRegionUuid";
 	public static String dearchive = "dearchive";
@@ -388,6 +410,7 @@ public interface Captions {
 	public static String Task = "Task";
 	public static String Sample_reportInfo = "Sample.reportInfo";
 	public static String CaseExport_ageGroup = "CaseExport.ageGroup";
+	public static String Therapy_newPrescription = "Therapy.newPrescription";
 	public static String Sample_testResult = "Sample.testResult";
 	public static String Symptoms_alteredConsciousness = "Symptoms.alteredConsciousness";
 	public static String CaseHospitalization_previousHospitalizations = "CaseHospitalization.previousHospitalizations";
@@ -409,6 +432,7 @@ public interface Captions {
 	public static String Contact_numberOfPendingTasks = "Contact.numberOfPendingTasks";
 	public static String Event_srcLastName = "Event.srcLastName";
 	public static String Event_eventLocation = "Event.eventLocation";
+	public static String Prescription_prescriptionStart = "Prescription.prescriptionStart";
 	public static String EventParticipant_caseId = "EventParticipant.caseId";
 	public static String number = "number";
 	public static String Symptoms_lesionsDeepProfound = "Symptoms.lesionsDeepProfound";
@@ -424,6 +448,7 @@ public interface Captions {
 	public static String EventParticipant_firstName = "EventParticipant.firstName";
 	public static String Symptoms_hearingloss = "Symptoms.hearingloss";
 	public static String Contact_person_lastName = "Contact.person.lastName";
+	public static String Prescription_edit = "Prescription.edit";
 	public static String Symptoms_temperature = "Symptoms.temperature";
 	public static String WeeklyReportOfficerSummary_informantReports = "WeeklyReportOfficerSummary.informantReports";
 	public static String SampleTest_testType = "SampleTest.testType";
@@ -434,7 +459,9 @@ public interface Captions {
 	public static String View_dashboard_contacts = "View.dashboard.contacts";
 	public static String Sample_sampleSource = "Sample.sampleSource";
 	public static String Contact_followUpUntil = "Contact.followUpUntil";
+	public static String Prescription_prescriptionType = "Prescription.prescriptionType";
 	public static String Symptoms_meningealSigns = "Symptoms.meningealSigns";
+	public static String Prescription_frequency = "Prescription.frequency";
 	public static String CaseData_hospitalization = "CaseData.hospitalization";
 	public static String Symptoms_temperatureSource = "Symptoms.temperatureSource";
 	public static String View_configuration_outbreaks_short = "View.configuration.outbreaks.short";
@@ -453,6 +480,7 @@ public interface Captions {
 	public static String Sample_received = "Sample.received";
 	public static String EpiData_processingConfirmedCaseFluidUnsafe = "EpiData.processingConfirmedCaseFluidUnsafe";
 	public static String Symptoms_soreThroat = "Symptoms.soreThroat";
+	public static String Prescription_route = "Prescription.route";
 	public static String CasePreviousHospitalization_period = "CasePreviousHospitalization.period";
 	public static String Symptoms_lymphadenopathyInguinal = "Symptoms.lymphadenopathyInguinal";
 	public static String Visit_symptoms = "Visit.symptoms";
@@ -515,6 +543,7 @@ public interface Captions {
 	public static String View_tasks_archive = "View.tasks.archive";
 	public static String Sample_caseClassification = "Sample.caseClassification";
 	public static String EpiData_burialAttended = "EpiData.burialAttended";
+	public static String Prescription_documentTreatment = "Prescription.documentTreatment";
 	public static String Symptoms_injectionSiteBleeding = "Symptoms.injectionSiteBleeding";
 	public static String View_cases_sub = "View.cases.sub";
 	public static String Person_phoneOwner = "Person.phoneOwner";
@@ -530,6 +559,7 @@ public interface Captions {
 	public static String User_active = "User.active";
 	public static String Sample_specimenCondition = "Sample.specimenCondition";
 	public static String WeeklyReportRegionSummary_officerReports = "WeeklyReportRegionSummary.officerReports";
+	public static String Therapy_treatments = "Therapy.treatments";
 	public static String EpiData_sickDeadAnimals = "EpiData.sickDeadAnimals";
 	public static String View_statistics_database_export = "View.statistics.database-export";
 	public static String Visit_disease = "Visit.disease";
@@ -546,21 +576,23 @@ public interface Captions {
 	public static String Person_occupationType = "Person.occupationType";
 	public static String Configuration_Outbreaks = "Configuration.Outbreaks";
 	public static String View_samples = "View.samples";
-	public static String skip = "skip";
 	public static String Contact_reportingUser = "Contact.reportingUser";
+	public static String skip = "skip";
 	public static String EpiData_primates = "EpiData.primates";
 	public static String CaseHospitalization_isolationDate = "CaseHospitalization.isolationDate";
-	public static String Symptoms_nausea = "Symptoms.nausea";
 	public static String View_configuration_laboratories_short = "View.configuration.laboratories.short";
+	public static String Symptoms_nausea = "Symptoms.nausea";
 	public static String CaseHospitalization_isolated = "CaseHospitalization.isolated";
 	public static String EventParticipant_personUuid = "EventParticipant.personUuid";
 	public static String Person_transporter_occupationDetails = "Person.transporter.occupationDetails";
 	public static String View_contacts_archive = "View.contacts.archive";
 	public static String CasePreviousHospitalization = "CasePreviousHospitalization";
-	public static String EventParticipant_personSex = "EventParticipant.personSex";
 	public static String Contact_resumeFollowUp = "Contact.resumeFollowUp";
+	public static String EventParticipant_personSex = "EventParticipant.personSex";
 	public static String CaseData_classificationDate = "CaseData.classificationDate";
+	public static String Treatment_treatmentDateTime = "Treatment.treatmentDateTime";
 	public static String WeeklyReportRegionSummary_officers = "WeeklyReportRegionSummary.officers";
+	public static String Treatment_typeOfDrug = "Treatment.typeOfDrug";
 	public static String CasePreviousHospitalization_admissionDate = "CasePreviousHospitalization.admissionDate";
 	public static String CaseExport_contactWithRodent = "CaseExport.contactWithRodent";
 	public static String Sample_noTestPossibleReason = "Sample.noTestPossibleReason";
@@ -572,9 +604,10 @@ public interface Captions {
 	public static String CaseData_searchField = "CaseData.searchField";
 	public static String Symptoms_blackeningDeathOfTissue = "Symptoms.blackeningDeathOfTissue";
 	public static String Symptoms_seizures = "Symptoms.seizures";
+	public static String CaseData_therapy = "CaseData.therapy";
 	public static String EpiDataGathering_district = "EpiDataGathering.district";
-	public static String text = "text";
 	public static String Symptoms_otherHemorrhagicSymptoms = "Symptoms.otherHemorrhagicSymptoms";
+	public static String text = "text";
 	public static String Task_priority = "Task.priority";
 	public static String Symptoms_diarrhea = "Symptoms.diarrhea";
 	public static String EpiData_traveled = "EpiData.traveled";
@@ -583,13 +616,15 @@ public interface Captions {
 	public static String Symptoms_symptomsUnknownOccurred = "Symptoms.symptomsUnknownOccurred";
 	public static String Sample_caseRegion = "Sample.caseRegion";
 	public static String CasePreviousHospitalization_admissionAndDischargeDate = "CasePreviousHospitalization.admissionAndDischargeDate";
-	public static String View_users_sub = "View.users.sub";
 	public static String CaseData_caseClassification = "CaseData.caseClassification";
+	public static String View_users_sub = "View.users.sub";
 	public static String EpiDataBurial_burialAddress = "EpiDataBurial.burialAddress";
+	public static String Therapy_newTreatment = "Therapy.newTreatment";
 	public static String Contact_resultingCase = "Contact.resultingCase";
 	public static String EpiData_burials = "EpiData.burials";
 	public static String Symptoms_skinRash = "Symptoms.skinRash";
 	public static String Contact_resultingCaseUser = "Contact.resultingCaseUser";
+	public static String Treatment_textFilter = "Treatment.textFilter";
 	public static String Event_reportingUser = "Event.reportingUser";
 	public static String EpiData_waterBodyDetails = "EpiData.waterBodyDetails";
  }

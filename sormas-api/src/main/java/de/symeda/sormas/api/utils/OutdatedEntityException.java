@@ -24,9 +24,9 @@ import de.symeda.sormas.api.EntityDto;
  * version in the database
  */
 @SuppressWarnings("serial")
-public class EntityDtoTooOldException extends RuntimeException {
+public class OutdatedEntityException extends ValidationRuntimeException {
 
-	public EntityDtoTooOldException(String entityUuid, Class<? extends EntityDto> entityClass) {
+	public OutdatedEntityException(String entityUuid, Class<? extends EntityDto> entityClass) {
 		super(entityClass.getSimpleName() + " is older than current version on server: '" + entityUuid + "'");
 	}
 

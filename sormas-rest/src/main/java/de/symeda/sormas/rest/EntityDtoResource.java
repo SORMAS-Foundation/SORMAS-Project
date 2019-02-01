@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.EntityDtoTooOldException;
+import de.symeda.sormas.api.utils.OutdatedEntityException;
 
 public abstract class EntityDtoResource {
 
@@ -29,7 +29,7 @@ public abstract class EntityDtoResource {
 				String errorMessage = dto.getClass().getSimpleName()
 						+ " " + dto.getUuid() + " " + DateHelper.formatLocalShortDateTime(dto.getChangeDate()) + "\n";
 				errorMessage += e.getMessage();
-				if (ExceptionUtils.getRootCause(e) instanceof EntityDtoTooOldException) {
+				if (ExceptionUtils.getRootCause(e) instanceof OutdatedEntityException) {
 					logger.warn(errorMessage, e);
 					result = PushResult.TOO_OLD;
 				} else {

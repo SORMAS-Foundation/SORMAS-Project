@@ -18,7 +18,7 @@
 package de.symeda.sormas.backend.util;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.utils.EntityDtoTooOldException;
+import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 public final class DtoHelper {
@@ -31,7 +31,7 @@ public final class DtoHelper {
 	public static void validateDto(EntityDto dto, AbstractDomainObject entity) {
 		if (entity.getChangeDate() != null 
 				&& (dto.getChangeDate() == null || dto.getChangeDate().getTime() + CHANGE_DATE_TOLERANCE_MS < entity.getChangeDate().getTime())) {
-			throw new EntityDtoTooOldException(dto.getUuid(), dto.getClass());
+			throw new OutdatedEntityException(dto.getUuid(), dto.getClass());
 		}
 	}
 
