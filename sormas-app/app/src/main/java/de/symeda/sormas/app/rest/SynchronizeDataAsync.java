@@ -89,6 +89,10 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             return null;
         }
 
+        if (ConfigProvider.isRepullNeeded()) {
+            syncMode = SyncMode.CompleteAndRepull;
+        }
+
         try {
             switch (syncMode) {
                 case Changes:
@@ -112,6 +116,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                     repullData();
                     pullMissingAndDeleteInvalidData();
                     synchronizeChangedData();
+                    ConfigProvider.setRepullNeeded(false);
                     break;
                 default:
                     throw new IllegalArgumentException(syncMode.toString());
