@@ -29,6 +29,7 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -60,6 +61,7 @@ import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsSubComponent;
 import de.symeda.sormas.ui.dashboard.statistics.SvgCircleElement;
 import de.symeda.sormas.ui.dashboard.statistics.SvgCircleElement.SvgCircleElementPart;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
 public class DashboardSurveillanceDiseaseBurdenLayout extends VerticalLayout {
