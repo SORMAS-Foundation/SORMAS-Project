@@ -32,5 +32,7 @@ public interface DiseaseFacade {
 			DistrictReferenceDto districtRef, 
 			Date from, 
 			Date to, 
+			Date previousFromDate,
+			Date previousToDate,
 			String userUuid);
 }

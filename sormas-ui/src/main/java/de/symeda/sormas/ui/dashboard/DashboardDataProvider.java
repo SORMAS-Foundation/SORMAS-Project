@@ -81,14 +81,16 @@ public class DashboardDataProvider {
 				DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(new Date())), userUuid));
 		setPendingTasks(
 				FacadeProvider.getTaskFacade().getAllByUserForDashboard(TaskStatus.PENDING, null, null, userUuid));
+		
 		// Contacts
 		setContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, fromDate,
 				toDate, userUuid));
 		setPreviousContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease,
 				previousFromDate, previousToDate, userUuid));
+		
 		// Disease burden
 		setDiseasesBurden(FacadeProvider.getDiseaseFacade().getDiseaseBurdenForDashboard(region, district, fromDate,
-				toDate, userUuid));
+				toDate, previousFromDate, previousToDate, userUuid));
 		
 		if (this.disease != null)
 			this.refreshDataForSelectedDisease();

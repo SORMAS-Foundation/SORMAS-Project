@@ -55,33 +55,6 @@ public class DiseaseBurdenDto  implements Serializable {
 		this.caseDeathCount = caseDeathCount;
 	}
 	
-	public DiseaseBurdenDto(Disease disease, Long caseCount, Long eventCount) {
-		this.disease = disease;
-		this.caseCount = caseCount;
-		this.previousCaseCount = 0L;
-		this.eventCount = eventCount;
-		this.outbreakDistrictCount = 0L;
-		this.caseDeathCount = 0L;
-	}
-	
-	public DiseaseBurdenDto(Disease disease, Long caseCount) {
-		this.disease = disease;
-		this.caseCount = caseCount;
-		this.previousCaseCount = 0L;
-		this.eventCount = 0L;
-		this.outbreakDistrictCount = 0L;
-		this.caseDeathCount = 0L;
-	}
-	
-	public DiseaseBurdenDto(Disease disease) {
-		this.disease = disease;
-		this.caseCount = 0L;
-		this.previousCaseCount = 0L;
-		this.eventCount = 0L;
-		this.outbreakDistrictCount = 0L;
-		this.caseDeathCount = 0L;
-	}
-	
 	public Disease getDisease() {
 		return disease;
 	}
