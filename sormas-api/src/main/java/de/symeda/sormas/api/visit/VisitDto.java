@@ -21,9 +21,12 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
 
 public class VisitDto extends EntityDto {
@@ -58,6 +61,21 @@ public class VisitDto extends EntityDto {
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
+	
+	public static VisitDto build(ContactDto contact, CaseDataDto caze) {
+		VisitDto visit = new VisitDto();
+    	visit.setUuid(DataHelper.createUuid());
+    	
+    	visit.setPerson(contact.getPerson());
+    	visit.setDisease(caze.getDisease());
+
+    	SymptomsDto symptoms = new SymptomsDto();
+    	visit.setSymptoms(symptoms);
+    	
+    	visit.setVisitDateTime(new Date());
+    	
+    	return visit;
+	}
 	
 	public Date getVisitDateTime() {
 		return visitDateTime;
