@@ -271,7 +271,7 @@ public class CasesView extends AbstractView {
 			searchField.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, SEARCH_FIELD));
 			searchField.addTextChangeListener(e -> {
 				criteria.nameUuidEpidNumberLike(e.getText());
-				navigateTo(criteria);
+				grid.reload();
 			});
 			firstFilterRowLayout.addComponent(searchField);
 

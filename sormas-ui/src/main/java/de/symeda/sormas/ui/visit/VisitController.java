@@ -18,27 +18,24 @@
 package de.symeda.sormas.ui.visit;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.function.Consumer;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Notification.Type;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.ui.UserProvider;
@@ -123,20 +120,10 @@ public class VisitController {
 	}
 	
     private VisitDto createNewVisit(ContactReferenceDto contactRef) {
-    	
     	ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
     	CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid());
     	
-    	VisitDto visit = new VisitDto();
-    	visit.setUuid(DataHelper.createUuid());
-    	
-    	visit.setPerson(contact.getPerson());
-    	visit.setDisease(caze.getDisease());
-
-    	SymptomsDto symptoms = new SymptomsDto();
-    	visit.setSymptoms(symptoms);
-    	
-    	visit.setVisitDateTime(new Date());
+    	VisitDto visit = VisitDto.build(contact, caze);
     	UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
     	visit.setVisitUser(userReference);
     	

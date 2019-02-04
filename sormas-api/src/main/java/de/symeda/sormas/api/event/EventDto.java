@@ -23,6 +23,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
 
 public class EventDto extends EntityDto {
@@ -75,6 +76,19 @@ public class EventDto extends EntityDto {
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
+	
+	public static EventDto build() {
+		EventDto event = new EventDto();
+		event.setUuid(DataHelper.createUuid());
+
+		event.setEventStatus(EventStatus.POSSIBLE);
+		LocationDto location = new LocationDto();
+		location.setUuid(DataHelper.createUuid());
+		event.setEventLocation(location);
+		event.setReportDateTime(new Date());
+
+		return event;
+	}
 	
 	public EventType getEventType() {
 		return eventType;

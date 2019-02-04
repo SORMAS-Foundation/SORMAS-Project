@@ -158,6 +158,8 @@ import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLoca
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
+import de.symeda.sormas.backend.therapy.TherapyFacadeEjb;
+import de.symeda.sormas.backend.therapy.TherapyFacadeEjb.TherapyFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
@@ -237,6 +239,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private PersonFacadeEjbLocal personFacade;
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private TherapyFacadeEjbLocal therapyFacade;
 
 	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
 
@@ -390,7 +394,7 @@ public class CaseFacadeEjb implements CaseFacade {
 						travel.getTravelDateFrom(), travel.getTravelDateTo()));
 			}
 			exportDto.setTravelHistory(travelHistoryBuilder.toString());
-			
+
 			// Place of initial detection
 			PreviousHospitalization firstPrevHosp = previousHospitalizationService.getInitialHospitalization(exportDto.getHospitalizationId());
 			if (firstPrevHosp != null) {
@@ -525,7 +529,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		return toDto(caze);
 	}
-	
+
 	@Override
 	public void validate(CaseDataDto caze) throws ValidationRuntimeException {
 		// Check whether any required field that does not have a not null constraint in
@@ -650,8 +654,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				taskService.ensurePersisted(task);
 			}
 		}
-		
-		
+
+
 		// Create a task to search for other cases for new Plague cases
 		if (existingCase == null && newCase.getDisease() == Disease.PLAGUE) {
 			createActiveSearchForOtherCasesTask(newCase);
@@ -767,7 +771,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public CaseDataDto saveAndTransferCase(CaseDataDto caze) {
 		Case existingCase = caseService.getByUuid(caze.getUuid());
-		
+
 		// Only update Hospitalization when Health Facility has been changed
 		if (!existingCase.getHealthFacility().getUuid().equals(caze.getHealthFacility().getUuid())) {
 			caze.getHospitalization().getPreviousHospitalizations()
@@ -777,10 +781,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			caze.getHospitalization().setDischargeDate(null);
 			caze.getHospitalization().setIsolated(null);
 		}
-		
+
 		return saveCase(caze);
 	}
-	
+
 	@Override
 	public void deleteCase(CaseReferenceDto caseRef, String userUuid) {
 		User user = userService.getByUuid(userUuid);
@@ -845,6 +849,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setInvestigationStatus(source.getInvestigationStatus());
 		target.setHospitalization(hospitalizationFacade.fromDto(source.getHospitalization()));
 		target.setEpiData(epiDataFacade.fromDto(source.getEpiData()));
+		if (source.getTherapy() != null) {
+			target.setTherapy(therapyFacade.fromDto(source.getTherapy()));
+		}
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
@@ -903,6 +910,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
 		target.setHospitalization(HospitalizationFacadeEjb.toDto(source.getHospitalization()));
 		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
+		if (source.getTherapy() != null) {
+			target.setTherapy(TherapyFacadeEjb.toDto(source.getTherapy()));
+		}
 
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));

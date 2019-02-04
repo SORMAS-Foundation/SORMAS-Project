@@ -25,6 +25,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
 
 public class TaskDto extends EntityDto {
@@ -78,6 +79,30 @@ public class TaskDto extends EntityDto {
 	private Double closedLon;
 	private Float closedLatLonAccuracy;
 
+	public static TaskDto build(TaskContext context, ReferenceDto entityRef) {
+		TaskDto task = new TaskDto();
+		task.setUuid(DataHelper.createUuid());
+		task.setSuggestedStart(TaskHelper.getDefaultSuggestedStart());
+		task.setDueDate(TaskHelper.getDefaultDueDate());
+		task.setTaskStatus(TaskStatus.PENDING);
+		task.setPriority(TaskPriority.NORMAL);
+		task.setTaskContext(context);
+		switch(context) {
+		case CASE:
+			task.setCaze((CaseReferenceDto) entityRef); 
+			break;
+		case CONTACT:
+			task.setContact((ContactReferenceDto) entityRef);
+			break;
+		case EVENT:
+			task.setEvent((EventReferenceDto) entityRef);
+			break;
+		case GENERAL:
+			break;
+		}
+		return task;
+	}
+	
 	public TaskContext getTaskContext() {
 		return taskContext;
 	}

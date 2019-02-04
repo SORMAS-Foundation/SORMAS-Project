@@ -43,7 +43,6 @@ public class CaseReferenceDto extends ReferenceDto {
 		setCaption(buildCaption(uuid, firstName, lastName));
 	}
 	
-	
 	public static String buildCaption(String uuid, String personName) {
 		return personName + " (" + DataHelper.getShortUuid(uuid) + ")";
 	}

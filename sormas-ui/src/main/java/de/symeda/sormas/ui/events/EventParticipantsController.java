@@ -30,19 +30,18 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
@@ -54,7 +53,7 @@ public class EventParticipantsController {
 	private PersonFacade personFacade = FacadeProvider.getPersonFacade();
 	
 	public void createEventParticipant(EventReferenceDto eventRef, Consumer<EventParticipantReferenceDto> doneConsumer) {
-		EventParticipantDto eventParticipant = createNewEventParticipant(eventRef);
+		EventParticipantDto eventParticipant = EventParticipantDto.build(eventRef);
 		EventParticipantCreateForm createForm = new EventParticipantCreateForm(UserRight.EVENTPARTICIPANT_CREATE);
 		createForm.setValue(eventParticipant);
 		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent = new CommitDiscardWrapperComponent<EventParticipantCreateForm>(createForm, createForm.getFieldGroup());
@@ -114,13 +113,6 @@ public class EventParticipantsController {
 				}
 			}, I18nProperties.getCaption("EventParticipant"));
 		}
-	}
-	
-	public EventParticipantDto createNewEventParticipant(EventReferenceDto eventRef) {
-		EventParticipantDto eventParticipant = new EventParticipantDto();
-		eventParticipant.setUuid(DataHelper.createUuid());
-		eventParticipant.setEvent(eventRef);
-		return eventParticipant;
 	}
 	
 	public List<EventParticipantDto> getEventParticipantIndexListByEvent(EventReferenceDto eventRef) {

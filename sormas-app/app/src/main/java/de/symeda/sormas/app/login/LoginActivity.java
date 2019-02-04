@@ -195,7 +195,8 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         if (ConfigProvider.getUsername() != null) {
             // valid login
             if (ConfigProvider.getUser() == null
-                    || DatabaseHelper.getCaseDao().isEmpty()) {
+                    || DatabaseHelper.getCaseDao().isEmpty()
+                    || ConfigProvider.isRepullNeeded()) {
                 // no user or data yet? sync...
                 SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.Changes, LoginActivity.this, new SyncCallback() {
                     @Override

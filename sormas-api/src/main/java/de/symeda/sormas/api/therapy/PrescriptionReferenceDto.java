@@ -15,19 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.utils;
+package de.symeda.sormas.api.therapy;
 
-import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.ReferenceDto;
 
-/**
- * Thrown when a entity that is supposed to be saved is older than the current
- * version in the database
- */
-@SuppressWarnings("serial")
-public class EntityDtoTooOldException extends RuntimeException {
+public class PrescriptionReferenceDto extends ReferenceDto {
 
-	public EntityDtoTooOldException(String entityUuid, Class<? extends EntityDto> entityClass) {
-		super(entityClass.getSimpleName() + " is older than current version on server: '" + entityUuid + "'");
+	private static final long serialVersionUID = -5028702472324192079L;
+	
+	public PrescriptionReferenceDto() {
+		
 	}
-
+	
+	public PrescriptionReferenceDto(String uuid) {
+		setUuid(uuid);
+	}
+	
+	public PrescriptionReferenceDto(String uuid, String caption) {
+		setUuid(uuid);
+		setCaption(caption);
+	}
+	
 }

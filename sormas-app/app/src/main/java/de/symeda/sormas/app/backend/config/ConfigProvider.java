@@ -77,6 +77,7 @@ public final class ConfigProvider {
     private static String KEY_PIN = "pin";
     private static String KEY_SERVER_REST_URL = "serverRestUrl";
     private static String KEY_ACCESS_GRANTED = "accessGranted";
+    private static String KEY_REPULL_NEEDED = "repullNeeded";
     private static String LAST_NOTIFICATION_DATE = "lastNotificationDate";
     private static String LAST_ARCHIVED_SYNC_DATE = "lastArchivedSyncDate";
     private static String CURRENT_APP_DOWNLOAD_ID = "currentAppDownloadId";
@@ -104,6 +105,7 @@ public final class ConfigProvider {
     private Long currentAppDownloadId;
     private Boolean accessGranted;
     private String locale;
+    private Boolean repullNeeded;
 
     private ConfigProvider(Context context) {
         this.context = context;
@@ -282,8 +284,7 @@ public final class ConfigProvider {
             DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_USERNAME, username));
             DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_PASSWORD, password));
 
-            // avoid loss of data
-            //DatabaseHelper.clearTables(false);
+            setRepullNeeded(true);
         }
     }
 
@@ -622,4 +623,25 @@ public final class ConfigProvider {
             DatabaseHelper.getConfigDao().createOrUpdate(new Config(LOCALE, locale));
         }
     }
+
+    public static boolean isRepullNeeded() {
+        if (instance.repullNeeded == null) {
+            Config config = DatabaseHelper.getConfigDao().queryForId(KEY_REPULL_NEEDED);
+            if (config != null) {
+                instance.repullNeeded = Boolean.parseBoolean(config.getValue());
+            }
+        }
+        return instance.repullNeeded != null ? instance.repullNeeded.booleanValue() : false;
+    }
+
+    public static void setRepullNeeded(boolean repullNeeded) {
+        if (instance.repullNeeded != null && instance.repullNeeded.booleanValue() == repullNeeded) {
+            return;
+        }
+
+        instance.repullNeeded = repullNeeded;
+
+        DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_REPULL_NEEDED, String.valueOf(repullNeeded)));
+    }
+
 }

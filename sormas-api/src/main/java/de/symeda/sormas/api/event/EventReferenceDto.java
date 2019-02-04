@@ -47,7 +47,6 @@ public class EventReferenceDto extends ReferenceDto {
 	}
 	
 	public static String buildCaption(Disease disease, String diseaseDetails, EventType eventType, Date eventDate) {
-		
 		String diseaseString = disease != Disease.OTHER
 				? DataHelper.toStringNullable(disease)
 				: DataHelper.toStringNullable(diseaseDetails);

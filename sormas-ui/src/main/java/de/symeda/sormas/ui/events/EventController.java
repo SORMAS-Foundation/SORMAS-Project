@@ -19,7 +19,6 @@ package de.symeda.sormas.ui.events;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import com.vaadin.navigator.Navigator;
@@ -34,19 +33,16 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
@@ -223,16 +219,9 @@ public class EventController {
 	}
 
 	private EventDto createNewEvent() {
-		EventDto event = new EventDto();
-		event.setUuid(DataHelper.createUuid());
+		EventDto event = EventDto.build();
 
-		event.setEventStatus(EventStatus.POSSIBLE);
-		LocationDto location = new LocationDto();
-		location.setUuid(DataHelper.createUuid());
-		location.setRegion(UserProvider.getCurrent().getUser().getRegion());
-		event.setEventLocation(location);
-
-		event.setReportDateTime(new Date());
+		event.getEventLocation().setRegion(UserProvider.getCurrent().getUser().getRegion());
 		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
 		event.setReportingUser(userReference);
 

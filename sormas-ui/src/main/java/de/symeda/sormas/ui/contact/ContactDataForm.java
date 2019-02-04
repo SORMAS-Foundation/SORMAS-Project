@@ -97,7 +97,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
     	addField(ContactDto.FOLLOW_UP_STATUS, ComboBox.class);
     	addField(ContactDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(1);
-    	addField(ContactDto.FOLLOW_UP_UNTIL, DateField.class);
+    	addDateField(ContactDto.FOLLOW_UP_UNTIL, DateField.class, -1);
 
     	ComboBox contactOfficerField = addField(ContactDto.CONTACT_OFFICER, ComboBox.class);
     	contactOfficerField.setNullSelectionAllowed(true);

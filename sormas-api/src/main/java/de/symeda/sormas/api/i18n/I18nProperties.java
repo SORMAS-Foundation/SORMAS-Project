@@ -19,6 +19,8 @@ package de.symeda.sormas.api.i18n;
 
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.ResourceBundle;
 
 public class I18nProperties {
@@ -180,6 +182,12 @@ public class I18nProperties {
 	public static String getString(String property) {
 		return getInstance().stringProperties.getString(property);
 	}
+
+	public static String getString(String property, String defaultValue) {
+		String result = getInstance().stringProperties.getString(property);
+		return StringUtils.isEmpty(result) ? defaultValue : result;
+	}
+
 
 	private I18nProperties() {
 		captionProperties = loadProperties("captions");

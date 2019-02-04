@@ -74,6 +74,7 @@ import de.symeda.sormas.ui.epidata.EpiDataView;
 import de.symeda.sormas.ui.hospitalization.CaseHospitalizationForm;
 import de.symeda.sormas.ui.hospitalization.CaseHospitalizationView;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
+import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -98,6 +99,9 @@ public class CaseController {
 		}
 		navigator.addView(CaseHospitalizationView.VIEW_NAME, CaseHospitalizationView.class);
 		navigator.addView(EpiDataView.VIEW_NAME, EpiDataView.class);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW)) {
+			navigator.addView(TherapyView.VIEW_NAME, TherapyView.class);
+		}
 	}
 
 	public void create() {

@@ -3,11 +3,11 @@ package de.symeda.sormas.backend;
 import org.junit.Test;
 
 import de.symeda.sormas.api.region.RegionDto;
-import de.symeda.sormas.api.utils.EntityDtoTooOldException;
+import de.symeda.sormas.api.utils.OutdatedEntityException;
 
 public class DtoEntityTest extends AbstractBeanTest {
 
-	@Test(expected = EntityDtoTooOldException.class)
+	@Test(expected = OutdatedEntityException.class)
 	public void testDtoTooOld() {
 
 		RegionDto region = RegionDto.build();
