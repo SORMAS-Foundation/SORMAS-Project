@@ -101,7 +101,7 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 									   .collect(Collectors.toList());
 
 		refreshChart(diseasesBurden);
-		chart.setHeight(visibleDiseasesCount * 55, Unit.PIXELS);
+		chart.setHeight(visibleDiseasesCount * 40 + 70, Unit.PIXELS);
 	}
 
 	private List<DiseaseBurdenDto> mockDataUp(List<DiseaseBurdenDto> data) {

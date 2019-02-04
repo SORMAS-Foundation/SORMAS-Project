@@ -97,7 +97,7 @@ public class DiseaseBurdenSurveillanceComponent extends VerticalLayout {
 
 		grid.reload(diseasesBurden);
 		//grid.setHeightMode(HeightMode.CSS);
-		grid.setHeight(visibleDiseasesCount * 55, Unit.PIXELS);
+		grid.setHeight(visibleDiseasesCount * 40 + 40, Unit.PIXELS);
 	}
 	
 	private List<DiseaseBurdenDto> mockDataUp(List<DiseaseBurdenDto> data) {
