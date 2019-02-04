@@ -24,12 +24,15 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 import elemental.json.JsonValue;
 
 @SuppressWarnings("serial")
-public class LinkRenderer extends HtmlRenderer {
+public class GridButtonRenderer extends HtmlRenderer {
 
     @Override
     public JsonValue encode(String value) {
     	if(!StringUtils.isEmpty(value)) {
-	    	value = "<a title='" + value + "'>" + value + "</a>";
+    		value = "<div class='v-button v-widget primary v-button-primary' tabindex='0' role='button'>"
+    				+ "<span class='v-button-wrap'>"
+    				+ "<span class='v-button-caption'>" + value + "</span></span></div>";
+//	    	value = "<a class='v-button v-button-primary' title='" + value + "'>" + value + "</a>";
 	        return super.encode(value);
     	} else {
     		return null;

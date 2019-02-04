@@ -23,7 +23,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractGrid;
-import de.symeda.sormas.ui.utils.LinkRenderer;
+import de.symeda.sormas.ui.utils.GridButtonRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
@@ -65,7 +65,7 @@ public class PrescriptionGrid extends Grid implements AbstractGrid<PrescriptionC
 		
 		getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
 		getColumn(EDIT_BTN_ID).setWidth(60);
-		getColumn(DOCUMENT_TREATMENT_BTN_ID).setRenderer(new LinkRenderer());
+		getColumn(DOCUMENT_TREATMENT_BTN_ID).setRenderer(new GridButtonRenderer());
 		getColumn(PrescriptionIndexDto.PRESCRIPTION_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateFormat()));
 	
 		for (Column column : getColumns()) {
