@@ -41,7 +41,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubNavigationMenu;
-import de.symeda.sormas.ui.SubNavigationMenu2;
+import de.symeda.sormas.ui.SubNavigationActionMenu;
 import de.symeda.sormas.ui.configuration.infrastructure.RegionsView;
 import de.symeda.sormas.ui.dashboard.contacts.DashboardContactsView;
 import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;

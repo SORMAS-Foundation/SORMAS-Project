@@ -33,17 +33,17 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 /**
- * A sub navigation menu presenting a list of available views to the user.
- * It emulates the HTML components of a tabsheet to use it's styling.
+ * A sub navigation menu presenting a list of options.
+ * Options are bound to a click listener to take an action
  */
 @SuppressWarnings("serial")
-public class SubNavigationMenu2 extends CssLayout {
+public class SubNavigationActionMenu extends CssLayout {
 
     private Map<String, AbstractComponent> viewMenuItemMap = new HashMap<String, AbstractComponent>();
 
     private CssLayout menuItemsLayout;
     
-    public SubNavigationMenu2() {
+    public SubNavigationActionMenu() {
         setWidth(100, Unit.PERCENTAGE);
         setHeightUndefined();
         setPrimaryStyleName("v-tabsheet");

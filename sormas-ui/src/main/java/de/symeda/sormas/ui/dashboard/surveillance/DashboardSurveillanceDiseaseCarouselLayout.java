@@ -29,7 +29,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.SubNavigationMenu2;
+import de.symeda.sormas.ui.SubNavigationActionMenu;
 import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
@@ -44,7 +44,7 @@ public class DashboardSurveillanceDiseaseCarouselLayout extends VerticalLayout {
 	private EpiCurveSurveillanceComponent epiCurveComponent;
 	private DashboardMapComponent mapComponent;
 	
-	private SubNavigationMenu2 carouselMenu;
+	private SubNavigationActionMenu carouselMenu;
 	private List<Disease> diseases;
 
 	public DashboardSurveillanceDiseaseCarouselLayout(DashboardDataProvider dashboardDataProvider) {
@@ -90,7 +90,7 @@ public class DashboardSurveillanceDiseaseCarouselLayout extends VerticalLayout {
 		layout.addComponent(autoSlide);
 		layout.setComponentAlignment(autoSlide, Alignment.MIDDLE_LEFT);
 		
-		carouselMenu = new SubNavigationMenu2();
+		carouselMenu = new SubNavigationActionMenu();
 		
 		for (Disease disease : diseases) {
 			carouselMenu.addView(disease.getName(), disease.toShortString(), (e) -> {
