@@ -67,7 +67,7 @@ public class UserBackendTest {
 
         District district = DatabaseHelper.getDistrictDao().queryUuid(TestHelper.DISTRICT_UUID);
 
-        assertThat(DatabaseHelper.getUserDao().getByDistrictAndRole(district,  UserRole.SURVEILLANCE_OFFICER, User.FIRST_NAME).size(), is(1));
+        assertThat(DatabaseHelper.getUserDao().getByDistrictAndRole(district, UserRole.SURVEILLANCE_OFFICER, User.FIRST_NAME).size(), is(1));
         List<User> informants = DatabaseHelper.getUserDao().getByDistrictAndRole(district, UserRole.HOSPITAL_INFORMANT, User.FIRST_NAME);
         assertThat(informants.size(), is(1));
         assertThat(informants.get(0).getUserRoles(), contains(UserRole.HOSPITAL_INFORMANT));
