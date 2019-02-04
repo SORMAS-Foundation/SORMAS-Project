@@ -80,7 +80,7 @@ public class EventService extends AbstractAdoService<Event> {
 
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	public List<String> getAllActiveUuids(User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -89,15 +89,15 @@ public class EventService extends AbstractAdoService<Event> {
 		Predicate filter = cb.or(
 				cb.equal(from.get(Event.ARCHIVED), false),
 				cb.isNull(from.get(Event.ARCHIVED)));
-		
+
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
 			filter = cb.and(filter, userFilter);
 		}
-		
+
 		cq.where(filter);
 		cq.select(from.get(Event.UUID));
-		
+
 		return em.createQuery(cq).getResultList();
 	}
 
@@ -216,7 +216,7 @@ public class EventService extends AbstractAdoService<Event> {
 				filter = dateFilter;
 			}
 		}
-		
+
 		Predicate archivedFilter = cb.equal(event.get(Event.ARCHIVED), true);
 		if (filter != null) {
 			filter = cb.and(filter, archivedFilter);
@@ -226,7 +226,7 @@ public class EventService extends AbstractAdoService<Event> {
 
 		cq.where(filter);
 		cq.select(event.get(Event.UUID));
-		
+
 		return em.createQuery(cq).getResultList();
 	}
 
@@ -295,8 +295,8 @@ public class EventService extends AbstractAdoService<Event> {
 
 		return dateFilter;
 	}
-	
-	
+
+
 	public Predicate buildCriteriaFilter(EventCriteria eventCriteria, CriteriaBuilder cb, Root<Event> from) {
 		Predicate filter = null;
 		if (eventCriteria.getReportingUserRole() != null) {
@@ -313,12 +313,10 @@ public class EventService extends AbstractAdoService<Event> {
 		if (eventCriteria.getEventType() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Event.EVENT_TYPE), eventCriteria.getEventType()));
 		}
-		if (eventCriteria.getArchived() != null) {
-			if (eventCriteria.getArchived() == true) {
-				filter = and(cb, filter, cb.equal(from.get(Event.ARCHIVED), true));
-			} else {
-				filter = and(cb, filter, cb.or(cb.equal(from.get(Event.ARCHIVED), false), cb.isNull(from.get(Event.ARCHIVED))));
-			}
+		if (Boolean.TRUE.equals(eventCriteria.getArchived())) {
+			filter = and(cb, filter, cb.equal(from.get(Event.ARCHIVED), true));
+		} else {
+			filter = and(cb, filter, cb.or(cb.equal(from.get(Event.ARCHIVED), false), cb.isNull(from.get(Event.ARCHIVED))));
 		}
 		return filter;
 	}

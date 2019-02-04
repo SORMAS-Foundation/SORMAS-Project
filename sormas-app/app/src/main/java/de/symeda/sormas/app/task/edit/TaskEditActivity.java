@@ -35,6 +35,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
@@ -43,6 +44,7 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.util.Bundler;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class TaskEditActivity extends BaseEditActivity<Task> {
@@ -82,11 +84,17 @@ public class TaskEditActivity extends BaseEditActivity<Task> {
 
         final Task taskToSave = getStoredRootEntity();
 
+        try {
+            validateData(taskToSave);
+        } catch (ValidationException e) {
+            NotificationHelper.showNotification(this, ERROR, e.getMessage());
+            return;
+        }
+
         saveTask = new SavingAsyncTask(getRootView(), taskToSave) {
 
             @Override
             public void doInBackground(TaskResultHolder resultHolder) throws DaoException, ValidationException {
-                validateData(taskToSave);
                 DatabaseHelper.getTaskDao().saveAndSnapshot(taskToSave);
             }
 
@@ -129,7 +137,13 @@ public class TaskEditActivity extends BaseEditActivity<Task> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Task activityRootData) {
-        return TaskEditFragment.newInstance(activityRootData);
+        if (activityRootData.getId() == null
+            || ConfigProvider.getUser().equals(activityRootData.getCreatorUser())) {
+            return TaskEditFragment.newInstance(activityRootData);
+        }
+        else {
+            return TaskExecutionFragment.newInstance(activityRootData);
+        }
     }
 
     @Override

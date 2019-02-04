@@ -29,7 +29,7 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 @SuppressWarnings("serial")
@@ -46,7 +46,7 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 	@Override
 	public void reload() {
 		List<SampleIndexDto> samples = FacadeProvider.getSampleFacade()
-				.getIndexList(CurrentUser.getCurrent().getUuid(), sampleCriteria);
+				.getIndexList(UserProvider.getCurrent().getUuid(), sampleCriteria);
 				
 		setEntries(samples);
 		if (!samples.isEmpty()) {
@@ -62,7 +62,7 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 	protected void drawDisplayedEntries() {
 		for (SampleIndexDto sample : getDisplayedEntries()) {
 			SampleListEntry listEntry = new SampleListEntry(sample);
-			if (CurrentUser.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT)) {
 				listEntry.addEditListener(new ClickListener() {
 					@Override
 					public void buttonClick(ClickEvent event) {

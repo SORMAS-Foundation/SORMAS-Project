@@ -364,18 +364,19 @@ public class AppUpdateController {
                 context.unregisterReceiver(this);
                 ConfigProvider.setCurrentAppDownloadId(null);
 
+                boolean downloadDoneInForeground = progressDialog != null;
+                if (progressDialog != null) {
+                    progressDialog.dismiss();
+                    progressDialog = null;
+                }
+
                 // Check if the download has been successful
                 File file = new File(activity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName);
                 if (!file.exists()) {
                     displayedDialog = buildDownloadFailedDialog();
                     displayedDialog.show();
-                    return;
-                }
-                // If progressDialog is null, the download has been completed in the background
-                // and the install prompt should not be shown automatically
-                if (progressDialog != null) {
-                    progressDialog.dismiss();
-                    progressDialog = null;
+                } else if (downloadDoneInForeground) {
+                    // go on with the installation
                     displayedDialog = buildInstallAppDialog();
                     displayedDialog.show();
                 }

@@ -20,11 +20,12 @@ package de.symeda.sormas.api.outbreak;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 
-public class OutbreakCriteria implements Serializable {
+public class OutbreakCriteria extends BaseCriteria implements Serializable {
 
 	private static final long serialVersionUID = 326691431810294295L;
 
@@ -37,7 +38,7 @@ public class OutbreakCriteria implements Serializable {
 	public RegionReferenceDto getRegion() {
 		return region;
 	}
-	public OutbreakCriteria districtIsInRegion(RegionReferenceDto region) {
+	public OutbreakCriteria region(RegionReferenceDto region) {
 		this.region = region;
 		return this;
 	}
@@ -45,7 +46,7 @@ public class OutbreakCriteria implements Serializable {
 	public DistrictReferenceDto getDistrict() {
 		return district;
 	}
-	public OutbreakCriteria districtEquals(DistrictReferenceDto district) {
+	public OutbreakCriteria district(DistrictReferenceDto district) {
 		this.district = district;
 		return this;
 	}
@@ -53,7 +54,7 @@ public class OutbreakCriteria implements Serializable {
 	public Disease getDisease() {
 		return disease;
 	}
-	public OutbreakCriteria diseaseEquals(Disease disease) {
+	public OutbreakCriteria disease(Disease disease) {
 		this.disease = disease;
 		return this;
 	}

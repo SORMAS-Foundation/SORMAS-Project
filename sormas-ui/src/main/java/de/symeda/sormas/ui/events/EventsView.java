@@ -35,15 +35,18 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
@@ -55,14 +58,22 @@ public class EventsView extends AbstractView {
 
 	public static final String VIEW_NAME = "events";
 
+	private EventCriteria criteria;
+
 	private EventGrid grid;
 	private Button createButton;
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
 
+	// Filter
+	private ComboBox typeFilter;
+	private ComboBox diseaseFilter;
+	private ComboBox reportedByFilter;
+	private Button resetButton;
+
 	private VerticalLayout gridLayout;
 
-	private boolean showArchivedEvents = false;
+	private Button switchArchivedActiveButton;
 	private String originalViewTitle;
 
 	// Bulk operations
@@ -74,7 +85,10 @@ public class EventsView extends AbstractView {
 
 		originalViewTitle = getViewTitleLabel().getValue();
 
+		criteria = ViewModelProviders.of(EventsView.class).get(EventCriteria.class);
+
 		grid = new EventGrid();
+		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
@@ -85,12 +99,12 @@ public class EventsView extends AbstractView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
 		grid.getContainer().addItemSetChangeListener(e -> {
-			updateActiveStatusButtonCaption();
+			updateStatusButtons();
 		});
 
 		addComponent(gridLayout);
 
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.EVENT_EXPORT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EXPORT)) {
 			Button exportButton = new Button("Export");
 			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
@@ -102,7 +116,7 @@ public class EventsView extends AbstractView {
 			addHeaderComponent(exportButton);
 		}
 
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.EVENT_CREATE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE)) {
 			createButton = new Button("New event");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
@@ -116,32 +130,43 @@ public class EventsView extends AbstractView {
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
 
-		ComboBox typeFilter = new ComboBox();
+		typeFilter = new ComboBox();
 		typeFilter.setWidth(140, Unit.PIXELS);
 		typeFilter.setInputPrompt(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.EVENT_TYPE));
 		typeFilter.addItems((Object[])EventType.values());
 		typeFilter.addValueChangeListener(e -> {
-			grid.setEventTypeFilter(((EventType)e.getProperty().getValue()));
+			criteria.eventType(((EventType)e.getProperty().getValue()));
+			navigateTo(criteria);
 		});
 		filterLayout.addComponent(typeFilter);
 
-		ComboBox diseaseFilter = new ComboBox();
+		diseaseFilter = new ComboBox();
 		diseaseFilter.setWidth(140, Unit.PIXELS);
 		diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.DISEASE));
 		diseaseFilter.addItems((Object[])Disease.values());
 		diseaseFilter.addValueChangeListener(e -> {
-			grid.setDiseaseFilter(((Disease)e.getProperty().getValue()));
+			criteria.disease(((Disease)e.getProperty().getValue()));
+			navigateTo(criteria);
 		});
 		filterLayout.addComponent(diseaseFilter);
 
-		ComboBox reportedByFilter = new ComboBox();
+		reportedByFilter = new ComboBox();
 		reportedByFilter.setWidth(140, Unit.PIXELS);
 		reportedByFilter.setInputPrompt("Reported By");
 		reportedByFilter.addItems((Object[]) UserRole.values());
 		reportedByFilter.addValueChangeListener(e -> {
-			grid.setReportedByFilter((UserRole) e.getProperty().getValue());
+			criteria.reportingUserRole((UserRole) e.getProperty().getValue());
+			navigateTo(criteria);
 		});
 		filterLayout.addComponent(reportedByFilter);
+
+		resetButton = new Button(I18nProperties.getCaption(Captions.resetFilters));
+		resetButton.setVisible(false);
+		resetButton.addClickListener(event -> {
+			ViewModelProviders.of(EventsView.class).remove(EventCriteria.class);
+			navigateTo(null);
+		});
+		filterLayout.addComponent(resetButton);
 
 		return filterLayout;
 	}
@@ -154,14 +179,22 @@ public class EventsView extends AbstractView {
 
 		statusButtons = new HashMap<>();
 
-		Button statusAll = new Button("All", e -> processStatusChange(null, e.getButton()));
+		Button statusAll = new Button("All", e -> {
+			criteria.eventStatus(null);
+			navigateTo(criteria);
+		});
 		CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 		statusAll.setCaptionAsHtml(true);
 		statusFilterLayout.addComponent(statusAll);
 		statusButtons.put(statusAll, "All");
+		activeStatusButton = statusAll;
 
 		for(EventStatus status : EventStatus.values()) {
-			Button statusButton = new Button(status.toString(), e -> processStatusChange(status, e.getButton()));
+			Button statusButton = new Button(status.toString(), e -> {
+				criteria.eventStatus(status);
+				navigateTo(criteria);
+			});
+			statusButton.setData(status);
 			CssStyles.style(statusButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 			statusButton.setCaptionAsHtml(true);
 			statusFilterLayout.addComponent(statusButton);
@@ -172,41 +205,18 @@ public class EventsView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show archived/active cases button
-			if (CurrentUser.getCurrent().hasUserRight(UserRight.EVENT_VIEW_ARCHIVED)) {
-				Button switchArchivedActiveButton = new Button(I18nProperties.getCaption("showArchivedEvents"));
+			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW_ARCHIVED)) {
+				switchArchivedActiveButton = new Button(I18nProperties.getCaption("showArchivedEvents"));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
-					if (!grid.getSelectedRows().isEmpty()) {
-						grid.deselectAll();
-					}
-					showArchivedEvents = !showArchivedEvents;
-					if (!showArchivedEvents) {
-						getViewTitleLabel().setValue(originalViewTitle);
-						switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showArchivedEvents"));
-						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
-						if (archiveItem != null && dearchiveItem != null) {
-							dearchiveItem.setVisible(false);
-							archiveItem.setVisible(true);
-						}
-						grid.getEventCriteria().archived(false);
-						grid.reload();
-					} else {
-						getViewTitleLabel().setValue(I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", ".") + ".archive"));
-						switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showActiveEvents"));
-						switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
-						if (archiveItem != null && dearchiveItem != null) {
-							archiveItem.setVisible(false);
-							dearchiveItem.setVisible(true);
-						}
-						grid.getEventCriteria().archived(true);
-						grid.reload();
-					}
+					criteria.archived(Boolean.TRUE.equals(criteria.getArchived()) ? null : Boolean.TRUE);
+					navigateTo(criteria);
 				});
 				actionButtonsLayout.addComponent(switchArchivedActiveButton);
 			}
 
 			// Bulk operation dropdown
-			if (CurrentUser.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				MenuBar bulkOperationsDropdown = new MenuBar();	
 				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
 
@@ -218,7 +228,6 @@ public class EventsView extends AbstractView {
 				Command deleteCommand = selectedItem -> {
 					ControllerProvider.getEventController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
 						public void run() {
-							grid.deselectAll();
 							grid.reload();
 						}
 					});
@@ -228,7 +237,6 @@ public class EventsView extends AbstractView {
 				Command archiveCommand = selectedItem -> {
 					ControllerProvider.getEventController().archiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
 						public void run() {
-							grid.deselectAll();
 							grid.reload();
 						}
 					});
@@ -238,7 +246,6 @@ public class EventsView extends AbstractView {
 				Command dearchiveCommand = selectedItem -> {
 					ControllerProvider.getEventController().dearchiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
 						public void run() {
-							grid.deselectAll();
 							grid.reload();
 						}
 					});
@@ -253,31 +260,72 @@ public class EventsView extends AbstractView {
 		statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
 		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 
-		activeStatusButton = statusAll;
 		return statusFilterLayout;
-	}
-
-	private void updateActiveStatusButtonCaption() {
-		if (activeStatusButton != null) {
-			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getContainer().size())));
-		}
-	}
-
-	private void processStatusChange(EventStatus eventStatus, Button button) {
-		grid.setStatusFilter(eventStatus);
-		statusButtons.keySet().forEach(b -> {
-			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
-			b.setCaption(statusButtons.get(b));
-		});
-		CssStyles.removeStyles(button, CssStyles.BUTTON_FILTER_LIGHT);
-		activeStatusButton = button;
-		updateActiveStatusButtonCaption();
 	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+		String params = event.getParameters().trim();
+		if (params.startsWith("?")) {
+			params = params.substring(1);
+			criteria.fromUrlParams(params);
+		}
+		updateFilterComponents();
 		grid.reload();
-		updateActiveStatusButtonCaption();
+	}
+	
+	public void updateFilterComponents() {
+		// TODO replace with Vaadin 8 databinding
+		applyingCriteria = true;
+
+		resetButton.setVisible(criteria.hasAnyFilterActive());
+		
+		updateStatusButtons();
+		updateArchivedButton();
+
+		typeFilter.setValue(criteria.getEventType());
+		diseaseFilter.setValue(criteria.getDisease());
+		reportedByFilter.setValue(criteria.getReportingUserRole());
+		
+		applyingCriteria = false;
+	}
+	
+	private void updateStatusButtons() {
+		statusButtons.keySet().forEach(b -> {
+			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
+			b.setCaption(statusButtons.get(b));
+			if (b.getData() == criteria.getEventStatus()) {
+				activeStatusButton = b;
+			}
+		});
+		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
+		if (activeStatusButton != null) {
+			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getContainer().size())));
+		}
+	}
+	
+	private void updateArchivedButton() {
+		if (switchArchivedActiveButton == null) {
+			return;
+		}
+		
+		if (Boolean.TRUE.equals(criteria.getArchived())) {
+			getViewTitleLabel().setValue(I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", ".") + ".archive"));
+			switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showActiveEvents"));
+			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
+			if (archiveItem != null && dearchiveItem != null) {
+				archiveItem.setVisible(false);
+				dearchiveItem.setVisible(true);
+			}
+		} else {
+			getViewTitleLabel().setValue(originalViewTitle);
+			switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showArchivedEvents"));
+			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
+			if (archiveItem != null && dearchiveItem != null) {
+				dearchiveItem.setVisible(false);
+				archiveItem.setVisible(true);
+			}
+		} 
 	}
 
 }

@@ -37,7 +37,6 @@ import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 
 public class ContactListFragment extends BaseListFragment<ContactListAdapter> implements OnListItemClickListener {
 
-    private List<Contact> contacts;
     private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerViewForList;
 
@@ -48,20 +47,14 @@ public class ContactListFragment extends BaseListFragment<ContactListAdapter> im
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
-        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        recyclerViewForList = (RecyclerView) view.findViewById(R.id.recyclerViewForList);
+        linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
+        recyclerViewForList = view.findViewById(R.id.recyclerViewForList);
         return view;
     }
 
     @Override
-    protected void prepareFragmentData() {
-        contacts = DatabaseHelper.getContactDao().queryForEq(Contact.FOLLOW_UP_STATUS, getListFilter(), Contact.REPORT_DATE_TIME, false);
-        getListAdapter().replaceAll(contacts);
-    }
-
-    @Override
     public ContactListAdapter getNewListAdapter() {
-        return new ContactListAdapter(R.layout.row_read_contact_list_item_layout, this, this.contacts, (FollowUpStatus) getListFilter());
+        return (ContactListAdapter) ((ContactListActivity) getActivity()).getAdapter();
     }
 
     @Override

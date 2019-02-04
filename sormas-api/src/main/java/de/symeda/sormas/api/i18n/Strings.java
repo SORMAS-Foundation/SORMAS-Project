@@ -1,20 +1,23 @@
 package de.symeda.sormas.api.i18n;
 
-/**
- * To update this file run the I18nConstantGenerator unit test
- */
 public interface Strings {
 
 	public static String visitCompletedSubject = "visitCompletedSubject";
 	public static String daysBeforeCaseStart = "daysBeforeCaseStart";
+	public static String treatment = "treatment";
 	public static String tasks = "tasks";
 	public static String confirmedCriteria = "confirmedCriteria";
+	public static String viewPrescription = "viewPrescription";
+	public static String deleteConfirmationHeadline = "deleteConfirmationHeadline";
 	public static String one = "one";
+	public static String entityOutdated = "entityOutdated";
 	public static String taskDueSpecific = "taskDueSpecific";
+	public static String errorWasReported = "errorWasReported";
 	public static String contactSymptomaticSubject = "contactSymptomaticSubject";
 	public static String nine = "nine";
 	public static String yes = "yes";
 	public static String labResultArrived = "labResultArrived";
+	public static String warningTitle = "warningTitle";
 	public static String caze = "caze";
 	public static String taskDueSubject = "taskDueSubject";
 	public static String contact = "contact";
@@ -22,11 +25,13 @@ public interface Strings {
 	public static String onePositiveTestResult = "onePositiveTestResult";
 	public static String twelve = "twelve";
 	public static String importSkips = "importSkips";
+	public static String errorTitle = "errorTitle";
 	public static String events = "events";
 	public static String cases = "cases";
 	public static String archiveNotification = "archiveNotification";
 	public static String seven = "seven";
 	public static String taskStartSpecific = "taskStartSpecific";
+	public static String prescription = "prescription";
 	public static String three = "three";
 	public static String personAged = "personAged";
 	public static String eleven = "eleven";
@@ -38,20 +43,25 @@ public interface Strings {
 	public static String event = "event";
 	public static String classificationRulesFor = "classificationRulesFor";
 	public static String between = "between";
+	public static String nothingSelectedText = "nothingSelectedText";
 	public static String EpiData_epiDataHint = "EpiData.epiDataHint";
 	public static String archiveEvent = "archiveEvent";
 	public static String oneOf = "oneOf";
 	public static String archivePrompt = "archivePrompt";
+	public static String editPrescription = "editPrescription";
 	public static String of = "of";
 	public static String two = "two";
 	public static String Symptoms_hint = "Symptoms.hint";
+	public static String createNewPrescription = "createNewPrescription";
 	public static String labResultSpecifiedSubject = "labResultSpecifiedSubject";
 	public static String caseClassificationChangedSubject = "caseClassificationChangedSubject";
 	public static String labResultArrivedSubject = "labResultArrivedSubject";
+	public static String editTreatment = "editTreatment";
 	public static String labSampleShippedShort = "labSampleShippedShort";
 	public static String no = "no";
 	public static String and = "and";
 	public static String dearchiveEvent = "dearchiveEvent";
+	public static String prescriptions = "prescriptions";
 	public static String noneOf = "noneOf";
 	public static String four = "four";
 	public static String taskStartSubject = "taskStartSubject";
@@ -66,25 +76,30 @@ public interface Strings {
 	public static String years = "years";
 	public static String five = "five";
 	public static String importedPersonInfo = "importedPersonInfo";
-	public static String contacts = "contacts";
-	public static String six = "six";
 	public static String importImports = "importImports";
+	public static String six = "six";
+	public static String contacts = "contacts";
 	public static String EpiData_animalHint = "EpiData.animalHint";
+	public static String createNewTreatment = "createNewTreatment";
 	public static String task = "task";
 	public static String importSimilarityInfo = "importSimilarityInfo";
 	public static String allOf = "allOf";
-	public static String caseClassificationChanged = "caseClassificationChanged";
 	public static String probableCriteria = "probableCriteria";
 	public static String importedCaseInfo = "importedCaseInfo";
+	public static String caseClassificationChanged = "caseClassificationChanged";
 	public static String taskStartGeneral = "taskStartGeneral";
 	public static String visitCompleted = "visitCompleted";
-	public static String contactSymptomatic = "contactSymptomatic";
 	public static String criteriaInfo = "criteriaInfo";
+	public static String contactSymptomatic = "contactSymptomatic";
 	public static String criteriaForTestType = "criteriaForTestType";
+	public static String treatments = "treatments";
 	public static String labSampleShipped = "labSampleShipped";
 	public static String labSampleShippedSubject = "labSampleShippedSubject";
 	public static String labResultSpecified = "labResultSpecified";
+	public static String nothingSelectedHeadline = "nothingSelectedHeadline";
+	public static String deleteSelectedText = "deleteSelectedText";
 	public static String notAnswered = "notAnswered";
+	public static String deleteConfirmationText = "deleteConfirmationText";
 	public static String sample = "sample";
 	public static String caseInvestigationDone = "caseInvestigationDone";
 	public static String suspectCriteria = "suspectCriteria";

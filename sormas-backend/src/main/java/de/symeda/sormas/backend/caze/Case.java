@@ -55,6 +55,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
+import de.symeda.sormas.backend.therapy.Therapy;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "cases")
@@ -117,7 +118,8 @@ public class Case extends AbstractDomainObject {
 	private InvestigationStatus investigationStatus;
 	private Hospitalization hospitalization;
 	private EpiData epiData;
-
+	private Therapy therapy;
+	
 	private Region region;
 	private District district;
 	private Community community;
@@ -395,6 +397,19 @@ public class Case extends AbstractDomainObject {
 
 	public void setEpiData(EpiData epiData) {
 		this.epiData = epiData;
+	}
+
+	// It's necessary to do a lazy fetch here because having three eager fetching
+	// one to one relations
+	// produces an error where two non-xa connections are opened
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public Therapy getTherapy() {
+		return therapy;
+	}
+	
+	public void setTherapy(Therapy therapy) {
+		this.therapy = therapy;
 	}
 
 	@Enumerated(EnumType.STRING)

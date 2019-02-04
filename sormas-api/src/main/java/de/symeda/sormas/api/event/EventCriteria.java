@@ -19,10 +19,11 @@ package de.symeda.sormas.api.event;
 
 import java.io.Serializable;
 
+import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRole;
 
-public class EventCriteria implements Serializable {
+public class EventCriteria extends BaseCriteria implements Serializable {
 
 	private static final long serialVersionUID = 2194071020732246594L;
 	
@@ -35,28 +36,28 @@ public class EventCriteria implements Serializable {
 	public EventStatus getEventStatus() {
 		return eventStatus;
 	}
-	public EventCriteria eventStatusEquals(EventStatus eventStatus) {
+	public EventCriteria eventStatus(EventStatus eventStatus) {
 		this.eventStatus = eventStatus;
 		return this;
 	}
 	public EventType getEventType() {
 		return eventType;
 	}
-	public EventCriteria eventTypeEquals(EventType eventType) {
+	public EventCriteria eventType(EventType eventType) {
 		this.eventType = eventType;
 		return this;
 	}
 	public Disease getDisease() {
 		return disease;
 	}
-	public EventCriteria diseaseEquals(Disease disease) {
+	public EventCriteria disease(Disease disease) {
 		this.disease = disease;
 		return this;
 	}
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
 	}
-	public EventCriteria reportingUserHasRole(UserRole reportingUserRole) {
+	public EventCriteria reportingUserRole(UserRole reportingUserRole) {
 		this.reportingUserRole = reportingUserRole;
 		return this;
 	}

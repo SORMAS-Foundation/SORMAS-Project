@@ -29,9 +29,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.region.RegionCriteria;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionFacade;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -70,10 +72,17 @@ public class RegionFacadeEjb implements RegionFacade {
 	}
 	
 	@Override
-	public List<RegionDto> getIndexList() {
+	public List<RegionDto> getIndexList(RegionCriteria criteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Region> cq = cb.createQuery(Region.class);
 		Root<Region> region = cq.from(Region.class);
+		
+		if (criteria != null) {
+			Predicate filter = regionService.buildCriteriaFilter(criteria, cb, region);
+			if (filter != null) {
+				cq.where(filter);
+			}
+		}
 		
 		cq.select(region);
 		cq.orderBy(cb.asc(region.get(Region.NAME)));

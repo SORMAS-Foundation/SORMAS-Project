@@ -33,6 +33,9 @@
 		<class>de.symeda.sormas.backend.user.User</class>
 		<class>de.symeda.sormas.backend.user.UserRoleConfig</class>
 		<class>de.symeda.sormas.backend.visit.Visit</class>
+		<class>de.symeda.sormas.backend.therapy.Therapy</class>
+		<class>de.symeda.sormas.backend.therapy.Treatment</class>
+		<class>de.symeda.sormas.backend.therapy.Prescription</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

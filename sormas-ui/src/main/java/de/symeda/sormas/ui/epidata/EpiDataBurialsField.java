@@ -28,7 +28,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -172,7 +172,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 		burial.setUuid(DataHelper.createUuid());
 		LocationDto location = new LocationDto();
 		location.setUuid(DataHelper.createUuid());
-		location.setRegion(CurrentUser.getCurrent().getUser().getRegion());
+		location.setRegion(UserProvider.getCurrent().getUser().getRegion());
 		burial.setBurialAddress(location);
 		return burial;
 	}

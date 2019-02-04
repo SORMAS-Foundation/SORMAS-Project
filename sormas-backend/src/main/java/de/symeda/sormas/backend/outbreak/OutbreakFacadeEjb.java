@@ -98,7 +98,7 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	public List<OutbreakDto> getActiveByRegionAndDisease(RegionReferenceDto regionRef, Disease disease) {
 
 		List<Outbreak> result = outbreakService.queryByCriteria(
-				new OutbreakCriteria().districtIsInRegion(regionRef).diseaseEquals(disease).active(true), null,
+				new OutbreakCriteria().region(regionRef).disease(disease).active(true), null,
 				Outbreak.DISTRICT, true);
 
 		return result.stream().map(OutbreakFacadeEjb::toDto).collect(Collectors.toList());
@@ -107,7 +107,7 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	@Override
 	public OutbreakDto getActiveByDistrictAndDisease(DistrictReferenceDto districtRef, Disease disease) {
 		List<Outbreak> result = outbreakService.queryByCriteria(
-				new OutbreakCriteria().districtEquals(districtRef).diseaseEquals(disease).active(true), null,
+				new OutbreakCriteria().district(districtRef).disease(disease).active(true), null,
 				Outbreak.DISTRICT, true);
 
 		return result.stream().map(OutbreakFacadeEjb::toDto).findFirst().orElse(null);
@@ -116,7 +116,7 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	@Override
 	public boolean hasOutbreak(DistrictReferenceDto district, Disease disease) {
 		Long count = outbreakService.countByCriteria(
-				new OutbreakCriteria().districtEquals(district).diseaseEquals(disease).active(true), null);
+				new OutbreakCriteria().district(district).disease(disease).active(true), null);
 		return count > 0;
 	}
 

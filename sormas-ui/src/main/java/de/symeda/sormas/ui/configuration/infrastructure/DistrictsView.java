@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 
 import java.util.Date;
 
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.StreamResource;
@@ -30,13 +31,16 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.region.DistrictCriteria;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
@@ -49,6 +53,13 @@ public class DistrictsView extends AbstractConfigurationView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/districts";
 
+	private DistrictCriteria criteria;
+
+	// Filter
+	private TextField searchField;
+	private ComboBox regionFilter;
+	private Button resetButton;
+
 	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;
 	private DistrictsGrid grid;
@@ -56,7 +67,11 @@ public class DistrictsView extends AbstractConfigurationView {
 
 	public DistrictsView() {
 		super(VIEW_NAME);
+
+		criteria = ViewModelProviders.of(DistrictsView.class).get(DistrictCriteria.class);
+
 		grid = new DistrictsGrid();
+		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(grid);
@@ -65,7 +80,6 @@ public class DistrictsView extends AbstractConfigurationView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
-		grid.reload();
 
 		Button exportButton = new Button("Export");
 		exportButton.setDescription("Export the columns and rows that are shown in the table below.");
@@ -77,7 +91,7 @@ public class DistrictsView extends AbstractConfigurationView {
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
 		fileDownloader.extend(exportButton);
 
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = new Button("New entry");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
@@ -94,27 +108,61 @@ public class DistrictsView extends AbstractConfigurationView {
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
 
-		TextField searchField = new TextField();
+		searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
+		searchField.setNullRepresentation("");
 		searchField.setInputPrompt(I18nProperties.getCaption(SEARCH));
 		searchField.addTextChangeListener(e -> {
-			grid.filterByText(e.getText());
+			criteria.nameEpidLike(e.getText());
+			navigateTo(criteria);
 		});
 		CssStyles.style(searchField, CssStyles.FORCE_CAPTION);
 		filterLayout.addComponent(searchField);
 
-		ComboBox regionFilter = new ComboBox();
+		regionFilter = new ComboBox();
 		regionFilter.setWidth(140, Unit.PIXELS);
 		regionFilter.setCaption(I18nProperties.getPrefixCaption(DistrictDto.I18N_PREFIX, DistrictDto.REGION));
 		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 		regionFilter.addValueChangeListener(e -> {
-			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
-			grid.setRegionFilter(region);
-
+			criteria.region((RegionReferenceDto) e.getProperty().getValue());
+			navigateTo(criteria);
 		});
 		filterLayout.addComponent(regionFilter);
 
+		resetButton = new Button(I18nProperties.getCaption(Captions.resetFilters));
+		resetButton.setVisible(false);
+		CssStyles.style(resetButton, CssStyles.FORCE_CAPTION);
+		resetButton.addClickListener(event -> {
+			ViewModelProviders.of(DistrictsView.class).remove(DistrictCriteria.class);
+			navigateTo(null);
+		});
+		filterLayout.addComponent(resetButton);
+
 		return filterLayout;
+	}	
+
+	@Override
+	public void enter(ViewChangeEvent event) {
+		super.enter(event);
+		String params = event.getParameters().trim();
+		if (params.startsWith("?")) {
+			params = params.substring(1);
+			criteria.fromUrlParams(params);
+		}
+		updateFilterComponents();
+		grid.reload();
+	}
+
+	public void updateFilterComponents() {
+		// TODO replace with Vaadin 8 databinding
+		applyingCriteria = true;
+
+		resetButton.setVisible(criteria.hasAnyFilterActive());
+
+		searchField.setValue(criteria.getNameEpidLike());
+		regionFilter.setValue(criteria.getRegion());
+		
+		applyingCriteria = false;
 	}	
 
 }

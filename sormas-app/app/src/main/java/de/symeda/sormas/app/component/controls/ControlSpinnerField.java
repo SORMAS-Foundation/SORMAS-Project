@@ -250,9 +250,9 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 
     @Override
     public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled); // this has to be called first
         input.setEnabled(enabled);
         label.setEnabled(enabled);
-        super.setEnabled(enabled);
     }
 
     @Override

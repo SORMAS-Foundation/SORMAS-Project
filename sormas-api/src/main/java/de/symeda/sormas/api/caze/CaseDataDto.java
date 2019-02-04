@@ -29,6 +29,7 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
@@ -66,6 +67,7 @@ public class CaseDataDto extends EntityDto {
 	public static final String SYMPTOMS = "symptoms";
 	public static final String HOSPITALIZATION = "hospitalization";
 	public static final String EPI_DATA = "epiData";
+	public static final String THERAPY = "therapy";
 	public static final String PREGNANT = "pregnant";
 	public static final String VACCINATION = "vaccination";
 	public static final String VACCINATION_DOSES = "vaccinationDoses";
@@ -161,7 +163,8 @@ public class CaseDataDto extends EntityDto {
 	private HospitalizationDto hospitalization;
 	private SymptomsDto symptoms;
 	private EpiDataDto epiData;
-
+	private TherapyDto therapy;
+	
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();
 		caze.setUuid(DataHelper.createUuid());
@@ -169,6 +172,7 @@ public class CaseDataDto extends EntityDto {
 		caze.setHospitalization(HospitalizationDto.build());
 		caze.setEpiData(EpiDataDto.build());
 		caze.setSymptoms(SymptomsDto.build());
+		caze.setTherapy(TherapyDto.build());
 		caze.setDisease(disease);
 		caze.setInvestigationStatus(InvestigationStatus.PENDING);
 		caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
@@ -369,6 +373,14 @@ public class CaseDataDto extends EntityDto {
 
 	public void setEpiData(EpiDataDto epiData) {
 		this.epiData = epiData;
+	}
+	
+	public TherapyDto getTherapy() {
+		return therapy;
+	}
+	
+	public void setTherapy(TherapyDto therapy) {
+		this.therapy = therapy;
 	}
 
 	public YesNoUnknown getPregnant() {

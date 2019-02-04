@@ -17,18 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.data.util.filter.Or;
-import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.SelectionModel.HasUserSelectionAllowed;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -36,14 +33,14 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.CommunityCriteria;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.AbstractGrid;
 
 @SuppressWarnings("serial")
-public class CommunitiesGrid extends Grid {
+public class CommunitiesGrid extends Grid implements AbstractGrid<CommunityCriteria> {
 
 	private static final long serialVersionUID = 3355810665696318673L;
 
@@ -73,7 +70,7 @@ public class CommunitiesGrid extends Grid {
 			}
 		});
 		
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			generatedContainer.addGeneratedProperty(EDIT_BTN_ID, new PropertyValueGenerator<String>() {
 				private static final long serialVersionUID = -7255691609662228895L;
 
@@ -96,7 +93,7 @@ public class CommunitiesGrid extends Grid {
         			CommunityDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
 		
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addColumn(EDIT_BTN_ID);
 			getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
 			getColumn(EDIT_BTN_ID).setWidth(40);
@@ -116,32 +113,23 @@ public class CommunitiesGrid extends Grid {
 	}
 	
 	public void reload() {
+		if (getSelectionModel() instanceof HasUserSelectionAllowed) {
+			deselectAll();
+		}
+		
 		List<CommunityDto> districts = FacadeProvider.getCommunityFacade().getIndexList(communityCriteria);
 		getContainer().removeAllItems();
 		getContainer().addAll(districts);
 	}
-	
-	public void filterByText(String text) {
-		getContainer().removeContainerFilters(CommunityDto.NAME);
 
-		if (text != null && !text.isEmpty()) {
-			List<Filter> orFilters = new ArrayList<Filter>();
-			String[] words = text.split("\\s+");
-			for (String word : words) {
-				orFilters.add(new SimpleStringFilter(CommunityDto.NAME, word, true, false));
-			}
-			getContainer().addContainerFilter(new Or(orFilters.stream().toArray(Filter[]::new)));
-		}
+	@Override
+	public CommunityCriteria getCriteria() {
+		return communityCriteria;
 	}
 	
-	public void setRegionFilter(RegionReferenceDto region) {
-		communityCriteria.regionEquals(region);
-		reload();
-	}
-
-	public void setDistrictFilter(DistrictReferenceDto district) {
-		communityCriteria.districtEquals(district);
-		reload();
-	}
+	@Override
+	public void setCriteria(CommunityCriteria communityCriteria) {
+		this.communityCriteria = communityCriteria;
+	}	
 	
 }

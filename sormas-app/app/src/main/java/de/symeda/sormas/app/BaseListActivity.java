@@ -29,13 +29,20 @@ import android.widget.TextView;
 import de.symeda.sormas.app.component.menu.PageMenuControl;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
+import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
+import de.symeda.sormas.app.databinding.RowCaseListItemLayoutBinding;
 import de.symeda.sormas.app.util.Bundler;
+import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.Consumer;
 
 public abstract class BaseListActivity extends BaseActivity implements IUpdateSubHeadingTitle, PageMenuControl.NotificationCountChangingListener {
 
     private TextView subHeadingListActivityTitle;
     private MenuItem newMenu = null;
     private BaseListFragment activeFragment = null;
+    private Consumer<PageMenuItem> openPageCallback;
+
+    protected DataBoundAdapter<?> adapter;
 
     public static Bundler buildBundle(Enum listFilter) {
         return BaseActivity.buildBundle(listFilter.ordinal());
@@ -114,6 +121,10 @@ public abstract class BaseListActivity extends BaseActivity implements IUpdateSu
             subHeadingListActivityTitle.setText(t);
     }
 
+    public void setOpenPageCallback(Consumer<PageMenuItem> callback) {
+        this.openPageCallback = callback;
+    }
+
     @Override
     public void updateSubHeadingTitle() {
         if (getActiveFragment() != null && getActiveFragment().getListFilter() != null) {
@@ -141,8 +152,15 @@ public abstract class BaseListActivity extends BaseActivity implements IUpdateSu
         if (newActiveFragment == null)
             return false;
         replaceFragment(newActiveFragment);
+        if (openPageCallback != null) {
+            openPageCallback.accept(menuItem);
+        }
         return true;
     }
 
     protected abstract BaseListFragment buildListFragment(PageMenuItem menuItem);
+
+    public DataBoundAdapter<?> getAdapter() {
+        return adapter;
+    }
 }

@@ -19,22 +19,23 @@ package de.symeda.sormas.api.facility;
 
 import java.io.Serializable;
 
+import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.IgnoreForUrl;
 
-public class FacilityCriteria implements Serializable, Cloneable {
+public class FacilityCriteria extends BaseCriteria implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 3958619224286048978L;
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
-
+	private String nameCityLike;
 	private FacilityType type;
-	private Boolean excludeStaticFacilities;
-
-	public FacilityCriteria regionEquals(RegionReferenceDto region) {
+	
+	public FacilityCriteria region(RegionReferenceDto region) {
 		this.region = region;
 		return this;
 	}
@@ -43,39 +44,41 @@ public class FacilityCriteria implements Serializable, Cloneable {
 		return region;
 	}
 
+	public FacilityCriteria district(DistrictReferenceDto district) {
+		this.district = district;
+		return this;
+	}
+
 	public DistrictReferenceDto getDistrict() {
 		return district;
+	}
+
+	public FacilityCriteria community(CommunityReferenceDto community) {
+		this.community = community;
+		return this;
 	}
 
 	public CommunityReferenceDto getCommunity() {
 		return community;
 	}
 
-	public FacilityType getType() {
-		return type;
-	}
-	
-	public Boolean isExcludeStaticFacilities() {
-		return excludeStaticFacilities;
-	}
-
-	public FacilityCriteria districtEquals(DistrictReferenceDto district) {
-		this.district = district;
-		return this;
-	}
-
-	public FacilityCriteria communityEquals(CommunityReferenceDto community) {
-		this.community = community;
-		return this;
-	}
-
-	public FacilityCriteria typeEquals(FacilityType type) {
+	public FacilityCriteria type(FacilityType type) {
 		this.type = type;
 		return this;
 	}
+
+	@IgnoreForUrl
+	public FacilityType getType() {
+		return type;
+	}
+
+	@IgnoreForUrl
+	public String getNameCityLike() {
+		return nameCityLike;
+	}
 	
-	public FacilityCriteria excludeStaticFacilitesEquals(boolean excludeStaticFacilities) {
-		this.excludeStaticFacilities = excludeStaticFacilities;
+	public FacilityCriteria nameCityLike(String nameCityLike) {
+		this.nameCityLike = nameCityLike;
 		return this;
 	}
 }

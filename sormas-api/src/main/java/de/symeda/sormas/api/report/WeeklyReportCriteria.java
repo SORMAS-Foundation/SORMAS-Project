@@ -19,11 +19,12 @@ package de.symeda.sormas.api.report;
 
 import java.io.Serializable;
 
+import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.EpiWeek;
 
-public class WeeklyReportCriteria implements Serializable, Cloneable {
+public class WeeklyReportCriteria extends BaseCriteria implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -31,8 +32,8 @@ public class WeeklyReportCriteria implements Serializable, Cloneable {
 	private UserReferenceDto reportingUser;
 	private RegionReferenceDto reportingUserRegion;
 	private UserReferenceDto assignedOfficer;
-	private Boolean isOfficer;
-	private Boolean isZeroReport;
+	private Boolean officerReport;
+	private Boolean zeroReport;
 
 	@Override
 	public WeeklyReportCriteria clone() {
@@ -70,21 +71,21 @@ public class WeeklyReportCriteria implements Serializable, Cloneable {
 		return this;
 	}
 
-	public Boolean getIsOfficer() {
-		return isOfficer;
+	public Boolean getOfficerReport() {
+		return officerReport;
 	}
 
-	public WeeklyReportCriteria isOfficer(Boolean isOfficer) {
-		this.isOfficer = isOfficer;
+	public WeeklyReportCriteria officerReport(Boolean officerReport) {
+		this.officerReport = officerReport;
 		return this;
 	}
 
-	public Boolean getIsZeroReport() {
-		return isZeroReport;
+	public Boolean getZeroReport() {
+		return zeroReport;
 	}
 
-	public WeeklyReportCriteria isZeroReport(Boolean isZeroReport) {
-		this.isZeroReport = isZeroReport;
+	public WeeklyReportCriteria zeroReport(Boolean zeroReport) {
+		this.zeroReport = zeroReport;
 		return this;
 	}
 

@@ -20,19 +20,21 @@ package de.symeda.sormas.api.task;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class TaskCriteria implements Serializable {
+public class TaskCriteria extends BaseCriteria implements Serializable {
 
 	private static final long serialVersionUID = -9174165215694877625L;
 
-	private TaskStatus[] taskStatuses;
+	private TaskStatus taskStatus;
 	private TaskType taskType;
 	private UserReferenceDto assigneeUser;
+	private UserReferenceDto excludeAssigneeUser;
 	private CaseReferenceDto caze;
 	private ContactReferenceDto contact;
 	private PersonReferenceDto contactPerson;
@@ -44,99 +46,157 @@ public class TaskCriteria implements Serializable {
 	private Date statusChangeDateFrom;
 	private Date statusChangeDateTo;
 	private Boolean archived;
-	
-	public TaskStatus[] getTaskStatuses() {
-		return taskStatuses;
+
+	public TaskCriteria taskStatus(TaskStatus taskStatus) {
+		this.taskStatus = taskStatus;
+		return this;
 	}
-	public TaskCriteria taskStatusEquals(TaskStatus ...taskStatuses) {
-		this.taskStatuses = taskStatuses;
+	
+	public TaskStatus getTaskStatus() {
+		return taskStatus;
+	}
+
+	public TaskCriteria taskType(TaskType taskType) {
+		this.taskType = taskType;
 		return this;
 	}
 	public TaskType getTaskType() {
 		return taskType;
 	}
-	
-	public TaskCriteria taskTypeEquals(TaskType taskType) {
-		this.taskType = taskType;
+
+	public TaskCriteria assigneeUser(UserReferenceDto assigneeUser) {
+		this.assigneeUser = assigneeUser;
 		return this;
 	}
 	public UserReferenceDto getAssigneeUser() {
 		return assigneeUser;
 	}
-	public TaskCriteria assigneeUserEquals(UserReferenceDto assigneeUser) {
-		this.assigneeUser = assigneeUser;
+	
+	public TaskCriteria excludeAssigneeUser(UserReferenceDto excludeAssigneeUser) {
+		this.excludeAssigneeUser = excludeAssigneeUser;
+		return this;
+	}
+	public UserReferenceDto getExcludeAssigneeUser() {
+		return excludeAssigneeUser;
+	}
+
+	public TaskCriteria caze(CaseReferenceDto caze) {
+		this.caze = caze;
 		return this;
 	}
 	public CaseReferenceDto getCaze() {
 		return caze;
 	}
-	public TaskCriteria cazeEquals(CaseReferenceDto caze) {
-		this.caze = caze;
+
+	public TaskCriteria contact(ContactReferenceDto contact) {
+		this.contact = contact;
 		return this;
 	}
 	public ContactReferenceDto getContact() {
 		return contact;
 	}
-	public TaskCriteria contactEquals(ContactReferenceDto contact) {
-		this.contact = contact;
-		return this;
-	}
-	public PersonReferenceDto getContactPerson() {
-		return contactPerson;
-	}
-	public TaskCriteria contactPersonEquals(PersonReferenceDto contactPerson) {
+
+	public TaskCriteria contactPerson(PersonReferenceDto contactPerson) {
 		this.contactPerson = contactPerson;
 		return this;
 	}
-	public EventReferenceDto getEvent() {
-		return event;
-	}
-	public TaskCriteria eventEquals(EventReferenceDto event) {
+	
+	public TaskCriteria event(EventReferenceDto event) {
 		this.event = event;
 		return this;
 	}
-	public Date getDueDateFrom() {
-		return dueDateFrom;
+	
+	public PersonReferenceDto getContactPerson() {
+		return contactPerson;
 	}
-	public Date getDueDateTo() {
-		return dueDateTo;
+
+	public EventReferenceDto getEvent() {
+		return event;
 	}
+
+	public boolean hasContextCriteria() {
+		return getCaze() != null || getEvent() != null || getContact() != null;
+	}
+
 	public TaskCriteria dueDateBetween(Date dueDateFrom, Date dueDateTo) {
 		this.dueDateFrom = dueDateFrom;
 		this.dueDateTo = dueDateTo;
 		return this;
 	}
-	public Date getStartDateFrom() {
-		return startDateFrom;
+	
+	public TaskCriteria dueDateFrom(Date dueDateFrom) {
+		this.dueDateFrom = dueDateFrom;
+		return this;
 	}
-	public Date getStartDateTo() {
-		return startDateTo;
+
+	public Date getDueDateFrom() {
+		return dueDateFrom;
 	}
+	
+	public TaskCriteria dueDateTo(Date dueDateTo) {
+		this.dueDateTo = dueDateTo;
+		return this;
+	}
+	
+	public Date getDueDateTo() {
+		return dueDateTo;
+	}
+	
 	public TaskCriteria startDateBetween(Date startDateFrom, Date startDateTo) {
 		this.startDateFrom = startDateFrom;
 		this.startDateTo = startDateTo;
 		return this;
 	}
-	public Date getStatusChangeDateFrom() {
-		return statusChangeDateFrom;
+
+	public TaskCriteria startDateFrom(Date startDateFrom) {
+		this.startDateFrom = startDateFrom;
+		return this;
 	}
-	public Date getStatusChangeDateTo() {
-		return statusChangeDateTo;
+	
+	public Date getStartDateFrom() {
+		return startDateFrom;
 	}
+
+	public TaskCriteria startDateTo(Date startDateTo) {
+		this.startDateTo = startDateTo;
+		return this;
+	}
+	
+	public Date getStartDateTo() {
+		return startDateTo;
+	}
+	
+
 	public TaskCriteria statusChangeDateBetween(Date statusChangeDateFrom, Date statusChangeDateTo) {
 		this.statusChangeDateFrom = statusChangeDateFrom;
 		this.statusChangeDateTo = statusChangeDateTo;
 		return this;
 	}
-	public Boolean getArchived() {
-		return archived;
+
+	public TaskCriteria statusChangeDateFrom(Date statusChangeDateFrom) {
+		this.statusChangeDateFrom = statusChangeDateFrom;
+		return this;
 	}
+	
+	public Date getStatusChangeDateFrom() {
+		return statusChangeDateFrom;
+	}
+	
+	public TaskCriteria statusChangeDateTo(Date statusChangeDateTo) {
+		this.statusChangeDateTo = statusChangeDateTo;
+		return this;
+	}
+	
+	public Date getStatusChangeDateTo() {
+		return statusChangeDateTo;
+	}
+	
 	public TaskCriteria archived(Boolean archived) {
 		this.archived = archived;
 		return this;
 	}
 	
-	public boolean hasContextCriteria() {
-		return getCaze() != null || getEvent() != null || getContact() != null;
+	public Boolean getArchived() {
+		return archived;
 	}
 }

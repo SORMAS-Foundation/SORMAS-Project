@@ -31,6 +31,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.region.DistrictCriteria;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.user.User;
@@ -140,6 +141,19 @@ public class DistrictService extends AbstractAdoService<District> {
 		Predicate filter = null;
 		if (criteria.getRegion() != null) {
 			filter = and(cb, filter, cb.equal(from.join(District.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
+		}
+		if (criteria.getNameEpidLike() != null) {
+			String[] textFilters = criteria.getNameEpidLike().split("\\s+");
+			for (int i=0; i<textFilters.length; i++)
+			{
+				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+							cb.like(cb.lower(from.get(District.NAME)), textFilter),
+							cb.like(cb.lower(from.get(District.EPID_CODE)), textFilter));
+					filter = and(cb, filter, likeFilters);
+				}
+			}
 		}
 		return filter;
 	}

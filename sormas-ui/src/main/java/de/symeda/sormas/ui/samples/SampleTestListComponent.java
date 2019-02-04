@@ -29,7 +29,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
@@ -52,7 +52,7 @@ public class SampleTestListComponent extends VerticalLayout {
 		Label tasksHeader = new Label(LayoutUtil.h3("Tests"), ContentMode.HTML);
 		componentHeader.addComponent(tasksHeader);
 
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.SAMPLETEST_CREATE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLETEST_CREATE)) {
 			createButton = new Button("New test");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);

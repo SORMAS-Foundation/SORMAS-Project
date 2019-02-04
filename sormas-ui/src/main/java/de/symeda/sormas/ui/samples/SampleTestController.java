@@ -37,7 +37,7 @@ import de.symeda.sormas.api.sample.SampleTestReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
@@ -91,11 +91,11 @@ public class SampleTestController {
 			}
 		});
 
-        if (CurrentUser.getCurrent().hasUserRole(UserRole.ADMIN)) {
+        if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getSampleTestFacade().deleteSampleTest(dto.toReference(), CurrentUser.getCurrent().getUserReference().getUuid());
+					FacadeProvider.getSampleTestFacade().deleteSampleTest(dto.toReference(), UserProvider.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().removeWindow(popupWindow);
 					callback.run();
 				}
@@ -123,8 +123,8 @@ public class SampleTestController {
 		SampleTestDto sampleTest = new SampleTestDto();
 		sampleTest.setUuid(DataHelper.createUuid());
 		sampleTest.setSample(sampleRef);
-		sampleTest.setLab(CurrentUser.getCurrent().getUser().getLaboratory());
-		sampleTest.setLabUser(CurrentUser.getCurrent().getUserReference());
+		sampleTest.setLab(UserProvider.getCurrent().getUser().getLaboratory());
+		sampleTest.setLabUser(UserProvider.getCurrent().getUserReference());
 		return sampleTest;
 	}
 	
@@ -135,7 +135,7 @@ public class SampleTestController {
 			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected sample tests?", new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getSampleTestFacade().deleteSampleTest(new SampleTestReferenceDto(((SampleTestDto) selectedRow).getUuid()), CurrentUser.getCurrent().getUuid());
+						FacadeProvider.getSampleTestFacade().deleteSampleTest(new SampleTestReferenceDto(((SampleTestDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification("Sample tests deleted", "All selected sample tests have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());

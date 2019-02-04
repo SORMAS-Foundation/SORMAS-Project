@@ -17,33 +17,34 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.data.util.filter.Or;
-import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.SelectionModel.HasUserSelectionAllowed;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.region.RegionCriteria;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.AbstractGrid;
 
-public class RegionsGrid extends Grid {
+public class RegionsGrid extends Grid implements AbstractGrid<RegionCriteria> {
 
 	private static final long serialVersionUID = 6289713952342575369L;
 
 	public static final String EDIT_BTN_ID = "edit";
 	
+	private RegionCriteria regionCriteria = new RegionCriteria();
+
 	public RegionsGrid() {
 		setSizeFull();
 		setSelectionMode(SelectionMode.NONE);
@@ -52,7 +53,7 @@ public class RegionsGrid extends Grid {
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		setContainerDataSource(generatedContainer);
 		
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			generatedContainer.addGeneratedProperty(EDIT_BTN_ID, new PropertyValueGenerator<String>() {
 				private static final long serialVersionUID = -7255691609662228895L;
 
@@ -75,7 +76,7 @@ public class RegionsGrid extends Grid {
         			RegionDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
         
-		if (CurrentUser.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addColumn(EDIT_BTN_ID);
 			getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
 			getColumn(EDIT_BTN_ID).setWidth(40);
@@ -95,24 +96,22 @@ public class RegionsGrid extends Grid {
 	}
 	
 	public void reload() {
-		List<RegionDto> regions = FacadeProvider.getRegionFacade().getIndexList();
+		if (getSelectionModel() instanceof HasUserSelectionAllowed) {
+			deselectAll();
+		}
+		
+		List<RegionDto> regions = FacadeProvider.getRegionFacade().getIndexList(regionCriteria);
 		getContainer().removeAllItems();
 		getContainer().addAll(regions);
 	}
-	
-	public void filterByText(String text) {
-		getContainer().removeContainerFilters(RegionDto.NAME);
-		getContainer().removeContainerFilters(RegionDto.EPID_CODE);
 
-		if (text != null && !text.isEmpty()) {
-			List<Filter> orFilters = new ArrayList<Filter>();
-			String[] words = text.split("\\s+");
-			for (String word : words) {
-				orFilters.add(new SimpleStringFilter(RegionDto.NAME, word, true, false));
-				orFilters.add(new SimpleStringFilter(RegionDto.EPID_CODE, word, true, false));
-			}
-			getContainer().addContainerFilter(new Or(orFilters.stream().toArray(Filter[]::new)));
-		}
+	@Override
+	public RegionCriteria getCriteria() {
+		return regionCriteria;
 	}
 	
+	@Override
+	public void setCriteria(RegionCriteria regionCriteria) {
+		this.regionCriteria = regionCriteria;
+	}
 }

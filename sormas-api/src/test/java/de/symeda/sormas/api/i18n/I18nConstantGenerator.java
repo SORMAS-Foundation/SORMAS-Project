@@ -17,6 +17,7 @@ public class I18nConstantGenerator {
 	
 	@Test
 	public void generateI18nConstants() throws FileNotFoundException, IOException {
+		generateI18nConstantClass("captions.properties", "Captions");
 		generateI18nConstantClass("strings.properties", "Strings");
 		generateI18nConstantClass("validations.properties", "Validations");
 	}
@@ -35,7 +36,7 @@ public class I18nConstantGenerator {
         writer.write("public interface " + outputClassName + " {\n\n");
         while (e.hasMoreElements()) {
             String key = (String) e.nextElement();
-            String constant =  key.replaceAll("\\.", "_");
+            String constant =  key.replaceAll("[\\.\\-]", "_");
             writer.write("\tpublic static String "+constant+" = \""+key+"\";\n");
         }
         writer.write(" }\n");

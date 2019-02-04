@@ -198,6 +198,33 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         }
     }
 
+    public List<ADO> queryForEq(String fieldName, Object value, String orderBy, boolean ascending, long offset, long limit) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.eq(fieldName, value);
+            where.and().eq(AbstractDomainObject.SNAPSHOT, false).query();
+            return builder.orderBy(orderBy, ascending).offset(offset).limit(limit).query();
+        } catch (SQLException | IllegalArgumentException e) {
+            Log.e(getTableName(), "Could not perform queryForEq");
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public long countOfEq(String fieldName, Object value) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.eq(fieldName, value);
+            where.and().eq(AbstractDomainObject.SNAPSHOT, false).query();
+            return builder.countOf();
+        } catch (SQLException | IllegalArgumentException e) {
+            Log.e(getTableName(), "Could not perform countOfEq");
+            throw new RuntimeException(e);
+        }
+    }
+
     public List<ADO> querySnapshotsForEq(String fieldName, Object value, String orderBy, boolean ascending) {
         try {
             QueryBuilder builder = queryBuilder();

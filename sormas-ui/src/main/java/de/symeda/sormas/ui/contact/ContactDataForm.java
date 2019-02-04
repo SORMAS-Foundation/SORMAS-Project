@@ -50,7 +50,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -97,7 +97,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
     	addField(ContactDto.FOLLOW_UP_STATUS, ComboBox.class);
     	addField(ContactDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(1);
-    	addField(ContactDto.FOLLOW_UP_UNTIL, DateField.class);
+    	addDateField(ContactDto.FOLLOW_UP_UNTIL, DateField.class, -1);
 
     	ComboBox contactOfficerField = addField(ContactDto.CONTACT_OFFICER, ComboBox.class);
     	contactOfficerField.setNullSelectionAllowed(true);
@@ -128,7 +128,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	    	}
     	    	else if (getValue().getContactClassification() == ContactClassification.CONFIRMED) {
     	    		// only when confirmed
-    	    		if (CurrentUser.getCurrent().hasUserRight(UserRight.CONTACT_CONVERT)) {
+    	    		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CONVERT)) {
 	    		    	Button toCaseButton = new Button("Create a case for this contact person");
 	    				toCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
 	    				
@@ -160,7 +160,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		Field<FollowUpStatus> statusField = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
 		boolean followUpVisible = getValue() != null && statusField.isVisible();
-		if (followUpVisible && CurrentUser.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
+		if (followUpVisible && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
 			FollowUpStatus followUpStatus = statusField.getValue();
 			if (followUpStatus == FollowUpStatus.FOLLOW_UP) {
 				

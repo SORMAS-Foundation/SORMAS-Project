@@ -83,22 +83,22 @@ public class TaskService extends AbstractAdoService<Task> {
 
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	public List<String> getAllActiveUuids(User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Task> from = cq.from(getElementClass());
 
 		Predicate filter = buildActiveTasksFilter(cb, from);
-		
+
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
 			filter = cb.and(filter, userFilter);
 		}
-		
+
 		cq.where(filter);
 		cq.select(from.get(Task.UUID));
-		
+
 		return em.createQuery(cq).getResultList();
 	}
 
@@ -174,22 +174,17 @@ public class TaskService extends AbstractAdoService<Task> {
 		Join<Contact, Case> contactCaze = contact.join(Contact.CAZE, JoinType.LEFT);
 		Join<Task, Event> event = from.join(Task.EVENT, JoinType.LEFT);
 
-		if (taskCriteria.getTaskStatuses() != null && taskCriteria.getTaskStatuses().length > 0) {
-			if (taskCriteria.getTaskStatuses().length == 1) {
-				filter = and(cb, filter, cb.equal(from.get(Task.TASK_STATUS), taskCriteria.getTaskStatuses()[0]));
-			} else {
-				Predicate subFilter = null;
-				for (TaskStatus taskStatus : taskCriteria.getTaskStatuses()) {
-					subFilter = or(cb, subFilter, cb.equal(from.get(Task.TASK_STATUS), taskStatus));
-				}
-				filter = and(cb, filter, subFilter);
-			}
+		if (taskCriteria.getTaskStatus() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Task.TASK_STATUS), taskCriteria.getTaskStatus()));
 		}
 		if (taskCriteria.getTaskType() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Task.TASK_TYPE), taskCriteria.getTaskType()));
 		}
 		if (taskCriteria.getAssigneeUser() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Task.ASSIGNEE_USER, JoinType.LEFT).get(User.UUID), taskCriteria.getAssigneeUser().getUuid()));
+		}
+		if (taskCriteria.getExcludeAssigneeUser() != null) {
+			filter = and(cb, filter, cb.notEqual(from.join(Task.ASSIGNEE_USER, JoinType.LEFT).get(User.UUID), taskCriteria.getExcludeAssigneeUser().getUuid()));
 		}
 		if (taskCriteria.getCaze() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Task.CAZE, JoinType.LEFT).get(User.UUID), taskCriteria.getCaze().getUuid()));
@@ -217,22 +212,20 @@ public class TaskService extends AbstractAdoService<Task> {
 			filter = cb.and(filter, cb.greaterThanOrEqualTo(from.get(Task.STATUS_CHANGE_DATE), taskCriteria.getStatusChangeDateFrom()));
 			filter = cb.and(filter, cb.lessThan(from.get(Task.STATUS_CHANGE_DATE), taskCriteria.getStatusChangeDateTo()));
 		}
-		if (taskCriteria.getArchived() != null) {
-			if (taskCriteria.getArchived() == true) {
-				filter = and(cb, filter,
-						cb.or(
-								cb.and(
-										cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE),
-										cb.equal(caze.get(Case.ARCHIVED), true)),
-								cb.and(
-										cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
-										cb.equal(contactCaze.get(Case.ARCHIVED), true)),
-								cb.and(
-										cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
-										cb.equal(event.get(Event.ARCHIVED), true))));
-			} else {
-				filter = and(cb, filter, buildActiveTasksFilter(cb, from));
-			}
+		if (Boolean.TRUE.equals(taskCriteria.getArchived())) {
+			filter = and(cb, filter,
+					cb.or(
+							cb.and(
+									cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE),
+									cb.equal(caze.get(Case.ARCHIVED), true)),
+							cb.and(
+									cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
+									cb.equal(contactCaze.get(Case.ARCHIVED), true)),
+							cb.and(
+									cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
+									cb.equal(event.get(Event.ARCHIVED), true))));
+		} else {
+			filter = and(cb, filter, buildActiveTasksFilter(cb, from));
 		}
 		return filter;
 	}

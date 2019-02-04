@@ -203,7 +203,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 
     @Override
     public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
+        super.setEnabled(enabled); // this has to be called first
         input.setEnabled(enabled);
         label.setEnabled(enabled);
     }

@@ -142,5 +142,4 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     public int getEditLayout() {
         return R.layout.fragment_case_new_layout;
     }
-
 }

@@ -19,11 +19,17 @@
 package de.symeda.sormas.app.contact.edit;
 
 import android.content.res.Resources;
+
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import android.os.Bundle;
 import android.view.View;
 
 import java.util.List;
 
+import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -36,17 +42,33 @@ import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.visit.VisitSection;
 import de.symeda.sormas.app.visit.edit.VisitEditActivity;
+import de.symeda.sormas.app.visit.list.VisitListAdapter;
+import de.symeda.sormas.app.visit.list.VisitListViewModel;
 
 
 public class ContactEditVisitsListFragment extends BaseEditFragment<FragmentFormListLayoutBinding, List<Visit>, Contact> implements OnListItemClickListener {
 
-    private List<Visit> record;
-
-    private ContactEditVisitsListAdapter adapter;
+    private VisitListAdapter adapter;
+    private VisitListViewModel model;
     private LinearLayoutManager linearLayoutManager;
 
     public static ContactEditVisitsListFragment newInstance(Contact activityRootData) {
         return newInstance(ContactEditVisitsListFragment.class, null, activityRootData);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        ((ContactEditActivity) getActivity()).showPreloader();
+        adapter = new VisitListAdapter(R.layout.row_read_followup_list_item_layout, this, null);
+        model = ViewModelProviders.of(this).get(VisitListViewModel.class);
+        model.getVisits(getActivityRootData()).observe(this, visits -> {
+            adapter.replaceAll(visits);
+            adapter.notifyDataSetChanged();
+            updateEmptyListHint(visits);
+            ((ContactEditActivity) getActivity()).hidePreloader();
+        });
     }
 
     @Override
@@ -57,23 +79,19 @@ public class ContactEditVisitsListFragment extends BaseEditFragment<FragmentForm
 
     @Override
     public List<Visit> getPrimaryData() {
-        return record;
+        throw new UnsupportedOperationException("Sub list fragments don't hold their data");
     }
 
     @Override
     protected void prepareFragmentData() {
-        Contact contact = getActivityRootData();
-        record = DatabaseHelper.getVisitDao().getByContact(contact);
+
     }
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        updateEmptyListHint(record);
-        adapter = new ContactEditVisitsListAdapter(R.layout.row_read_followup_list_item_layout, this, record);
-        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
     }
 
     @Override

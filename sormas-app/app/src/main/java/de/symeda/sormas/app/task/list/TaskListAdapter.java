@@ -18,54 +18,43 @@
 
 package de.symeda.sormas.app.task.list;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import androidx.core.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.core.content.ContextCompat;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
-import de.symeda.sormas.app.core.adapter.databinding.ISetOnListItemClickListener;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.RowTaskListItemLayoutBinding;
 
-public class TaskListAdapter extends DataBoundAdapter<RowTaskListItemLayoutBinding> implements ISetOnListItemClickListener {
+public class TaskListAdapter extends DataBoundAdapter<RowTaskListItemLayoutBinding> implements OnListItemClickListener.HasOnListItemClickListener {
 
-    private static final String TAG = TaskListAdapter.class.getSimpleName();
-
-    private final Context context;
-    private List<Task> data = new ArrayList<>();
+    private List<Task> data;
     private OnListItemClickListener mOnListItemClickListener;
 
-    public TaskListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener) {
-        this(context, rowLayout, onListItemClickListener, new ArrayList<Task>());
+    public TaskListAdapter(int rowLayout) {
+        this(rowLayout, null);
     }
 
-    public TaskListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<Task> data) {
+    public TaskListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener) {
         super(rowLayout);
-        this.context = context;
         this.mOnListItemClickListener = onListItemClickListener;
-
-        if (data == null)
-            this.data = new ArrayList<>();
-        else
-            this.data = new ArrayList<>(data);
+        this.data = new ArrayList<>();
     }
 
     @Override
     protected void bindItem(DataBoundViewHolder<RowTaskListItemLayoutBinding> holder,
                             int position, List<Object> payloads) {
-
         Task record = data.get(position);
         holder.setData(record);
         holder.setOnListItemClickListener(this.mOnListItemClickListener);

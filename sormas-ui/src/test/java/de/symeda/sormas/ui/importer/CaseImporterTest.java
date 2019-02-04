@@ -28,7 +28,7 @@ import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.MockProducer;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.TestDataCreator;
@@ -58,7 +58,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 	@Test
 	public void testImportAllCases() throws IOException, InvalidColumnException, InterruptedException {
-		UserReferenceDto user = CurrentUser.getCurrent().getUserReference();
+		UserReferenceDto user = UserProvider.getCurrent().getUserReference();
 		
 		new TestDataCreator().createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
 

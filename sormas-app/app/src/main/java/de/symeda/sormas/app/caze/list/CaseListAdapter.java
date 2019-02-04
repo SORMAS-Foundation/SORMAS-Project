@@ -18,75 +18,55 @@
 
 package de.symeda.sormas.app.caze.list;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
-import androidx.core.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
-import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
-import de.symeda.sormas.app.core.adapter.databinding.ISetOnListItemClickListener;
-import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.core.adapter.databinding.BindingPagedListAdapter;
+import de.symeda.sormas.app.core.adapter.databinding.BindingViewHolder;
 import de.symeda.sormas.app.databinding.RowCaseListItemLayoutBinding;
 
-import java.util.ArrayList;
-import java.util.List;
+public class CaseListAdapter extends BindingPagedListAdapter<Case, RowCaseListItemLayoutBinding> {
 
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.app.backend.caze.Case;
-
-public class CaseListAdapter extends DataBoundAdapter<RowCaseListItemLayoutBinding> implements ISetOnListItemClickListener {
-
-    private static final String TAG = CaseListAdapter.class.getSimpleName();
-
-    private final Context context;
-    private List<Case> data;
-    private OnListItemClickListener mOnListItemClickListener;
-
-    public CaseListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<Case> data) {
-        super(rowLayout);
-        this.context = context;
-        this.mOnListItemClickListener = onListItemClickListener;
-
-        if (data == null)
-            this.data = new ArrayList<>();
-        else
-            this.data = new ArrayList<>(data);
+    CaseListAdapter() {
+        super(R.layout.row_case_list_item_layout);
     }
 
     @Override
-    protected void bindItem(DataBoundViewHolder<RowCaseListItemLayoutBinding> holder,
-                            int position, List<Object> payloads) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
 
-        Case record = data.get(position);
-        holder.setData(record);
-        holder.setOnListItemClickListener(this.mOnListItemClickListener);
+        if (getItemViewType(position) == TYPE_ITEM) {
 
-        indicateCaseClassification(holder.binding.imgCaseStatusIcon, record);
+            BindingViewHolder<Case, RowCaseListItemLayoutBinding> pagedHolder = (BindingViewHolder)holder;
+            Case item = getItem(position);
 
-        //Sync Icon
-        if (record.isModified() || record.getPerson().isModified()) {
-            holder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
-            holder.binding.imgSyncIcon.setImageResource(R.drawable.ic_sync_blue_24dp);
-        } else {
-            holder.binding.imgSyncIcon.setVisibility(View.GONE);
+            pagedHolder.setOnListItemClickListener(this.mOnListItemClickListener);
+
+            indicateCaseClassification(pagedHolder.binding.imgCaseStatusIcon, item);
+
+            //Sync Icon
+            if (item.isModified() || item.getPerson().isModified()) {
+                pagedHolder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
+                pagedHolder.binding.imgSyncIcon.setImageResource(R.drawable.ic_sync_blue_24dp);
+            } else {
+                pagedHolder.binding.imgSyncIcon.setVisibility(View.GONE);
+            }
+
+            // TODO #704
+            //updateUnreadIndicator(holder, record);
         }
-
-        // TODO #704
-//        updateUnreadIndicator(holder, record);
     }
 
-    @Override
-    public int getItemCount() {
-        return data.size();
-    }
-
-//    public void updateUnreadIndicator(DataBoundViewHolder<RowCaseListItemLayoutBinding> holder, Case item) {
+    //    public void updateUnreadIndicator(DataBoundViewHolder<RowCaseListItemLayoutBinding> holder, Case item) {
 //        LayerDrawable backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
 //        Drawable unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
 //
@@ -101,7 +81,7 @@ public class CaseListAdapter extends DataBoundAdapter<RowCaseListItemLayoutBindi
 
     public void indicateCaseClassification(ImageView imgCaseClassificationIcon, Case item) {
         Resources resources = imgCaseClassificationIcon.getContext().getResources();
-        Drawable drw = (Drawable)ContextCompat.getDrawable(imgCaseClassificationIcon.getContext(), R.drawable.indicator_status_circle);
+        Drawable drw = ContextCompat.getDrawable(imgCaseClassificationIcon.getContext(), R.drawable.indicator_status_circle);
 
         if (item.getCaseClassification() == CaseClassification.NOT_CLASSIFIED) {
             drw.setColorFilter(resources.getColor(R.color.indicatorCaseNotYetClassified), PorterDuff.Mode.SRC_OVER);
@@ -116,42 +96,5 @@ public class CaseListAdapter extends DataBoundAdapter<RowCaseListItemLayoutBindi
         }
 
         imgCaseClassificationIcon.setBackground(drw);
-    }
-
-    public Case getCase(int position) {
-        if (position < 0)
-            return null;
-
-        if (position >= this.data.size())
-            return null;
-
-        return (Case)this.data.get(position);
-    }
-
-    public void addAll(List<Case> data) {
-        if (data == null)
-            return;
-
-        this.data.addAll(data);
-    }
-
-    public void replaceAll(List<Case> data) {
-        if (data == null)
-            return;
-
-        this.data.clear();
-        this.data.addAll(data);
-    }
-
-    public void clear() {
-        if (this.data == null)
-            return;
-
-        this.data.clear();
-    }
-
-    @Override
-    public void setOnListItemClickListener(OnListItemClickListener onListItemClickListener) {
-        this.mOnListItemClickListener = onListItemClickListener;
     }
 }

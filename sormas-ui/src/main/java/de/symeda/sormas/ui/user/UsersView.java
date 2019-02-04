@@ -34,7 +34,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -74,7 +74,7 @@ public class UsersView extends AbstractView {
         
         addComponent(gridLayout);
         
-    	if (CurrentUser.getCurrent().hasUserRight(UserRight.USER_CREATE)) {
+    	if (UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE)) {
 	        createButton = new Button("New user");
 	        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 	        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
@@ -103,7 +103,7 @@ public class UsersView extends AbstractView {
         ComboBox roleFilter = new ComboBox();
         roleFilter.setWidth(200, Unit.PIXELS);
         roleFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
-        roleFilter.addItems(UserRole.getAssignableRoles(CurrentUser.getCurrent().getUserRoles()));
+        roleFilter.addItems(UserRole.getAssignableRoles(UserProvider.getCurrent().getUserRoles()));
         roleFilter.addValueChangeListener(e -> {
         	UserRole value = (UserRole) e.getProperty().getValue();
         	grid.setUserRoleFilter(value);
@@ -125,7 +125,7 @@ public class UsersView extends AbstractView {
     @Override
     public void enter(ViewChangeEvent event) {
     	List<UserDto> users = FacadeProvider.getUserFacade().getAll(
-    			UserRole.getAssignableRoles(CurrentUser.getCurrent().getUserRoles()).stream().toArray(UserRole[]::new));
+    			UserRole.getAssignableRoles(UserProvider.getCurrent().getUserRoles()).stream().toArray(UserRole[]::new));
         grid.setUsers(users);
     }
 }

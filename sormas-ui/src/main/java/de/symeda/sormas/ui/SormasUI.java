@@ -33,7 +33,8 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.ui.CurrentUser.HasCurrentUser;
+import de.symeda.sormas.ui.UserProvider.HasUserProvider;
+import de.symeda.sormas.ui.ViewModelProviders.HasViewModelProviders;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.login.LoginScreen;
 import de.symeda.sormas.ui.login.LoginScreen.LoginListener;
@@ -51,9 +52,10 @@ import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
 @Viewport("user-scalable=no,initial-scale=1.0")
 @Theme("sormas")
 @Widgetset("de.symeda.sormas.SormasWidgetset")
-public class SormasUI extends UI implements HasCurrentUser {
+public class SormasUI extends UI implements HasUserProvider, HasViewModelProviders {
 
-	private final CurrentUser currentUser = new CurrentUser();
+	private final UserProvider userProvider = new UserProvider();
+	private final ViewModelProviders viewModelProviders = new ViewModelProviders();
 
 	@Override
 	public void init(VaadinRequest vaadinRequest) {
@@ -96,8 +98,13 @@ public class SormasUI extends UI implements HasCurrentUser {
 	}
 
 	@Override
-	public CurrentUser getCurrentUser() {
-		return currentUser;
+	public UserProvider getUserProvider() {
+		return userProvider;
+	}
+
+	@Override
+	public ViewModelProviders getViewModelProviders() {
+		return viewModelProviders;
 	}
 
 	@WebServlet(urlPatterns = "/*", name = "SormasUIServlet", asyncSupported = true)

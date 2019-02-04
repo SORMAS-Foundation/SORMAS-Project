@@ -59,7 +59,7 @@ import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.importer.CaseImportProgressLayout;
 import de.symeda.sormas.ui.importer.CaseImportResult;
 import de.symeda.sormas.ui.importer.CaseImporter;
@@ -82,7 +82,7 @@ public class CaseImportLayout extends VerticalLayout {
 	private final UI currentUI;
 
 	public CaseImportLayout() {
-		currentUser = CurrentUser.getCurrent().getUserReference();
+		currentUser = UserProvider.getCurrent().getUserReference();
 		currentUI = UI.getCurrent();
 		
 		setMargin(true);
@@ -194,7 +194,7 @@ public class CaseImportLayout extends VerticalLayout {
 
 			FileOutputStream fos = null;
 			try {
-				String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + "_case_import_" + DateHelper.formatDateForExport(new Date()) + "_" + DataHelper.getShortUuid(CurrentUser.getCurrent().getUuid()) + ".csv";
+				String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + "_case_import_" + DateHelper.formatDateForExport(new Date()) + "_" + DataHelper.getShortUuid(UserProvider.getCurrent().getUuid()) + ".csv";
 				file = new File(Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath()).resolve(newFileName).toString());
 				fos = new FileOutputStream(file);
 			} catch (FileNotFoundException e) {

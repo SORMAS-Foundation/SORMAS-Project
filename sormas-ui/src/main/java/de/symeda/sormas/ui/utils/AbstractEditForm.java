@@ -56,7 +56,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
 import de.symeda.sormas.ui.epidata.EpiDataGatheringsField;
 import de.symeda.sormas.ui.epidata.EpiDataTravelsField;
@@ -193,7 +193,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			addFields();
 		}
 
-		if (editOrCreateUserRight != null && !CurrentUser.getCurrent().hasUserRight(editOrCreateUserRight)) {
+		if (editOrCreateUserRight != null && !UserProvider.getCurrent().hasUserRight(editOrCreateUserRight)) {
 			getFieldGroup().setReadOnly(true);
 		}
 	}
@@ -424,7 +424,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		
 		if (DateField.class.isAssignableFrom(field.getClass())
 				|| DateTimeField.class.isAssignableFrom(field.getClass())) {
-			field.addValidator(new FutureDateValidator(amountOfDays, field.getCaption()));
+			field.addValidator(new FutureDateValidator(field, amountOfDays, field.getCaption()));
 		}
 		
 		return field;

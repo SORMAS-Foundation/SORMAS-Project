@@ -47,6 +47,7 @@ import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -736,11 +737,25 @@ public class CaseService extends AbstractAdoService<Case> {
 							)
 					);
 		}
-		if (caseCriteria.getArchived() != null) {
-			if (caseCriteria.getArchived() == true) {
-				filter = and(cb, filter, cb.equal(from.get(Case.ARCHIVED), true));
-			} else {
-				filter = and(cb, filter, cb.or(cb.equal(from.get(Case.ARCHIVED), false), cb.isNull(from.get(Case.ARCHIVED))));
+		if (Boolean.TRUE.equals(caseCriteria.getArchived())) {
+			filter = and(cb, filter, cb.equal(from.get(Case.ARCHIVED), true));
+		} else {
+			filter = and(cb, filter, cb.or(cb.equal(from.get(Case.ARCHIVED), false), cb.isNull(from.get(Case.ARCHIVED))));
+		}
+
+		if (caseCriteria.getNameUuidEpidNumberLike() != null) {
+			String[] textFilters = caseCriteria.getNameUuidEpidNumberLike().split("\\s+");
+			for (int i=0; i<textFilters.length; i++)
+			{
+				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+							cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
+							cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
+							cb.like(cb.lower(from.get(Case.UUID)), textFilter),
+							cb.like(cb.lower(from.get(Case.EPID_NUMBER)), textFilter));
+					filter = and(cb, filter, likeFilters);
+				}
 			}
 		}
 		return filter;

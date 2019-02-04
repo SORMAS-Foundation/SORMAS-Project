@@ -27,7 +27,7 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.CurrentUser;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 @SuppressWarnings("serial")
@@ -62,7 +62,7 @@ public class SampleTestList extends PaginationList<SampleTestDto> {
 	protected void drawDisplayedEntries() {
 		for (SampleTestDto sampleTest : getDisplayedEntries()) {
 			SampleTestListEntry listEntry = new SampleTestListEntry(sampleTest);
-			if (CurrentUser.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT)) {
 				listEntry.addEditListener(new ClickListener() {
 					@Override
 					public void buttonClick(ClickEvent event) {

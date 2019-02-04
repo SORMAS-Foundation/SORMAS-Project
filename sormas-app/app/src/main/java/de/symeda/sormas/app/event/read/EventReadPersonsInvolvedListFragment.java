@@ -19,11 +19,14 @@
 package de.symeda.sormas.app.event.read;
 
 import android.os.Bundle;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import android.view.View;
 
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -31,13 +34,14 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
-import de.symeda.sormas.app.event.read.eventparticipant.EventParticipantReadActivity;
+import de.symeda.sormas.app.event.eventparticipant.list.EventParticipantListAdapter;
+import de.symeda.sormas.app.event.eventparticipant.list.EventParticipantListViewModel;
+import de.symeda.sormas.app.event.eventparticipant.read.EventParticipantReadActivity;
 
 public class EventReadPersonsInvolvedListFragment extends BaseReadFragment<FragmentFormListLayoutBinding, List<EventParticipant>, Event> implements OnListItemClickListener {
 
-    private List<EventParticipant> record;
-
-    private EventReadPersonsInvolvedAdapter adapter;
+    private EventParticipantListAdapter adapter;
+    private EventParticipantListViewModel model;
     private LinearLayoutManager linearLayoutManager;
 
     public static EventReadPersonsInvolvedListFragment newInstance(Event activityRootData) {
@@ -45,22 +49,30 @@ public class EventReadPersonsInvolvedListFragment extends BaseReadFragment<Fragm
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        ((EventReadActivity) getActivity()).showPreloader();
+        adapter = new EventParticipantListAdapter(R.layout.row_read_persons_involved_list_item_layout, this, null);
+        model = ViewModelProviders.of(this).get(EventParticipantListViewModel.class);
+        model.getEventParticipants(getActivityRootData()).observe(this, eventParticipants -> {
+            adapter.replaceAll(eventParticipants);
+            adapter.notifyDataSetChanged();
+            updateEmptyListHint(eventParticipants);
+            ((EventReadActivity) getActivity()).hidePreloader();
+        });
+    }
+
+    @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
-        Event event = getActivityRootData();
-        record = DatabaseHelper.getEventParticipantDao().getByEvent(event);
+
     }
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        updateEmptyListHint(record);
-
-        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        adapter = new EventReadPersonsInvolvedAdapter(
-                R.layout.row_read_persons_involved_list_item_layout, EventReadPersonsInvolvedListFragment.this, record);
-
+        linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -70,9 +82,8 @@ public class EventReadPersonsInvolvedListFragment extends BaseReadFragment<Fragm
 
     @Override
     public List<EventParticipant> getPrimaryData() {
-        return null;
+        throw new UnsupportedOperationException("Sub list fragments don't hold their data");
     }
-
 
     @Override
     public int getRootReadLayout() {
