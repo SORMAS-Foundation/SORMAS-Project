@@ -132,7 +132,8 @@ public class DashboardSurveillanceDiseaseBurdenLayout extends VerticalLayout {
 		diseaseBurdenComponent.refresh(visibleDiseasesCount);
 		diseaseDifferenceComponent.refresh(visibleDiseasesCount);
 		
-		diseaseBurdenComponent.setHeight(visibleDiseasesCount * 55, Unit.PIXELS);		
-		diseaseDifferenceComponent.setHeight(visibleDiseasesCount * 55 + 50, Unit.PIXELS);			
+		//int newHeight = visibleDiseasesCount * 55;
+		//diseaseBurdenComponent.setHeight(newHeight, Unit.PIXELS);		
+		//diseaseDifferenceComponent.setHeight(visibleDiseasesCount * 55 + 50, Unit.PIXELS);	
 	}
 }

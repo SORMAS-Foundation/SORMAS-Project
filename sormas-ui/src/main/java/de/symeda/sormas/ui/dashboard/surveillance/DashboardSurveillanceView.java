@@ -38,12 +38,12 @@ public class DashboardSurveillanceView extends AbstractDashboardView {
 		//add disease burden and cases
 		diseaseBurdenAndDifferenceLayout = new DashboardSurveillanceDiseaseBurdenLayout(dashboardDataProvider);
 		dashboardLayout.addComponent(diseaseBurdenAndDifferenceLayout);
-		dashboardLayout.setExpandRatio(diseaseBurdenAndDifferenceLayout, 1);
+//		dashboardLayout.setExpandRatio(diseaseBurdenAndDifferenceLayout, 1);
 
 		//add disease statistics
-		statisticsComponent = new DashboardSurveillanceStatisticsComponent(dashboardDataProvider);
-		dashboardLayout.addComponent(statisticsComponent);
-		dashboardLayout.setExpandRatio(statisticsComponent, 1);
+//		statisticsComponent = new DashboardSurveillanceStatisticsComponent(dashboardDataProvider);
+//		dashboardLayout.addComponent(statisticsComponent);
+//		dashboardLayout.setExpandRatio(statisticsComponent, 1);
 
 		//add diseaseCarousel and map
 		diseaseCarouselLayout = new DashboardSurveillanceDiseaseCarouselLayout(dashboardDataProvider);

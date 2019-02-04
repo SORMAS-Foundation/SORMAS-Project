@@ -134,7 +134,7 @@ public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
 
 		getContainer().addAll(items);
 		
-		setSizeFull();
+		//setSizeFull();
 	}
 
 	@Override
