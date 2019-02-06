@@ -47,7 +47,7 @@ import de.symeda.sormas.api.outbreak.DashboardOutbreakDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.task.DashboardTaskDto;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.CurrentUser;
+//import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DiseaseBurdenGrid;
 import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
@@ -164,13 +164,13 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 		hcjs.append("{ name: 'More than last year', color: '#FF4500', data: [");
 		hcjs.append(Stream.concat(positive_values.stream(), negative_values.stream().map((v) -> 0)) // pad with negative
 																									// group
-				.map((d) -> d.toString()).reduce((fullText, nextText) -> fullText + ", " + nextText).get());
+				.map((d) -> d.toString()).reduce((fullText, nextText) -> fullText + ", " + nextText).orElse(""));
 		hcjs.append("]},");
 
 		hcjs.append("{ name: 'Less than last year', color: '#32CD32', data: [");
 		hcjs.append(Stream.concat(positive_values.stream().map((v) -> 0), negative_values.stream()) // pad with positive
 																									// group
-				.map((d) -> d.toString()).reduce((fullText, nextText) -> fullText + ", " + nextText).get());
+				.map((d) -> d.toString()).reduce((fullText, nextText) -> fullText + ", " + nextText).orElse(""));
 		hcjs.append("]},");
 
 		hcjs.append("],"); // series: []

@@ -180,6 +180,7 @@ public class DashboardMapComponent extends VerticalLayout {
 		addComponent(map);
 		addComponent(createFooter());
 		setExpandRatio(map, 1);
+		map.setHeight(385, Unit.PIXELS);
 	}
 
 	public void refreshMap() {

@@ -47,7 +47,7 @@ import de.symeda.sormas.api.outbreak.DashboardOutbreakDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.task.DashboardTaskDto;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.CurrentUser;
+//import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DiseaseBurdenGrid;
 import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;

@@ -429,12 +429,40 @@ public class CaseService extends AbstractAdoService<Case> {
 		cq.groupBy(person.get(Person.PRESENT_CONDITION));
 		cq.multiselect(person.get(Person.PRESENT_CONDITION), cb.count(caze));
 		List<Object[]> results = em.createQuery(cq).getResultList();
-
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																	
+		
 		Map<PresentCondition, Long> resultMap = results.stream().collect(
 				Collectors.toMap(e -> (PresentCondition) e[0], e -> (Long) e[1]));
 		return resultMap;
 	}
 
+	public Map<Disease, Long> getNewCaseCountPerDisease(CaseCriteria caseCriteria, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Case> caze = cq.from(getElementClass());
+
+		Predicate filter = createUserFilter(cb, cq, caze, user);
+		Predicate criteriaFilter = buildCriteriaFilter(caseCriteria, cb, caze);
+		if (filter != null) {
+			filter = cb.and(filter, criteriaFilter);
+		} else {
+			filter = criteriaFilter;
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.groupBy(caze.get(Case.DISEASE));
+		cq.multiselect(caze.get(Case.DISEASE), cb.count(caze));
+		List<Object[]> results = em.createQuery(cq).getResultList();
+
+		Map<Disease, Long> resultMap = results.stream().collect(
+				Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
+		
+		return resultMap;
+	}
+	
 	public Case getLatestCaseByPerson(Person person, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(Case.class);

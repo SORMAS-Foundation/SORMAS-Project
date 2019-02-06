@@ -40,11 +40,15 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.disease.DiseaseFacade;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventService;
@@ -57,6 +61,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.util.ModelConstants;
+//import de.symeda.sormas.ui.UserProvider;
 
 /**
  * Provides the application configuration settings
@@ -77,13 +82,139 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 			Date previousTo,
 			String userUuid) {
 		
+		//diseases
+		List<Disease> diseases = Stream.of(Disease.values()).collect(Collectors.toList());
+				
+		//new cases
+		CaseCriteria caseCriteria = new CaseCriteria()
+				.newCaseDateBetween(from, to, null)
+				.region(regionRef)
+				.district(districtRef);
+
+		Map<Disease, Long> newCases = FacadeProvider.getCaseFacade()
+				.getNewCaseCountPerDisease(caseCriteria, userUuid);
+		
+		//previous cases
+		caseCriteria.newCaseDateBetween(previousFrom, previousTo, null);
+		
+		Map<Disease, Long> previousCases = FacadeProvider.getCaseFacade()
+				.getNewCaseCountPerDisease(caseCriteria, userUuid);
+				
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = null;
+		Predicate filter = null;
+		List<Object[]> results;
+		
+		//events
+		cq = cb.createQuery(Object[].class);
+		Root<Event> event = cq.from(Event.class);
+		Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
+		cq.multiselect(event.get(Event.DISEASE), cb.count(event));
+		cq.groupBy(event.get(Event.DISEASE));
+		
+		filter = null;
+		if (from != null || to != null) {
+			filter = AbstractAdoService.and(cb, filter, cb.between(event.get(Event.REPORT_DATE_TIME), from, to));
+		}
+		if (districtRef != null) {
+			filter = AbstractAdoService.and(cb, filter, cb.equal(eventLocation.join(Location.DISTRICT, JoinType.LEFT).get(District.UUID), districtRef.getUuid()));
+		}
+		else if (regionRef != null) {
+			filter = AbstractAdoService.and(cb, filter, cb.equal(eventLocation.join(Location.REGION, JoinType.LEFT).get(Region.UUID), regionRef.getUuid()));
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		results = em.createQuery(cq).getResultList();
+		
+		Map<Disease, Long> events = results.stream().collect(
+				Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
+					
+		//outbreaks
+		cq = cb.createQuery(Object[].class);
+		Root<Outbreak> outbreak = cq.from(Outbreak.class);
+		cq.multiselect(outbreak.get(Outbreak.DISEASE), cb.countDistinct(outbreak.get(Outbreak.DISTRICT)));
+		cq.groupBy(outbreak.get(Outbreak.DISEASE));
+		
+		filter = null;
+		if (from != null || to != null) {
+			filter = AbstractAdoService.and(cb, filter, cb.between(outbreak.get(Outbreak.REPORT_DATE), from, to));
+		}
+		if (districtRef != null) {
+			filter = AbstractAdoService.and(cb, filter, cb.equal(outbreak.join(Outbreak.DISTRICT, JoinType.LEFT).get(District.UUID), districtRef.getUuid()));
+		}
+		else if (regionRef != null) {
+			filter = AbstractAdoService.and(cb, filter, cb.equal(outbreak.join(Outbreak.DISTRICT, JoinType.LEFT).join(District.REGION, JoinType.LEFT).get(Region.UUID), regionRef.getUuid()));
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		results = em.createQuery(cq).getResultList();
+		
+		Map<Disease, Long> outbreaks = results.stream().collect(
+				Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
+				
+		//case fatalities
+		cq = cb.createQuery(Object[].class);
+		Root<Person> deceasedPerson = cq.from(Person.class);
+		cq.multiselect(deceasedPerson.get(Person.CAUSE_OF_DEATH_DISEASE), cb.count(deceasedPerson));
+		cq.groupBy(deceasedPerson.get(Person.CAUSE_OF_DEATH_DISEASE));
+
+		filter = cb.isNotNull(deceasedPerson.get(Person.CAUSE_OF_DEATH_DISEASE));
+		if (from != null || to != null) {
+			filter = AbstractAdoService.and(cb, filter, cb.between(deceasedPerson.get(Person.DEATH_DATE), from, to));
+		}
+		if (districtRef != null) {
+			filter = AbstractAdoService.and(cb, filter, cb.equal(deceasedPerson.join(Person.ADDRESS, JoinType.LEFT).join(Location.DISTRICT, JoinType.LEFT).get(District.UUID), districtRef.getUuid()));
+		}
+		else if (regionRef != null) {
+			filter = AbstractAdoService.and(cb, filter, cb.equal(deceasedPerson.join(Person.ADDRESS, JoinType.LEFT).join(Location.DISTRICT, JoinType.LEFT).join(District.REGION, JoinType.LEFT).get(Region.UUID), regionRef.getUuid()));
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		results = em.createQuery(cq).getResultList();
+		
+		Map<Disease, Long> caseFatalities = results.stream().collect(
+				Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
+		
+		//build diseasesBurden
+		List<DiseaseBurdenDto> diseasesBurden = diseases.stream().map(disease -> {
+			Long caseCount = newCases.getOrDefault(disease, 0L);
+			Long previousCaseCount = previousCases.getOrDefault(disease, 0L);
+			Long eventCount = events.getOrDefault(disease, 0L);
+			Long outbreakDistrictCount = outbreaks.getOrDefault(disease, 0L);
+			Long caseFatalityCount = caseFatalities.getOrDefault(disease, 0L);
+			
+			return new DiseaseBurdenDto(disease, caseCount, previousCaseCount, eventCount, outbreakDistrictCount, caseFatalityCount);
+			
+		}).collect(Collectors.toList());
+		
+		return diseasesBurden;
+	}
+	
+	
+	//@Override
+	public List<DiseaseBurdenDto> getDiseaseBurdenForDashboard_old(
+			RegionReferenceDto regionRef,
+			DistrictReferenceDto districtRef, 
+			Date from, 
+			Date to,
+			Date previousFrom,
+			Date previousTo,
+			String userUuid) {
+		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = null;
 		
 		//diseases
 		List<Disease> diseases = Stream.of(Disease.values()).collect(Collectors.toList());
-				
-		//cases
+		
+		
+		//new cases
 		cq = cb.createQuery(Object[].class);
 		Root<Case> caze = cq.from(Case.class);
 		cq.multiselect(caze.get(Case.DISEASE), cb.count(caze));
@@ -91,7 +222,7 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		
 		Predicate filter = null;
 		if (from != null || to != null) {
-			filter = AbstractAdoService.and(cb, filter, createActiveCaseFilter(cb, caze, from, to));
+			filter = AbstractAdoService.and(cb, filter, cb.between(caze.get(Case.REPORT_DATE), from, to));
 		}
 		if (districtRef != null) {
 			filter = AbstractAdoService.and(cb, filter, cb.equal(caze.join(Case.DISTRICT, JoinType.LEFT).get(District.UUID), districtRef.getUuid()));
@@ -113,7 +244,7 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		
 		filter = null;
 		if (previousFrom != null || to != null) {
-			filter = AbstractAdoService.and(cb, filter, createActiveCaseFilter(cb, caze, previousFrom, previousTo));
+			//filter = AbstractAdoService.and(cb, filter, createActiveCaseFilter(cb, caze, previousFrom, previousTo));
 		}
 		if (districtRef != null) {
 			filter = AbstractAdoService.and(cb, filter, cb.equal(caze.join(Case.DISTRICT, JoinType.LEFT).get(District.UUID), districtRef.getUuid()));
@@ -207,39 +338,6 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		}).collect(Collectors.toList());
 		
 		return diseasesBurden;
-	}
-	
-	public Predicate createActiveCaseFilter(CriteriaBuilder cb, Root<Case> from, Date fromDate, Date toDate) {
-		Predicate dateFromFilter = null;
-		Predicate dateToFilter = null;
-		if (fromDate != null) {
-			dateFromFilter = cb.or(
-					cb.isNull(from.get(Case.OUTCOME_DATE)),
-					cb.greaterThanOrEqualTo(from.get(Case.OUTCOME_DATE), fromDate)
-					);
-		}
-		if (toDate != null) {
-			// Onset date > reception date > report date (use report date as a fallback if none of the other dates is available)
-			Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS, JoinType.LEFT);
-			dateToFilter = cb.or(
-					cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), toDate), 
-					cb.and(
-							cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), 
-							cb.lessThanOrEqualTo(from.get(Case.RECEPTION_DATE), toDate)
-							),
-					cb.and(
-							cb.isNull(symptoms.get(Symptoms.ONSET_DATE)),
-							cb.isNull(from.get(Case.RECEPTION_DATE)),
-							cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), toDate)
-							)
-					);
-		}
-
-		if (dateFromFilter != null && dateToFilter != null) {
-			return cb.and(dateFromFilter, dateToFilter);			
-		} else {
-			return dateFromFilter != null ? dateFromFilter : dateToFilter != null ? dateToFilter : null;
-		}
 	}
 	
 	@LocalBean

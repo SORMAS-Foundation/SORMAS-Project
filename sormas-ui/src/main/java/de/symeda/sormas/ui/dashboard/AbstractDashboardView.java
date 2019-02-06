@@ -38,7 +38,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubNavigationMenu;

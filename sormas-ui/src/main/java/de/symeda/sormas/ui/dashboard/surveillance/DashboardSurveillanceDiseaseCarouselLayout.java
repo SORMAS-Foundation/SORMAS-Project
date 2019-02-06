@@ -67,19 +67,11 @@ public class DashboardSurveillanceDiseaseCarouselLayout extends VerticalLayout {
 	private void initLayout() {
 		addStyleName(DashboardCssStyles.CURVE_AND_MAP_LAYOUT);
 		
-		HorizontalLayout carouselOptions = createCarouselOptions();
-		addComponent(carouselOptions);
+		addComponent(createCarouselOptions());
+		
+		addComponent(statisticsComponent);
 				
-		HorizontalLayout contentLayout = new HorizontalLayout();
-		contentLayout.setWidth(100, Unit.PERCENTAGE);
-
-		HorizontalLayout statisticsAndEpiCurveLayout = createStatisticsAndEpiCurveLayout();
-		contentLayout.addComponent(statisticsAndEpiCurveLayout);
-		
-		contentLayout.addComponent(mapComponent);
-		mapComponent.setHeight(100, Unit.PERCENTAGE);
-		
-		addComponent(contentLayout);
+		addComponent(createEpiCurveAndMapLayout());
 	}
 	
 	private HorizontalLayout createCarouselOptions() {
@@ -152,13 +144,13 @@ public class DashboardSurveillanceDiseaseCarouselLayout extends VerticalLayout {
 		}
 	}
 
-	protected HorizontalLayout createStatisticsAndEpiCurveLayout() {
+	protected HorizontalLayout createEpiCurveAndMapLayout() {
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.setWidth(100, Unit.PERCENTAGE);
 
-		layout.addComponent(statisticsComponent);
-
 		layout.addComponent(epiCurveComponent);
+
+		layout.addComponent(mapComponent);
 
 		return layout;
 	}

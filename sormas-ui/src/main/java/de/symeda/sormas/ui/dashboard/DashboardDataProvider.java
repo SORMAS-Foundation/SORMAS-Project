@@ -98,7 +98,7 @@ public class DashboardDataProvider {
 
 	private void refreshDataForSelectedDisease () {
 		// Update the entities lists according to the filters
-		String userUuid = CurrentUser.getCurrent().getUuid();
+		String userUuid = UserProvider.getCurrent().getUuid();
 
 		int period = DateHelper.getDaysBetween(fromDate, toDate);
 		previousFromDate = DateHelper.getStartOfDay(DateHelper.subtractDays(fromDate, period));
