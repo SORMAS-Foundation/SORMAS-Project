@@ -70,7 +70,8 @@ public class DashboardSurveillanceDiseaseCarouselLayout extends VerticalLayout {
 		addComponent(createCarouselOptions());
 		
 		addComponent(statisticsComponent);
-				
+		statisticsComponent.addStyleName(DashboardCssStyles.HIGHLIGHTED_STATISTICS_COMPONENT);				
+		
 		addComponent(createEpiCurveAndMapLayout());
 	}
 	

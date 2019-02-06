@@ -159,13 +159,13 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 		}
 		epiCurveFooterHeaderLayout.addComponent(groupingDropdown);
 		epiCurveFooterHeaderLayout.setComponentAlignment(groupingDropdown, Alignment.MIDDLE_RIGHT);
-		//epiCurveFooterHeaderLayout.setExpandRatio(groupingDropdown, 1);
+		epiCurveFooterHeaderLayout.setExpandRatio(groupingDropdown, 1);
 		
 		// Epi curve mode
 		AbstractComponent epiCurveModeSelector = createEpiCurveModeSelector();
 		epiCurveFooterHeaderLayout.addComponent(epiCurveModeSelector);
 		epiCurveFooterHeaderLayout.setComponentAlignment(epiCurveModeSelector, Alignment.MIDDLE_RIGHT);
-		//epiCurveFooterHeaderLayout.setExpandRatio(epiCurveModeSelector, 1);
+		epiCurveFooterHeaderLayout.setExpandRatio(epiCurveModeSelector, 0);
 		
 		return epiCurveFooterHeaderLayout;
 	}
