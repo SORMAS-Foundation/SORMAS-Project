@@ -26,24 +26,17 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
-import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskIndexDto;
-import de.symeda.sormas.api.task.TaskPriority;
-import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -140,27 +133,8 @@ public class TaskController {
 	}
 
 	private TaskDto createNewTask(TaskContext context, ReferenceDto entityRef) {
-		TaskDto task = new TaskDto();
-		task.setUuid(DataHelper.createUuid());
-		task.setSuggestedStart(TaskHelper.getDefaultSuggestedStart());
-		task.setDueDate(TaskHelper.getDefaultDueDate());
+		TaskDto task = TaskDto.build(context, entityRef);
 		task.setCreatorUser(UserProvider.getCurrent().getUserReference());
-		task.setTaskStatus(TaskStatus.PENDING);
-		task.setPriority(TaskPriority.NORMAL);
-		task.setTaskContext(context);
-		switch(context) {
-		case CASE:
-			task.setCaze((CaseReferenceDto) entityRef); 
-			break;
-		case CONTACT:
-			task.setContact((ContactReferenceDto) entityRef);
-			break;
-		case EVENT:
-			task.setEvent((EventReferenceDto) entityRef);
-			break;
-		case GENERAL:
-			break;
-		}
 		return task;
 	}
 
