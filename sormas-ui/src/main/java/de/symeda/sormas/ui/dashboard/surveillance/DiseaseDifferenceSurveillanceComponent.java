@@ -61,6 +61,7 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 
 	private DashboardDataProvider dashboardDataProvider;
 	private HighChart chart;
+	private Label subtitleLabel;
 
 	public DiseaseDifferenceSurveillanceComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
@@ -68,7 +69,7 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 		Label title = new Label("Difference in number of cases");
 		CssStyles.style(title, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 
-		Label subtitle = new Label("Compared to previous time period");
+		subtitleLabel = new Label("Compared to previous time period");
 
 		chart = new HighChart();
 		chart.setSizeFull();
@@ -78,7 +79,7 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 		// setHeight(400, Unit.PIXELS);
 
 		addComponent(title);
-		addComponent(subtitle);
+		addComponent(subtitleLabel);
 		addComponent(chart);
 		setExpandRatio(chart, 1);
 
@@ -128,6 +129,41 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 	}
 
 	private void refreshChart(List<DiseaseBurdenDto> data) {
+		//express previous period in contextual, user-friendly text
+		//for subtitle and legend labels
+		String previousPeriodExpression = "previous period";
+		{
+			long now = new Date().getTime();
+			long fromDate = this.dashboardDataProvider.getFromDate().getTime();
+			long toDate = this.dashboardDataProvider.getToDate().getTime();
+			float millisecondsToDays = (1000 * 60 * 60 * 24);
+			
+			float diffBetweenFromAndToInDays = (toDate - fromDate) / millisecondsToDays;
+			float diffBetweenNowAndToInDays = (now - toDate) / millisecondsToDays;
+			
+			if (diffBetweenFromAndToInDays == 1) {
+				if (diffBetweenNowAndToInDays <= 0) //today
+					previousPeriodExpression = "yesterday";
+				else if (diffBetweenNowAndToInDays < 1) //yesterday
+					previousPeriodExpression = "last two days";
+			}
+			else if (diffBetweenFromAndToInDays == 7) {
+				if (diffBetweenNowAndToInDays <= 0) //this week
+					previousPeriodExpression = "last week";
+				else if (diffBetweenNowAndToInDays < 7) //last week
+					previousPeriodExpression = "last two weeks";
+			}
+			else if (diffBetweenFromAndToInDays == 365) {
+				if (diffBetweenNowAndToInDays <= 0) //this year
+					previousPeriodExpression = "last year";
+				else if (diffBetweenNowAndToInDays < 365)
+					previousPeriodExpression = "last two years";
+			}
+		}
+		//~express prev...
+		
+		this.subtitleLabel.setValue("Compared to " + previousPeriodExpression);
+				
 		StringBuilder hcjs = new StringBuilder();
 		hcjs.append("var options = {" + "chart:{ " + " type: 'bar', " + " backgroundColor: 'transparent' " + "},"
 				+ "credits:{ enabled: false }," + "exporting:{ " + " enabled: false,"
@@ -161,13 +197,13 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 
 		hcjs.append("series: [");
 
-		hcjs.append("{ name: 'More than last year', color: '#FF4500', data: [");
+		hcjs.append("{ name: 'More than " + previousPeriodExpression + "', color: '#FF4500', data: [");
 		hcjs.append(Stream.concat(positive_values.stream(), negative_values.stream().map((v) -> 0)) // pad with negative
 																									// group
 				.map((d) -> d.toString()).reduce((fullText, nextText) -> fullText + ", " + nextText).orElse(""));
 		hcjs.append("]},");
 
-		hcjs.append("{ name: 'Less than last year', color: '#32CD32', data: [");
+		hcjs.append("{ name: 'Less than " + previousPeriodExpression + "', color: '#32CD32', data: [");
 		hcjs.append(Stream.concat(positive_values.stream().map((v) -> 0), negative_values.stream()) // pad with positive
 																									// group
 				.map((d) -> d.toString()).reduce((fullText, nextText) -> fullText + ", " + nextText).orElse(""));
