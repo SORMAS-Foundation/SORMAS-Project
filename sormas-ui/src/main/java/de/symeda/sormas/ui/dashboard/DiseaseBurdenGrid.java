@@ -65,9 +65,14 @@ public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
 		setContainerDataSource(generatedContainer);
 
 		setColumns(/* VIEW_DETAILS_BTN_ID, */
-				DiseaseBurdenDto.DISEASE, DiseaseBurdenDto.CASE_COUNT, DiseaseBurdenDto.PREVIOUS_CASE_COUNT,
-				DiseaseBurdenDto.CASES_DIFFERENCE, DiseaseBurdenDto.EVENT_COUNT,
-				DiseaseBurdenDto.OUTBREAK_DISTRICT_COUNT, DiseaseBurdenDto.CASE_FATALITY_RATE);
+				DiseaseBurdenDto.DISEASE, 
+				DiseaseBurdenDto.CASE_COUNT, 
+				DiseaseBurdenDto.PREVIOUS_CASE_COUNT,
+				DiseaseBurdenDto.CASES_DIFFERENCE, 
+				DiseaseBurdenDto.EVENT_COUNT,
+				DiseaseBurdenDto.OUTBREAK_DISTRICT_COUNT,
+				DiseaseBurdenDto.CASE_DEATH_COUNT,
+				DiseaseBurdenDto.CASE_FATALITY_RATE);
 
 		for (Column column : getColumns()) {
 			if (column.getPropertyId().equals(VIEW_DETAILS_BTN_ID)) {
@@ -83,6 +88,7 @@ public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
 		getColumn(DiseaseBurdenDto.CASES_DIFFERENCE).setHeaderCaption("DYNAMIC");
 		getColumn(DiseaseBurdenDto.EVENT_COUNT).setHeaderCaption("NUMBER OF EVENTS");
 		getColumn(DiseaseBurdenDto.OUTBREAK_DISTRICT_COUNT).setHeaderCaption("OUTBREAK DISTRICTS");
+		getColumn(DiseaseBurdenDto.CASE_DEATH_COUNT).setHeaderCaption("DEATHS");
 		getColumn(DiseaseBurdenDto.CASE_FATALITY_RATE).setHeaderCaption("CFR");
 
 		// format columns

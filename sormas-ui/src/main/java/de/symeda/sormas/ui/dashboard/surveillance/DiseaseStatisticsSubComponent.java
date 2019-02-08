@@ -349,7 +349,7 @@ public class DiseaseStatisticsSubComponent extends HorizontalLayout {
 		Long fatalCasesCount = newCases.stream().filter((c) -> c.wasFatal()).count();
 		long previousFatalCasesCount = previousCases.stream().filter((c) -> c.wasFatal()).count();
 		long fatalCasesGrowth = fatalCasesCount - previousFatalCasesCount;
-		Float fatalityRate = ((float) fatalCasesCount / (float) (casesCount == 0 ? 1 : casesCount));
+		Float fatalityRate = 100 * ((float) fatalCasesCount / (float) (casesCount == 0 ? 1 : casesCount));
 
 		// count
 		// current

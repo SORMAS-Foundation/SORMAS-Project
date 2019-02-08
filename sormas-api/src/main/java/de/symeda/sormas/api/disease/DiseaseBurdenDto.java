@@ -37,6 +37,7 @@ public class DiseaseBurdenDto  implements Serializable {
 	public static final String CASES_DIFFERENCE = "casesDifference";
 	public static final String EVENT_COUNT = "eventCount";
 	public static final String OUTBREAK_DISTRICT_COUNT = "outbreakDistrictCount";
+	public static final String CASE_DEATH_COUNT = "caseDeathCount";
 	public static final String CASE_FATALITY_RATE = "caseFatalityRate";
 	
 	private Disease disease;
@@ -102,7 +103,7 @@ public class DiseaseBurdenDto  implements Serializable {
 	}
 	
 	public Float getCaseFatalityRate() {
-		return ((float)getCaseDeathCount() / (float)(getCaseCount() == 0 ? 1 : getCaseCount()));
+		return 100 * ((float)getCaseDeathCount() / (float)(getCaseCount() == 0 ? 1 : getCaseCount()));
 	}
 
 	
