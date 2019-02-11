@@ -21,6 +21,8 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -36,8 +38,7 @@ public class OutbreaksView extends AbstractConfigurationView {
 	public OutbreaksView() {
 		super(VIEW_NAME);
 
-		Label infoTextLabel = new Label("Click on a button to define which LGAs of the state "
-				+ "currently have an outbreak of a specific disease.");
+		Label infoTextLabel = new Label(I18nProperties.getString(Strings.infoDefineOutbreaks));
 		CssStyles.style(infoTextLabel, CssStyles.LABEL_MEDIUM);
 		
 		grid = new OutbreakOverviewGrid();

@@ -127,6 +127,7 @@ public class TaskGrid extends Grid implements ItemClickListener, AbstractGrid<Ta
 
         getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
         getColumn(EDIT_BTN_ID).setWidth(60);
+        getColumn(EDIT_BTN_ID).setHeaderCaption("");
         
         getColumn(TaskIndexDto.DUE_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
         getColumn(TaskIndexDto.SUGGESTED_START).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));

@@ -28,7 +28,9 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
 @Entity(name = DiseaseClassificationCriteria.TABLE_NAME)
 @DatabaseTable(tableName = DiseaseClassificationCriteria.TABLE_NAME)
@@ -97,7 +99,7 @@ public class DiseaseClassificationCriteria extends AbstractDomainObject {
 
     @Override
     public String toString() {
-        return "Classification for " + disease.toString();
+        return DatabaseHelper.getContext().getString(R.string.heading_classification_for) + " " + disease.toString();
     }
 
     @Override

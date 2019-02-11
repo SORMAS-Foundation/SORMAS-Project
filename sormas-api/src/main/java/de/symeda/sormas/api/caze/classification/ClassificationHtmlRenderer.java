@@ -19,6 +19,8 @@ package de.symeda.sormas.api.caze.classification;
 
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -38,7 +40,7 @@ public class ClassificationHtmlRenderer {
 		ClassificationCriteriaDto suspectCriteria = criteria.getSuspectCriteria();
 		if (suspectCriteria != null) {
 			StringBuilder suspectSb = new StringBuilder();
-			suspectSb.append(createHeadlineDiv("Suspect Classification"));
+			suspectSb.append(createHeadlineDiv(I18nProperties.getString(Strings.classificationSuspect)));
 			suspectSb.append(createInfoDiv());
 			suspectSb.append(buildCriteriaDiv(suspectCriteria));
 			sb.append(createSurroundingDiv(ClassificationCriteriaType.SUSPECT, suspectSb.toString(), true));
@@ -52,7 +54,7 @@ public class ClassificationHtmlRenderer {
 		ClassificationCriteriaDto probableCriteria = criteria.getProbableCriteria();
 		if (probableCriteria != null) {
 			StringBuilder probableSb = new StringBuilder();
-			probableSb.append(createHeadlineDiv("Probable Classification"));
+			probableSb.append(createHeadlineDiv(I18nProperties.getString(Strings.classificationProbable)));
 			probableSb.append(createInfoDiv());
 			probableSb.append(buildCriteriaDiv(probableCriteria));
 			sb.append(createSurroundingDiv(ClassificationCriteriaType.PROBABLE, probableSb.toString(), true));
@@ -66,7 +68,7 @@ public class ClassificationHtmlRenderer {
 		ClassificationCriteriaDto confirmedCriteria = criteria.getConfirmedCriteria();
 		if (confirmedCriteria != null) {
 			StringBuilder confirmedSb = new StringBuilder();
-			confirmedSb.append(createHeadlineDiv("Confirmed Classification"));
+			confirmedSb.append(createHeadlineDiv(I18nProperties.getString(Strings.classificationConfirmed)));
 			confirmedSb.append(createInfoDiv());
 			confirmedSb.append(buildCriteriaDiv(confirmedCriteria));
 			sb.append(createSurroundingDiv(ClassificationCriteriaType.CONFIRMED, confirmedSb.toString(), false));
@@ -127,9 +129,9 @@ public class ClassificationHtmlRenderer {
 				"  display: inline-block;\r\n" + 
 				"}</style></header><body>");
 
-		html.append("<h1 style=\"text-align: center; color: #005A9C;\">SORMAS Case Classification Rules</h1>");
-		html.append("<h4 style=\"text-align: center;\">Generated for SORMAS ").append(InfoProvider.get().getVersion()).append(" on ").append(sormasServerUrl).append(" at ").append(DateHelper.formatLocalShortDateTime(new Date())).append("</h4>");
-		
+		html.append("<h1 style=\"text-align: center; color: #005A9C;\">").append(I18nProperties.getString(Strings.classificationClassificationRules)).append("</h1>");
+		html.append("<h4 style=\"text-align: center;\">").append(I18nProperties.getString(Strings.classificationGeneratedFor)).append(" ").append(InfoProvider.get().getVersion()).append(StringUtils.wrap(I18nProperties.getString(Strings.sOn), " ")).append(sormasServerUrl).append(StringUtils.wrap(I18nProperties.getString(Strings.sAt), " ")).append(DateHelper.formatLocalShortDateTime(new Date())).append("</h4>");
+
 		for (Disease disease : Disease.values()) {
 			DiseaseClassificationCriteriaDto diseaseCriteria = FacadeProvider.getCaseClassificationFacade().getByDisease(disease);
 			if (diseaseCriteria != null && diseaseCriteria.hasAnyCriteria()) {
@@ -187,7 +189,7 @@ public class ClassificationHtmlRenderer {
 			} else if (parentCriteria instanceof ClassificationCollectiveCriteria && !(parentCriteria instanceof ClassificationAllOfCriteriaDto)) {
 				// For collective criteria, but not ClassificationAllOfCriteria, add a sub div with a slightly different color to make clear
 				// that it belongs to the criteria listed before
-				String itemDiv = createCriteriaItemDiv("<b>" + I18nProperties.getString(Strings.and).toUpperCase() + "</b>" + subCriteria.buildDescription());
+				String itemDiv = createCriteriaItemDiv("<b>" + I18nProperties.getString(Strings.sAnd).toUpperCase() + "</b>" + subCriteria.buildDescription());
 				subCriteriaSb.append(createSubCriteriaSurroundingDiv(itemDiv));
 			} else {
 				// For everything else, recursively call this method to determine how to display the sub criteria
@@ -224,7 +226,7 @@ public class ClassificationHtmlRenderer {
 	 * Creates a div containing an info text.
 	 */
 	private static String createInfoDiv() {
-		return "... when the case meets <b>ALL</b> of the following requirements:<br/>";
+		return I18nProperties.getString(Strings.classificationInfoText);
 	}
 
 	/**

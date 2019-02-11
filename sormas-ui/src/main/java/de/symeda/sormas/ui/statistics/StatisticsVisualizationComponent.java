@@ -30,6 +30,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisualizationChartType;
@@ -54,7 +56,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		setSpacing(true);
 		setWidth(100, Unit.PERCENTAGE);
 
-		visualizationSelect = new OptionGroup("Type", Arrays.asList(StatisticsVisualizationType.values()));
+		visualizationSelect = new OptionGroup(I18nProperties.getCaption(Captions.statisticsVisualizationType), Arrays.asList(StatisticsVisualizationType.values()));
 		visualizationSelect.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
@@ -74,7 +76,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		addComponent(visualizationSelect);
 		setExpandRatio(visualizationSelect, 0);
 
-		visualizationMapSelect = new OptionGroup("Map type", Arrays.asList(StatisticsVisualizationMapType.values()));
+		visualizationMapSelect = new OptionGroup(I18nProperties.getCaption(Captions.statisticsMapType), Arrays.asList(StatisticsVisualizationMapType.values()));
 		visualizationMapSelect.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
@@ -87,7 +89,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		addComponent(visualizationMapSelect);
 		setExpandRatio(visualizationSelect, 0);
 
-		visualizationChartSelect = new OptionGroup("Chart type",
+		visualizationChartSelect = new OptionGroup(I18nProperties.getCaption(Captions.statisticsChartType),
 				Arrays.asList(StatisticsVisualizationChartType.values()));
 		visualizationChartSelect.addValueChangeListener(new ValueChangeListener() {
 			@Override
@@ -109,7 +111,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		switchRowsAndColumnsButton = new Button();
 		CssStyles.style(switchRowsAndColumnsButton, CssStyles.FORCE_CAPTION);
 		switchRowsAndColumnsButton.setIcon(FontAwesome.EXCHANGE);
-		switchRowsAndColumnsButton.setDescription("Exchange rows and columns");
+		switchRowsAndColumnsButton.setDescription(I18nProperties.getCaption(Captions.statisticsExchange));
 		switchRowsAndColumnsButton.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {

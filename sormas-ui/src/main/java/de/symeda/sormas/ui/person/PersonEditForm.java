@@ -33,11 +33,12 @@ import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.CauseOfDeath;
@@ -66,7 +67,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private static final String OCCUPATION_HEADER = "occupationHeader";
 	private static final String ADDRESS_HEADER = "addressHeader";
 
-	private Label occupationHeader = new Label(LayoutUtil.h3(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, "Occupation")), ContentMode.HTML);
+	private Label occupationHeader = new Label(LayoutUtil.h3(I18nProperties.getString(Strings.headingPersonOccupation)), ContentMode.HTML);
 	private Label addressHeader = new Label(LayoutUtil.h3(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS)), ContentMode.HTML);
 
 	private boolean facilityFieldsInitialized = false;
@@ -80,7 +81,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private final ViewMode viewMode;
 
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.h3("Person information")+
+			LayoutUtil.h3(I18nProperties.getString(Strings.headingPersonInformation))+
 			LayoutUtil.fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
 			LayoutUtil.fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
 			LayoutUtil.fluidRow(
@@ -155,7 +156,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		birthDateMonth.setPageLength(12);
 		setItemCaptionsForMonths(birthDateMonth);
 		ComboBox birthDateYear = addField(PersonDto.BIRTH_DATE_YYYY, ComboBox.class);
-		birthDateYear.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, "birthdate"));
+		birthDateYear.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE));
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
 		birthDateYear.setNullSelectionAllowed(true);
 		birthDateYear.addItems(DateHelper.getYearsToNow());

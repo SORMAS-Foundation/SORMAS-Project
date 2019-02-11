@@ -128,7 +128,7 @@ public class ContactSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.V
     //<editor-fold desc="More Overrides">
     @Override
     protected int getSectionTitleResId() {
-        return R.string.dashboard_section_title_contact;
+        return R.string.heading_contact_summary;
     }
 
     @Override
@@ -236,7 +236,7 @@ public class ContactSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.V
     private List<SummaryTotalData> getTotalDataAsync() {
         List<SummaryTotalData> dataSet = new ArrayList<>();
         SummaryTotalData data = new SummaryTotalData();
-        data.dataTitle = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_total_contacts);
+        data.dataTitle = ResourceUtils.getString(getActivity(), R.string.caption_total_contacts);
         data.dataValue = String.valueOf(new Random().nextInt(10000));
         dataSet.add(data);
 
@@ -247,11 +247,11 @@ public class ContactSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.V
         Random random = new Random();
         List<SummaryCircularData> dataSet = new ArrayList<>();
 
-        String titleUnconfirmed = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_contacts_unconfirmed);
-        String titleConfirmed = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_contacts_confirmed);
-        String titleNotAContact = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_contacts_not_a_contact);
-        String titleConvertedToCase = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_contacts_converted_to_case);
-        String titleDropped = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_contacts_dropped);
+        String titleUnconfirmed = ResourceUtils.getString(getActivity(), R.string.caption_unconfirmed);
+        String titleConfirmed = ResourceUtils.getString(getActivity(), R.string.caption_confirmed);
+        String titleNotAContact = ResourceUtils.getString(getActivity(), R.string.caption_not_a_contact);
+        String titleConvertedToCase = ResourceUtils.getString(getActivity(), R.string.caption_converted_to_case);
+        String titleDropped = ResourceUtils.getString(getActivity(), R.string.caption_dropped);
 
         //Confirmed Cases
         SummaryCircularData data1 = new SummaryCircularData(titleUnconfirmed, random.nextInt(10000), random.nextInt(100));

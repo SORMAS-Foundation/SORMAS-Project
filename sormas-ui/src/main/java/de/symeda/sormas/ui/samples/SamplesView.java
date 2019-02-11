@@ -26,6 +26,8 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
@@ -47,7 +49,7 @@ public class SamplesView extends AbstractView {
 		addComponent(sampleListComponent);
 		
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EXPORT)) {
-			Button exportButton = new Button("Export");
+			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
 			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
 			

@@ -61,7 +61,7 @@
                     android:scrollHorizontally="true"
                     android:textColor="@color/listActivityRowTertiaryText"
                     android:textSize="@dimen/listActivityRowPrimaryTextSize"
-                    app:defaultValue='@{@string/disease_unknown}'
+                    app:defaultValue='@{@string/value_disease_unknown}'
                     app:diseaseValue="@{data.disease}" />
 
                 <TextView

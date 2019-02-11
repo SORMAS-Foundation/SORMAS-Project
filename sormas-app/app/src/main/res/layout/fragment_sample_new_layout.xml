@@ -72,8 +72,8 @@
 
             <de.symeda.sormas.app.component.controls.ControlDateTimeField
                 android:id="@+id/sample_sampleDateTime"
-                app:dateHint="@string/hint_sample_date_of_sampling"
-                app:timeHint="@string/hint_sample_time_of_sampling"
+                app:dateHint="@string/caption_date_of_sampling"
+                app:timeHint="@string/caption_time_of_sampling"
                 app:required="true"
                 app:value="@={data.sampleDateTime}"
                 style="@style/ControlSingleColumnStyle" />

@@ -87,7 +87,7 @@ public class EventReadActivity extends BaseReadActivity<Event> {
 
     @Override
     protected int getActivityTitle() {
-        return R.string.heading_level3_event_read;
+        return R.string.heading_event_read;
     }
 
     @Override

@@ -72,7 +72,7 @@
                         android:maxLines="1"
                         android:ellipsize="end"
                         app:value="@{data.visitStatus}"
-                        app:defaultValue='@{@string/visit_status_unknown}'
+                        app:defaultValue='@{@string/value_status_unknown}'
                         />
 
                     <TextView
@@ -85,7 +85,7 @@
                         android:textSize="@dimen/row_entry_secondary_text_size"
                         android:textColor="@color/row_entry_secondary_text"
                         app:value="@{data.visitRemarks}"
-                        app:defaultValue='@{@string/visit_remarks_unknown}'
+                        app:defaultValue='@{@string/value_visit_remarks_unknown}'
                         />
 
 
@@ -143,7 +143,7 @@
                     android:textColor="@color/listActivityRowLeastText"
                     android:fontFamily="sans-serif-medium"
                     app:dateValue="@{data.visitDateTime}"
-                    app:defaultValue='@{@string/visit_date_unknown}'
+                    app:defaultValue='@{@string/value_visit_date_unknown}'
                     />
 
                 <TextView
@@ -156,7 +156,7 @@
                     android:textColor="@color/listActivityRowDateText"
                     android:fontFamily="sans-serif"
                     app:timeAgoValue="@{data.visitDateTime}"
-                    app:defaultValue='@{@string/visit_time_unknown}'
+                    app:defaultValue='@{@string/value_visit_time_unknown}'
                     />
 
             </LinearLayout>

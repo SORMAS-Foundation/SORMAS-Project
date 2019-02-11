@@ -41,6 +41,7 @@ import com.vaadin.ui.Notification.Type;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -99,7 +100,8 @@ public class GridExportStreamResource extends StreamResource {
 				} catch (IOException e) {
 					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
 					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
-					new Notification("Export failed", "There was an error trying to provide the data to export. Please contact an admin and inform them about this issue.", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+					new Notification(I18nProperties.getString(Strings.headingExportFailed), I18nProperties.getString(Strings.messageExportFailed),
+							Type.ERROR_MESSAGE, false).show(Page.getCurrent());
 					return null;
 				}
 			}

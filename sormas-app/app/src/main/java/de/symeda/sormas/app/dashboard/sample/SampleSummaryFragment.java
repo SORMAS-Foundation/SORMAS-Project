@@ -183,7 +183,7 @@ public class SampleSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.Vi
         List<SummaryTotalData> dataSet = new ArrayList<>();
 
         SummaryTotalData data = new SummaryTotalData();
-        data.dataTitle = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_total_samples);
+        data.dataTitle = ResourceUtils.getString(getActivity(), R.string.caption_total_samples);
         ;
         data.dataValue = String.valueOf(new Random().nextInt(10000));
         dataSet.add(data);
@@ -195,11 +195,11 @@ public class SampleSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.Vi
         Random random = new Random();
         List<SummaryCircularData> dataSet = new ArrayList<>();
 
-        String titlePositiveResults = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_samples_positive);
-        String titleNegativeResults = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_samples_negative);
-        String titlePendingResults = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_samples_pending);
-        String titleIndeterminateResults = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_samples_indeterminate);
-        String titleInadequateSpecimen = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_samples_inadequate_specimen);
+        String titlePositiveResults = ResourceUtils.getString(getActivity(), R.string.caption_positive);
+        String titleNegativeResults = ResourceUtils.getString(getActivity(), R.string.caption_negative);
+        String titlePendingResults = ResourceUtils.getString(getActivity(), R.string.caption_pending);
+        String titleIndeterminateResults = ResourceUtils.getString(getActivity(), R.string.caption_indeterminate);
+        String titleInadequateSpecimen = ResourceUtils.getString(getActivity(), R.string.caption_inadequate_specimen);
 
         //Confirmed Cases
         SummaryCircularData data1 = new SummaryCircularData(titlePositiveResults, random.nextInt(10000), random.nextInt(100),
@@ -234,7 +234,7 @@ public class SampleSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.Vi
     //<editor-fold desc="More Overrides">
     @Override
     protected int getSectionTitleResId() {
-        return R.string.dashboard_section_title_sample;
+        return R.string.heading_sample_summary;
     }
 
     @Override

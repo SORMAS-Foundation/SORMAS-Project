@@ -17,7 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 
 public class ContactReferenceDto extends ReferenceDto {
@@ -46,7 +50,7 @@ public class ContactReferenceDto extends ReferenceDto {
 		StringBuilder builder = new StringBuilder();
 		builder.append(DataHelper.toStringNullable(contactFirstName))
 			.append(" ").append(DataHelper.toStringNullable(contactLastName).toUpperCase())
-			.append(" to case ")
+			.append(StringUtils.wrap(I18nProperties.getString(Strings.sToCase), ""))
 			.append(DataHelper.toStringNullable(caseFirstName))
 			.append(" ").append(DataHelper.toStringNullable(caseLastName));
 		return builder.toString();

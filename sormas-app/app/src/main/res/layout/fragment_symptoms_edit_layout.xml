@@ -77,14 +77,14 @@
                 style="@style/SubHeadingCompactStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/sub_heading_symptoms"/>
+                android:text="@string/heading_symptoms"/>
 
             <TextView
                 android:id="@+id/symptoms_description"
                 style="@style/SubHeadingDescriptionStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/description_symptoms"/>
+                android:text="@string/info_symptoms"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -606,7 +606,7 @@
 
                 <TextView
                     android:id="@+id/lesions_locations_label"
-                    android:text="@string/label_lesions_locations"
+                    android:text="@string/caption_lesions_locations"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/ControlLabelStyle" />

@@ -38,6 +38,8 @@ import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.dashboard.surveillance.DashboardSurveillanceView;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -84,7 +86,7 @@ public class Menu extends CssLayout {
 
         // logout menu item
         MenuBar logoutMenu = new MenuBar();
-        logoutMenu.addItem("Logout (" + UserProvider.getCurrent().getUserName() + ")", FontAwesome.SIGN_OUT, new Command() {
+        logoutMenu.addItem(I18nProperties.getCaption(Captions.cLogout) + " (" + UserProvider.getCurrent().getUserName() + ")", FontAwesome.SIGN_OUT, new Command() {
 
             @Override
             public void menuSelected(MenuItem selectedItem) {
@@ -96,7 +98,7 @@ public class Menu extends CssLayout {
         menuPart.addComponent(logoutMenu);
 
         // button for toggling the visibility of the menu when on a small screen
-        final Button showMenu = new Button("Menu", new ClickListener() {
+        final Button showMenu = new Button(I18nProperties.getCaption(Captions.cMenu), new ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
                 if (menuPart.getStyleName().contains(VALO_MENU_VISIBLE)) {

@@ -129,7 +129,7 @@ public class ControlSpinnerAdapter extends ArrayAdapter<Item> {
 
         if (textView != null) {
             if (StringUtils.isEmpty(textView.getText())) {
-                textView.setText(getContext().getResources().getString(R.string.hint_select_entry_blank));
+                textView.setText(getContext().getResources().getString(R.string.hint_clear));
             }
 
             if (position == 0) {

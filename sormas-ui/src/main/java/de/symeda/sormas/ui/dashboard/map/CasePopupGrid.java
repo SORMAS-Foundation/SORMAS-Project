@@ -29,6 +29,7 @@ import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
@@ -41,9 +42,9 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 @SuppressWarnings("serial")
 public class CasePopupGrid extends Grid {
 
-	public static final String DISEASE_SHORT = "diseaseShort";
-	public static final String FIRST_NAME = "firstName";
-	public static final String LAST_NAME = "lastName";
+	public static final String DISEASE_SHORT = Captions.genPropDiseaseShort;
+	public static final String FIRST_NAME = Captions.genPropFirstName;
+	public static final String LAST_NAME = Captions.genPropLastName;
 	
 	private final FacilityReferenceDto facility;
 	private final DashboardMapComponent dashboardMapComponent;

@@ -33,6 +33,7 @@ import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -46,9 +47,9 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 @SuppressWarnings("serial")
 public class EventGrid extends Grid implements AbstractGrid<EventCriteria> {
 	
-	public static final String INFORMATION_SOURCE = "informationSource";
-	public static final String PENDING_EVENT_TASKS = "pendingEventTasks";
-	public static final String DISEASE_SHORT = "diseaseShort";
+	public static final String INFORMATION_SOURCE = Captions.genPropInformationSource;
+	public static final String PENDING_EVENT_TASKS = Captions.genPropNumberOfPendingTasks;
+	public static final String DISEASE_SHORT = Captions.genPropDiseaseShort;
 
 	private EventCriteria eventCriteria = new EventCriteria();
 	
@@ -86,7 +87,7 @@ public class EventGrid extends Grid implements AbstractGrid<EventCriteria> {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				EventIndexDto event = (EventIndexDto)itemId;
-				return String.format(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, PENDING_EVENT_TASKS + "Format"),
+				return String.format(I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
 						FacadeProvider.getTaskFacade().getPendingTaskCountByEvent(event.toReference()));
 			}
 			@Override

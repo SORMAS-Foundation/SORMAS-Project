@@ -32,6 +32,7 @@ public class TreatmentDto extends EntityDto {
 	public static final String EXECUTING_CLINICIAN = "executingClinician";
 	public static final String TREATMENT_TYPE = "treatmentType";
 	public static final String TREATMENT_DETAILS = "treatmentDetails";
+	public static final String DRUG_INTAKE_DETAILS = "drugIntakeDetails";
 	public static final String TYPE_OF_DRUG = "typeOfDrug";
 	public static final String DOSE = "dose";
 	public static final String ROUTE = "route";

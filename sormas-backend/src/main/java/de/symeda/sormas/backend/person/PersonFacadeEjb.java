@@ -39,6 +39,8 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.PersonDto;
@@ -216,10 +218,10 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public void validate(PersonDto source) throws ValidationRuntimeException {
 		if (StringUtils.isEmpty(source.getFirstName())) {
-			throw new ValidationRuntimeException("You have to specify a first name");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyFirstName));
 		}
 		if (StringUtils.isEmpty(source.getLastName())) {
-			throw new ValidationRuntimeException("You have to specify a last name");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyLastName));
 		}
 	}
 

@@ -27,11 +27,11 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
@@ -126,7 +126,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	    	TaskDto taskDto = getValue();
 	    	
 	    	if (taskDto.getTaskType() == TaskType.CASE_INVESTIGATION && taskDto.getCaze() != null) {
-	        	taskStatus.addValidator(new TaskStatusValidator(taskDto.getCaze().getUuid(), "Not allowed to set investigation status to done for an unclassified case."));
+	        	taskStatus.addValidator(new TaskStatusValidator(taskDto.getCaze().getUuid(), I18nProperties.getValidationError(Validations.investigationStatusUnclassifiedCase)));
 	    	}
 	    	
 	    	DistrictReferenceDto district = null;

@@ -25,12 +25,14 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -45,12 +47,12 @@ import de.symeda.sormas.ui.utils.ViewMode;
 @SuppressWarnings("serial")
 public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
-	private static final String HEALTH_FACILITY = "healthFacility";	
+	private static final String HEALTH_FACILITY = Captions.genPropHealthFacility;	
 	private final CaseDataDto caze;
 	private final ViewMode viewMode;
 
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.h3("Hospitalization data") +
+			LayoutUtil.h3(I18nProperties.getString(Strings.headingHospitalization)) +
 			LayoutUtil.fluidRowLocs(HEALTH_FACILITY, "") +
 			LayoutUtil.fluidRowLoc(6, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY) +
 			LayoutUtil.fluidRowLocs(HospitalizationDto.ADMISSION_DATE, HospitalizationDto.DISCHARGE_DATE) +
@@ -115,7 +117,7 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 		YesNoUnknown value = (YesNoUnknown) hospitalizedPreviouslyField.getValue();
 		Collection<PreviousHospitalizationDto> previousHospitalizations = previousHospitalizationsField.getValue();
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT) && value == YesNoUnknown.YES && (previousHospitalizations == null || previousHospitalizations.size() == 0)) {
-			hospitalizedPreviouslyField.setComponentError(new UserError("Please add an entry to the list below if there is any data available to you."));
+			hospitalizedPreviouslyField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.softAddEntryToList)));
 		} else {
 			hospitalizedPreviouslyField.setComponentError(null);
 		}

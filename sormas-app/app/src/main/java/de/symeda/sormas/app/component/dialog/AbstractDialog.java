@@ -20,7 +20,6 @@ package de.symeda.sormas.app.component.dialog;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.Resources;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
@@ -223,9 +222,9 @@ public abstract class AbstractDialog implements NotificationContext {
         if (deleteCallback != null) {
             final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActivity(),
                     R.string.heading_confirmation_dialog,
-                    R.string.heading_sub_confirmation_notification_dialog_delete,
-                    R.string.yes,
-                    R.string.no);
+                    R.string.confirmation_delete,
+                    R.string.s_yes,
+                    R.string.s_no);
             confirmationDialog.setPositiveCallback(new Callback() {
                 @Override
                 public void call() {

@@ -33,6 +33,8 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
@@ -57,7 +59,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 			epiCurveLabel.setValue(epiCurveContactsMode.toString() + " Chart");
 		}
 
-		PopupButton dataDropdown = new PopupButton("Data");
+		PopupButton dataDropdown = new PopupButton(I18nProperties.getCaption(Captions.dashboardData));
 		CssStyles.style(dataDropdown, CssStyles.BUTTON_SUBTLE);
 
 		VerticalLayout groupingLayout = new VerticalLayout();
@@ -124,12 +126,12 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 			}
 		}
 
-		hcjs.append("yAxis: { min: 0, title: { text: 'Number of Contacts' }, allowDecimals: false, softMax: 10, "
+		hcjs.append("yAxis: { min: 0, title: { text: '" + I18nProperties.getCaption(Captions.dashboardNumberOfContacts) + "' }, allowDecimals: false, softMax: 10, "
 				+ "stackLabels: { enabled: true, "
 				+ "style: {fontWeight: 'normal', textOutline: '0', gridLineColor: '#000000', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } } },"
 				+ "legend: { verticalAlign: 'top', backgroundColor: 'transparent', align: 'left', "
 				+ "borderWidth: 0, shadow: false, margin: 30, padding: 0 },"
-				+ "tooltip: { headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'},"
+				+ "tooltip: { headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}<br/>" + I18nProperties.getCaption(Captions.dashboardTotal) + ": {point.stackTotal}'},"
 				+ "plotOptions: { column: { borderWidth: 0, stacking: 'normal', groupPadding: 0, pointPadding: 0, dataLabels: {"
 				+ "enabled: true, formatter: function() { if (this.y > 0) return this.y; },"
 				+ "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } } },");
@@ -163,7 +165,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 			}
 
 			hcjs.append("series: [");
-			hcjs.append("{ name: 'Unconfirmed', color: '#808080', dataLabels: { allowOverlap: false }, data: [");
+			hcjs.append("{ name: '" + I18nProperties.getCaption(Captions.dashboardUnconfirmed) + "', color: '#808080', dataLabels: { allowOverlap: false }, data: [");
 			for (int i = 0; i < unconfirmedNumbers.length; i++) {
 				if (i == unconfirmedNumbers.length - 1) {
 					hcjs.append(unconfirmedNumbers[i] + "]},");
@@ -171,7 +173,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 					hcjs.append(unconfirmedNumbers[i] + ", ");
 				}
 			}
-			hcjs.append("{ name: 'Confirmed', color: '#005A9C', dataLabels: { allowOverlap: false },  data: [");
+			hcjs.append("{ name: '" + I18nProperties.getCaption(Captions.dashboardConfirmed) + "', color: '#005A9C', dataLabels: { allowOverlap: false },  data: [");
 			for (int i = 0; i < confirmedNumbers.length; i++) {
 				if (i == confirmedNumbers.length - 1) {
 					hcjs.append(confirmedNumbers[i] + "]}]};");
@@ -219,7 +221,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 			}
 
 			hcjs.append("series: [");
-			hcjs.append("{ name: 'Under F/U', color: '#005A9C', dataLabels: { allowOverlap: false }, data: [");
+			hcjs.append("{ name: '" + I18nProperties.getCaption(Captions.dashboardUnderFollowUpShort) + "', color: '#005A9C', dataLabels: { allowOverlap: false }, data: [");
 			for (int i = 0; i < underFollowUpNumbers.length; i++) {
 				if (i == underFollowUpNumbers.length - 1) {
 					hcjs.append(underFollowUpNumbers[i] + "]},");
@@ -227,7 +229,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 					hcjs.append(underFollowUpNumbers[i] + ", ");
 				}
 			}
-			hcjs.append("{ name: 'Lost To F/U', color: '#FF0000', dataLabels: { allowOverlap: false },  data: [");
+			hcjs.append("{ name: '" + I18nProperties.getCaption(Captions.dashboardLostToFollowUpShort) + "', color: '#FF0000', dataLabels: { allowOverlap: false },  data: [");
 			for (int i = 0; i < lostToFollowUpNumbers.length; i++) {
 				if (i == lostToFollowUpNumbers.length - 1) {
 					hcjs.append(lostToFollowUpNumbers[i] + "]},");
@@ -235,7 +237,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 					hcjs.append(lostToFollowUpNumbers[i] + ", ");
 				}
 			}
-			hcjs.append("{ name: 'Completed F/U', color: '#32CD32', dataLabels: { allowOverlap: false },  data: [");
+			hcjs.append("{ name: '" + I18nProperties.getCaption(Captions.dashboardCompletedFollowUpShort) + "', color: '#32CD32', dataLabels: { allowOverlap: false },  data: [");
 			for (int i = 0; i < completedFollowUpNumbers.length; i++) {
 				if (i == completedFollowUpNumbers.length - 1) {
 					hcjs.append(completedFollowUpNumbers[i] + "]},");
@@ -243,7 +245,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 					hcjs.append(completedFollowUpNumbers[i] + ", ");
 				}
 			}
-			hcjs.append("{ name: 'Canceled F/U', color: '#FF8C00', dataLabels: { allowOverlap: false },  data: [");
+			hcjs.append("{ name: '" + I18nProperties.getCaption(Captions.dashboardCanceledFollowUpShort) + "', color: '#FF8C00', dataLabels: { allowOverlap: false },  data: [");
 			for (int i = 0; i < canceledFollowUpNumbers.length; i++) {
 				if (i == canceledFollowUpNumbers.length - 1) {
 					hcjs.append(canceledFollowUpNumbers[i] + "]},");
@@ -251,7 +253,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 					hcjs.append(canceledFollowUpNumbers[i] + ", ");
 				}
 			}
-			hcjs.append("{ name: 'Converted to Case', color: '#00BFFF', dataLabels: { allowOverlap: false },  data: [");
+			hcjs.append("{ name: '" + I18nProperties.getCaption(Captions.dashboardConvertedToCase) + "', color: '#00BFFF', dataLabels: { allowOverlap: false },  data: [");
 			for (int i = 0; i < convertedNumbers.length; i++) {
 				if (i == convertedNumbers.length - 1) {
 					hcjs.append(convertedNumbers[i] + "]}]};");
@@ -282,7 +284,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 			}
 
 			hcjs.append("series: [");
-			hcjs.append("{ name: 'F/U Until', color: '#00BFFF', dataLabels: { allowOverlap: false },  data: [");
+			hcjs.append("{ name: '" + I18nProperties.getCaption(Captions.dashboardFollowUpUntilShort) + "', color: '#00BFFF', dataLabels: { allowOverlap: false },  data: [");
 			for (int i = 0; i < followUpUntilNumbers.length; i++) {
 				if (i == followUpUntilNumbers.length - 1) {
 					hcjs.append(followUpUntilNumbers[i] + "]}]};");

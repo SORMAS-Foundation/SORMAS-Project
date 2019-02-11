@@ -123,7 +123,7 @@ public class EventSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.Vie
     //<editor-fold desc="More Overrides">
     @Override
     protected int getSectionTitleResId() {
-        return R.string.dashboard_section_title_event;
+        return R.string.heading_event_summary;
     }
 
     @Override
@@ -226,7 +226,7 @@ public class EventSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.Vie
         List<SummaryTotalData> dataSet = new ArrayList<>();
 
         SummaryTotalData data = new SummaryTotalData();
-        data.dataTitle = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_total_events);
+        data.dataTitle = ResourceUtils.getString(getActivity(), R.string.caption_total_events);
         ;
         data.dataValue = String.valueOf(new Random().nextInt(10000));
         dataSet.add(data);
@@ -238,11 +238,11 @@ public class EventSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.Vie
         Random random = new Random();
         List<SummaryCircularData> dataSet = new ArrayList<>();
 
-        String titlePossible = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_events_possible);
-        String titleConfirmed = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_events_confirmed);
-        String titleNotAnEvent = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_events_not_an_event);
-        String titleRumor = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_events_rumor);
-        String titleOutbreak = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_events_outbreak);
+        String titlePossible = ResourceUtils.getString(getActivity(), R.string.caption_possible_events);
+        String titleConfirmed = ResourceUtils.getString(getActivity(), R.string.caption_confirmed_events);
+        String titleNotAnEvent = ResourceUtils.getString(getActivity(), R.string.caption_not_an_event);
+        String titleRumor = ResourceUtils.getString(getActivity(), R.string.caption_rumor);
+        String titleOutbreak = ResourceUtils.getString(getActivity(), R.string.caption_outbreak);
 
         //Confirmed Cases
         SummaryCircularData data1 = new SummaryCircularData(titlePossible, random.nextInt(10000), random.nextInt(100));

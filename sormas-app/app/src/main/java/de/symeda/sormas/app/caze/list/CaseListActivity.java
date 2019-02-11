@@ -98,7 +98,7 @@ public class CaseListActivity extends PagedBaseListActivity {
 
     @Override
     protected int getActivityTitle() {
-        return R.string.heading_level2_cases_list;
+        return R.string.heading_cases_list;
     }
 
     @Override

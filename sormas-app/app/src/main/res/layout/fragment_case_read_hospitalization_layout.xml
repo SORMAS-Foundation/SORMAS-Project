@@ -51,7 +51,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/heading_sub_case_hos_most_recent_hospitalization"
+                    android:text="@string/heading_most_recent_hospitalization"
                     style="@style/SubHeadingStyle" />
 
                 <LinearLayout
@@ -134,7 +134,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/sub_heading_previous_hospitalizations"
+                    android:text="@string/heading_previous_hospitalizations"
                     android:layout_marginBottom="@dimen/subHeadlineMarginBottom"
                     style="@style/SubHeadingCompactStyle" />
 

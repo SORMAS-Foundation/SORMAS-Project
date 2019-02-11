@@ -47,6 +47,7 @@ public class TreatmentGrid extends Grid implements AbstractGrid<TreatmentCriteri
 		
 		getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
 		getColumn(EDIT_BTN_ID).setWidth(60);
+		getColumn(EDIT_BTN_ID).setHeaderCaption("");
 		getColumn(TreatmentIndexDto.TREATMENT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
 		
 		for (Column column : getColumns()) {

@@ -35,6 +35,7 @@ import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -70,7 +71,7 @@ public class EventParticipantsController {
 								if (person != null) {
 									dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(person.getUuid()));
 									EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
-									Notification.show("New person created", Type.ASSISTIVE_NOTIFICATION);
+									Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
 				        			ControllerProvider.getEventParticipantController().editEventParticipant(savedDto);
 								}
 							});
@@ -78,7 +79,7 @@ public class EventParticipantsController {
 			}
 		});
 		
-		VaadinUiUtil.showModalPopupWindow(createComponent, "Create new person");
+		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewEventParticipant));
 	}
 	
 	public void editEventParticipant(EventParticipantDto eventParticipant) {
@@ -86,7 +87,7 @@ public class EventParticipantsController {
 		editForm.setValue(eventParticipant);
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> editView = new CommitDiscardWrapperComponent<EventParticipantEditForm>(editForm, editForm.getFieldGroup());
 
-		Window window = VaadinUiUtil.showModalPopupWindow(editView, "Edit person");
+		Window window = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditEventParticipant));
         // form is too big for typical screens
 		window.setHeight(80, Unit.PERCENTAGE); 
 		
@@ -97,7 +98,7 @@ public class EventParticipantsController {
 					EventParticipantDto dto = editForm.getValue();
 					personFacade.savePerson(dto.getPerson());
 					dto = eventParticipantFacade.saveEventParticipant(dto);
-					Notification.show("Person data saved", Type.WARNING_MESSAGE);
+					Notification.show(I18nProperties.getString(Strings.messageEventParticipantSaved), Type.WARNING_MESSAGE);
 					refreshView();
 				}
 			}
@@ -111,7 +112,7 @@ public class EventParticipantsController {
 					UI.getCurrent().removeWindow(window);
 					refreshView();
 				}
-			}, I18nProperties.getCaption("EventParticipant"));
+			}, I18nProperties.getCaption(EventParticipantDto.I18N_PREFIX));
 		}
 	}
 	
@@ -130,15 +131,17 @@ public class EventParticipantsController {
 
 	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
-			new Notification("No event participants selected", "You have not selected any event participants.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(I18nProperties.getString(Strings.headingNoEventParticipantsSelected), 
+					I18nProperties.getString(Strings.messageNoEventParticipantsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected event participants?", new Runnable() {
+			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEventParticipants), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
 						FacadeProvider.getEventParticipantFacade().deleteEventParticipant(new EventParticipantReferenceDto(((EventParticipantDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
-					new Notification("Event participants deleted", "All selected event participants have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+					new Notification(I18nProperties.getString(Strings.headingEventParticipantsDeleted), 
+							I18nProperties.getString(Strings.messageEventParticipantsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
 				}
 			});
 		}

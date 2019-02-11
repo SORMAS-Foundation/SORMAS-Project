@@ -29,6 +29,7 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -130,7 +131,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		}
 
 		menu.removeAllViews();
-		menu.addView(CasesView.VIEW_NAME, "Cases list");
+		menu.addView(CasesView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseCasesList));
 		menu.addView(CaseDataView.VIEW_NAME, I18nProperties.getCaption(CaseDataDto.I18N_PREFIX), params);
 		
 		if (!hasOutbreak || viewConfiguration.getViewMode() != ViewMode.SIMPLE) {
@@ -143,7 +144,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 			}
 		}
 		if (DiseaseHelper.hasContactFollowUp(caze.getDisease(), caze.getPlagueType())) {
-			menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, "contacts"), params);
+			menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseContacts), params);
 		}
 		
 		infoLabel.setValue(caseRef.getCaption());

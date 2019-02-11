@@ -92,7 +92,7 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
 
     @Override
     protected int getActivityTitle() {
-        return R.string.heading_level3_contact_read;
+        return R.string.heading_contact_read;
     }
 
     @Override

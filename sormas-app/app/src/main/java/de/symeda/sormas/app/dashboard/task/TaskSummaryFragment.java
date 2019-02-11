@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.BaseSummaryFragment;
 import de.symeda.sormas.app.R;
@@ -212,9 +213,9 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
                     public void call(Subscriber<? super List<TaskPrioritySummaryEntry>> subscriber) {
                         try {
                             List<TaskPrioritySummaryEntry> list = new ArrayList<TaskPrioritySummaryEntry>() {{
-                                add(new TaskPrioritySummaryEntry(0, "Normal", new Random().nextInt(100)));
-                                add(new TaskPrioritySummaryEntry(1, "Low", new Random().nextInt(100)));
-                                add(new TaskPrioritySummaryEntry(2, "High", new Random().nextInt(100)));
+                                add(new TaskPrioritySummaryEntry(0, TaskPriority.NORMAL.toString(), new Random().nextInt(100)));
+                                add(new TaskPrioritySummaryEntry(1, TaskPriority.LOW.toString(), new Random().nextInt(100)));
+                                add(new TaskPrioritySummaryEntry(2, TaskPriority.HIGH.toString(), new Random().nextInt(100)));
                             }};
 
                             subscriber.onNext(list);
@@ -318,7 +319,7 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
         List<SummaryTotalData> dataSet = new ArrayList<>();
         for (int i = 1; i <= 1; i++) {
             SummaryTotalData data = new SummaryTotalData();
-            data.dataTitle = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_total_tasks);
+            data.dataTitle = ResourceUtils.getString(getActivity(), R.string.caption_total_tasks);
             ;
             data.dataValue = String.valueOf(new Random().nextInt(10000));
             dataSet.add(data);
@@ -330,7 +331,7 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
     private List<SummaryPieData> getPieDataAsync() {
         List<SummaryPieData> dataSet = new ArrayList<>();
 
-        String titleTotalTasks = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_total_tasks);
+        String titleTotalTasks = ResourceUtils.getString(getActivity(), R.string.caption_total_tasks);
         dataSet.add(new SummaryPieData(titleTotalTasks));
         return dataSet;
     }
@@ -339,10 +340,10 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
         Random random = new Random();
         List<SummaryCircularData> dataSet = new ArrayList<>();
 
-        String titlePending = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_tasks_pending);
-        String titleDone = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_tasks_done);
-        String titleRemoved = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_tasks_removed);
-        String titleNotExecutable = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_tasks_not_executable);
+        String titlePending = ResourceUtils.getString(getActivity(), R.string.caption_tasks_pending);
+        String titleDone = ResourceUtils.getString(getActivity(), R.string.caption_tasks_done);
+        String titleRemoved = ResourceUtils.getString(getActivity(), R.string.caption_tasks_removed);
+        String titleNotExecutable = ResourceUtils.getString(getActivity(), R.string.caption_tasks_not_executable);
 
         //Probable Cases
         SummaryCircularData data1 = new SummaryCircularData(titlePending, random.nextInt(10000), random.nextInt(100));
@@ -369,7 +370,7 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
 
     @Override
     protected int getSectionTitleResId() {
-        return R.string.dashboard_section_title_task;
+        return R.string.heading_task_summary;
     }
 
     @Override

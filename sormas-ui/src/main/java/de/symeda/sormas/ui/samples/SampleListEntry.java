@@ -27,6 +27,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
@@ -80,15 +81,15 @@ public class SampleListEntry extends HorizontalLayout {
 					sample.getSpecimenCondition().toString());
 		} else if (sample.isReferred()) {
 			htmlRight = LayoutUtil.divCss(
-					CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE + " " + CssStyles.LABEL_NOT, "Referred");
+					CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE + " " + CssStyles.LABEL_NOT, I18nProperties.getCaption(Captions.sampleReferredShort));
 		} else if (sample.isReceived()) {
-			htmlRight = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE, "Received")
+			htmlRight = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE, I18nProperties.getCaption(Captions.sampleReceived))
 					+ LayoutUtil.div(DateHelper.formatLocalShortDate(sample.getReceivedDate()));
 		} else if (sample.isShipped()) {
-			htmlRight = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE, "Shipped")
+			htmlRight = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE, I18nProperties.getCaption(Captions.sampleShipped))
 					+ LayoutUtil.div(DateHelper.formatLocalShortDate(sample.getShipmentDate()));
 		} else {
-			htmlRight = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE, "Not shipped yet");
+			htmlRight = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE, I18nProperties.getCaption(Captions.sampleNotShippedLong));
 		}
 		Label labelRight = new Label(htmlRight, ContentMode.HTML);
 		labelRight.addStyleName(CssStyles.ALIGN_RIGHT);

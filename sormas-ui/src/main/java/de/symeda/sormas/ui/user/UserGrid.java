@@ -70,6 +70,7 @@ public class UserGrid extends Grid {
 
         getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
         getColumn(EDIT_BTN_ID).setWidth(60);
+        getColumn(EDIT_BTN_ID).setHeaderCaption("");
         
         getColumn(UserDto.UUID).setRenderer(new UuidRenderer());
 

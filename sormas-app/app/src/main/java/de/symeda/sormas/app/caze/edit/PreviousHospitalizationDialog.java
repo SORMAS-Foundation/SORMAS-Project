@@ -50,7 +50,7 @@ public class PreviousHospitalizationDialog extends AbstractDialog {
 
     PreviousHospitalizationDialog(final FragmentActivity activity, PreviousHospitalization previousHospitalization) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_previous_hospitalization_layout,
-                R.layout.dialog_root_three_button_panel_layout, R.string.heading_case_hos_prev_hospitalization, -1);
+                R.layout.dialog_root_three_button_panel_layout, R.string.heading_previous_hospitalization, -1);
 
         this.data = previousHospitalization;
     }

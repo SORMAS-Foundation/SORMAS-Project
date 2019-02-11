@@ -22,6 +22,8 @@ import java.util.Date;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -42,7 +44,7 @@ public class LaboratoriesView extends AbstractFacilitiesView {
 		fileDownloader.extend(exportButton);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			createButton.setCaption("New entry");
+			createButton.setCaption(I18nProperties.getCaption(Captions.cNewEntry));
 			createButton.addClickListener(
 					e -> ControllerProvider.getInfrastructureController().createHealthFacility(true));
 		}

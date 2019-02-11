@@ -57,7 +57,7 @@ public class ClassificationAllOfCriteriaDto extends ClassificationCriteriaDto im
 	
 	@Override
 	public String getCriteriaName() {
-		return "<b>" + I18nProperties.getString(Strings.allOf).toUpperCase() + "</b>";
+		return "<b>" + I18nProperties.getString(Strings.classificationAllOf).toUpperCase() + "</b>";
 	}
 	
 	@Override
@@ -85,7 +85,7 @@ public class ClassificationAllOfCriteriaDto extends ClassificationCriteriaDto im
 					if (i + 1 < subCriteria.size()) {
 						stringBuilder.append(", ");
 					} else {
-						stringBuilder.append(" <b>").append(I18nProperties.getString(Strings.and).toUpperCase()).append("</b> ");
+						stringBuilder.append(" <b>").append(I18nProperties.getString(Strings.sAnd).toUpperCase()).append("</b> ");
 					}
 				}
 				

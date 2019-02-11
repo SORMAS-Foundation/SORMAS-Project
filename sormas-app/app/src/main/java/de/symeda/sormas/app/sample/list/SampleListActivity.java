@@ -93,7 +93,7 @@ public class SampleListActivity extends BaseListActivity {
 
     @Override
     protected int getActivityTitle() {
-        return R.string.heading_level2_samples_list;
+        return R.string.heading_samples_list;
     }
 
 }

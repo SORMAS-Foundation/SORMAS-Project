@@ -38,9 +38,10 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
@@ -49,8 +50,8 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
@@ -88,7 +89,7 @@ public class SampleController {
 			}
 		});
 
-		VaadinUiUtil.showModalPopupWindow(editView, "Create new sample");
+		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
 	}
 
 	public void createReferral(SampleDto sample) {
@@ -118,7 +119,7 @@ public class SampleController {
 			}
 		});
 
-		VaadinUiUtil.showModalPopupWindow(createView, "Refer sample to another laboratory");
+		VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingReferSample));
 	}
 
 	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid) {
@@ -142,7 +143,7 @@ public class SampleController {
 							UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
 						requestSampleCollectionTaskCreation(dto, form);
 					} else {
-						Notification.show("Sample data saved", Type.WARNING_MESSAGE);
+						Notification.show(I18nProperties.getString(Strings.messageSampleSaved), Type.WARNING_MESSAGE);
 					}
 				}
 			}
@@ -155,7 +156,7 @@ public class SampleController {
 					FacadeProvider.getSampleFacade().deleteSample(dto.toReference(), UserProvider.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
 				}
-			}, I18nProperties.getString(Strings.sample));
+			}, I18nProperties.getString(Strings.entitySample));
 		}
 
 		// Initialize 'Refer to another laboratory' button or link to referred sample
@@ -163,7 +164,7 @@ public class SampleController {
 		referOrLinkToOtherLabButton.addStyleName(ValoTheme.BUTTON_LINK);
 		if (dto.getReferredTo() == null) {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_TRANSFER)) {
-				referOrLinkToOtherLabButton.setCaption("Refer to another laboratory");
+				referOrLinkToOtherLabButton.setCaption(I18nProperties.getCaption(Captions.sampleRefer));
 				referOrLinkToOtherLabButton.addClickListener(new ClickListener() {
 					private static final long serialVersionUID = 1L;
 					@Override
@@ -174,7 +175,7 @@ public class SampleController {
 							sampleDto = FacadeProvider.getSampleFacade().saveSample(sampleDto);
 							createReferral(sampleDto);
 						} catch (SourceException | InvalidValueException e) {
-							Notification.show("There are errors in the sample form. Please fix them and save the sample before referring it to another laboratory.", Type.ERROR_MESSAGE);
+							Notification.show(I18nProperties.getString(Strings.messageSampleErrors), Type.ERROR_MESSAGE);
 						}
 					}
 				});
@@ -184,7 +185,7 @@ public class SampleController {
 			}
 		} else {
 			SampleDto referredDto = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getReferredTo().getUuid());
-			referOrLinkToOtherLabButton.setCaption("Referred to " + referredDto.getLab().toString());
+			referOrLinkToOtherLabButton.setCaption(I18nProperties.getCaption(Captions.sampleReferredTo) + " " + referredDto.getLab().toString());
 			referOrLinkToOtherLabButton.addClickListener(new ClickListener() {
 				private static final long serialVersionUID = 1L;
 				@Override
@@ -206,7 +207,7 @@ public class SampleController {
 
 		ConfirmationComponent requestTaskComponent = buildRequestTaskComponent();
 
-		Label description = new Label("You have set the specimen condition to not adequate.<br/>Do you want to create a new sample collection task?");
+		Label description = new Label(I18nProperties.getString(Strings.messageCreateCollectionTask));
 		description.setContentMode(ContentMode.HTML);
 		description.setWidth(100, Unit.PERCENTAGE);
 		layout.addComponent(description);
@@ -217,7 +218,7 @@ public class SampleController {
 
 		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
 		popupWindow.setSizeUndefined();
-		popupWindow.setCaption("Create new task?");
+		popupWindow.setCaption(I18nProperties.getString(Strings.headingCreateNewTaskQuestion));
 		requestTaskComponent.getConfirmButton().addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
 			@Override
@@ -245,22 +246,24 @@ public class SampleController {
 			protected void onCancel() {
 			}
 		};
-		requestTaskComponent.getConfirmButton().setCaption("Yes");
-		requestTaskComponent.getCancelButton().setCaption("No");
+		requestTaskComponent.getConfirmButton().setCaption(I18nProperties.getString(Strings.sYes));
+		requestTaskComponent.getCancelButton().setCaption(I18nProperties.getString(Strings.sNo));
 		return requestTaskComponent;
 	}
 
 	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
-			new Notification("No samples selected", "You have not selected any samples.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(I18nProperties.getString(Strings.headingNoSamplesSelected), 
+					I18nProperties.getString(Strings.messageNoSamplesSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected samples?", new Runnable() {
+			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteSamples), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
 						FacadeProvider.getSampleFacade().deleteSample(new SampleReferenceDto(((SampleIndexDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
-					new Notification("Cases deleted", "All selected cases have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+					new Notification(I18nProperties.getString(Strings.headingSamplesDeleted), 
+							I18nProperties.getString(Strings.messageSamplesDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
 				}
 			});
 		}

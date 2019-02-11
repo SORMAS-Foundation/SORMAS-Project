@@ -27,6 +27,9 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -49,11 +52,11 @@ public class SampleListComponent extends VerticalLayout {
 		addComponent(list);
 		list.reload();
 
-		Label tasksHeader = new Label(LayoutUtil.h3("Samples"), ContentMode.HTML);
+		Label tasksHeader = new Label(LayoutUtil.h3(I18nProperties.getString(Strings.entitySamples)), ContentMode.HTML);
 		componentHeader.addComponent(tasksHeader);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
-			createButton = new Button("New sample");
+			createButton = new Button(I18nProperties.getCaption(Captions.sampleNewSample));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
 			createButton.addClickListener(e -> ControllerProvider.getSampleController().create(caseRef, this::reload));

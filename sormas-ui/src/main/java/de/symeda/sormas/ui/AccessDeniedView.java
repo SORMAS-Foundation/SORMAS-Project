@@ -23,6 +23,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+
 /**
  * View shown when trying to navigate to a view the user does not have access to using
  * {@link com.vaadin.navigator.Navigator}.
@@ -38,7 +41,7 @@ public class AccessDeniedView extends VerticalLayout implements View {
         setMargin(true);
         setSpacing(true);
 
-        Label header = new Label("Access denied");
+        Label header = new Label(I18nProperties.getString(Strings.headingAccessDenied));
         header.addStyleName(Reindeer.LABEL_H1);
         addComponent(header);
         addComponent(explanation = new Label());
@@ -46,6 +49,6 @@ public class AccessDeniedView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        explanation.setValue("You do not have the required rights to view this page.");
+        explanation.setValue(I18nProperties.getString(Strings.errorAccessDenied));
     }
 }

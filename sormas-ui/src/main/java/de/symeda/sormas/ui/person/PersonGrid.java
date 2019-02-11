@@ -117,7 +117,7 @@ public class PersonGrid extends Grid {
 		getColumn(PersonIndexDto.LAST_NAME).setMinimumWidth(150);
 		getColumn(CASE_LOC).setRenderer(new HtmlRenderer());
 		getColumn(CASE_LOC).setHeaderCaption(I18nProperties.getPrefixCaption(PersonIndexDto.I18N_PREFIX, 
-				associatedCase == null ? "lastDisease" : "matchingCase"));
+				associatedCase == null ? PersonIndexDto.LAST_DISEASE : PersonIndexDto.MATCHING_CASE));
 	}
 
 	@SuppressWarnings("unchecked")

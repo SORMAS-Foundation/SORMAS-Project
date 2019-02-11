@@ -32,6 +32,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -60,7 +61,7 @@ public class VisitController {
         final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(editForm, editForm.getFieldGroup());
         editView.setWidth(100, Unit.PERCENTAGE);
 
-        Window window = VaadinUiUtil.showModalPopupWindow(editView, "Edit visit");
+        Window window = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditVisit));
         // visit form is too big for typical screens
 		window.setWidth(editForm.getWidth() + 90, Unit.PIXELS); 
 		window.setHeight(80, Unit.PERCENTAGE); 
@@ -88,7 +89,7 @@ public class VisitController {
         				doneConsumer.accept(referenceDto);
         			}
 				}
-			}, I18nProperties.getCaption("Visit"));
+			}, I18nProperties.getCaption(VisitDto.I18N_PREFIX));
 		}
 	}
 
@@ -113,7 +114,7 @@ public class VisitController {
         	}
         });
 
-        Window window = VaadinUiUtil.showModalPopupWindow(editView, "Create new visit");
+        Window window = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewVisit));
         // visit form is too big for typical screens
 		window.setWidth(createForm.getWidth() + 64 + 24, Unit.PIXELS); 
 		window.setHeight(80, Unit.PERCENTAGE); 
@@ -132,15 +133,17 @@ public class VisitController {
 	
 	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
-			new Notification("No visits selected", "You have not selected any visits.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(I18nProperties.getString(Strings.headingNoVisitsSelected), 
+					I18nProperties.getString(Strings.messageNoVisitsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected visits?", new Runnable() {
+			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteVisits), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
 						FacadeProvider.getVisitFacade().deleteVisit(new VisitReferenceDto(((VisitDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
-					new Notification("Visits deleted", "All selected visits have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+					new Notification(I18nProperties.getString(Strings.headingVisitsDeleted), 
+							I18nProperties.getString(Strings.messageVisitsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
 				}
 			});
 		}

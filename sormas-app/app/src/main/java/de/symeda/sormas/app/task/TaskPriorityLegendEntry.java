@@ -18,6 +18,7 @@
 
 package de.symeda.sormas.app.task;
 
+import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.visualization.data.BaseLegendEntry;
 
@@ -79,7 +80,7 @@ public abstract class TaskPriorityLegendEntry extends BaseLegendEntry {
             this.key = 0;
             this.legendColor = R.color.normalPriority;
             this.legendShape = R.drawable.background_legend_normal_priority;
-            this.name = "Normal";
+            this.name = TaskPriority.NORMAL.toString();
         }
 
         @Override
@@ -141,7 +142,7 @@ public abstract class TaskPriorityLegendEntry extends BaseLegendEntry {
             this.key = 1;
             this.legendColor = R.color.lowPriority;
             this.legendShape = R.drawable.background_legend_low_priority;
-            this.name = "Low";
+            this.name = TaskPriority.LOW.toString();
         }
 
         @Override
@@ -203,7 +204,7 @@ public abstract class TaskPriorityLegendEntry extends BaseLegendEntry {
             this.key = 2;
             this.legendColor = R.color.highPriority;
             this.legendShape = R.drawable.background_legend_high_priority;
-            this.name = "High";
+            this.name = TaskPriority.HIGH.toString();
         }
 
         @Override

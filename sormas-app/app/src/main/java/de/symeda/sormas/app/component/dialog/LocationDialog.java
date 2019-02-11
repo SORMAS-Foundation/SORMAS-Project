@@ -47,7 +47,7 @@ public class LocationDialog extends AbstractDialog {
 
     public LocationDialog(final FragmentActivity activity, Location location) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_location_layout,
-                R.layout.dialog_root_two_button_panel_layout, R.string.heading_location_dialog, -1);
+                R.layout.dialog_root_two_button_panel_layout, R.string.heading_location, -1);
 
         this.data = location;
     }
@@ -90,9 +90,9 @@ public class LocationDialog extends AbstractDialog {
             public void onClick(View v) {
                 final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActivity(),
                         R.string.heading_confirmation_dialog,
-                        R.string.heading_sub_confirmation_notification_dialog_pick_gps,
-                        R.string.yes,
-                        R.string.no);
+                        R.string.confirmation_pick_gps,
+                        R.string.s_yes,
+                        R.string.s_no);
 
                 confirmationDialog.setPositiveCallback(new Callback() {
                     @Override

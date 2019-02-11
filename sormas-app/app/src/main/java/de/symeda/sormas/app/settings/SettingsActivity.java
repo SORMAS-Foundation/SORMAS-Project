@@ -21,7 +21,6 @@ package de.symeda.sormas.app.settings;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import de.symeda.sormas.app.BaseLandingActivity;
@@ -67,7 +66,7 @@ public class SettingsActivity extends BaseLandingActivity {
                 ConfigProvider.setServerRestUrl(serverUrl);
                 onResume();
 
-                NotificationHelper.showNotification(this, NotificationPosition.BOTTOM, NotificationType.SUCCESS, R.string.notification_saved_settings);
+                NotificationHelper.showNotification(this, NotificationPosition.BOTTOM, NotificationType.SUCCESS, R.string.message_settings_saved);
 
                 return true;
         }

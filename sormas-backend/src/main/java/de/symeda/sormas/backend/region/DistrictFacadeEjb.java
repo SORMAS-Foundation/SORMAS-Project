@@ -35,6 +35,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictCriteria;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictFacade;
@@ -159,7 +161,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		District district = districtService.getByUuid(dto.getUuid());
 		
 		if (dto.getRegion() == null) {
-			throw new ValidationRuntimeException("You have to specify a valid region");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
 		}
 
 		district = fillOrBuildEntity(dto, district);

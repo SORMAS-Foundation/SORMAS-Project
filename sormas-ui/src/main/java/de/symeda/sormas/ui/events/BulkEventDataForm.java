@@ -23,6 +23,8 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.OptionGroup;
 
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -51,9 +53,9 @@ public class BulkEventDataForm extends AbstractEditForm<EventDto> {
 	
 	@Override
 	protected void addFields() {
-		eventStatusCheckBox = new CheckBox("Change case classification");
+		eventStatusCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkEventStatus));
 		getContent().addComponent(eventStatusCheckBox, EVENT_STATUS_CHECKBOX);
-		eventTypeCheckBox = new CheckBox("Change investigation status");
+		eventTypeCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkEventType));
 		getContent().addComponent(eventTypeCheckBox, EVENT_TYPE_CHECKBOX);
 		OptionGroup eventStatus = addField(EventDto.EVENT_STATUS, OptionGroup.class);
 		eventStatus.setEnabled(false);

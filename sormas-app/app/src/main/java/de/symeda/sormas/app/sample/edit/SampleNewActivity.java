@@ -121,7 +121,7 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
     public void saveData() {
 
         if (saveTask != null) {
-            NotificationHelper.showNotification(this, WARNING, getString(R.string.snackbar_already_saving));
+            NotificationHelper.showNotification(this, WARNING, getString(R.string.message_already_saving));
             return; // don't save multiple times
         }
 
