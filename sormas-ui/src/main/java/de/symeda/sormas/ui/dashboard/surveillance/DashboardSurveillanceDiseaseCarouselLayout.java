@@ -19,8 +19,6 @@ package de.symeda.sormas.ui.dashboard.surveillance;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CheckBox;
@@ -123,6 +121,9 @@ public class DashboardSurveillanceDiseaseCarouselLayout extends VerticalLayout {
 			this.setActiveDisease(diseases.get(nextDiseaseIndex));	
 		});
 		
+		// enabled by default
+		autoSlide.setValue(true);
+		
 		return autoSlide;
 	}
 	
@@ -138,7 +139,7 @@ public class DashboardSurveillanceDiseaseCarouselLayout extends VerticalLayout {
 	
 	private void changeAutoSlideOption(boolean isActivated) {
 		if (isActivated) {			
-			SormasUI.getCurrent().setPollInterval(5000);
+			SormasUI.getCurrent().setPollInterval(1000*90);
 		}
 		else {
 			SormasUI.getCurrent().setPollInterval(-1);

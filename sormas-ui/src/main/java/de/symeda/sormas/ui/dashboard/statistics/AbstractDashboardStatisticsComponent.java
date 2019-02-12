@@ -40,6 +40,10 @@ import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
+/**
+ * Remove when DashboardCnnstactStatisticsComponent is updated
+ */
+@Deprecated
 @SuppressWarnings("serial")
 public abstract class AbstractDashboardStatisticsComponent extends VerticalLayout {
 

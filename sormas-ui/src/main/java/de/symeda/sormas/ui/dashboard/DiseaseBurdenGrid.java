@@ -17,45 +17,25 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.data.util.converter.StringToIntegerConverter;
 import com.vaadin.data.util.converter.StringToLongConverter;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Grid;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.report.WeeklyReportDto;
-import de.symeda.sormas.api.report.WeeklyReportOfficerSummaryDto;
-import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.PercentageRenderer;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
-public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
+public class DiseaseBurdenGrid extends Grid {
 
 	private static final String VIEW_DETAILS_BTN_ID = "viewDetails";
-
-	@SuppressWarnings("unused")
-	private RegionReferenceDto region;
-	private int week;
-	private int year;
 
 	public DiseaseBurdenGrid() {
 		setSizeFull();
@@ -126,7 +106,6 @@ public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
 		}).setRenderer(new HtmlRenderer());
 
 		setSelectionMode(SelectionMode.NONE);
-//		addItemClickListener(this);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -137,28 +116,6 @@ public class DiseaseBurdenGrid extends Grid implements ItemClickListener {
 
 	public void reload(List<DiseaseBurdenDto> items) {
 		getContainer().removeAllItems();
-
 		getContainer().addAll(items);
-		
-		//setSizeFull();
-	}
-
-	@Override
-	public void itemClick(ItemClickEvent event) {
-		if (event.getPropertyId().equals(VIEW_DETAILS_BTN_ID)) {
-			WeeklyReportOfficerSummaryDto summaryDto = (WeeklyReportOfficerSummaryDto) event.getItemId();
-			VerticalLayout layout = new VerticalLayout();
-			layout.setSizeUndefined();
-			layout.setMargin(true);
-			Window window = VaadinUiUtil.showPopupWindow(layout);
-
-//			WeeklyReportInformantsGrid grid = new WeeklyReportInformantsGrid(summaryDto.getOfficer(), new EpiWeek(year, week));
-//			grid.setWidth(960, Unit.PIXELS);
-//			grid.setHeightMode(HeightMode.ROW);
-//			grid.setHeightUndefined();
-//			layout.addComponent(grid);
-			window.setCaption(
-					"Weekly Reports in " + summaryDto.getDistrict().toString() + " - Epi Week " + week + "/" + year);
-		}
 	}
 }
