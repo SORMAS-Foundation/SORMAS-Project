@@ -174,7 +174,7 @@ public class TaskNotificationService extends Service {
             }
 
             Notification notification = new NotificationCompat.Builder(context)
-                    .setTicker(r.getString(R.string.headline_task_notification))
+                    .setTicker(r.getString(R.string.heading_task_notification))
                     .setSmallIcon(R.mipmap.ic_launcher_foreground)
                     .setContentTitle(task.getTaskType().toString() + (caze != null ? " (" + caze.getDisease().toShortString() + ")" : contact != null ? " (" + contact.getCaseDisease().toShortString() + ")" : ""))
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(content.toString())))
@@ -212,7 +212,7 @@ public class TaskNotificationService extends Service {
                             .setTicker(title)
                             .setSmallIcon(R.mipmap.ic_launcher_foreground)
                             .setContentTitle(title)
-                            .setContentText(context.getResources().getString(R.string.hint_no_weekly_report))
+                            .setContentText(context.getResources().getString(R.string.hint_weekly_report_confirmation_required))
                             .setContentIntent(pi)
                             .setAutoCancel(true)
                             .build();

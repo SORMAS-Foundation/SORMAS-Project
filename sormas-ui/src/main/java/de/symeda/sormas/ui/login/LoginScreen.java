@@ -31,6 +31,8 @@ import com.vaadin.ui.LoginForm;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.UserRightsException;
 
 /**
@@ -114,11 +116,11 @@ public class LoginScreen extends CssLayout {
 			if (LoginHelper.login(username, password)) {
 				loginListener.loginSuccessful();
 			} else {
-				showNotification(new Notification("Login failed",
-						"Please check your username and password and try again.", Notification.Type.WARNING_MESSAGE));
+				showNotification(new Notification(I18nProperties.getString(Strings.headingLoginFailed),
+						I18nProperties.getString(Strings.messageLoginFailed), Notification.Type.WARNING_MESSAGE));
 			}
 		} catch (UserRightsException e) {
-			showNotification(new Notification("Login failed", e.getMessage(), Notification.Type.WARNING_MESSAGE));
+			showNotification(new Notification(I18nProperties.getString(Strings.headingLoginFailed), e.getMessage(), Notification.Type.WARNING_MESSAGE));
 		}
 	}
 

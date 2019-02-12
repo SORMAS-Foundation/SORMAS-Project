@@ -41,6 +41,9 @@ import com.opencsv.CSVWriter;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
@@ -75,7 +78,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
  */
 public class CaseImporter {
 
-	private static final String ERROR_COLUMN_NAME = "Error description";
+	private static final String ERROR_COLUMN_NAME = I18nProperties.getCaption(Captions.caseImportErrorDescription);
 	private static final Logger logger = LoggerFactory.getLogger(CaseImporter.class);
 
 	private Consumer<CaseImportResult> caseImportedCallback;
@@ -182,7 +185,7 @@ public class CaseImporter {
 		// Check whether the new line has the same length as the header line
 		if (nextLine.length > headersLine.length) {
 			hasImportError = true;
-			writeImportError(errorReportCsvWriter, nextLine, "This line is longer than the header line");
+			writeImportError(errorReportCsvWriter, nextLine, I18nProperties.getValidationError(Validations.importLineTooLong));
 			readNextLineFromCsv(headersLine, headers);
 		}
 
@@ -356,38 +359,42 @@ public class CaseImporter {
 					} else if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
 						List<RegionReferenceDto> region = FacadeProvider.getRegionFacade().getByName(entry);
 						if (region.isEmpty()) {
-							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Entry does not exist in the database");
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildHeaderPathString(entryHeaderPath)));
 						} else if (region.size() > 1) {
-							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Region name is not unique, make sure there is only one region with this name in the database");
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importRegionNotUnique, entry, buildHeaderPathString(entryHeaderPath)));
 						} else {
 							pd.getWriteMethod().invoke(currentElement, region.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
 						List<DistrictReferenceDto> district = FacadeProvider.getDistrictFacade().getByName(entry, caze.getRegion());
 						if (district.isEmpty()) {
-							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Entry does not exist in the database or in the specified region");
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrRegion, entry, buildHeaderPathString(entryHeaderPath)));
 						} else if (district.size() > 1) {
-							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; District name is not unique in the chosen region, make sure there is only one district with this name belonging to the chosen region in the database");
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importDistrictNotUnique, entry, buildHeaderPathString(entryHeaderPath)));
 						} else {
 							pd.getWriteMethod().invoke(currentElement, district.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(CommunityReferenceDto.class)) {
 						List<CommunityReferenceDto> community = FacadeProvider.getCommunityFacade().getByName(entry, caze.getDistrict());
 						if (community.isEmpty()) {
-							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Entry does not exist in the database or in the specified district");
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrDistrict, entry, buildHeaderPathString(entryHeaderPath)));
 						} else if (community.size() > 1) {
-							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Community name is not unique in the chosen district, make sure there is only one community with this name belonging to the chosen district in the database");
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importCommunityNotUnique, entry, buildHeaderPathString(entryHeaderPath)));
 						} else {
 							pd.getWriteMethod().invoke(currentElement, community.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(FacilityReferenceDto.class)) {
 						List<FacilityReferenceDto> facility = FacadeProvider.getFacilityFacade().getByName(entry, caze.getDistrict(), caze.getCommunity());
 						if (facility.isEmpty()) {
-							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Entry does not exist in the database or in the specified " + (caze.getCommunity() == null ? "district" : "community"));
+							if (caze.getCommunity() != null) {
+								throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrCommunity, entry, buildHeaderPathString(entryHeaderPath)));
+							} else {
+								throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrDistrict, entry, buildHeaderPathString(entryHeaderPath)));
+							}
 						} else if (facility.size() > 1 && caze.getCommunity() == null) {
-							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Facility name is not unique in the chosen district, make sure there is only one facility with this name belonging to the chosen district in the database or specify a community");
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importFacilityNotUniqueInDistrict, entry, buildHeaderPathString(entryHeaderPath)));
 						} else if (facility.size() > 1 && caze.getCommunity() != null) {
-							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Facility name is not unique in the chosen community, make sure there is only one facility with this name belonging to the chosen community in the database");
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importFacilityNotUniqueInCommunity, entry, buildHeaderPathString(entryHeaderPath)));
 						} else {
 							pd.getWriteMethod().invoke(currentElement, facility.get(0));
 						}
@@ -396,27 +403,27 @@ public class CaseImporter {
 						if (user != null) {
 							pd.getWriteMethod().invoke(currentElement, user.toReference());
 						} else {
-							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Entry does not exist in the database");
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildHeaderPathString(entryHeaderPath)));
 						}
 					} else if (propertyType.isAssignableFrom(String.class)) {
 						pd.getWriteMethod().invoke(currentElement, entry);
 					} else {
-						throw new UnsupportedOperationException ("Property type " + propertyType.getName() + " not allowed when importing cases.");
+						throw new UnsupportedOperationException (I18nProperties.getValidationError(Validations.importCasesPropertyTypeNotAllowed, propertyType.getName()));
 					}
 				}
 			} catch (IntrospectionException e) {
 				throw new InvalidColumnException(buildHeaderPathString(entryHeaderPath));
 			} catch (InvocationTargetException | IllegalAccessException e) {
-				throw new ImportErrorException("The import failed because of an error in column " + buildHeaderPathString(entryHeaderPath));
+				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importErrorInColumn, buildHeaderPathString(entryHeaderPath)));
 			} catch (IllegalArgumentException e) {
 				throw new ImportErrorException(entry, buildHeaderPathString(entryHeaderPath));
 			} catch (ParseException e) {
-				throw new ImportErrorException("Invalid date in column " + buildHeaderPathString(entryHeaderPath) + "; Allowed date formats are dd/MM/yyyy, dd.MM.yyyy and dd-MM-yyyy");
+				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importInvalidDate, buildHeaderPathString(entryHeaderPath)));
 			} catch (ImportErrorException e) {
 				throw e;
 			} catch (Exception e) {
 				logger.error("Unexpected error when trying to import a case: " + e.getMessage());
-				throw new ImportErrorException("Unexpected error when trying to import this case. Please send your error report file to an administrator and remove this case from your import file.");
+				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importCasesUnexpectedError));
 			}
 		}
 	}

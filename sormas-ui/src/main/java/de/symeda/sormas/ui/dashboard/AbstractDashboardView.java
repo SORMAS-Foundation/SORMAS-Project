@@ -62,8 +62,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 @SuppressWarnings("serial")
 public abstract class AbstractDashboardView extends AbstractView {
 
-	public static final String I18N_PREFIX = "Dashboard";
-
 	public static final String ROOT_VIEW_NAME = "dashboard";
 
 	protected DashboardDataProvider dashboardDataProvider;

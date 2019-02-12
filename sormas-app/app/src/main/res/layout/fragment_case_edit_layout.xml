@@ -222,7 +222,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/sub_heading_additional_medical_information"
+                    android:text="@string/heading_additional_medical_information"
                     style="@style/SubHeadingStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField

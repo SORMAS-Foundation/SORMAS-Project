@@ -58,7 +58,6 @@ import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.core.TimeAgo;
 import de.symeda.sormas.app.core.enumeration.SampleTestResultTypeElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
-import de.symeda.sormas.app.report.WeeklyReportListItem;
 
 public class TextViewBindingAdapters {
 
@@ -612,9 +611,9 @@ public class TextViewBindingAdapters {
         } else {
             Case caze = DatabaseHelper.getCaseDao().queryUuidBasic(resultingCaseUuid);
             if (caze != null) {
-                val = "Resulting Case Status: " + caze.getInvestigationStatus().toString();
+                val = DatabaseHelper.getString(R.string.caption_resulting_case_status) + ": " + caze.getInvestigationStatus().toString();
             } else {
-                val = "Resulting Case UUID: " + DataHelper.getShortUuid(resultingCaseUuid);
+                val = DatabaseHelper.getString(R.string.caption_resulting_case_uuid) + ": " + DataHelper.getShortUuid(resultingCaseUuid);
             }
 
             if (valueFormat != null && !valueFormat.trim().equals("")) {
@@ -714,11 +713,11 @@ public class TextViewBindingAdapters {
             }
 
             if (condition == SpecimenCondition.NOT_ADEQUATE) {
-                result = resources.getString(R.string.inadequate_specimen_cond);
+                result = resources.getString(R.string.value_inadequate_specimen_condition);
             } else if (mostRecentTest != null) {
                 result = mostRecentTest.getTestResult().toString();
             } else {
-                result = resources.getString(R.string.no_recent_test);
+                result = resources.getString(R.string.info_no_sample_test);
             }
 
             textField.setText(result);
@@ -802,8 +801,8 @@ public class TextViewBindingAdapters {
     public static void setHasValue(TextView textView, ObservableList list) {
         Resources resources = textView.getContext().getResources();
 
-        String yes = resources.getString(R.string.yes);
-        String no = resources.getString(R.string.no);
+        String yes = resources.getString(R.string.s_yes);
+        String no = resources.getString(R.string.s_no);
 
         if (list != null && list.size() > 0) {
             textView.setText(yes);

@@ -26,10 +26,11 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.UserProvider;
@@ -144,7 +145,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		
 		for (String epiDataField : epiDataFields) {
 			if (getFieldGroup().getField(epiDataField).isVisible()) {
-				String epiDataCaptionLayout = LayoutUtil.h3("Epidemiological Data") + LayoutUtil.divsCss(CssStyles.VSPACE_3, I18nProperties.getString(Strings.EpiData_epiDataHint));
+				String epiDataCaptionLayout = LayoutUtil.h3(I18nProperties.getCaption(EpiDataDto.I18N_PREFIX)) + LayoutUtil.divsCss(CssStyles.VSPACE_3, I18nProperties.getString(Strings.messageEpiDataHint));
 				Label epiDataCaptionLabel = new Label(epiDataCaptionLayout);
 				epiDataCaptionLabel.setContentMode(ContentMode.HTML);
 				getContent().addComponent(epiDataCaptionLabel, EPI_DATA_CAPTION_LOC);
@@ -157,7 +158,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		
 		for (String animalContact : animalContacts) {
 			if (getFieldGroup().getField(animalContact).isVisible()) {
-				String animalCaptionLayout = LayoutUtil.h3("Animal Contacts") + LayoutUtil.divsCss(CssStyles.VSPACE_3, I18nProperties.getString(Strings.EpiData_animalHint));
+				String animalCaptionLayout = LayoutUtil.h3(I18nProperties.getString(Strings.headingAnimalContacts)) + LayoutUtil.divsCss(CssStyles.VSPACE_3, I18nProperties.getString(Strings.messageAnimalContactsHint));
 				Label animalCaptionLabel = new Label(animalCaptionLayout);
 				animalCaptionLabel.setContentMode(ContentMode.HTML);
 				getContent().addComponent(animalCaptionLabel, ANIMAL_CAPTION_LOC);
@@ -169,7 +170,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		
 		for (String environmentalExp : environmentalExposures) {
 			if (getFieldGroup().getField(environmentalExp).isVisible()) {
-				String environmentalCaptionLayout = LayoutUtil.h3("Environmental Exposure");
+				String environmentalCaptionLayout = LayoutUtil.h3(I18nProperties.getString(Strings.headingEnvironmentalExposure));
 				Label environmentalCaptionLabel = new Label(environmentalCaptionLayout);
 				environmentalCaptionLabel.setContentMode(ContentMode.HTML);
 				getContent().addComponent(environmentalCaptionLabel, ENVIRONMENTAL_LOC);
@@ -200,7 +201,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private void updateBurialsHint(OptionGroup burialAttendedField, EpiDataBurialsField burialsField) {
 		YesNoUnknown value = (YesNoUnknown) burialAttendedField.getValue();
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT) && value == YesNoUnknown.YES && (burialsField == null || burialsField.getValue() == null || burialsField.getValue().size() == 0)) {
-			burialAttendedField.setComponentError(new UserError("Please add an entry to the list below if there is any data available to you."));
+			burialAttendedField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.softAddEntryToList)));
 		} else {
 			burialAttendedField.setComponentError(null);
 		}
@@ -209,7 +210,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private void updateGatheringsHint(OptionGroup gatheringAttendedField, EpiDataGatheringsField gatheringsField) {
 		YesNoUnknown value = (YesNoUnknown) gatheringAttendedField.getValue();
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT) && value == YesNoUnknown.YES && (gatheringsField == null || gatheringsField.getValue() == null || gatheringsField.getValue().size() == 0)) {
-			gatheringAttendedField.setComponentError(new UserError("Please add an entry to the list below if there is any data available to you."));
+			gatheringAttendedField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.softAddEntryToList)));
 		} else {
 			gatheringAttendedField.setComponentError(null);
 		}
@@ -218,7 +219,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private void updateTravelsHint(OptionGroup traveledField, EpiDataTravelsField travelsField) {
 		YesNoUnknown value = (YesNoUnknown) traveledField.getValue();
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT) && value == YesNoUnknown.YES && (travelsField == null || travelsField.getValue() == null || travelsField.getValue().size() == 0)) {
-			traveledField.setComponentError(new UserError("Please add an entry to the list below if there is any data available to you."));
+			traveledField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.softAddEntryToList)));
 		} else {
 			traveledField.setComponentError(null);
 		}

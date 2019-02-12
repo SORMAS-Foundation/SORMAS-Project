@@ -33,6 +33,8 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -82,16 +84,16 @@ public class ContactVisitsView extends AbstractContactView {
 
 		statusButtons = new HashMap<>();
 
-		Button contactButton = new Button("Contact related", e -> {
+		Button contactButton = new Button(I18nProperties.getCaption(Captions.contactRelated), e -> {
 			grid.reload(getContactRef());
 			processStatusChangeVisuals(e.getButton());
 		});
 		CssStyles.style(contactButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 		contactButton.setCaptionAsHtml(true);
 		topLayout.addComponent(contactButton);
-		statusButtons.put(contactButton, "Contact related");
+		statusButtons.put(contactButton, I18nProperties.getCaption(Captions.contactRelated));
 
-		Button personButton = new Button("All visits of contact person", e -> {
+		Button personButton = new Button(I18nProperties.getCaption(Captions.contactPersonVisits), e -> {
 			ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
 			grid.reload(contact.getPerson());
 			processStatusChangeVisuals(e.getButton());
@@ -99,7 +101,7 @@ public class ContactVisitsView extends AbstractContactView {
 		CssStyles.style(personButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 		personButton.setCaptionAsHtml(true);
 		topLayout.addComponent(personButton);
-		statusButtons.put(personButton, "All visits of contact person");
+		statusButtons.put(personButton, I18nProperties.getCaption(Captions.contactPersonVisits));
 
 		topLayout.setExpandRatio(topLayout.getComponent(topLayout.getComponentCount()-1), 1);
 
@@ -108,7 +110,7 @@ public class ContactVisitsView extends AbstractContactView {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
 			MenuBar bulkOperationsDropdown = new MenuBar();	
-			MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
+			MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 			Command deleteCommand = selectedItem -> {
 				ControllerProvider.getVisitController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -118,7 +120,7 @@ public class ContactVisitsView extends AbstractContactView {
 					}
 				});
 			};
-			bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
+			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), FontAwesome.TRASH, deleteCommand);
 
 			topLayout.addComponent(bulkOperationsDropdown);
 			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
@@ -126,7 +128,7 @@ public class ContactVisitsView extends AbstractContactView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE)) {
-			newButton = new Button("New visit");
+			newButton = new Button(I18nProperties.getCaption(Captions.visitNewVisit));
 			newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			newButton.setIcon(FontAwesome.PLUS_CIRCLE);
 			newButton.addClickListener(e -> {

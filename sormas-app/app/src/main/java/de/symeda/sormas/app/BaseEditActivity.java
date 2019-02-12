@@ -31,10 +31,6 @@ import android.widget.TextView;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
-import de.symeda.sormas.app.core.async.AsyncTaskResult;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.util.Bundler;
@@ -146,7 +142,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
             // DatabaseHelper.getAdoDao(storedRootEntity.getClass()).markAsReadWithCast(storedRootEntity);
             if (hadRootEntity) {
                 NotificationHelper.showNotification(BaseEditActivity.this, NotificationType.WARNING,
-                        String.format(getResources().getString(R.string.snackbar_entity_overridden), storedRootEntity.getEntityName()));
+                        String.format(getResources().getString(R.string.message_entity_overridden), storedRootEntity.getEntityName()));
             }
         }
 

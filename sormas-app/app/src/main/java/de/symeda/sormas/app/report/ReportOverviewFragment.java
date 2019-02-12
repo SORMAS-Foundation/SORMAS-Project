@@ -55,7 +55,7 @@ public class ReportOverviewFragment extends ReportFragment {
 
     @Override
     protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.headline_informant_reports);
+        return getResources().getString(R.string.heading_informant_reports);
     }
 
     @Override

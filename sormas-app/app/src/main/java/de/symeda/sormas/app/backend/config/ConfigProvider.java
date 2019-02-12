@@ -22,11 +22,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.preference.PreferenceManager;
 import android.security.KeyPairGeneratorSpec;
-import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
@@ -59,8 +55,6 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.NoSuchPaddingException;
 import javax.security.auth.x500.X500Principal;
 
-import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
@@ -134,7 +128,7 @@ public final class ConfigProvider {
         if (!instance.hasDeviceEncryption()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setCancelable(false);
-            builder.setMessage(R.string.alert_encryption);
+            builder.setMessage(R.string.message_encryption);
             AlertDialog dialog = builder.create();
             dialog.setButton(AlertDialog.BUTTON_POSITIVE, activity.getString(R.string.action_ok),
                     new DialogInterface.OnClickListener() {
@@ -311,7 +305,7 @@ public final class ConfigProvider {
         }
 
         if (!hasDeviceEncryption()) {
-            throw new IllegalStateException(context.getString(R.string.alert_encryption));
+            throw new IllegalStateException(context.getString(R.string.message_encryption));
         }
 
         try {
@@ -385,7 +379,7 @@ public final class ConfigProvider {
         }
 
         if (!hasDeviceEncryption()) {
-            throw new IllegalStateException(context.getString(R.string.alert_encryption));
+            throw new IllegalStateException(context.getString(R.string.message_encryption));
         }
 
         try {

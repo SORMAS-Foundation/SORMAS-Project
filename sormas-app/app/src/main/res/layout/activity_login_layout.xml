@@ -52,7 +52,7 @@
                     android:layout_height="@dimen/logoHeight"
                     android:layout_marginTop="@dimen/logoMarginTop"
                     android:layout_marginBottom="@dimen/logoMarginBottom"
-                    android:contentDescription="@string/sormas_logo_desc"
+                    android:contentDescription="@string/description_sormas_logo"
                     android:src="@drawable/sormas_logo" />
 
                 <!-- SORMAS description texts -->
@@ -61,14 +61,14 @@
                     android:id="@+id/heading_1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/login_heading_1"
+                    android:text="@string/heading_surveillance_outbreak"
                     style="@style/LoginHeading1" />
 
                 <TextView
                     android:id="@+id/heading_2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/login_heading_2"
+                    android:text="@string/heading_response_management"
                     style="@style/LoginHeading2" />
 
                 <LinearLayout
@@ -81,7 +81,7 @@
                         android:id="@+id/sub_heading_1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/login_sub_heading_1"
+                        android:text="@string/heading_disease_prevention"
                         style="@style/LoginSubHeadingText" />
 
                     <View
@@ -92,7 +92,7 @@
                         android:id="@+id/sub_heading_2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/login_sub_heading_2"
+                        android:text="@string/heading_disease_detection"
                         style="@style/LoginSubHeadingText" />
 
                     <View
@@ -103,7 +103,7 @@
                         android:id="@+id/sub_heading_3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/login_sub_heading_3"
+                        android:text="@string/heading_outbreak_response"
                         style="@style/LoginSubHeadingText" />
 
                 </LinearLayout>
@@ -120,22 +120,22 @@
                         android:id="@+id/signInHeader"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/login_sign_in"
+                        android:text="@string/heading_sign_in"
                         style="@style/LoginSignInText" />
 
                     <TextView
                         android:id="@+id/signInSubHeader"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/login_sign_in_tag_line"
+                        android:text="@string/info_sign_in"
                         style="@style/LoginSignInTagLineText" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextEditField
                         android:id="@+id/username"
                         style="@style/ControlSingleColumnStyle"
                         app:hint="@string/hint_login_username"
-                        app:labelCaption="@string/label_login_username"
-                        app:description="@string/desc_login_username"
+                        app:labelCaption="@string/caption_username"
+                        app:description="@string/description_username"
                         app:required="true"
                         app:value="@={data.userName}" />
 
@@ -143,8 +143,8 @@
                         android:id="@+id/password"
                         style="@style/ControlSingleColumnStyle"
                         app:hint="@string/hint_login_password"
-                        app:labelCaption="@string/label_login_password"
-                        app:description="@string/desc_login_password"
+                        app:labelCaption="@string/caption_password"
+                        app:description="@string/description_password"
                         app:required="true"
                         app:value="@={data.password}" />
 
@@ -176,7 +176,7 @@
                             android:layout_alignParentEnd="true"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/login_change_settings"
+                            android:text="@string/action_change_settings"
                             style="@style/SubtleButtonStyle"
                             android:onClick="showSettingsView" />
 

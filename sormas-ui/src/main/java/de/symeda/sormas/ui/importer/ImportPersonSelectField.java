@@ -30,10 +30,11 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
@@ -47,8 +48,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
 public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
-
-	public static final String I18N_PREFIX = "CaseImport";
 
 	public static final String CREATE_PERSON = "createPerson";
 	public static final String SELECT_PERSON = "selectPerson";
@@ -86,7 +85,7 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 
 		// Info label
 
-		Label infoLabel = new Label(I18nProperties.getString(Strings.importSimilarityInfo));
+		Label infoLabel = new Label(I18nProperties.getString(Strings.infoImportSimilarity));
 		CssStyles.style(infoLabel, CssStyles.VSPACE_3);
 		layout.addComponent(infoLabel);
 
@@ -95,7 +94,7 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 		outerCaseInfoLayout.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(outerCaseInfoLayout, CssStyles.BACKGROUND_ROUNDED_CORNERS, CssStyles.BACKGROUND_SUB_CRITERIA, CssStyles.VSPACE_3, "v-scrollable");
 
-		Label importedCaseLabel = new Label(I18nProperties.getString(Strings.importedCaseInfo));
+		Label importedCaseLabel = new Label(I18nProperties.getString(Strings.headingImportedCaseInfo));
 		CssStyles.style(importedCaseLabel, CssStyles.LABEL_BOLD, CssStyles.VSPACE_4);
 		outerCaseInfoLayout.addComponent(importedCaseLabel);
 
@@ -158,7 +157,7 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 		outerPersonInfoLayout.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(outerPersonInfoLayout, CssStyles.BACKGROUND_ROUNDED_CORNERS, CssStyles.BACKGROUND_SUB_CRITERIA, CssStyles.VSPACE_3, "v-scrollable");
 
-		Label importedPersonLabel = new Label(I18nProperties.getString(Strings.importedPersonInfo));
+		Label importedPersonLabel = new Label(I18nProperties.getString(Strings.headingImportedPersonInfo));
 		CssStyles.style(importedPersonLabel, CssStyles.LABEL_BOLD, CssStyles.VSPACE_4);
 		outerPersonInfoLayout.addComponent(importedPersonLabel);
 
@@ -233,7 +232,7 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 		// Person selection/creation
 		selectPerson = new OptionGroup(null);
 		selectPerson.addItem(SELECT_PERSON);
-		selectPerson.setItemCaption(SELECT_PERSON, I18nProperties.getCaption("Person.select"));
+		selectPerson.setItemCaption(SELECT_PERSON, I18nProperties.getCaption(Captions.personSelect));
 		CssStyles.style(selectPerson, CssStyles.VSPACE_NONE);
 		selectPerson.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
@@ -248,7 +247,7 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 		layout.addComponent(selectPerson);
 
 		mergeCheckBox = new CheckBox();
-		mergeCheckBox.setCaption(I18nProperties.getPrefixCaption(I18N_PREFIX, "mergeCase"));
+		mergeCheckBox.setCaption(I18nProperties.getCaption(Captions.caseImportMergeCase));
 		CssStyles.style(mergeCheckBox, CssStyles.VSPACE_3);
 		layout.addComponent(mergeCheckBox);
 
@@ -270,7 +269,7 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 
 		createNewPerson = new OptionGroup(null);
 		createNewPerson.addItem(CREATE_PERSON);
-		createNewPerson.setItemCaption(CREATE_PERSON, I18nProperties.getCaption("Person.createNew"));
+		createNewPerson.setItemCaption(CREATE_PERSON, I18nProperties.getCaption(Captions.personCreateNew));
 		// Deselect grid when "create new" is selected
 		createNewPerson.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {

@@ -155,9 +155,9 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         String password = binding.password.getValue();
 
         if (userName.isEmpty()) {
-            binding.username.enableErrorState(R.string.notification_empty_username);
+            binding.username.enableErrorState(R.string.message_empty_username);
         } else if (password.isEmpty()) {
-            binding.password.enableErrorState(R.string.notification_empty_password);
+            binding.password.enableErrorState(R.string.message_empty_password);
         } else {
             ConfigProvider.setUsernameAndPassword(userName, password);
             processLogin(true);
@@ -168,8 +168,8 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
 
         if (progressDialog == null || !progressDialog.isShowing()) {
             boolean isInitialSync = DatabaseHelper.getFacilityDao().isEmpty();
-            progressDialog = ProgressDialog.show(this, getString(R.string.headline_synchronization),
-                    getString(isInitialSync ? R.string.hint_synchronization_initial : R.string.hint_synchronization), true);
+            progressDialog = ProgressDialog.show(this, getString(R.string.heading_synchronization),
+                    getString(isInitialSync ? R.string.info_initial_synchronization : R.string.info_synchronizing), true);
         }
 
         // try to connect -> validates login and version

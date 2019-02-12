@@ -35,7 +35,6 @@ import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.event.edit.EventNewActivity;
 
@@ -96,7 +95,7 @@ public class EventListActivity extends BaseListActivity {
 
     @Override
     protected int getActivityTitle() {
-        return R.string.heading_level2_events_list;
+        return R.string.heading_events_list;
     }
 
     @Override

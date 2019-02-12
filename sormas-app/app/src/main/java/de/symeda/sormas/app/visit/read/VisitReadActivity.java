@@ -96,7 +96,7 @@ public class VisitReadActivity extends BaseReadActivity<Visit> {
 
     @Override
     protected int getActivityTitle() {
-        return R.string.heading_level3_1_contact_visit_info;
+        return R.string.heading_contact_visit;
     }
 
     @Override

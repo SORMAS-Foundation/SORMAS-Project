@@ -59,7 +59,7 @@ public class TreatmentForm extends AbstractEditForm<TreatmentDto> {
 
 		treatmentTypeField.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() == TreatmentType.DRUG_INTAKE) {
-				treatmentDetailsField.setCaption(I18nProperties.getPrefixCaption(TreatmentDto.I18N_PREFIX, "drugIntakeDetails"));
+				treatmentDetailsField.setCaption(I18nProperties.getPrefixCaption(TreatmentDto.I18N_PREFIX, TreatmentDto.DRUG_INTAKE_DETAILS));
 			} else {
 				treatmentDetailsField.setCaption(I18nProperties.getPrefixCaption(TreatmentDto.I18N_PREFIX, TreatmentDto.TREATMENT_DETAILS));
 			}

@@ -136,7 +136,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/heading_sub_alert_source_of_information"
+                android:text="@string/heading_source_of_information"
                 style="@style/SubHeadingStyle" />
 
             <LinearLayout

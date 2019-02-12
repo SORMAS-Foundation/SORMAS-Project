@@ -59,7 +59,7 @@ public class ClassificationNoneOfCriteriaDto extends ClassificationCriteriaDto i
 	@Override
 	public String buildDescription() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("<b> ").append(I18nProperties.getString(Strings.noneOf).toUpperCase()).append("</b>");
+		stringBuilder.append("<b> ").append(I18nProperties.getString(Strings.classificationNoneOf).toUpperCase()).append("</b>");
 		for (int i = 0; i < classificationCriteria.size(); i++) {
 			stringBuilder.append("<br/>- ");
 			stringBuilder.append(classificationCriteria.get(i).buildDescription());
@@ -69,7 +69,7 @@ public class ClassificationNoneOfCriteriaDto extends ClassificationCriteriaDto i
 	
 	@Override
 	public String getCriteriaName() {
-		return "<b>" + I18nProperties.getString(Strings.noneOf).toUpperCase() + "</b>";
+		return "<b>" + I18nProperties.getString(Strings.classificationNoneOf).toUpperCase() + "</b>";
 	}
 	
 	@Override

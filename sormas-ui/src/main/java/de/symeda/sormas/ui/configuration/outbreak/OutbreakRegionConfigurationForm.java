@@ -29,6 +29,9 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -37,8 +40,8 @@ import de.symeda.sormas.ui.utils.CssStyles;
 public class OutbreakRegionConfigurationForm extends VerticalLayout {
 
 	// Outbreak mode statics
-	private final static String OUTBREAK = "outbreak";
-	private final static String NORMAL = "normal";
+	private final static String OUTBREAK = I18nProperties.getCaption(Captions.outbreakOutbreak);
+	private final static String NORMAL = I18nProperties.getCaption(Captions.outbreakNormal);
 
 	// Data
 	private final Set<DistrictReferenceDto> affectedDistricts;
@@ -74,7 +77,7 @@ public class OutbreakRegionConfigurationForm extends VerticalLayout {
 		CssStyles.style(headerLayout, CssStyles.VSPACE_2);
 
 		// Headline and info text
-		Label infoTextLabel = new Label("Define which LGAs currently are affected by an outbreak.");
+		Label infoTextLabel = new Label(I18nProperties.getString(Strings.headingDefineOutbreakDistricts));
 		infoTextLabel.setWidthUndefined();
 		CssStyles.style(infoTextLabel, CssStyles.VSPACE_TOP_4);
 		headerLayout.addComponent(infoTextLabel);
@@ -84,7 +87,7 @@ public class OutbreakRegionConfigurationForm extends VerticalLayout {
 		allDistrictsLayout.setWidthUndefined();
 		allDistrictsLayout.setSpacing(true);
 		{
-			Label allDistrictsLabel = new Label("Set status of all LGAs:");
+			Label allDistrictsLabel = new Label(I18nProperties.getString(Strings.headingSetOutbreakStatus));
 			allDistrictsLabel.setWidthUndefined();
 			CssStyles.style(allDistrictsLabel, CssStyles.VSPACE_TOP_4);
 			allDistrictsLayout.addComponent(allDistrictsLabel);
@@ -195,7 +198,7 @@ public class OutbreakRegionConfigurationForm extends VerticalLayout {
 	}
 
 	private void updateAffectedDistrictsNumberLabel() {		
-		affectedDistrictsNumberLabel.setValue(affectedDistricts.size() + "/" + totalDistricts + " Affected LGAs");
+		affectedDistrictsNumberLabel.setValue(affectedDistricts.size() + "/" + totalDistricts + " " + I18nProperties.getCaption(Captions.outbreakAffectedDistricts));
 		
 		CssStyles.removeStyles(affectedDistrictsNumberLabel, 
 				CssStyles.LABEL_CONFIGURATION_SEVERITY_INDICATOR, CssStyles.LABEL_CRITICAL, CssStyles.LABEL_WARNING);

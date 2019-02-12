@@ -53,17 +53,17 @@ public class ServerConnectionException extends Exception {
 
         switch (getCustomHtmlErrorCode()) {
             case 401:
-                return context.getResources().getString(R.string.snackbar_http_401);
+                return context.getResources().getString(R.string.message_http_401);
             case 403:
-                return context.getResources().getString(R.string.snackbar_http_403);
+                return context.getResources().getString(R.string.message_http_403);
             case 404:
-                return String.format(context.getResources().getString(R.string.snackbar_http_404), ConfigProvider.getServerRestUrl());
+                return String.format(context.getResources().getString(R.string.message_http_404), ConfigProvider.getServerRestUrl());
             case 503:
-                return context.getResources().getString(R.string.snackbar_http_503);
+                return context.getResources().getString(R.string.message_http_503);
             case 600:
-                return context.getResources().getString(R.string.snackbar_no_connection);
+                return context.getResources().getString(R.string.message_no_connection);
             case 601:
-                return context.getResources().getString(R.string.snackbar_version_too_new);
+                return context.getResources().getString(R.string.message_version_too_new);
             default:
                 throw new IllegalArgumentException(""+ getCustomHtmlErrorCode());
         }

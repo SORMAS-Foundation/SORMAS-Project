@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashSet;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.ValidationException;
 
 /**
@@ -325,7 +326,7 @@ public enum UserRole {
 		private final UserRole forbiddenUserRole;
 		
 		public UserRoleValidationException(UserRole checkedUserRole, UserRole forbiddenUserRole) {
-			super(checkedUserRole + " cannot be combined with " + forbiddenUserRole);
+			super(checkedUserRole + " " + I18nProperties.getString(Strings.messageUserRoleCombination) + " " + forbiddenUserRole);
 			this.checkedUserRole = checkedUserRole;
 			this.forbiddenUserRole = forbiddenUserRole;
 		}

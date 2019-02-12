@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.events;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -27,8 +28,8 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class EventParticipantCreateForm extends AbstractEditForm<EventParticipantDto> {
 	
-	private static final String FIRST_NAME = "firstName";
-	private static final String LAST_NAME = "lastName";
+	private static final String FIRST_NAME = Captions.genPropFirstName;
+	private static final String LAST_NAME = Captions.genPropLastName;
 	
 	private static final String HTML_LAYOUT =
 			LayoutUtil.fluidRowLocs(EventParticipantDto.INVOLVEMENT_DESCRIPTION) +

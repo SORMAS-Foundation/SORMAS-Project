@@ -22,8 +22,10 @@ import java.util.function.Consumer;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -38,9 +40,9 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 @SuppressWarnings("serial")
 public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringDto> {
 	
-	private static final String CITY = "city";
-	private static final String DISTRICT = "district";
-	private static final String GATHERING_DAY = "gatheringDay";
+	private static final String CITY = Captions.genPropCity;
+	private static final String DISTRICT = Captions.genPropDistrict;
+	private static final String GATHERING_DAY = Captions.genPropGatheringDay;
 	
 	@Override
 	public Class<EpiDataGatheringDto> getEntryType() {
@@ -76,7 +78,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 				if (gathering.getGatheringDate() != null) {
 					return DateHelper.formatLocalDate(gathering.getGatheringDate());
 				} else {
-					return "Unknown";
+					return I18nProperties.getString(Strings.sUnknown);
 				}
 			}
 		});
@@ -122,9 +124,9 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 		editForm.setValue(entry);
 		
 		final CommitDiscardWrapperComponent<EpiDataGatheringEditForm> editView = new CommitDiscardWrapperComponent<EpiDataGatheringEditForm>(editForm, editForm.getFieldGroup());
-		editView.getCommitButton().setCaption("done");
+		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.sDone));
 
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Social event");
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.entityGathering));
 		
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -142,7 +144,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 					popupWindow.close();
 					EpiDataGatheringsField.this.removeEntry(entry);
 				}
-			}, I18nProperties.getCaption("EpiDataGathering"));
+			}, I18nProperties.getCaption(EpiDataGatheringDto.I18N_PREFIX));
 		}
 	}
 	

@@ -23,6 +23,8 @@ import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttributeGroup;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
@@ -31,7 +33,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 @SuppressWarnings("serial")
 public class StatisticsFilterComponent extends VerticalLayout {
 
-	private static final String SPECIFY_YOUR_SELECTION = "Specify your selection";
+	private static final String SPECIFY_YOUR_SELECTION = I18nProperties.getCaption(Captions.statisticsSpecifySelection);
 
 	private StatisticsCaseAttribute selectedAttribute;
 	private StatisticsCaseSubAttribute selectedSubAttribute;
@@ -51,10 +53,10 @@ public class StatisticsFilterComponent extends VerticalLayout {
 		filterAttributeLayout.setWidth(100, Unit.PERCENTAGE);
 
 		MenuBar filterAttributeDropdown = new MenuBar();
-		filterAttributeDropdown.setCaption("Attribute");
-		MenuItem filterAttributeItem = filterAttributeDropdown.addItem("Select an attribute", null);
+		filterAttributeDropdown.setCaption(I18nProperties.getCaption(Captions.statisticsAttribute));
+		MenuItem filterAttributeItem = filterAttributeDropdown.addItem(I18nProperties.getCaption(Captions.statisticsAttributeSelect), null);
 		MenuBar filterSubAttributeDropdown = new MenuBar();
-		filterSubAttributeDropdown.setCaption("Attribute specification");
+		filterSubAttributeDropdown.setCaption(I18nProperties.getCaption(Captions.statisticsAttributeSpecification));
 		MenuItem filterSubAttributeItem = filterSubAttributeDropdown.addItem(SPECIFY_YOUR_SELECTION, null);
 
 		// Add attribute groups

@@ -54,7 +54,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/heading_sub_case_hos_most_recent_hospitalization"
+                    android:text="@string/heading_most_recent_hospitalization"
                     style="@style/SubHeadingStyle" />
 
                 <LinearLayout
@@ -147,7 +147,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
-                        android:text="@string/sub_heading_previous_hospitalizations"
+                        android:text="@string/heading_previous_hospitalizations"
                         style="@style/SubHeadingCompactStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlButton

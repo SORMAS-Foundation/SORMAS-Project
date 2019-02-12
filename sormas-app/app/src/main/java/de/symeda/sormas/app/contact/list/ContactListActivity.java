@@ -91,7 +91,7 @@ public class ContactListActivity extends BaseListActivity {
 
     @Override
     protected int getActivityTitle() {
-        return R.string.heading_level2_contacts_list;
+        return R.string.heading_contacts_list;
     }
 
 }

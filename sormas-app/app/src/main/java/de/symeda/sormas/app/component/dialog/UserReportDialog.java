@@ -51,8 +51,8 @@ public class UserReportDialog extends AbstractDialog {
 
     public UserReportDialog(final FragmentActivity activity, String viewName, String uuid) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_user_report_layout,
-                R.layout.dialog_root_two_button_panel_layout, R.string.headline_user_report,
-                R.string.hint_user_report);
+                R.layout.dialog_root_two_button_panel_layout, R.string.heading_user_report,
+                R.string.info_user_report);
 
         this.uuid = uuid;
         this.viewName = viewName;
@@ -81,9 +81,9 @@ public class UserReportDialog extends AbstractDialog {
                                     .setAction("Error Report")
                                     .setLabel("Location: " + viewName + (uuid!=null?" - UUID: " + uuid:"") + (ConfigProvider.getUser()!=null?" - User: " + ConfigProvider.getUser().getUuid():"") + " - Description: " + description)
                                     .build());
-                            resultHolder.setResultStatus(new BoolResult(true, getActivity().getResources().getString(R.string.snackbar_report_sent)));
+                            resultHolder.setResultStatus(new BoolResult(true, getActivity().getResources().getString(R.string.message_report_sent)));
                         } catch (Exception ex) {
-                            resultHolder.setResultStatus(new BoolResult(true, getActivity().getResources().getString(R.string.snackbar_report_not_sent)));
+                            resultHolder.setResultStatus(new BoolResult(true, getActivity().getResources().getString(R.string.message_report_not_sent)));
                         }
                     }
 

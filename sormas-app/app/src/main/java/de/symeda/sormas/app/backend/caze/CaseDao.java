@@ -61,13 +61,10 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
-import de.symeda.sormas.app.backend.report.WeeklyReport;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleTest;
-import de.symeda.sormas.app.backend.sample.SampleTestDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.task.Task;
-import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
@@ -356,9 +353,9 @@ public class CaseDao extends AbstractAdoDao<Case> {
             Resources r = context.getResources();
 
             Notification notification = new NotificationCompat.Builder(context)
-                    .setTicker(r.getString(R.string.headline_case_notification))
+                    .setTicker(r.getString(R.string.heading_case_disease_changed))
                     .setSmallIcon(R.mipmap.ic_launcher_foreground)
-                    .setContentTitle(r.getString(R.string.headline_case_notification))
+                    .setContentTitle(r.getString(R.string.heading_case_disease_changed))
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(content.toString())))
                     .setContentIntent(pi)
                     .setAutoCancel(true)

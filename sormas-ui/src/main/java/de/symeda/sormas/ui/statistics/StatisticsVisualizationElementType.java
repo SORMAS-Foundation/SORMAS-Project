@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.statistics;
 
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum StatisticsVisualizationElementType {
@@ -36,15 +37,15 @@ public enum StatisticsVisualizationElementType {
 		switch (this) {
 		case ROWS:
 			if (visualizationType == StatisticsVisualizationType.CHART) {
-				return "Don't group series";
+				return I18nProperties.getCaption(Captions.statisticsDontGroupSeries);
 			} else {
-				return "Don't group rows";
+				return I18nProperties.getCaption(Captions.statisticsDontGroupRows);
 			}
 		case COLUMNS:
 			if (visualizationType == StatisticsVisualizationType.CHART) {
-				return "Don't group x-axis";
+				return I18nProperties.getCaption(Captions.statisticsDontGroupX);
 			} else {
-				return "Don't group columns";
+				return I18nProperties.getCaption(Captions.statisticsDontGroupColumns);
 			}
 		default:
 			return null;

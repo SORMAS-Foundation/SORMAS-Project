@@ -206,7 +206,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/heading_sub_case_epid_animal_contacts"
+                    android:text="@string/heading_animal_contacts"
                     style="@style/SubHeadingStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
@@ -325,7 +325,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/heading_sub_case_epid_environmental_exposure"
+                    android:text="@string/heading_environmental_exposure"
                     style="@style/SubHeadingStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField

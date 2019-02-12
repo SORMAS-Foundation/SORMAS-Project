@@ -58,6 +58,8 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.DashboardContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
@@ -393,7 +395,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		// use only date, not time
 		target.setLastContactDate(source.getLastContactDate() != null ? DateHelper8.toDate(DateHelper8.toLocalDate(source.getLastContactDate())) : null);
 		if (target.getLastContactDate() != null && target.getLastContactDate().after(target.getReportDateTime())) {
-			throw new ValidationException(Contact.LAST_CONTACT_DATE + " has to be before " + Contact.REPORT_DATE_TIME);
+			throw new ValidationException(I18nProperties.getValidationError(Validations.beforeDate, 
+					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, Contact.LAST_CONTACT_DATE), 
+					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, Contact.REPORT_DATE_TIME)));
 		}
 
 		target.setContactProximity(source.getContactProximity());

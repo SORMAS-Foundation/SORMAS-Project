@@ -20,6 +20,8 @@ package de.symeda.sormas.api.utils;
 import java.io.Serializable;
 import java.util.Objects;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
 @SuppressWarnings("serial")
@@ -70,11 +72,11 @@ public class EpiWeek implements Serializable, StatisticsGroupingKey {
 
 	@Override
 	public String toString() {
-		return "Wk " + week + (year != null ? ("-" + year + " (" + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekStart(this)) + " - " + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekEnd(this)) + ")") : "");
+		return I18nProperties.getString(Strings.sWeekShort) + " " + week + (year != null ? ("-" + year + " (" + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekStart(this)) + " - " + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekEnd(this)) + ")") : "");
 	}
 	
 	public String toShortString() {
-		return "Wk " + week + (year != null ? ("-" + year) : "");
+		return I18nProperties.getString(Strings.sWeekShort) + " " + week + (year != null ? ("-" + year) : "");
 	}
 
 	@Override

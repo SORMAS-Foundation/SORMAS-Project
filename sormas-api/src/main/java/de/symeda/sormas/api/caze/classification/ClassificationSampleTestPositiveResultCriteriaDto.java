@@ -56,13 +56,13 @@ public class ClassificationSampleTestPositiveResultCriteriaDto extends Classific
 	@Override
 	public String buildDescription() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(I18nProperties.getString(Strings.onePositiveTestResult)).append(" ");
+		stringBuilder.append(I18nProperties.getString(Strings.classificationOnePositiveTestResult)).append(" ");
 		for (int i = 0; i < sampleTestTypes.size(); i++) {
 			if (i > 0) {
 				if (i < sampleTestTypes.size() - 1) {
 					stringBuilder.append(", ");
 				} else {
-					stringBuilder.append(" <b>").append(I18nProperties.getString(Strings.or).toUpperCase()).append("</b> ");
+					stringBuilder.append(" <b>").append(I18nProperties.getString(Strings.sOr).toUpperCase()).append("</b> ");
 				}
 			}
 

@@ -47,7 +47,7 @@
             android:id="@+id/empty_list_hint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/addToEmptyListHint"
+            android:text="@string/hint_add_to_empty_list"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textAlignment="center"
             style="@style/EmptyListHintStyle"

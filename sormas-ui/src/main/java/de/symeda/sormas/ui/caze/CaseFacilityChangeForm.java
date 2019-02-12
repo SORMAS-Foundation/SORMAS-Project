@@ -40,7 +40,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 
-	public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
+	public static final String NONE_HEALTH_FACILITY_DETAILS = CaseDataDto.NONE_HEALTH_FACILITY_DETAILS;
 	
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.divs(

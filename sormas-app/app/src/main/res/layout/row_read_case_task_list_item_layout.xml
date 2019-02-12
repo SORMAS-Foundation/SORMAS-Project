@@ -66,7 +66,7 @@
                     app:dueTimeAgoValue="@{data}"
                     app:textColor="@{@color/listActivityRowDateText}"
                     app:valueFormat="@{@string/due_timeago_format}"
-                    app:defaultValue='@{@string/task_date_unknown}'
+                    app:defaultValue='@{@string/value_task_date_unknown}'
                     />
 
 
@@ -129,7 +129,7 @@
                         android:textColor="@color/row_entry_status_text"
                         android:fontFamily="sans-serif-medium"
                         app:value="@{data.priority}"
-                        app:defaultValue='@{@string/task_priority_unknown}'
+                        app:defaultValue='@{@string/value_task_priority_unknown}'
                         />
 
 
@@ -153,7 +153,7 @@
                         android:textColor="@color/row_entry_status_text"
                         android:fontFamily="sans-serif-medium"
                         app:value="@{data.taskStatus}"
-                        app:defaultValue='@{@string/task_status_unknown}'/>
+                        app:defaultValue='@{@string/value_status_unknown}'/>
 
                 </LinearLayout>
 
@@ -184,7 +184,7 @@
                         android:maxLines="1"
                         android:ellipsize="end"
                         app:value="@{data.taskType}"
-                        app:defaultValue='@{@string/task_type_unknown}'
+                        app:defaultValue='@{@string/value_task_type_unknown}'
                         />
 
                     <TextView
@@ -201,7 +201,7 @@
                         app:maxLines="2"
                         android:ellipsize="end"
                         app:value="@{data.creatorComment}"
-                        app:defaultValue='@{@string/task_comment_unknown}'
+                        app:defaultValue='@{@string/value_comment_unknown}'
                         />
 
                     <!--<TextView

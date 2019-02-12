@@ -31,9 +31,10 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.report.WeeklyReportDto;
 import de.symeda.sormas.api.report.WeeklyReportOfficerSummaryDto;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -117,14 +118,14 @@ public class WeeklyReportOfficersGrid extends Grid implements ItemClickListener 
 				WeeklyReportOfficerSummaryDto.INFORMANT_REPORTS,
 				WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE,
 				WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS);
-		preHeaderCell.setHtml(I18nProperties.getPrefixCaption(WeeklyReportOfficerSummaryDto.I18N_PREFIX, "officerInformants"));
+		preHeaderCell.setHtml(I18nProperties.getCaption(Captions.weeklyReportOfficerInformants));
 		preHeaderCell.setStyleName(CssStyles.GRID_CELL_ODD);
 		
 		getColumn(VIEW_DETAILS_BTN_ID).setRenderer(new HtmlRenderer());
 		getColumn(VIEW_DETAILS_BTN_ID).setWidth(60);
 
 		getColumn(WeeklyReportOfficerSummaryDto.OFFICER_REPORT_DATE).setRenderer(new HtmlRenderer(
-				I18nProperties.getPrefixCaption(WeeklyReportDto.I18N_PREFIX, "noReport")));
+				I18nProperties.getCaption(Captions.weeklyReportNoReport)));
 		getColumn(WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE).setRenderer(new PercentageRenderer());
 		
 		setCellStyleGenerator(new WeeklyReportGridCellStyleGenerator());
@@ -167,8 +168,8 @@ public class WeeklyReportOfficersGrid extends Grid implements ItemClickListener 
 			grid.setHeightMode(HeightMode.ROW);
 			grid.setHeightUndefined();
 			layout.addComponent(grid);
-			window.setCaption(
-					"Weekly Reports in " + summaryDto.getDistrict().toString() + " - Epi Week " + week + "/" + year);
+			window.setCaption(String.format(I18nProperties.getCaption(Captions.weeklyReportsInDistrict), summaryDto.getDistrict().toString())
+					+ " - " + I18nProperties.getString(Strings.sEpiWeek) + " " + week + "/" + year);
 		}
 	}
 }

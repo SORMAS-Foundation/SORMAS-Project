@@ -117,7 +117,7 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 
     @Override
     protected int getActivityTitle() {
-        return R.string.heading_level3_case_read;
+        return R.string.heading_case_read;
     }
 
     @Override

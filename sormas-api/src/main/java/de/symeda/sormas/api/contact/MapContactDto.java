@@ -20,6 +20,11 @@ package de.symeda.sormas.api.contact;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+
 public class MapContactDto implements Serializable {
 
 	private static final long serialVersionUID = -5840120135940125045L;
@@ -158,7 +163,7 @@ public class MapContactDto implements Serializable {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append(personFirstName).append(" ").append(personLastName.toUpperCase());
-		builder.append(" to case ");
+		builder.append(StringUtils.wrap(I18nProperties.getString(Strings.sToCase), ""));
 		builder.append(casePersonFirstName).append(" ").append(casePersonLastName.toUpperCase());
 		return builder.toString();
 	}

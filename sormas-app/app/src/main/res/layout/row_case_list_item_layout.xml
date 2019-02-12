@@ -78,7 +78,7 @@
                     android:fontFamily="sans-serif-medium"
                     app:value="@{data.uuid}"
                     app:shortUuid="@{true}"
-                    app:defaultValue='@{@string/uuid_unknown}'
+                    app:defaultValue='@{@string/value_uuid_unknown}'
                     />
 
                 <LinearLayout
@@ -106,7 +106,7 @@
                         android:textColor="@color/row_entry_status_text"
                         android:fontFamily="sans-serif-medium"
                         app:value="@{data.caseClassification}"
-                        app:defaultValue='@{@string/status_unknown}'
+                        app:defaultValue='@{@string/value_status_unknown}'
                         />
                 </LinearLayout>
 
@@ -136,7 +136,7 @@
                         android:maxLines="1"
                         android:ellipsize="end"
                         app:personValue="@{data.person}"
-                        app:defaultValue='@{@string/person_unknown}'
+                        app:defaultValue='@{@string/value_person_unknown}'
                         />
 
                     <TextView
@@ -149,7 +149,7 @@
                         android:textSize="@dimen/row_entry_secondary_text_size"
                         android:textColor="@color/row_entry_secondary_text"
                         app:facilityValue="@{data.healthFacility}"
-                        app:defaultValue='@{@string/health_facility_unknown}'
+                        app:defaultValue='@{@string/value_facility_unknown}'
                         />
 
                     <TextView
@@ -160,7 +160,7 @@
                         android:textColor="@color/listActivityRowLeastText"
                         android:fontFamily="sans-serif-medium"
                         app:userValue="@{data.reportingUser}"
-                        app:defaultValue='@{@string/person_unknown}'
+                        app:defaultValue='@{@string/value_person_unknown}'
                         />
 
                 </LinearLayout>
@@ -199,7 +199,7 @@
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentRight="true"
                         app:timeAgoValue="@{data.reportDate}"
-                        app:defaultValue='@{@string/report_date_unknown}'
+                        app:defaultValue='@{@string/value_report_date_unknown}'
                         />
 
                 </RelativeLayout>

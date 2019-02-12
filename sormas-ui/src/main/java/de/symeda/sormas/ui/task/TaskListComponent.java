@@ -27,6 +27,9 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -50,11 +53,11 @@ public class TaskListComponent extends VerticalLayout {
 		addComponent(list);
 		list.reload();
 
-		Label tasksHeader = new Label(LayoutUtil.h3("Tasks"), ContentMode.HTML);
+		Label tasksHeader = new Label(LayoutUtil.h3(I18nProperties.getString(Strings.entityTasks)), ContentMode.HTML);
 		componentHeader.addComponent(tasksHeader);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
-			createButton = new Button("New task");
+			createButton = new Button(I18nProperties.getCaption(Captions.taskNewTask));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
 			createButton.addClickListener(

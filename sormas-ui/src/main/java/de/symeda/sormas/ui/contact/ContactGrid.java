@@ -37,6 +37,7 @@ import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -52,9 +53,9 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 @SuppressWarnings("serial")
 public class ContactGrid extends Grid implements AbstractGrid<ContactCriteria> {
 
-	public static final String NUMBER_OF_VISITS = "numberOfVisits";
-	public static final String NUMBER_OF_PENDING_TASKS = "numberOfPendingTasks";
-	public static final String DISEASE_SHORT = "diseaseShort";
+	public static final String NUMBER_OF_VISITS = Captions.genPropNumberOfVisits;
+	public static final String NUMBER_OF_PENDING_TASKS = Captions.genPropNumberOfPendingTasks;
+	public static final String DISEASE_SHORT = Captions.genPropDiseaseShort;
 
 	private ContactCriteria contactCriteria = new ContactCriteria();
 
@@ -88,7 +89,7 @@ public class ContactGrid extends Grid implements AbstractGrid<ContactCriteria> {
 						numberOfMissedVisits = 0;
 					}
 
-					return String.format(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, "numberOfVisitsFormat"),
+					return String.format(I18nProperties.getCaption(Captions.formatNumberOfVisitsFormat),
 							numberOfVisits, numberOfMissedVisits);
 				} else {
 					return "-";
@@ -104,7 +105,7 @@ public class ContactGrid extends Grid implements AbstractGrid<ContactCriteria> {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				ContactIndexDto contactIndexDto = (ContactIndexDto)itemId;
-				return String.format(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, NUMBER_OF_PENDING_TASKS + "Format"), 
+				return String.format(I18nProperties.getCaption(Captions.formatSimpleNumberFormat), 
 						FacadeProvider.getTaskFacade().getPendingTaskCountByContact(contactIndexDto.toReference()));
 			}
 			@Override

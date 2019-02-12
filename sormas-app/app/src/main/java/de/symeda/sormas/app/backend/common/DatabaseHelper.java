@@ -936,4 +936,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return instance.context;
 	}
 
+	public static String getString(int stringResourceId) {
+		if (instance.context == null) {
+			return null;
+		}
+
+		return instance.context.getResources().getString(stringResourceId);
+	}
+
 }

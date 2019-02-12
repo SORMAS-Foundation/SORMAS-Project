@@ -86,7 +86,7 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         boolean result = super.onCreateOptionsMenu(menu);
-        getSaveMenu().setTitle(R.string.action_save_participant);
+        getSaveMenu().setTitle(R.string.action_save_event_participant);
         return result;
     }
 
@@ -97,14 +97,14 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 
     @Override
     protected int getActivityTitle() {
-        return R.string.heading_level4_event_edit;
+        return R.string.heading_event_edit;
     }
 
     @Override
     public void saveData() {
 
         if (saveTask != null) {
-            NotificationHelper.showNotification(this, WARNING, getString(R.string.snackbar_already_saving));
+            NotificationHelper.showNotification(this, WARNING, getString(R.string.message_already_saving));
             return; // don't save multiple times
         }
 

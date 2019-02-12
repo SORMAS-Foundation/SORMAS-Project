@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.contacts;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
@@ -26,12 +28,10 @@ public class DashboardContactsView extends AbstractDashboardView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/contacts";
 
-	public static final String I18N_PREFIX = "Dashboard";
-
 	public DashboardContactsView() {
 		super(VIEW_NAME, DashboardType.CONTACTS);
 		
-		filterLayout.setInfoLabelText("All Dashboard elements that display general information about contacts use the follow-up period of the respective contact, starting with the contact report date.");
+		filterLayout.setInfoLabelText(I18nProperties.getString(Strings.infoContactDashboard));
 
 		// Add statistics
 		statisticsComponent = new DashboardContactsStatisticsComponent(dashboardDataProvider);

@@ -43,7 +43,6 @@ import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCriteriaDto;
@@ -55,7 +54,6 @@ import de.symeda.sormas.api.caze.classification.ClassificationSampleTestCriteria
 import de.symeda.sormas.api.caze.classification.ClassificationSampleTestPositiveResultCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
@@ -342,7 +340,7 @@ public final class RetroProvider {
                         } else {
                             if (activityReference.get() != null) {
                                 NotificationHelper.showNotification((NotificationContext) activityReference.get(), NotificationType.ERROR,
-                                        activityReference.get().getResources().getString(R.string.server_connection_error));
+                                        activityReference.get().getResources().getString(R.string.error_server_connection));
                             }
                             callback.accept(false);
                         }

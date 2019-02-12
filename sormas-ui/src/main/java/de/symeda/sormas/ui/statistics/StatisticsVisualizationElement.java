@@ -22,6 +22,8 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttributeGroup;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
@@ -59,7 +61,7 @@ public class StatisticsVisualizationElement extends HorizontalLayout {
 		
 		displayedSubAttributeDropdown = new MenuBar();
 		CssStyles.style(displayedSubAttributeDropdown, CssStyles.FORCE_CAPTION);
-		displayedSubAttributeItem = displayedSubAttributeDropdown.addItem("Specify your selection", null);
+		displayedSubAttributeItem = displayedSubAttributeDropdown.addItem(I18nProperties.getCaption(Captions.statisticsSpecifySelection), null);
 		
 		// Empty selections
 		Command emptyItemCommand = selectedItem -> {
@@ -120,7 +122,7 @@ public class StatisticsVisualizationElement extends HorizontalLayout {
 	
 	private void resetSubAttributeDropdown() {
 		displayedSubAttributeItem.removeChildren();
-		displayedSubAttributeItem.setText("Specify your selection");
+		displayedSubAttributeItem.setText(I18nProperties.getCaption(Captions.statisticsSpecifySelection));
 		removeComponent(displayedSubAttributeDropdown);
 	}
 

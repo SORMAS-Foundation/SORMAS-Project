@@ -25,6 +25,8 @@ import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.user.UserRight;
@@ -96,10 +98,14 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 	    			Date visitDateTime = (Date) getFieldGroup().getField(VisitDto.VISIT_DATE_TIME).getValue();
 	    			Date contactReferenceDate = contact.getLastContactDate() != null ? contact.getLastContactDate() : contact.getReportDateTime();
 	    			if (visitDateTime.before(contactReferenceDate) && DateHelper.getDaysBetween(visitDateTime, contactReferenceDate) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
-	    				throw new InvalidValueException("The visit cannot be more than " + VisitDto.ALLOWED_CONTACT_DATE_OFFSET + " days before the " + (contact.getLastContactDate() != null ? "last contact date." : "contact report date."));
+	    				if (contact.getLastContactDate() != null) {
+	    					throw new InvalidValueException(I18nProperties.getValidationError(Validations.visitBeforeLastContactDate, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
+	    				} else {
+	    					throw new InvalidValueException(I18nProperties.getValidationError(Validations.visitBeforeContactReport, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
+	    				}
 	    			}
 	    			if (contact.getFollowUpUntil() != null && visitDateTime.after(contact.getFollowUpUntil()) && DateHelper.getDaysBetween(contact.getFollowUpUntil(), visitDateTime) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
-	    				throw new InvalidValueException("The visit cannot be more than " + VisitDto.ALLOWED_CONTACT_DATE_OFFSET + " days after the end of the follow-up duration.");
+	    				throw new InvalidValueException(I18nProperties.getValidationError(Validations.visitAfterFollowUp, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
 	    			}
 	    		}
 	    	});

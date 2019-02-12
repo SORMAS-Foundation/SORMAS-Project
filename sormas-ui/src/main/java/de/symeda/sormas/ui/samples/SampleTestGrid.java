@@ -60,6 +60,7 @@ public class SampleTestGrid extends Grid implements ItemClickListener {
 
 		getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
 		getColumn(EDIT_BTN_ID).setWidth(60);
+		getColumn(EDIT_BTN_ID).setHeaderCaption("");
 		getColumn(SampleTestDto.TEST_RESULT_VERIFIED).setRenderer(new BooleanRenderer());
 
 		getColumn(SampleTestDto.TEST_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalShortDateTimeFormat()));

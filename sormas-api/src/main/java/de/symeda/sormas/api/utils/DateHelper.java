@@ -566,7 +566,7 @@ public final class DateHelper {
 	/**
 	 * Returns a Date object that is set to Monday of the given epi week.
 	 * 
-	 * @param year The year to get the first day of the epi week for
+	 * @param sYear The year to get the first day of the epi week for
 	 * @param week The epi week to get the first day for
 	 * @return The first day of the epi week
 	 */
@@ -588,7 +588,7 @@ public final class DateHelper {
 	/**
 	 * Returns a Date object that is set to Sunday of the given epi week.
 	 * 
-	 * @param year The year to get the last day of the epi week for
+	 * @param sYear The year to get the last day of the epi week for
 	 * @param week The epi week to get the last day for
 	 * @return The last day of the epi week
 	 */

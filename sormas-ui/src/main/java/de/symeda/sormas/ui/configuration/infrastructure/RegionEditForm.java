@@ -21,6 +21,8 @@ import com.vaadin.data.util.converter.StringToFloatConverter;
 import com.vaadin.data.util.converter.StringToIntegerConverter;
 import com.vaadin.ui.TextField;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -50,10 +52,10 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 		addField(RegionDto.EPID_CODE, TextField.class);
 		TextField population = addField(RegionDto.POPULATION, TextField.class);
 		population.setConverter(new StringToIntegerConverter());
-		population.setConversionError("Only numbers are allowed for " + population.getCaption());
+		population.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, population.getCaption()));
 		TextField growthRate = addField(RegionDto.GROWTH_RATE, TextField.class);
 		growthRate.setConverter(new StringToFloatConverter());
-		growthRate.setConversionError("Only numbers (with decimal places) are allowed for " + growthRate.getCaption());
+		growthRate.setConversionError(I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, growthRate.getCaption()));
 		
 		setRequired(true, RegionDto.NAME, RegionDto.EPID_CODE);
 	}

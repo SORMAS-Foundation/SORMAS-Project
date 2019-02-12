@@ -19,6 +19,8 @@ package de.symeda.sormas.api;
 
 import java.io.Serializable;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
 public class IntegerRange implements Serializable, StatisticsGroupingKey {
@@ -54,7 +56,7 @@ public class IntegerRange implements Serializable, StatisticsGroupingKey {
 		} else if (from != null && to == null) {
 			return String.valueOf(from) + "+";
 		} else {
-			return "Unknown";
+			return I18nProperties.getString(Strings.sUnknown);
 		}
 	}
 

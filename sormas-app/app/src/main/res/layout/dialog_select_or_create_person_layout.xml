@@ -53,7 +53,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/description_pick_or_create_person"
+                    android:text="@string/info_similar_persons_found"
                     android:textColor="@color/pageHintText"
                     android:textSize="@dimen/defaultPageHintTextSize"/>
 
@@ -101,21 +101,21 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/sub_heading_existing_persons"
+                        android:text="@string/heading_existing_persons"
                         style="@style/SubHeadingCompactStyle" />
 
                     <TextView
                         android:id="@+id/pick_person_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/description_pick_person"
+                        android:text="@string/info_pick_person"
                         style="@style/SubHeadingDescriptionStyle" />
 
                     <TextView
                         android:id="@+id/no_records_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/description_pick_person_no_records"
+                        android:text="@string/message_no_matching_persons"
                         style="@style/SubHeadingDescriptionStyle" />
 
                 </LinearLayout>
@@ -137,7 +137,7 @@
                 android:id="@+id/create_person_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/description_create_person"
+                android:text="@string/info_create_person"
                 android:paddingStart="@dimen/rowListItemHorizontalMargin"
                 android:paddingEnd="@dimen/rowListItemHorizontalMargin"
                 style="@style/SubHeadingDescriptionStyle" />

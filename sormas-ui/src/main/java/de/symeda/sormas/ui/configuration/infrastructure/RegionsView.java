@@ -30,7 +30,9 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.RegionCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -44,8 +46,6 @@ import de.symeda.sormas.ui.utils.DownloadUtil;
 public class RegionsView extends AbstractConfigurationView {
 
 	private static final long serialVersionUID = -3487830069266335042L;
-
-	public static final String SEARCH = "search";
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/regions";
 	
@@ -76,8 +76,8 @@ public class RegionsView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		Button exportButton = new Button("Export");
-		exportButton.setDescription("Export the columns and rows that are shown in the table below.");
+		Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
+		exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		exportButton.setIcon(FontAwesome.TABLE);
 		addHeaderComponent(exportButton);
@@ -87,7 +87,7 @@ public class RegionsView extends AbstractConfigurationView {
 		fileDownloader.extend(exportButton);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			createButton = new Button("New entry");
+			createButton = new Button(I18nProperties.getCaption(Captions.cNewEntry));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
 			createButton.addClickListener(
@@ -105,7 +105,7 @@ public class RegionsView extends AbstractConfigurationView {
 
 		searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
-		searchField.setInputPrompt(I18nProperties.getCaption(SEARCH));
+		searchField.setInputPrompt(I18nProperties.getString(Strings.promptSearch));
 		searchField.setNullRepresentation("");
 		searchField.addTextChangeListener(e -> {
 			criteria.nameEpidLike(e.getText());
@@ -114,7 +114,7 @@ public class RegionsView extends AbstractConfigurationView {
 		CssStyles.style(searchField, CssStyles.FORCE_CAPTION);
 		filterLayout.addComponent(searchField);
 
-		resetButton = new Button(I18nProperties.getCaption(Captions.resetFilters));
+		resetButton = new Button(I18nProperties.getCaption(Captions.cResetFilters));
 		resetButton.setVisible(false);
 		CssStyles.style(resetButton, CssStyles.FORCE_CAPTION);
 		resetButton.addClickListener(event -> {
