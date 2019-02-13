@@ -30,6 +30,7 @@ public interface Strings {
 	public static String confirmationDearchiveEvent = "confirmationDearchiveEvent";
 	public static String confirmationDearchiveEvents = "confirmationDearchiveEvents";
 	public static String confirmationDeleteCases = "confirmationDeleteCases";
+	public static String confirmationDeleteClinicalVisits = "confirmationDeleteClinicalVisits";
 	public static String confirmationDeleteContacts = "confirmationDeleteContacts";
 	public static String confirmationDeleteEntity = "confirmationDeleteEntity";
 	public static String confirmationDeleteEventParticipants = "confirmationDeleteEventParticipants";
@@ -45,6 +46,8 @@ public interface Strings {
 	public static String entityBurial = "entityBurial";
 	public static String entityCase = "entityCase";
 	public static String entityCases = "entityCases";
+	public static String entityClinicalVisit = "entityClinicalVisit";
+	public static String entityClinicalVisits = "entityClinicalVisits";
 	public static String entityContact = "entityContact";
 	public static String entityContacts = "entityContacts";
 	public static String entityDistrict = "entityDistrict";
@@ -85,6 +88,7 @@ public interface Strings {
 	public static String headingCasesDeleted = "headingCasesDeleted";
 	public static String headingCaseStatusMap = "headingCaseStatusMap";
 	public static String headingChangeCaseDisease = "headingChangeCaseDisease";
+	public static String headingClinicalVisitsDeleted = "headingClinicalVisitsDeleted";
 	public static String headingConfirmArchiving = "headingConfirmArchiving";
 	public static String headingConfirmDearchiving = "headingConfirmDearchiving";
 	public static String headingConfirmDeletion = "headingConfirmDeletion";
@@ -94,6 +98,7 @@ public interface Strings {
 	public static String headingContactsDeleted = "headingContactsDeleted";
 	public static String headingCreateEntry = "headingCreateEntry";
 	public static String headingCreateNewCase = "headingCreateNewCase";
+	public static String headingCreateNewClinicalVisit = "headingCreateNewClinicalVisit";
 	public static String headingCreateNewContact = "headingCreateNewContact";
 	public static String headingCreateNewEvent = "headingCreateNewEvent";
 	public static String headingCreateNewEventParticipant = "headingCreateNewEventParticipant";
@@ -114,6 +119,7 @@ public interface Strings {
 	public static String headingDownloadErrorReport = "headingDownloadErrorReport";
 	public static String headingDownloadImportGuide = "headingDownloadImportGuide";
 	public static String headingEditCases = "headingEditCases";
+	public static String headingEditClinicalVisit = "headingEditClinicalVisit";
 	public static String headingEditContacts = "headingEditContacts";
 	public static String headingEditEventParticipant = "headingEditEventParticipant";
 	public static String headingEditEvents = "headingEditEvents";
@@ -157,6 +163,7 @@ public interface Strings {
 	public static String headingNewPassword = "headingNewPassword";
 	public static String headingNewTestResults = "headingNewTestResults";
 	public static String headingNoCasesSelected = "headingNoCasesSelected";
+	public static String headingNoClinicalVisitsSelected = "headingNoClinicalVisitsSelected";
 	public static String headingNoContactsSelected = "headingNoContactsSelected";
 	public static String headingNoEventParticipantsSelected = "headingNoEventParticipantsSelected";
 	public static String headingNoEventsSelected = "headingNoEventsSelected";
@@ -232,6 +239,9 @@ public interface Strings {
 	public static String messageCasesEdited = "messageCasesEdited";
 	public static String messageCaseTransfered = "messageCaseTransfered";
 	public static String messageCheckInputData = "messageCheckInputData";
+	public static String messageClinicalVisitCreated = "messageClinicalVisitCreated";
+	public static String messageClinicalVisitsDeleted = "messageClinicalVisitsDeleted";
+	public static String messageClinicalVisitSaved = "messageClinicalVisitSaved";
 	public static String messageContactCreated = "messageContactCreated";
 	public static String messageContactSaved = "messageContactSaved";
 	public static String messageContactsDeleted = "messageContactsDeleted";
@@ -268,6 +278,7 @@ public interface Strings {
 	public static String messageMissingDateFilter = "messageMissingDateFilter";
 	public static String messageMissingEpiWeekFilter = "messageMissingEpiWeekFilter";
 	public static String messageNoCasesSelected = "messageNoCasesSelected";
+	public static String messageNoClinicalVisitsSelected = "messageNoClinicalVisitsSelected";
 	public static String messageNoContactsSelected = "messageNoContactsSelected";
 	public static String messageNoCsvFile = "messageNoCsvFile";
 	public static String messageNoEventParticipantsSelected = "messageNoEventParticipantsSelected";
@@ -285,6 +296,8 @@ public interface Strings {
 	public static String messagePersonSaved = "messagePersonSaved";
 	public static String messagePersonSavedClassificationChanged = "messagePersonSavedClassificationChanged";
 	public static String messagePlagueTypeChange = "messagePlagueTypeChange";
+	public static String messagePrescriptionCreated = "messagePrescriptionCreated";
+	public static String messagePrescriptionSaved = "messagePrescriptionSaved";
 	public static String messagePrescriptionsDeleted = "messagePrescriptionsDeleted";
 	public static String messageSampleErrors = "messageSampleErrors";
 	public static String messageSampleSaved = "messageSampleSaved";
@@ -293,8 +306,11 @@ public interface Strings {
 	public static String messageSpecifyFilterAttributes = "messageSpecifyFilterAttributes";
 	public static String messageSpecifyRowAttribute = "messageSpecifyRowAttribute";
 	public static String messageSymptomsHint = "messageSymptomsHint";
+	public static String messageSymptomsVisitHint = "messageSymptomsVisitHint";
 	public static String messageTasksDeleted = "messageTasksDeleted";
 	public static String messageTemplateNotAvailable = "messageTemplateNotAvailable";
+	public static String messageTreatmentCreated = "messageTreatmentCreated";
+	public static String messageTreatmentSaved = "messageTreatmentSaved";
 	public static String messageTreatmentsDeleted = "messageTreatmentsDeleted";
 	public static String messageUserRoleCombination = "messageUserRoleCombination";
 	public static String messageVisitsDeleted = "messageVisitsDeleted";
@@ -352,6 +368,7 @@ public interface Strings {
 	public static String sAnd = "sAnd";
 	public static String sAt = "sAt";
 	public static String sBetween = "sBetween";
+	public static String sBpm = "sBpm";
 	public static String sBy = "sBy";
 	public static String sDone = "sDone";
 	public static String sEdit = "sEdit";
@@ -359,6 +376,7 @@ public interface Strings {
 	public static String sForCase = "sForCase";
 	public static String sInactive = "sInactive";
 	public static String sInColumn = "sInColumn";
+	public static String sMmhg = "sMmhg";
 	public static String sNo = "sNo";
 	public static String sNotAnswered = "sNotAnswered";
 	public static String sOf = "sOf";

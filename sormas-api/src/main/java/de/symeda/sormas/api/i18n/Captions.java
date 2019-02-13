@@ -51,6 +51,7 @@ public interface Captions {
 	public static String changeDate = "changeDate";
 	public static String cImport = "cImport";
 	public static String cInfo = "cInfo";
+	public static String clinicalVisitNewClinicalVisit = "clinicalVisitNewClinicalVisit";
 	public static String cLogout = "cLogout";
 	public static String cMenu = "cMenu";
 	public static String cNewEntry = "cNewEntry";
@@ -279,6 +280,7 @@ public interface Captions {
 	public static String statisticsVisualizationType = "statisticsVisualizationType";
 	public static String Symptoms = "Symptoms";
 	public static String symptomsLesionsLocations = "symptomsLesionsLocations";
+	public static String symptomsMaxTemperature = "symptomsMaxTemperature";
 	public static String symptomsSetClearedToNo = "symptomsSetClearedToNo";
 	public static String Task = "Task";
 	public static String taskMyTasks = "taskMyTasks";

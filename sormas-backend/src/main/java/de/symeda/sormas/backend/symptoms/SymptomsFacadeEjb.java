@@ -140,6 +140,9 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setBuboesGroinArmpitNeck(source.getBuboesGroinArmpitNeck());
 		target.setPatientIllLocation(source.getPatientIllLocation());
 		target.setBulgingFontanelle(source.getBulgingFontanelle());
+		target.setBloodPressureDiastolic(source.getBloodPressureDiastolic());
+		target.setBloodPressureSystolic(source.getBloodPressureSystolic());
+		target.setHeartRate(source.getHeartRate());
 		
 		return symptoms;
 	}
@@ -246,6 +249,9 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setBuboesGroinArmpitNeck(source.getBuboesGroinArmpitNeck());
 		target.setPatientIllLocation(source.getPatientIllLocation());
 		target.setBulgingFontanelle(source.getBulgingFontanelle());
+		target.setBloodPressureDiastolic(source.getBloodPressureDiastolic());
+		target.setBloodPressureSystolic(source.getBloodPressureSystolic());
+		target.setHeartRate(source.getHeartRate());
 		
 		return target;
 	}

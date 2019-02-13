@@ -82,8 +82,7 @@ public class TherapyView extends AbstractCaseView {
 		prescriptionGrid = new PrescriptionGrid(this);
 		prescriptionGrid.setCriteria(prescriptionCriteria);
 		prescriptionGrid.setHeightMode(HeightMode.ROW);
-		prescriptionGrid.setHeightByRows(5);
-		CssStyles.style(prescriptionGrid, CssStyles.VSPACE_3);
+		CssStyles.style(prescriptionGrid, CssStyles.VSPACE_2);
 		container.addComponent(prescriptionGrid);
 
 		container.addComponent(createTreatmentsHeader());
@@ -262,6 +261,7 @@ public class TherapyView extends AbstractCaseView {
 	
 	public void reloadPrescriptionGrid() {
 		prescriptionGrid.reload();
+		prescriptionGrid.setHeightByRows(Math.min(prescriptionGrid.getContainer().size(), 5));
 	}
 	
 	public void reloadTreatmentGrid() {

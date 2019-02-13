@@ -2737,3 +2737,60 @@ ALTER TABLE treatment_history ADD COLUMN prescription_id bigint;
 ALTER TABLE treatment ADD CONSTRAINT fk_treatment_prescription_id FOREIGN KEY (prescription_id) REFERENCES prescription (id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (126, 'Type of drug and prescription link #936');
+
+-- 2019-02-11 Clinical course and visits #938
+
+CREATE TABLE clinicalcourse(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+ALTER TABLE clinicalcourse OWNER TO sormas_user;
+
+CREATE TABLE clinicalcourse_history (LIKE clinicalcourse);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON clinicalcourse
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'clinicalcourse_history', true);
+ALTER TABLE clinicalcourse_history OWNER TO sormas_user;
+
+CREATE TABLE clinicalvisit(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	clinicalcourse_id bigint not null,
+	symptoms_id bigint not null,
+	person_id bigint not null,
+	disease varchar(255),
+	visitdatetime timestamp,
+	visitremarks varchar(512),
+	visitingperson varchar(512),
+	sys_period tstzrange not null,
+	primary key(id)
+);
+ALTER TABLE clinicalvisit OWNER TO sormas_user;
+ALTER TABLE clinicalvisit ADD CONSTRAINT fk_clinicalvisit_clinicalcourse_id FOREIGN KEY (clinicalcourse_id) REFERENCES clinicalcourse (id);
+ALTER TABLE clinicalvisit ADD CONSTRAINT fk_clinicalvisit_symptoms_id FOREIGN KEY (symptoms_id) REFERENCES symptoms (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE clinicalvisit ADD CONSTRAINT fk_clinicalvisit_person_id FOREIGN KEY (person_id) REFERENCES person (id);
+
+CREATE TABLE clinicalvisit_history (LIKE clinicalvisit);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON clinicalvisit
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'clinicalvisit_history', true);
+ALTER TABLE clinicalvisit_history OWNER TO sormas_user;
+
+ALTER TABLE cases ADD COLUMN clinicalcourse_id bigint;
+ALTER TABLE cases_history ADD COLUMN clinicalcourse_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_clinicalcourse_id FOREIGN KEY (clinicalcourse_id) REFERENCES clinicalcourse (id);
+
+ALTER TABLE symptoms ADD COLUMN bloodpressuresystolic integer;
+ALTER TABLE symptoms ADD COLUMN bloodpressurediastolic integer;
+ALTER TABLE symptoms ADD COLUMN heartrate integer;
+ALTER TABLE symptoms_history ADD COLUMN bloodpressuresystolic integer;
+ALTER TABLE symptoms_history ADD COLUMN bloodpressurediastolic integer;
+ALTER TABLE symptoms_history ADD COLUMN heartrate integer;
+
+INSERT INTO schema_version (version_number, comment) VALUES (127, 'Clinical course and visits #938');

@@ -44,12 +44,13 @@ public class TherapyController {
 				if (!form.getFieldGroup().isModified()) {
 					PrescriptionDto dto = form.getValue();
 					FacadeProvider.getTherapyFacade().savePrescription(dto);
+					Notification.show(I18nProperties.getString(Strings.messagePrescriptionCreated), Type.TRAY_NOTIFICATION);
 					callback.run();
 				}
 			}
 		});
 
-		VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(I18nProperties.getString(Strings.headingCreateNewPrescription)));
+		VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingCreateNewPrescription));
 	}
 
 	public void openPrescriptionEditForm(PrescriptionReferenceDto prescriptionReference, Runnable callback, boolean readOnly) {
@@ -68,6 +69,7 @@ public class TherapyController {
 					PrescriptionDto dto = form.getValue();
 					FacadeProvider.getTherapyFacade().savePrescription(dto);
 					popupWindow.close();
+					Notification.show(I18nProperties.getString(Strings.messagePrescriptionSaved), Type.TRAY_NOTIFICATION);
 					if (callback != null) {
 						callback.run();
 					}
@@ -111,6 +113,7 @@ public class TherapyController {
 				if (!form.getFieldGroup().isModified()) {
 					TreatmentDto dto = form.getValue();
 					FacadeProvider.getTherapyFacade().saveTreatment(dto);
+					Notification.show(I18nProperties.getString(Strings.messageTreatmentCreated), Type.TRAY_NOTIFICATION);
 					callback.run();
 				}
 			}
@@ -130,6 +133,7 @@ public class TherapyController {
 				if (!form.getFieldGroup().isModified()) {
 					TreatmentDto dto = form.getValue();
 					FacadeProvider.getTherapyFacade().saveTreatment(dto);
+					Notification.show(I18nProperties.getString(Strings.messageTreatmentCreated), Type.TRAY_NOTIFICATION);
 					callback.run();
 				}
 			}
@@ -153,6 +157,7 @@ public class TherapyController {
 					TreatmentDto dto = form.getValue();
 					FacadeProvider.getTherapyFacade().saveTreatment(dto);
 					popupWindow.close();
+					Notification.show(I18nProperties.getString(Strings.messageTreatmentSaved), Type.TRAY_NOTIFICATION);
 					callback.run();
 				}
 			}

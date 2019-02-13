@@ -45,6 +45,11 @@ public class Symptoms extends AbstractDomainObject {
 	
 	public static final String ONSET_DATE = "onsetDate";
 	public static final String SYMPTOMATIC = "symptomatic";
+	public static final String TEMPERATURE = "temperature";
+	public static final String TEMPERATURE_SOURCE = "temperatureSource";
+	public static final String BLOOD_PRESSURE_SYSTOLIC = "bloodPressureSystolic";
+	public static final String BLOOD_PRESSURE_DIASTOLIC = "bloodPressureDiastolic";
+	public static final String HEART_RATE = "heartRate";
 
 	private Date onsetDate;
 	private String onsetSymptom;
@@ -53,6 +58,10 @@ public class Symptoms extends AbstractDomainObject {
 
 	private Float temperature;
 	private TemperatureSource temperatureSource;
+	private Integer bloodPressureSystolic;
+	private Integer bloodPressureDiastolic;
+	private Integer heartRate;
+	
 	private SymptomState fever;
 	private SymptomState vomiting;
 	private SymptomState diarrhea;
@@ -173,6 +182,30 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setTemperatureSource(TemperatureSource temperatureSource) {
 		this.temperatureSource = temperatureSource;
+	}
+
+	public Integer getBloodPressureSystolic() {
+		return bloodPressureSystolic;
+	}
+
+	public void setBloodPressureSystolic(Integer bloodPressureSystolic) {
+		this.bloodPressureSystolic = bloodPressureSystolic;
+	}
+
+	public Integer getBloodPressureDiastolic() {
+		return bloodPressureDiastolic;
+	}
+
+	public void setBloodPressureDiastolic(Integer bloodPressureDiastolic) {
+		this.bloodPressureDiastolic = bloodPressureDiastolic;
+	}
+
+	public Integer getHeartRate() {
+		return heartRate;
+	}
+
+	public void setHeartRate(Integer heartRate) {
+		this.heartRate = heartRate;
 	}
 
 	@Enumerated(EnumType.STRING)

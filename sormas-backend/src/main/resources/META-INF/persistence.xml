@@ -37,6 +37,8 @@
 		<class>de.symeda.sormas.backend.therapy.Therapy</class>
 		<class>de.symeda.sormas.backend.therapy.Treatment</class>
 		<class>de.symeda.sormas.backend.therapy.Prescription</class>
+		<class>de.symeda.sormas.backend.clinicalcourse.ClinicalCourse</class>
+		<class>de.symeda.sormas.backend.clinicalcourse.ClinicalVisit</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
