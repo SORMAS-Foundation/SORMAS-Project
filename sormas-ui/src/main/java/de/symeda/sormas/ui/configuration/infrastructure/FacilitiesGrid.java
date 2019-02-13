@@ -105,6 +105,7 @@ public class FacilitiesGrid extends Grid implements AbstractGrid<FacilityCriteri
 		
 		List<FacilityDto> facilities = FacadeProvider.getFacilityFacade()
 				.getIndexList(UserProvider.getCurrent().getUuid(), facilityCriteria);
+		
 		getContainer().removeAllItems();
 		getContainer().addAll(facilities);
 	}

@@ -29,14 +29,17 @@ public class CommunityDto extends EntityDto {
 	public static final String I18N_PREFIX = "Community";
 
 	public static final String NAME = "name";
+	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	
 	private String name;
+	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	
-	public CommunityDto(Date creationDate, Date changeDate, String uuid, String name, String districtUuid, String districtName) {
+	public CommunityDto(Date creationDate, Date changeDate, String uuid, String name, String regionUuid, String regionName, String districtUuid, String districtName) {
 		super(creationDate, changeDate, uuid);
 		this.name = name;
+		this.region = new RegionReferenceDto(regionUuid, regionName);
 		this.district = new DistrictReferenceDto(districtUuid, districtName);
 	}
 	
@@ -49,6 +52,14 @@ public class CommunityDto extends EntityDto {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public RegionReferenceDto getRegion() {
+		return region;
+	}
+
+	public void setRegion(RegionReferenceDto region) {
+		this.region = region;
 	}
 	
 	public DistrictReferenceDto getDistrict() {
@@ -71,6 +82,5 @@ public class CommunityDto extends EntityDto {
 		CommunityDto dto = new CommunityDto();
 		dto.setUuid(DataHelper.createUuid());
 		return dto;
-	}
-	
+	}	
 }
