@@ -26,9 +26,8 @@ public class ClinicalVisitGrid extends Grid implements AbstractGrid<ClinicalVisi
 	private static final String EDIT_BTN_ID = "edit";
 	
 	private ClinicalVisitCriteria clinicalVisitCriteria = new ClinicalVisitCriteria();
-	private CaseReferenceDto caseRef;
 	
-	public ClinicalVisitGrid(ClinicalCourseView parentView) {
+	public ClinicalVisitGrid(CaseReferenceDto caseRef) {
 		setSizeFull();
 		
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
@@ -85,10 +84,6 @@ public class ClinicalVisitGrid extends Grid implements AbstractGrid<ClinicalVisi
 	@Override
 	public ClinicalVisitCriteria getCriteria() {
 		return clinicalVisitCriteria;
-	}
-	
-	public void setCaseRef(CaseReferenceDto caseRef) {
-		this.caseRef = caseRef;
 	}
 	
 }

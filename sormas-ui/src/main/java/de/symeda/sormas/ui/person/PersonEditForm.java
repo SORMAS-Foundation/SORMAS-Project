@@ -133,7 +133,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 	@Override
 	protected void addFields() {
-
 		if (!initialized) {
 			// vars have to be set first
 			return;

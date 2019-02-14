@@ -42,10 +42,6 @@ public class ClinicalVisitDto extends EntityDto {
 		
 		return clinicalVisit;
 	}
-	
-	public ClinicalVisitReferenceDto toReference() {
-		return new ClinicalVisitReferenceDto(getUuid(), toString());
-	}
 
 	public ClinicalCourseDto getClinicalCourse() {
 		return clinicalCourse;

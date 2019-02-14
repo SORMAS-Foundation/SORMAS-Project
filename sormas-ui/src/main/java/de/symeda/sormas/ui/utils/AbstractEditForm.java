@@ -48,8 +48,8 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -57,6 +57,7 @@ import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
 import de.symeda.sormas.ui.epidata.EpiDataGatheringsField;
 import de.symeda.sormas.ui.epidata.EpiDataTravelsField;
@@ -137,6 +138,9 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 				else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
 					return (T) new LocationEditForm(editOrCreateUserRight);
 				} 
+				else if (HealthConditionsForm.class.isAssignableFrom(fieldType)) {
+					return (T) new HealthConditionsForm(editOrCreateUserRight);
+				}
 				else if (DateTimeField.class.isAssignableFrom(fieldType)) {
 					DateTimeField field = new DateTimeField();
 					field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));

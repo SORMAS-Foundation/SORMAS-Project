@@ -2794,3 +2794,40 @@ ALTER TABLE symptoms_history ADD COLUMN bloodpressurediastolic integer;
 ALTER TABLE symptoms_history ADD COLUMN heartrate integer;
 
 INSERT INTO schema_version (version_number, comment) VALUES (127, 'Clinical course and visits #938');
+
+-- 2019-02-13 Health conditions #952
+
+CREATE TABLE healthconditions(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	tuberculosis varchar(255),
+	asplenia varchar(255),
+	hepatitis varchar(255),
+	diabetes varchar(255),
+	hiv varchar(255),
+	hivart varchar(255),
+	chronicliverdisease varchar(255),
+	malignancychemotherapy varchar(255),
+	chronicheartfailure varchar(255),
+	chronicpulmonarydisease varchar(255),
+	chronickidneydisease varchar(255),
+	chronicneurologiccondition varchar(255),
+	otherconditions varchar(512),
+	sys_period tstzrange not null,
+	primary key(id)
+);
+ALTER TABLE healthconditions OWNER TO sormas_user;
+
+CREATE TABLE healthconditions_history (LIKE healthconditions);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON healthconditions
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'healthconditions_history', true);
+ALTER TABLE healthconditions_history OWNER TO sormas_user;
+
+ALTER TABLE clinicalcourse ADD COLUMN healthconditions_id bigint;
+ALTER TABLE clinicalcourse_history ADD COLUMN healthconditions_id bigint;
+ALTER TABLE clinicalcourse ADD CONSTRAINT fk_clinicalcourse_healthconditions_id FOREIGN KEY (healthconditions_id) REFERENCES healthconditions (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (128, 'Health conditions #952');

@@ -143,6 +143,7 @@ public interface Strings {
 	public static String headingFollowUpSituation = "headingFollowUpSituation";
 	public static String headingFollowUpStatus = "headingFollowUpStatus";
 	public static String headingFollowUpStatusChanged = "headingFollowUpStatusChanged";
+	public static String headingHealthConditions = "headingHealthConditions";
 	public static String headingHospitalization = "headingHospitalization";
 	public static String headingImportCases = "headingImportCases";
 	public static String headingImportCsvFile = "headingImportCsvFile";
@@ -239,6 +240,7 @@ public interface Strings {
 	public static String messageCasesEdited = "messageCasesEdited";
 	public static String messageCaseTransfered = "messageCaseTransfered";
 	public static String messageCheckInputData = "messageCheckInputData";
+	public static String messageClinicalCourseSaved = "messageClinicalCourseSaved";
 	public static String messageClinicalVisitCreated = "messageClinicalVisitCreated";
 	public static String messageClinicalVisitsDeleted = "messageClinicalVisitsDeleted";
 	public static String messageClinicalVisitSaved = "messageClinicalVisitSaved";

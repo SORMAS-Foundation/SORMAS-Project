@@ -21,6 +21,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitIndexDto;
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.user.UserRole;
@@ -56,8 +57,10 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 	CaseService caseService;
 	@EJB
 	PersonService personService;
+	@EJB
+	HealthConditionsService healthConditionsService;
 
-//	private String countPositiveSymptomsQuery;
+	//	private String countPositiveSymptomsQuery;
 
 	@Override
 	public List<ClinicalVisitIndexDto> getClinicalVisitIndexList(ClinicalVisitCriteria criteria) {
@@ -85,48 +88,48 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 		cq.orderBy(cb.desc(visit.get(ClinicalVisit.VISIT_DATE_TIME)));
 
 		List<ClinicalVisitIndexDto> results = em.createQuery(cq).getResultList();
-		
+
 		// Build the query to count positive symptoms
 		// TODO: Re-activate when issue #964 (replace EclipseLink with Hibernate) has been done
-//		if (countPositiveSymptomsQuery == null) {
-//			String listColumnsQuery = "SELECT column_name FROM information_schema.columns "
-//					+ "WHERE table_schema = 'public' AND data_type IN ('character varying') "
-//					+ "AND TABLE_NAME = '" + Symptoms.TABLE_NAME + "' "
-//					+ "ORDER BY column_name";
-//			List<String> columns = em.createNativeQuery(listColumnsQuery).getResultList();
-//
-//			StringBuilder queryBuilder = new StringBuilder();
-//			queryBuilder.append("SELECT id, ");
-//			for (int i = 0; i < columns.size(); i++) {
-//				queryBuilder.append("CASE " + columns.get(i) + " WHEN 'YES' THEN 1 ELSE 0 END");
-//				if (i < columns.size() - 1) {
-//					queryBuilder.append(" + ");
-//				}
-//			}
-//			queryBuilder.append(" AS count FROM symptoms WHERE id IN (");
-//			countPositiveSymptomsQuery = queryBuilder.toString();
-//		}
-//
-//		if (!results.isEmpty()) {
-//			// Add number of positive symptoms
-//			HashMap<Long, ClinicalVisitIndexDto> symptomVisits = new HashMap<>();
-//			StringBuilder symptomIdsBuilder = new StringBuilder();
-//			for (int i = 0; i < results.size(); i++) {
-//				ClinicalVisitIndexDto result = results.get(i);
-//				symptomIdsBuilder.append(result.getSymptomsId());
-//				if (i < results.size() - 1) {
-//					symptomIdsBuilder.append(", ");
-//				}
-//				symptomVisits.put(result.getSymptomsId(), result);
-//			}
-//			symptomIdsBuilder.append(");");
-//
-//			List<Object[]> symptomCounts = em.createNativeQuery(countPositiveSymptomsQuery + symptomIdsBuilder.toString()).getResultList();
-//
-//			symptomCounts.stream().forEach(c -> {
-//				symptomVisits.get(c[0]).setSignsAndSymptomsCount((Integer) c[1]);
-//			});
-//		}
+		//		if (countPositiveSymptomsQuery == null) {
+		//			String listColumnsQuery = "SELECT column_name FROM information_schema.columns "
+		//					+ "WHERE table_schema = 'public' AND data_type IN ('character varying') "
+		//					+ "AND TABLE_NAME = '" + Symptoms.TABLE_NAME + "' "
+		//					+ "ORDER BY column_name";
+		//			List<String> columns = em.createNativeQuery(listColumnsQuery).getResultList();
+		//
+		//			StringBuilder queryBuilder = new StringBuilder();
+		//			queryBuilder.append("SELECT id, ");
+		//			for (int i = 0; i < columns.size(); i++) {
+		//				queryBuilder.append("CASE " + columns.get(i) + " WHEN 'YES' THEN 1 ELSE 0 END");
+		//				if (i < columns.size() - 1) {
+		//					queryBuilder.append(" + ");
+		//				}
+		//			}
+		//			queryBuilder.append(" AS count FROM symptoms WHERE id IN (");
+		//			countPositiveSymptomsQuery = queryBuilder.toString();
+		//		}
+		//
+		//		if (!results.isEmpty()) {
+		//			// Add number of positive symptoms
+		//			HashMap<Long, ClinicalVisitIndexDto> symptomVisits = new HashMap<>();
+		//			StringBuilder symptomIdsBuilder = new StringBuilder();
+		//			for (int i = 0; i < results.size(); i++) {
+		//				ClinicalVisitIndexDto result = results.get(i);
+		//				symptomIdsBuilder.append(result.getSymptomsId());
+		//				if (i < results.size() - 1) {
+		//					symptomIdsBuilder.append(", ");
+		//				}
+		//				symptomVisits.put(result.getSymptomsId(), result);
+		//			}
+		//			symptomIdsBuilder.append(");");
+		//
+		//			List<Object[]> symptomCounts = em.createNativeQuery(countPositiveSymptomsQuery + symptomIdsBuilder.toString()).getResultList();
+		//
+		//			symptomCounts.stream().forEach(c -> {
+		//				symptomVisits.get(c[0]).setSignsAndSymptomsCount((Integer) c[1]);
+		//			});
+		//		}
 
 		return results;
 	}
@@ -163,6 +166,15 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 		ClinicalVisit clinicalVisit = clinicalVisitService.getByUuid(clinicalVisitUuid);
 		clinicalVisitService.delete(clinicalVisit);
 	}
+	
+	@Override
+	public ClinicalCourseDto saveClinicalCourse(ClinicalCourseDto clinicalCourse) {
+		ClinicalCourse entity = fromDto(clinicalCourse);
+		
+		service.ensurePersisted(entity);
+		
+		return toDto(entity);
+	}
 
 	public static ClinicalCourseDto toDto(ClinicalCourse source) {
 		if (source == null) {
@@ -171,6 +183,10 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 
 		ClinicalCourseDto target = new ClinicalCourseDto();
 		DtoHelper.fillDto(target, source);
+
+		if (source.getHealthConditions() != null) {
+			target.setHealthConditions(toHealthConditionsDto(source.getHealthConditions()));
+		}
 
 		return target;
 	}
@@ -187,6 +203,10 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 		}
 
 		DtoHelper.validateDto(source, target);
+
+		if (source.getHealthConditions() != null) {
+			target.setHealthConditions(fromHealthConditionsDto(source.getHealthConditions()));
+		}
 
 		return target;
 	}
@@ -230,6 +250,61 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 		target.setVisitDateTime(source.getVisitDateTime());
 		target.setVisitRemarks(source.getVisitRemarks());
 		target.setVisitingPerson(source.getVisitingPerson());
+
+		return target;
+	}
+
+	public static HealthConditionsDto toHealthConditionsDto(HealthConditions source) {
+		if (source == null) {
+			return null;
+		}
+
+		HealthConditionsDto target = new HealthConditionsDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setAsplenia(source.getAsplenia());
+		target.setChronicHeartFailure(source.getChronicHeartFailure());
+		target.setChronicKidneyDisease(source.getChronicKidneyDisease());
+		target.setChronicLiverDisease(source.getChronicLiverDisease());
+		target.setChronicNeurologicCondition(source.getChronicNeurologicCondition());
+		target.setChronicPulmonaryDisease(source.getChronicPulmonaryDisease());
+		target.setDiabetes(source.getDiabetes());
+		target.setHepatitis(source.getHepatitis());
+		target.setHiv(source.getHiv());
+		target.setHivArt(source.getHivArt());
+		target.setMalignancyChemotherapy(source.getMalignancyChemotherapy());
+		target.setTuberculosis(source.getTuberculosis());
+		target.setOtherConditions(source.getOtherConditions());
+
+		return target;
+	}
+
+	public HealthConditions fromHealthConditionsDto(@NotNull HealthConditionsDto source) {
+		HealthConditions target = healthConditionsService.getByUuid(source.getUuid());
+
+		if (target == null) {
+			target = new HealthConditions();
+			target.setUuid(source.getUuid());
+			if (source.getCreationDate() != null) {
+				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
+			}
+		}
+
+		DtoHelper.validateDto(source, target);
+
+		target.setAsplenia(source.getAsplenia());
+		target.setChronicHeartFailure(source.getChronicHeartFailure());
+		target.setChronicKidneyDisease(source.getChronicKidneyDisease());
+		target.setChronicLiverDisease(source.getChronicLiverDisease());
+		target.setChronicNeurologicCondition(source.getChronicNeurologicCondition());
+		target.setChronicPulmonaryDisease(source.getChronicPulmonaryDisease());
+		target.setDiabetes(source.getDiabetes());
+		target.setHepatitis(source.getHepatitis());
+		target.setHiv(source.getHiv());
+		target.setHivArt(source.getHivArt());
+		target.setMalignancyChemotherapy(source.getMalignancyChemotherapy());
+		target.setTuberculosis(source.getTuberculosis());
+		target.setOtherConditions(source.getOtherConditions());
 
 		return target;
 	}
