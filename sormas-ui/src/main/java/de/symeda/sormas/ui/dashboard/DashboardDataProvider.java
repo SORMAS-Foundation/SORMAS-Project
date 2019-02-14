@@ -92,11 +92,13 @@ public class DashboardDataProvider {
 		setDiseasesBurden(FacadeProvider.getDiseaseFacade().getDiseaseBurdenForDashboard(region, district, fromDate,
 				toDate, previousFromDate, previousToDate, userUuid));
 		
-		if (this.disease != null)
-			this.refreshDataForSelectedDisease();
+		this.refreshDataForSelectedDisease();
 	}
 
 	private void refreshDataForSelectedDisease () {
+		if (this.disease == null)
+			return;
+
 		// Update the entities lists according to the filters
 		String userUuid = UserProvider.getCurrent().getUuid();
 
