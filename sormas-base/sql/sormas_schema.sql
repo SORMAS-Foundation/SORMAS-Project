@@ -2840,5 +2840,14 @@ ALTER TABLE cases ADD COLUMN sequelaedetails varchar(512);
 ALTER TABLE cases_history ADD COLUMN sequelae varchar(255);
 ALTER TABLE cases_history ADD COLUMN sequelaedetails varchar(512);
 
+ALTER TABLE person ADD COLUMN educationtype varchar(255);
+ALTER TABLE person ADD COLUMN educationdetails varchar(255);
+ALTER TABLE person ADD COLUMN approximateagereferencedate date;
+UPDATE person SET approximateagereferencedate=changedate WHERE person.approximateage IS NOT NULL;
+
+ALTER TABLE person_history ADD COLUMN educationtype varchar(255);
+ALTER TABLE person_history ADD COLUMN educationdetails varchar(255);
+ALTER TABLE person_history ADD COLUMN approximateagereferencedate date;
+
 INSERT INTO schema_version (version_number, comment) VALUES (129, 'Additional Case, Person and Hospitalization fields #935');
 

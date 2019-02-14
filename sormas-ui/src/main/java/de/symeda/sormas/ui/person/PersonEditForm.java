@@ -71,6 +71,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private Label addressHeader = new Label(LayoutUtil.h3(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS)), ContentMode.HTML);
 
 	private boolean facilityFieldsInitialized = false;
+
+	private TextField approximateAgeField;
+	private ComboBox approximateAgeTypeField;
+	private DateField approximateAgeReferenceDateField;
+
 	private Disease disease;
 	private String diseaseDetails;
 	private ComboBox causeOfDeathField;
@@ -86,7 +91,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			LayoutUtil.fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
 			LayoutUtil.fluidRow(
 					LayoutUtil.fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
-					LayoutUtil.fluidRowLocs(PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE)
+					LayoutUtil.fluidRowLocs(PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE, PersonDto.APPROXIMATE_AGE_REFERENCE_DATE)
 					) +
 			LayoutUtil.fluidRowLocs(PersonDto.SEX, PersonDto.PRESENT_CONDITION) +
 			LayoutUtil.fluidRow(
@@ -110,13 +115,15 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					CssStyles.VSPACE_3, 
 					LayoutUtil.fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS),
 					LayoutUtil.fluidRowLocs(PersonDto.OCCUPATION_REGION, PersonDto.OCCUPATION_DISTRICT, PersonDto.OCCUPATION_COMMUNITY, PersonDto.OCCUPATION_FACILITY),
-					LayoutUtil.fluidRowLocs("","", PersonDto.OCCUPATION_FACILITY_DETAILS)
+					LayoutUtil.fluidRowLocs("","", PersonDto.OCCUPATION_FACILITY_DETAILS),
+					LayoutUtil.fluidRowLocs(PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS)
 					) +
 			LayoutUtil.loc(ADDRESS_HEADER) +
 			LayoutUtil.fluidRowLocs(PersonDto.ADDRESS)
 			;
 
 	private boolean initialized = false;
+
 
 	public PersonEditForm(Disease disease, String diseaseDetails, UserRight editOrCreateUserRight, ViewMode viewMode) {
 		super(PersonDto.class, PersonDto.I18N_PREFIX, editOrCreateUserRight);
@@ -161,8 +168,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		birthDateYear.addItems(DateHelper.getYearsToNow());
 		birthDateYear.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		DateField deathDate = addField(PersonDto.DEATH_DATE, DateField.class);
-		addField(PersonDto.APPROXIMATE_AGE, TextField.class);
-		addField(PersonDto.APPROXIMATE_AGE_TYPE, ComboBox.class);
+		approximateAgeField = addField(PersonDto.APPROXIMATE_AGE, TextField.class);
+		approximateAgeTypeField = addField(PersonDto.APPROXIMATE_AGE_TYPE, ComboBox.class);
+		approximateAgeReferenceDateField = addField(PersonDto.APPROXIMATE_AGE_REFERENCE_DATE, DateField.class);
+		
 		AbstractSelect deathPlaceType = addField(PersonDto.DEATH_PLACE_TYPE, ComboBox.class);
 		deathPlaceType.setNullSelectionAllowed(true);
 		TextField deathPlaceDesc = addField(PersonDto.DEATH_PLACE_DESCRIPTION, TextField.class);
@@ -172,8 +181,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.ADDRESS, LocationEditForm.class).setCaption(null);
 		addField(PersonDto.PHONE, TextField.class);
 		addField(PersonDto.PHONE_OWNER, TextField.class);
-		addField(PersonDto.OCCUPATION_TYPE, ComboBox.class);
-		addField(PersonDto.OCCUPATION_DETAILS, TextField.class);
+		
+		addFields(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS,
+				PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS);
+
 		causeOfDeathField = addField(PersonDto.CAUSE_OF_DEATH, ComboBox.class);
 		causeOfDeathDiseaseField = addField(PersonDto.CAUSE_OF_DEATH_DISEASE, ComboBox.class);
 		causeOfDeathDetailsField = addField(PersonDto.CAUSE_OF_DEATH_DETAILS, TextField.class);
@@ -193,6 +204,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		// Set requirements that don't need visibility changes and read only status
 
+		setReadOnly(true, 
+				PersonDto.APPROXIMATE_AGE_REFERENCE_DATE);
 		setRequired(true, 
 				PersonDto.FIRST_NAME, 
 				PersonDto.LAST_NAME);
@@ -248,6 +261,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			updateOccupationFieldCaptions();
 			toogleOccupationMetaFields();
 		});
+		
+		addFieldListeners(PersonDto.APPROXIMATE_AGE, e -> updateApproximateAgeReferenceDate());
 
 		facilityRegion.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
@@ -347,6 +362,18 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			approximateAgeTypeSelect.setValue(String.valueOf(pair.getElement1()));
 			approximateAgeTypeSelect.setReadOnly(true);
 		}
+	}
+	
+	private void updateApproximateAgeReferenceDate() {
+		
+		approximateAgeReferenceDateField.setReadOnly(false);
+		if (approximateAgeField.isModified()
+				|| approximateAgeTypeField.isModified()) {
+			approximateAgeReferenceDateField.setValue(new Date());
+		} else {
+			approximateAgeReferenceDateField.discard();
+		}
+		approximateAgeReferenceDateField.setReadOnly(true);
 	}
 
 	private void toogleOccupationMetaFields() {
