@@ -261,7 +261,7 @@ public class TherapyView extends AbstractCaseView {
 	
 	public void reloadPrescriptionGrid() {
 		prescriptionGrid.reload();
-		prescriptionGrid.setHeightByRows(Math.min(prescriptionGrid.getContainer().size(), 5));
+		prescriptionGrid.setHeightByRows(Math.max(1, Math.min(prescriptionGrid.getContainer().size(), 5)));
 	}
 	
 	public void reloadTreatmentGrid() {

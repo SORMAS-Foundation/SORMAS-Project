@@ -26,6 +26,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -49,6 +50,9 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.therapy.PrescriptionDto;
+import de.symeda.sormas.api.therapy.TreatmentDto;
+import de.symeda.sormas.api.therapy.TreatmentType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -66,6 +70,10 @@ public class TestDataCreator {
 
 	public TestDataCreator(AbstractBeanTest beanTest) {
 		this.beanTest = beanTest;
+	}
+	
+	public UserDto createUser(RDCF rdcf, UserRole... roles) {
+		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
 	}
 
 	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName,
@@ -103,6 +111,10 @@ public class TestDataCreator {
 				InvestigationStatus.PENDING, new Date(), rdcf);
 	}
 
+	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto person, RDCF rdcf) {
+		return createCase(user, person, Disease.EVD, CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), rdcf);
+	}
+	
 	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease,
 			CaseClassification caseClassification, InvestigationStatus investigationStatus, Date reportDate,
 			RDCF rdcf) {
@@ -119,6 +131,32 @@ public class TestDataCreator {
 		caze = beanTest.getCaseFacade().saveCase(caze);
 
 		return caze;
+	}
+	
+	public ClinicalVisitDto createClinicalVisit(CaseDataDto caze) {
+		ClinicalVisitDto clinicalVisit = ClinicalVisitDto.buildClinicalVisit(caze.getClinicalCourse(), SymptomsDto.build(), caze.getDisease(), caze.getPerson());
+		
+		clinicalVisit = beanTest.getClinicalCourseFacade().saveClinicalVisit(clinicalVisit, caze.getUuid());
+	
+		return clinicalVisit;
+	}
+	
+	public PrescriptionDto createPrescription(CaseDataDto caze) {
+		PrescriptionDto prescription = PrescriptionDto.buildPrescription(caze.getTherapy());
+		prescription.setPrescriptionType(TreatmentType.BLOOD_TRANSFUSION);
+		
+		prescription = beanTest.getTherapyFacade().savePrescription(prescription);
+		
+		return prescription;
+	}
+	
+	public TreatmentDto createTreatment(CaseDataDto caze) {
+		TreatmentDto treatment = TreatmentDto.buildTreatment(caze.getTherapy());
+		treatment.setTreatmentType(TreatmentType.BLOOD_TRANSFUSION);
+		
+		treatment = beanTest.getTherapyFacade().saveTreatment(treatment);
+		
+		return treatment;
 	}
 
 	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
@@ -260,6 +298,10 @@ public class TestDataCreator {
 				associatedCase.getReportingUser(), resultType, "", true);
 	}
 
+	public RDCF createRDCF() {
+		return createRDCF("Region", "District", "Community", "Facility");
+	}
+	
 	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName) {
 		Region region = createRegion(regionName);
 		District district = createDistrict(districtName, region);

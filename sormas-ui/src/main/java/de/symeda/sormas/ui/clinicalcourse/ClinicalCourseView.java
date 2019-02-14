@@ -105,7 +105,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 	
 	public void reloadClinicalVisitGrid() {
 		clinicalVisitGrid.reload();
-		clinicalVisitGrid.setHeightByRows(Math.min(clinicalVisitGrid.getContainer().size(), 10));
+		clinicalVisitGrid.setHeightByRows(Math.max(1, Math.min(clinicalVisitGrid.getContainer().size(), 10)));
 	}
 	
 	@Override
