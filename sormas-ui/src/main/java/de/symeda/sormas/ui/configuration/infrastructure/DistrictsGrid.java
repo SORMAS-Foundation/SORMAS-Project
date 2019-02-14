@@ -80,6 +80,7 @@ public class DistrictsGrid extends Grid implements AbstractGrid<DistrictCriteria
 			addColumn(EDIT_BTN_ID);
 			getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
 			getColumn(EDIT_BTN_ID).setWidth(40);
+			getColumn(EDIT_BTN_ID).setHeaderCaption("");
 
 			addItemClickListener(e -> {
 				if (e.getPropertyId() != null && (e.getPropertyId().equals(EDIT_BTN_ID) || e.isDoubleClick())) {

@@ -33,11 +33,17 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
+/**
+ * Remove when DashboardCnnstactStatisticsComponent is updated
+ */
+@Deprecated
 @SuppressWarnings("serial")
 public abstract class AbstractDashboardStatisticsComponent extends VerticalLayout {
 
@@ -142,9 +148,9 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 	}
 
 	private void addShowMoreAndLessButtons() {
-		showMoreButton = new Button("Show All Diseases", FontAwesome.CHEVRON_DOWN);
+		showMoreButton = new Button(I18nProperties.getCaption(Captions.dashboardShowAllDiseases), FontAwesome.CHEVRON_DOWN);
 		CssStyles.style(showMoreButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_3);
-		showLessButton = new Button("Show First 6 Diseases", FontAwesome.CHEVRON_UP);
+		showLessButton = new Button(I18nProperties.getCaption(Captions.dashboardShowFirstDiseases), FontAwesome.CHEVRON_UP);
 		CssStyles.style(showLessButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_3);
 
 		showMoreButton.addClickListener(e -> {

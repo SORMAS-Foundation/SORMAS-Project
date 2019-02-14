@@ -118,7 +118,7 @@
                     android:textAllCaps="true"
                     android:textColor="@color/row_entry_secondary_text"
                     android:textSize="@dimen/row_entry_secondary_text_size"
-                    app:defaultValue='@{@string/unconfirmed}'
+                    app:defaultValue='@{@string/caption_unconfirmed}'
                     app:dateValue="@{data.reportDate}"
                     app:valueFormat="@{@string/report_submitted_date_format}" />
 

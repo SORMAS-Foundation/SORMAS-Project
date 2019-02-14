@@ -36,6 +36,10 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.DashboardContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.DashboardVisitDto;
 import de.symeda.sormas.api.visit.VisitFacade;
@@ -99,17 +103,17 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 		firstComponent = new DashboardStatisticsSubComponent();
 
 		// Header
-		firstComponent.addHeader("All Contacts", null, true);
+		firstComponent.addHeader(I18nProperties.getString(Strings.headingAllContacts), null, true);
 
 		// Content
 		firstComponent.addMainContent();
 
 		allContactsCountLayout = firstComponent.createCountLayout(true);
-		contactClassificationUnconfirmed = new DashboardStatisticsCountElement("Unconfirmed", CountElementStyle.MINOR);
-		contactClassificationConfirmed = new DashboardStatisticsCountElement("Confirmed", CountElementStyle.PRIMARY);
-		contactClassificationNotAContact = new DashboardStatisticsCountElement("Not a contact", CountElementStyle.POSITIVE);
-		newContacts = new DashboardStatisticsCountElement("New", CountElementStyle.NEUTRAL);
-		symptomaticContacts = new DashboardStatisticsCountElement("Symptomatic", CountElementStyle.CRITICAL);
+		contactClassificationUnconfirmed = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardUnconfirmed), CountElementStyle.MINOR);
+		contactClassificationConfirmed = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardConfirmed), CountElementStyle.PRIMARY);
+		contactClassificationNotAContact = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNotAContact), CountElementStyle.POSITIVE);
+		newContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNew), CountElementStyle.NEUTRAL);
+		symptomaticContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardSymptomatic), CountElementStyle.CRITICAL);
 		firstComponent.addComponentToCountLayout(allContactsCountLayout, contactClassificationUnconfirmed);
 		firstComponent.addComponentToCountLayout(allContactsCountLayout, contactClassificationConfirmed);
 		firstComponent.addComponentToCountLayout(allContactsCountLayout, contactClassificationNotAContact);
@@ -117,11 +121,11 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 		firstComponent.addComponentToCountLayout(allContactsCountLayout, symptomaticContacts);
 		firstComponent.addComponentToContent(allContactsCountLayout);
 
-		contactClassificationUnconfirmedLarge = new DashboardStatisticsPercentageElement("Unconfirmed", CssStyles.SVG_FILL_MINOR);
-		contactClassificationConfirmedLarge = new DashboardStatisticsPercentageElement("Confirmed", CssStyles.SVG_FILL_CRITICAL);
-		contactClassificationNotAContactLarge = new DashboardStatisticsPercentageElement("Not a contact", CssStyles.SVG_FILL_POSITIVE);
-		newContactsLarge = new DashboardStatisticsPercentageElement("New", CssStyles.SVG_FILL_NEUTRAL);
-		symptomaticContactsLarge = new DashboardStatisticsPercentageElement("Symptomatic", CssStyles.SVG_FILL_CRITICAL);
+		contactClassificationUnconfirmedLarge = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardUnconfirmed), CssStyles.SVG_FILL_MINOR);
+		contactClassificationConfirmedLarge = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardConfirmed), CssStyles.SVG_FILL_CRITICAL);
+		contactClassificationNotAContactLarge = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardNotAContact), CssStyles.SVG_FILL_POSITIVE);
+		newContactsLarge = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardNew), CssStyles.SVG_FILL_NEUTRAL);
+		symptomaticContactsLarge = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardSymptomatic), CssStyles.SVG_FILL_CRITICAL);
 
 		subComponentsLayout.addComponent(firstComponent, FIRST_LOC);
 	}
@@ -204,20 +208,20 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 		secondComponent = new DashboardStatisticsSubComponent();
 
 		// Header
-		secondComponent.addHeader("Contact Follow-Up", null, true);
+		secondComponent.addHeader(I18nProperties.getString(Strings.headingContactFollowUp), null, true);
 
 		// Content
 		secondComponent.addMainContent();
-		underFollowUp = new DashboardStatisticsPercentageElement("Under follow-up", CssStyles.SVG_FILL_PRIMARY);
+		underFollowUp = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardUnderFollowUp), CssStyles.SVG_FILL_PRIMARY);
 		underFollowUp.setDescription(FollowUpStatus.FOLLOW_UP.getDescription());
-		followUpCompleted = new DashboardStatisticsPercentageElement("Completed follow-up", CssStyles.SVG_FILL_POSITIVE);
+		followUpCompleted = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardCompletedFollowUp), CssStyles.SVG_FILL_POSITIVE);
 		followUpCompleted.setDescription(FollowUpStatus.COMPLETED.getDescription());
-		followUpCanceled = new DashboardStatisticsPercentageElement("Canceled follow-up", CssStyles.SVG_FILL_IMPORTANT);
+		followUpCanceled = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardCanceledFollowUp), CssStyles.SVG_FILL_IMPORTANT);
 		followUpCanceled.setDescription(FollowUpStatus.CANCELED.getDescription());
-		lostToFollowUp = new DashboardStatisticsPercentageElement("Lost to follow-up", CssStyles.SVG_FILL_CRITICAL);
+		lostToFollowUp = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardLostToFollowUp), CssStyles.SVG_FILL_CRITICAL);
 		lostToFollowUp.setDescription(FollowUpStatus.LOST.getDescription());
-		contactStatusConverted = new DashboardStatisticsPercentageElement("Converted to case", CssStyles.SVG_FILL_NEUTRAL);
-		contactStatusConverted.setDescription("The contact has been converted to a case because it has become symptomatic");
+		contactStatusConverted = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardConvertedToCase), CssStyles.SVG_FILL_NEUTRAL);
+		contactStatusConverted.setDescription(I18nProperties.getDescription(Descriptions.descDashboardConvertedToCase));
 		secondComponent.addComponentToContent(underFollowUp);
 		secondComponent.addComponentToContent(followUpCompleted);
 		secondComponent.addComponentToContent(followUpCanceled);
@@ -258,42 +262,41 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 		thirdComponent = new DashboardStatisticsSubComponent();
 
 		// Header
-		thirdComponent.addHeader("Follow-Up Situation", null, false);
+		thirdComponent.addHeader(I18nProperties.getString(Strings.headingFollowUpSituation), null, false);
 
 		// Visit status of last visit
 		thirdComponent.addMainContent();
 		CssLayout visitStatusCountLayout = thirdComponent.createCountLayout(true);
-		cooperativeContacts = new DashboardStatisticsCountElement("Cooperative", CountElementStyle.POSITIVE);
+		cooperativeContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardCooperative), CountElementStyle.POSITIVE);
 		thirdComponent.addComponentToCountLayout(visitStatusCountLayout, cooperativeContacts);
-		uncooperativeContacts = new DashboardStatisticsCountElement("Uncooperative", CountElementStyle.CRITICAL);
+		uncooperativeContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardUncooperative), CountElementStyle.CRITICAL);
 		thirdComponent.addComponentToCountLayout(visitStatusCountLayout, uncooperativeContacts);
-		unavailableContacts = new DashboardStatisticsCountElement("Unavailable", CountElementStyle.RELEVANT);
+		unavailableContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardUnavailable), CountElementStyle.RELEVANT);
 		thirdComponent.addComponentToCountLayout(visitStatusCountLayout, unavailableContacts);
-		neverVisitedContacts = new DashboardStatisticsCountElement("Never visited", CountElementStyle.MINOR);
+		neverVisitedContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNeverVisited), CountElementStyle.MINOR);
 		thirdComponent.addComponentToCountLayout(visitStatusCountLayout, neverVisitedContacts);
 
 		Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 		infoLabel.setSizeUndefined();
-		infoLabel.setDescription("Follow-up status is calculcated by taking the status of the last visit to the respective contact. \"Never Visited\" means that "
-				+ "the contact has not yet been visited at all.");
+		infoLabel.setDescription(I18nProperties.getDescription(Descriptions.descDashboardFollowUpInfo));
 		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_SECONDARY, "follow-up-status-info-button");
 		thirdComponent.addComponentToCountLayout(visitStatusCountLayout, infoLabel);
 
 		thirdComponent.addComponentToContent(visitStatusCountLayout);
 
 		// Number of missed visits
-		Label missedVisitsLabel = new Label("Contacts not visited for...");
+		Label missedVisitsLabel = new Label(I18nProperties.getCaption(Captions.dashboardNotVisitedFor));
 		CssStyles.style(missedVisitsLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT, CssStyles.LABEL_ROUNDED_CORNERS_SLIM);
 		thirdComponent.addComponentToContent(missedVisitsLabel);
 
 		CssLayout missedVisitsCountLayout = thirdComponent.createCountLayout(false);
-		missedVisitsOneDay = new DashboardStatisticsCountElement("1 Day", CountElementStyle.PRIMARY);
+		missedVisitsOneDay = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardOneDay), CountElementStyle.PRIMARY);
 		thirdComponent.addComponentToCountLayout(missedVisitsCountLayout, missedVisitsOneDay);
-		missedVisitsTwoDays = new DashboardStatisticsCountElement("2 Days", CountElementStyle.PRIMARY);
+		missedVisitsTwoDays = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardTwoDays), CountElementStyle.PRIMARY);
 		thirdComponent.addComponentToCountLayout(missedVisitsCountLayout, missedVisitsTwoDays);
-		missedVisitsThreeDays = new DashboardStatisticsCountElement("3 Days", CountElementStyle.PRIMARY);
+		missedVisitsThreeDays = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardThreeDays), CountElementStyle.PRIMARY);
 		thirdComponent.addComponentToCountLayout(missedVisitsCountLayout, missedVisitsThreeDays);
-		missedVisitsGtThreeDays = new DashboardStatisticsCountElement("> 3 Days", CountElementStyle.PRIMARY);
+		missedVisitsGtThreeDays = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardGtThreeDays), CountElementStyle.PRIMARY);
 		thirdComponent.addComponentToCountLayout(missedVisitsCountLayout, missedVisitsGtThreeDays);
 		thirdComponent.addComponentToContent(missedVisitsCountLayout);
 
@@ -360,20 +363,20 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 		fourthComponent = new DashboardStatisticsSubComponent();
 
 		// Header
-		fourthComponent.addHeader("Visits", null, true);
+		fourthComponent.addHeader(I18nProperties.getString(Strings.headingVisits), null, true);
 
 		// Content
 		fourthComponent.addMainContent();
-		unavailableVisits = new DashboardStatisticsGraphicalGrowthElement("Unavailable", CssStyles.SVG_FILL_MINOR);
+		unavailableVisits = new DashboardStatisticsGraphicalGrowthElement(I18nProperties.getCaption(Captions.dashboardUnavailable), CssStyles.SVG_FILL_MINOR);
 		fourthComponent.addComponentToContent(unavailableVisits);
-		uncooperativeVisits = new DashboardStatisticsGraphicalGrowthElement("Uncooperative", CssStyles.SVG_FILL_IMPORTANT);
+		uncooperativeVisits = new DashboardStatisticsGraphicalGrowthElement(I18nProperties.getCaption(Captions.dashboardUncooperative), CssStyles.SVG_FILL_IMPORTANT);
 		fourthComponent.addComponentToContent(uncooperativeVisits);
-		cooperativeVisits = new DashboardStatisticsGraphicalGrowthElement("Cooperative", CssStyles.SVG_FILL_POSITIVE);
+		cooperativeVisits = new DashboardStatisticsGraphicalGrowthElement(I18nProperties.getCaption(Captions.dashboardCooperative), CssStyles.SVG_FILL_POSITIVE);
 		fourthComponent.addComponentToContent(cooperativeVisits);
 		Label separator = new Label("<hr/>", ContentMode.HTML);
 		CssStyles.style(separator, CssStyles.VSPACE_TOP_3, CssStyles.VSPACE_3);
 		fourthComponent.addComponentToContent(separator);
-		missedVisits = new DashboardStatisticsGraphicalGrowthElement("Missed", CssStyles.SVG_FILL_CRITICAL);
+		missedVisits = new DashboardStatisticsGraphicalGrowthElement(I18nProperties.getCaption(Captions.dashboardMissed), CssStyles.SVG_FILL_CRITICAL);
 		fourthComponent.addComponentToContent(missedVisits);
 		
 		subComponentsLayout.addComponent(fourthComponent, FOURTH_LOC);

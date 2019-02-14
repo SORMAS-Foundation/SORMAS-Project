@@ -29,6 +29,8 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskIndexDto;
@@ -94,7 +96,7 @@ public class TaskList extends PaginationList<TaskIndexDto> {
 			showPage(1);
 		} else {
 			updatePaginationLayout();
-			Label noTasksLabel = new Label("There are no tasks for this " + context.toString() + ".");
+			Label noTasksLabel = new Label(String.format(I18nProperties.getCaption(Captions.taskNoTasks), context.toString()));
 			listLayout.addComponent(noTasksLabel);
 		}
 	}

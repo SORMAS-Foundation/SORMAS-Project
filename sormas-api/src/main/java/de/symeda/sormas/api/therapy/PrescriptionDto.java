@@ -34,6 +34,7 @@ public class PrescriptionDto extends EntityDto {
 	public static final String PRESCRIBING_CLINICIAN = "prescribingClinician";
 	public static final String PRESCRIPTION_TYPE = "prescriptionType";
 	public static final String PRESCRIPTION_DETAILS = "prescriptionDetails";
+	public static final String DRUG_INTAKE_DETAILS = "drugIntakeDetails";
 	public static final String TYPE_OF_DRUG = "typeOfDrug";
 	public static final String FREQUENCY = "frequency";
 	public static final String DOSE = "dose";

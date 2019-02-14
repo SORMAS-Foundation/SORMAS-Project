@@ -42,6 +42,7 @@ public class PersonDto extends EntityDto {
 	public static final String LAST_NAME = "lastName";
 
 	public static final String PRESENT_CONDITION = "presentCondition";
+	public static final String BIRTH_DATE = "birthdate";
 	public static final String BIRTH_DATE_DD = "birthdateDD";
 	public static final String BIRTH_DATE_MM = "birthdateMM";
 	public static final String BIRTH_DATE_YYYY = "birthdateYYYY";

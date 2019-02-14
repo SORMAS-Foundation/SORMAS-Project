@@ -69,16 +69,16 @@ public class ClassificationPersonAgeCriteriaDto extends ClassificationCriteriaDt
 	@Override
 	public String buildDescription() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(I18nProperties.getString(Strings.personAged)).append(" ");
+		stringBuilder.append(I18nProperties.getString(Strings.classificationPersonAged)).append(" ");
 		if (lowerThreshold != null && upperThreshold != null) {
-			stringBuilder.append(I18nProperties.getString(Strings.between))
+			stringBuilder.append(I18nProperties.getString(Strings.sBetween))
 					.append(" ").append(lowerThreshold).append(" ")
-					.append(I18nProperties.getString(Strings.and)).append(" ")
-					.append(upperThreshold).append(" ").append(I18nProperties.getString(Strings.years));
+					.append(I18nProperties.getString(Strings.sAnd)).append(" ")
+					.append(upperThreshold).append(" ").append(I18nProperties.getString(Strings.sYears));
 		} else if (lowerThreshold != null) {
-			stringBuilder.append(lowerThreshold).append(" ").append(I18nProperties.getString(Strings.yearsOrMore));
+			stringBuilder.append(lowerThreshold).append(" ").append(I18nProperties.getString(Strings.classificationYearsOrMore));
 		} else if (upperThreshold != null) {
-			stringBuilder.append(upperThreshold).append(" ").append(I18nProperties.getString(Strings.yearsOrLess));
+			stringBuilder.append(upperThreshold).append(" ").append(I18nProperties.getString(Strings.classificationYearsOrLess));
 		}
 
 		return stringBuilder.toString();

@@ -26,6 +26,8 @@ import com.vaadin.ui.OptionGroup;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -68,13 +70,13 @@ public class BulkContactDataForm extends AbstractEditForm<ContactDto> {
 			return;
 		}
 		
-		classificationCheckBox = new CheckBox("Change contact classification");
+		classificationCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkContactClassification));
 		getContent().addComponent(classificationCheckBox, CLASSIFICATION_CHECKBOX);
 		OptionGroup contactClassification = addField(ContactDto.CONTACT_CLASSIFICATION, OptionGroup.class);
 		contactClassification.setEnabled(false);
 		
 		if (singleSelectedDistrict != null) {
-			contactOfficerCheckBox = new CheckBox("Change contact officer");
+			contactOfficerCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkContactOfficer));
 			getContent().addComponent(contactOfficerCheckBox, CONTACT_OFFICER_CHECKBOX);
 			ComboBox contactOfficer = addField(ContactDto.CONTACT_OFFICER, ComboBox.class);
 			contactOfficer.setEnabled(false);

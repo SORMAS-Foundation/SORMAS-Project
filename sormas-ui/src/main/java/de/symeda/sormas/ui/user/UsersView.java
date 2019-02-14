@@ -29,7 +29,9 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -49,8 +51,8 @@ public class UsersView extends AbstractView {
 	private static final long serialVersionUID = -3533557348144005469L;
 	
 	public static final String VIEW_NAME = "users";
-	public static final String ACTIVE_FILTER = "Active";
-	public static final String INACTIVE_FILTER = "Inactive";
+	public static final String ACTIVE_FILTER = I18nProperties.getString(Strings.sActive);
+	public static final String INACTIVE_FILTER = I18nProperties.getString(Strings.sInactive);
 
 	private UserGrid grid;    
     private Button createButton;
@@ -75,7 +77,7 @@ public class UsersView extends AbstractView {
         addComponent(gridLayout);
         
     	if (UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE)) {
-	        createButton = new Button("New user");
+	        createButton = new Button(I18nProperties.getCaption(Captions.userNewUser));
 	        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 	        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
 	        createButton.addClickListener(e -> ControllerProvider.getUserController().create());
@@ -114,7 +116,7 @@ public class UsersView extends AbstractView {
         TextField filter = new TextField();
         filter.setWidth(200, Unit.PIXELS);
         filter.setStyleName("filter-textfield");
-        filter.setInputPrompt("Search user");
+        filter.setInputPrompt(I18nProperties.getString(Strings.promptUserSearch));
         filter.setImmediate(true);
         filter.addTextChangeListener(e -> grid.filterByText(e.getText()));
         filterLayout.addComponent(filter);

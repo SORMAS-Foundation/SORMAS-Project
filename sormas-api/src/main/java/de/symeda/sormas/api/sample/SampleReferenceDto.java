@@ -17,7 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 
 public class SampleReferenceDto extends ReferenceDto {
@@ -46,11 +50,10 @@ public class SampleReferenceDto extends ReferenceDto {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(DataHelper.toStringNullable(sampleMaterial));
 		if (stringBuilder.length() > 0) {
-			stringBuilder.append(" sample");
-		} else {
-			stringBuilder.append("Sample");
+			stringBuilder.append(" ");
 		}
-		stringBuilder.append(" for case ")
+		stringBuilder.append(I18nProperties.getString(Strings.entitySample));
+		stringBuilder.append(StringUtils.wrap(I18nProperties.getString(Strings.sForCase), " "))
 			.append(DataHelper.getShortUuid(caseUuid));
 		return stringBuilder.toString();
 	}

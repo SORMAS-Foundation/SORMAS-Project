@@ -18,40 +18,17 @@
 package de.symeda.sormas.ui.dashboard.surveillance;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.DashboardCaseDto;
-import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
-import de.symeda.sormas.api.event.DashboardEventDto;
-import de.symeda.sormas.api.outbreak.DashboardOutbreakDto;
-import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.task.DashboardTaskDto;
-import de.symeda.sormas.api.utils.DateHelper;
 //import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
-import de.symeda.sormas.ui.dashboard.DiseaseBurdenGrid;
-import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
-import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -76,7 +53,6 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 
 		// layout
 		setWidth(100, Unit.PERCENTAGE);
-		// setHeight(400, Unit.PIXELS);
 
 		addComponent(title);
 		addComponent(subtitleLabel);
@@ -98,13 +74,13 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 		diseasesBurden = diseasesBurden.stream()
 									   .sorted((dto1, dto2) -> (int) (dto2.getCaseCount() - dto1.getCaseCount()))
 									   .limit(visibleDiseasesCount)
-									   //.filter((dto) -> dto.hasCount())
 									   .collect(Collectors.toList());
 
 		refreshChart(diseasesBurden);
 		chart.setHeight(visibleDiseasesCount * 40 + 70, Unit.PIXELS);
 	}
 
+	@SuppressWarnings("unused")
 	private List<DiseaseBurdenDto> mockDataUp(List<DiseaseBurdenDto> data) {
 		List<DiseaseBurdenDto> newData = new ArrayList<DiseaseBurdenDto>();
 

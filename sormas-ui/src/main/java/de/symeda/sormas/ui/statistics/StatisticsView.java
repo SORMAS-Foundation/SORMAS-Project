@@ -45,7 +45,6 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.Month;
 import de.symeda.sormas.api.MonthOfYear;
@@ -55,6 +54,10 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.Year;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
@@ -97,7 +100,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		super(VIEW_NAME);
 		setWidth(100, Unit.PERCENTAGE);
 
-		emptyResultLabel = new Label("No cases have been found for the selected filters and visualization options.");
+		emptyResultLabel = new Label(I18nProperties.getString(Strings.infoNoCasesFoundStatistics));
 
 		// Main layout
 		VerticalLayout statisticsLayout = new VerticalLayout();
@@ -109,7 +112,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		addFiltersLayout(statisticsLayout);
 
 		// Visualization layout
-		Label visualizationTitle = new Label("Visualization");
+		Label visualizationTitle = new Label(I18nProperties.getString(Strings.headingVisualization));
 		visualizationTitle.setWidthUndefined();
 		CssStyles.style(visualizationTitle, CssStyles.STATISTICS_TITLE);
 		statisticsLayout.addComponent(visualizationTitle);
@@ -128,17 +131,15 @@ public class StatisticsView extends AbstractStatisticsView {
 		addResultsLayout(statisticsLayout);
 
 		// Disclaimer
-		Label disclaimer = new Label(FontAwesome.INFO_CIRCLE.getHtml()
-				+ " All statistics on this page are aggregated data "
-				+ "of the whole country. This includes cases you might not have read and write access to and therefore are "
-				+ "not visible in the case directory.", ContentMode.HTML);
+		Label disclaimer = new Label(FontAwesome.INFO_CIRCLE.getHtml() + " " +
+				I18nProperties.getString(Strings.infoStatisticsDisclaimer), ContentMode.HTML);
 		statisticsLayout.addComponent(disclaimer);
 
 		addComponent(statisticsLayout);
 	}
 
 	private void addFiltersLayout(VerticalLayout statisticsLayout) {
-		Label filtersLayoutTitle = new Label("Filters");
+		Label filtersLayoutTitle = new Label(I18nProperties.getString(Strings.headingFilters));
 		filtersLayoutTitle.setWidthUndefined();
 		CssStyles.style(filtersLayoutTitle, CssStyles.STATISTICS_TITLE);
 		statisticsLayout.addComponent(filtersLayoutTitle);
@@ -147,10 +148,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		CssStyles.style(filtersSectionLayout, CssStyles.STATISTICS_TITLE_BOX);
 		filtersSectionLayout.setSpacing(true);
 		filtersSectionLayout.setWidth(100, Unit.PERCENTAGE);
-		Label filtersInfoText = new Label(
-				"Add filters to restrict the aggregated data.<br>"
-						+ "If you use multiple filters only cases that pass all restrictions will be aggregated.",
-				ContentMode.HTML);
+		Label filtersInfoText = new Label(I18nProperties.getString(Strings.infoStatisticsFilter), ContentMode.HTML);
 		filtersSectionLayout.addComponent(filtersInfoText);
 
 		filtersLayout = new VerticalLayout();
@@ -162,14 +160,14 @@ public class StatisticsView extends AbstractStatisticsView {
 		{
 			filtersSectionFooter.setSpacing(true);
 
-			Button addFilterButton = new Button("Add filter", FontAwesome.PLUS);
+			Button addFilterButton = new Button(I18nProperties.getCaption(Captions.statisticsAddFilter), FontAwesome.PLUS);
 			CssStyles.style(addFilterButton, ValoTheme.BUTTON_PRIMARY);
 			addFilterButton.addClickListener(e -> {
 				filtersLayout.addComponent(createFilterComponentLayout());
 			});
 			filtersSectionFooter.addComponent(addFilterButton);
 
-			Button resetFiltersButton = new Button("Reset filters");
+			Button resetFiltersButton = new Button(I18nProperties.getCaption(Captions.statisticsResetFilters));
 			resetFiltersButton.addClickListener(e -> {
 				filtersLayout.removeAllComponents();
 				filterComponents.clear();
@@ -189,7 +187,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		StatisticsFilterComponent filterComponent = new StatisticsFilterComponent();
 
 		Button removeFilterButton = new Button(FontAwesome.TIMES);
-		removeFilterButton.setDescription("Remove filter");
+		removeFilterButton.setDescription(I18nProperties.getCaption(Captions.statisticsRemoveFilter));
 		CssStyles.style(removeFilterButton, CssStyles.FORCE_CAPTION);
 		removeFilterButton.addClickListener(e -> {
 			filterComponents.remove(filterComponent);
@@ -205,7 +203,7 @@ public class StatisticsView extends AbstractStatisticsView {
 	}
 
 	private void addResultsLayout(VerticalLayout statisticsLayout) {
-		Label resultsLayoutTitle = new Label("Results");
+		Label resultsLayoutTitle = new Label(I18nProperties.getString(Strings.headingResults));
 		resultsLayoutTitle.setWidthUndefined();
 		CssStyles.style(resultsLayoutTitle, CssStyles.STATISTICS_TITLE);
 		statisticsLayout.addComponent(resultsLayoutTitle);
@@ -214,13 +212,13 @@ public class StatisticsView extends AbstractStatisticsView {
 		resultsLayout.setWidth(100, Unit.PERCENTAGE);
 		resultsLayout.setSpacing(true);
 		CssStyles.style(resultsLayout, CssStyles.STATISTICS_TITLE_BOX);
-		resultsLayout.addComponent(new Label("Click the 'generate'-button to create a new table, map or chart."));
+		resultsLayout.addComponent(new Label(I18nProperties.getString(Strings.infoStatisticsResults)));
 
 		statisticsLayout.addComponent(resultsLayout);
 	}
 
 	private void addOptionsLayout(VerticalLayout statisticsLayout) {
-		Label optionsTitle = new Label("Options");
+		Label optionsTitle = new Label(I18nProperties.getCaption(Captions.cOptions));
 		optionsTitle.setWidthUndefined();
 		CssStyles.style(optionsTitle, CssStyles.STATISTICS_TITLE);
 		statisticsLayout.addComponent(optionsTitle);
@@ -230,7 +228,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		optionsLayout.setSpacing(true);
 		CssStyles.style(optionsLayout, CssStyles.STATISTICS_TITLE_BOX);
 		{
-			zeroValues = new CheckBox("Show zero values");
+			zeroValues = new CheckBox(I18nProperties.getCaption(Captions.statisticsShowZeroValues));
 			zeroValues.setValue(false);
 			optionsLayout.addComponent(zeroValues);
 		}
@@ -238,7 +236,7 @@ public class StatisticsView extends AbstractStatisticsView {
 	}
 
 	private void addGenerateButton(VerticalLayout statisticsLayout) {
-		Button generateButton = new Button("Generate");
+		Button generateButton = new Button(I18nProperties.getCaption(Captions.cGenerate));
 		CssStyles.style(generateButton, ValoTheme.BUTTON_PRIMARY);
 		generateButton.addClickListener(e -> {
 			// Check whether there is any invalid empty filter or grouping data
@@ -248,8 +246,7 @@ public class StatisticsView extends AbstractStatisticsView {
 						&& (filterComponent.getSelectedAttribute() == null
 								|| filterComponent.getSelectedAttribute().getSubAttributes().length > 0
 										&& filterComponent.getSelectedSubAttribute() == null)) {
-					errorNotification = new Notification(
-							"Please specify all selected filter attributes and sub attributes", Type.WARNING_MESSAGE);
+					errorNotification = new Notification(I18nProperties.getString(Strings.messageSpecifyFilterAttributes), Type.WARNING_MESSAGE);
 					break;
 				}
 			}
@@ -257,14 +254,11 @@ public class StatisticsView extends AbstractStatisticsView {
 			if (errorNotification == null && visualizationComponent.getRowsAttribute() != null
 					&& visualizationComponent.getRowsAttribute().getSubAttributes().length > 0
 					&& visualizationComponent.getRowsSubAttribute() == null) {
-				errorNotification = new Notification(
-						"Please specify the row attribute you have chosen for the visualization", Type.WARNING_MESSAGE);
+				errorNotification = new Notification(I18nProperties.getString(Strings.messageSpecifyRowAttribute), Type.WARNING_MESSAGE);
 			} else if (errorNotification == null && visualizationComponent.getColumnsAttribute() != null
 					&& visualizationComponent.getColumnsAttribute().getSubAttributes().length > 0
 					&& visualizationComponent.getColumnsSubAttribute() == null) {
-				errorNotification = new Notification(
-						"Please specify the column attribute you have chosen for the visualization",
-						Type.WARNING_MESSAGE);
+				errorNotification = new Notification(I18nProperties.getString(Strings.messageSpecifyColumnAttribute), Type.WARNING_MESSAGE);
 			}
 
 			if (errorNotification != null) {
@@ -297,8 +291,8 @@ public class StatisticsView extends AbstractStatisticsView {
 			return;
 		}
 
-		exportButton = new Button("Export");
-		exportButton.setDescription("Export the columns and rows that are shown in the table above.");
+		exportButton = new Button(I18nProperties.getCaption(Captions.export));
+		exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		exportButton.setIcon(FontAwesome.TABLE);
 		resultsLayout.addComponent(exportButton);
@@ -429,7 +423,7 @@ public class StatisticsView extends AbstractStatisticsView {
 							+ "style: {fontWeight: 'normal', textOutline: '0', gridLineColor: '#000000', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } } },");
 
 			hcjs.append(
-					"tooltip: { headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'},");
+					"tooltip: { headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}<br/>" + I18nProperties.getCaption(Captions.cTotal) + ": {point.stackTotal}'},");
 		}
 
 		hcjs.append("legend: { verticalAlign: 'top', backgroundColor: 'transparent', align: 'left', "
@@ -714,7 +708,7 @@ public class StatisticsView extends AbstractStatisticsView {
 
 		AbstractOrderedLayout regionLegend = DashboardMapComponent.buildRegionLegend(true, CaseMeasure.CASE_COUNT,
 				false, valuesLowerQuartile, valuesMedian, valuesUpperQuartile);
-		Label legendHeader = new Label("Map key");
+		Label legendHeader = new Label(I18nProperties.getCaption(Captions.dashboardMapKey));
 		CssStyles.style(legendHeader, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 		regionLegend.addComponent(legendHeader, 0);
 

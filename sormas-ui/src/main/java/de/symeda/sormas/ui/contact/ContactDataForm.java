@@ -38,13 +38,15 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -64,7 +66,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private static final String LOST_FOLLOW_UP_BTN_LOC = "lostFollowUpBtnLoc";
 	
     private static final String HTML_LAYOUT = 
-    		LayoutUtil.h3("Contact data")+
+    		LayoutUtil.h3(I18nProperties.getString(Strings.headingContactData))+
 			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS) +
 			LayoutUtil.locCss(CssStyles.VSPACE_3, TO_CASE_BTN_LOC) +
 			LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.UUID) +
@@ -72,7 +74,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY, "") +
 			LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
 			LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION) +
-			LayoutUtil.h3("Follow-up status") +
+			LayoutUtil.h3(I18nProperties.getString(Strings.headingFollowUpStatus)) +
 			LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
 			LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_COMMENT) +
 			LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_UNTIL, ContactDto.CONTACT_OFFICER)
@@ -123,13 +125,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	    	if (getValue().getResultingCase() != null) {
     	    		// link to case
     		    	Link linkToData = ControllerProvider.getCaseController().createLinkToData(getValue().getResultingCase().getUuid(), 
-    		    			"Open case of this contact person");
+    		    			I18nProperties.getCaption(Captions.contactOpenContactCase));
     		    	getContent().addComponent(linkToData, TO_CASE_BTN_LOC);
     	    	}
     	    	else if (getValue().getContactClassification() == ContactClassification.CONFIRMED) {
     	    		// only when confirmed
     	    		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CONVERT)) {
-	    		    	Button toCaseButton = new Button("Create a case for this contact person");
+	    		    	Button toCaseButton = new Button(I18nProperties.getCaption(Captions.contactCreateContactCase));
 	    				toCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
 	    				
 	    				toCaseButton.addClickListener(new ClickListener() {
@@ -164,7 +166,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			FollowUpStatus followUpStatus = statusField.getValue();
 			if (followUpStatus == FollowUpStatus.FOLLOW_UP) {
 				
-		    	Button cancelButton = new Button(I18nProperties.getCaption("Contact.cancelFollowUp"));
+		    	Button cancelButton = new Button(I18nProperties.getCaption(Captions.contactCancelFollowUp));
 		    	cancelButton.setWidth(100, Unit.PERCENTAGE);
 		    	cancelButton.addClickListener(new ClickListener() {
 					@Override
@@ -178,7 +180,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				});
 				getContent().addComponent(cancelButton, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
 
-		    	Button lostButton = new Button(I18nProperties.getCaption("Contact.lostToFollowUp"));
+		    	Button lostButton = new Button(I18nProperties.getCaption(Captions.contactLostToFollowUp));
 		    	lostButton.setWidth(100, Unit.PERCENTAGE);
 		    	lostButton.addClickListener(new ClickListener() {
 					@Override
@@ -195,7 +197,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			} else if (followUpStatus == FollowUpStatus.CANCELED
 					|| followUpStatus == FollowUpStatus.LOST) {
 
-		    	Button resumeButton = new Button(I18nProperties.getCaption("Contact.resumeFollowUp"));
+		    	Button resumeButton = new Button(I18nProperties.getCaption(Captions.contactResumeFollowUp));
 		    	resumeButton.addStyleName(CssStyles.FORCE_CAPTION);
 		    	resumeButton.setWidth(100, Unit.PERCENTAGE);
 		    	resumeButton.addClickListener(new ClickListener() {

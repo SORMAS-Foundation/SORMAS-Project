@@ -239,6 +239,10 @@ public class LayoutUtil {
 		return new FluidColumn(null, span, offset, null, content);
 	}
 
+	public static FluidColumn fluidColumn(int span, int offset, int spanSmall, int offsetSmall, String content) {
+		return new FluidColumn(null, span, offset, spanSmall, offsetSmall, null, content);
+	}
+
 	public static FluidColumn fluidColumnLoc(int span, int offset, String loc) {
 		return new FluidColumn(null, span, offset, loc, null);
 	}

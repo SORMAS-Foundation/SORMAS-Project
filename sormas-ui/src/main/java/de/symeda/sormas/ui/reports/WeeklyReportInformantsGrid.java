@@ -26,8 +26,9 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.report.WeeklyReportDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -77,7 +78,7 @@ public class WeeklyReportInformantsGrid extends Grid {
 		}
 
 		getColumn(WeeklyReportInformantSummary.INFORMANT_REPORT_DATE).setRenderer(new HtmlRenderer(
-				I18nProperties.getPrefixCaption(WeeklyReportDto.I18N_PREFIX, "noReport")));
+				I18nProperties.getCaption(Captions.weeklyReportNoReport)));
 
 		setCellStyleGenerator(new WeeklyReportGridCellStyleGenerator());
 		

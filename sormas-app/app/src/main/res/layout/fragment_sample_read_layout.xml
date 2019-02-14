@@ -217,7 +217,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/heading_sub_most_recent_test"
+                    android:text="@string/heading_most_recent_test"
                     style="@style/SubHeadingStyle" />
 
                 <include
@@ -230,7 +230,7 @@
                     android:id="@+id/no_recent_test"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/no_recent_test"
+                    android:text="@string/info_no_sample_test"
                     android:textColor="@android:color/tab_indicator_text"
                     android:textSize="@dimen/empty_list_hint_size" />
 

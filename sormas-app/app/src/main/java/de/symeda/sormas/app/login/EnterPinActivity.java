@@ -38,11 +38,8 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.notification.NotificationType;
-import de.symeda.sormas.app.dashboard.DashboardActivity;
 import de.symeda.sormas.app.databinding.ActivityEnterPinLayoutBinding;
-import de.symeda.sormas.app.login.LoginActivity;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
 
 public class EnterPinActivity extends AppCompatActivity implements NotificationContext {
@@ -106,29 +103,29 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
             // Hide the forgot PIN button
             findViewById(R.id.action_forgotPIN).setVisibility(View.GONE);
             if (lastEnteredPIN == null) {
-                headline.setText(R.string.headline_create_pin);
+                headline.setText(R.string.heading_create_pin);
                 hint.setText(R.string.hint_create_pin);
             } else {
-                headline.setText(R.string.headline_confirm_pin);
+                headline.setText(R.string.heading_confirm_pin);
                 hint.setText(R.string.hint_create_pin_again);
             }
         } else {
             if (calledFromSettings) {
                 if (confirmedCurrentPIN) {
                     if (lastEnteredPIN == null) {
-                        headline.setText(R.string.headline_new_pin);
+                        headline.setText(R.string.heading_create_new_pin);
                         hint.setText(R.string.hint_new_pin);
                     } else {
-                        headline.setText(R.string.headline_confirm_pin);
+                        headline.setText(R.string.heading_confirm_pin);
                         hint.setText(R.string.hint_new_pin_again);
                     }
                 } else {
-                    headline.setText(R.string.headline_enter_pin);
+                    headline.setText(R.string.heading_enter_pin);
                     hint.setText(R.string.hint_enter_current_pin);
                 }
             } else {
-                headline.setText(R.string.headline_enter_pin);
-                hint.setText(R.string.hint_enter_pin);
+                headline.setText(R.string.heading_enter_pin);
+                hint.setText(R.string.hint_enter_authentication_pin);
             }
         }
 
@@ -223,7 +220,7 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
 
         if (number.length() != 4) {
             if (showSnackbar) {
-                NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_too_short);
+                NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.message_pin_too_short);
             }
             return false;
         }
@@ -231,7 +228,7 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
         boolean consecutiveNumbers = Pattern.matches("(0123|1234|2345|3456|4567|5678|6789|9876|8765|7654|6543|5432|4321|3210)", number);
         if (consecutiveNumbers) {
             if (showSnackbar) {
-                NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_no_consecutive);
+                NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.message_pin_no_consecutive);
             }
             return false;
         }
@@ -239,7 +236,7 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
         boolean sameNumbers = Pattern.matches("\\d*?(\\d)\\1{2,}\\d*", number);
         if (sameNumbers) {
             if (showSnackbar) {
-                NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_no_same);
+                NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.message_pin_no_same);
             }
             return false;
         }
@@ -271,11 +268,11 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
                 if (lastEnteredPIN.equals(enteredPIN)) {
                     ConfigProvider.setPin(enteredPIN);
                     ConfigProvider.setAccessGranted(true);
-                    NotificationHelper.showNotification(binding, NotificationType.SUCCESS, R.string.snackbar_pin_correct_loading);
+                    NotificationHelper.showNotification(binding, NotificationType.SUCCESS, R.string.message_pin_correct_loading);
                     finish();
                 } else {
                     lastEnteredPIN = null;
-                    NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_not_matching);
+                    NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.message_pin_not_matching);
                     onResume();
                 }
             }
@@ -294,11 +291,11 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
                     } else {
                         if (lastEnteredPIN.equals(enteredPIN)) {
                             ConfigProvider.setPin(enteredPIN);
-                            NotificationHelper.showNotification(binding, NotificationType.INFO, R.string.snackbar_pin_changed);
+                            NotificationHelper.showNotification(binding, NotificationType.INFO, R.string.message_pin_changed);
                             finish();
                         } else {
                             lastEnteredPIN = null;
-                            NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_not_matching);
+                            NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.message_pin_not_matching);
                             onResume();
                         }
                     }
@@ -307,7 +304,7 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
                         confirmedCurrentPIN = true;
                         onResume();
                     } else {
-                        NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_wrong);
+                        NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.message_pin_wrong);
                         triedAgain = true;
                         onResume();
                     }
@@ -316,10 +313,10 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
                 // Process the login if the PIN is correct, otherwise display an error message and restart the activity
                 if (enteredPIN.equals(savedPIN)) {
                     ConfigProvider.setAccessGranted(true);
-                    NotificationHelper.showNotification(binding, NotificationType.SUCCESS, R.string.snackbar_pin_correct_loading);
+                    NotificationHelper.showNotification(binding, NotificationType.SUCCESS, R.string.message_pin_correct_loading);
                     finish();
                 } else {
-                    NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_wrong);
+                    NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.message_pin_wrong);
                     triedAgain = true;
                     onResume();
                 }
@@ -357,8 +354,8 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
 
         AlertDialog dialog = builder.create();
         dialog.setCancelable(true);
-        dialog.setTitle(view.getContext().getResources().getText(R.string.headline_reset_PIN).toString());
-        dialog.setMessage(view.getContext().getResources().getText(R.string.infoText_resetPIN).toString());
+        dialog.setTitle(view.getContext().getResources().getText(R.string.heading_reset_PIN).toString());
+        dialog.setMessage(view.getContext().getResources().getText(R.string.info_reset_pin).toString());
         dialog.show();
     }
 

@@ -619,11 +619,11 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
                             conflictStringBuilder.append(I18nProperties.getCaption(source.getI18nPrefix() + "." + property.getName()));
                             conflictStringBuilder.append("<br/><i>");
-                            conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_yours));
+                            conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.s_synclog_yours));
                             conflictStringBuilder.append("</i>");
                             conflictStringBuilder.append(DataHelper.toStringNullable(currentFieldValue));
                             conflictStringBuilder.append("<br/><i>");
-                            conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_server));
+                            conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.s_synclog_server));
                             conflictStringBuilder.append("</i>");
                             conflictStringBuilder.append(DataHelper.toStringNullable(sourceFieldValue));
                             conflictStringBuilder.append("<br/>");
@@ -711,9 +711,9 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                         continue;
                     } else if (AdoPropertyHelper.hasModifiedProperty(existingEntry, existingSnapshot, true)) {
                         // entry exists and is modified -> inform the user that the changes are deleted
-                        conflictStringBuilder.append("A list entry you modified was deleted:");
+                        conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.error_modified_list_entry_deleted));
                         conflictStringBuilder.append("<br/><i>");
-                        conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_yours));
+                        conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.s_synclog_yours));
                         conflictStringBuilder.append("</i>");
                         conflictStringBuilder.append(DataHelper.toStringNullable(existingEntry));
                     }
@@ -858,7 +858,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         try {
             if (ado.isModified() && ado.getClass().getAnnotation(EmbeddedAdo.class) == null) {
                 // let user know if changes are lost (not for embedded entities)
-                DatabaseHelper.getSyncLogDao().createWithParentStack(ado.toString(), "Changes dropped because you have no longer access to this entity.");
+                DatabaseHelper.getSyncLogDao().createWithParentStack(ado.toString(), DatabaseHelper.getString(R.string.error_changes_dropped_no_access));
                 // TODO include JSON backup
             }
             delete(ado);

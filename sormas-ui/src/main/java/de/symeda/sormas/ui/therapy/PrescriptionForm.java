@@ -68,7 +68,7 @@ public class PrescriptionForm extends AbstractEditForm<PrescriptionDto> {
 
 		prescriptionTypeField.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() == TreatmentType.DRUG_INTAKE) {
-				prescriptionDetailsField.setCaption(I18nProperties.getPrefixCaption(PrescriptionDto.I18N_PREFIX, "drugIntakeDetails"));
+				prescriptionDetailsField.setCaption(I18nProperties.getPrefixCaption(PrescriptionDto.I18N_PREFIX, PrescriptionDto.DRUG_INTAKE_DETAILS));
 			} else {
 				prescriptionDetailsField.setCaption(I18nProperties.getPrefixCaption(PrescriptionDto.I18N_PREFIX, PrescriptionDto.PRESCRIPTION_DETAILS));
 			}

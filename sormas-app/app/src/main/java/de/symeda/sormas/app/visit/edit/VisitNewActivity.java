@@ -97,7 +97,7 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         boolean result = super.onCreateOptionsMenu(menu);
-        getSaveMenu().setTitle(R.string.action_save_followup);
+        getSaveMenu().setTitle(R.string.action_save_visit);
         return result;
     }
 
@@ -110,7 +110,7 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
     public void saveData() {
 
         if (saveTask != null) {
-            NotificationHelper.showNotification(this, WARNING, getString(R.string.snackbar_already_saving));
+            NotificationHelper.showNotification(this, WARNING, getString(R.string.message_already_saving));
             return; // don't save multiple times
         }
 
@@ -158,7 +158,7 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
 
     @Override
     protected int getActivityTitle() {
-        return R.string.heading_level3_1_contact_visit_info;
+        return R.string.heading_contact_visit;
     }
 
 

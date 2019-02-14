@@ -64,7 +64,7 @@
                     android:maxLines="1"
                     android:ellipsize="end"
                     app:diseaseValue="@{data}"
-                    app:defaultValue='@{@string/disease_unknown}'
+                    app:defaultValue='@{@string/value_disease_unknown}'
                     />
 
                 <ImageView
@@ -85,7 +85,7 @@
                     android:fontFamily="sans-serif-medium"
                     app:value="@{data.uuid}"
                     app:shortUuid="@{true}"
-                    app:defaultValue='@{@string/uuid_unknown}'
+                    app:defaultValue='@{@string/value_uuid_unknown}'
                     />
 
             </LinearLayout>
@@ -123,7 +123,7 @@
                             android:maxLines="1"
                             android:ellipsize="end"
                             app:value="@{data.eventType}"
-                            app:defaultValue='@{@string/type_unknown}'
+                            app:defaultValue='@{@string/value_type_unknown}'
                             />
 
                         <ImageView
@@ -147,7 +147,7 @@
                         android:textSize="@dimen/row_entry_secondary_text_size"
                         android:textColor="@color/row_entry_secondary_text"
                         app:value="@{data.eventDesc}"
-                        app:defaultValue='@{@string/record_desc_unknown}'
+                        app:defaultValue='@{@string/value_description_unknown}'
                         />
 
                 </LinearLayout>
@@ -204,7 +204,7 @@
                     android:textColor="@color/listActivityRowDateText"
                     android:fontFamily="sans-serif-medium"
                     app:timeAgoValue="@{data.eventDate}"
-                    app:defaultValue='@{@string/event_date_unknown}'
+                    app:defaultValue='@{@string/value_date_unknown}'
                     />
 
                 <!-- Event Location -->
@@ -218,7 +218,7 @@
                     android:fontFamily="sans-serif"
                     android:textAlignment="viewEnd"
                     app:shortLocationValue="@{data.eventLocation}"
-                    app:defaultValue='@{@string/event_location_unknown}'
+                    app:defaultValue='@{@string/value_location_unknown}'
                     />
 
 

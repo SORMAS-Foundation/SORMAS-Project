@@ -19,7 +19,6 @@
 package de.symeda.sormas.app.component.controls;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import androidx.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
@@ -232,7 +231,7 @@ public class ControlTextImageField extends ControlTextReadField {
                 textImageField.setValue(DateHelper.formatLocalShortDate(sample.getShipmentDate()), true);
                 textImageField.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.green);
             } else {
-                textImageField.setValue(textImageField.getResources().getString(R.string.no), false);
+                textImageField.setValue(textImageField.getResources().getString(R.string.s_no), false);
                 textImageField.setImageBackground(R.drawable.ic_cancel_24dp, R.color.red);
             }
         }
@@ -250,7 +249,7 @@ public class ControlTextImageField extends ControlTextReadField {
                 textImageField.setValue(DateHelper.formatLocalShortDate(sample.getReceivedDate()), true);
                 textImageField.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.green);
             } else {
-                textImageField.setValue(textImageField.getResources().getString(R.string.no), false);
+                textImageField.setValue(textImageField.getResources().getString(R.string.s_no), false);
                 textImageField.setImageBackground(R.drawable.ic_cancel_24dp, R.color.red);
             }
         }

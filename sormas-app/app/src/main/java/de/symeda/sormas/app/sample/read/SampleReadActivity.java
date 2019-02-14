@@ -74,7 +74,7 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
 
     @Override
     protected int getActivityTitle() {
-        return R.string.heading_level3_sample_read;
+        return R.string.heading_sample_read;
     }
 
     @Override

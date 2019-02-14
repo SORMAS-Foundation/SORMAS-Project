@@ -28,6 +28,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonIndexDto;
@@ -36,14 +37,12 @@ import de.symeda.sormas.ui.utils.CssStyles;
 @SuppressWarnings("serial")
 public class PersonSelectField extends CustomField<PersonIndexDto> {
 
-	public static final String FIRST_NAME = "firstName";
-	public static final String LAST_NAME = "lastName";
 	public static final String CREATE_PERSON = "createPerson";
 	public static final String SELECT_PERSON = "selectPerson";
 	
 	private final TextField firstNameField = new TextField();
 	private final TextField lastNameField = new TextField();
-	private final Button searchMatchesButton = new Button("Find matching persons");
+	private final Button searchMatchesButton = new Button(I18nProperties.getCaption(Captions.personFindMatching));
 	private PersonGrid personGrid;
 	private OptionGroup selectPerson;
 	private OptionGroup createNewPerson;
@@ -83,7 +82,7 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 		
 		selectPerson = new OptionGroup(null);
 		selectPerson.addItem(SELECT_PERSON);
-		selectPerson.setItemCaption(SELECT_PERSON, I18nProperties.getCaption("Person.select"));
+		selectPerson.setItemCaption(SELECT_PERSON, I18nProperties.getCaption(Captions.personSelect));
 		CssStyles.style(selectPerson, CssStyles.VSPACE_NONE);
 		selectPerson.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
@@ -113,7 +112,7 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 		
 		createNewPerson = new OptionGroup(null);
 		createNewPerson.addItem(CREATE_PERSON);
-		createNewPerson.setItemCaption(CREATE_PERSON, I18nProperties.getCaption("Person.createNew"));
+		createNewPerson.setItemCaption(CREATE_PERSON, I18nProperties.getCaption(Captions.personCreateNew));
 		// unselect grid when "create new" is selected
 		createNewPerson.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
@@ -136,7 +135,6 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 	private void initPersonGrid() {
 		if (personGrid == null) {
 			personGrid = new PersonGrid(firstNameField.getValue(), lastNameField.getValue());
-//			personGrid.setCaption(I18nProperties.getFragment("Person.select"));
 		}
 	}
 	

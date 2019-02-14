@@ -17,60 +17,34 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.surveillance;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
-import de.symeda.sormas.api.caze.NewCaseDateType;
-import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.outbreak.DashboardOutbreakDto;
-import de.symeda.sormas.api.outbreak.OutbreakDto;
-import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.SampleTestResultType;
-import de.symeda.sormas.api.task.DashboardTaskDto;
-import de.symeda.sormas.api.utils.DateHelper;
 //import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
-import de.symeda.sormas.ui.dashboard.DiseaseBurdenGrid;
-import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
-import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 import de.symeda.sormas.ui.dashboard.statistics.CountElementStyle;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsCountElement;
-import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsGrowthElement;
-import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsPercentageElement;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsSubComponent;
-import de.symeda.sormas.ui.dashboard.statistics.SvgCircleElement;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 
-public class DiseaseStatisticsSubComponent extends HorizontalLayout {
+public class DiseaseStatisticsSubComponent extends CustomLayout {
 
 	private static final long serialVersionUID = 6582975657305031105L;
 
@@ -105,19 +79,28 @@ public class DiseaseStatisticsSubComponent extends HorizontalLayout {
 	private DashboardStatisticsCountElement testResultNegative;
 	private DashboardStatisticsCountElement testResultPending;
 	private DashboardStatisticsCountElement testResultIndeterminate;
+	
+	private static final String CASE_LOC = "case";
+	private static final String OUTBREAK_LOC = "outbreak";
+	private static final String EVENT_LOC = "event";
+	private static final String SAMPLE_LOC = "sample";
 
 	public DiseaseStatisticsSubComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
 		
 		setWidth(100, Unit.PERCENTAGE);
 
-		addComponent(createCaseComponent());
+		setTemplateContents(
+				LayoutUtil.fluidRow(
+						LayoutUtil.fluidColumn(6, 0, 12, 0, LayoutUtil.fluidRowLocs(CASE_LOC, OUTBREAK_LOC)), 
+						LayoutUtil.fluidColumn(6, 0, 12, 0, LayoutUtil.fluidRowLocs(EVENT_LOC, SAMPLE_LOC))
+						) 
+				);
 
-		addComponent(createOutbreakDistrictAndCaseFatalityLayout());
-
-		addComponent(createEventComponent());
-
-		addComponent(createTestResultComponent());
+		addComponent(createCaseComponent(), CASE_LOC);
+		addComponent(createOutbreakDistrictAndCaseFatalityLayout(), OUTBREAK_LOC);
+		addComponent(createEventComponent(), EVENT_LOC);
+		addComponent(createTestResultComponent(), SAMPLE_LOC);
 	}
 	
 	private DashboardStatisticsSubComponent createCaseComponent() {

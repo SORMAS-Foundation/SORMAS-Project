@@ -25,8 +25,8 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Grid;
@@ -34,6 +34,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -88,7 +91,7 @@ public class ReportsView extends AbstractView {
 		yearFilter.setWidth(200, Unit.PIXELS);
 		yearFilter.addItems(DateHelper.getYearsToNow());
 		yearFilter.select(year);
-		yearFilter.setCaption("Year");
+		yearFilter.setCaption(I18nProperties.getString(Strings.sYear));
 		yearFilter.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		yearFilter.addValueChangeListener(e -> {
 			updateEpiWeeks((int) e.getProperty().getValue(), (int) epiWeekFilter.getValue());
@@ -99,13 +102,13 @@ public class ReportsView extends AbstractView {
 		epiWeekFilter = new ComboBox();
 		epiWeekFilter.setWidth(200, Unit.PIXELS);
 		updateEpiWeeks(year, week);
-		epiWeekFilter.setCaption("Epi Week");
+		epiWeekFilter.setCaption(I18nProperties.getString(Strings.sEpiWeek));
 		epiWeekFilter.addValueChangeListener(e -> {
 			reloadGrid();
 		});
 		filterLayout.addComponent(epiWeekFilter);
 
-		Button lastWeekButton = new Button("Last week");
+		Button lastWeekButton = new Button(I18nProperties.getCaption(Captions.dashboardLastWeek));
 		lastWeekButton.addStyleName(CssStyles.FORCE_CAPTION);
 		lastWeekButton.addClickListener(e -> {
 			EpiWeek epiWeek = DateHelper.getPreviousEpiWeek(new Date());
@@ -114,25 +117,8 @@ public class ReportsView extends AbstractView {
 		});
 		filterLayout.addComponent(lastWeekButton);
 
-		// this week will not have any reports
-//		Button thisWeekButton = new Button("This week");
-//		thisWeekButton.addStyleName(CssStyles.FORCE_CAPTION);
-//		thisWeekButton.addClickListener(e -> {
-//			EpiWeek epiWeek = DateHelper.getEpiWeek(new Date());
-//			yearFilter.select(epiWeek.getYear());
-//			epiWeekFilter.select(epiWeek.getWeek());
-//		});
-//		filterLayout.addComponent(thisWeekButton);
-		
 		Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
-		infoLabel.setDescription("<b>Number of officer/informant reports</b> is the total number of reports that were submitted "
-					+ "by the officers/informants associated with the displayed region or officer this week.<br/><br/>"
-					+ "<b>Percentage</b> is the percentage of officers/informants that submitted their report for the "
-					+ "respective week.<br/><br/>"
-					+ "<b>Number of officers/informants zero reports</b> is the amount of zero reports, i.e. submitted reports "
-					+ "with no cases. These are included in the total number of reports.<br/><br/>"
-					+ "<b>Officer/Informant report submission</b> is either the date the report has been submitted at or "
-					+ "a hint that no report has been submitted for this week yet.");
+		infoLabel.setDescription(I18nProperties.getString(Strings.infoWeeklyReportsView));
 		infoLabel.setSizeUndefined();
 		CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
 		filterLayout.addComponent(infoLabel);

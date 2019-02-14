@@ -41,11 +41,12 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -72,12 +73,12 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private static final String MONKEYPOX_LESIONS_IMG4 = "monkeypoxLesionsImg4";
 
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.h3("Clinical Signs and Symptoms") +
+			LayoutUtil.h3(I18nProperties.getString(Strings.headingSignsAndSymptoms)) +
 			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_3, SymptomsDto.TEMPERATURE, SymptomsDto.TEMPERATURE_SOURCE) +
 			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_3, SymptomsDto.ONSET_DATE, SymptomsDto.ONSET_SYMPTOM) +
 			LayoutUtil.fluidRowCss(CssStyles.VSPACE_3,
 					LayoutUtil.fluidColumn(8, 0,
-							LayoutUtil.divs(I18nProperties.getString(Strings.Symptoms_hint))),
+							LayoutUtil.divs(I18nProperties.getString(Strings.messageSymptomsHint))),
 					LayoutUtil.fluidColumn(4, 0,
 							LayoutUtil.locCss(CssStyles.ALIGN_RIGHT, BUTTONS_LOC))) +
 			LayoutUtil.fluidRow(
@@ -254,7 +255,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 
 		// Handle visibility of lesions locations caption
-		Label lesionsLocationsCaption = new Label("Localisation of the lesions");
+		Label lesionsLocationsCaption = new Label(I18nProperties.getCaption(Captions.symptomsLesionsLocations));
 		CssStyles.style(lesionsLocationsCaption, CssStyles.VSPACE_3);
 		getContent().addComponent(lesionsLocationsCaption, LESIONS_LOCATIONS_LOC);
 		getContent().getComponent(LESIONS_LOCATIONS_LOC).setVisible(getFieldGroup().getField(SymptomsDto.LESIONS).getValue() == SymptomState.YES);
@@ -280,7 +281,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		addListenerForOnsetSymptom(onsetSymptom);
 
-		Button clearAllButton = new Button("Clear all");
+		Button clearAllButton = new Button(I18nProperties.getCaption(Captions.cClearAll));
 		clearAllButton.addStyleName(ValoTheme.BUTTON_LINK);
 
 		clearAllButton.addClickListener(new ClickListener() {
@@ -304,7 +305,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			}
 		});
 
-		Button setEmptyToNoButton = new Button("Set cleared to No");
+		Button setEmptyToNoButton = new Button(I18nProperties.getCaption(Captions.symptomsSetClearedToNo));
 		setEmptyToNoButton.addStyleName(ValoTheme.BUTTON_LINK);
 
 		setEmptyToNoButton.addClickListener(new ClickListener() {
@@ -361,7 +362,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				if(getFieldGroup().getField(SymptomsDto.TEMPERATURE).getValue() != null) {
 					if((Float)(getFieldGroup().getField(SymptomsDto.TEMPERATURE).getValue()) >= 38.0f) {
 						if(value != SymptomState.YES) {
-							throw new InvalidValueException("Fever needs to be set to 'Yes' for temperatures >= 38");
+							throw new InvalidValueException(I18nProperties.getString(Strings.errorSetFeverRequired));
 						}
 					}
 				}

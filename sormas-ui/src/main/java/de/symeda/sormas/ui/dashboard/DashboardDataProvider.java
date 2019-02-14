@@ -28,7 +28,6 @@ import de.symeda.sormas.api.contact.DashboardContactDto;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.outbreak.DashboardOutbreakDto;
-import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardSampleDto;

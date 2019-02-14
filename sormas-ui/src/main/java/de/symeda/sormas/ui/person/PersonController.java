@@ -32,14 +32,16 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.events.EventParticipantsView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -105,7 +107,7 @@ public class PersonController {
 				selectOrCreateComponent.getCommitButton().setEnabled(commitAllowed);
 			});
 
-			VaadinUiUtil.showModalPopupWindow(selectOrCreateComponent, "Pick or create person");
+			VaadinUiUtil.showModalPopupWindow(selectOrCreateComponent, I18nProperties.getString(Strings.headingPickOrCreatePerson));
 		} else {
 			create(personSelect.getFirstName(), personSelect.getLastName(), resultConsumer);
 		}
@@ -170,11 +172,11 @@ public class PersonController {
 					}
 					
 					if (newClassification != null) {
-						Notification notification = new Notification("Person data save. The classification of at least one case associated with this person was automatically changed to " + newClassification.toString() + ".", Type.WARNING_MESSAGE);
+						Notification notification = new Notification(String.format(I18nProperties.getString(Strings.messagePersonSavedClassificationChanged), newClassification.toString()), Type.WARNING_MESSAGE);
 						notification.setDelayMsec(-1);
 						notification.show(Page.getCurrent());
 					} else {
-						Notification.show("Person data saved", Type.WARNING_MESSAGE);
+						Notification.show(I18nProperties.getString(Strings.messagePersonSaved), Type.WARNING_MESSAGE);
 					}
 					
 					refreshView();

@@ -49,7 +49,7 @@
                 android:layout_margin="@dimen/simple_dialog_button_margin"
                 android:paddingLeft="@dimen/dialog_panel_horizontal_padding"
                 android:paddingRight="@dimen/dialog_panel_horizontal_padding"
-                android:text="@string/headline_help"
+                android:text="@string/heading_help"
                 android:textSize="@dimen/textSizeXXLarge"
                 style="@style/HeadingStyle" />
 

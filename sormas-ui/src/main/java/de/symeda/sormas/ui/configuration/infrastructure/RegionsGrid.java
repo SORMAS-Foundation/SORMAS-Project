@@ -80,7 +80,8 @@ public class RegionsGrid extends Grid implements AbstractGrid<RegionCriteria> {
 			addColumn(EDIT_BTN_ID);
 			getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
 			getColumn(EDIT_BTN_ID).setWidth(40);
-
+			getColumn(EDIT_BTN_ID).setHeaderCaption("");
+			
 			addItemClickListener(e -> {
 				if (e.getPropertyId() != null && (e.getPropertyId().equals(EDIT_BTN_ID) || e.isDoubleClick())) {
 					ControllerProvider.getInfrastructureController().editRegion(((RegionDto) e.getItemId()).getUuid());

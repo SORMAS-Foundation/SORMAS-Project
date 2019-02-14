@@ -320,8 +320,8 @@ public final class LocationService {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(callingActivity);
         builder.setCancelable(false);
-        builder.setMessage(R.string.alert_gps_permission);
-        builder.setTitle(R.string.alert_title_gps_permission);
+        builder.setMessage(R.string.message_gps_permission);
+        builder.setTitle(R.string.heading_gps_permission);
         builder.setIcon(R.drawable.ic_perm_device_information_black_24dp);
         requestGpsAccessDialog = builder.create();
 
@@ -354,8 +354,8 @@ public final class LocationService {
     public AlertDialog buildEnableGpsDialog(final Activity callingActivity) {
         AlertDialog.Builder builder = new AlertDialog.Builder(callingActivity);
         builder.setCancelable(false);
-        builder.setMessage(R.string.alert_gps);
-        builder.setTitle(R.string.alert_title_gps);
+        builder.setMessage(R.string.message_gps_activation);
+        builder.setTitle(R.string.heading_gps_activation);
         builder.setIcon(R.drawable.ic_location_on_black_24dp);
         AlertDialog dialog = builder.create();
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, callingActivity.getString(R.string.action_close_app),

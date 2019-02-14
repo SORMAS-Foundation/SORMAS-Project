@@ -19,6 +19,8 @@ package de.symeda.sormas.ui.person;
 
 import com.vaadin.ui.TextField;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -28,7 +30,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 	
     private static final String HTML_LAYOUT = 
-	    		LayoutUtil.h3("Create new person") +
+	    		LayoutUtil.h3(I18nProperties.getString(Strings.headingCreateNewPerson)) +
 			LayoutUtil.fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
 			LayoutUtil.fluidRowLocs(PersonDto.UUID, "")
 			;

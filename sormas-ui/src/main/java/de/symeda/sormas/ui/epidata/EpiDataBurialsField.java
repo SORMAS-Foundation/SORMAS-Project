@@ -22,8 +22,10 @@ import java.util.function.Consumer;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.epidata.EpiDataBurialDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -40,9 +42,9 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 	
 	private static final String EPI_DATA_BURIAL_TABLE_PREFIX = "EpiDataBurialTable";
 	
-	private static final String PERIOD = "period";
-	private static final String CITY = "city";
-	private static final String DISTRICT = "district";
+	private static final String PERIOD = Captions.genPropBurialPeriod;
+	private static final String CITY = Captions.genPropCity;
+	private static final String DISTRICT = Captions.genPropDistrict;
 	
 	@Override
 	public Class<EpiDataBurialDto> getEntryType() {
@@ -58,7 +60,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataBurialDto burial = (EpiDataBurialDto) itemId;
 				if (burial.getBurialDateFrom() == null && burial.getBurialDateTo() == null) {
-					return "Unknown";
+					return I18nProperties.getString(Strings.sUnknown);
 				} else {
 					StringBuilder periodBuilder = new StringBuilder();
 					periodBuilder.append(burial.getBurialDateFrom() != null ? DateHelper.formatLocalDate(burial.getBurialDateFrom()) : "?");
@@ -142,9 +144,9 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 		editForm.setValue(entry);
 		
 		final CommitDiscardWrapperComponent<EpiDataBurialEditForm> editView = new CommitDiscardWrapperComponent<EpiDataBurialEditForm>(editForm, editForm.getFieldGroup());
-		editView.getCommitButton().setCaption("done");
+		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.sDone));
 
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Burial");
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.entityBurial));
 		
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -162,7 +164,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 					popupWindow.close();
 					EpiDataBurialsField.this.removeEntry(entry);
 				}
-			}, I18nProperties.getCaption("EpiDataBurial"));
+			}, I18nProperties.getCaption(EpiDataBurialDto.I18N_PREFIX));
 		}
 	}
 	

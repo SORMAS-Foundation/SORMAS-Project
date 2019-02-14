@@ -37,6 +37,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
@@ -53,14 +55,16 @@ public class AboutView extends VerticalLayout implements View {
 		// Info section
 		aboutContent.addComponent(
 				new Label(FontAwesome.INFO_CIRCLE.getHtml()
-						+ " SORMAS version: "
+						+ " "
+						+ I18nProperties.getCaption(Captions.aboutSormasVersion)
+						+ ": "
 						+ InfoProvider.get().getVersion(), ContentMode.HTML), "info");
 
 		// Documents section
 		VerticalLayout documentsLayout = new VerticalLayout();
 		aboutContent.addComponent(documentsLayout, "documents");
 		
-		Button classificationDocumentButton = new Button("Case Classification Rules (HTML)");
+		Button classificationDocumentButton = new Button(I18nProperties.getCaption(Captions.aboutCaseClassificationRules));
 		CssStyles.style(classificationDocumentButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 		documentsLayout.addComponent(classificationDocumentButton);
 
@@ -73,13 +77,13 @@ public class AboutView extends VerticalLayout implements View {
 
 		}
 
-		Button dataDictionaryButton = new Button("Data Dictionary (XLSX)");
+		Button dataDictionaryButton = new Button(I18nProperties.getCaption(Captions.aboutDataDictionary));
 		CssStyles.style(dataDictionaryButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 		documentsLayout.addComponent(dataDictionaryButton);
 		FileDownloader dataDictionaryDownloader = new FileDownloader(new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
 		dataDictionaryDownloader.extend(dataDictionaryButton);
 		
-		Button technicalManualButton = new Button("Technical Manual (PDF)");
+		Button technicalManualButton = new Button(I18nProperties.getCaption(Captions.aboutTechnicalManual));
 		CssStyles.style(technicalManualButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 		documentsLayout.addComponent(technicalManualButton);
 		technicalManualButton.addClickListener(e -> {

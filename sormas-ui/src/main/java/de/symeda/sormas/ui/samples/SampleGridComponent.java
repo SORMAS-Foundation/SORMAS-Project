@@ -39,7 +39,9 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -59,9 +61,6 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
 public class SampleGridComponent extends VerticalLayout {
-
-	public static final String LGA = "lga";
-	public static final String SEARCH_FIELD = "searchField";
 	
 	private static final String NOT_SHIPPED = "notShipped";
 	private static final String SHIPPED = "shipped";
@@ -181,7 +180,7 @@ public class SampleGridComponent extends VerticalLayout {
 		districtFilter = new ComboBox();
 		districtFilter.setWidth(140, Unit.PIXELS);
 		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
-		districtFilter.setDescription("Select a district in the state");
+		districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
 		districtFilter.addValueChangeListener(e -> {
 			criteria.district(((DistrictReferenceDto)e.getProperty().getValue()));
 			samplesView.navigateTo(criteria);
@@ -218,14 +217,14 @@ public class SampleGridComponent extends VerticalLayout {
 		searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setNullRepresentation("");
-		searchField.setInputPrompt(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, SEARCH_FIELD));
+		searchField.setInputPrompt(I18nProperties.getString(Strings.promptSamplesSearchField));
 		searchField.addTextChangeListener(e -> {
 			criteria.caseCodeIdLike(e.getText());
 			grid.reload();
 		});
 		filterLayout.addComponent(searchField);
 
-		resetButton = new Button(I18nProperties.getCaption(Captions.resetFilters));
+		resetButton = new Button(I18nProperties.getCaption(Captions.cResetFilters));
 		resetButton.setVisible(false);
 		resetButton.addClickListener(event -> {
 			ViewModelProviders.of(SamplesView.class).remove(SampleCriteria.class);
@@ -247,21 +246,21 @@ public class SampleGridComponent extends VerticalLayout {
 		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
 		buttonFilterLayout.setSpacing(true);
 		{
-			Button statusAll = new Button("All", e -> processStatusChange(null));
+			Button statusAll = new Button(I18nProperties.getCaption(Captions.cAll), e -> processStatusChange(null));
 			CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 			statusAll.setCaptionAsHtml(true);
 			buttonFilterLayout.addComponent(statusAll);
-			statusButtons.put(statusAll, "All");
+			statusButtons.put(statusAll, I18nProperties.getCaption(Captions.cAll));
 			activeStatusButton = statusAll;
 
-			Button notShippedButton = new Button("Not shipped", e -> processStatusChange(NOT_SHIPPED));
-			initializeStatusButton(notShippedButton, buttonFilterLayout, NOT_SHIPPED, "Not shipped");
-			Button shippedButton = new Button("Shipped", e -> processStatusChange(SHIPPED));
-			initializeStatusButton(shippedButton, buttonFilterLayout, SHIPPED, "Shipped");
-			Button receivedButton = new Button("Received", e -> processStatusChange(RECEIVED));
-			initializeStatusButton(receivedButton, buttonFilterLayout, RECEIVED, "Received");
-			Button referredButton = new Button("Referred to other lab", e -> processStatusChange(REFERRED));
-			initializeStatusButton(referredButton, buttonFilterLayout, REFERRED, "Referred to other lab");
+			Button notShippedButton = new Button(I18nProperties.getCaption(Captions.sampleNotShipped), e -> processStatusChange(NOT_SHIPPED));
+			initializeStatusButton(notShippedButton, buttonFilterLayout, NOT_SHIPPED, I18nProperties.getCaption(Captions.sampleNotShipped));
+			Button shippedButton = new Button(I18nProperties.getCaption(Captions.sampleShipped), e -> processStatusChange(SHIPPED));
+			initializeStatusButton(shippedButton, buttonFilterLayout, SHIPPED, I18nProperties.getCaption(Captions.sampleShipped));
+			Button receivedButton = new Button(I18nProperties.getCaption(Captions.sampleReceived), e -> processStatusChange(RECEIVED));
+			initializeStatusButton(receivedButton, buttonFilterLayout, RECEIVED, I18nProperties.getCaption(Captions.sampleReceived));
+			Button referredButton = new Button(I18nProperties.getCaption(Captions.sampleReferred), e -> processStatusChange(REFERRED));
+			initializeStatusButton(referredButton, buttonFilterLayout, REFERRED, I18nProperties.getCaption(Captions.sampleReferred));
 		}
 
 		shipmentFilterLayout.addComponent(buttonFilterLayout);
@@ -271,7 +270,7 @@ public class SampleGridComponent extends VerticalLayout {
 		{
 			// Show archived/active cases button
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
-				switchArchivedActiveButton = new Button(I18nProperties.getCaption("showArchivedSamples"));
+				switchArchivedActiveButton = new Button(I18nProperties.getCaption(Captions.sampleShowArchived));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
 					criteria.archived(Boolean.TRUE.equals(criteria.getArchived()) ? null : Boolean.TRUE);
@@ -285,7 +284,7 @@ public class SampleGridComponent extends VerticalLayout {
 				shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 				MenuBar bulkOperationsDropdown = new MenuBar();	
-				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
+				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 				Command deleteCommand = selectedItem -> {
 					ControllerProvider.getSampleController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -294,7 +293,7 @@ public class SampleGridComponent extends VerticalLayout {
 						}
 					});
 				};
-				bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), FontAwesome.TRASH, deleteCommand);
 
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
 			}
@@ -406,11 +405,11 @@ public class SampleGridComponent extends VerticalLayout {
 		
 		if (Boolean.TRUE.equals(criteria.getArchived())) {
 			viewTitleLabel.setValue(I18nProperties.getPrefixCaption("View", SamplesView.VIEW_NAME.replaceAll("/", ".") + ".archive"));
-			switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showActiveSamples"));
+			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(Captions.sampleShowActive));
 			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		} else {
 			viewTitleLabel.setValue(originalViewTitle);
-			switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showArchivedSamples"));
+			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(Captions.sampleShowArchived));
 			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 		} 
 	}

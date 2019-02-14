@@ -40,6 +40,8 @@ import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -252,13 +254,13 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 		if (dto.getType() != FacilityType.LABORATORY) {
 			if (dto.getRegion() == null) {
-				throw new ValidationRuntimeException("You have to specify a valid region");
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
 			}
 			if (dto.getDistrict() == null) {
-				throw new ValidationRuntimeException("You have to specify a valid district");
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 			}
 			if (dto.getCommunity() == null) {
-				throw new ValidationRuntimeException("You have to specify a valid community");
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCommunity));
 			}
 		}
 		

@@ -33,6 +33,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -49,13 +51,13 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 	private static final String STATUS_CHANGE = "statusChange";
 
-	private static final String HTML_LAYOUT = LayoutUtil.h3("Event data")
+	private static final String HTML_LAYOUT = LayoutUtil.h3(I18nProperties.getString(Strings.headingEventData))
 			+ LayoutUtil.fluidRowLocs(4, EventDto.UUID, 3, EventDto.REPORT_DATE_TIME, 5, EventDto.REPORTING_USER)
 			+ LayoutUtil.fluidRowLocs(EventDto.EVENT_TYPE, EventDto.DISEASE, EventDto.DISEASE_DETAILS)
 			+ LayoutUtil.fluidRowLocs(4, EventDto.EVENT_DATE, 8, EventDto.EVENT_STATUS)
-			+ LayoutUtil.fluidRowLocs(EventDto.EVENT_DESC) + LayoutUtil.h3("Source of information")
+			+ LayoutUtil.fluidRowLocs(EventDto.EVENT_DESC) + LayoutUtil.h3(I18nProperties.getString(Strings.headingInformationSource))
 			+ LayoutUtil.fluidRowLocs(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME)
-			+ LayoutUtil.fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL) + LayoutUtil.h3("Location")
+			+ LayoutUtil.fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL) + LayoutUtil.h3(I18nProperties.getString(Strings.headingLocation))
 			+ LayoutUtil.fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT)
 			+ LayoutUtil.fluidRowLocs(EventDto.EVENT_LOCATION)
 			+ LayoutUtil.fluidRowLocs("", EventDto.SURVEILLANCE_OFFICER);

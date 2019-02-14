@@ -79,7 +79,7 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
                     personDialog.dismiss();
                     resultConsumer.accept(personDialog.getSelectedPerson());
                 } else {
-                    NotificationHelper.showDialogNotification(personDialog, NotificationType.ERROR, R.string.snackbar_select_create_person);
+                    NotificationHelper.showDialogNotification(personDialog, NotificationType.ERROR, R.string.info_select_create_person);
                 }
             }
         });
@@ -88,7 +88,7 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
             @Override
             public void call() {
                 if (personDialog.contentBinding.personFirstName.getValue().isEmpty() || personDialog.contentBinding.personLastName.getValue().isEmpty()) {
-                    NotificationHelper.showDialogNotification(personDialog, NotificationType.ERROR, R.string.snackbar_person_first_last_name);
+                    NotificationHelper.showDialogNotification(personDialog, NotificationType.ERROR, R.string.message_enter_person_name);
                 } else {
                     person.setFirstName(personDialog.contentBinding.personFirstName.getValue());
                     person.setLastName(personDialog.contentBinding.personLastName.getValue());
@@ -106,7 +106,7 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
     private SelectOrCreatePersonDialog(final FragmentActivity activity, Person person) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_select_or_create_person_layout,
                 R.layout.dialog_root_cancel_create_select_button_panel_layout,
-                R.string.heading_pick_or_create_person_dialog, -1);
+                R.string.heading_pick_or_create_person, -1);
 
         this.person = person;
         this.setSelectedPerson(null);
@@ -177,7 +177,7 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
                         }
                     } catch (NumberFormatException ex) {
                         NotificationHelper.showDialogNotification(SelectOrCreatePersonDialog.this,
-                                NotificationType.ERROR, R.string.notification_internal_error);
+                                NotificationType.ERROR, R.string.error_internal_error);
                     }
                 }
             }

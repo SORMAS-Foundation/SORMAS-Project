@@ -29,6 +29,9 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -43,7 +46,7 @@ public class SampleTestGridComponent extends VerticalLayout {
 	private VerticalLayout gridLayout;
 
 	public SampleTestGridComponent(SampleReferenceDto sampleRef, boolean sampleReceived, int caseSampleCount) {
-		Label headline = new Label("Sample tests");
+		Label headline = new Label(I18nProperties.getString(Strings.entityPathogenTests));
 		CssStyles.style(headline, CssStyles.H3);
 		addComponent(headline);
 		
@@ -64,7 +67,7 @@ public class SampleTestGridComponent extends VerticalLayout {
 
 			addComponent(gridLayout);
 		} else {
-			Label infoLabel = new Label("To add tests to this sample, it has to be marked as received first.");
+			Label infoLabel = new Label(I18nProperties.getString(Strings.infoAddTestsToSample));
 			addComponent(infoLabel);
 		}
 	}
@@ -80,7 +83,7 @@ public class SampleTestGridComponent extends VerticalLayout {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
 			MenuBar bulkOperationsDropdown = new MenuBar();	
-			MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
+			MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 			Command deleteCommand = selectedItem -> {
 				ControllerProvider.getSampleTestController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -90,14 +93,14 @@ public class SampleTestGridComponent extends VerticalLayout {
 					}
 				});
 			};
-			bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
+			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), FontAwesome.TRASH, deleteCommand);
 
 			topLayout.addComponent(bulkOperationsDropdown);
 			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
 			topLayout.setExpandRatio(bulkOperationsDropdown, 1);
 		}
 
-		Button createButton = new Button("New result");
+		Button createButton = new Button(I18nProperties.getCaption(Captions.sampleTestNewResult));
 		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		createButton.setIcon(FontAwesome.PLUS_CIRCLE);
 		createButton.addClickListener(e -> ControllerProvider.getSampleTestController().create(sampleRef, caseSampleCount, grid::reload));

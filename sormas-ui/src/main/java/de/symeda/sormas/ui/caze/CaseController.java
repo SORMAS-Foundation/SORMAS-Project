@@ -46,6 +46,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
@@ -106,17 +107,17 @@ public class CaseController {
 
 	public void create() {
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null, null);
-		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case");    	
+		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));    	
 	}
 
 	public void create(PersonReferenceDto person, Disease disease, EventParticipantDto eventParticipant) {
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(person, disease, null, eventParticipant);
-		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case"); 
+		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase)); 
 	}
 
 	public void create(PersonReferenceDto person, Disease disease, ContactDto contact) {
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(person, disease, contact, null);
-		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case");
+		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
 	public void navigateToIndex() {
@@ -135,7 +136,7 @@ public class CaseController {
 	public void navigateToView(String viewName, String caseUuid, ViewMode viewMode) {
 		navigateToView(viewName, caseUuid, viewMode, false);
 	}
-	
+
 	public void navigateToView(String viewName, String caseUuid, ViewMode viewMode, boolean openTab) {
 
 		String navigationState = viewName + "/" + caseUuid;
@@ -143,7 +144,7 @@ public class CaseController {
 			// pass full view mode as param so it's also used for other views when switching
 			navigationState	+= "?" + AbstractCaseView.VIEW_MODE_URL_PREFIX + "=" + viewMode.toString();
 		}
-		
+
 		if (openTab) {
 			SormasUI.get().getPage().open(SormasUI.get().getPage().getLocation().getRawPath() + "#!" + navigationState, "_blank", false);
 		} else {
@@ -241,7 +242,7 @@ public class CaseController {
 							updatedContact.setResultingCase(savedCase.toReference());
 							FacadeProvider.getContactFacade().saveContact(updatedContact);
 						}
-						Notification.show("New case created", Type.ASSISTIVE_NOTIFICATION);
+						Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
 						navigateToView(CasePersonView.VIEW_NAME, dto.getUuid(), null);
 					} else {
 						ControllerProvider.getPersonController().selectOrCreatePerson(
@@ -250,7 +251,7 @@ public class CaseController {
 									if (person != null) {
 										dto.setPerson(person);
 										FacadeProvider.getCaseFacade().saveCase(dto);
-										Notification.show("New case created", Type.ASSISTIVE_NOTIFICATION);
+										Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
 										navigateToView(CasePersonView.VIEW_NAME, dto.getUuid(), null);
 									}
 								});
@@ -321,7 +322,9 @@ public class CaseController {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void showBulkCaseDataEditComponent(Collection<Object> selectedRows) {
 		if (selectedRows.size() == 0) {
-			new Notification("No cases selected", "You have not selected any cases.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(I18nProperties.getString(Strings.headingNoCasesSelected), 
+					I18nProperties.getString(Strings.messageNoCasesSelected), 
+					Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 			return;
 		} 
 
@@ -345,7 +348,7 @@ public class CaseController {
 		form.setValue(tempCase);
 		final CommitDiscardWrapperComponent<BulkCaseDataForm> editView = new CommitDiscardWrapperComponent<BulkCaseDataForm>(form, form.getFieldGroup());
 
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Edit cases");
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditCases));
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -371,7 +374,7 @@ public class CaseController {
 				}
 				popupWindow.close();
 				navigateToIndex();
-				Notification.show("All cases have been edited", Type.HUMANIZED_MESSAGE);
+				Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Type.HUMANIZED_MESSAGE);
 			}
 		});
 
@@ -391,7 +394,7 @@ public class CaseController {
 					FacadeProvider.getCaseFacade().deleteCase(cazeRef, UserProvider.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
 				}
-			}, I18nProperties.getString(Strings.caze));
+			}, I18nProperties.getString(Strings.entityCase));
 		}
 
 		// Initialize 'Archive' button
@@ -400,9 +403,9 @@ public class CaseController {
 			Button archiveCaseButton = new Button();
 			archiveCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
 			if (archived) {
-				archiveCaseButton.setCaption(I18nProperties.getCaption("dearchive"));
+				archiveCaseButton.setCaption(I18nProperties.getCaption(Captions.cDearchive));
 			} else {
-				archiveCaseButton.setCaption(I18nProperties.getCaption("archive"));
+				archiveCaseButton.setCaption(I18nProperties.getCaption(Captions.cArchive));
 			}
 			archiveCaseButton.addClickListener(e -> {
 				editView.commit();
@@ -417,7 +420,7 @@ public class CaseController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_TRANSFER)) {
 			Button transferCaseButton = new Button();
 			transferCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
-			transferCaseButton.setCaption("Transfer case");
+			transferCaseButton.setCaption(I18nProperties.getCaption(Captions.caseTransferCase));
 			transferCaseButton.addClickListener(new ClickListener() {
 				private static final long serialVersionUID = 1L;
 				@Override
@@ -482,21 +485,20 @@ public class CaseController {
 
 		if (resultDto.getPlagueType() != cazeDto.getPlagueType()) {
 			// TODO would be much better to have a notification for this triggered in the backend
-			Window window = VaadinUiUtil.showSimplePopupWindow("Save notification", 
-					"The symptoms selected match the clinical criteria for " + resultDto.getPlagueType().toString() + ". "
-							+ "The plague type is set to " + resultDto.getPlagueType().toString() + " for this case.");
+			Window window = VaadinUiUtil.showSimplePopupWindow(I18nProperties.getString(Strings.headingSaveNotification), 
+					String.format(I18nProperties.getString(Strings.messagePlagueTypeChange), resultDto.getPlagueType().toString(), resultDto.getPlagueType().toString()));
 			window.addCloseListener(new CloseListener() {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public void windowClose(CloseEvent e) {
 					if (existingDto.getCaseClassification() != resultDto.getCaseClassification() &&
 							resultDto.getClassificationUser() == null) {
-						Notification notification = new Notification("Case saved. The classification was automatically changed to " + resultDto.getCaseClassification().toString() + ".", Type.WARNING_MESSAGE);
+						Notification notification = new Notification(String.format(I18nProperties.getString(Strings.messageCaseSavedClassificationChanged), resultDto.getCaseClassification().toString()), Type.WARNING_MESSAGE);
 						notification.setDelayMsec(-1);
 						notification.show(Page.getCurrent());
 						navigateToView(viewName, cazeDto.getUuid(), viewMode);
 					} else {
-						Notification.show("Case saved", Type.WARNING_MESSAGE);
+						Notification.show(I18nProperties.getString(Strings.messageCaseSaved), Type.WARNING_MESSAGE);
 						navigateToView(viewName, cazeDto.getUuid(), viewMode);
 					}
 				}
@@ -505,12 +507,12 @@ public class CaseController {
 			// Notify user about an automatic case classification change
 			if (existingDto.getCaseClassification() != resultDto.getCaseClassification() &&
 					resultDto.getClassificationUser() == null) {
-				Notification notification = new Notification("Case saved. The classification was automatically changed to " + resultDto.getCaseClassification().toString() + ".", Type.WARNING_MESSAGE);
+				Notification notification = new Notification(String.format(I18nProperties.getString(Strings.messageCaseSavedClassificationChanged), resultDto.getCaseClassification().toString()), Type.WARNING_MESSAGE);
 				notification.setDelayMsec(-1);
 				notification.show(Page.getCurrent());
 				navigateToView(viewName, cazeDto.getUuid(), viewMode);
 			} else {
-				Notification.show("Case saved", Type.WARNING_MESSAGE);
+				Notification.show(I18nProperties.getString(Strings.messageCaseSaved), Type.WARNING_MESSAGE);
 				navigateToView(viewName, cazeDto.getUuid(), viewMode);
 			}
 		}
@@ -551,11 +553,11 @@ public class CaseController {
 		CaseFacilityChangeForm facilityChangeForm = new CaseFacilityChangeForm(UserRight.CASE_TRANSFER);
 		facilityChangeForm.setValue(caze);
 		CommitDiscardWrapperComponent<CaseFacilityChangeForm> facilityChangeView = new CommitDiscardWrapperComponent<CaseFacilityChangeForm>(facilityChangeForm, facilityChangeForm.getFieldGroup());
-		facilityChangeView.getCommitButton().setCaption("Transfer case");
+		facilityChangeView.getCommitButton().setCaption(I18nProperties.getCaption(Captions.caseTransferCase));
 		facilityChangeView.setMargin(true);
 
 		Window popupWindow = VaadinUiUtil.showPopupWindow(facilityChangeView);
-		popupWindow.setCaption("Transfer case");
+		popupWindow.setCaption(I18nProperties.getString(Strings.headingTransferCase));
 
 		facilityChangeView.addCommitListener(new CommitListener() {
 			@Override
@@ -564,13 +566,13 @@ public class CaseController {
 					CaseDataDto dto = facilityChangeForm.getValue();
 					FacadeProvider.getCaseFacade().saveAndTransferCase(dto);
 					popupWindow.close();
-					Notification.show("Case has been transfered to another health facility.", Type.WARNING_MESSAGE);
+					Notification.show(I18nProperties.getString(Strings.messageCaseTransfered), Type.WARNING_MESSAGE);
 					navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null);
 				}
 			}
 		});
 
-		Button cancelButton = new Button("cancel");
+		Button cancelButton = new Button(I18nProperties.getCaption(Captions.cCancel));
 		cancelButton.setStyleName(ValoTheme.BUTTON_LINK);
 		cancelButton.addClickListener(e -> {
 			popupWindow.close();
@@ -580,20 +582,20 @@ public class CaseController {
 
 	private void archiveOrDearchiveCase(String caseUuid, boolean archive) {
 		if (archive) {
-			Label contentLabel = new Label(String.format(I18nProperties.getString(Strings.archivePrompt), I18nProperties.getString(Strings.caze).toLowerCase(), I18nProperties.getString(Strings.caze).toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.archiveCase), contentLabel, I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 640, e -> {
+			Label contentLabel = new Label(String.format(I18nProperties.getString(Strings.confirmationArchiveCase), I18nProperties.getString(Strings.entityCase).toLowerCase(), I18nProperties.getString(Strings.entityCase).toLowerCase()));
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingArchiveCase), contentLabel, I18nProperties.getString(Strings.sYes), I18nProperties.getString(Strings.sNo), 640, e -> {
 				if (e.booleanValue() == true) {
 					FacadeProvider.getCaseFacade().archiveOrDearchiveCase(caseUuid, true);
-					Notification.show(String.format(I18nProperties.getString(Strings.archiveNotification), I18nProperties.getString(Strings.caze)), Type.ASSISTIVE_NOTIFICATION);
+					Notification.show(String.format(I18nProperties.getString(Strings.messageCaseArchived), I18nProperties.getString(Strings.entityCase)), Type.ASSISTIVE_NOTIFICATION);
 					navigateToView(CaseDataView.VIEW_NAME, caseUuid, null);
 				}
 			});
 		} else {
-			Label contentLabel = new Label(String.format(I18nProperties.getString(Strings.dearchivePrompt), I18nProperties.getString(Strings.caze).toLowerCase(), I18nProperties.getString(Strings.caze).toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.dearchiveCase), contentLabel, I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 640, e -> {
+			Label contentLabel = new Label(String.format(I18nProperties.getString(Strings.confirmationDearchiveCase), I18nProperties.getString(Strings.entityCase).toLowerCase(), I18nProperties.getString(Strings.entityCase).toLowerCase()));
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingDearchiveCase), contentLabel, I18nProperties.getString(Strings.sYes), I18nProperties.getString(Strings.sNo), 640, e -> {
 				if (e.booleanValue()) {
 					FacadeProvider.getCaseFacade().archiveOrDearchiveCase(caseUuid, false);
-					Notification.show(String.format(I18nProperties.getString(Strings.dearchiveNotification), I18nProperties.getString(Strings.caze)), Type.ASSISTIVE_NOTIFICATION);
+					Notification.show(String.format(I18nProperties.getString(Strings.messageCaseDearchived), I18nProperties.getString(Strings.entityCase)), Type.ASSISTIVE_NOTIFICATION);
 					navigateToView(CaseDataView.VIEW_NAME, caseUuid, null);
 				}
 			});
@@ -611,13 +613,13 @@ public class CaseController {
 			suspectContent.setWidth(100, Unit.PERCENTAGE);
 			suspectContent.setValue(ClassificationHtmlRenderer.createSuspectHtmlString(diseaseCriteria));
 			classificationRulesLayout.addComponent(suspectContent);
-	
+
 			Label probableContent = new Label();
 			probableContent.setContentMode(ContentMode.HTML);
 			probableContent.setWidth(100, Unit.PERCENTAGE);
 			probableContent.setValue(ClassificationHtmlRenderer.createProbableHtmlString(diseaseCriteria));
 			classificationRulesLayout.addComponent(probableContent);
-	
+
 			Label confirmedContent = new Label();
 			confirmedContent.setContentMode(ContentMode.HTML);
 			confirmedContent.setWidth(100, Unit.PERCENTAGE);
@@ -636,15 +638,17 @@ public class CaseController {
 
 	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
-			new Notification("No cases selected", "You have not selected any cases.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(I18nProperties.getString(Strings.headingNoCasesSelected), 
+					I18nProperties.getString(Strings.messageNoCasesSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected cases?", new Runnable() {
+			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteCases), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
 						FacadeProvider.getCaseFacade().deleteCase(new CaseReferenceDto(((CaseIndexDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
-					new Notification("Cases deleted", "All selected cases have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+					new Notification(I18nProperties.getString(Strings.headingCasesDeleted), 
+							I18nProperties.getString(Strings.messageCasesDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
 				}
 			});
 		}
@@ -652,31 +656,39 @@ public class CaseController {
 
 	public void archiveAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
-			new Notification("No cases selected", "You have not selected any cases.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(I18nProperties.getString(Strings.headingNoCasesSelected), 
+					I18nProperties.getString(Strings.messageNoCasesSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showConfirmationPopup("Confirm archiving", new Label("Are you sure you want to archive all " + selectedRows.size() + " selected cases?"), "Yes", "No", null, e -> {
-				if (e.booleanValue() == true) {
-					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getCaseFacade().archiveOrDearchiveCase(((CaseIndexDto) selectedRow).getUuid(), true);
-					}
-					callback.run();
-					new Notification("Cases archived", "All selected cases have been archived.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
-				}
-			});
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingConfirmArchiving), 
+					new Label(String.format(I18nProperties.getString(Strings.confirmationArchiveCases), selectedRows.size())), 
+					I18nProperties.getString(Strings.sYes), I18nProperties.getString(Strings.sNo), null, e -> {
+						if (e.booleanValue() == true) {
+							for (Object selectedRow : selectedRows) {
+								FacadeProvider.getCaseFacade().archiveOrDearchiveCase(((CaseIndexDto) selectedRow).getUuid(), true);
+							}
+							callback.run();
+							new Notification(I18nProperties.getString(Strings.headingCasesArchived),
+									I18nProperties.getString(Strings.messageCasesArchived), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+						}
+					});
 		}
 	}
 
 	public void dearchiveAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
-			new Notification("No cases selected", "You have not selected any cases.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(I18nProperties.getString(Strings.headingNoCasesSelected), 
+					I18nProperties.getString(Strings.messageNoCasesSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showConfirmationPopup("Confirm de-archiving", new Label("Are you sure you want to de-archive all " + selectedRows.size() + " selected cases?"), "Yes", "No", null, e -> {
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingConfirmDearchiving), 
+					new Label(String.format(I18nProperties.getString(Strings.confirmationDearchiveCases), selectedRows.size())), 
+							I18nProperties.getString(Strings.sYes), I18nProperties.getString(Strings.sNo), null, e -> {
 				if (e.booleanValue() == true) {
 					for (Object selectedRow : selectedRows) {
 						FacadeProvider.getCaseFacade().archiveOrDearchiveCase(((CaseIndexDto) selectedRow).getUuid(), false);
 					}
 					callback.run();
-					new Notification("Cases de-archived", "All selected cases have been de-archived.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+					new Notification(I18nProperties.getString(Strings.headingCasesDearchived), 
+							I18nProperties.getString(Strings.messageCasesDearchived), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
 				}
 			});
 		}

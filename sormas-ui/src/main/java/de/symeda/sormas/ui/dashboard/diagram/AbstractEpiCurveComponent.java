@@ -34,7 +34,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.highcharts.HighChart;
@@ -85,7 +87,7 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 		epiCurveHeaderLayout.setSpacing(true);
 		CssStyles.style(epiCurveHeaderLayout, CssStyles.VSPACE_4);
 
-		epiCurveLabel = new Label("Epidemiological Curve");
+		epiCurveLabel = new Label(I18nProperties.getString(Strings.headingEpiCurve));
 		epiCurveLabel.setSizeUndefined();
 		CssStyles.style(epiCurveLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 
@@ -126,7 +128,7 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 		CssStyles.style(epiCurveFooterHeaderLayout, CssStyles.VSPACE_4);
 
 		// Grouping
-		PopupButton groupingDropdown = new PopupButton("Grouping");
+		PopupButton groupingDropdown = new PopupButton(I18nProperties.getCaption(Captions.dashboardGrouping));
 		CssStyles.style(groupingDropdown, CssStyles.BUTTON_SUBTLE);
 		{
 			VerticalLayout groupingLayout = new VerticalLayout();
@@ -146,7 +148,7 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 			groupingLayout.addComponent(groupingSelect);
 
 			// "Always show at least 7 entries" checkbox
-			CheckBox minimumEntriesCheckbox = new CheckBox("Always show at least 7 entries");
+			CheckBox minimumEntriesCheckbox = new CheckBox(I18nProperties.getCaption(Captions.dashboardShowMinimumEntries));
 			CssStyles.style(minimumEntriesCheckbox, CssStyles.VSPACE_NONE);
 			minimumEntriesCheckbox.setValue(showMinimumEntries);
 			minimumEntriesCheckbox.addValueChangeListener(e -> {

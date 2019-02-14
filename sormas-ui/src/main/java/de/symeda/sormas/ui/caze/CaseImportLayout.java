@@ -52,7 +52,9 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonIndexDto;
@@ -88,16 +90,16 @@ public class CaseImportLayout extends VerticalLayout {
 		setMargin(true);
 
 		// Step 1: Download SORMAS Import Guide
-		String headline = "Download and read the SORMAS Import Guide and the Data Dictionary";
-		String infoText = "If this is your first time importing data into SORMAS, we strongly recommend to read the import guide first.";
+		String headline = I18nProperties.getString(Strings.headingDownloadImportGuide);
+		String infoText = I18nProperties.getString(Strings.infoDownloadImportGuide);
 		Resource buttonIcon = FontAwesome.FILE_PDF_O;
-		String buttonCaption = "Download Import Guide";
+		String buttonCaption = I18nProperties.getCaption(Captions.importDownloadImportGuide);
 		CaseImportLayoutComponent importGuideComponent = new CaseImportLayoutComponent(1, headline, infoText, buttonIcon, buttonCaption);
 		FileDownloader importGuideDownloader = new FileDownloader(new ClassResource("/SORMAS_Import_Guide.pdf"));
 		importGuideDownloader.extend(importGuideComponent.getButton());
 		addComponent(importGuideComponent);
 
-		Button dataDictionaryButton = new Button("Download Data Dictionary", FontAwesome.FILE_EXCEL_O);
+		Button dataDictionaryButton = new Button(I18nProperties.getCaption(Captions.importDownloadDataDictionary), FontAwesome.FILE_EXCEL_O);
 		CssStyles.style(dataDictionaryButton, ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_TOP_3);
 		FileDownloader dataDictionaryDownloader = new FileDownloader(new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
 		dataDictionaryDownloader.extend(dataDictionaryButton);
@@ -105,39 +107,36 @@ public class CaseImportLayout extends VerticalLayout {
 		CssStyles.style(dataDictionaryButton, CssStyles.VSPACE_2);
 
 		// Step 2: Download case import template
-		headline = "Download the case import template";
-		infoText = "You can use this template .csv file to bring your data into a format SORMAS can read. Please do this every time you import data,"
-				+ " never use a file you have downloaded before.";
+		headline = I18nProperties.getString(Strings.headingDownloadCaseImportTemplate);
+		infoText = I18nProperties.getString(Strings.infoDownloadCaseImportTemplate);
 		buttonIcon = FontAwesome.DOWNLOAD;
-		buttonCaption = "Download Case Import Template";
+		buttonCaption = I18nProperties.getCaption(Captions.importDownloadCaseImportTemplate);
 		CaseImportLayoutComponent importTemplateComponent = new CaseImportLayoutComponent(2, headline, infoText, buttonIcon, buttonCaption);
 		String templateFilePath = FacadeProvider.getImportFacade().getCaseImportTemplateFilePath().toString();
 		StreamResource templateResource = DownloadUtil.createFileStreamResource(templateFilePath, "sormas_import_case_template.csv", "text/csv",
-				"Template not available", "The template file is not available. Please contact an admin and tell them about this issue.");
+				I18nProperties.getString(Strings.headingTemplateNotAvailable), I18nProperties.getString(Strings.messageTemplateNotAvailable));
 		FileDownloader templateFileDownloader = new FileDownloader(templateResource);
 		templateFileDownloader.extend(importTemplateComponent.getButton());
 		CssStyles.style(importTemplateComponent, CssStyles.VSPACE_2);
 		addComponent(importTemplateComponent);
 
 		// Step 3: Upload .csv file
-		headline = "Import .csv file";
-		infoText = "Depending on the amount of cases you want to import, this may take a while. You will receive a notification when the import process"
-				+ "has finished.";
+		headline = I18nProperties.getString(Strings.headingImportCsvFile);
+		infoText = I18nProperties.getString(Strings.infoImportCsvFile);
 		CaseImportLayoutComponent importCasesComponent = new CaseImportLayoutComponent(3, headline, infoText, null, null);
 		addComponent(importCasesComponent);
 		CaseImportUploader receiver = new CaseImportUploader();
 		Upload upload = new Upload("", receiver);
-		upload.setButtonCaption("Upload Case List");
+		upload.setButtonCaption(I18nProperties.getCaption(Captions.importUploadCaseList));
 		CssStyles.style(upload, CssStyles.VSPACE_2);
 		upload.addSucceededListener(receiver);
 		addComponent(upload);
 
 		// Step 4: Download error report
-		headline = "Download error report";
-		infoText = "If there were any cases that could not be imported, you will be offered a .csv file containing all these cases "
-				+ " as well as the error descriptions.";
+		headline = I18nProperties.getString(Strings.headingDownloadErrorReport);
+		infoText = I18nProperties.getString(Strings.infoDownloadErrorReport);
 		buttonIcon = FontAwesome.DOWNLOAD;
-		buttonCaption = "Download Error Report";
+		buttonCaption = I18nProperties.getCaption(Captions.importDownloadErrorReport);
 		CaseImportLayoutComponent errorReportComponent = new CaseImportLayoutComponent(4, headline, infoText, buttonIcon, buttonCaption);
 		downloadErrorReportButton = errorReportComponent.getButton();
 		errorReportComponent.getButton().setEnabled(false);
@@ -153,7 +152,7 @@ public class CaseImportLayout extends VerticalLayout {
 		public CaseImportLayoutComponent(int step, String headline, String infoText, Resource buttonIcon, String buttonCaption) {
 			setSpacing(false);
 
-			headlineLabel = new Label("Step " + step + ": " + headline);
+			headlineLabel = new Label(I18nProperties.getString(Strings.sStep) + " " + step + ": " + headline);
 			CssStyles.style(headlineLabel, CssStyles.H3);
 			addComponent(headlineLabel);
 
@@ -180,14 +179,16 @@ public class CaseImportLayout extends VerticalLayout {
 			// Reject empty files
 			if (fileName == null || fileName.isEmpty()) {
 				file = null;
-				new Notification("No file", "You have not selected a file to upload. Please select a .csv file containing the cases you want to import from your computer.", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+				new Notification(I18nProperties.getString(Strings.headingNoFile), I18nProperties.getString(Strings.messageNoCsvFile), 
+						Type.ERROR_MESSAGE, false).show(Page.getCurrent());
 				// Workaround because returning null here throws an uncatchable UploadException
 				return new ByteArrayOutputStream();
 			}
 			// Reject all files except .csv files - we also need to accept excel files here
 			if (!(mimeType.equals("text/csv") || mimeType.equals("application/vnd.ms-excel"))) {
 				file = null;
-				new Notification("Wrong file type", "Please provide a .csv file containing the cases you want to import. It's recommended to use the case import template file as a starting point.", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+				new Notification(I18nProperties.getString(Strings.headingWrongFileType), I18nProperties.getString(Strings.messageWrongFileType), 
+						Type.ERROR_MESSAGE, false).show(Page.getCurrent());
 				// Workaround because returning null here throws an uncatchable UploadException
 				return new ByteArrayOutputStream();
 			}
@@ -199,7 +200,8 @@ public class CaseImportLayout extends VerticalLayout {
 				fos = new FileOutputStream(file);
 			} catch (FileNotFoundException e) {
 				file = null;
-				new Notification("Import error", "Could not import file.", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+				new Notification(I18nProperties.getString(Strings.headingImportError), I18nProperties.getString(Strings.messageImportError), 
+						Type.ERROR_MESSAGE, false).show(Page.getCurrent());
 				// Workaround because returning null here throws an uncatchable UploadException
 				return new ByteArrayOutputStream();
 			}
@@ -258,7 +260,7 @@ public class CaseImportLayout extends VerticalLayout {
 				};
 
 				Window popup = VaadinUiUtil.createPopupWindow();
-				popup.setCaption("Case Import");
+				popup.setCaption(I18nProperties.getString(Strings.headingCaseImport));
 				popup.setWidth(800, Unit.PIXELS);
 				popup.setContent(progressLayout);
 				popup.setClosable(false);
@@ -267,7 +269,8 @@ public class CaseImportLayout extends VerticalLayout {
 				ImportThread importThread = new ImportThread(caseImporter, similarityCallback, caseImportedCallback, popup, progressLayout, errorReportFile.getPath());
 				importThread.start();
 			} catch (IOException e) {
-				new Notification("Import failed", "The import failed due to a critical error. Please contact your admin and inform them about this issue.", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+				new Notification(I18nProperties.getString(Strings.headingImportFailed), I18nProperties.getString(Strings.messageImportFailed), 
+						Type.ERROR_MESSAGE, false).show(Page.getCurrent());
 			}
 		}
 	}
@@ -302,9 +305,9 @@ public class CaseImportLayout extends VerticalLayout {
 					}
 				};
 				selectOrCreateComponent.addDiscardListener(discardListener);
-				selectOrCreateComponent.getDiscardButton().setCaption(I18nProperties.getCaption("cancel"));
+				selectOrCreateComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.cCancel));
 
-				Button skipButton = new Button(I18nProperties.getCaption("skip"));
+				Button skipButton = new Button(I18nProperties.getCaption(Captions.cSkip));
 				skipButton.addClickListener(e -> {
 					currentUI.accessSynchronously(new Runnable() {
 						@Override
@@ -321,7 +324,7 @@ public class CaseImportLayout extends VerticalLayout {
 					selectOrCreateComponent.getCommitButton().setEnabled(commitAllowed);
 				});
 
-				VaadinUiUtil.showModalPopupWindow(selectOrCreateComponent, "Pick or create person");
+				VaadinUiUtil.showModalPopupWindow(selectOrCreateComponent, I18nProperties.getString(Strings.headingPickOrCreatePerson));
 			}});
 	}
 	
@@ -360,22 +363,22 @@ public class CaseImportLayout extends VerticalLayout {
 
 						if (importResult == ImportResultStatus.COMPLETED) {
 							progressLayout.displaySuccessIcon();
-							progressLayout.setInfoLabelText("<b>Import successful!</b><br/>All cases have been imported. You can now close this window and the \"Import Cases\" dialog.");
+							progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportSuccessful));
 						} else if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS) {
 							progressLayout.displayWarningIcon();
-							progressLayout.setInfoLabelText("<b>Import partially successful!</b><br/>The import has been successful, but some of the cases could not be imported due to malformed data. Please close this window and download the error report in the \"Import Cases\" dialog.");
+							progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportPartiallySuccessful));
 						} else if (importResult == ImportResultStatus.CANCELED) {
 							progressLayout.displaySuccessIcon();
-							progressLayout.setInfoLabelText("<b>Import canceled!</b><br/>The import has been canceled. All already processed cases have been successfully imported. You can now close this window and the \"Import Cases\" dialog.");
+							progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportCanceled));
 						} else {
 							progressLayout.displayWarningIcon();
-							progressLayout.setInfoLabelText("<b>Import canceled!</b><br/>The import has been canceled. Some of the already processed cases could not be imported due to malformed data. Please close this window and download the error report in the \"Import Cases\" dialog.");
+							progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportCanceledErrors));
 						}								
 
 						popup.addCloseListener(e -> {
 							if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS || importResult == ImportResultStatus.CANCELED_WITH_ERRORS) {
 								StreamResource streamResource = DownloadUtil.createFileStreamResource(errorReportFilePath, "sormas_import_error_report.csv", "text/csv",
-										"Error report not available", "The error report file is not available. Please contact an admin and tell them about this issue.");
+										I18nProperties.getString(Strings.headingErrorReportNotAvailable), I18nProperties.getString(Strings.messageErrorReportNotAvailable));
 								FileDownloader fileDownloader = new FileDownloader(streamResource);
 								fileDownloader.extend(downloadErrorReportButton);
 								downloadErrorReportButton.setEnabled(true);
@@ -394,7 +397,7 @@ public class CaseImportLayout extends VerticalLayout {
 							popup.close();
 						});
 						progressLayout.displayErrorIcon();
-						progressLayout.setInfoLabelText("<b>Import failed!</b><br/>The import failed due to a critical error. Please contact your admin and inform them about this issue.");
+						progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportFailedFull));
 						currentUI.setPollInterval(-1);
 					}
 				});
@@ -407,7 +410,7 @@ public class CaseImportLayout extends VerticalLayout {
 							popup.close();
 						});
 						progressLayout.displayErrorIcon();
-						progressLayout.setInfoLabelText("<b>Invalid column!</b><br/>The column \"" + e.getColumnName() + "\" is not part of the case or one of its connected entities. Please remove it from the .csv file and upload it again.");
+						progressLayout.setInfoLabelText(String.format(I18nProperties.getString(Strings.messageImportInvalidColumn), e.getColumnName()));
 						currentUI.setPollInterval(-1);
 					}
 				});

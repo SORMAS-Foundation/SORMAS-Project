@@ -93,7 +93,7 @@ public class TaskListActivity extends BaseListActivity {
 
     @Override
     protected int getActivityTitle() {
-        return R.string.heading_level2_tasks_list;
+        return R.string.heading_tasks_list;
     }
 
     @Override

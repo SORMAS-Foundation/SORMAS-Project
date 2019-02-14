@@ -53,6 +53,7 @@ public class ContactDto extends EntityDto {
 	public static final String REPORT_LON = "reportLon";
 	public static final String RESULTING_CASE = "resultingCase";
 	public static final String RESULTING_CASE_USER = "resultingCaseUser";
+	public static final String VISITS = "visits";
 	
 	@Required
 	private Date reportDateTime;

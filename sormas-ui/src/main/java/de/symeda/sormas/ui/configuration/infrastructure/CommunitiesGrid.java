@@ -29,6 +29,7 @@ import com.vaadin.ui.Grid.SelectionModel.HasUserSelectionAllowed;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.CommunityCriteria;
 import de.symeda.sormas.api.region.CommunityDto;
@@ -45,7 +46,7 @@ public class CommunitiesGrid extends Grid implements AbstractGrid<CommunityCrite
 	private static final long serialVersionUID = 3355810665696318673L;
 
 	public static final String EDIT_BTN_ID = "edit";
-	private static final String REGION_LOC = "region";
+	private static final String REGION_LOC = Captions.cRegion;
 	
 	private CommunityCriteria communityCriteria = new CommunityCriteria();
 	
@@ -97,6 +98,7 @@ public class CommunitiesGrid extends Grid implements AbstractGrid<CommunityCrite
 			addColumn(EDIT_BTN_ID);
 			getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
 			getColumn(EDIT_BTN_ID).setWidth(40);
+			getColumn(EDIT_BTN_ID).setHeaderCaption("");
 
 			addItemClickListener(e -> {
 				if (e.getPropertyId() != null && (e.getPropertyId().equals(EDIT_BTN_ID) || e.isDoubleClick())) {

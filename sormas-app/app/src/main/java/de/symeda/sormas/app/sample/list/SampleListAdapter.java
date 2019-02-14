@@ -92,12 +92,12 @@ public class SampleListAdapter extends DataBoundAdapter<RowSampleListItemLayoutB
     private String getSampleTestResultMessage(Context context, Sample record) {
         SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(record);
         if (record.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
-            return context.getResources().getString(R.string.inadequate_specimen_cond);
+            return context.getResources().getString(R.string.value_inadequate_specimen_condition);
         } else {
             if (mostRecentTest != null) {
                 return mostRecentTest.getTestResult().toString();
             } else {
-                return context.getResources().getString(R.string.no_recent_test);
+                return context.getResources().getString(R.string.info_no_sample_test);
             }
         }
     }

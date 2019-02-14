@@ -27,7 +27,6 @@ import java.util.List;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
@@ -38,7 +37,6 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.caze.CaseSection;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
@@ -144,7 +142,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
     @Override
     protected int getActivityTitle() {
-        return R.string.heading_level4_case_edit;
+        return R.string.heading_case_edit;
     }
 
     @Override
@@ -160,7 +158,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     public void saveData(final Consumer<Case> successCallback) {
 
         if (saveTask != null) {
-            NotificationHelper.showNotification(this, WARNING, getString(R.string.snackbar_already_saving));
+            NotificationHelper.showNotification(this, WARNING, getString(R.string.message_already_saving));
             return; // don't save multiple times
         }
 

@@ -27,7 +27,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
-import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditActivity;
@@ -179,7 +178,7 @@ public class TaskNewActivity extends BaseEditActivity<Task> {
     public void saveData() {
 
         if (saveTask != null) {
-            NotificationHelper.showNotification(this, WARNING, getString(R.string.snackbar_already_saving));
+            NotificationHelper.showNotification(this, WARNING, getString(R.string.message_already_saving));
             return; // don't save multiple times
         }
 
@@ -201,7 +200,7 @@ public class TaskNewActivity extends BaseEditActivity<Task> {
     private void saveDataInner(final Task taskToSave) {
 
         if (saveTask != null) {
-            NotificationHelper.showNotification(this, WARNING, getString(R.string.snackbar_already_saving));
+            NotificationHelper.showNotification(this, WARNING, getString(R.string.message_already_saving));
             return; // don't save multiple times
         }
 
@@ -234,7 +233,7 @@ public class TaskNewActivity extends BaseEditActivity<Task> {
         if (data.getTaskStatus() == TaskStatus.NOT_EXECUTABLE
                 && DataHelper.isNullOrEmpty(data.getAssigneeReply())) {
             // TODO I18n: Replace with text from I18nProperties?
-            throw new ValidationException(getContext().getResources().getString(R.string.snackbar_task_reply));
+            throw new ValidationException(getContext().getResources().getString(R.string.message_task_reply_required));
         }
 
         if (data.getTaskStatus() == TaskStatus.DONE

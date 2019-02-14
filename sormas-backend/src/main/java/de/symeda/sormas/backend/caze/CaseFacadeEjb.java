@@ -72,6 +72,7 @@ import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
@@ -542,45 +543,35 @@ public class CaseFacadeEjb implements CaseFacade {
 		// Check whether any required field that does not have a not null constraint in
 		// the database is empty
 		if (caze.getRegion() == null) {
-			throw new ValidationRuntimeException("You have to specify a valid region");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
 		}
 		if (caze.getDistrict() == null) {
-			throw new ValidationRuntimeException("You have to specify a valid district");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 		}
 		if (caze.getHealthFacility() == null) {
-			throw new ValidationRuntimeException("You have to specify a valid health facility");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validFacility));
 		}
 		if (caze.getDisease() == null) {
-			throw new ValidationRuntimeException("You have to specify a valid disease");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDisease));
 		}
 		// Check whether there are any infrastructure errors
 		if (!districtFacade.getDistrictByUuid(caze.getDistrict().getUuid()).getRegion().equals(caze.getRegion())) {
-			throw new ValidationRuntimeException(
-					"Could not find a database entry for the specified district in the specified region");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noDistrictInRegion));
 		}
 		if (caze.getCommunity() != null && !communityFacade.getByUuid(caze.getCommunity().getUuid()).getDistrict().equals(caze.getDistrict())) {
-			throw new ValidationRuntimeException(
-					"Could not find a database entry for the specified community in the specified district");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noCommunityInDistrict));
 		}
 		if (caze.getCommunity() == null && facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getDistrict() != null
 				&& !facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getDistrict().equals(caze.getDistrict())) {
-			throw new ValidationRuntimeException(
-					"Could not find a database entry for the specified health facility in the specified district");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityInDistrict));
 		}
 		if (caze.getCommunity() != null && facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getCommunity() != null
 				&& !caze.getCommunity().equals(facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getCommunity())) {
-			throw new ValidationRuntimeException(
-					"Could not find a database entry for the specified health facility in the specified community");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityInCommunity));
 		}
 		if (facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getRegion() != null
 				&& !caze.getRegion().equals(facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getRegion())) {
-			throw new ValidationRuntimeException(
-					"Could not find a database entry for the specified health facility in the specified region");
-		}
-		if (facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getRegion() != null
-				&& !caze.getRegion().equals(facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getRegion())) {
-			throw new ValidationRuntimeException(
-					"Could not find a database entry for the specified health facility in the specified region");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityInRegion));
 		}
 	}
 

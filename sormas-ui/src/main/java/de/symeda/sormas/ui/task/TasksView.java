@@ -22,6 +22,8 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -52,7 +54,7 @@ public class TasksView extends AbstractView {
         addComponent(taskListComponent);
         
     	if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
-	    	Button createButton = new Button("New task");
+	    	Button createButton = new Button(I18nProperties.getCaption(Captions.taskNewTask));
 	        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 	        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
 	        createButton.addClickListener(e -> ControllerProvider.getTaskController().create(TaskContext.GENERAL, null, taskListComponent.getGrid()::reload));

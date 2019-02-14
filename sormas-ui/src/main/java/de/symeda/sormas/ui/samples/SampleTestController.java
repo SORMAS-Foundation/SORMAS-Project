@@ -27,8 +27,9 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
@@ -68,7 +69,7 @@ public class SampleTestController {
 			}
 		});
 		
-		VaadinUiUtil.showModalPopupWindow(editView, "Create new sample test result"); 
+		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreatePathogenTestResult)); 
 	}
 	
 	public void edit(SampleTestDto dto, int caseSampleCount, Runnable callback) {
@@ -79,7 +80,7 @@ public class SampleTestController {
 		form.setValue(newDto);
 		final CommitDiscardWrapperComponent<SampleTestEditForm> editView = new CommitDiscardWrapperComponent<SampleTestEditForm>(form, form.getFieldGroup());
 
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Edit sample test result");
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditPathogenTestResult));
 		
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -99,7 +100,7 @@ public class SampleTestController {
 					UI.getCurrent().removeWindow(popupWindow);
 					callback.run();
 				}
-			}, I18nProperties.getCaption("SampleTest"));
+			}, I18nProperties.getCaption(SampleTestDto.I18N_PREFIX));
 		}
 	}
 	
@@ -111,11 +112,11 @@ public class SampleTestController {
 	
 		if (existingCaseDto.getCaseClassification() != newCaseDto.getCaseClassification() &&
 				newCaseDto.getClassificationUser() == null) {
-			Notification notification = new Notification("Sample test saved. The classification of its associated case was automatically changed to " + newCaseDto.getCaseClassification().toString() + ".", Type.WARNING_MESSAGE);
+			Notification notification = new Notification(String.format(I18nProperties.getString(Strings.messagePathogenTestSaved), newCaseDto.getCaseClassification().toString()), Type.WARNING_MESSAGE);
 			notification.setDelayMsec(-1);
 			notification.show(Page.getCurrent());
 		} else {
-			Notification.show("Sample test saved", Type.WARNING_MESSAGE);
+			Notification.show(I18nProperties.getString(Strings.messagePathogenTestSavedShort), Type.WARNING_MESSAGE);
 		}
 	}
 	
@@ -130,15 +131,17 @@ public class SampleTestController {
 	
 	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
-			new Notification("No sample tests selected", "You have not selected any sample tests.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(I18nProperties.getString(Strings.headingNoPathogenTestsSelected), 
+					I18nProperties.getString(Strings.messageNoPathogenTestsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected sample tests?", new Runnable() {
+			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeletePathogenTests), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
 						FacadeProvider.getSampleTestFacade().deleteSampleTest(new SampleTestReferenceDto(((SampleTestDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
-					new Notification("Sample tests deleted", "All selected sample tests have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+					new Notification(I18nProperties.getString(Strings.headingPathogenTestsDeleted),
+							I18nProperties.getString(Strings.messagePathogenTestsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
 				}
 			});
 		}

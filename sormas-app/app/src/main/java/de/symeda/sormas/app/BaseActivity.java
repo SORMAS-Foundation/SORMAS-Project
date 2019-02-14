@@ -392,8 +392,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
             if (user == null)
                 return;
             else {
-                userName.setText(R.string.userNamePlaceholder);
-                userRole.setText(R.string.userRolePlaceholder);
+                userName.setText(R.string.value_no_username);
+                userRole.setText(R.string.value_role_unassigned);
             }
 
             userName.setText(user.getLastName() + " " + user.getFirstName());
@@ -436,8 +436,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         menuDrawerToggle = new ActionBarDrawerToggle(
                 this,
                 menuDrawerLayout,
-                R.string.drawer_open,
-                R.string.drawer_close) {
+                R.string.caption_drawer_open,
+                R.string.caption_drawer_close) {
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
@@ -568,8 +568,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         if (showProgressDialog) {
             if (progressDialog == null || !progressDialog.isShowing()) {
                 boolean isInitialSync = DatabaseHelper.getFacilityDao().isEmpty();
-                progressDialog = ProgressDialog.show(this, getString(R.string.headline_synchronization),
-                        getString(isInitialSync ? R.string.hint_synchronization_initial : R.string.hint_synchronization), true);
+                progressDialog = ProgressDialog.show(this, getString(R.string.heading_synchronization),
+                        getString(isInitialSync ? R.string.info_initial_synchronization : R.string.info_synchronizing), true);
             }
         } else {
             progressDialog = null;
@@ -629,9 +629,9 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                         if (syncLogCountAfter > syncLogCountBefore) {
                             showConflictSnackbar();
                         } else if (SynchronizeDataAsync.hasAnyUnsynchronizedData()) {
-                            NotificationHelper.showNotification(BaseActivity.this, NotificationType.WARNING, R.string.snackbar_sync_unsynced);
+                            NotificationHelper.showNotification(BaseActivity.this, NotificationType.WARNING, R.string.message_sync_not_synchronized);
                         } else {
-                            NotificationHelper.showNotification(BaseActivity.this, NotificationType.SUCCESS, R.string.snackbar_sync_success);
+                            NotificationHelper.showNotification(BaseActivity.this, NotificationType.SUCCESS, R.string.message_sync_success);
                         }
                     } else {
                         NotificationHelper.showNotification(BaseActivity.this, NotificationType.ERROR, syncFailedMessage);
@@ -656,7 +656,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
     private void showConflictSnackbar() {
 
-        NotificationHelper.showNotification(BaseActivity.this, NotificationType.ERROR, R.string.snackbar_sync_conflict);
+        NotificationHelper.showNotification(BaseActivity.this, NotificationType.ERROR, R.string.message_sync_conflict);
 
         // TODO allow user to open sync log from here
 //        snackbar.setAction(R.string.snackbar_open_synclog, new View.OnClickListener() {

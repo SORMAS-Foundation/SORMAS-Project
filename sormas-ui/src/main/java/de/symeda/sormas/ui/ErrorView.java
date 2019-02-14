@@ -23,6 +23,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+
 /**
  * View shown when trying to navigate to a view that does not exist using
  * {@link com.vaadin.navigator.Navigator}.
@@ -38,7 +41,7 @@ public class ErrorView extends VerticalLayout implements View {
         setMargin(true);
         setSpacing(true);
 
-        Label header = new Label("The view could not be found");
+        Label header = new Label(I18nProperties.getString(Strings.headingViewNotFound));
         header.addStyleName(Reindeer.LABEL_H1);
         addComponent(header);
         addComponent(explanation = new Label());
@@ -46,8 +49,6 @@ public class ErrorView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        explanation.setValue(String.format(
-                "You tried to navigate to a view ('%s') that does not exist.",
-                event.getViewName()));
+        explanation.setValue(String.format(I18nProperties.getString(Strings.errorViewNotFound), event.getViewName()));
     }
 }

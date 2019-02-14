@@ -19,6 +19,8 @@ package de.symeda.sormas.api;
 
 import java.io.Serializable;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
 public class Quarter implements Serializable, StatisticsGroupingKey {
@@ -56,7 +58,7 @@ public class Quarter implements Serializable, StatisticsGroupingKey {
 	
 	@Override
 	public String toString() {
-		return "Q" + value;
+		return I18nProperties.getString(Strings.sQuarterShort) + value;
 	}
 
 	@Override

@@ -17,21 +17,34 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.contacts;
 
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.VerticalLayout;
+
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
+import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
 import de.symeda.sormas.ui.dashboard.DashboardType;
+import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
+import de.symeda.sormas.ui.dashboard.statistics.AbstractDashboardStatisticsComponent;
 
 @SuppressWarnings("serial")
 public class DashboardContactsView extends AbstractDashboardView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/contacts";
 
-	public static final String I18N_PREFIX = "Dashboard";
-
+	protected AbstractDashboardStatisticsComponent statisticsComponent;
+	protected AbstractEpiCurveComponent epiCurveComponent;
+	protected DashboardMapComponent mapComponent;
+	protected HorizontalLayout epiCurveAndMapLayout;
+	private VerticalLayout epiCurveLayout;
+	private VerticalLayout mapLayout;
+	
 	public DashboardContactsView() {
 		super(VIEW_NAME, DashboardType.CONTACTS);
 		
-		filterLayout.setInfoLabelText("All Dashboard elements that display general information about contacts use the follow-up period of the respective contact, starting with the contact report date.");
+		filterLayout.setInfoLabelText(I18nProperties.getString(Strings.infoContactDashboard));
 
 		// Add statistics
 		statisticsComponent = new DashboardContactsStatisticsComponent(dashboardDataProvider);
@@ -46,5 +59,105 @@ public class DashboardContactsView extends AbstractDashboardView {
 		dashboardLayout.addComponent(epiCurveAndMapLayout);
 		dashboardLayout.setExpandRatio(epiCurveAndMapLayout, 1);
 	}
+
+	protected HorizontalLayout createEpiCurveAndMapLayout() {
+		HorizontalLayout layout = new HorizontalLayout();
+		layout.addStyleName(DashboardCssStyles.CURVE_AND_MAP_LAYOUT);
+		layout.setWidth(100, Unit.PERCENTAGE);
+		layout.setMargin(false);
+
+		// Epi curve layout
+		epiCurveLayout = createEpiCurveLayout();
+		layout.addComponent(epiCurveLayout);
+
+		// Map layout
+		mapLayout = createMapLayout();
+		layout.addComponent(mapLayout);
+
+		return layout;
+	}	
 	
+	protected VerticalLayout createEpiCurveLayout() {
+		if (epiCurveComponent == null) {
+			throw new UnsupportedOperationException(
+					"EpiCurveComponent needs to be initialized before calling createEpiCurveLayout");
+		}
+
+		VerticalLayout layout = new VerticalLayout();
+		layout.setWidth(100, Unit.PERCENTAGE);
+		layout.setHeight(400, Unit.PIXELS);
+
+		epiCurveComponent.setSizeFull();
+
+		layout.addComponent(epiCurveComponent);
+		layout.setExpandRatio(epiCurveComponent, 1);
+
+		epiCurveComponent.setExpandListener(e -> {
+			dashboardLayout.removeComponent(statisticsComponent);
+			epiCurveAndMapLayout.removeComponent(mapLayout);
+			DashboardContactsView.this.setHeight(100, Unit.PERCENTAGE);
+			epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
+			epiCurveLayout.setSizeFull();
+		});
+
+		epiCurveComponent.setCollapseListener(e -> {
+			dashboardLayout.addComponent(statisticsComponent, 1);
+			epiCurveAndMapLayout.addComponent(mapLayout, 1);
+			epiCurveLayout.setHeight(400, Unit.PIXELS);
+			DashboardContactsView.this.setHeightUndefined();
+			epiCurveAndMapLayout.setHeightUndefined();
+		});
+
+		return layout;
+	}
+
+	protected VerticalLayout createMapLayout() {
+		if (mapComponent == null) {
+			throw new UnsupportedOperationException(
+					"MapComponent needs to be initialized before calling createMapLayout");
+		}
+		VerticalLayout layout = new VerticalLayout();
+		layout.setWidth(100, Unit.PERCENTAGE);
+		layout.setHeight(555, Unit.PIXELS);
+
+		mapComponent.setSizeFull();
+
+		layout.addComponent(mapComponent);
+		layout.setExpandRatio(mapComponent, 1);
+
+		mapComponent.setExpandListener(e -> {
+			dashboardLayout.removeComponent(statisticsComponent);
+			epiCurveAndMapLayout.removeComponent(epiCurveLayout);
+			DashboardContactsView.this.setHeight(100, Unit.PERCENTAGE);
+			epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
+			mapLayout.setSizeFull();
+		});
+
+		mapComponent.setCollapseListener(e -> {
+			dashboardLayout.addComponent(statisticsComponent, 1);
+			epiCurveAndMapLayout.addComponent(epiCurveLayout, 0);
+			mapLayout.setHeight(400, Unit.PIXELS);
+			DashboardContactsView.this.setHeightUndefined();
+			epiCurveAndMapLayout.setHeightUndefined();
+		});
+
+		return layout;
+	}
+
+	public void refreshDashboard() {
+		super.refreshDashboard();
+
+		// Updates statistics
+		statisticsComponent.updateStatistics(dashboardDataProvider.getDisease());
+
+		// Update cases and contacts shown on the map
+		if (mapComponent != null)
+			mapComponent.refreshMap();
+
+		// Epi curve chart has to be created again due to a canvas resizing issue when
+		// simply refreshing the component
+		if (epiCurveComponent != null)
+			epiCurveComponent.clearAndFillEpiCurveChart();
+	}
+
 }

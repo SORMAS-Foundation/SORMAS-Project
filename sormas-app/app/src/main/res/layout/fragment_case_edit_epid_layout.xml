@@ -59,14 +59,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/sub_heading_epidemiological_info"
+                    android:text="@string/heading_epidemiological_info"
                     style="@style/SubHeadingCompactStyle" />
 
                 <TextView
                     android:id="@+id/epidemiological_info_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/description_epidemiological_info"
+                    android:text="@string/info_epidemiological_info"
                     style="@style/SubHeadingDescriptionStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -152,7 +152,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
-                        android:text="@string/heading_sub_case_epid_burial_visited"
+                        android:text="@string/heading_burials_visited"
                         style="@style/ReadActivitySubListHeadingNoBMarginStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlButton
@@ -217,7 +217,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
-                        android:text="@string/heading_sub_case_epid_social_events"
+                        android:text="@string/heading_social_events"
                         style="@style/ReadActivitySubListHeadingNoBMarginStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlButton
@@ -282,7 +282,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
-                        android:text="@string/heading_sub_case_epid_travels"
+                        android:text="@string/heading_travels"
                         style="@style/ReadActivitySubListHeadingNoBMarginStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlButton
@@ -327,7 +327,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/heading_sub_case_epid_animal_contacts"
+                    android:text="@string/heading_animal_contacts"
                     style="@style/SubHeadingStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -473,7 +473,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/heading_sub_case_epid_environmental_exposure"
+                    android:text="@string/heading_environmental_exposure"
                     style="@style/SubHeadingStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
