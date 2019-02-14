@@ -47,9 +47,9 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 @SuppressWarnings("serial")
 public class EventGrid extends Grid implements AbstractGrid<EventCriteria> {
 	
-	public static final String INFORMATION_SOURCE = Captions.genPropInformationSource;
-	public static final String PENDING_EVENT_TASKS = Captions.genPropNumberOfPendingTasks;
-	public static final String DISEASE_SHORT = Captions.genPropDiseaseShort;
+	public static final String INFORMATION_SOURCE = Captions.Event_informationSource;
+	public static final String PENDING_EVENT_TASKS = Captions.columnNumberOfPendingTasks;
+	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 
 	private EventCriteria eventCriteria = new EventCriteria();
 	

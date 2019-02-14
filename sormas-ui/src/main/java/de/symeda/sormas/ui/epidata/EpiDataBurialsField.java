@@ -42,9 +42,9 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 	
 	private static final String EPI_DATA_BURIAL_TABLE_PREFIX = "EpiDataBurialTable";
 	
-	private static final String PERIOD = Captions.genPropBurialPeriod;
-	private static final String CITY = Captions.genPropCity;
-	private static final String DISTRICT = Captions.genPropDistrict;
+	private static final String PERIOD = Captions.EpiDataBurialTable_burialPeriod;
+	private static final String CITY = LocationDto.CITY;
+	private static final String DISTRICT = LocationDto.DISTRICT;
 	
 	@Override
 	public Class<EpiDataBurialDto> getEntryType() {

@@ -138,7 +138,7 @@ public class ClinicalCourseController {
 			new Notification(I18nProperties.getString(Strings.headingNoClinicalVisitsSelected),
 					I18nProperties.getString(Strings.messageNoClinicalVisitsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteClinicalVisits), selectedRows.size()), new Runnable() {
+			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
 						FacadeProvider.getClinicalCourseFacade().deleteClinicalVisit(((ClinicalVisitIndexDto) selectedRow).getUuid(), UserProvider.getCurrent().getUuid());

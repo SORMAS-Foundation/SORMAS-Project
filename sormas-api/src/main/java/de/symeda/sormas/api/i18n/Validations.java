@@ -39,7 +39,7 @@ public interface Validations {
 	public static String specifyFirstName = "specifyFirstName";
 	public static String specifyLastName = "specifyLastName";
 	public static String userNameNotUnique = "userNameNotUnique";
-	public static String validCommunity = "validWard";
+	public static String validCommunity = "validCommunity";
 	public static String validDisease = "validDisease";
 	public static String validDistrict = "validDistrict";
 	public static String validFacility = "validFacility";
@@ -47,5 +47,4 @@ public interface Validations {
 	public static String visitAfterFollowUp = "visitAfterFollowUp";
 	public static String visitBeforeContactReport = "visitBeforeContactReport";
 	public static String visitBeforeLastContactDate = "visitBeforeLastContactDate";
-
-}
+ }

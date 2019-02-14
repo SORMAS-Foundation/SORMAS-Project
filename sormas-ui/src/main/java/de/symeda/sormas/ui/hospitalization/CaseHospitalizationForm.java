@@ -47,7 +47,7 @@ import de.symeda.sormas.ui.utils.ViewMode;
 @SuppressWarnings("serial")
 public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
-	private static final String HEALTH_FACILITY = Captions.genPropHealthFacility;	
+	private static final String HEALTH_FACILITY = Captions.CaseHospitalization_healthFacility;	
 	private final CaseDataDto caze;
 	private final ViewMode viewMode;
 

@@ -30,7 +30,6 @@ public interface Strings {
 	public static String confirmationDearchiveEvent = "confirmationDearchiveEvent";
 	public static String confirmationDearchiveEvents = "confirmationDearchiveEvents";
 	public static String confirmationDeleteCases = "confirmationDeleteCases";
-	public static String confirmationDeleteClinicalVisits = "confirmationDeleteClinicalVisits";
 	public static String confirmationDeleteContacts = "confirmationDeleteContacts";
 	public static String confirmationDeleteEntity = "confirmationDeleteEntity";
 	public static String confirmationDeleteEventParticipants = "confirmationDeleteEventParticipants";
@@ -42,7 +41,6 @@ public interface Strings {
 	public static String confirmationDeleteTreatments = "confirmationDeleteTreatments";
 	public static String confirmationDeleteVisits = "confirmationDeleteVisits";
 	public static String confirmationLostToFollowUp = "confirmationLostToFollowUp";
-	public static String confirmedCriteria = "confirmedCriteria";
 	public static String entityBurial = "entityBurial";
 	public static String entityCase = "entityCase";
 	public static String entityCases = "entityCases";
@@ -242,8 +240,8 @@ public interface Strings {
 	public static String messageCheckInputData = "messageCheckInputData";
 	public static String messageClinicalCourseSaved = "messageClinicalCourseSaved";
 	public static String messageClinicalVisitCreated = "messageClinicalVisitCreated";
-	public static String messageClinicalVisitsDeleted = "messageClinicalVisitsDeleted";
 	public static String messageClinicalVisitSaved = "messageClinicalVisitSaved";
+	public static String messageClinicalVisitsDeleted = "messageClinicalVisitsDeleted";
 	public static String messageContactCreated = "messageContactCreated";
 	public static String messageContactSaved = "messageContactSaved";
 	public static String messageContactsDeleted = "messageContactsDeleted";
@@ -352,7 +350,7 @@ public interface Strings {
 	public static String numberTwo = "numberTwo";
 	public static String promptCasesDateFrom = "promptCasesDateFrom";
 	public static String promptCasesDateTo = "promptCasesDateTo";
-	public static String promptCasesEpiWeek = "promptCasesEpiWeek";
+	public static String promptCasesEpiWeekFrom = "promptCasesEpiWeekFrom";
 	public static String promptCasesEpiWeekTo = "promptCasesEpiWeekTo";
 	public static String promptCasesSearchField = "promptCasesSearchField";
 	public static String promptContactsSearchField = "promptContactsSearchField";
@@ -394,5 +392,4 @@ public interface Strings {
 	public static String sYear = "sYear";
 	public static String sYears = "sYears";
 	public static String sYes = "sYes";
-	
-}
+ }

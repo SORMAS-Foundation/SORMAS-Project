@@ -53,9 +53,9 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 @SuppressWarnings("serial")
 public class ContactGrid extends Grid implements AbstractGrid<ContactCriteria> {
 
-	public static final String NUMBER_OF_VISITS = Captions.genPropNumberOfVisits;
-	public static final String NUMBER_OF_PENDING_TASKS = Captions.genPropNumberOfPendingTasks;
-	public static final String DISEASE_SHORT = Captions.genPropDiseaseShort;
+	public static final String NUMBER_OF_VISITS = Captions.Contact_numberOfVisits;
+	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
+	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 
 	private ContactCriteria contactCriteria = new ContactCriteria();
 

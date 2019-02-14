@@ -42,9 +42,9 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 @SuppressWarnings("serial")
 public class CasePopupGrid extends Grid {
 
-	public static final String DISEASE_SHORT = Captions.genPropDiseaseShort;
-	public static final String FIRST_NAME = Captions.genPropFirstName;
-	public static final String LAST_NAME = Captions.genPropLastName;
+	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
+	public static final String FIRST_NAME = PersonDto.FIRST_NAME;
+	public static final String LAST_NAME = PersonDto.LAST_NAME;
 	
 	private final FacilityReferenceDto facility;
 	private final DashboardMapComponent dashboardMapComponent;
