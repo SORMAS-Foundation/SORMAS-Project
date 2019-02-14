@@ -877,6 +877,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setOutcome(source.getOutcome());
 		target.setOutcomeDate(source.getOutcomeDate());
+		target.setSequelae(source.getSequelae());
+		target.setSequelaeDetails(source.getSequelaeDetails());
 
 		return target;
 	}
@@ -946,6 +948,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setOutcome(source.getOutcome());
 		target.setOutcomeDate(source.getOutcomeDate());
+		target.setSequelae(source.getSequelae());
+		target.setSequelaeDetails(source.getSequelaeDetails());
 
 		return target;
 	}

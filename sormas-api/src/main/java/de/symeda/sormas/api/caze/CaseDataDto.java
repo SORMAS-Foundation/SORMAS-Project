@@ -83,6 +83,8 @@ public class CaseDataDto extends EntityDto {
 	public static final String REPORT_LON = "reportLon";
 	public static final String OUTCOME = "outcome";
 	public static final String OUTCOME_DATE = "outcomeDate";
+	public static final String SEQUELAE = "sequelae";
+	public static final String SEQUELAE_DETAILS = "sequelaeDetails";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -127,6 +129,8 @@ public class CaseDataDto extends EntityDto {
 	private CaseOutcome outcome;
 	@Outbreaks
 	private Date outcomeDate;
+	private YesNoUnknown sequelae;
+	private String sequelaeDetails;
 	@Outbreaks
 	@Required
 	private RegionReferenceDto region;
@@ -184,6 +188,10 @@ public class CaseDataDto extends EntityDto {
 		caze.setOutcome(CaseOutcome.NO_OUTCOME);
 		caze.setReportDate(new Date());
 		return caze;
+	}
+
+	public CaseReferenceDto toReference() {
+		return new CaseReferenceDto(getUuid(), CaseReferenceDto.buildCaption(getUuid(), getPerson().getCaption()));
 	}
 
 	public UserReferenceDto getReportingUser() {
@@ -500,8 +508,20 @@ public class CaseDataDto extends EntityDto {
 		this.outcomeDate = outcomeDate;
 	}
 
-	public CaseReferenceDto toReference() {
-		return new CaseReferenceDto(getUuid(), CaseReferenceDto.buildCaption(getUuid(), getPerson().getCaption()));
+	public YesNoUnknown getSequelae() {
+		return sequelae;
+	}
+
+	public void setSequelae(YesNoUnknown sequelae) {
+		this.sequelae = sequelae;
+	}
+
+	public String getSequelaeDetails() {
+		return sequelaeDetails;
+	}
+
+	public void setSequelaeDetails(String sequelaeDetails) {
+		this.sequelaeDetails = sequelaeDetails;
 	}
 	
 }

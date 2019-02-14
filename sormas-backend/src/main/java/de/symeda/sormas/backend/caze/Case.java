@@ -101,6 +101,8 @@ public class Case extends AbstractDomainObject {
 	public static final String REPORT_LON = "reportLon";
 	public static final String OUTCOME = "outcome";
 	public static final String OUTCOME_DATE = "outcomeDate";
+	public static final String SEQUELAE = "sequelae";
+	public static final String SEQUELAE_DETAILS = "sequelaeDetails";
 	public static final String CASE_AGE = "caseAge";
 	public static final String ARCHIVED = "archived";
 
@@ -156,6 +158,8 @@ public class Case extends AbstractDomainObject {
 
 	private CaseOutcome outcome;
 	private Date outcomeDate;
+	private YesNoUnknown sequelae;
+	private String sequelaeDetails;
 
 	private Integer caseAge;
 	
@@ -568,6 +572,24 @@ public class Case extends AbstractDomainObject {
 
 	public void setOutcomeDate(Date outcomeDate) {
 		this.outcomeDate = outcomeDate;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getSequelae() {
+		return sequelae;
+	}
+
+	public void setSequelae(YesNoUnknown sequelae) {
+		this.sequelae = sequelae;
+	}
+	
+	@Column(length = 512)
+	public String getSequelaeDetails() {
+		return sequelaeDetails;
+	}
+
+	public void setSequelaeDetails(String sequelaeDetails) {
+		this.sequelaeDetails = sequelaeDetails;
 	}
 
 	public Integer getCaseAge() {

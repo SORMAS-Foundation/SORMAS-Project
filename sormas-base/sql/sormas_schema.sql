@@ -2831,3 +2831,14 @@ ALTER TABLE clinicalcourse_history ADD COLUMN healthconditions_id bigint;
 ALTER TABLE clinicalcourse ADD CONSTRAINT fk_clinicalcourse_healthconditions_id FOREIGN KEY (healthconditions_id) REFERENCES healthconditions (id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (128, 'Health conditions #952');
+
+-- 2019-02-13 Additional Case, Person and Hospitalization fields #935
+
+ALTER TABLE cases ADD COLUMN sequelae varchar(255);
+ALTER TABLE cases ADD COLUMN sequelaedetails varchar(512);
+
+ALTER TABLE cases_history ADD COLUMN sequelae varchar(255);
+ALTER TABLE cases_history ADD COLUMN sequelaedetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (129, 'Additional Case, Person and Hospitalization fields #935');
+

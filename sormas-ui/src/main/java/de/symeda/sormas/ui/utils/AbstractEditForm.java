@@ -111,8 +111,9 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			public <T extends Field> T createField(Class<?> type, Class<T> fieldType) {
 
 				if (type.isEnum()) {
-					if (SymptomState.class.isAssignableFrom(type)
-							|| YesNoUnknown.class.isAssignableFrom(type)) {
+					if (fieldType.isAssignableFrom(Field.class) // no specific fieldType defined?
+							&& (SymptomState.class.isAssignableFrom(type)
+							|| YesNoUnknown.class.isAssignableFrom(type))) {
 						OptionGroup field = super.createField(type, OptionGroup.class);
 						CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
 						return (T) field;
@@ -476,6 +477,17 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		for (String propertyId : fieldOrPropertyIds) {
 			Field<?> field = getField(propertyId);
 			field.setRequired(required);
+		}
+	}
+	
+	protected void setSoftRequired(boolean required, String ...fieldOrPropertyIds) {
+		for (String propertyId : fieldOrPropertyIds) {
+			Field<?> field = getField(propertyId);
+			if (required) {
+				FieldHelper.addSoftRequiredStyle(field);
+			} else {
+				FieldHelper.removeSoftRequiredStyle(field);
+			}
 		}
 	}
 
