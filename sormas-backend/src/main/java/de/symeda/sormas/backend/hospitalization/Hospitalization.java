@@ -30,6 +30,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.hospitalization.AccommodationType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ImportIgnore;
@@ -41,22 +42,26 @@ public class Hospitalization extends AbstractDomainObject {
 	private static final long serialVersionUID = -8576270649634034244L;
 
 	public static final String TABLE_NAME = "hospitalization";
-	
+
+	public static final String ADMITTED_TO_HEALTH_FACILITY = "admittedToHealthFacility";
 	public static final String ADMISSION_DATE = "admissionDate";
 	public static final String DISCHARGE_DATE = "dischargeDate";
+	public static final String ACCOMMODATION = "accommodation";
 	public static final String ISOLATED = "isolated";
 	public static final String ISOLATION_DATE = "isolationDate";
+	public static final String LEFT_AGAINST_ADVICE = "leftAgainstAdvice";
 	public static final String HOSPITALIZED_PREVIOUSLY = "hospitalizedPreviously";
 	public static final String PREVIOUS_HOSPITALIZATIONS = "previousHospitalizations";
-	public static final String ADMITTED_TO_HEALTH_FACILITY = "admittedToHealthFacility";
 	
+	private YesNoUnknown admittedToHealthFacility;
 	private Date admissionDate;
 	private Date dischargeDate;
+	private AccommodationType accommodation;
 	private YesNoUnknown isolated;
 	private Date isolationDate;
-	private YesNoUnknown hospitalizedPreviously;
-	private YesNoUnknown admittedToHealthFacility;
+	private YesNoUnknown leftAgainstAdvice;
 	
+	private YesNoUnknown hospitalizedPreviously;
 	private Date changeDateOfEmbeddedLists;
 	private List<PreviousHospitalization> previousHospitalizations = new ArrayList<PreviousHospitalization>();
 	
@@ -127,6 +132,22 @@ public class Hospitalization extends AbstractDomainObject {
 	}
 	public void setChangeDateOfEmbeddedLists(Date changeDateOfEmbeddedLists) {
 		this.changeDateOfEmbeddedLists = changeDateOfEmbeddedLists;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public AccommodationType getAccommodation() {
+		return accommodation;
+	}
+	public void setAccommodation(AccommodationType accommodation) {
+		this.accommodation = accommodation;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getLeftAgainstAdvice() {
+		return leftAgainstAdvice;
+	}
+	public void setLeftAgainstAdvice(YesNoUnknown leftAgainstAdvice) {
+		this.leftAgainstAdvice = leftAgainstAdvice;
 	}
 	
 }

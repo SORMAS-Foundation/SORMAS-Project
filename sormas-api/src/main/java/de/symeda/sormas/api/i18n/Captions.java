@@ -79,6 +79,7 @@ public interface Captions {
 	public static String CaseExport_sampleTaken = "CaseExport.sampleTaken";
 	public static String CaseExport_travelHistory = "CaseExport.travelHistory";
 	public static String caseFilterWithoutGeo = "caseFilterWithoutGeo";
+	public static String CaseHospitalization_accommodation = "CaseHospitalization.accommodation";
 	public static String CaseHospitalization_admissionDate = "CaseHospitalization.admissionDate";
 	public static String CaseHospitalization_admittedToHealthFacility = "CaseHospitalization.admittedToHealthFacility";
 	public static String CaseHospitalization_dischargeDate = "CaseHospitalization.dischargeDate";
@@ -86,6 +87,7 @@ public interface Captions {
 	public static String CaseHospitalization_hospitalizedPreviously = "CaseHospitalization.hospitalizedPreviously";
 	public static String CaseHospitalization_isolated = "CaseHospitalization.isolated";
 	public static String CaseHospitalization_isolationDate = "CaseHospitalization.isolationDate";
+	public static String CaseHospitalization_leftAgainstAdvice = "CaseHospitalization.leftAgainstAdvice";
 	public static String CaseHospitalization_previousHospitalizations = "CaseHospitalization.previousHospitalizations";
 	public static String caseImportErrorDescription = "caseImportErrorDescription";
 	public static String caseImportMergeCase = "caseImportMergeCase";

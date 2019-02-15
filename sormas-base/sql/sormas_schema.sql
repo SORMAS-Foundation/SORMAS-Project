@@ -2832,7 +2832,7 @@ ALTER TABLE clinicalcourse ADD CONSTRAINT fk_clinicalcourse_healthconditions_id 
 
 INSERT INTO schema_version (version_number, comment) VALUES (128, 'Health conditions #952');
 
--- 2019-02-13 Additional Case, Person and Hospitalization fields #935
+-- 2019-02-13 Additional Case and Person fields #935
 
 ALTER TABLE cases ADD COLUMN sequelae varchar(255);
 ALTER TABLE cases ADD COLUMN sequelaedetails varchar(512);
@@ -2849,5 +2849,20 @@ ALTER TABLE person_history ADD COLUMN educationtype varchar(255);
 ALTER TABLE person_history ADD COLUMN educationdetails varchar(255);
 ALTER TABLE person_history ADD COLUMN approximateagereferencedate date;
 
-INSERT INTO schema_version (version_number, comment) VALUES (129, 'Additional Case, Person and Hospitalization fields #935');
+INSERT INTO schema_version (version_number, comment) VALUES (129, 'Additional Case and Person fields #935');
 
+-- 2019-02-15 Additional Hospitalization fields and history table #935
+
+ALTER TABLE hospitalization ADD COLUMN accommodation varchar(255);
+ALTER TABLE hospitalization ADD COLUMN leftagainstadvice varchar(255);
+
+ALTER TABLE hospitalization ADD COLUMN sys_period tstzrange;
+UPDATE hospitalization SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE hospitalization ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE hospitalization_history (LIKE hospitalization);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON hospitalization
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'hospitalization_history', true);
+ALTER TABLE hospitalization_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (130, 'Additional Hospitalization fields and history table #935');
