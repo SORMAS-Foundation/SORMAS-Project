@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.dashboard.surveillance;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -70,17 +71,25 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 	public void refresh(int visibleDiseasesCount) {
 		List<DiseaseBurdenDto> diseasesBurden = dashboardDataProvider.getDiseasesBurden();
 
-		// data mockup: manipulate the data
+		//data mockup: manipulate the data
 //		diseasesBurden = mockDataUp(diseasesBurden);
-
-		// sort, limit and filter
+		
 		diseasesBurden = diseasesBurden.stream()
-									   .sorted((dto1, dto2) -> (int) (dto2.getCaseCount() - dto1.getCaseCount()))
+									   .sorted((dto1, dto2) -> {
+										   long _dto1 = dto1.getCasesDifference();
+										   long _dto2 = dto2.getCasesDifference();
+										   
+										   if (_dto1 == 0) _dto1 = -100;
+										   if (_dto2 == 0) _dto2 = -100;
+										   
+										   return (int) (_dto2 - _dto1);
+									   })
+									   //.sorted(Comparator.comparing(DiseaseBurdenDto::getCasesDifference, (d) -> d == 0? -100 : d))
 									   .limit(visibleDiseasesCount)
 									   .collect(Collectors.toList());
 
 		refreshChart(diseasesBurden);
-		chart.setHeight(visibleDiseasesCount * 40 + 70, Unit.PIXELS);
+		chart.setHeight(diseasesBurden.size() * 40 + 70, Unit.PIXELS);
 	}
 
 	@SuppressWarnings("unused")
@@ -163,29 +172,18 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 				+ "enabled: true, formatter: function() { if (this.y > 0) return this.y; },"
 				+ "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } }, series: { pointWidth: 20 } },");
 
-		/*
-		 * split data into two groups (positive and negative) positive group will be
-		 * padded with zeros of negative group and negative group will also be padded
-		 * with zeros of positive group
-		 * 
-		 */
-		List<Long> positive_values = data.stream().filter((d) -> d.getCasesDifference() >= 0)
-				.map((d) -> d.getCasesDifference()).collect(Collectors.toList());
-		List<Long> negative_values = data.stream().filter((d) -> d.getCasesDifference() < 0)
-				.map((d) -> d.getCasesDifference()).collect(Collectors.toList());
+		//use two series for this chart
+		List<Long> positive_series = data.stream().map((d) -> d.getCasesDifference() < 0 ? 0 : d.getCasesDifference()).collect(Collectors.toList());
+		List<Long> negative_series = data.stream().map((d) -> d.getCasesDifference() > 0 ? 0 : d.getCasesDifference()).collect(Collectors.toList());
 
 		hcjs.append("series: [");
 
 		hcjs.append("{ name: 'More than " + previousPeriodExpression + "', color: '#FF4500', data: [");
-		hcjs.append(Stream.concat(positive_values.stream(), negative_values.stream().map((v) -> 0)) // pad with negative
-																									// group
-				.map((d) -> d.toString()).reduce((fullText, nextText) -> fullText + ", " + nextText).orElse(""));
+		hcjs.append(positive_series.stream().map((d) -> d.toString()).reduce((fullText, nextText) -> fullText + ", " + nextText).orElse(""));
 		hcjs.append("]},");
 
 		hcjs.append("{ name: 'Less than " + previousPeriodExpression + "', color: '#32CD32', data: [");
-		hcjs.append(Stream.concat(positive_values.stream().map((v) -> 0), negative_values.stream()) // pad with positive
-																									// group
-				.map((d) -> d.toString()).reduce((fullText, nextText) -> fullText + ", " + nextText).orElse(""));
+		hcjs.append(negative_series.stream().map((d) -> d.toString()).reduce((fullText, nextText) -> fullText + ", " + nextText).orElse(""));
 		hcjs.append("]},");
 
 		hcjs.append("],"); // series: []
