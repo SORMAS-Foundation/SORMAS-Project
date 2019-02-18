@@ -131,7 +131,6 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
             return;
         }
 
-
         saveTask = new SavingAsyncTask(getRootView(), contactToSave) {
 
             @Override

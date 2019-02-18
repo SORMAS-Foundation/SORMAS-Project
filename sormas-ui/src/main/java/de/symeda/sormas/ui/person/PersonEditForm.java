@@ -72,10 +72,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 	private boolean facilityFieldsInitialized = false;
 
-	private TextField approximateAgeField;
-	private ComboBox approximateAgeTypeField;
-	private DateField approximateAgeReferenceDateField;
-
 	private Disease disease;
 	private String diseaseDetails;
 	private ComboBox causeOfDeathField;
@@ -168,9 +164,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		birthDateYear.addItems(DateHelper.getYearsToNow());
 		birthDateYear.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		DateField deathDate = addField(PersonDto.DEATH_DATE, DateField.class);
-		approximateAgeField = addField(PersonDto.APPROXIMATE_AGE, TextField.class);
-		approximateAgeTypeField = addField(PersonDto.APPROXIMATE_AGE_TYPE, ComboBox.class);
-		approximateAgeReferenceDateField = addField(PersonDto.APPROXIMATE_AGE_REFERENCE_DATE, DateField.class);
+		addField(PersonDto.APPROXIMATE_AGE, TextField.class);
+		addField(PersonDto.APPROXIMATE_AGE_TYPE, ComboBox.class);
+		addField(PersonDto.APPROXIMATE_AGE_REFERENCE_DATE, DateField.class);
 		
 		AbstractSelect deathPlaceType = addField(PersonDto.DEATH_PLACE_TYPE, ComboBox.class);
 		deathPlaceType.setNullSelectionAllowed(true);
@@ -234,7 +230,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		initializeVisibilitiesAndAllowedVisibilities(disease, viewMode);
 
-		if (!getField(PersonDto.OCCUPATION_TYPE).isVisible())
+		if (!getField(PersonDto.OCCUPATION_TYPE).isVisible()
+				&& !getField(PersonDto.EDUCATION_TYPE).isVisible())
 			occupationHeader.setVisible(false);
 		if (!getField(PersonDto.ADDRESS).isVisible())
 			addressHeader.setVisible(false);
@@ -261,8 +258,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			updateOccupationFieldCaptions();
 			toogleOccupationMetaFields();
 		});
-		
-		addFieldListeners(PersonDto.APPROXIMATE_AGE, e -> updateApproximateAgeReferenceDate());
 
 		facilityRegion.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
@@ -362,18 +357,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			approximateAgeTypeSelect.setValue(String.valueOf(pair.getElement1()));
 			approximateAgeTypeSelect.setReadOnly(true);
 		}
-	}
-	
-	private void updateApproximateAgeReferenceDate() {
-		
-		approximateAgeReferenceDateField.setReadOnly(false);
-		if (approximateAgeField.isModified()
-				|| approximateAgeTypeField.isModified()) {
-			approximateAgeReferenceDateField.setValue(new Date());
-		} else {
-			approximateAgeReferenceDateField.discard();
-		}
-		approximateAgeReferenceDateField.setReadOnly(true);
 	}
 
 	private void toogleOccupationMetaFields() {

@@ -162,7 +162,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
             return; // don't save multiple times
         }
 
-        final Case cazeToSave = getStoredRootEntity();
+        final Case changedCase = getStoredRootEntity();
 
         try {
             FragmentValidator.validate(getContext(), getActiveFragment().getContentBinding());
@@ -171,14 +171,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
             return;
         }
 
-        // Case classification
-        final Case existingCase = DatabaseHelper.getCaseDao().queryUuidBasic(cazeToSave.getUuid());
-        if (existingCase != null && cazeToSave.getCaseClassification() != existingCase.getCaseClassification()) {
-            cazeToSave.setClassificationDate(new Date());
-            cazeToSave.setClassificationUser(ConfigProvider.getUser());
-        }
-
-        saveTask = new SavingAsyncTask(getRootView(), cazeToSave) {
+        saveTask = new SavingAsyncTask(getRootView(), changedCase) {
             @Override
             protected void onPreExecute() {
                 showPreloader();
@@ -187,8 +180,8 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
             @Override
             protected void doInBackground(TaskResultHolder resultHolder) throws DaoException {
                 synchronized (CaseEditActivity.this) {
-                    DatabaseHelper.getPersonDao().saveAndSnapshot(cazeToSave.getPerson());
-                    DatabaseHelper.getCaseDao().saveAndSnapshot(cazeToSave);
+                    DatabaseHelper.getPersonDao().saveAndSnapshot(changedCase.getPerson());
+                    DatabaseHelper.getCaseDao().saveAndSnapshot(changedCase);
                 }
             }
 
@@ -197,7 +190,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                 hidePreloader();
                 super.onPostExecute(taskResult);
                 if (taskResult.getResultStatus().isSuccess()) {
-                    successCallback.accept(cazeToSave);
+                    successCallback.accept(changedCase);
                 } else {
                     onResume(); // reload data
                 }

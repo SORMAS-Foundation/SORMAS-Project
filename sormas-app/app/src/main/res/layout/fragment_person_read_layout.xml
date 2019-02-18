@@ -127,8 +127,8 @@
                     android:id="@+id/person_deathDate"
                     app:value="@{data.deathDate}"
                     app:dependencyParentField="@{personPresentCondition}"
-                    app:dependencyParentValue="@{PresentCondition.ALIVE}"
-                    app:dependencyParentVisibility="@{false}"
+                    app:dependencyParentValue="@{PresentCondition.DEAD}"
+                    app:dependencyParentValue2="@{PresentCondition.BURIED}"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
@@ -142,8 +142,8 @@
                     android:id="@+id/person_causeOfDeath"
                     app:value="@{data.causeOfDeath}"
                     app:dependencyParentField="@{personPresentCondition}"
-                    app:dependencyParentValue="@{PresentCondition.ALIVE}"
-                    app:dependencyParentVisibility="@{false}"
+                    app:dependencyParentValue="@{PresentCondition.DEAD}"
+                    app:dependencyParentValue2="@{PresentCondition.BURIED}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
@@ -169,16 +169,16 @@
                     android:id="@+id/person_deathPlaceType"
                     app:value="@{data.deathPlaceType}"
                     app:dependencyParentField="@{personPresentCondition}"
-                    app:dependencyParentValue="@{PresentCondition.ALIVE}"
-                    app:dependencyParentVisibility="@{false}"
+                    app:dependencyParentValue="@{PresentCondition.DEAD}"
+                    app:dependencyParentValue2="@{PresentCondition.BURIED}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/person_deathPlaceDescription"
                     app:value="@{data.deathPlaceDescription}"
                     app:dependencyParentField="@{personPresentCondition}"
-                    app:dependencyParentValue="@{PresentCondition.ALIVE}"
-                    app:dependencyParentVisibility="@{false}"
+                    app:dependencyParentValue="@{PresentCondition.DEAD}"
+                    app:dependencyParentValue2="@{PresentCondition.BURIED}"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
@@ -220,6 +220,13 @@
                 style="@style/ControlSingleColumnStyle" />
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/person_educationType"
+                app:value="@{data.educationType}"
+                app:appendValue="@{data.educationDetails}"
+                app:valueFormat="@string/two_strings_with_hyphen_format"
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/person_occupationType"

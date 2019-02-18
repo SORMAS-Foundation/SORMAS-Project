@@ -31,6 +31,7 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
+import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -85,7 +86,6 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         List<Item> diseaseList = DataUtils.getEnumItems(Disease.class, true);
         List<Item> deathPlaceTypeList = DataUtils.getEnumItems(DeathPlaceType.class, true);
         List<Item> burialConductorList = DataUtils.getEnumItems(BurialConductor.class, true);
-        List<Item> occupationTypeList = DataUtils.getEnumItems(OccupationType.class, true);
 
         List<Item> initialOccupationRegions = InfrastructureHelper.loadRegions();
         List<Item> initialOccupationDistricts = InfrastructureHelper.loadDistricts(record.getOccupationRegion());
@@ -127,7 +127,8 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         contentBinding.personCauseOfDeathDisease.initializeSpinner(diseaseList);
         contentBinding.personDeathPlaceType.initializeSpinner(deathPlaceTypeList);
         contentBinding.personBurialConductor.initializeSpinner(burialConductorList);
-        contentBinding.personOccupationType.initializeSpinner(occupationTypeList);
+        contentBinding.personOccupationType.initializeSpinner(DataUtils.getEnumItems(OccupationType.class, true));
+        contentBinding.personEducationType.initializeSpinner(DataUtils.getEnumItems(EducationType.class, true));
 
         // Initialize ControlDateFields
         contentBinding.personDeathDate.initializeDateField(fragment.getFragmentManager());

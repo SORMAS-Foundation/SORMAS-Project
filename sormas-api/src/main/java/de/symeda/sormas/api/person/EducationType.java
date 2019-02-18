@@ -24,7 +24,7 @@ public enum EducationType {
     PRIMARY, 
     SECONDARY, 
     TERTIARY, 
-    OTHERS
+    OTHER
 	;
 	
 	public String toString() {

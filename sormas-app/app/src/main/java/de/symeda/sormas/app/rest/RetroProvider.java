@@ -22,7 +22,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import androidx.fragment.app.FragmentActivity;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -43,13 +42,14 @@ import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import androidx.fragment.app.FragmentActivity;
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNoneOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNotInStartDateRangeCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationPersonAgeCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationPersonAgeBetweenYearsCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationSampleTestCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationSampleTestPositiveResultCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteriaDto;
@@ -117,7 +117,7 @@ public final class RetroProvider {
                 .registerSubtype(ClassificationAllOfCriteriaDto.class, "ClassificationAllOfCriteriaDto")
                 .registerSubtype(ClassificationCaseCriteriaDto.class, "ClassificationCaseCriteriaDto")
                 .registerSubtype(ClassificationNoneOfCriteriaDto.class, "ClassificationNoneOfCriteriaDto")
-                .registerSubtype(ClassificationPersonAgeCriteriaDto.class, "ClassificationPersonAgeCriteriaDto")
+                .registerSubtype(ClassificationPersonAgeBetweenYearsCriteriaDto.class, "ClassificationPersonAgeBetweenYearsCriteriaDto")
                 .registerSubtype(ClassificationSampleTestPositiveResultCriteriaDto.class, "ClassificationSampleTestPositiveResultCriteriaDto")
                 .registerSubtype(ClassificationXOfCriteriaDto.class, "ClassificationXOfCriteriaDto")
                 .registerSubtype(ClassificationEpiDataCriteriaDto.class, "ClassificationEpiDataCriteriaDto")
