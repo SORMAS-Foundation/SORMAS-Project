@@ -29,6 +29,10 @@ import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+
 @SuppressWarnings("serial")
 public class DashboardSurveillanceDiseaseBurdenLayout extends CustomLayout {
 
@@ -63,9 +67,9 @@ public class DashboardSurveillanceDiseaseBurdenLayout extends CustomLayout {
 		
 		VerticalLayout buttonsLayout = new VerticalLayout();
 		
-		showMoreButton = new Button("Show All Diseases", FontAwesome.CHEVRON_DOWN);
+		showMoreButton = new Button(I18nProperties.getCaption(Captions.dashboardShowAllDiseases), FontAwesome.CHEVRON_DOWN);
 		CssStyles.style(showMoreButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_3);
-		showLessButton = new Button("Show First 6 Diseases", FontAwesome.CHEVRON_UP);
+		showLessButton = new Button(I18nProperties.getCaption(Captions.dashboardShowFirstDiseases), FontAwesome.CHEVRON_UP);
 		CssStyles.style(showLessButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_3);
 
 		showMoreButton.addClickListener(e -> {

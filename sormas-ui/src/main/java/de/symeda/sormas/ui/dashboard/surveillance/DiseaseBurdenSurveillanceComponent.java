@@ -26,6 +26,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 //import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DiseaseBurdenGrid;
@@ -41,7 +43,7 @@ public class DiseaseBurdenSurveillanceComponent extends VerticalLayout {
 	public DiseaseBurdenSurveillanceComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
 
-		Label title = new Label("Disease Burden Information");
+		Label title = new Label(I18nProperties.getCaption(Captions.dashboardDiseaseBurdenInfo));
 		CssStyles.style(title, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 
 		grid = new DiseaseBurdenGrid();

@@ -26,6 +26,8 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubNavigationActionMenu;
 import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
@@ -100,7 +102,7 @@ public class DashboardSurveillanceDiseaseCarouselLayout extends VerticalLayout {
 	
 	private CheckBox setupSlideShow() {
 		//slideshow option
-		CheckBox autoSlide = new CheckBox("slide show");
+		CheckBox autoSlide = new CheckBox(I18nProperties.getCaption(Captions.dashboardDiseaseCarouselSlideShow));
 		autoSlide.addValueChangeListener(e -> {
 			this.changeAutoSlideOption(autoSlide.getValue());
 		});

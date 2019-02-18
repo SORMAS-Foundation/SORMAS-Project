@@ -28,6 +28,7 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.PercentageRenderer;
@@ -64,12 +65,14 @@ public class DiseaseBurdenGrid extends Grid {
 		}
 
 		// rename columns
-		getColumn(DiseaseBurdenDto.PREVIOUS_CASE_COUNT).setHeaderCaption("PREVIOUS NUMBER OF CASES");
-		getColumn(DiseaseBurdenDto.CASES_DIFFERENCE).setHeaderCaption("DYNAMIC");
-		getColumn(DiseaseBurdenDto.EVENT_COUNT).setHeaderCaption("NUMBER OF EVENTS");
-		getColumn(DiseaseBurdenDto.OUTBREAK_DISTRICT_COUNT).setHeaderCaption("OUTBREAK DISTRICTS");
-		getColumn(DiseaseBurdenDto.CASE_DEATH_COUNT).setHeaderCaption("DEATHS");
-		getColumn(DiseaseBurdenDto.CASE_FATALITY_RATE).setHeaderCaption("CFR");
+		getColumn(DiseaseBurdenDto.DISEASE).setHeaderCaption(I18nProperties.getCaption(Captions.dashboardDisease));
+		getColumn(DiseaseBurdenDto.CASE_COUNT).setHeaderCaption(I18nProperties.getCaption(Captions.dashboardDiseaseBurdenCaseCount));
+		getColumn(DiseaseBurdenDto.PREVIOUS_CASE_COUNT).setHeaderCaption(I18nProperties.getCaption(Captions.dashboardDiseaseBurdenPreviousCaseCount));
+		getColumn(DiseaseBurdenDto.CASES_DIFFERENCE).setHeaderCaption(I18nProperties.getCaption(Captions.dashboardDiseaseBurdenDynamic));
+		getColumn(DiseaseBurdenDto.EVENT_COUNT).setHeaderCaption(I18nProperties.getCaption(Captions.dashboardDiseaseBurdenNumberOfEvents));
+		getColumn(DiseaseBurdenDto.OUTBREAK_DISTRICT_COUNT).setHeaderCaption(I18nProperties.getCaption(Captions.dashboardDiseaseBurdenOutbreakDistricts));
+		getColumn(DiseaseBurdenDto.CASE_DEATH_COUNT).setHeaderCaption(I18nProperties.getCaption(Captions.dashboardDiseaseBurdenDeaths));
+		getColumn(DiseaseBurdenDto.CASE_FATALITY_RATE).setHeaderCaption(I18nProperties.getCaption(Captions.dashboardCaseFatalityRateShort));
 
 		// format columns
 		getColumn(DiseaseBurdenDto.CASE_FATALITY_RATE).setRenderer(new PercentageRenderer());

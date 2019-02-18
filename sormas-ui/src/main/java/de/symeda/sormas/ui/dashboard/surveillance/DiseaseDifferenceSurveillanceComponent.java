@@ -27,6 +27,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.I18nProperties;
 //import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.highcharts.HighChart;
@@ -43,10 +46,10 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 	public DiseaseDifferenceSurveillanceComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
 
-		Label title = new Label("Difference in number of cases");
+		Label title = new Label(I18nProperties.getCaption(Captions.dashboardDiseaseDifference));
 		CssStyles.style(title, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 
-		subtitleLabel = new Label("Compared to previous time period");
+		subtitleLabel = new Label(I18nProperties.getCaption(Captions.dashboardComparedToPreviousPeriod));
 
 		chart = new HighChart();
 		chart.setSizeFull();
@@ -107,7 +110,7 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 	private void refreshChart(List<DiseaseBurdenDto> data) {
 		//express previous period in contextual, user-friendly text
 		//for subtitle and legend labels
-		String previousPeriodExpression = "previous period";
+		String previousPeriodExpression = I18nProperties.getString(Strings.previousPeriod);
 		{
 			long now = new Date().getTime();
 			long fromDate = this.dashboardDataProvider.getFromDate().getTime();
@@ -119,21 +122,21 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 			
 			if (diffBetweenFromAndToInDays == 1) {
 				if (diffBetweenNowAndToInDays <= 0) //today
-					previousPeriodExpression = "yesterday";
+					previousPeriodExpression = I18nProperties.getString(Strings.yesterday);
 				else if (diffBetweenNowAndToInDays < 1) //yesterday
-					previousPeriodExpression = "last two days";
+					previousPeriodExpression = I18nProperties.getString(Strings.lastTwoDays);
 			}
 			else if (diffBetweenFromAndToInDays == 7) {
 				if (diffBetweenNowAndToInDays <= 0) //this week
-					previousPeriodExpression = "last week";
+					previousPeriodExpression = I18nProperties.getString(Strings.lastWeek);
 				else if (diffBetweenNowAndToInDays < 7) //last week
-					previousPeriodExpression = "last two weeks";
+					previousPeriodExpression = I18nProperties.getString(Strings.lastTwoWeeks);
 			}
 			else if (diffBetweenFromAndToInDays == 365) {
 				if (diffBetweenNowAndToInDays <= 0) //this year
-					previousPeriodExpression = "last year";
+					previousPeriodExpression = I18nProperties.getString(Strings.lastYear);
 				else if (diffBetweenNowAndToInDays < 365)
-					previousPeriodExpression = "last two years";
+					previousPeriodExpression = I18nProperties.getString(Strings.lastTwoYears);
 			}
 		}
 		//~express prev...
@@ -151,7 +154,7 @@ public class DiseaseDifferenceSurveillanceComponent extends VerticalLayout {
 		}
 		hcjs.append("]},");
 
-		hcjs.append("yAxis: { title: { text: 'Difference' }, allowDecimals: false, " + "stackLabels: { enabled: true, "
+		hcjs.append("yAxis: { title: { text: '" + I18nProperties.getCaption(Captions.dashboardDiseaseDifferenceYAxisLabel) + "' }, allowDecimals: false, " + "stackLabels: { enabled: true, "
 				+ "style: {fontWeight: 'normal', textOutline: '0', gridLineColor: '#000000', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } } },"
 				+ "legend: { verticalAlign: 'middle', backgroundColor: 'transparent', align: 'right', layout: 'vertical', "
 				+ "borderWidth: 0, shadow: false, margin: 30, padding: 0 },"
