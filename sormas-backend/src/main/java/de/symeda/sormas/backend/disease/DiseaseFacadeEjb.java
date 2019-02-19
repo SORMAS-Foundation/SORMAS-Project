@@ -17,9 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.disease;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,29 +35,21 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.backend.common.AbstractAdoService;
-
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.disease.DiseaseFacade;
-import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.outbreak.Outbreak;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.RegionFacadeEjb;
-import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.util.ModelConstants;
 //import de.symeda.sormas.ui.UserProvider;
 
@@ -71,6 +61,9 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 	
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
+	
+	@EJB
+	private CaseFacadeEjbLocal caseFacade;
 	
 	//@Override
 	public List<DiseaseBurdenDto> getDiseaseBurdenForDashboard(
@@ -91,14 +84,12 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 				.region(regionRef)
 				.district(districtRef);
 
-		Map<Disease, Long> newCases = FacadeProvider.getCaseFacade()
-				.getNewCaseCountPerDisease(caseCriteria, userUuid);
+		Map<Disease, Long> newCases = caseFacade.getNewCaseCountPerDisease(caseCriteria, userUuid);
 		
 		//previous cases
 		caseCriteria.newCaseDateBetween(previousFrom, previousTo, null);
 		
-		Map<Disease, Long> previousCases = FacadeProvider.getCaseFacade()
-				.getNewCaseCountPerDisease(caseCriteria, userUuid);
+		Map<Disease, Long> previousCases = caseFacade.getNewCaseCountPerDisease(caseCriteria, userUuid);
 				
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = null;

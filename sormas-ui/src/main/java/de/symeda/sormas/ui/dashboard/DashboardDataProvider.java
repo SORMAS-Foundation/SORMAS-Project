@@ -30,10 +30,7 @@ import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.outbreak.DashboardOutbreakDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.sample.DashboardSampleDto;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
-import de.symeda.sormas.api.task.DashboardTaskDto;
-import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
 
@@ -49,19 +46,24 @@ public class DashboardDataProvider {
 	private Date previousFromDate;
 	private Date previousToDate;
 
+	// overall
+	private List<DiseaseBurdenDto> diseasesBurden = new ArrayList<>();
+
+	// TODO make disease specific when contact dashboard is updated
+	private List<DashboardContactDto> contacts = new ArrayList<>();
+	private List<DashboardContactDto> previousContacts = new ArrayList<>();
+	
+	// disease specific
 	private List<DashboardCaseDto> cases = new ArrayList<>();
 	private List<DashboardCaseDto> previousCases = new ArrayList<>();
+	private List<DashboardOutbreakDto> outbreaks = new ArrayList<>();
 	private List<DashboardEventDto> events = new ArrayList<>();
 	private List<DashboardEventDto> previousEvents = new ArrayList<>();
 	private List<DashboardTestResultDto> testResults = new ArrayList<>();
 	private List<DashboardTestResultDto> previousTestResults = new ArrayList<>();
-	private List<DashboardSampleDto> samples = new ArrayList<>();
-	private List<DashboardTaskDto> tasks = new ArrayList<>();
-	private List<DashboardTaskDto> pendingTasks = new ArrayList<>();
-	private List<DashboardContactDto> contacts = new ArrayList<>();
-	private List<DashboardContactDto> previousContacts = new ArrayList<>();
-	private List<DiseaseBurdenDto> diseasesBurden = new ArrayList<>();
-	private List<DashboardOutbreakDto> outbreaks = new ArrayList<>();
+//	private List<DashboardSampleDto> samples = new ArrayList<>();
+//	private List<DashboardTaskDto> tasks = new ArrayList<>();
+//	private List<DashboardTaskDto> pendingTasks = new ArrayList<>();
 
 	public void refreshData() {
 		// Update the entities lists according to the filters
@@ -71,15 +73,15 @@ public class DashboardDataProvider {
 		previousFromDate = DateHelper.getStartOfDay(DateHelper.subtractDays(fromDate, period));
 		previousToDate = DateHelper.getEndOfDay(DateHelper.subtractDays(toDate, period));
 
-		// Samples
-		setSamples(FacadeProvider.getSampleFacade().getNewSamplesForDashboard(region, district, disease, fromDate,
-				toDate, userUuid));
-		// Tasks
-		setTasks(FacadeProvider.getTaskFacade().getAllByUserForDashboard(null,
-				DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(new Date())),
-				DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(new Date())), userUuid));
-		setPendingTasks(
-				FacadeProvider.getTaskFacade().getAllByUserForDashboard(TaskStatus.PENDING, null, null, userUuid));
+//		// Samples
+//		setSamples(FacadeProvider.getSampleFacade().getNewSamplesForDashboard(region, district, disease, fromDate,
+//				toDate, userUuid));
+//		// Tasks
+//		setTasks(FacadeProvider.getTaskFacade().getAllByUserForDashboard(null,
+//				DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(new Date())),
+//				DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(new Date())), userUuid));
+//		setPendingTasks(
+//				FacadeProvider.getTaskFacade().getAllByUserForDashboard(TaskStatus.PENDING, null, null, userUuid));
 		
 		// Contacts
 		setContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, fromDate,
@@ -176,29 +178,29 @@ public class DashboardDataProvider {
 		this.previousTestResults = previousTestResults;
 	}
 
-	public List<DashboardSampleDto> getSamples() {
-		return samples;
-	}
-
-	public void setSamples(List<DashboardSampleDto> samples) {
-		this.samples = samples;
-	}
-
-	public List<DashboardTaskDto> getTasks() {
-		return tasks;
-	}
-
-	public void setTasks(List<DashboardTaskDto> tasks) {
-		this.tasks = tasks;
-	}
-
-	public List<DashboardTaskDto> getPendingTasks() {
-		return pendingTasks;
-	}
-
-	public void setPendingTasks(List<DashboardTaskDto> pendingTasks) {
-		this.pendingTasks = pendingTasks;
-	}
+//	public List<DashboardSampleDto> getSamples() {
+//		return samples;
+//	}
+//
+//	public void setSamples(List<DashboardSampleDto> samples) {
+//		this.samples = samples;
+//	}
+//
+//	public List<DashboardTaskDto> getTasks() {
+//		return tasks;
+//	}
+//
+//	public void setTasks(List<DashboardTaskDto> tasks) {
+//		this.tasks = tasks;
+//	}
+//
+//	public List<DashboardTaskDto> getPendingTasks() {
+//		return pendingTasks;
+//	}
+//
+//	public void setPendingTasks(List<DashboardTaskDto> pendingTasks) {
+//		this.pendingTasks = pendingTasks;
+//	}
 
 	public List<DashboardContactDto> getContacts() {
 		return contacts;
