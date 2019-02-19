@@ -20,6 +20,7 @@ package de.symeda.sormas.api.person;
 import java.util.Date;
 
 import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.joda.time.Months;
 import org.joda.time.Years;
 
@@ -28,7 +29,8 @@ import de.symeda.sormas.api.utils.DataHelper.Pair;
 
 public enum ApproximateAgeType {
 	YEARS,
-	MONTHS
+	MONTHS,
+	DAYS,
 	;
 	
 	public String toString() {
@@ -36,6 +38,7 @@ public enum ApproximateAgeType {
 	};
 	
 	public static final class ApproximateAgeHelper {
+		
 		public static final Pair<Integer, ApproximateAgeType> getApproximateAge(Date birthDate, Date deathDate) {
 			if (birthDate == null)
 	            return Pair.createPair(null, ApproximateAgeType.YEARS);
@@ -43,11 +46,15 @@ public enum ApproximateAgeType {
 	        DateTime toDate = deathDate==null?DateTime.now(): new DateTime(deathDate);
 	        DateTime startDate = new DateTime(birthDate);
 	        Years years = Years.yearsBetween(startDate, toDate);
-	        
 
-	        if(years.getYears()<1) {
+	        if (years.getYears() < 1) {
 	            Months months = Months.monthsBetween(startDate, toDate);
-	            return Pair.createPair(months.getMonths(), ApproximateAgeType.MONTHS);
+	            if (months.getMonths() < 1) {
+	            	Days days = Days.daysBetween(startDate, toDate);
+	            	return Pair.createPair(days.getDays(), ApproximateAgeType.DAYS);
+	            } else {
+	            	return Pair.createPair(months.getMonths(), ApproximateAgeType.MONTHS);
+	            }
 	        }
 	        else {
 	            return Pair.createPair(years.getYears(), ApproximateAgeType.YEARS);
@@ -76,10 +83,50 @@ public enum ApproximateAgeType {
 		public static String formatApproximateAge(Integer approximateAge, ApproximateAgeType approximateAgeType) {
 			if (approximateAge == null) {
 				return "";
-			} else if (approximateAgeType == ApproximateAgeType.MONTHS) {
-				return approximateAge + " " + approximateAgeType.toString();
+			} else if (approximateAgeType != null) {
+				switch (approximateAgeType) {
+				case YEARS:
+					return approximateAge.toString();
+				case MONTHS:
+				case DAYS:
+					return approximateAge + " " + approximateAgeType.toString();
+				default:
+					throw new IllegalArgumentException(approximateAgeType.toString());
+				}
 			} else {
 				return approximateAge.toString();
+			}
+		}
+		
+		public static Integer getAgeYears(Integer age, ApproximateAgeType approximateAgeType) {
+			if (age == null || approximateAgeType == null) {
+				return age;
+			}
+			
+			switch (approximateAgeType) {
+			case YEARS:
+				return age;
+			case MONTHS:
+				return Math.floorDiv(age, 12);
+			case DAYS:
+				return Math.floorDiv(age, 365);
+			default:
+				throw new IllegalArgumentException(approximateAgeType.toString());
+			}	
+		}
+		
+		public static String getAgeGroupFromAge(Integer age, ApproximateAgeType ageType) {
+			
+			Integer ageYears = ApproximateAgeHelper.getAgeYears(age, ageType);
+			if (ageYears == null) {
+				return null;
+			}
+			
+			int lowerAgeBoundary = (int) Math.floor(ageYears / 5f) * 5;
+			if (lowerAgeBoundary >= 120) {
+				return "120+";
+			} else {
+				return lowerAgeBoundary + "-" + (lowerAgeBoundary + 4);
 			}
 		}
 	}

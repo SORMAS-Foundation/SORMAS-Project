@@ -34,6 +34,9 @@ public class SymptomsDto extends EntityDto {
 
 	public static final String TEMPERATURE = "temperature";
 	public static final String TEMPERATURE_SOURCE = "temperatureSource";
+	public static final String BLOOD_PRESSURE_SYSTOLIC = "bloodPressureSystolic";
+	public static final String BLOOD_PRESSURE_DIASTOLIC = "bloodPressureDiastolic";
+	public static final String HEART_RATE = "heartRate";
 	public static final String ONSET_DATE = "onsetDate";
 	public static final String ONSET_SYMPTOM = "onsetSymptom";
 	public static final String PATIENT_ILL_LOCATION = "patientIllLocation";
@@ -137,6 +140,10 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	@Outbreaks
 	private TemperatureSource temperatureSource;
+	private Integer bloodPressureSystolic;
+	private Integer bloodPressureDiastolic;
+	private Integer heartRate;
+	
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	@Outbreaks
 	private SymptomState fever;
@@ -275,7 +282,7 @@ public class SymptomsDto extends EntityDto {
 	private SymptomState hiccups;
 	@Diseases({Disease.YELLOW_FEVER,Disease.OTHER})
 	private SymptomState backache;
-	@Diseases({Disease.YELLOW_FEVER,Disease.OTHER})
+	@Diseases({Disease.YELLOW_FEVER,Disease.LASSA,Disease.OTHER})
 	private SymptomState jaundice;
 	@Diseases({Disease.YELLOW_FEVER,Disease.OTHER})
 	private SymptomState darkUrine;
@@ -400,6 +407,24 @@ public class SymptomsDto extends EntityDto {
 	}
 	public void setTemperatureSource(TemperatureSource temperatureSource) {
 		this.temperatureSource = temperatureSource;
+	}
+	public Integer getBloodPressureSystolic() {
+		return bloodPressureSystolic;
+	}
+	public void setBloodPressureSystolic(Integer bloodPressureSystolic) {
+		this.bloodPressureSystolic = bloodPressureSystolic;
+	}
+	public Integer getBloodPressureDiastolic() {
+		return bloodPressureDiastolic;
+	}
+	public void setBloodPressureDiastolic(Integer bloodPressureDiastolic) {
+		this.bloodPressureDiastolic = bloodPressureDiastolic;
+	}
+	public Integer getHeartRate() {
+		return heartRate;
+	}
+	public void setHeartRate(Integer heartRate) {
+		this.heartRate = heartRate;
 	}
 	public SymptomState getFever() {
 		return fever;

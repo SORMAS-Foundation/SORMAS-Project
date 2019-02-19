@@ -27,4 +27,15 @@ public enum TemperatureSource {
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
+	
+	public static String formatTemperatureSource(Float temperature, TemperatureSource temperatureSource) {
+		if (temperature == null) {
+			return "";
+		} else if (temperatureSource == null) {
+			return SymptomsHelper.getTemperatureString(temperature);
+		} else {
+			return SymptomsHelper.getTemperatureString(temperature) + " (" + temperatureSource.toString() + ")";
+		}
+	}
+	
 }

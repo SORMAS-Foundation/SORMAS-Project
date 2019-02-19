@@ -408,7 +408,7 @@ public class CasesView extends AbstractView {
 			Button applyButton = new Button(I18nProperties.getCaption(Captions.cApplyDateFilter));
 
 			weekAndDateFilter = new EpiWeekAndDateFilterComponent(applyButton, false, false, true);
-			weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesEpiWeek));
+			weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesEpiWeekFrom));
 			weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesEpiWeekTo));
 			weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesDateFrom));
 			weekAndDateFilter.getDateToFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesDateTo));

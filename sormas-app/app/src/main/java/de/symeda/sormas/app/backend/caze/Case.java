@@ -71,6 +71,8 @@ public class Case extends AbstractDomainObject {
     public static final String REPORTING_USER = "reportingUser_id";
     public static final String HEALTH_FACILITY = "healthFacility_id";
     public static final String OUTCOME = "outcome";
+    public static final String SEQUELAE = "sequelae";
+    public static final String SEQUELAE_DETAILS = "sequelaeDetails";
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
     private Person person;
@@ -184,6 +186,10 @@ public class Case extends AbstractDomainObject {
     private CaseOutcome outcome;
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date outcomeDate;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown sequelae;
+    @Column(length = 512)
+    private String sequelaeDetails;
 
     public Person getPerson() {
         return person;
@@ -503,4 +509,19 @@ public class Case extends AbstractDomainObject {
         return I18N_PREFIX;
     }
 
+    public YesNoUnknown getSequelae() {
+        return sequelae;
+    }
+
+    public void setSequelae(YesNoUnknown sequelae) {
+        this.sequelae = sequelae;
+    }
+
+    public String getSequelaeDetails() {
+        return sequelaeDetails;
+    }
+
+    public void setSequelaeDetails(String sequelaeDetails) {
+        this.sequelaeDetails = sequelaeDetails;
+    }
 }

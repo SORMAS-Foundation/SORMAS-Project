@@ -36,6 +36,7 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
+import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -81,6 +82,8 @@ public class Person extends AbstractDomainObject {
 	private Integer approximateAge;
 	@Enumerated(EnumType.STRING)
 	private ApproximateAgeType approximateAgeType;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date approximateAgeReferenceDate;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 2)
 	private Location address;
@@ -89,7 +92,6 @@ public class Person extends AbstractDomainObject {
 	@Column(length = 255)
 	private String phoneOwner;
 
-	// TODO private Ethnicity ethnicity;
 	@Enumerated(EnumType.STRING)
 	private Sex sex;
 
@@ -103,13 +105,13 @@ public class Person extends AbstractDomainObject {
 	private Disease causeOfDeathDisease;
 	//@Deprecated
 	//private String causeOfDeathDiseaseDetails;
-	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
+	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date deathDate;
 	@Enumerated(EnumType.STRING)
 	private DeathPlaceType deathPlaceType;
 	@Column(length = 255)
 	private String deathPlaceDescription;
-	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
+	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date burialDate;
 	@Column(length=255)
 	private String burialPlaceDescription;
@@ -117,8 +119,13 @@ public class Person extends AbstractDomainObject {
 	private BurialConductor burialConductor;
 
 	@Enumerated(EnumType.STRING)
+	private EducationType educationType;
+	@Column(length = 512)
+	private String educationDetails;
+
+	@Enumerated(EnumType.STRING)
 	private OccupationType occupationType;
-	@Column
+	@Column(length = 512)
 	private String occupationDetails;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Region occupationRegion;
@@ -366,4 +373,27 @@ public class Person extends AbstractDomainObject {
 		return I18N_PREFIX;
 	}
 
+	public Date getApproximateAgeReferenceDate() {
+		return approximateAgeReferenceDate;
+	}
+
+	public void setApproximateAgeReferenceDate(Date approximateAgeReferenceDate) {
+		this.approximateAgeReferenceDate = approximateAgeReferenceDate;
+	}
+
+	public EducationType getEducationType() {
+		return educationType;
+	}
+
+	public void setEducationType(EducationType educationType) {
+		this.educationType = educationType;
+	}
+
+	public String getEducationDetails() {
+		return educationDetails;
+	}
+
+	public void setEducationDetails(String educationDetails) {
+		this.educationDetails = educationDetails;
+	}
 }

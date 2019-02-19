@@ -370,17 +370,30 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
     @Override
     public Case saveAndSnapshot(final Case caze) throws DaoException {
-        // If a new case is created, use the last available location to update its report latitude and longitude
-        if (caze.getId() == null) {
+
+        final Case existingCase = queryUuidBasic(caze.getUuid());
+        onCaseChanged(existingCase, caze);
+        return super.saveAndSnapshot(caze);
+    }
+
+    private void onCaseChanged(Case existingCase, Case changedCase) {
+
+        if (existingCase == null) {
+            // If a new case is created, use the last available location to update its report latitude and longitude
             Location location = LocationService.instance().getLocation();
             if (location != null) {
-                caze.setReportLat(location.getLatitude());
-                caze.setReportLon(location.getLongitude());
-                caze.setReportLatLonAccuracy(location.getAccuracy());
+                changedCase.setReportLat(location.getLatitude());
+                changedCase.setReportLon(location.getLongitude());
+                changedCase.setReportLatLonAccuracy(location.getAccuracy());
             }
         }
-
-        return super.saveAndSnapshot(caze);
+        else {
+            // classification
+            if (changedCase.getCaseClassification() != existingCase.getCaseClassification()) {
+                changedCase.setClassificationDate(new Date());
+                changedCase.setClassificationUser(ConfigProvider.getUser());
+            }
+        }
     }
 
     public void deleteCaseAndAllDependingEntities(String caseUuid) throws SQLException {

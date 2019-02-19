@@ -37,7 +37,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 @SuppressWarnings("serial")
 public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 
-	private static final String PERIOD = Captions.genPropTravelPeriod;
+	private static final String PERIOD = Captions.EpiDataTravel_travelPeriod;
 	
 	@Override
 	public Class<EpiDataTravelDto> getEntryType() {

@@ -17,11 +17,20 @@
  *******************************************************************************/
 package de.symeda.sormas.api.symptoms;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 
 public final class SymptomsHelper {
 
@@ -38,8 +47,43 @@ public final class SymptomsHelper {
 		return x;
 	}
 
+	public static List<Integer> getBloodPressureValues() {
+		List<Integer> x = new ArrayList<>();
+		for (int i = 0; i <= 300; i++) {
+			x.add(i);
+		}
+		return x;
+	}
+
+	public static List<Integer> getHeartRateValues() {
+		List<Integer> x = new ArrayList<>();
+		for (int i = 0; i <= 300; i++) {
+			x.add(i);
+		}
+		return x;
+	}
+
 	public static String getTemperatureString(float value) {
 		return String.format("%.1f °C", value);
+	}
+
+	public static String getBloodPressureString(Integer systolic, Integer diastolic) {
+		if (systolic == null && diastolic == null) {
+			return "";
+		}
+
+		StringBuilder bpStringBuilder = new StringBuilder();
+		bpStringBuilder.append(systolic != null ? systolic : "?")
+		.append("/")
+		.append(diastolic != null ? diastolic : "?")
+		.append(" ")
+		.append(I18nProperties.getString(Strings.sMmhg));
+
+		return bpStringBuilder.toString();
+	}
+
+	public static String getHeartRateString(int heartRate) {
+		return heartRate + " " + I18nProperties.getString(Strings.sBpm);
 	}
 
 	public static List<String> getSymptomPropertyIds() {
@@ -118,5 +162,80 @@ public final class SymptomsHelper {
 		}
 
 		dto.setSymptomatic(false);
+	}
+
+	/**
+	 * Updates the targetSymptoms according to the sourceSymptoms values. All sourceSymptoms that
+	 * are set to YES will also be set to YES in the targetSymptoms, while sourceSymptoms set to NO
+	 * will not result in an update of the corresponding targetSymptom. Additionally, the
+	 * targetSymptoms temperature will be updated if it is lower than the sourceSymptoms temperature, 
+	 * and Strings will be added to existing Strings when those do not contain them already.
+	 */
+	public static void updateSymptoms(SymptomsDto sourceSymptoms, SymptomsDto targetSymptoms) {
+		if (sourceSymptoms == null || targetSymptoms == null) {
+			throw new NullPointerException("sourceSymptoms and targetSymptoms can not be null.");
+		}
+
+		boolean newTemperatureSet = false;		
+		try {
+			PropertyDescriptor[] pds = Introspector.getBeanInfo(SymptomsDto.class, EntityDto.class).getPropertyDescriptors();
+			for (PropertyDescriptor pd : pds) {
+				// Skip properties without a read or write method
+				if (pd.getReadMethod() == null|| pd.getWriteMethod() == null) {
+					continue;
+				}
+
+				if (pd.getReadMethod().getReturnType() == SymptomState.class) {
+					// SymptomStates are carried over when they are set to YES
+					SymptomState result = (SymptomState) pd.getReadMethod().invoke(sourceSymptoms);
+					if (result == SymptomState.YES) {
+						pd.getWriteMethod().invoke(targetSymptoms, result);
+					}
+				} else if (pd.getReadMethod().getReturnType() == Boolean.class) {
+					// Booleans are carried over when they are TRUE
+					if (pd.getName().equals("symptomatic")) {
+						continue;
+					} else {
+						Boolean result = (Boolean) pd.getReadMethod().invoke(sourceSymptoms);
+						if (Boolean.TRUE.equals(result)) {
+							pd.getWriteMethod().invoke(targetSymptoms, result);
+						}
+					}
+				} else if (pd.getName().equals("temperature")) {
+					// Temperature is carried over when it's higher than the targetSymptoms temperature
+					Float sourceResult = (Float) pd.getReadMethod().invoke(sourceSymptoms);
+					Float targetResult = (Float) pd.getReadMethod().invoke(targetSymptoms);
+					if (sourceResult != null && (targetResult == null || sourceResult > targetResult)) {
+						pd.getWriteMethod().invoke(targetSymptoms, sourceResult);
+						newTemperatureSet = true;
+					}
+				} else if (pd.getReadMethod().getReturnType() == String.class) {
+					// Strings are added to the targetSymptoms when they are not contained within the
+					// respective targetSymptoms String
+					if (pd.getName().equals("onsetSymptom")) {
+						continue;
+					} else {
+						String sourceResult = (String) pd.getReadMethod().invoke(sourceSymptoms);
+						String targetResult = (String) pd.getReadMethod().invoke(targetSymptoms);
+						if (targetResult == null) {
+							targetResult = "";
+						}
+						if (!StringUtils.isEmpty(sourceResult) && !targetResult.contains(sourceResult)) {
+							if (targetResult.isEmpty()) {
+								pd.getWriteMethod().invoke(targetSymptoms, sourceResult);
+							} else {
+								pd.getWriteMethod().invoke(targetSymptoms, targetResult + ", " + sourceResult);
+							}
+						}
+					}
+				}
+			}
+
+			if (newTemperatureSet) {
+				targetSymptoms.setTemperatureSource(sourceSymptoms.getTemperatureSource());
+			}
+		} catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
+			throw new RuntimeException("Exception when trying to update symptoms: " + e.getMessage(), e.getCause());
+		}
 	}
 }

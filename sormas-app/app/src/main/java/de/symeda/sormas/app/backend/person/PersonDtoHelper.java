@@ -81,6 +81,7 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
         target.setBirthdateYYYY(source.getBirthdateYYYY());
         target.setApproximateAge(source.getApproximateAge());
         target.setApproximateAgeType(source.getApproximateAgeType());
+        target.setApproximateAgeReferenceDate(source.getApproximateAgeReferenceDate());
 
         target.setPhone(source.getPhone());
         target.setPhoneOwner(source.getPhoneOwner());
@@ -89,6 +90,10 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
         target.setDeathDate(source.getDeathDate());
 
         target.setAddress(locationHelper.fillOrCreateFromDto(target.getAddress(), source.getAddress()));
+
+        target.setEducationType(source.getEducationType());
+        target.setEducationDetails(source.getEducationDetails());
+
         target.setOccupationType(source.getOccupationType());
         target.setOccupationDetails(source.getOccupationDetails());
         target.setOccupationRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getOccupationRegion()));
@@ -127,6 +132,7 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
         target.setBirthdateYYYY(source.getBirthdateYYYY());
         target.setApproximateAge(source.getApproximateAge());
         target.setApproximateAgeType(source.getApproximateAgeType());
+        target.setApproximateAgeReferenceDate(source.getApproximateAgeReferenceDate());
         target.setPhone(source.getPhone());
         target.setPhoneOwner(source.getPhoneOwner());
 
@@ -136,6 +142,9 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 
         Location address = DatabaseHelper.getLocationDao().queryForId(source.getAddress().getId());
         target.setAddress(locationHelper.adoToDto(address));
+
+        target.setEducationType(source.getEducationType());
+        target.setEducationDetails(source.getEducationDetails());
 
         target.setOccupationType(source.getOccupationType());
         target.setOccupationDetails(source.getOccupationDetails());

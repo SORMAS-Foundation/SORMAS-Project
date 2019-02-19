@@ -25,6 +25,7 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
@@ -83,7 +84,7 @@ public class ContactExportDto implements Serializable {
 		this.lastContactDate = lastContactDate;
 		this.person = PersonDto.buildCaption(firstName, lastName);
 		this.sex = sex;
-		this.approximateAge = PersonHelper.buildAgeString(approximateAge, approximateAgeType);
+		this.approximateAge = ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
 		this.reportDate = reportDate;
 		this.contactProximity = contactProximity;
 		this.contactStatus = contactStatus;

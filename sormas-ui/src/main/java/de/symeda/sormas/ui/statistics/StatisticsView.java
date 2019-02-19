@@ -739,7 +739,7 @@ public class StatisticsView extends AbstractStatisticsView {
 				if (filterElement.getSelectedValues() != null) {
 					List<Sex> sexes = new ArrayList<>();
 					for (TokenizableValue tokenizableValue : filterElement.getSelectedValues()) {
-						if (tokenizableValue.getValue() == StatisticsHelper.UNKNOWN) {
+						if (tokenizableValue.getValue().toString().toLowerCase().equals(StatisticsHelper.UNKNOWN)) {
 							caseCriteria.sexUnknown(true);
 						} else {
 							sexes.add((Sex) tokenizableValue.getValue());

@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -31,7 +32,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
@@ -150,36 +150,14 @@ public class PersonController {
 
 	private CommitDiscardWrapperComponent<PersonEditForm> getPersonEditView(PersonEditForm editForm, UserRight editOrCreateUserRight) {
 		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(editForm, editForm.getFieldGroup());
-		CaseFacade caseFacade = FacadeProvider.getCaseFacade();
 		
-		List<CaseDataDto> personCases = caseFacade.getAllCasesOfPerson(editForm.getValue().getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
 		
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
 				if (!editForm.getFieldGroup().isModified()) {
 					PersonDto dto = editForm.getValue();
-					personFacade.savePerson(dto);
-					
-					// Check whether the classification of any of this person's cases has changed
-					CaseClassification newClassification = null;
-					for (CaseDataDto personCase : personCases) {
-						CaseDataDto updatedPersonCase = caseFacade.getCaseDataByUuid(personCase.getUuid());
-						if (personCase.getCaseClassification() != updatedPersonCase.getCaseClassification() && updatedPersonCase.getClassificationUser() == null) {
-							newClassification = updatedPersonCase.getCaseClassification();
-							break;
-						}
-					}
-					
-					if (newClassification != null) {
-						Notification notification = new Notification(String.format(I18nProperties.getString(Strings.messagePersonSavedClassificationChanged), newClassification.toString()), Type.WARNING_MESSAGE);
-						notification.setDelayMsec(-1);
-						notification.show(Page.getCurrent());
-					} else {
-						Notification.show(I18nProperties.getString(Strings.messagePersonSaved), Type.WARNING_MESSAGE);
-					}
-					
-					refreshView();
+					savePerson( dto);
 				}
 			}
 		});
@@ -187,6 +165,49 @@ public class PersonController {
 		return editView;
 	}
 
+	private void savePerson(PersonDto personDto) {
+
+		PersonDto existingPerson = FacadeProvider.getPersonFacade().getPersonByUuid(personDto.getUuid());
+		List<CaseDataDto> personCases = FacadeProvider.getCaseFacade().getAllCasesOfPerson(personDto.getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
+
+		onPersonChanged(existingPerson, personDto);
+		
+		personFacade.savePerson(personDto);
+		
+		// Check whether the classification of any of this person's cases has changed
+		CaseClassification newClassification = null;
+		for (CaseDataDto personCase : personCases) {
+			CaseDataDto updatedPersonCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(personCase.getUuid());
+			if (personCase.getCaseClassification() != updatedPersonCase.getCaseClassification() && updatedPersonCase.getClassificationUser() == null) {
+				newClassification = updatedPersonCase.getCaseClassification();
+				break;
+			}
+		}
+		
+		if (newClassification != null) {
+			Notification notification = new Notification(String.format(I18nProperties.getString(Strings.messagePersonSavedClassificationChanged), newClassification.toString()), Type.WARNING_MESSAGE);
+			notification.setDelayMsec(-1);
+			notification.show(Page.getCurrent());
+		} else {
+			Notification.show(I18nProperties.getString(Strings.messagePersonSaved), Type.WARNING_MESSAGE);
+		}
+		
+		refreshView();
+	}
+
+	private void onPersonChanged(PersonDto existingPerson, PersonDto changedPerson) {
+		// approximate age reference date
+		if (existingPerson == null
+				|| !DataHelper.equal(changedPerson.getApproximateAge(), existingPerson.getApproximateAge())
+				|| !DataHelper.equal(changedPerson.getApproximateAgeType(), existingPerson.getApproximateAgeType())) {
+			if (changedPerson.getApproximateAge() == null) {
+				changedPerson.setApproximateAgeReferenceDate(null);
+			} else {
+				changedPerson.setApproximateAgeReferenceDate(new Date());
+			}
+		}
+	}
+	
 	private void refreshView() {
 		View currentView = SormasUI.get().getNavigator().getCurrentView();
 		if (currentView instanceof EventParticipantsView) {

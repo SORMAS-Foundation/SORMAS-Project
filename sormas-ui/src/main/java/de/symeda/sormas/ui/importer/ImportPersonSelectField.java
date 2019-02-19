@@ -36,8 +36,8 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -185,7 +185,7 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 
 			Label ageField = new Label();
 			ageField.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.APPROXIMATE_AGE));
-			ageField.setValue(PersonHelper.buildAgeString(importedPerson.getApproximateAge(), importedPerson.getApproximateAgeType()));
+			ageField.setValue(ApproximateAgeHelper.formatApproximateAge(importedPerson.getApproximateAge(), importedPerson.getApproximateAgeType()));
 			ageField.setWidthUndefined();
 			personInfoLayout.addComponent(ageField);
 

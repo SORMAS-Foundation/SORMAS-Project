@@ -101,6 +101,26 @@
                     android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseHospitalization_accommodation"
+                        app:value="@{data.accommodation}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseHospitalization_leftAgainstAdvice"
+                        dependencyParentField="@{caseHospitalizationDischargeDate}"
+                        dependencyParentValue="null"
+                        dependencyParentVisibility="false"
+                        app:value="@{data.leftAgainstAdvice}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/caseHospitalization_isolated"
                         app:value="@{data.isolated}"
                         app:dependencyParentField="@{caseHospitalizationAdmittedToHealthFacility}"

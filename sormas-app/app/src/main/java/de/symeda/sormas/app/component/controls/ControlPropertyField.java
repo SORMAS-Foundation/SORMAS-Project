@@ -32,8 +32,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.util.ControlLabelOnTouchListener;
 
@@ -57,7 +60,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
     private Boolean captionItalic;
 
     private ControlPropertyField dependencyParentField;
-    private Object dependencyParentValue;
+    private List<Object> dependencyParentValues;
     private boolean dependencyParentVisibility = true;
 
     private View visibilityChild;
@@ -211,17 +214,16 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
      *                           has been set
      */
     private void setVisibilityBasedOnParentField(boolean calledFromListener) {
-        if (dependencyParentField == null || dependencyParentValue == null) {
+        if (dependencyParentField == null || dependencyParentValues == null) {
             return;
         }
 
-        if (dependencyParentField.getValue() == null ||
-                dependencyParentField.getVisibility() != VISIBLE) {
+        if (dependencyParentField.getVisibility() != VISIBLE) {
             hideField(calledFromListener);
             return;
         }
 
-        if (dependencyParentField.getValue() == dependencyParentValue) {
+        if (dependencyParentValues.contains(dependencyParentField.getValue())) {
             if (dependencyParentVisibility) {
                 setVisibility(VISIBLE);
             } else {
@@ -367,17 +369,21 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
         return getFieldValue();
     }
 
-    @BindingAdapter(value = {"dependencyParentField", "dependencyParentValue", "dependencyParentVisibility"}, requireAll = false)
-    public static void setDependencyParentField(ControlPropertyField field, ControlPropertyField dependencyParentField, Object dependencyParentValue, Boolean dependencyParentVisibility) {
+    @BindingAdapter(value = {"dependencyParentField", "dependencyParentValue", "dependencyParentValue2", "dependencyParentVisibility"}, requireAll = false)
+    public static void setDependencyParentField(ControlPropertyField field, ControlPropertyField dependencyParentField, Object dependencyParentValue, Object dependencyParentValue2, Boolean dependencyParentVisibility) {
         field.dependencyParentField = dependencyParentField;
-        field.dependencyParentValue = dependencyParentValue;
+        field.dependencyParentValues = new ArrayList();
+        field.dependencyParentValues.add(dependencyParentValue);
+        if (dependencyParentValue2 != null) {
+            field.dependencyParentValues.add(dependencyParentValue2);
+        }
 
         if (dependencyParentVisibility != null) {
             field.dependencyParentVisibility = dependencyParentVisibility;
         }
 
         final ControlPropertyField thisField = field;
-        if (dependencyParentField != null && dependencyParentValue != null) {
+        if (dependencyParentField != null) {
             thisField.setVisibilityBasedOnParentField(false);
             dependencyParentField.addValueChangedListener(new ValueChangeListener() {
                 @Override

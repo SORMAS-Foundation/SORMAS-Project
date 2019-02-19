@@ -20,8 +20,6 @@ package de.symeda.sormas.api.event;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.apache.commons.lang3.StringUtils;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;

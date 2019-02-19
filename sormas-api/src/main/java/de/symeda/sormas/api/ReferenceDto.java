@@ -19,8 +19,10 @@ package de.symeda.sormas.api;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 @SuppressWarnings("serial")
-public abstract class ReferenceDto implements Serializable, HasUuid {
+public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<ReferenceDto> {
 
 	public static final String CAPTION = "caption";
 	
@@ -87,4 +89,8 @@ public abstract class ReferenceDto implements Serializable, HasUuid {
 		return 0;
 	}
 
+	@Override
+	public int compareTo(ReferenceDto o) {
+		return ObjectUtils.compare(getCaption(), o.getCaption());
+	}
 }

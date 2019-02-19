@@ -148,11 +148,23 @@
                         android:id="@+id/caseData_outcomeDate"
                         app:value="@{data.outcomeDate}"
                         app:dependencyParentField="@{caseDataOutcome}"
-                        app:dependencyParentValue="@{CaseOutcome.NO_OUTCOME}"
+                        app:dependencyParentValue="@{null}"
+                        app:dependencyParentValue2="@{CaseOutcome.NO_OUTCOME}"
                         app:dependencyParentVisibility="@{false}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_sequelae"
+                    app:value="@{data.sequelae}"
+                    app:appendValue="@{data.sequelaeDetails}"
+                    app:valueFormat="@string/two_strings_with_hyphen_format"
+                    app:dependencyParentField="@{caseDataOutcome}"
+                    app:dependencyParentValue="@{null}"
+                    app:dependencyParentValue2="@{CaseOutcome.NO_OUTCOME}"
+                    app:dependencyParentVisibility="@{false}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

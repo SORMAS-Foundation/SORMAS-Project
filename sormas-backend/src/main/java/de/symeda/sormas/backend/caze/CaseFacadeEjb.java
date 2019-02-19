@@ -105,6 +105,8 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
@@ -242,7 +244,9 @@ public class CaseFacadeEjb implements CaseFacade {
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private TherapyFacadeEjbLocal therapyFacade;
-
+	@EJB
+	private ClinicalCourseFacadeEjbLocal clinicalCourseFacade;
+	
 	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
 
 	@Override
@@ -850,6 +854,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (source.getTherapy() != null) {
 			target.setTherapy(therapyFacade.fromDto(source.getTherapy()));
 		}
+		if (source.getClinicalCourse() != null) {
+			target.setClinicalCourse(clinicalCourseFacade.fromDto(source.getClinicalCourse()));
+		}
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
@@ -877,6 +884,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setOutcome(source.getOutcome());
 		target.setOutcomeDate(source.getOutcomeDate());
+		target.setSequelae(source.getSequelae());
+		target.setSequelaeDetails(source.getSequelaeDetails());
 
 		return target;
 	}
@@ -911,6 +920,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (source.getTherapy() != null) {
 			target.setTherapy(TherapyFacadeEjb.toDto(source.getTherapy()));
 		}
+		if (source.getClinicalCourse() != null) {
+			target.setClinicalCourse(ClinicalCourseFacadeEjb.toDto(source.getClinicalCourse()));
+		}
 
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
@@ -943,6 +955,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setOutcome(source.getOutcome());
 		target.setOutcomeDate(source.getOutcomeDate());
+		target.setSequelae(source.getSequelae());
+		target.setSequelaeDetails(source.getSequelaeDetails());
 
 		return target;
 	}

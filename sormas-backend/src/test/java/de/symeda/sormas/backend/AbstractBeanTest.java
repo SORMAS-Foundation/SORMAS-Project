@@ -21,6 +21,7 @@ import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
@@ -39,11 +40,13 @@ import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleTestFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.task.TaskFacade;
+import de.symeda.sormas.api.therapy.TherapyFacade;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -68,6 +71,7 @@ import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleTestFacadeEjb.SampleTestFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
+import de.symeda.sormas.backend.therapy.TherapyFacadeEjb.TherapyFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
@@ -200,6 +204,14 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public CommunityService getCommunityService() {
 		return getBean(CommunityService.class);
+	}
+	
+	public ClinicalCourseFacade getClinicalCourseFacade() {
+		return getBean(ClinicalCourseFacadeEjbLocal.class);
+	}
+	
+	public TherapyFacade getTherapyFacade() {
+		return getBean(TherapyFacadeEjbLocal.class);
 	}
 
 }

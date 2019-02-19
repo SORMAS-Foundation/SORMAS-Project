@@ -37,6 +37,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubNavigationMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseView;
 import de.symeda.sormas.ui.epidata.EpiDataView;
 import de.symeda.sormas.ui.hospitalization.CaseHospitalizationView;
 import de.symeda.sormas.ui.therapy.TherapyView;
@@ -141,6 +142,9 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 			menu.addView(EpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), params);
 			if (UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW)) {
 				menu.addView(TherapyView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.THERAPY), params);
+			}
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW)) {
+				menu.addView(ClinicalCourseView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICAL_COURSE), params);
 			}
 		}
 		if (DiseaseHelper.hasContactFollowUp(caze.getDisease(), caze.getPlagueType())) {

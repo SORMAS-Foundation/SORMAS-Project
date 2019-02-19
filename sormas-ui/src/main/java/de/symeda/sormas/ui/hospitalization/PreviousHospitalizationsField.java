@@ -37,9 +37,9 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 @SuppressWarnings("serial")
 public class PreviousHospitalizationsField extends AbstractTableField<PreviousHospitalizationDto> {
 
-	private static final String PERIOD = Captions.genPropPrevHospPeriod;
-	private static final String WARD = Captions.genPropCommunity;
-	private static final String LGA = Captions.genPropDistrict;
+	private static final String PERIOD = Captions.CasePreviousHospitalization_prevHospPeriod;
+	private static final String COMMUNITY = Captions.CasePreviousHospitalization_community;
+	private static final String DISTRICT = Captions.CasePreviousHospitalization_district;
 
 	@Override
 	public Class<PreviousHospitalizationDto> getEntryType() {
@@ -67,7 +67,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 			}
 		});
 
-		table.addGeneratedColumn(WARD, new Table.ColumnGenerator() {
+		table.addGeneratedColumn(COMMUNITY, new Table.ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
@@ -75,7 +75,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 			}
 		});
 
-		table.addGeneratedColumn(LGA, new Table.ColumnGenerator() {
+		table.addGeneratedColumn(DISTRICT, new Table.ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
@@ -83,14 +83,14 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 			}
 		});
 
-		table.setVisibleColumns(EDIT_COLUMN_ID, PERIOD, PreviousHospitalizationDto.HEALTH_FACILITY, WARD, LGA,
+		table.setVisibleColumns(EDIT_COLUMN_ID, PERIOD, PreviousHospitalizationDto.HEALTH_FACILITY, COMMUNITY, DISTRICT,
 				PreviousHospitalizationDto.DESCRIPTION, PreviousHospitalizationDto.ISOLATED);
 
 		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
 		table.setColumnExpandRatio(PERIOD, 0);
 		table.setColumnExpandRatio(PreviousHospitalizationDto.HEALTH_FACILITY, 0);
-		table.setColumnExpandRatio(WARD, 0);
-		table.setColumnExpandRatio(LGA, 0);
+		table.setColumnExpandRatio(COMMUNITY, 0);
+		table.setColumnExpandRatio(DISTRICT, 0);
 		table.setColumnExpandRatio(PreviousHospitalizationDto.DESCRIPTION, 0);
 		table.setColumnExpandRatio(PreviousHospitalizationDto.ISOLATED, 0);
 

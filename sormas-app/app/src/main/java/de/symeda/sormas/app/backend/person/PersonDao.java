@@ -22,7 +22,6 @@ import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.dao.RawRowMapper;
 import com.j256.ormlite.field.DataType;
 
 import java.sql.SQLException;
@@ -31,10 +30,13 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.person.PersonNameDto;
-import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DaoException;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.util.LocationService;
 
 /**
  * Created by Martin Wahnschaffe on 22.07.2016.
@@ -88,5 +90,27 @@ public class PersonDao extends AbstractAdoDao<Person> {
         }
 
         return date;
+    }
+
+    @Override
+    public Person saveAndSnapshot(final Person person) throws DaoException {
+
+        final Person existingPerson = queryUuid(person.getUuid());
+        onPersonChanged(existingPerson, person);
+        return super.saveAndSnapshot(person);
+    }
+
+    private void onPersonChanged(Person existingPerson, Person changedPerson) {
+
+        // approximate age reference date
+        if (existingPerson == null
+                || !DataHelper.equal(changedPerson.getApproximateAge(), existingPerson.getApproximateAge())
+                || !DataHelper.equal(changedPerson.getApproximateAgeType(), existingPerson.getApproximateAgeType())) {
+            if (changedPerson.getApproximateAge() == null) {
+                changedPerson.setApproximateAgeReferenceDate(null);
+            } else {
+                changedPerson.setApproximateAgeReferenceDate(new Date());
+            }
+        }
     }
 }

@@ -43,8 +43,8 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 @SuppressWarnings("serial")
 public class CaseGrid extends Grid implements AbstractGrid<CaseCriteria> {
 
-	public static final String DISEASE_SHORT = Captions.genPropDiseaseShort;
-	public static final String NUMBER_OF_PENDING_TASKS = Captions.genPropNumberOfPendingTasks;
+	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
+	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
 
 	private CaseCriteria caseCriteria = new CaseCriteria();
 

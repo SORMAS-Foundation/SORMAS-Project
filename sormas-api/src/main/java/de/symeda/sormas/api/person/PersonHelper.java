@@ -116,20 +116,6 @@ public class PersonHelper {
 		return 1 - ((double) levenshteinDistance / (double) len);
 	}
 
-	public static String buildAgeString(Integer approximateAge, ApproximateAgeType approximateAgeType) {
-		if (approximateAge == null) {
-			return "";
-		}
-
-		if (approximateAgeType == ApproximateAgeType.MONTHS) {
-			return approximateAge + " " + approximateAgeType;
-		} else if (approximateAgeType == null || approximateAgeType == ApproximateAgeType.YEARS) {
-			return approximateAge.toString();
-		} else { 
-			throw new IllegalArgumentException(approximateAgeType.toString());
-		}
-	}
-
 	public static String buildPhoneString(String phone, String phoneOwner) {
 		StringBuilder result = new StringBuilder();
 		if (!DataHelper.isNullOrEmpty(phone)) {
@@ -158,23 +144,5 @@ public class PersonHelper {
 			result.append(occupationFacilityName);
 		}
 		return result.length() > 0 ? result.toString() : "";
-	}
-
-	public static String getAgeGroupFromAge(Integer age, ApproximateAgeType ageType) {
-		if (age == null) {
-			return null;
-		}
-		
-		if (ageType == ApproximateAgeType.MONTHS) {
-			return "0-4";
-		}
-
-		int lowerAgeBoundary = (int) Math.floor(age / 5f) * 5;
-		
-		if (lowerAgeBoundary >= 120) {
-			return "120+";
-		} else {
-			return lowerAgeBoundary + "-" + (lowerAgeBoundary + 4);
-		}
 	}
 }

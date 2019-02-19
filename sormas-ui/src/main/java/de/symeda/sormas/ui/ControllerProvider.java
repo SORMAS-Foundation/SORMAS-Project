@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui;
 
 import de.symeda.sormas.ui.caze.CaseController;
+import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseController;
 import de.symeda.sormas.ui.configuration.infrastructure.InfrastructureController;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreakController;
 import de.symeda.sormas.ui.contact.ContactController;
@@ -54,6 +55,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final StatisticsController statisticsController;
 	private final DashboardController dashboardController;
 	private final TherapyController therapyController;
+	private final ClinicalCourseController clinicalCourseController;
 
 	public ControllerProvider() {
 		super();
@@ -73,6 +75,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		statisticsController = new StatisticsController();
 		dashboardController = new DashboardController();
 		therapyController = new TherapyController();
+		clinicalCourseController = new ClinicalCourseController();
 	}
 
 	protected static ControllerProvider get() {
@@ -137,6 +140,10 @@ public class ControllerProvider extends BaseControllerProvider {
 	
 	public static TherapyController getTherapyController() {
 		return get().therapyController;
+	}
+	
+	public static ClinicalCourseController getClinicalCourseController() {
+		return get().clinicalCourseController;
 	}
 
 }

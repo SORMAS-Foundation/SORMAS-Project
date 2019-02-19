@@ -56,8 +56,8 @@ public class SampleGrid extends Grid implements AbstractGrid<SampleCriteria> {
 
 	public static final String EDIT_BTN_ID = "edit";
 	
-	private static final String TEST_RESULT_AND_SPECIMEN = Captions.genPropTestResultAndSpecimen;
-	private static final String DISEASE_SHORT = Captions.genPropDiseaseShort;
+	private static final String TEST_RESULT_AND_SPECIMEN = Captions.Sample_testResultAndSpecimen;
+	private static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 	
 	private SampleCriteria sampleCriteria = new SampleCriteria();
 	

@@ -69,6 +69,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseView;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.epidata.EpiDataView;
@@ -102,6 +103,9 @@ public class CaseController {
 		navigator.addView(EpiDataView.VIEW_NAME, EpiDataView.class);
 		if (UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW)) {
 			navigator.addView(TherapyView.VIEW_NAME, TherapyView.class);
+		}
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW)) {
+			navigator.addView(ClinicalCourseView.VIEW_NAME, ClinicalCourseView.class);
 		}
 	}
 

@@ -27,6 +27,8 @@
     <data>
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
+        <import type="de.symeda.sormas.api.hospitalization.AccommodationType" />
+        <variable name="accommodationClass" type="Class" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.hospitalization.Hospitalization" />
         <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case" />
@@ -93,6 +95,27 @@
                         android:id="@+id/caseHospitalization_dischargeDate"
                         app:value="@={data.dischargeDate}"
                         app:allowedDaysInFuture="7"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlSwitchField
+                        android:id="@+id/caseHospitalization_accommodation"
+                        app:value="@={data.accommodation}"
+                        app:enumClass="@{accommodationClass}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlSwitchField
+                        android:id="@+id/caseHospitalization_leftAgainstAdvice"
+                        dependencyParentField="@{caseHospitalizationDischargeDate}"
+                        dependencyParentValue="null"
+                        dependencyParentVisibility="@{false}"
+                        app:value="@={data.leftAgainstAdvice}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>

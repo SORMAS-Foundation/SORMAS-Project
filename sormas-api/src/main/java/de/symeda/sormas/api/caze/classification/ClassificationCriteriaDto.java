@@ -41,7 +41,7 @@ import de.symeda.sormas.api.sample.SampleTestDto;
 	@JsonSubTypes.Type(value = ClassificationAllOfCriteriaDto.class, name = "ClassificationAllOfCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationCaseCriteriaDto.class, name = "ClassificationCaseCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationNoneOfCriteriaDto.class, name = "ClassificationNoneOfCrieriaDto"),
-	@JsonSubTypes.Type(value = ClassificationPersonAgeCriteriaDto.class, name = "ClassificationPersonAgeCriteriaDto"),
+	@JsonSubTypes.Type(value = ClassificationPersonAgeBetweenYearsCriteriaDto.class, name = "ClassificationPersonAgeBetweenYearsCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationSampleTestPositiveResultCriteriaDto.class, name = "ClassificationSampleTestPositiveResultCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationXOfCriteriaDto.class, name = "ClassificationXOfCriteriaDto"),
 })

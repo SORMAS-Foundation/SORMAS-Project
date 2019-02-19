@@ -93,8 +93,10 @@ public class CommunityFacadeEjb implements CommunityFacade {
 			}
 		}
 		
-		cq.multiselect(community.get(Community.CREATION_DATE), community.get(Community.CHANGE_DATE), community.get(Community.UUID), 
-				community.get(Community.NAME), district.get(District.UUID), district.get(District.NAME));
+		cq.multiselect(community.get(Community.CREATION_DATE), community.get(Community.CHANGE_DATE),
+				community.get(Community.UUID), community.get(Community.NAME),
+				region.get(Region.UUID), region.get(Region.NAME),
+				district.get(District.UUID), district.get(District.NAME));
 		cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)), cb.asc(community.get(Community.NAME)));
 
 		List<CommunityDto> resultList = em.createQuery(cq).getResultList();
@@ -165,6 +167,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		
 		dto.setName(entity.getName());
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
+		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getDistrict().getRegion()));
 
 		return dto;
 	}

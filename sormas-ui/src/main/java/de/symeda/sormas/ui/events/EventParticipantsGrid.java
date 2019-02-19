@@ -45,11 +45,11 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 @SuppressWarnings("serial")
 public class EventParticipantsGrid extends Grid {
 	
-	public static final String PERSON_UUID = Captions.genPropPersonUuid;
-	public static final String PERSON_NAME = Captions.genPropPersonName;
-	public static final String PERSON_AGE = Captions.genPropPersonAge;
-	public static final String PERSON_SEX = Captions.genPropPersonSex;
-	public static final String CASE_ID = Captions.genPropCaseId;
+	public static final String PERSON_UUID = Captions.EventParticipant_personUuid;
+	public static final String PERSON_NAME = Captions.EventParticipant_personName;
+	public static final String PERSON_AGE = Captions.EventParticipant_personAge;
+	public static final String PERSON_SEX = Captions.EventParticipant_personSex;
+	public static final String CASE_ID = Captions.EventParticipant_caseId;
 
 	private static final String EDIT_BTN_ID = "edit";
 	
