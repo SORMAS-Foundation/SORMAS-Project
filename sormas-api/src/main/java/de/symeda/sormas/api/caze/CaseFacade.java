@@ -76,6 +76,8 @@ public interface CaseFacade {
 	
 	Map<PresentCondition, Long> getNewCaseCountPerPersonCondition(CaseCriteria caseCriteria, String userUuid);
 	
+	Map<Disease, Long> getNewCaseCountPerDisease(CaseCriteria caseCriteria, String userUuid);
+	
 	/**
 	 * @param fromDate optional
 	 * @param toDate optional

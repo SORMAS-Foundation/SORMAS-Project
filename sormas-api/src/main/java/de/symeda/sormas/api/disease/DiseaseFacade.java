@@ -15,54 +15,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.outbreak;
+package de.symeda.sormas.api.disease;
 
 import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 
 @Remote
-public interface OutbreakFacade {
-
-	List<String> getActiveUuidsAfter(Date date);
-
-	List<String> getInactiveUuidsAfter(Date date);
-
-	List<OutbreakDto> getActiveAfter(Date date);
-	
-	List<OutbreakDto> getActive();
-	
-	List<OutbreakDto> getActiveByRegionAndDisease(RegionReferenceDto region, Disease disease);
-	
-	OutbreakDto getActiveByDistrictAndDisease(DistrictReferenceDto district, Disease disease);
-
-	boolean hasOutbreak(DistrictReferenceDto district, Disease disease);
-
-	OutbreakDto saveOutbreak(OutbreakDto outbreakDto);
-
-	void deleteOutbreak(OutbreakDto outbreakDto);
-	
-	/**
-	 * @return The freshly started outbreak or an existing one if already started
-	 */
-	OutbreakDto startOutbreak(DistrictReferenceDto district, Disease disease);
-
-	/**
-	 * @return The ended outbreak or null if none was active
-	 */
-	OutbreakDto endOutbreak(DistrictReferenceDto district, Disease disease);
-	
-	List<DashboardOutbreakDto> getOutbreaksForDashboard(
+public interface DiseaseFacade {	
+	List<DiseaseBurdenDto> getDiseaseBurdenForDashboard(
 			RegionReferenceDto regionRef,
 			DistrictReferenceDto districtRef, 
-			Disease disease,
 			Date from, 
 			Date to, 
+			Date previousFromDate,
+			Date previousToDate,
 			String userUuid);
 }

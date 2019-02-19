@@ -181,7 +181,9 @@ public class DashboardMapComponent extends VerticalLayout {
 		// Add components
 		addComponent(createHeader());
 		addComponent(map);
+		addComponent(createFooter());
 		setExpandRatio(map, 1);
+		map.setHeight(385, Unit.PIXELS);
 	}
 
 	public void refreshMap() {
@@ -257,13 +259,45 @@ public class DashboardMapComponent extends VerticalLayout {
 		mapHeaderLayout.setComponentAlignment(mapLabel, Alignment.BOTTOM_LEFT);
 		mapHeaderLayout.setExpandRatio(mapLabel, 1);
 
+		// "Expand" and "Collapse" buttons
+		Button expandMapButton = new Button("", FontAwesome.EXPAND);
+		CssStyles.style(expandMapButton, CssStyles.BUTTON_SUBTLE);
+		expandMapButton.addStyleName(CssStyles.VSPACE_NONE);
+		Button collapseMapButton = new Button("", FontAwesome.COMPRESS);
+		CssStyles.style(collapseMapButton, CssStyles.BUTTON_SUBTLE);
+		collapseMapButton.addStyleName(CssStyles.VSPACE_NONE);
+
+		expandMapButton.addClickListener(e -> {
+			externalExpandButtonListener.buttonClick(e);
+			mapHeaderLayout.removeComponent(expandMapButton);
+			mapHeaderLayout.addComponent(collapseMapButton);
+			mapHeaderLayout.setComponentAlignment(collapseMapButton, Alignment.MIDDLE_RIGHT);
+		});
+		collapseMapButton.addClickListener(e -> {
+			externalCollapseButtonListener.buttonClick(e);
+			mapHeaderLayout.removeComponent(collapseMapButton);
+			mapHeaderLayout.addComponent(expandMapButton);
+			mapHeaderLayout.setComponentAlignment(expandMapButton, Alignment.MIDDLE_RIGHT);
+		});
+		mapHeaderLayout.addComponent(expandMapButton);
+		mapHeaderLayout.setComponentAlignment(expandMapButton, Alignment.MIDDLE_RIGHT);
+
+		return mapHeaderLayout;
+	}
+
+	private HorizontalLayout createFooter() {
+		HorizontalLayout mapFooterLayout = new HorizontalLayout();
+		mapFooterLayout.setWidth(100, Unit.PERCENTAGE);
+		mapFooterLayout.setSpacing(true);
+		CssStyles.style(mapFooterLayout, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_3);
+
 		// Map key dropdown button
 		legendDropdown = new PopupButton(I18nProperties.getCaption(Captions.dashboardMapKey));
 		CssStyles.style(legendDropdown, CssStyles.BUTTON_SUBTLE);
 		legendDropdown.setContent(createLegend());
-		mapHeaderLayout.addComponent(legendDropdown);
-		mapHeaderLayout.setComponentAlignment(legendDropdown, Alignment.MIDDLE_RIGHT);
-		mapHeaderLayout.setExpandRatio(legendDropdown, 1);
+		mapFooterLayout.addComponent(legendDropdown);
+		mapFooterLayout.setComponentAlignment(legendDropdown, Alignment.MIDDLE_RIGHT);
+		mapFooterLayout.setExpandRatio(legendDropdown, 1);
 
 		// Layers dropdown button
 		PopupButton layersDropdown = new PopupButton(I18nProperties.getCaption(Captions.dashboardMapLayers));
@@ -400,33 +434,10 @@ public class DashboardMapComponent extends VerticalLayout {
 				}
 			}
 		}
-		mapHeaderLayout.addComponent(layersDropdown);
-		mapHeaderLayout.setComponentAlignment(layersDropdown, Alignment.MIDDLE_RIGHT);
+		mapFooterLayout.addComponent(layersDropdown);
+		mapFooterLayout.setComponentAlignment(layersDropdown, Alignment.MIDDLE_RIGHT);
 
-		// "Expand" and "Collapse" buttons
-		Button expandMapButton = new Button("", FontAwesome.EXPAND);
-		CssStyles.style(expandMapButton, CssStyles.BUTTON_SUBTLE);
-		expandMapButton.addStyleName(CssStyles.VSPACE_NONE);
-		Button collapseMapButton = new Button("", FontAwesome.COMPRESS);
-		CssStyles.style(collapseMapButton, CssStyles.BUTTON_SUBTLE);
-		collapseMapButton.addStyleName(CssStyles.VSPACE_NONE);
-
-		expandMapButton.addClickListener(e -> {
-			externalExpandButtonListener.buttonClick(e);
-			mapHeaderLayout.removeComponent(expandMapButton);
-			mapHeaderLayout.addComponent(collapseMapButton);
-			mapHeaderLayout.setComponentAlignment(collapseMapButton, Alignment.MIDDLE_RIGHT);
-		});
-		collapseMapButton.addClickListener(e -> {
-			externalCollapseButtonListener.buttonClick(e);
-			mapHeaderLayout.removeComponent(collapseMapButton);
-			mapHeaderLayout.addComponent(expandMapButton);
-			mapHeaderLayout.setComponentAlignment(expandMapButton, Alignment.MIDDLE_RIGHT);
-		});
-		mapHeaderLayout.addComponent(expandMapButton);
-		mapHeaderLayout.setComponentAlignment(expandMapButton, Alignment.MIDDLE_RIGHT);
-
-		return mapHeaderLayout;
+		return mapFooterLayout;
 	}
 
 	private VerticalLayout createLegend() {
@@ -535,7 +546,8 @@ public class DashboardMapComponent extends VerticalLayout {
 			HorizontalLayout eventsKeyLayout = new HorizontalLayout();
 			{
 				eventsKeyLayout.setSpacing(false);
-				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_RUMOR, EventType.RUMOR.toString());
+				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_RUMOR,
+						EventType.RUMOR.toString());
 				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
 				eventsKeyLayout.addComponent(legendEntry);
 				legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_OUTBREAK, EventType.OUTBREAK.toString());
@@ -880,22 +892,21 @@ public class DashboardMapComponent extends VerticalLayout {
 			CaseClassification classification = caze.getCaseClassification();
 			if (classification == null || classification == CaseClassification.NO_CASE)
 				continue;
-			boolean hasCaseGps = (caze.getAddressLat() != null && caze.getAddressLon() != null) 
-					 || (caze.getReportLat() != null || caze.getReportLon() != null);
+			boolean hasCaseGps = (caze.getAddressLat() != null && caze.getAddressLon() != null)
+					|| (caze.getReportLat() != null || caze.getReportLon() != null);
 			boolean hasFacilityGps = caze.getHealthFacilityLat() != null && caze.getHealthFacilityLon() != null;
 			if (!hasCaseGps && !hasFacilityGps) {
 				continue; // no gps at all
-			}			
+			}
 
 			if (mapCaseDisplayMode == MapCaseDisplayMode.CASE_ADDRESS) {
 				if (!hasCaseGps) {
-					continue; 
+					continue;
 				}
 				mapCaseDtos.add(caze);
 			} else {
 				if (caze.getHealthFacilityUuid().equals(FacilityDto.NONE_FACILITY_UUID)
-						|| caze.getHealthFacilityUuid().equals(FacilityDto.OTHER_FACILITY_UUID)
-						|| !hasFacilityGps) {
+						|| caze.getHealthFacilityUuid().equals(FacilityDto.OTHER_FACILITY_UUID) || !hasFacilityGps) {
 					if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITY_OR_CASE_ADDRESS) {
 						if (!hasCaseGps) {
 							continue;

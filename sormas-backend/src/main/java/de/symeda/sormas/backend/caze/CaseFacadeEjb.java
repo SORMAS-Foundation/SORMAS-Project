@@ -510,6 +510,13 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
+	public Map<Disease, Long> getNewCaseCountPerDisease(CaseCriteria caseCriteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+
+		return caseService.getNewCaseCountPerDisease(caseCriteria, user);
+	}
+
+	@Override
 	public CaseDataDto getCaseDataByUuid(String uuid) {
 		return toDto(caseService.getByUuid(uuid));
 	}

@@ -226,6 +226,11 @@ public interface Strings {
 	public static String infoUserEmail = "infoUserEmail";
 	public static String infoUserPhoneNumber = "infoUserPhoneNumber";
 	public static String infoWeeklyReportsView = "infoWeeklyReportsView";
+	public static String lastTwoDays = "lastTwoDays";
+	public static String lastTwoWeeks = "lastTwoWeeks";
+	public static String lastTwoYears = "lastTwoYears";
+	public static String lastWeek = "lastWeek";
+	public static String lastYear = "lastYear";
 	public static String messageAnimalContactsHint = "messageAnimalContactsHint";
 	public static String messageCaseArchived = "messageCaseArchived";
 	public static String messageCaseCreated = "messageCaseCreated";
@@ -348,6 +353,7 @@ public interface Strings {
 	public static String numberThree = "numberThree";
 	public static String numberTwelve = "numberTwelve";
 	public static String numberTwo = "numberTwo";
+	public static String previousPeriod = "previousPeriod";
 	public static String promptCasesDateFrom = "promptCasesDateFrom";
 	public static String promptCasesDateTo = "promptCasesDateTo";
 	public static String promptCasesEpiWeekFrom = "promptCasesEpiWeekFrom";
@@ -392,4 +398,5 @@ public interface Strings {
 	public static String sYear = "sYear";
 	public static String sYears = "sYears";
 	public static String sYes = "sYes";
+	public static String yesterday = "yesterday";
  }

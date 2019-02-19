@@ -59,6 +59,8 @@ public interface Captions {
 	public static String CaseData_region = "CaseData.region";
 	public static String CaseData_reportDate = "CaseData.reportDate";
 	public static String CaseData_reportingUser = "CaseData.reportingUser";
+	public static String CaseData_sequlae = "CaseData.sequlae";
+	public static String CaseData_sequlaeDetails = "CaseData.sequlaeDetails";
 	public static String CaseData_smallpoxVaccinationReceived = "CaseData.smallpoxVaccinationReceived";
 	public static String CaseData_smallpoxVaccinationScar = "CaseData.smallpoxVaccinationScar";
 	public static String CaseData_surveillanceOfficer = "CaseData.surveillanceOfficer";
@@ -214,6 +216,7 @@ public interface Captions {
 	public static String dashboardCaseFatalityRate = "dashboardCaseFatalityRate";
 	public static String dashboardCaseFatalityRateShort = "dashboardCaseFatalityRateShort";
 	public static String dashboardCasesIn = "dashboardCasesIn";
+	public static String dashboardComparedToPreviousPeriod = "dashboardComparedToPreviousPeriod";
 	public static String dashboardCompletedFollowUp = "dashboardCompletedFollowUp";
 	public static String dashboardCompletedFollowUpShort = "dashboardCompletedFollowUpShort";
 	public static String dashboardConfirmed = "dashboardConfirmed";
@@ -224,6 +227,16 @@ public interface Captions {
 	public static String dashboardDead = "dashboardDead";
 	public static String dashboardDiscarded = "dashboardDiscarded";
 	public static String dashboardDisease = "dashboardDisease";
+	public static String dashboardDiseaseBurdenCaseCount = "dashboardDiseaseBurdenCaseCount";
+	public static String dashboardDiseaseBurdenDeaths = "dashboardDiseaseBurdenDeaths";
+	public static String dashboardDiseaseBurdenDynamic = "dashboardDiseaseBurdenDynamic";
+	public static String dashboardDiseaseBurdenInfo = "dashboardDiseaseBurdenInfo";
+	public static String dashboardDiseaseBurdenNumberOfEvents = "dashboardDiseaseBurdenNumberOfEvents";
+	public static String dashboardDiseaseBurdenOutbreakDistricts = "dashboardDiseaseBurdenOutbreakDistricts";
+	public static String dashboardDiseaseBurdenPreviousCaseCount = "dashboardDiseaseBurdenPreviousCaseCount";
+	public static String dashboardDiseaseCarouselSlideShow = "dashboardDiseaseCarouselSlideShow";
+	public static String dashboardDiseaseDifference = "dashboardDiseaseDifference";
+	public static String dashboardDiseaseDifferenceYAxisLabel = "dashboardDiseaseDifferenceYAxisLabel";
 	public static String dashboardDone = "dashboardDone";
 	public static String dashboardFatalities = "dashboardFatalities";
 	public static String dashboardFollowUpUntilShort = "dashboardFollowUpUntilShort";
@@ -250,6 +263,9 @@ public interface Captions {
 	public static String dashboardNegative = "dashboardNegative";
 	public static String dashboardNeverVisited = "dashboardNeverVisited";
 	public static String dashboardNew = "dashboardNew";
+	public static String dashboardNewCases = "dashboardNewCases";
+	public static String dashboardNewEvents = "dashboardNewEvents";
+	public static String dashboardNewTestResults = "dashboardNewTestResults";
 	public static String dashboardNoPopulationData = "dashboardNoPopulationData";
 	public static String dashboardNormal = "dashboardNormal";
 	public static String dashboardNotACase = "dashboardNotACase";
@@ -263,6 +279,7 @@ public interface Captions {
 	public static String dashboardNumberOfContacts = "dashboardNumberOfContacts";
 	public static String dashboardOneDay = "dashboardOneDay";
 	public static String dashboardOutbreak = "dashboardOutbreak";
+	public static String dashboardOutbreakDistricts = "dashboardOutbreakDistricts";
 	public static String dashboardPending = "dashboardPending";
 	public static String dashboardPositive = "dashboardPositive";
 	public static String dashboardPossible = "dashboardPossible";
