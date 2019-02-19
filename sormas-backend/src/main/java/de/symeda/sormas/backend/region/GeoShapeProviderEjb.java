@@ -149,7 +149,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		return new GeoLatLon(polygonCenter.getX(), polygonCenter.getY());
 	}
 
-	//@PostConstruct
+	@PostConstruct
 	private void loadData() {
 
 		loadRegionData();
