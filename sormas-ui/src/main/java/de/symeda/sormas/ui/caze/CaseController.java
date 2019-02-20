@@ -500,11 +500,10 @@ public class CaseController {
 						Notification notification = new Notification(String.format(I18nProperties.getString(Strings.messageCaseSavedClassificationChanged), resultDto.getCaseClassification().toString()), Type.WARNING_MESSAGE);
 						notification.setDelayMsec(-1);
 						notification.show(Page.getCurrent());
-						navigateToView(viewName, cazeDto.getUuid(), viewMode);
 					} else {
 						Notification.show(I18nProperties.getString(Strings.messageCaseSaved), Type.WARNING_MESSAGE);
-						navigateToView(viewName, cazeDto.getUuid(), viewMode);
 					}
+					SormasUI.refreshView();
 				}
 			});
 		} else {
@@ -514,11 +513,10 @@ public class CaseController {
 				Notification notification = new Notification(String.format(I18nProperties.getString(Strings.messageCaseSavedClassificationChanged), resultDto.getCaseClassification().toString()), Type.WARNING_MESSAGE);
 				notification.setDelayMsec(-1);
 				notification.show(Page.getCurrent());
-				navigateToView(viewName, cazeDto.getUuid(), viewMode);
 			} else {
 				Notification.show(I18nProperties.getString(Strings.messageCaseSaved), Type.WARNING_MESSAGE);
-				navigateToView(viewName, cazeDto.getUuid(), viewMode);
 			}
+			SormasUI.refreshView();
 		}
 	}
 
@@ -571,7 +569,7 @@ public class CaseController {
 					FacadeProvider.getCaseFacade().saveAndTransferCase(dto);
 					popupWindow.close();
 					Notification.show(I18nProperties.getString(Strings.messageCaseTransfered), Type.WARNING_MESSAGE);
-					navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null);
+					SormasUI.refreshView();
 				}
 			}
 		});

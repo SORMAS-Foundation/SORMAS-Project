@@ -111,9 +111,8 @@
                         app:value="@={data.sequelae}"
                         app:enumClass="@{yesNoUnknownClass}"
                         app:dependencyParentField="@{caseDataOutcome}"
-                        app:dependencyParentValue="@{null}"
-                        app:dependencyParentValue2="@{CaseOutcome.NO_OUTCOME}"
-                        app:dependencyParentVisibility="@{false}"
+                        app:dependencyParentValue="@{CaseOutcome.RECOVERED}"
+                        app:dependencyParentValue2="@{CaseOutcome.UNKNOWN}"
                         app:userEditRight="@{UserRight.CASE_CLASSIFY}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 

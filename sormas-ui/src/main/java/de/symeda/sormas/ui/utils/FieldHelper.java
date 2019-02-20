@@ -153,33 +153,24 @@ public final class FieldHelper {
 
 		setRequiredWhen(fieldGroup, fieldGroup.getField(sourcePropertyId), targetPropertyIds, sourceValues);
 	}
+	
+	public static void setRequiredWhenNotNull(FieldGroup fieldGroup, Object sourcePropertyId, 
+			String targetPropertyId) {
+		setRequiredWhen(fieldGroup, fieldGroup.getField(sourcePropertyId), Arrays.asList(targetPropertyId), Arrays.asList((Object)null), true, null);
+	}
 
 	@SuppressWarnings("rawtypes")
 	public static void setRequiredWhen(FieldGroup fieldGroup, Field sourceField,
 			List<String> targetPropertyIds, final List<Object> sourceValues) {
-
-		if(sourceField instanceof AbstractField<?>) {
-			((AbstractField) sourceField).setImmediate(true);
+		setRequiredWhen(fieldGroup, sourceField, targetPropertyIds, sourceValues, false, null);	
 		}
 
-		// initialize
-		{
-			boolean required = sourceValues.contains(sourceField.getValue());
-			for(Object targetPropertyId : targetPropertyIds) {
-				Field targetField = fieldGroup.getField(targetPropertyId);
-				targetField.setRequired(required);
-			}
-		}
-
-		sourceField.addValueChangeListener(event -> {
-			boolean required = sourceValues.contains(event.getProperty().getValue());
-			for(Object targetPropertyId : targetPropertyIds) {
-				Field targetField = fieldGroup.getField(targetPropertyId);
-				targetField.setRequired(required);
-			}
-		});
+	@SuppressWarnings("rawtypes")
+	public static void setRequiredWhen(FieldGroup fieldGroup, Field sourceField, 
+			List<String> targetPropertyIds, final List<Object> sourceValues, Disease disease) {
+		setRequiredWhen(fieldGroup, sourceField, targetPropertyIds, sourceValues, false, disease);
 	}
-
+	
 	/**
 	 * Sets the target fields to required when the sourceField has a value that's contained
 	 * in the sourceValues list; the disease is needed to make sure that no fields are set
@@ -187,7 +178,7 @@ public final class FieldHelper {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static void setRequiredWhen(FieldGroup fieldGroup, Field sourceField, 
-			List<String> targetPropertyIds, final List<Object> sourceValues, Disease disease) {
+			List<String> targetPropertyIds, final List<Object> sourceValues, boolean requiredWhenNot, Disease disease) {
 
 		if(sourceField instanceof AbstractField<?>) {
 			((AbstractField) sourceField).setImmediate(true);
@@ -196,6 +187,7 @@ public final class FieldHelper {
 		// initialize
 		{
 			boolean required = sourceValues.contains(sourceField.getValue());
+			required = required != requiredWhenNot;
 			for(Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				if (!targetField.isVisible()) {
@@ -203,7 +195,8 @@ public final class FieldHelper {
 					continue;
 				}
 				
-				if(Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
+				if (disease == null 
+						|| Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
 					targetField.setRequired(required);
 				}
 			}
@@ -211,6 +204,7 @@ public final class FieldHelper {
 
 		sourceField.addValueChangeListener(event -> {
 			boolean required = sourceValues.contains(event.getProperty().getValue());
+			required = required != requiredWhenNot;
 			for(Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				if (!targetField.isVisible()) {
@@ -218,7 +212,8 @@ public final class FieldHelper {
 					continue;
 				}
 				
-				if(Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
+				if (disease == null
+						|| Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
 					targetField.setRequired(required);
 				}
 			}

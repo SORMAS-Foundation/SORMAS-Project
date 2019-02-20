@@ -136,7 +136,7 @@ public class SampleController {
 					SampleDto dto = form.getValue();
 					SampleDto originalDto = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getUuid());
 					FacadeProvider.getSampleFacade().saveSample(dto);
-					navigateToData(dto.getUuid());
+					SormasUI.refreshView();
 
 					if (dto.getSpecimenCondition() != originalDto.getSpecimenCondition() &&
 							dto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE &&

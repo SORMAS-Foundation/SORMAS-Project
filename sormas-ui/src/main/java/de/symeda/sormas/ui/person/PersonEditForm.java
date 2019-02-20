@@ -237,6 +237,19 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			addressHeader.setVisible(false);
 
 		// Add listeners
+		
+		FieldHelper.setRequiredWhenNotNull(getFieldGroup(), PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE);
+		addFieldListeners(PersonDto.APPROXIMATE_AGE, e -> {
+			@SuppressWarnings("unchecked")
+			Field<ApproximateAgeType> ageTypeField = (Field<ApproximateAgeType>) getField(PersonDto.APPROXIMATE_AGE_TYPE);
+			if (e.getProperty().getValue() == null) {
+				ageTypeField.clear();
+			} else {
+				if (ageTypeField.isEmpty()) {
+					ageTypeField.setValue(ApproximateAgeType.YEARS);
+				}
+			}
+		});
 
 		addFieldListeners(PersonDto.BIRTH_DATE_DD, e -> {
 			updateApproximateAge();
@@ -354,7 +367,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 			AbstractSelect approximateAgeTypeSelect = (AbstractSelect)getFieldGroup().getField(PersonDto.APPROXIMATE_AGE_TYPE);
 			approximateAgeTypeSelect.setReadOnly(false);
-			approximateAgeTypeSelect.setValue(String.valueOf(pair.getElement1()));
+			approximateAgeTypeSelect.setValue(pair.getElement1());
 			approximateAgeTypeSelect.setReadOnly(true);
 		}
 	}

@@ -135,7 +135,7 @@ public class EventController {
 					EventDto eventDto = eventEditForm.getValue();
 					eventDto = FacadeProvider.getEventFacade().saveEvent(eventDto);
 					Notification.show(I18nProperties.getString(Strings.messageEventSaved), Type.WARNING_MESSAGE);
-					navigateToData(eventDto.getUuid());
+					SormasUI.refreshView();
 				}
 			}
 		});

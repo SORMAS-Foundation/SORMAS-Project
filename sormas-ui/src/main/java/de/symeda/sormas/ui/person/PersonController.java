@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
@@ -42,7 +41,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.events.EventParticipantsView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -140,24 +138,19 @@ public class PersonController {
 
 
 	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid, Disease disease, String diseaseDetails, UserRight editOrCreateUserRight, final ViewMode viewMode) {
-		PersonEditForm personEditForm = new PersonEditForm(disease, diseaseDetails, editOrCreateUserRight, viewMode);
+		PersonEditForm editForm = new PersonEditForm(disease, diseaseDetails, editOrCreateUserRight, viewMode);
 
 		PersonDto personDto = personFacade.getPersonByUuid(personUuid);
-		personEditForm.setValue(personDto);
+		editForm.setValue(personDto);
 
-		return getPersonEditView(personEditForm, editOrCreateUserRight);
-	}
-
-	private CommitDiscardWrapperComponent<PersonEditForm> getPersonEditView(PersonEditForm editForm, UserRight editOrCreateUserRight) {
 		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(editForm, editForm.getFieldGroup());
-		
 		
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
 				if (!editForm.getFieldGroup().isModified()) {
 					PersonDto dto = editForm.getValue();
-					savePerson( dto);
+					savePerson(dto);
 				}
 			}
 		});
@@ -192,7 +185,7 @@ public class PersonController {
 			Notification.show(I18nProperties.getString(Strings.messagePersonSaved), Type.WARNING_MESSAGE);
 		}
 		
-		refreshView();
+		SormasUI.refreshView();
 	}
 
 	private void onPersonChanged(PersonDto existingPerson, PersonDto changedPerson) {
@@ -207,13 +200,4 @@ public class PersonController {
 			}
 		}
 	}
-	
-	private void refreshView() {
-		View currentView = SormasUI.get().getNavigator().getCurrentView();
-		if (currentView instanceof EventParticipantsView) {
-			// force refresh, because view didn't change
-			((EventParticipantsView)currentView).enter(null);
-		}
-	}
-
 }

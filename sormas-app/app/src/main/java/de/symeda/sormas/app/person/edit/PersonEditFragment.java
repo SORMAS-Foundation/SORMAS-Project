@@ -130,6 +130,28 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         contentBinding.personOccupationType.initializeSpinner(DataUtils.getEnumItems(OccupationType.class, true));
         contentBinding.personEducationType.initializeSpinner(DataUtils.getEnumItems(EducationType.class, true));
 
+        contentBinding.personApproximateAge.addValueChangedListener(new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                if (DataHelper.isNullOrEmpty((String)field.getValue())) {
+                    contentBinding.personApproximateAgeType.setRequired(false);
+                    contentBinding.personApproximateAgeType.setValue(null);
+                } else {
+                    contentBinding.personApproximateAgeType.setRequired(true);
+                    if (contentBinding.personApproximateAgeType.getValue() == null) {
+                        contentBinding.personApproximateAgeType.setValue(ApproximateAgeType.YEARS);
+                    }
+                }
+            }
+        });
+
+        if (!DataHelper.isNullOrEmpty(contentBinding.personApproximateAge.getValue())) {
+            contentBinding.personApproximateAgeType.setRequired(true);
+            if (contentBinding.personApproximateAgeType.getValue() == null) {
+                contentBinding.personApproximateAgeType.setValue(ApproximateAgeType.YEARS);
+            }
+        }
+
         // Initialize ControlDateFields
         contentBinding.personDeathDate.initializeDateField(fragment.getFragmentManager());
         contentBinding.personBurialDate.initializeDateField(fragment.getFragmentManager());

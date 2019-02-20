@@ -205,7 +205,7 @@ public class ContactController {
 
 					dto = FacadeProvider.getContactFacade().saveContact(dto);
 					Notification.show(I18nProperties.getString(Strings.messageContactSaved), Type.WARNING_MESSAGE);
-					editData(dto.getUuid());
+					SormasUI.refreshView();
 				}
 			}
 		});

@@ -122,4 +122,8 @@ public class SormasUI extends UI implements HasUserProvider, HasViewModelProvide
 			return super.createDeploymentConfiguration(initParameters);
 		}
 	}
+	
+	public static void refreshView() {
+		get().getNavigator().navigateTo(get().getNavigator().getState());
+	}
 }

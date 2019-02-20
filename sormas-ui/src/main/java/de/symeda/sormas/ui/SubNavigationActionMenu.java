@@ -21,16 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
-import com.vaadin.ui.themes.ValoTheme;
-
-import de.symeda.sormas.ui.utils.CssStyles;
 
 /**
  * A sub navigation menu presenting a list of options.
