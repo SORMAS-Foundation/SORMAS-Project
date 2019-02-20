@@ -143,6 +143,18 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setBloodPressureDiastolic(source.getBloodPressureDiastolic());
 		target.setBloodPressureSystolic(source.getBloodPressureSystolic());
 		target.setHeartRate(source.getHeartRate());
+		target.setPharyngealErythema(source.getPharyngealErythema());
+		target.setPharyngealExudate(source.getPharyngealExudate());
+		target.setOedemaFaceNeck(source.getOedemaFaceNeck());
+		target.setOedemaLowerExtremity(source.getOedemaLowerExtremity());
+		target.setLossSkinTurgor(source.getLossSkinTurgor());
+		target.setPalpableLiver(source.getPalpableLiver());
+		target.setPalpableSpleen(source.getPalpableSpleen());
+		target.setMalaise(source.getMalaise());
+		target.setSunkenEyesFontanelle(source.getSunkenEyesFontanelle());
+		target.setSidePain(source.getSidePain());
+		target.setFluidInLungCavity(source.getFluidInLungCavity());
+		target.setTremor(source.getTremor());
 		
 		return symptoms;
 	}
@@ -251,7 +263,19 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setBulgingFontanelle(source.getBulgingFontanelle());
 		target.setBloodPressureDiastolic(source.getBloodPressureDiastolic());
 		target.setBloodPressureSystolic(source.getBloodPressureSystolic());
-		target.setHeartRate(source.getHeartRate());
+		target.setHeartRate(source.getHeartRate());		
+		target.setPharyngealErythema(source.getPharyngealErythema());
+		target.setPharyngealExudate(source.getPharyngealExudate());
+		target.setOedemaFaceNeck(source.getOedemaFaceNeck());
+		target.setOedemaLowerExtremity(source.getOedemaLowerExtremity());
+		target.setLossSkinTurgor(source.getLossSkinTurgor());
+		target.setPalpableLiver(source.getPalpableLiver());
+		target.setPalpableSpleen(source.getPalpableSpleen());
+		target.setMalaise(source.getMalaise());
+		target.setSunkenEyesFontanelle(source.getSunkenEyesFontanelle());
+		target.setSidePain(source.getSidePain());
+		target.setFluidInLungCavity(source.getFluidInLungCavity());
+		target.setTremor(source.getTremor());
 		
 		return target;
 	}

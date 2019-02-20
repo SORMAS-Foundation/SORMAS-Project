@@ -7,7 +7,7 @@ public class ClinicalVisitCriteria extends BaseCriteria implements Cloneable {
 
 	private static final long serialVersionUID = 3366677994421979459L;
 	
-	private ClinicalCourseDto clinicalCourse;
+	private ClinicalCourseReferenceDto clinicalCourse;
 
 	@Override
 	public ClinicalVisitCriteria clone() {
@@ -19,11 +19,11 @@ public class ClinicalVisitCriteria extends BaseCriteria implements Cloneable {
 	}	
 	
 	@IgnoreForUrl
-	public ClinicalCourseDto getClinicalCourse() {
+	public ClinicalCourseReferenceDto getClinicalCourse() {
 		return clinicalCourse;
 	}
 	
-	public ClinicalVisitCriteria clinicalCourse(ClinicalCourseDto clinicalCourse) {
+	public ClinicalVisitCriteria clinicalCourse(ClinicalCourseReferenceDto clinicalCourse) {
 		this.clinicalCourse = clinicalCourse;
 		return this;
 	}

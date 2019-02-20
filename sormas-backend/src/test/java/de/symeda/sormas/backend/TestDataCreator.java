@@ -134,27 +134,27 @@ public class TestDataCreator {
 	}
 	
 	public ClinicalVisitDto createClinicalVisit(CaseDataDto caze) {
-		ClinicalVisitDto clinicalVisit = ClinicalVisitDto.buildClinicalVisit(caze.getClinicalCourse(), SymptomsDto.build(), caze.getDisease(), caze.getPerson());
+		ClinicalVisitDto clinicalVisit = ClinicalVisitDto.buildClinicalVisit(caze.getClinicalCourse().toReference(), SymptomsDto.build(), caze.getDisease(), caze.getPerson());
 		
-		clinicalVisit = beanTest.getClinicalCourseFacade().saveClinicalVisit(clinicalVisit, caze.getUuid());
+		clinicalVisit = beanTest.getClinicalVisitFacade().saveClinicalVisit(clinicalVisit, caze.getUuid());
 	
 		return clinicalVisit;
 	}
 	
 	public PrescriptionDto createPrescription(CaseDataDto caze) {
-		PrescriptionDto prescription = PrescriptionDto.buildPrescription(caze.getTherapy());
+		PrescriptionDto prescription = PrescriptionDto.buildPrescription(caze.getTherapy().toReference());
 		prescription.setPrescriptionType(TreatmentType.BLOOD_TRANSFUSION);
 		
-		prescription = beanTest.getTherapyFacade().savePrescription(prescription);
+		prescription = beanTest.getPrescriptionFacade().savePrescription(prescription);
 		
 		return prescription;
 	}
 	
 	public TreatmentDto createTreatment(CaseDataDto caze) {
-		TreatmentDto treatment = TreatmentDto.buildTreatment(caze.getTherapy());
+		TreatmentDto treatment = TreatmentDto.buildTreatment(caze.getTherapy().toReference());
 		treatment.setTreatmentType(TreatmentType.BLOOD_TRANSFUSION);
 		
-		treatment = beanTest.getTherapyFacade().saveTreatment(treatment);
+		treatment = beanTest.getTreatmentFacade().saveTreatment(treatment);
 		
 		return treatment;
 	}

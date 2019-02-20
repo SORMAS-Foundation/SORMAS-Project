@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.therapy;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
 public class TherapyDto extends EntityDto {
@@ -30,6 +31,10 @@ public class TherapyDto extends EntityDto {
 		TherapyDto therapy = new TherapyDto();
 		therapy.setUuid(DataHelper.createUuid());
 		return therapy;
+	}
+	
+	public TherapyReferenceDto toReference() {
+		return new TherapyReferenceDto(getUuid());
 	}
 
 }

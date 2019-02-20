@@ -70,7 +70,7 @@ public class ClinicalVisitGrid extends Grid implements AbstractGrid<ClinicalVisi
 			deselectAll();
 		}
 		
-		List<ClinicalVisitIndexDto> entries = FacadeProvider.getClinicalCourseFacade().getClinicalVisitIndexList(clinicalVisitCriteria);
+		List<ClinicalVisitIndexDto> entries = FacadeProvider.getClinicalVisitFacade().getIndexList(clinicalVisitCriteria);
 		
 		getContainer().removeAllItems();
 		getContainer().addAll(entries);

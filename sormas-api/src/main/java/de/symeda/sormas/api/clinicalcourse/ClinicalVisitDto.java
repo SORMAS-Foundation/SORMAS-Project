@@ -22,7 +22,7 @@ public class ClinicalVisitDto extends EntityDto {
 	public static final String VISIT_REMARKS = "visitRemarks";
 	public static final String VISITING_PERSON = "visitingPerson";
 	
-	private ClinicalCourseDto clinicalCourse;
+	private ClinicalCourseReferenceDto clinicalCourse;
 	private SymptomsDto symptoms;
 	private Disease disease;
 	private PersonReferenceDto person;
@@ -30,7 +30,7 @@ public class ClinicalVisitDto extends EntityDto {
 	private String visitRemarks;
 	private String visitingPerson;
 	
-	public static ClinicalVisitDto buildClinicalVisit(ClinicalCourseDto clinicalCourse, SymptomsDto symptoms,
+	public static ClinicalVisitDto buildClinicalVisit(ClinicalCourseReferenceDto clinicalCourse, SymptomsDto symptoms,
 			Disease disease, PersonReferenceDto person) {
 		ClinicalVisitDto clinicalVisit = new ClinicalVisitDto();
 		clinicalVisit.setUuid(DataHelper.createUuid());
@@ -43,10 +43,10 @@ public class ClinicalVisitDto extends EntityDto {
 		return clinicalVisit;
 	}
 
-	public ClinicalCourseDto getClinicalCourse() {
+	public ClinicalCourseReferenceDto getClinicalCourse() {
 		return clinicalCourse;
 	}
-	public void setClinicalCourse(ClinicalCourseDto clinicalCourse) {
+	public void setClinicalCourse(ClinicalCourseReferenceDto clinicalCourse) {
 		this.clinicalCourse = clinicalCourse;
 	}
 

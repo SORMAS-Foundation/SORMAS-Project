@@ -54,13 +54,13 @@ import de.symeda.sormas.ui.utils.CssStyles;
 public class TherapyView extends AbstractCaseView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/therapy";
-	
+
 	private PrescriptionCriteria prescriptionCriteria;
 	private TreatmentCriteria treatmentCriteria;
 
 	private PrescriptionGrid prescriptionGrid;
 	private TreatmentGrid treatmentGrid;
-	
+
 	// Filter
 	private ComboBox prescriptionTypeFilter;
 	private TextField prescriptionTextFilter;
@@ -125,7 +125,7 @@ public class TherapyView extends AbstractCaseView {
 				headlineRow.addComponent(bulkOperationsDropdown);
 				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
 			}
-			
+
 			Button newPrescriptionButton = new Button(I18nProperties.getCaption(Captions.prescriptionNewPrescription));
 			CssStyles.style(newPrescriptionButton, ValoTheme.BUTTON_PRIMARY);
 			newPrescriptionButton.addClickListener(e -> {
@@ -149,7 +149,7 @@ public class TherapyView extends AbstractCaseView {
 				navigateTo(prescriptionCriteria);
 			});
 			filterRow.addComponent(prescriptionTypeFilter);
-			
+
 			prescriptionTextFilter = new TextField();
 			prescriptionTextFilter.setWidth(300, Unit.PIXELS);
 			prescriptionTextFilter.setNullRepresentation("");
@@ -195,7 +195,7 @@ public class TherapyView extends AbstractCaseView {
 				headlineRow.addComponent(bulkOperationsDropdown);
 				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
 			}
-			
+
 			Button newTreatmentButton = new Button(I18nProperties.getCaption(Captions.treatmentNewTreatment));
 			newTreatmentButton.addClickListener(e -> {
 				ControllerProvider.getTherapyController().openTreatmentCreateForm(treatmentCriteria.getTherapy(), this::reloadTreatmentGrid);
@@ -218,7 +218,7 @@ public class TherapyView extends AbstractCaseView {
 				navigateTo(treatmentCriteria);
 			});
 			filterRow.addComponent(treatmentTypeFilter);
-			
+
 			treatmentTextFilter = new TextField();
 			treatmentTextFilter.setWidth(300, Unit.PIXELS);
 			treatmentTextFilter.setNullRepresentation("");
@@ -235,35 +235,33 @@ public class TherapyView extends AbstractCaseView {
 	}
 
 	private void update() {
-		if (prescriptionCriteria.getTherapy() == null || treatmentCriteria.getTherapy() == null) {	
-			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
-			
-			// TODO: Remove this once a proper ViewModel system has been introduced
-			if (caze.getTherapy() == null) {
-				TherapyDto therapy = TherapyDto.build();
-				caze.setTherapy(therapy);
-				caze = FacadeProvider.getCaseFacade().saveCase(caze);
-			}
-			
-			prescriptionCriteria.therapy(caze.getTherapy());
-			treatmentCriteria.therapy(caze.getTherapy());
+		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
+
+		// TODO: Remove this once a proper ViewModel system has been introduced
+		if (caze.getTherapy() == null) {
+			TherapyDto therapy = TherapyDto.build();
+			caze.setTherapy(therapy);
+			caze = FacadeProvider.getCaseFacade().saveCase(caze);
 		}
-		
+
+		prescriptionCriteria.therapy(caze.getTherapy().toReference());
+		treatmentCriteria.therapy(caze.getTherapy().toReference());
+
 		applyingCriteria = true;
-		
+
 		prescriptionTypeFilter.setValue(prescriptionCriteria.getPrescriptionType());
 		prescriptionTextFilter.setValue(prescriptionCriteria.getTextFilter());
 		treatmentTypeFilter.setValue(treatmentCriteria.getTreatmentType());
 		treatmentTextFilter.setValue(treatmentCriteria.getTextFilter());
-		
+
 		applyingCriteria = false;
 	}
-	
+
 	public void reloadPrescriptionGrid() {
 		prescriptionGrid.reload();
 		prescriptionGrid.setHeightByRows(Math.max(1, Math.min(prescriptionGrid.getContainer().size(), 5)));
 	}
-	
+
 	public void reloadTreatmentGrid() {
 		treatmentGrid.reload();
 	}

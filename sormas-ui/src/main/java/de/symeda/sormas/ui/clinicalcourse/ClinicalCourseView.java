@@ -33,20 +33,20 @@ import de.symeda.sormas.ui.utils.ViewMode;
 public class ClinicalCourseView extends AbstractCaseView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/clinicalcourse";
-	
+
 	private ClinicalVisitCriteria clinicalVisitCriteria;
 	private ClinicalVisitGrid clinicalVisitGrid;
-	
+
 	public ClinicalCourseView() {
 		super(VIEW_NAME);
-		
+
 		clinicalVisitCriteria = ViewModelProviders.of(ClinicalCourseView.class).get(ClinicalVisitCriteria.class);
 	}
-	
+
 	private VerticalLayout createClinicalVisitsHeader() {
 		VerticalLayout clinicalVisitsHeader = new VerticalLayout();
 		clinicalVisitsHeader.setWidth(100, Unit.PERCENTAGE);
-		
+
 		HorizontalLayout headlineRow = new HorizontalLayout();
 		headlineRow.setSpacing(true);
 		headlineRow.setWidth(100, Unit.PERCENTAGE);
@@ -55,7 +55,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 			CssStyles.style(clinicalVisitsLabel, CssStyles.H3);
 			headlineRow.addComponent(clinicalVisitsLabel);
 			headlineRow.setExpandRatio(clinicalVisitsLabel, 1);
-			
+
 			// Bulk operations
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				MenuBar bulkOperationsDropdown = new MenuBar();	
@@ -73,70 +73,68 @@ public class ClinicalCourseView extends AbstractCaseView {
 				headlineRow.addComponent(bulkOperationsDropdown);
 				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
 			}
-			
+
 			Button newClinicalVisitButton = new Button(I18nProperties.getCaption(Captions.clinicalVisitNewClinicalVisit));
 			CssStyles.style(newClinicalVisitButton, ValoTheme.BUTTON_PRIMARY);
 			newClinicalVisitButton.addClickListener(e -> {
 				ControllerProvider.getClinicalCourseController().openClinicalVisitCreateForm(clinicalVisitCriteria.getClinicalCourse(), getCaseRef().getUuid(), this::reloadClinicalVisitGrid);
 			});
 			headlineRow.addComponent(newClinicalVisitButton);
-			
+
 			headlineRow.setComponentAlignment(newClinicalVisitButton, Alignment.MIDDLE_RIGHT);
 		}
 		clinicalVisitsHeader.addComponent(headlineRow);
-		
+
 		return clinicalVisitsHeader;
 	}
-	
+
 	private void update() {
-		if (clinicalVisitCriteria.getClinicalCourse() == null) {
-			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
-			
-			// TODO: Remove this once a proper ViewModel system has been introduced
-			if (caze.getClinicalCourse() == null) {
-				ClinicalCourseDto clinicalCourse = ClinicalCourseDto.build();
-				caze.setClinicalCourse(clinicalCourse);
-				caze = FacadeProvider.getCaseFacade().saveCase(caze);
-			}
-			
-			clinicalVisitCriteria.clinicalCourse(caze.getClinicalCourse());
+		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
+
+		// TODO: Remove this once a proper ViewModel system has been introduced
+		if (caze.getClinicalCourse() == null) {
+			ClinicalCourseDto clinicalCourse = ClinicalCourseDto.build();
+			caze.setClinicalCourse(clinicalCourse);
+			caze = FacadeProvider.getCaseFacade().saveCase(caze);
 		}
+
+		clinicalVisitCriteria.clinicalCourse(caze.getClinicalCourse().toReference());
 	}
-	
+
 	public void reloadClinicalVisitGrid() {
 		clinicalVisitGrid.reload();
 		clinicalVisitGrid.setHeightByRows(Math.max(1, Math.min(clinicalVisitGrid.getContainer().size(), 10)));
 	}
-	
+
 	@Override
 	public void enter(ViewChangeEvent event) {
 		super.enter(event);
-		
-    	if (getViewMode() == ViewMode.SIMPLE) {
-    		ControllerProvider.getCaseController().navigateToCase(getCaseRef().getUuid());
-    		return;
-    	}
-		
+
+		if (getViewMode() == ViewMode.SIMPLE) {
+			ControllerProvider.getCaseController().navigateToCase(getCaseRef().getUuid());
+			return;
+		}
+
 		VerticalLayout container = new VerticalLayout();
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
-		
+
 		container.addComponent(createClinicalVisitsHeader());
-		
+
 		clinicalVisitGrid = new ClinicalVisitGrid(getCaseRef());
 		clinicalVisitGrid.setCriteria(clinicalVisitCriteria);
 		clinicalVisitGrid.setHeightMode(HeightMode.ROW);
 		CssStyles.style(clinicalVisitGrid, CssStyles.VSPACE_3);
 		container.addComponent(clinicalVisitGrid);
-		
+
 		CommitDiscardWrapperComponent<ClinicalCourseForm> clinicalCourseForm = ControllerProvider.getClinicalCourseController().getClinicalCourseView(getCaseRef().getUuid(), getViewMode());
 		clinicalCourseForm.setMargin(false);
 		container.addComponent(clinicalCourseForm);
-		
+
 		setSubComponent(container);
-		
+
 		update();
 		reloadClinicalVisitGrid();
 	}
-	
+
 }

@@ -82,7 +82,7 @@ public class PrescriptionGrid extends Grid implements AbstractGrid<PrescriptionC
 			}
 			
 			if (DOCUMENT_TREATMENT_BTN_ID.equals(e.getPropertyId())) {
-				PrescriptionDto prescription = FacadeProvider.getTherapyFacade().getPrescriptionByUuid(((PrescriptionIndexDto) e.getItemId()).getUuid());
+				PrescriptionDto prescription = FacadeProvider.getPrescriptionFacade().getPrescriptionByUuid(((PrescriptionIndexDto) e.getItemId()).getUuid());
 				ControllerProvider.getTherapyController().openTreatmentCreateForm(prescription, new Runnable() {
 					@Override
 					public void run() {
@@ -106,7 +106,7 @@ public class PrescriptionGrid extends Grid implements AbstractGrid<PrescriptionC
 			deselectAll();
 		}
 
-		List<PrescriptionIndexDto> entries = FacadeProvider.getTherapyFacade().getPrescriptionIndexList(prescriptionCriteria);
+		List<PrescriptionIndexDto> entries = FacadeProvider.getPrescriptionFacade().getIndexList(prescriptionCriteria);
 		
 		getContainer().removeAllItems();
 		getContainer().addAll(entries);

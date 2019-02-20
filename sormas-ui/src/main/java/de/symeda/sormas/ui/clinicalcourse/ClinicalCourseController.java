@@ -11,6 +11,7 @@ import com.vaadin.ui.Window;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
+import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -32,7 +33,7 @@ public class ClinicalCourseController {
 
 	}
 
-	public void openClinicalVisitCreateForm(ClinicalCourseDto clinicalCourse, String caseUuid, Runnable callback) {
+	public void openClinicalVisitCreateForm(ClinicalCourseReferenceDto clinicalCourse, String caseUuid, Runnable callback) {
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 		ClinicalVisitDto clinicalVisit = ClinicalVisitDto.buildClinicalVisit(clinicalCourse, new SymptomsDto(), caze.getDisease(), caze.getPerson());
 		ClinicalVisitForm form = new ClinicalVisitForm(true, clinicalVisit.getDisease(),
@@ -47,7 +48,7 @@ public class ClinicalCourseController {
 			public void onCommit() {
 				if (!form.getFieldGroup().isModified()) {
 					ClinicalVisitDto dto = form.getValue();
-					dto = FacadeProvider.getClinicalCourseFacade().saveClinicalVisit(dto, caseUuid);
+					dto = FacadeProvider.getClinicalVisitFacade().saveClinicalVisit(dto, caseUuid);
 					Notification.show(I18nProperties.getString(Strings.messageClinicalVisitCreated), Type.TRAY_NOTIFICATION);
 					if (callback != null) {
 						callback.run();
@@ -63,7 +64,7 @@ public class ClinicalCourseController {
 	}
 
 	public void openClinicalVisitEditForm(ClinicalVisitIndexDto clinicalVisitIndex, String caseUuid, Runnable callback) {
-		ClinicalVisitDto clinicalVisit = FacadeProvider.getClinicalCourseFacade().getClinicalVisitByUuid(clinicalVisitIndex.getUuid());
+		ClinicalVisitDto clinicalVisit = FacadeProvider.getClinicalVisitFacade().getClinicalVisitByUuid(clinicalVisitIndex.getUuid());
 		ClinicalVisitForm form = new ClinicalVisitForm(false, clinicalVisit.getDisease(), 
 				FacadeProvider.getPersonFacade().getPersonByUuid(clinicalVisit.getPerson().getUuid()), 
 				UserRight.CLINICAL_VISIT_EDIT);
@@ -81,7 +82,7 @@ public class ClinicalCourseController {
 			public void onCommit() {
 				if (!form.getFieldGroup().isModified()) {
 					ClinicalVisitDto dto = form.getValue();
-					FacadeProvider.getClinicalCourseFacade().saveClinicalVisit(dto, caseUuid);
+					FacadeProvider.getClinicalVisitFacade().saveClinicalVisit(dto, caseUuid);
 					popupWindow.close();
 					Notification.show(I18nProperties.getString(Strings.messageClinicalVisitSaved), Type.TRAY_NOTIFICATION);
 					if (callback != null) {
@@ -102,7 +103,7 @@ public class ClinicalCourseController {
 			view.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getClinicalCourseFacade().deleteClinicalVisit(clinicalVisit.getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
+					FacadeProvider.getClinicalVisitFacade().deleteClinicalVisit(clinicalVisit.getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
 					popupWindow.close();
 					if (callback != null) {
 						callback.run();
@@ -141,7 +142,7 @@ public class ClinicalCourseController {
 			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getClinicalCourseFacade().deleteClinicalVisit(((ClinicalVisitIndexDto) selectedRow).getUuid(), UserProvider.getCurrent().getUuid());
+						FacadeProvider.getClinicalVisitFacade().deleteClinicalVisit(((ClinicalVisitIndexDto) selectedRow).getUuid(), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification(I18nProperties.getString(Strings.headingClinicalVisitsDeleted),

@@ -2866,3 +2866,33 @@ FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'hospitalization_history
 ALTER TABLE hospitalization_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (130, 'Additional Hospitalization fields and history table #935');
+
+-- 2019-02-20 Additional signs and symptoms #938
+
+ALTER TABLE symptoms ADD COLUMN pharyngealerythema varchar(255);
+ALTER TABLE symptoms ADD COLUMN pharyngealexudate varchar(255);
+ALTER TABLE symptoms ADD COLUMN oedemafaceneck varchar(255);
+ALTER TABLE symptoms ADD COLUMN oedemalowerextremity varchar(255);
+ALTER TABLE symptoms ADD COLUMN lossskinturgor varchar(255);
+ALTER TABLE symptoms ADD COLUMN palpableliver varchar(255);
+ALTER TABLE symptoms ADD COLUMN palpablespleen varchar(255);
+ALTER TABLE symptoms ADD COLUMN malaise varchar(255);
+ALTER TABLE symptoms ADD COLUMN sunkeneyesfontanelle varchar(255);
+ALTER TABLE symptoms ADD COLUMN sidepain varchar(255);
+ALTER TABLE symptoms ADD COLUMN fluidinlungcavity varchar(255);
+ALTER TABLE symptoms ADD COLUMN tremor varchar(255);
+
+ALTER TABLE symptoms_history ADD COLUMN pharyngealerythema varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN pharyngealexudate varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN oedemafaceneck varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN oedemalowerextremity varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lossskinturgor varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN palpableliver varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN palpablespleen varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN malaise varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN sunkeneyesfontanelle varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN sidepain varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN fluidinlungcavity varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN tremor varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (131, 'Additional signs and symptoms #938');

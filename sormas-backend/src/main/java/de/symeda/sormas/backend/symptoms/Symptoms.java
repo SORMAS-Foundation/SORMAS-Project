@@ -143,6 +143,18 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState blackeningDeathOfTissue;
 	private SymptomState buboesGroinArmpitNeck;
 	private SymptomState bulgingFontanelle;
+	private SymptomState pharyngealErythema;
+	private SymptomState pharyngealExudate;
+	private SymptomState oedemaFaceNeck;
+	private SymptomState oedemaLowerExtremity;
+	private SymptomState lossSkinTurgor;
+	private SymptomState palpableLiver;
+	private SymptomState palpableSpleen;
+	private SymptomState malaise;
+	private SymptomState sunkenEyesFontanelle;
+	private SymptomState sidePain;
+	private SymptomState fluidInLungCavity;
+	private SymptomState tremor;
 	private String otherNonHemorrhagicSymptomsText;
 	private String symptomsComments;
 	// when adding new fields make sure to extend toHumanString
@@ -947,6 +959,114 @@ public class Symptoms extends AbstractDomainObject {
 		this.bulgingFontanelle = bulgingFontanelle;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPharyngealErythema() {
+		return pharyngealErythema;
+	}
+
+	public void setPharyngealErythema(SymptomState pharyngealErythema) {
+		this.pharyngealErythema = pharyngealErythema;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPharyngealExudate() {
+		return pharyngealExudate;
+	}
+
+	public void setPharyngealExudate(SymptomState pharyngealExudate) {
+		this.pharyngealExudate = pharyngealExudate;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getOedemaFaceNeck() {
+		return oedemaFaceNeck;
+	}
+
+	public void setOedemaFaceNeck(SymptomState oedemaFaceNeck) {
+		this.oedemaFaceNeck = oedemaFaceNeck;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getOedemaLowerExtremity() {
+		return oedemaLowerExtremity;
+	}
+
+	public void setOedemaLowerExtremity(SymptomState oedemaLowerExtremity) {
+		this.oedemaLowerExtremity = oedemaLowerExtremity;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLossSkinTurgor() {
+		return lossSkinTurgor;
+	}
+
+	public void setLossSkinTurgor(SymptomState lossSkinTurgor) {
+		this.lossSkinTurgor = lossSkinTurgor;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPalpableLiver() {
+		return palpableLiver;
+	}
+
+	public void setPalpableLiver(SymptomState palpableLiver) {
+		this.palpableLiver = palpableLiver;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPalpableSpleen() {
+		return palpableSpleen;
+	}
+
+	public void setPalpableSpleen(SymptomState palpableSpleen) {
+		this.palpableSpleen = palpableSpleen;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getMalaise() {
+		return malaise;
+	}
+
+	public void setMalaise(SymptomState malaise) {
+		this.malaise = malaise;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getSunkenEyesFontanelle() {
+		return sunkenEyesFontanelle;
+	}
+
+	public void setSunkenEyesFontanelle(SymptomState sunkenEyesFontanelle) {
+		this.sunkenEyesFontanelle = sunkenEyesFontanelle;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getSidePain() {
+		return sidePain;
+	}
+
+	public void setSidePain(SymptomState sidePain) {
+		this.sidePain = sidePain;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getFluidInLungCavity() {
+		return fluidInLungCavity;
+	}
+
+	public void setFluidInLungCavity(SymptomState fluidInLungCavity) {
+		this.fluidInLungCavity = fluidInLungCavity;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getTremor() {
+		return tremor;
+	}
+
+	public void setTremor(SymptomState tremor) {
+		this.tremor = tremor;
+	}
+
 	@Column(length = 255)
 	public String getSymptomsComments() {
 		return symptomsComments;
@@ -1047,6 +1167,18 @@ public class Symptoms extends AbstractDomainObject {
 		appendYesSymptom(string, blackeningDeathOfTissue, SymptomsDto.BLACKENING_DEATH_OF_TISSUE);
 		appendYesSymptom(string, buboesGroinArmpitNeck, SymptomsDto.BUBOES_GROIN_ARMPIT_NECK);
 		appendYesSymptom(string, bulgingFontanelle, SymptomsDto.BULGING_FONTANELLE);
+		appendYesSymptom(string, pharyngealErythema, SymptomsDto.PHARYNGEAL_ERYTHEMA);
+		appendYesSymptom(string, pharyngealExudate, SymptomsDto.PHARYNGEAL_EXUDATE);
+		appendYesSymptom(string, oedemaFaceNeck, SymptomsDto.OEDEMA_FACE_NECK);
+		appendYesSymptom(string, oedemaLowerExtremity, SymptomsDto.OEDEMA_LOWER_EXTREMITY);
+		appendYesSymptom(string, lossSkinTurgor, SymptomsDto.LOSS_SKIN_TURGOR);
+		appendYesSymptom(string, palpableLiver, SymptomsDto.PALPABLE_LIVER);
+		appendYesSymptom(string, palpableSpleen, SymptomsDto.PALPABLE_SPLEEN);
+		appendYesSymptom(string, malaise, SymptomsDto.MALAISE);
+		appendYesSymptom(string, sunkenEyesFontanelle, SymptomsDto.SUNKEN_EYES_FONTANELLE);
+		appendYesSymptom(string, sidePain, SymptomsDto.SIDE_PAIN);
+		appendYesSymptom(string, fluidInLungCavity, SymptomsDto.FLUID_IN_LUNG_CAVITY);
+		appendYesSymptom(string, tremor, SymptomsDto.TREMOR);
 		// symptomsComments;
 		
 		return string.toString();

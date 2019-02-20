@@ -42,7 +42,7 @@ public class PrescriptionDto extends EntityDto {
 	public static final String ROUTE_DETAILS = "routeDetails";
 	public static final String ADDITIONAL_NOTES = "additionalNotes";
 	
-	private TherapyDto therapy;
+	private TherapyReferenceDto therapy;
 	private Date prescriptionDate;
 	private Date prescriptionStart;
 	private Date prescriptionEnd;
@@ -56,7 +56,7 @@ public class PrescriptionDto extends EntityDto {
 	private String routeDetails;
 	private String additionalNotes;
 	
-	public static PrescriptionDto buildPrescription(TherapyDto therapy) {
+	public static PrescriptionDto buildPrescription(TherapyReferenceDto therapy) {
 		PrescriptionDto prescription = new PrescriptionDto();
 		prescription.setUuid(DataHelper.createUuid());
 		prescription.setTherapy(therapy);
@@ -69,10 +69,10 @@ public class PrescriptionDto extends EntityDto {
 		return new PrescriptionReferenceDto(getUuid(), toString());
 	}
 	
-	public TherapyDto getTherapy() {
+	public TherapyReferenceDto getTherapy() {
 		return therapy;
 	}
-	public void setTherapy(TherapyDto therapy) {
+	public void setTherapy(TherapyReferenceDto therapy) {
 		this.therapy = therapy;
 	}
 	public Date getPrescriptionDate() {

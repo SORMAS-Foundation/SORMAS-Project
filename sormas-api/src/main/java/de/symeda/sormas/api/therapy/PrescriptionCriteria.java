@@ -7,7 +7,7 @@ public class PrescriptionCriteria extends BaseCriteria implements Cloneable {
 
 	private static final long serialVersionUID = -9045206141614519189L;
 
-	private TherapyDto therapy;
+	private TherapyReferenceDto therapy;
 	private TreatmentType prescriptionType;
 	private String textFilter;
 	
@@ -21,11 +21,11 @@ public class PrescriptionCriteria extends BaseCriteria implements Cloneable {
 	}
 	
 	@IgnoreForUrl
-	public TherapyDto getTherapy() {
+	public TherapyReferenceDto getTherapy() {
 		return therapy;
 	}
 	
-	public PrescriptionCriteria therapy(TherapyDto therapy) {
+	public PrescriptionCriteria therapy(TherapyReferenceDto therapy) {
 		this.therapy = therapy;
 		return this;
 	}

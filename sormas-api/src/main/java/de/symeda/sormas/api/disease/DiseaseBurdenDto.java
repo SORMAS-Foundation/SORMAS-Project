@@ -18,12 +18,8 @@
 package de.symeda.sormas.api.disease;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.event.EventType;
-import de.symeda.sormas.api.location.LocationReferenceDto;
 
 public class DiseaseBurdenDto  implements Serializable {
 	

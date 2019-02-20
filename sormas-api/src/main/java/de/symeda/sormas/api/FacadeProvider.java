@@ -23,6 +23,7 @@ import javax.naming.NamingException;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
+import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.disease.DiseaseFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
@@ -43,7 +44,9 @@ import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleTestFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.task.TaskFacade;
+import de.symeda.sormas.api.therapy.PrescriptionFacade;
 import de.symeda.sormas.api.therapy.TherapyFacade;
+import de.symeda.sormas.api.therapy.TreatmentFacade;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
@@ -175,8 +178,20 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(TherapyFacade.class);
 	}
 	
+	public static PrescriptionFacade getPrescriptionFacade() {
+		return get().lookupEjbRemote(PrescriptionFacade.class);
+	}
+	
+	public static TreatmentFacade getTreatmentFacade() {
+		return get().lookupEjbRemote(TreatmentFacade.class);
+	}
+	
 	public static ClinicalCourseFacade getClinicalCourseFacade() {
 		return get().lookupEjbRemote(ClinicalCourseFacade.class);
+	}
+	
+	public static ClinicalVisitFacade getClinicalVisitFacade() {
+		return get().lookupEjbRemote(ClinicalVisitFacade.class);
 	}
 
 	public static DiseaseFacade getDiseaseFacade() {

@@ -19,6 +19,10 @@ public class ClinicalCourseDto extends EntityDto {
 		clinicalCourse.setHealthConditions(HealthConditionsDto.build());
 		return clinicalCourse;
 	}
+	
+	public ClinicalCourseReferenceDto toReference() {
+		return new ClinicalCourseReferenceDto(getUuid());
+	}
 
 	public HealthConditionsDto getHealthConditions() {
 		return healthConditions;

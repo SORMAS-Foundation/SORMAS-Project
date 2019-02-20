@@ -15,45 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.outbreak;
+package de.symeda.sormas.api.clinicalcourse;
 
-import java.io.Serializable;
+import de.symeda.sormas.api.ReferenceDto;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
+public class ClinicalCourseReferenceDto extends ReferenceDto {
 
-public class DashboardOutbreakDto  implements Serializable {
-	
-	private static final long serialVersionUID = 2430932452606853497L;
-	
-	public static final String I18N_PREFIX = "DiseaseBurdenInformation";
-	
-	public static final String DISEASE = "disease";
-	public static final String DISTRICT = "district";
-	
-	private Disease disease;
-	private DistrictReferenceDto district;
-	
-	public DashboardOutbreakDto(Disease disease, String districtUuid) {
-		this.disease = disease;
-		this.district = new DistrictReferenceDto(districtUuid);
-	}
+	private static final long serialVersionUID = -2664896907352864261L;
 
-	public Disease getDisease() {
-		return disease;
-	}
-
-	public void setDisease(Disease disease) {
-		this.disease = disease;
-	}
-
-	public DistrictReferenceDto getDistrict() {
-		return district;
-	}
-
-	public void setDistrict(DistrictReferenceDto district) {
-		this.district = district;
+	public ClinicalCourseReferenceDto() {
+		
 	}
 	
+	public ClinicalCourseReferenceDto(String uuid) {
+		setUuid(uuid);
+	}
+	
+	public ClinicalCourseReferenceDto(String uuid, String caption) {
+		setUuid(uuid);
+		setCaption(caption);
+	}
 	
 }

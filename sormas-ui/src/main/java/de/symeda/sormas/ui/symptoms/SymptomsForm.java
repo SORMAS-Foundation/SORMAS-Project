@@ -90,16 +90,18 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 									SymptomsDto.ABDOMINAL_PAIN, SymptomsDto.HEARINGLOSS, SymptomsDto.ALTERED_CONSCIOUSNESS, SymptomsDto.ANOREXIA_APPETITE_LOSS,
 									SymptomsDto.BACKACHE, SymptomsDto.BLACKENING_DEATH_OF_TISSUE, SymptomsDto.BLOOD_IN_STOOL, SymptomsDto.BUBOES_GROIN_ARMPIT_NECK, SymptomsDto.BULGING_FONTANELLE, 
 									SymptomsDto.CHEST_PAIN, SymptomsDto.CHILLS_SWEATS, SymptomsDto.CONFUSED_DISORIENTED, SymptomsDto.CONJUNCTIVITIS, SymptomsDto.SEIZURES, SymptomsDto.COUGH, 
-									SymptomsDto.DARK_URINE, SymptomsDto.DEHYDRATION, SymptomsDto.DIARRHEA, SymptomsDto.DIFFICULTY_BREATHING, SymptomsDto.FATIGUE_WEAKNESS,
-									SymptomsDto.FEVER, SymptomsDto.HEADACHE, SymptomsDto.HICCUPS, SymptomsDto.BEDRIDDEN, SymptomsDto.JAUNDICE, SymptomsDto.JOINT_PAIN, SymptomsDto.KOPLIKS_SPOTS, 
-									SymptomsDto.LYMPHADENOPATHY_AXILLARY, SymptomsDto.LYMPHADENOPATHY_CERVICAL, SymptomsDto.LYMPHADENOPATHY_INGUINAL, SymptomsDto.SKIN_RASH, 
+									SymptomsDto.DARK_URINE, SymptomsDto.DEHYDRATION, SymptomsDto.DIARRHEA, SymptomsDto.DIFFICULTY_BREATHING, 
+									SymptomsDto.LYMPHADENOPATHY_AXILLARY, SymptomsDto.LYMPHADENOPATHY_CERVICAL, SymptomsDto.LYMPHADENOPATHY_INGUINAL, SymptomsDto.FATIGUE_WEAKNESS, 
+									SymptomsDto.FEVER, SymptomsDto.FLUID_IN_LUNG_CAVITY, SymptomsDto.HEADACHE, SymptomsDto.HICCUPS, SymptomsDto.BEDRIDDEN, SymptomsDto.JAUNDICE, 
+									SymptomsDto.JOINT_PAIN, SymptomsDto.KOPLIKS_SPOTS, SymptomsDto.LOSS_SKIN_TURGOR, SymptomsDto.SKIN_RASH, SymptomsDto.MALAISE,
 									SymptomsDto.MENINGEAL_SIGNS, SymptomsDto.OTITIS_MEDIA, SymptomsDto.MUSCLE_PAIN, SymptomsDto.NAUSEA, SymptomsDto.NECK_STIFFNESS, 
-									SymptomsDto.EYE_PAIN_LIGHT_SENSITIVE, SymptomsDto.PAINFUL_LYMPHADENITIS)),
+									SymptomsDto.OEDEMA_FACE_NECK, SymptomsDto.OEDEMA_LOWER_EXTREMITY, SymptomsDto.EYE_PAIN_LIGHT_SENSITIVE, SymptomsDto.PAINFUL_LYMPHADENITIS)),
 					LayoutUtil.fluidColumn(6, 0, 
 							LayoutUtil.locsCss(CssStyles.VSPACE_3,
+									SymptomsDto.PALPABLE_LIVER, SymptomsDto.PALPABLE_SPLEEN, SymptomsDto.PHARYNGEAL_ERYTHEMA, SymptomsDto.PHARYNGEAL_EXUDATE, 
 									SymptomsDto.RAPID_BREATHING, SymptomsDto.REFUSAL_FEEDOR_DRINK, SymptomsDto.RUNNY_NOSE, SymptomsDto.ORAL_ULCERS,
-									SymptomsDto.SHOCK, SymptomsDto.SORE_THROAT, SymptomsDto.SWOLLEN_GLANDS, SymptomsDto.THROBOCYTOPENIA, SymptomsDto.UNEXPLAINED_BLEEDING, 
-									SymptomsDto.EYES_BLEEDING, SymptomsDto.INJECTION_SITE_BLEEDING, 
+									SymptomsDto.SHOCK, SymptomsDto.SIDE_PAIN, SymptomsDto.SORE_THROAT, SymptomsDto.SUNKEN_EYES_FONTANELLE, SymptomsDto.SWOLLEN_GLANDS, 
+									SymptomsDto.THROBOCYTOPENIA, SymptomsDto.TREMOR, SymptomsDto.UNEXPLAINED_BLEEDING, SymptomsDto.EYES_BLEEDING, SymptomsDto.INJECTION_SITE_BLEEDING, 
 									SymptomsDto.BLEEDING_VAGINA, SymptomsDto.GUMS_BLEEDING, SymptomsDto.STOMACH_BLEEDING, SymptomsDto.BLOOD_URINE, SymptomsDto.BLOODY_BLACK_STOOL, 
 									SymptomsDto.SKIN_BRUISING, SymptomsDto.COUGHING_BLOOD, SymptomsDto.DIGESTED_BLOOD_VOMIT, SymptomsDto.RED_BLOOD_VOMIT, SymptomsDto.NOSE_BLEEDING, 
 									SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS, SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT, 
@@ -197,7 +199,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.LESIONS_SOLES_FEET, SymptomsDto.LESIONS_PALMS_HANDS, SymptomsDto.LESIONS_THORAX, SymptomsDto.LESIONS_ARMS, SymptomsDto.LESIONS_GENITALS, SymptomsDto.LESIONS_ALL_OVER_BODY,  
 				SymptomsDto.LYMPHADENOPATHY_AXILLARY, SymptomsDto.LYMPHADENOPATHY_CERVICAL, SymptomsDto.LYMPHADENOPATHY_INGUINAL, SymptomsDto.MENINGEAL_SIGNS, 
 				SymptomsDto.CHILLS_SWEATS, SymptomsDto.BEDRIDDEN, SymptomsDto.ORAL_ULCERS, SymptomsDto.PAINFUL_LYMPHADENITIS, SymptomsDto.BLACKENING_DEATH_OF_TISSUE, SymptomsDto.BUBOES_GROIN_ARMPIT_NECK, 
-				SymptomsDto.BULGING_FONTANELLE, SymptomsDto.PATIENT_ILL_LOCATION);
+				SymptomsDto.BULGING_FONTANELLE, SymptomsDto.PHARYNGEAL_ERYTHEMA, SymptomsDto.PHARYNGEAL_EXUDATE, SymptomsDto.OEDEMA_FACE_NECK, SymptomsDto.OEDEMA_LOWER_EXTREMITY,
+				SymptomsDto.LOSS_SKIN_TURGOR, SymptomsDto.PALPABLE_LIVER, SymptomsDto.PALPABLE_SPLEEN, SymptomsDto.MALAISE, SymptomsDto.SUNKEN_EYES_FONTANELLE,
+				SymptomsDto.SIDE_PAIN, SymptomsDto.FLUID_IN_LUNG_CAVITY, SymptomsDto.TREMOR, SymptomsDto.PATIENT_ILL_LOCATION);
 		addField(SymptomsDto.LESIONS_ONSET_DATE, DateField.class);
 
 
@@ -237,7 +241,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.RAPID_BREATHING, SymptomsDto.SWOLLEN_GLANDS, SymptomsDto.UNEXPLAINED_BLEEDING, SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS,
 				SymptomsDto.LESIONS, SymptomsDto.LYMPHADENOPATHY_AXILLARY, SymptomsDto.LYMPHADENOPATHY_CERVICAL,
 				SymptomsDto.LYMPHADENOPATHY_INGUINAL, SymptomsDto.MENINGEAL_SIGNS, SymptomsDto.CHILLS_SWEATS, SymptomsDto.BEDRIDDEN, SymptomsDto.ORAL_ULCERS, SymptomsDto.PAINFUL_LYMPHADENITIS,
-				SymptomsDto.BLACKENING_DEATH_OF_TISSUE, SymptomsDto.BUBOES_GROIN_ARMPIT_NECK, SymptomsDto.BULGING_FONTANELLE);
+				SymptomsDto.BLACKENING_DEATH_OF_TISSUE, SymptomsDto.BUBOES_GROIN_ARMPIT_NECK, SymptomsDto.BULGING_FONTANELLE, SymptomsDto.PHARYNGEAL_ERYTHEMA, SymptomsDto.PHARYNGEAL_EXUDATE,
+				SymptomsDto.OEDEMA_FACE_NECK, SymptomsDto.OEDEMA_LOWER_EXTREMITY, SymptomsDto.LOSS_SKIN_TURGOR, SymptomsDto.PALPABLE_LIVER, SymptomsDto.PALPABLE_SPLEEN,
+				SymptomsDto.MALAISE, SymptomsDto.SUNKEN_EYES_FONTANELLE, SymptomsDto.SIDE_PAIN, SymptomsDto.FLUID_IN_LUNG_CAVITY, SymptomsDto.TREMOR);
 
 		// Set visibilities
 

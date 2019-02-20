@@ -77,7 +77,7 @@ public class TreatmentGrid extends Grid implements AbstractGrid<TreatmentCriteri
 			deselectAll();
 		}
 
-		List<TreatmentIndexDto> entries = FacadeProvider.getTherapyFacade().getTreatmentIndexList(treatmentCriteria);
+		List<TreatmentIndexDto> entries = FacadeProvider.getTreatmentFacade().getIndexList(treatmentCriteria);
 		
 		getContainer().removeAllItems();
 		getContainer().addAll(entries);

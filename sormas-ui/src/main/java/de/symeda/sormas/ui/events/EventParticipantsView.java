@@ -118,9 +118,10 @@ public class EventParticipantsView extends AbstractEventView {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		if(event != null) {
+		if (event != null) {
 			super.enter(event);
 		}
+		
 		grid.reload(getEventRef());
 	}
 

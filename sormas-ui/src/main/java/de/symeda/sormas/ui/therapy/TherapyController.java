@@ -16,7 +16,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.PrescriptionIndexDto;
 import de.symeda.sormas.api.therapy.PrescriptionReferenceDto;
-import de.symeda.sormas.api.therapy.TherapyDto;
+import de.symeda.sormas.api.therapy.TherapyReferenceDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentIndexDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -33,7 +33,7 @@ public class TherapyController {
 
 	}
 
-	public void openPrescriptionCreateForm(TherapyDto therapy, Runnable callback) {
+	public void openPrescriptionCreateForm(TherapyReferenceDto therapy, Runnable callback) {
 		PrescriptionForm form = new PrescriptionForm(true, UserRight.PRESCRIPTION_CREATE, false);
 		form.setValue(PrescriptionDto.buildPrescription(therapy));
 		final CommitDiscardWrapperComponent<PrescriptionForm> view = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
@@ -43,7 +43,7 @@ public class TherapyController {
 			public void onCommit() {
 				if (!form.getFieldGroup().isModified()) {
 					PrescriptionDto dto = form.getValue();
-					FacadeProvider.getTherapyFacade().savePrescription(dto);
+					FacadeProvider.getPrescriptionFacade().savePrescription(dto);
 					Notification.show(I18nProperties.getString(Strings.messagePrescriptionCreated), Type.TRAY_NOTIFICATION);
 					callback.run();
 				}
@@ -54,7 +54,7 @@ public class TherapyController {
 	}
 
 	public void openPrescriptionEditForm(PrescriptionReferenceDto prescriptionReference, Runnable callback, boolean readOnly) {
-		PrescriptionDto prescription = FacadeProvider.getTherapyFacade().getPrescriptionByUuid(prescriptionReference.getUuid());
+		PrescriptionDto prescription = FacadeProvider.getPrescriptionFacade().getPrescriptionByUuid(prescriptionReference.getUuid());
 		PrescriptionForm form = new PrescriptionForm(false, UserRight.PRESCRIPTION_EDIT, readOnly);
 		form.setValue(prescription);
 
@@ -67,7 +67,7 @@ public class TherapyController {
 			public void onCommit() {
 				if (!form.getFieldGroup().isModified()) {
 					PrescriptionDto dto = form.getValue();
-					FacadeProvider.getTherapyFacade().savePrescription(dto);
+					FacadeProvider.getPrescriptionFacade().savePrescription(dto);
 					popupWindow.close();
 					Notification.show(I18nProperties.getString(Strings.messagePrescriptionSaved), Type.TRAY_NOTIFICATION);
 					if (callback != null) {
@@ -88,7 +88,7 @@ public class TherapyController {
 			view.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getTherapyFacade().deletePrescription(prescription.getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
+					FacadeProvider.getPrescriptionFacade().deletePrescription(prescription.getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
 					popupWindow.close();
 					if (callback != null) {
 						callback.run();
@@ -102,7 +102,7 @@ public class TherapyController {
 		openPrescriptionEditForm(new PrescriptionReferenceDto(prescriptionIndex.getUuid()), callback, readOnly);
 	}
 
-	public void openTreatmentCreateForm(TherapyDto therapy, Runnable callback) {
+	public void openTreatmentCreateForm(TherapyReferenceDto therapy, Runnable callback) {
 		TreatmentForm form = new TreatmentForm(true, UserRight.TREATMENT_CREATE);
 		form.setValue(TreatmentDto.buildTreatment(therapy));
 		final CommitDiscardWrapperComponent<TreatmentForm> view = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
@@ -112,7 +112,7 @@ public class TherapyController {
 			public void onCommit() {
 				if (!form.getFieldGroup().isModified()) {
 					TreatmentDto dto = form.getValue();
-					FacadeProvider.getTherapyFacade().saveTreatment(dto);
+					FacadeProvider.getTreatmentFacade().saveTreatment(dto);
 					Notification.show(I18nProperties.getString(Strings.messageTreatmentCreated), Type.TRAY_NOTIFICATION);
 					callback.run();
 				}
@@ -132,7 +132,7 @@ public class TherapyController {
 			public void onCommit() {
 				if (!form.getFieldGroup().isModified()) {
 					TreatmentDto dto = form.getValue();
-					FacadeProvider.getTherapyFacade().saveTreatment(dto);
+					FacadeProvider.getTreatmentFacade().saveTreatment(dto);
 					Notification.show(I18nProperties.getString(Strings.messageTreatmentCreated), Type.TRAY_NOTIFICATION);
 					callback.run();
 				}
@@ -143,7 +143,7 @@ public class TherapyController {
 	}
 
 	public void openTreatmentEditForm(TreatmentIndexDto treatmentIndex, Runnable callback) {
-		TreatmentDto treatment = FacadeProvider.getTherapyFacade().getTreatmentByUuid(treatmentIndex.getUuid());
+		TreatmentDto treatment = FacadeProvider.getTreatmentFacade().getTreatmentByUuid(treatmentIndex.getUuid());
 		TreatmentForm form = new TreatmentForm(false, UserRight.TREATMENT_EDIT);
 		form.setValue(treatment);
 
@@ -155,7 +155,7 @@ public class TherapyController {
 			public void onCommit() {
 				if (!form.getFieldGroup().isModified()) {
 					TreatmentDto dto = form.getValue();
-					FacadeProvider.getTherapyFacade().saveTreatment(dto);
+					FacadeProvider.getTreatmentFacade().saveTreatment(dto);
 					popupWindow.close();
 					Notification.show(I18nProperties.getString(Strings.messageTreatmentSaved), Type.TRAY_NOTIFICATION);
 					callback.run();
@@ -174,7 +174,7 @@ public class TherapyController {
 			view.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getTherapyFacade().deleteTreatment(treatment.getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
+					FacadeProvider.getTreatmentFacade().deleteTreatment(treatment.getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
 					popupWindow.close();
 					callback.run();
 				}
@@ -199,7 +199,7 @@ public class TherapyController {
 			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeletePrescriptions), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getTherapyFacade().deletePrescription(((PrescriptionIndexDto) selectedRow).getUuid(), UserProvider.getCurrent().getUuid());
+						FacadeProvider.getPrescriptionFacade().deletePrescription(((PrescriptionIndexDto) selectedRow).getUuid(), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification(I18nProperties.getString(Strings.headingPrescriptionsDeleted),
@@ -218,7 +218,7 @@ public class TherapyController {
 			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteTreatments), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getTherapyFacade().deleteTreatment(((TreatmentIndexDto) selectedRow).getUuid(), UserProvider.getCurrent().getUuid());
+						FacadeProvider.getTreatmentFacade().deleteTreatment(((TreatmentIndexDto) selectedRow).getUuid(), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification(I18nProperties.getString(Strings.headingTreatmentsDeleted),
