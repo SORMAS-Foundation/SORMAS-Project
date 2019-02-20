@@ -168,9 +168,9 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			// Initialize referral and report information
 			VerticalLayout reportInfoLayout = new VerticalLayout();
 
-			String reportInfoText = I18nProperties.getString(Strings.sReportedOn) + " "
+			String reportInfoText = I18nProperties.getString(Strings.reportedOn) + " "
 					+ DateHelper.formatLocalDateTime(getValue().getReportDateTime()) + " "
-					+ I18nProperties.getString(Strings.sBy) + " " + getValue().getReportingUser().toString();
+					+ I18nProperties.getString(Strings.by) + " " + getValue().getReportingUser().toString();
 			Label reportInfoLabel = new Label(reportInfoText);
 			reportInfoLabel.setEnabled(false);
 			reportInfoLayout.addComponent(reportInfoLabel);

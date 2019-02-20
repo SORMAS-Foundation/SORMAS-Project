@@ -91,7 +91,7 @@ public class ReportsView extends AbstractView {
 		yearFilter.setWidth(200, Unit.PIXELS);
 		yearFilter.addItems(DateHelper.getYearsToNow());
 		yearFilter.select(year);
-		yearFilter.setCaption(I18nProperties.getString(Strings.sYear));
+		yearFilter.setCaption(I18nProperties.getString(Strings.year));
 		yearFilter.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		yearFilter.addValueChangeListener(e -> {
 			updateEpiWeeks((int) e.getProperty().getValue(), (int) epiWeekFilter.getValue());
@@ -102,7 +102,7 @@ public class ReportsView extends AbstractView {
 		epiWeekFilter = new ComboBox();
 		epiWeekFilter.setWidth(200, Unit.PIXELS);
 		updateEpiWeeks(year, week);
-		epiWeekFilter.setCaption(I18nProperties.getString(Strings.sEpiWeek));
+		epiWeekFilter.setCaption(I18nProperties.getString(Strings.epiWeek));
 		epiWeekFilter.addValueChangeListener(e -> {
 			reloadGrid();
 		});

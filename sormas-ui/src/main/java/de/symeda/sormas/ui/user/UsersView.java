@@ -51,8 +51,8 @@ public class UsersView extends AbstractView {
 	private static final long serialVersionUID = -3533557348144005469L;
 	
 	public static final String VIEW_NAME = "users";
-	public static final String ACTIVE_FILTER = I18nProperties.getString(Strings.sActive);
-	public static final String INACTIVE_FILTER = I18nProperties.getString(Strings.sInactive);
+	public static final String ACTIVE_FILTER = I18nProperties.getString(Strings.active);
+	public static final String INACTIVE_FILTER = I18nProperties.getString(Strings.inactive);
 
 	private UserGrid grid;    
     private Button createButton;

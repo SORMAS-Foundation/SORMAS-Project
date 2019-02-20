@@ -55,7 +55,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 			LayoutUtil.fluidRowLocs(UserDto.FIRST_NAME, UserDto.LAST_NAME)+
 			LayoutUtil.fluidRowLocs(UserDto.USER_EMAIL, UserDto.PHONE)+
 			LayoutUtil.fluidRowLocs(USER_EMAIL_DESC_LOC, USER_PHONE_DESC_LOC)+
-			LayoutUtil.h3(I18nProperties.getString(Strings.sAddress)) +
+			LayoutUtil.h3(I18nProperties.getString(Strings.address)) +
 			LayoutUtil.fluidRowLocs(UserDto.ADDRESS) +
 			LayoutUtil.h3(I18nProperties.getString(Strings.headingUserData)) +
 			LayoutUtil.fluidRowLocs(UserDto.ACTIVE) +

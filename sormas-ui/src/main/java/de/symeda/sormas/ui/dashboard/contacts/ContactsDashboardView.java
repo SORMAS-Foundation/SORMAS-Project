@@ -30,7 +30,7 @@ import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 import de.symeda.sormas.ui.dashboard.statistics.AbstractDashboardStatisticsComponent;
 
 @SuppressWarnings("serial")
-public class DashboardContactsView extends AbstractDashboardView {
+public class ContactsDashboardView extends AbstractDashboardView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/contacts";
 
@@ -41,17 +41,17 @@ public class DashboardContactsView extends AbstractDashboardView {
 	private VerticalLayout epiCurveLayout;
 	private VerticalLayout mapLayout;
 	
-	public DashboardContactsView() {
+	public ContactsDashboardView() {
 		super(VIEW_NAME, DashboardType.CONTACTS);
 		
 		filterLayout.setInfoLabelText(I18nProperties.getString(Strings.infoContactDashboard));
 
 		// Add statistics
-		statisticsComponent = new DashboardContactsStatisticsComponent(dashboardDataProvider);
+		statisticsComponent = new ContactsDashboardStatisticsComponent(dashboardDataProvider);
 		dashboardLayout.addComponent(statisticsComponent);
 		dashboardLayout.setExpandRatio(statisticsComponent, 0);
 
-		epiCurveComponent = new EpiCurveContactsComponent(dashboardDataProvider);
+		epiCurveComponent = new ContactsEpiCurveComponent(dashboardDataProvider);
 		mapComponent = new DashboardMapComponent(dashboardDataProvider);
 		
 		// Add epi curve and map
@@ -95,7 +95,7 @@ public class DashboardContactsView extends AbstractDashboardView {
 		epiCurveComponent.setExpandListener(e -> {
 			dashboardLayout.removeComponent(statisticsComponent);
 			epiCurveAndMapLayout.removeComponent(mapLayout);
-			DashboardContactsView.this.setHeight(100, Unit.PERCENTAGE);
+			ContactsDashboardView.this.setHeight(100, Unit.PERCENTAGE);
 			epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
 			epiCurveLayout.setSizeFull();
 		});
@@ -104,7 +104,7 @@ public class DashboardContactsView extends AbstractDashboardView {
 			dashboardLayout.addComponent(statisticsComponent, 1);
 			epiCurveAndMapLayout.addComponent(mapLayout, 1);
 			epiCurveLayout.setHeight(400, Unit.PIXELS);
-			DashboardContactsView.this.setHeightUndefined();
+			ContactsDashboardView.this.setHeightUndefined();
 			epiCurveAndMapLayout.setHeightUndefined();
 		});
 
@@ -128,7 +128,7 @@ public class DashboardContactsView extends AbstractDashboardView {
 		mapComponent.setExpandListener(e -> {
 			dashboardLayout.removeComponent(statisticsComponent);
 			epiCurveAndMapLayout.removeComponent(epiCurveLayout);
-			DashboardContactsView.this.setHeight(100, Unit.PERCENTAGE);
+			ContactsDashboardView.this.setHeight(100, Unit.PERCENTAGE);
 			epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
 			mapLayout.setSizeFull();
 		});
@@ -137,7 +137,7 @@ public class DashboardContactsView extends AbstractDashboardView {
 			dashboardLayout.addComponent(statisticsComponent, 1);
 			epiCurveAndMapLayout.addComponent(epiCurveLayout, 0);
 			mapLayout.setHeight(400, Unit.PIXELS);
-			DashboardContactsView.this.setHeightUndefined();
+			ContactsDashboardView.this.setHeightUndefined();
 			epiCurveAndMapLayout.setHeightUndefined();
 		});
 

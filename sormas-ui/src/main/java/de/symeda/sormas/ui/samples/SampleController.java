@@ -246,8 +246,8 @@ public class SampleController {
 			protected void onCancel() {
 			}
 		};
-		requestTaskComponent.getConfirmButton().setCaption(I18nProperties.getString(Strings.sYes));
-		requestTaskComponent.getCancelButton().setCaption(I18nProperties.getString(Strings.sNo));
+		requestTaskComponent.getConfirmButton().setCaption(I18nProperties.getString(Strings.yes));
+		requestTaskComponent.getCancelButton().setCaption(I18nProperties.getString(Strings.no));
 		return requestTaskComponent;
 	}
 

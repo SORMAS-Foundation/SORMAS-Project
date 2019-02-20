@@ -585,7 +585,7 @@ public class CaseController {
 	private void archiveOrDearchiveCase(String caseUuid, boolean archive) {
 		if (archive) {
 			Label contentLabel = new Label(String.format(I18nProperties.getString(Strings.confirmationArchiveCase), I18nProperties.getString(Strings.entityCase).toLowerCase(), I18nProperties.getString(Strings.entityCase).toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingArchiveCase), contentLabel, I18nProperties.getString(Strings.sYes), I18nProperties.getString(Strings.sNo), 640, e -> {
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingArchiveCase), contentLabel, I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 640, e -> {
 				if (e.booleanValue() == true) {
 					FacadeProvider.getCaseFacade().archiveOrDearchiveCase(caseUuid, true);
 					Notification.show(String.format(I18nProperties.getString(Strings.messageCaseArchived), I18nProperties.getString(Strings.entityCase)), Type.ASSISTIVE_NOTIFICATION);
@@ -594,7 +594,7 @@ public class CaseController {
 			});
 		} else {
 			Label contentLabel = new Label(String.format(I18nProperties.getString(Strings.confirmationDearchiveCase), I18nProperties.getString(Strings.entityCase).toLowerCase(), I18nProperties.getString(Strings.entityCase).toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingDearchiveCase), contentLabel, I18nProperties.getString(Strings.sYes), I18nProperties.getString(Strings.sNo), 640, e -> {
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingDearchiveCase), contentLabel, I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 640, e -> {
 				if (e.booleanValue()) {
 					FacadeProvider.getCaseFacade().archiveOrDearchiveCase(caseUuid, false);
 					Notification.show(String.format(I18nProperties.getString(Strings.messageCaseDearchived), I18nProperties.getString(Strings.entityCase)), Type.ASSISTIVE_NOTIFICATION);
@@ -663,7 +663,7 @@ public class CaseController {
 		} else {
 			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingConfirmArchiving), 
 					new Label(String.format(I18nProperties.getString(Strings.confirmationArchiveCases), selectedRows.size())), 
-					I18nProperties.getString(Strings.sYes), I18nProperties.getString(Strings.sNo), null, e -> {
+					I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), null, e -> {
 						if (e.booleanValue() == true) {
 							for (Object selectedRow : selectedRows) {
 								FacadeProvider.getCaseFacade().archiveOrDearchiveCase(((CaseIndexDto) selectedRow).getUuid(), true);
@@ -683,7 +683,7 @@ public class CaseController {
 		} else {
 			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingConfirmDearchiving), 
 					new Label(String.format(I18nProperties.getString(Strings.confirmationDearchiveCases), selectedRows.size())), 
-							I18nProperties.getString(Strings.sYes), I18nProperties.getString(Strings.sNo), null, e -> {
+							I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), null, e -> {
 				if (e.booleanValue() == true) {
 					for (Object selectedRow : selectedRows) {
 						FacadeProvider.getCaseFacade().archiveOrDearchiveCase(((CaseIndexDto) selectedRow).getUuid(), false);

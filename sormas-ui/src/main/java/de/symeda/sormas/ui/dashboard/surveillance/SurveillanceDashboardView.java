@@ -23,24 +23,25 @@ import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 
 @SuppressWarnings("serial")
-public class DashboardSurveillanceView extends AbstractDashboardView {
+public class SurveillanceDashboardView extends AbstractDashboardView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/surveillance";
 
-	protected DashboardSurveillanceDiseaseBurdenLayout diseaseBurdenAndDifferenceLayout;
-	protected DashboardSurveillanceDiseaseCarouselLayout diseaseCarouselLayout;
+	protected SurveillanceOverviewLayout surveillanceOverviewLayout;
+	protected SurveillanceDiseaseCarouselLayout diseaseCarouselLayout;
 	
-	public DashboardSurveillanceView() {
+	public SurveillanceDashboardView() {
 		super(VIEW_NAME, DashboardType.SURVEILLANCE);
 
 		filterLayout.setInfoLabelText(I18nProperties.getString(Strings.infoSurveillanceDashboard));
+		dashboardLayout.setSpacing(false);
 
 		//add disease burden and cases
-		diseaseBurdenAndDifferenceLayout = new DashboardSurveillanceDiseaseBurdenLayout(dashboardDataProvider);
-		dashboardLayout.addComponent(diseaseBurdenAndDifferenceLayout);
+		surveillanceOverviewLayout = new SurveillanceOverviewLayout(dashboardDataProvider);
+		dashboardLayout.addComponent(surveillanceOverviewLayout);
 
 		//add diseaseCarousel and map
-		diseaseCarouselLayout = new DashboardSurveillanceDiseaseCarouselLayout(dashboardDataProvider);
+		diseaseCarouselLayout = new SurveillanceDiseaseCarouselLayout(dashboardDataProvider);
 		dashboardLayout.addComponent(diseaseCarouselLayout);
 		dashboardLayout.setExpandRatio(diseaseCarouselLayout, 1);
 	}
@@ -49,8 +50,8 @@ public class DashboardSurveillanceView extends AbstractDashboardView {
 		super.refreshDashboard();
 
 		// Update disease burden
-		if (diseaseBurdenAndDifferenceLayout != null)
-			diseaseBurdenAndDifferenceLayout.refresh();
+		if (surveillanceOverviewLayout != null)
+			surveillanceOverviewLayout.refresh();
 
 		//Update disease carousel
 		if (diseaseCarouselLayout != null)

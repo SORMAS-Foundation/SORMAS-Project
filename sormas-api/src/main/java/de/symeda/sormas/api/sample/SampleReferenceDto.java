@@ -53,7 +53,7 @@ public class SampleReferenceDto extends ReferenceDto {
 			stringBuilder.append(" ");
 		}
 		stringBuilder.append(I18nProperties.getString(Strings.entitySample));
-		stringBuilder.append(StringUtils.wrap(I18nProperties.getString(Strings.sForCase), " "))
+		stringBuilder.append(StringUtils.wrap(I18nProperties.getString(Strings.forCase), " "))
 			.append(DataHelper.getShortUuid(caseUuid));
 		return stringBuilder.toString();
 	}

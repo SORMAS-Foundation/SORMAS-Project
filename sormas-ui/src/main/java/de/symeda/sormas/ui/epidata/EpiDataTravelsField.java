@@ -53,7 +53,7 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataTravelDto travel = (EpiDataTravelDto) itemId;
 				if (travel.getTravelDateFrom() == null && travel.getTravelDateTo() == null) {
-					return I18nProperties.getString(Strings.sUnknown);
+					return I18nProperties.getString(Strings.unknown);
 				} else {
 					StringBuilder periodBuilder = new StringBuilder();
 					periodBuilder.append(travel.getTravelDateFrom() != null ? DateHelper.formatLocalDate(travel.getTravelDateFrom()) : "?");
@@ -105,7 +105,7 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 		editForm.setValue(entry);
 		
 		final CommitDiscardWrapperComponent<EpiDataTravelEditForm> editView = new CommitDiscardWrapperComponent<EpiDataTravelEditForm>(editForm, editForm.getFieldGroup());
-		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.sDone));
+		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 		
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.entityTravel));
 

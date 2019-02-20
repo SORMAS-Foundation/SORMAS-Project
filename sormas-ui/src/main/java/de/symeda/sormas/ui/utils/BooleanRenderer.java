@@ -30,9 +30,9 @@ public class BooleanRenderer extends HtmlRenderer {
     public JsonValue encode(String value) {
     	if(value != null && !value.isEmpty()) {
     		if (value.equals("true")) {
-    			return super.encode(I18nProperties.getString(Strings.sYes));
+    			return super.encode(I18nProperties.getString(Strings.yes));
     		} else {
-    			return super.encode(I18nProperties.getString(Strings.sNo));
+    			return super.encode(I18nProperties.getString(Strings.no));
     		}
     	} else {
     		return null;

@@ -50,7 +50,7 @@ public class ContactReferenceDto extends ReferenceDto {
 		StringBuilder builder = new StringBuilder();
 		builder.append(DataHelper.toStringNullable(contactFirstName))
 			.append(" ").append(DataHelper.toStringNullable(contactLastName).toUpperCase())
-			.append(StringUtils.wrap(I18nProperties.getString(Strings.sToCase), ""))
+			.append(StringUtils.wrap(I18nProperties.getString(Strings.toCase), ""))
 			.append(DataHelper.toStringNullable(caseFirstName))
 			.append(" ").append(DataHelper.toStringNullable(caseLastName));
 		return builder.toString();

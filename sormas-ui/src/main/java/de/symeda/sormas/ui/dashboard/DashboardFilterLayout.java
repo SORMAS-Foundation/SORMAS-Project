@@ -87,7 +87,8 @@ public class DashboardFilterLayout extends HorizontalLayout {
 				dashboardDataProvider.setRegion((RegionReferenceDto) regionFilter.getValue());
 				dashboardView.refreshDashboard();
 			});
-			regionFilter.setCaption(I18nProperties.getString(Strings.entityRegion));
+			// save height
+			// regionFilter.setCaption(I18nProperties.getString(Strings.entityRegion));
 			addComponent(regionFilter);
 			dashboardDataProvider.setRegion((RegionReferenceDto) regionFilter.getValue());
 		}
@@ -101,27 +102,12 @@ public class DashboardFilterLayout extends HorizontalLayout {
 				dashboardDataProvider.setDistrict((DistrictReferenceDto) districtFilter.getValue());
 				dashboardView.refreshDashboard();
 			});
-			districtFilter.setCaption(I18nProperties.getString(Strings.entityDistrict));
+			// save height
+			//districtFilter.setCaption(I18nProperties.getString(Strings.entityDistrict));
 			addComponent(districtFilter);
 			dashboardDataProvider.setDistrict((DistrictReferenceDto) districtFilter.getValue());
 		}
 	}
-
-//	private void createDiseaseFilter() {
-//		diseaseFilter.setWidth(200, Unit.PIXELS);
-//		diseaseFilter.setInputPrompt(I18nProperties.getString(Strings.promptDisease));
-//		if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
-//			diseaseFilter.addItems(DiseaseHelper.getAllDiseasesWithFollowUp());
-//		} else {
-//			diseaseFilter.addItems((Object[]) Disease.values());
-//		}
-//		diseaseFilter.addValueChangeListener(e -> {
-//			dashboardDataProvider.setDisease((Disease) diseaseFilter.getValue());
-//			dashboardView.refreshDashboard();
-//		});
-//		diseaseFilter.setCaption(I18nProperties.getCaption(Captions.dashboardDisease));
-//		addComponent(diseaseFilter);
-//	}
 
 	private void createDateFilters() {
 		HorizontalLayout dateFilterLayout = new HorizontalLayout();
@@ -246,7 +232,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		infoLabel.setSizeUndefined();
 		CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
 		addComponent(infoLabel);
-		setComponentAlignment(infoLabel, Alignment.MIDDLE_RIGHT);
+		setComponentAlignment(infoLabel, Alignment.TOP_RIGHT);
 	}
 
 	private void initializeDateFilterButton(Button button) {
@@ -255,7 +241,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 				changeDateFilterButtonsStyles(button);
 			});
 		}
-		CssStyles.style(button, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT, CssStyles.FORCE_CAPTION);
+		CssStyles.style(button, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);//, CssStyles.FORCE_CAPTION);
 		dateFilterButtons.add(button);
 	}
 

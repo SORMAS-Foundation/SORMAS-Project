@@ -2,6 +2,13 @@ package de.symeda.sormas.api.i18n;
 
 public interface Strings {
 
+	public static String active = "active";
+	public static String address = "address";
+	public static String and = "and";
+	public static String at = "at";
+	public static String between = "between";
+	public static String bpm = "bpm";
+	public static String by = "by";
 	public static String classificationAllOf = "classificationAllOf";
 	public static String classificationClassificationRules = "classificationClassificationRules";
 	public static String classificationConfirmed = "classificationConfirmed";
@@ -19,6 +26,7 @@ public interface Strings {
 	public static String classificationSuspect = "classificationSuspect";
 	public static String classificationYearsOrLess = "classificationYearsOrLess";
 	public static String classificationYearsOrMore = "classificationYearsOrMore";
+	public static String comparedTo = "comparedTo";
 	public static String confirmationArchiveCase = "confirmationArchiveCase";
 	public static String confirmationArchiveCases = "confirmationArchiveCases";
 	public static String confirmationArchiveEvent = "confirmationArchiveEvent";
@@ -41,6 +49,8 @@ public interface Strings {
 	public static String confirmationDeleteTreatments = "confirmationDeleteTreatments";
 	public static String confirmationDeleteVisits = "confirmationDeleteVisits";
 	public static String confirmationLostToFollowUp = "confirmationLostToFollowUp";
+	public static String done = "done";
+	public static String edit = "edit";
 	public static String entityBurial = "entityBurial";
 	public static String entityCase = "entityCase";
 	public static String entityCases = "entityCases";
@@ -64,6 +74,7 @@ public interface Strings {
 	public static String entityTravel = "entityTravel";
 	public static String entityTreatment = "entityTreatment";
 	public static String entityTreatments = "entityTreatments";
+	public static String epiWeek = "epiWeek";
 	public static String errorAccessDenied = "errorAccessDenied";
 	public static String errorEntityOutdated = "errorEntityOutdated";
 	public static String errorInvalidValue = "errorInvalidValue";
@@ -74,6 +85,7 @@ public interface Strings {
 	public static String errorSetFeverRequired = "errorSetFeverRequired";
 	public static String errorViewNotFound = "errorViewNotFound";
 	public static String errorWasReported = "errorWasReported";
+	public static String forCase = "forCase";
 	public static String headingAccessDenied = "headingAccessDenied";
 	public static String headingAllContacts = "headingAllContacts";
 	public static String headingAnimalContacts = "headingAnimalContacts";
@@ -199,6 +211,8 @@ public interface Strings {
 	public static String headingVisitsDeleted = "headingVisitsDeleted";
 	public static String headingVisualization = "headingVisualization";
 	public static String headingWrongFileType = "headingWrongFileType";
+	public static String inactive = "inactive";
+	public static String inColumn = "inColumn";
 	public static String infoAddTestsToSample = "infoAddTestsToSample";
 	public static String infoBasicExport = "infoBasicExport";
 	public static String infoCanceledBy = "infoCanceledBy";
@@ -320,6 +334,9 @@ public interface Strings {
 	public static String messageUserRoleCombination = "messageUserRoleCombination";
 	public static String messageVisitsDeleted = "messageVisitsDeleted";
 	public static String messageWrongFileType = "messageWrongFileType";
+	public static String mmhg = "mmhg";
+	public static String no = "no";
+	public static String notAnswered = "notAnswered";
 	public static String notificationCaseClassificationChanged = "notificationCaseClassificationChanged";
 	public static String notificationCaseClassificationChangedSubject = "notificationCaseClassificationChangedSubject";
 	public static String notificationCaseInvestigationDone = "notificationCaseInvestigationDone";
@@ -353,6 +370,9 @@ public interface Strings {
 	public static String numberThree = "numberThree";
 	public static String numberTwelve = "numberTwelve";
 	public static String numberTwo = "numberTwo";
+	public static String of = "of";
+	public static String on = "on";
+	public static String or = "or";
 	public static String previousPeriod = "previousPeriod";
 	public static String promptCasesDateFrom = "promptCasesDateFrom";
 	public static String promptCasesDateTo = "promptCasesDateTo";
@@ -369,34 +389,15 @@ public interface Strings {
 	public static String promptTreatmentTextFilter = "promptTreatmentTextFilter";
 	public static String promptTypeToAdd = "promptTypeToAdd";
 	public static String promptUserSearch = "promptUserSearch";
-	public static String sActive = "sActive";
-	public static String sAddress = "sAddress";
-	public static String sAnd = "sAnd";
-	public static String sAt = "sAt";
-	public static String sBetween = "sBetween";
-	public static String sBpm = "sBpm";
-	public static String sBy = "sBy";
-	public static String sDone = "sDone";
-	public static String sEdit = "sEdit";
-	public static String sEpiWeek = "sEpiWeek";
-	public static String sForCase = "sForCase";
-	public static String sInactive = "sInactive";
-	public static String sInColumn = "sInColumn";
-	public static String sMmhg = "sMmhg";
-	public static String sNo = "sNo";
-	public static String sNotAnswered = "sNotAnswered";
-	public static String sOf = "sOf";
-	public static String sOn = "sOn";
-	public static String sOr = "sOr";
-	public static String sQuarterShort = "sQuarterShort";
-	public static String sReportedBy = "sReportedBy";
-	public static String sReportedOn = "sReportedOn";
-	public static String sStep = "sStep";
-	public static String sToCase = "sToCase";
-	public static String sUnknown = "sUnknown";
-	public static String sWeekShort = "sWeekShort";
-	public static String sYear = "sYear";
-	public static String sYears = "sYears";
-	public static String sYes = "sYes";
+	public static String quarterShort = "quarterShort";
+	public static String reportedBy = "reportedBy";
+	public static String reportedOn = "reportedOn";
+	public static String step = "step";
+	public static String toCase = "toCase";
+	public static String unknown = "unknown";
+	public static String weekShort = "weekShort";
+	public static String year = "year";
+	public static String years = "years";
+	public static String yes = "yes";
 	public static String yesterday = "yesterday";
  }

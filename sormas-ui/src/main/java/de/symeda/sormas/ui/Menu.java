@@ -40,7 +40,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.ui.dashboard.surveillance.DashboardSurveillanceView;
+import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -77,7 +77,7 @@ public class Menu extends CssLayout {
         image.addClickListener(new com.vaadin.event.MouseEvents.ClickListener() {
 			@Override
 			public void click(com.vaadin.event.MouseEvents.ClickEvent event) {
-	        	SormasUI.get().getNavigator().navigateTo(DashboardSurveillanceView.VIEW_NAME);
+	        	SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME);
 			}
         });
         top.addComponent(image);

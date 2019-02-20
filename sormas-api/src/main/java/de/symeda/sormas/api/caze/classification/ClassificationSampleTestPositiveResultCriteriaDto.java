@@ -62,7 +62,7 @@ public class ClassificationSampleTestPositiveResultCriteriaDto extends Classific
 				if (i < sampleTestTypes.size() - 1) {
 					stringBuilder.append(", ");
 				} else {
-					stringBuilder.append(" <b>").append(I18nProperties.getString(Strings.sOr).toUpperCase()).append("</b> ");
+					stringBuilder.append(" <b>").append(I18nProperties.getString(Strings.or).toUpperCase()).append("</b> ");
 				}
 			}
 

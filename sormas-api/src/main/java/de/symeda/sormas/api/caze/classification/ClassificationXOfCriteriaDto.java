@@ -68,7 +68,7 @@ public class ClassificationXOfCriteriaDto extends ClassificationCriteriaDto impl
 
 	@Override
 	public String getCriteriaName() {
-		return "<b>" + parseAmountNumber() + " " + I18nProperties.getString(Strings.sOf).toUpperCase() + "</b>";
+		return "<b>" + parseAmountNumber() + " " + I18nProperties.getString(Strings.of).toUpperCase() + "</b>";
 	}
 
 	@Override
@@ -177,7 +177,7 @@ public class ClassificationXOfCriteriaDto extends ClassificationCriteriaDto impl
 					if (i + 1 < classificationCriteria.size()) {
 						stringBuilder.append(", ");
 					} else {
-						stringBuilder.append(" <b>").append( I18nProperties.getString(Strings.sOr).toUpperCase()).append("</b> ");
+						stringBuilder.append(" <b>").append( I18nProperties.getString(Strings.or).toUpperCase()).append("</b> ");
 					}
 				}
 				

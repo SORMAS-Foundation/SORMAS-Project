@@ -46,7 +46,7 @@ import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsSubComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
-public class DiseaseStatisticsSubComponent extends CustomLayout {
+public class DiseaseStatisticsComponent extends CustomLayout {
 
 	private static final long serialVersionUID = 6582975657305031105L;
 
@@ -87,7 +87,7 @@ public class DiseaseStatisticsSubComponent extends CustomLayout {
 	private static final String EVENT_LOC = "event";
 	private static final String SAMPLE_LOC = "sample";
 
-	public DiseaseStatisticsSubComponent(DashboardDataProvider dashboardDataProvider) {
+	public DiseaseStatisticsComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
 		
 		setWidth(100, Unit.PERCENTAGE);

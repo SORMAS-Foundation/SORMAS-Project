@@ -72,11 +72,11 @@ public class EpiWeek implements Serializable, StatisticsGroupingKey {
 
 	@Override
 	public String toString() {
-		return I18nProperties.getString(Strings.sWeekShort) + " " + week + (year != null ? ("-" + year + " (" + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekStart(this)) + " - " + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekEnd(this)) + ")") : "");
+		return I18nProperties.getString(Strings.weekShort) + " " + week + (year != null ? ("-" + year + " (" + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekStart(this)) + " - " + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekEnd(this)) + ")") : "");
 	}
 	
 	public String toShortString() {
-		return I18nProperties.getString(Strings.sWeekShort) + " " + week + (year != null ? ("-" + year) : "");
+		return I18nProperties.getString(Strings.weekShort) + " " + week + (year != null ? ("-" + year) : "");
 	}
 
 	@Override

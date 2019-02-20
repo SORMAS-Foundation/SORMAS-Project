@@ -152,7 +152,7 @@ public class CaseImportLayout extends VerticalLayout {
 		public CaseImportLayoutComponent(int step, String headline, String infoText, Resource buttonIcon, String buttonCaption) {
 			setSpacing(false);
 
-			headlineLabel = new Label(I18nProperties.getString(Strings.sStep) + " " + step + ": " + headline);
+			headlineLabel = new Label(I18nProperties.getString(Strings.step) + " " + step + ": " + headline);
 			CssStyles.style(headlineLabel, CssStyles.H3);
 			addComponent(headlineLabel);
 

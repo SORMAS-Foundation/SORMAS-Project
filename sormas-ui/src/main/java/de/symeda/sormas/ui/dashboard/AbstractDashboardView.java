@@ -26,8 +26,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.dashboard.contacts.DashboardContactsView;
-import de.symeda.sormas.ui.dashboard.surveillance.DashboardSurveillanceView;
+import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
+import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -67,9 +67,9 @@ public abstract class AbstractDashboardView extends AbstractView {
 		dashboardSwitcher.addValueChangeListener(e -> {
 			dashboardDataProvider.setDashboardType((DashboardType) e.getProperty().getValue());
 			if (e.getProperty().getValue().equals(DashboardType.SURVEILLANCE)) {
-				SormasUI.get().getNavigator().navigateTo(DashboardSurveillanceView.VIEW_NAME);
+				SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME);
 			} else {
-				SormasUI.get().getNavigator().navigateTo(DashboardContactsView.VIEW_NAME);
+				SormasUI.get().getNavigator().navigateTo(ContactsDashboardView.VIEW_NAME);
 			}
 		});
 		addHeaderComponent(dashboardSwitcher);

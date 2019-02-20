@@ -58,7 +58,7 @@ public class Quarter implements Serializable, StatisticsGroupingKey {
 	
 	@Override
 	public String toString() {
-		return I18nProperties.getString(Strings.sQuarterShort) + value;
+		return I18nProperties.getString(Strings.quarterShort) + value;
 	}
 
 	@Override

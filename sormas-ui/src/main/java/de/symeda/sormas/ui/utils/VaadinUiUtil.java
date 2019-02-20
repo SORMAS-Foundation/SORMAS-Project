@@ -198,8 +198,8 @@ public class VaadinUiUtil {
 				popupWindow.close();
 			}
 		};
-		deleteConfirmationComponent.getConfirmButton().setCaption(I18nProperties.getString(Strings.sYes));
-		deleteConfirmationComponent.getCancelButton().setCaption(I18nProperties.getString(Strings.sNo));
+		deleteConfirmationComponent.getConfirmButton().setCaption(I18nProperties.getString(Strings.yes));
+		deleteConfirmationComponent.getCancelButton().setCaption(I18nProperties.getString(Strings.no));
 		deleteLayout.addComponent(deleteConfirmationComponent);
 		deleteLayout.setComponentAlignment(deleteConfirmationComponent, Alignment.BOTTOM_RIGHT);
 		

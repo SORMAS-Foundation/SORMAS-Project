@@ -77,13 +77,13 @@ public final class SymptomsHelper {
 		.append("/")
 		.append(diastolic != null ? diastolic : "?")
 		.append(" ")
-		.append(I18nProperties.getString(Strings.sMmhg));
+		.append(I18nProperties.getString(Strings.mmhg));
 
 		return bpStringBuilder.toString();
 	}
 
 	public static String getHeartRateString(int heartRate) {
-		return heartRate + " " + I18nProperties.getString(Strings.sBpm);
+		return heartRate + " " + I18nProperties.getString(Strings.bpm);
 	}
 
 	public static List<String> getSymptomPropertyIds() {

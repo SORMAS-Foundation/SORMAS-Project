@@ -78,7 +78,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 				if (gathering.getGatheringDate() != null) {
 					return DateHelper.formatLocalDate(gathering.getGatheringDate());
 				} else {
-					return I18nProperties.getString(Strings.sUnknown);
+					return I18nProperties.getString(Strings.unknown);
 				}
 			}
 		});
@@ -124,7 +124,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 		editForm.setValue(entry);
 		
 		final CommitDiscardWrapperComponent<EpiDataGatheringEditForm> editView = new CommitDiscardWrapperComponent<EpiDataGatheringEditForm>(editForm, editForm.getFieldGroup());
-		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.sDone));
+		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.entityGathering));
 		

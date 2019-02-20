@@ -122,10 +122,10 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 	}
 
 	private HorizontalLayout createFooter() {
-		HorizontalLayout epiCurveFooterHeaderLayout = new HorizontalLayout();
-		epiCurveFooterHeaderLayout.setWidth(100, Unit.PERCENTAGE);
-		epiCurveFooterHeaderLayout.setSpacing(true);
-		CssStyles.style(epiCurveFooterHeaderLayout, CssStyles.VSPACE_4);
+		HorizontalLayout epiCurveFooterLayout = new HorizontalLayout();
+		epiCurveFooterLayout.setWidth(100, Unit.PERCENTAGE);
+		epiCurveFooterLayout.setSpacing(true);
+		CssStyles.style(epiCurveFooterLayout, CssStyles.VSPACE_4);
 
 		// Grouping
 		PopupButton groupingDropdown = new PopupButton(I18nProperties.getCaption(Captions.dashboardGrouping));
@@ -159,17 +159,17 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 
 			groupingDropdown.setContent(groupingLayout);
 		}
-		epiCurveFooterHeaderLayout.addComponent(groupingDropdown);
-		epiCurveFooterHeaderLayout.setComponentAlignment(groupingDropdown, Alignment.MIDDLE_RIGHT);
-		epiCurveFooterHeaderLayout.setExpandRatio(groupingDropdown, 1);
+		epiCurveFooterLayout.addComponent(groupingDropdown);
+		epiCurveFooterLayout.setComponentAlignment(groupingDropdown, Alignment.MIDDLE_RIGHT);
+		epiCurveFooterLayout.setExpandRatio(groupingDropdown, 1);
 		
 		// Epi curve mode
 		AbstractComponent epiCurveModeSelector = createEpiCurveModeSelector();
-		epiCurveFooterHeaderLayout.addComponent(epiCurveModeSelector);
-		epiCurveFooterHeaderLayout.setComponentAlignment(epiCurveModeSelector, Alignment.MIDDLE_RIGHT);
-		epiCurveFooterHeaderLayout.setExpandRatio(epiCurveModeSelector, 0);
+		epiCurveFooterLayout.addComponent(epiCurveModeSelector);
+		epiCurveFooterLayout.setComponentAlignment(epiCurveModeSelector, Alignment.MIDDLE_RIGHT);
+		epiCurveFooterLayout.setExpandRatio(epiCurveModeSelector, 0);
 		
-		return epiCurveFooterHeaderLayout;
+		return epiCurveFooterLayout;
 	}
 
 	protected abstract AbstractComponent createEpiCurveModeSelector();

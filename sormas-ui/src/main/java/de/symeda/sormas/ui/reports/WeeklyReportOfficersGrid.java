@@ -169,7 +169,7 @@ public class WeeklyReportOfficersGrid extends Grid implements ItemClickListener 
 			grid.setHeightUndefined();
 			layout.addComponent(grid);
 			window.setCaption(String.format(I18nProperties.getCaption(Captions.weeklyReportsInDistrict), summaryDto.getDistrict().toString())
-					+ " - " + I18nProperties.getString(Strings.sEpiWeek) + " " + week + "/" + year);
+					+ " - " + I18nProperties.getString(Strings.epiWeek) + " " + week + "/" + year);
 		}
 	}
 }

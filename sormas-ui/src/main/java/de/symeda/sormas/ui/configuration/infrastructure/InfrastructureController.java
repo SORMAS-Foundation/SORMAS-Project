@@ -48,7 +48,7 @@ public class InfrastructureController {
 	public void editHealthFacility(String uuid) {
 		FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(uuid);
 		CommitDiscardWrapperComponent<FacilityEditForm> editComponent = getFacilityEditComponent(facility, facility.getType() == FacilityType.LABORATORY);
-		String caption = I18nProperties.getString(Strings.sEdit) + " " + facility.getName();
+		String caption = I18nProperties.getString(Strings.edit) + " " + facility.getName();
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
 	}
 	
@@ -60,7 +60,7 @@ public class InfrastructureController {
 	public void editRegion(String uuid) {
 		RegionDto region = FacadeProvider.getRegionFacade().getRegionByUuid(uuid);
 		CommitDiscardWrapperComponent<RegionEditForm> editComponent = getRegionEditComponent(region);
-		String caption = I18nProperties.getString(Strings.sEdit) + " " + region.getName();
+		String caption = I18nProperties.getString(Strings.edit) + " " + region.getName();
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
 	}
 	
@@ -72,7 +72,7 @@ public class InfrastructureController {
 	public void editDistrict(String uuid) {
 		DistrictDto district = FacadeProvider.getDistrictFacade().getDistrictByUuid(uuid);
 		CommitDiscardWrapperComponent<DistrictEditForm> editComponent = getDistrictEditComponent(district);
-		String caption = I18nProperties.getString(Strings.sEdit) + " " + district.getName();
+		String caption = I18nProperties.getString(Strings.edit) + " " + district.getName();
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
 	}
 
@@ -84,7 +84,7 @@ public class InfrastructureController {
 	public void editCommunity(String uuid) {
 		CommunityDto community = FacadeProvider.getCommunityFacade().getByUuid(uuid);
 		CommitDiscardWrapperComponent<CommunityEditForm> editComponent = getCommunityEditComponent(community);
-		String caption = I18nProperties.getString(Strings.sEdit) + " " + community.getName();
+		String caption = I18nProperties.getString(Strings.edit) + " " + community.getName();
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
 	}
 

@@ -60,7 +60,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataBurialDto burial = (EpiDataBurialDto) itemId;
 				if (burial.getBurialDateFrom() == null && burial.getBurialDateTo() == null) {
-					return I18nProperties.getString(Strings.sUnknown);
+					return I18nProperties.getString(Strings.unknown);
 				} else {
 					StringBuilder periodBuilder = new StringBuilder();
 					periodBuilder.append(burial.getBurialDateFrom() != null ? DateHelper.formatLocalDate(burial.getBurialDateFrom()) : "?");
@@ -144,7 +144,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 		editForm.setValue(entry);
 		
 		final CommitDiscardWrapperComponent<EpiDataBurialEditForm> editView = new CommitDiscardWrapperComponent<EpiDataBurialEditForm>(editForm, editForm.getFieldGroup());
-		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.sDone));
+		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.entityBurial));
 		

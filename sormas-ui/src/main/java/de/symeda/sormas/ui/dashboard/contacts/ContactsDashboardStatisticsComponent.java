@@ -55,7 +55,7 @@ import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsSubComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
-public class DashboardContactsStatisticsComponent extends AbstractDashboardStatisticsComponent {
+public class ContactsDashboardStatisticsComponent extends AbstractDashboardStatisticsComponent {
 
 	// "All Contacts" elements
 	private CssLayout allContactsCountLayout;
@@ -93,7 +93,7 @@ public class DashboardContactsStatisticsComponent extends AbstractDashboardStati
 	private DashboardStatisticsGraphicalGrowthElement uncooperativeVisits;
 	private DashboardStatisticsGraphicalGrowthElement cooperativeVisits;
 
-	public DashboardContactsStatisticsComponent(DashboardDataProvider dashboardDataProvider) {
+	public ContactsDashboardStatisticsComponent(DashboardDataProvider dashboardDataProvider) {
 		super(dashboardDataProvider);
 
 	}

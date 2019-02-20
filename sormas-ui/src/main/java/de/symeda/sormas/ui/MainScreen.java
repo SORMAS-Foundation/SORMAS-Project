@@ -44,8 +44,8 @@ import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
 import de.symeda.sormas.ui.configuration.userrights.UserRightsView;
 import de.symeda.sormas.ui.contact.ContactsView;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
-import de.symeda.sormas.ui.dashboard.contacts.DashboardContactsView;
-import de.symeda.sormas.ui.dashboard.surveillance.DashboardSurveillanceView;
+import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
+import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.events.EventsView;
 import de.symeda.sormas.ui.reports.ReportsView;
 import de.symeda.sormas.ui.samples.SamplesView;
@@ -81,7 +81,7 @@ public class MainScreen extends HorizontalLayout {
 			public View getView(String viewName) {
 				try {
 					// Add new views to this clause to make sure that the right error page is shown
-					if (viewName.equals(DashboardSurveillanceView.VIEW_NAME) || viewName.equals(DashboardContactsView.VIEW_NAME) 
+					if (viewName.equals(SurveillanceDashboardView.VIEW_NAME) || viewName.equals(ContactsDashboardView.VIEW_NAME) 
 							|| viewName.equals(TasksView.VIEW_NAME) || viewName.equals(CasesView.VIEW_NAME)
 							|| viewName.equals(ContactsView.VIEW_NAME) || viewName.equals(EventsView.VIEW_NAME)
 							|| viewName.equals(SamplesView.VIEW_NAME) || viewName.equals(ReportsView.VIEW_NAME) 
@@ -105,9 +105,9 @@ public class MainScreen extends HorizontalLayout {
 			ControllerProvider.getDashboardController().registerViews(navigator);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
-			menu.addView(DashboardSurveillanceView.class, AbstractDashboardView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuDashboard), FontAwesome.DASHBOARD);
+			menu.addView(SurveillanceDashboardView.class, AbstractDashboardView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuDashboard), FontAwesome.DASHBOARD);
 		} else if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_CONTACT_ACCESS)) {
-			menu.addView(DashboardContactsView.class, AbstractDashboardView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuDashboard), FontAwesome.DASHBOARD);
+			menu.addView(ContactsDashboardView.class, AbstractDashboardView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuDashboard), FontAwesome.DASHBOARD);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
 			menu.addView(TasksView.class, TasksView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuTasks), FontAwesome.TASKS);
@@ -195,7 +195,7 @@ public class MainScreen extends HorizontalLayout {
 			if (event.getViewName().isEmpty()) {
 				// redirect to default view
 				if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_VIEW)) {
-					SormasUI.get().getNavigator().navigateTo(DashboardSurveillanceView.VIEW_NAME);
+					SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME);
 				} else if (UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
 					SormasUI.get().getNavigator().navigateTo(SamplesView.VIEW_NAME);
 				} else if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {

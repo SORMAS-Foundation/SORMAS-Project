@@ -233,7 +233,7 @@ public class EventController {
 	private void archiveOrDearchiveEvent(String eventUuid, boolean archive) {
 		if (archive) {
 			Label contentLabel = new Label(String.format(I18nProperties.getString(Strings.confirmationArchiveEvent), I18nProperties.getString(Strings.entityEvent).toLowerCase(), I18nProperties.getString(Strings.entityEvent).toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingArchiveEvent), contentLabel, I18nProperties.getString(Strings.sYes), I18nProperties.getString(Strings.sNo), 640, e -> {
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingArchiveEvent), contentLabel, I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 640, e -> {
 				if (e.booleanValue() == true) {
 					FacadeProvider.getEventFacade().archiveOrDearchiveEvent(eventUuid, true);
 					Notification.show(String.format(I18nProperties.getString(Strings.messageEventArchived), I18nProperties.getString(Strings.entityEvent)), Type.ASSISTIVE_NOTIFICATION);
@@ -242,7 +242,7 @@ public class EventController {
 			});
 		} else {
 			Label contentLabel = new Label(String.format(I18nProperties.getString(Strings.confirmationDearchiveEvent), I18nProperties.getString(Strings.entityEvent).toLowerCase(), I18nProperties.getString(Strings.entityEvent).toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingDearchiveEvent), contentLabel, I18nProperties.getString(Strings.sYes), I18nProperties.getString(Strings.sNo), 640, e -> {
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingDearchiveEvent), contentLabel, I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 640, e -> {
 				if (e.booleanValue()) {
 					FacadeProvider.getEventFacade().archiveOrDearchiveEvent(eventUuid, false);
 					Notification.show(String.format(I18nProperties.getString(Strings.messageEventDearchived), I18nProperties.getString(Strings.entityEvent)), Type.ASSISTIVE_NOTIFICATION);
@@ -278,7 +278,7 @@ public class EventController {
 		} else {
 			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingConfirmArchiving), 
 					new Label(String.format(I18nProperties.getString(Strings.confirmationArchiveEvents), selectedRows.size())), 
-					I18nProperties.getString(Strings.sYes), I18nProperties.getString(Strings.sNo), null, e -> {
+					I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), null, e -> {
 				if (e.booleanValue() == true) {
 					for (Object selectedRow : selectedRows) {
 						FacadeProvider.getEventFacade().archiveOrDearchiveEvent(((EventIndexDto) selectedRow).getUuid(), true);
@@ -298,7 +298,7 @@ public class EventController {
 		} else {
 			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingConfirmDearchiving), 
 					new Label(String.format(I18nProperties.getString(Strings.confirmationDearchiveEvents), selectedRows.size())), 
-					I18nProperties.getString(Strings.sYes), I18nProperties.getString(Strings.sNo), null, e -> {
+					I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), null, e -> {
 				if (e.booleanValue() == true) {
 					for (Object selectedRow : selectedRows) {
 						FacadeProvider.getEventFacade().archiveOrDearchiveEvent(((EventIndexDto) selectedRow).getUuid(), false);

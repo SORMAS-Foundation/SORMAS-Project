@@ -56,7 +56,7 @@ public class IntegerRange implements Serializable, StatisticsGroupingKey {
 		} else if (from != null && to == null) {
 			return String.valueOf(from) + "+";
 		} else {
-			return I18nProperties.getString(Strings.sUnknown);
+			return I18nProperties.getString(Strings.unknown);
 		}
 	}
 

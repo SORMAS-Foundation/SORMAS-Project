@@ -91,7 +91,7 @@ public class ClassificationSampleTestCriteriaDto extends ClassificationCaseCrite
 			for (int i = 0; i < testTypes.size(); i++) {
 				if (i > 0) {
 					if (i == testTypes.size() - 1) {
-						stringBuilder.append(" <b>").append(I18nProperties.getString(Strings.sOr).toUpperCase()).append("</b> ");
+						stringBuilder.append(" <b>").append(I18nProperties.getString(Strings.or).toUpperCase()).append("</b> ");
 					} else {
 						stringBuilder.append(", ");
 					}

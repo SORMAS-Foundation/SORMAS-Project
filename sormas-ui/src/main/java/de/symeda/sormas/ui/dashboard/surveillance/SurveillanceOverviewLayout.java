@@ -24,7 +24,6 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
@@ -32,10 +31,10 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
-public class DashboardSurveillanceDiseaseBurdenLayout extends CustomLayout {
+public class SurveillanceOverviewLayout extends CustomLayout {
 
-	protected DiseaseBurdenSurveillanceComponent diseaseBurdenComponent;
-	protected DiseaseDifferenceSurveillanceComponent diseaseDifferenceComponent;
+	protected DiseaseBurdenComponent diseaseBurdenComponent;
+	protected CaseCountDifferenceComponent diseaseDifferenceComponent;
 	private Button showMoreButton;
 	private Button showLessButton;
 	private Boolean isShowingAllDiseases;
@@ -44,7 +43,7 @@ public class DashboardSurveillanceDiseaseBurdenLayout extends CustomLayout {
 	private static String DIFFERENCE_LOC = "difference";
 	private static String EXTEND_BUTTONS_LOC = "extendButtons";
 	
-	public DashboardSurveillanceDiseaseBurdenLayout(DashboardDataProvider dashboardDataProvider) {
+	public SurveillanceOverviewLayout(DashboardDataProvider dashboardDataProvider) {
 
 		setTemplateContents(
 				LayoutUtil.fluidRow(
@@ -52,8 +51,8 @@ public class DashboardSurveillanceDiseaseBurdenLayout extends CustomLayout {
 						LayoutUtil.fluidColumnLoc(6, 0, 12, 0, DIFFERENCE_LOC))
 				+ LayoutUtil.loc(EXTEND_BUTTONS_LOC));
 		
-		diseaseBurdenComponent = new DiseaseBurdenSurveillanceComponent(dashboardDataProvider);
-		diseaseDifferenceComponent = new DiseaseDifferenceSurveillanceComponent(dashboardDataProvider);
+		diseaseBurdenComponent = new DiseaseBurdenComponent(dashboardDataProvider);
+		diseaseDifferenceComponent = new CaseCountDifferenceComponent(dashboardDataProvider);
 
 		addComponent(diseaseBurdenComponent, BURDEN_LOC);
 		addComponent(diseaseDifferenceComponent, DIFFERENCE_LOC);
@@ -66,9 +65,9 @@ public class DashboardSurveillanceDiseaseBurdenLayout extends CustomLayout {
 		VerticalLayout buttonsLayout = new VerticalLayout();
 		
 		showMoreButton = new Button(I18nProperties.getCaption(Captions.dashboardShowAllDiseases), FontAwesome.CHEVRON_DOWN);
-		CssStyles.style(showMoreButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_3);
+		CssStyles.style(showMoreButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_4);
 		showLessButton = new Button(I18nProperties.getCaption(Captions.dashboardShowFirstDiseases), FontAwesome.CHEVRON_UP);
-		CssStyles.style(showLessButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_3);
+		CssStyles.style(showLessButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_4);
 
 		showMoreButton.addClickListener(e -> {
 			isShowingAllDiseases = true;
@@ -98,9 +97,7 @@ public class DashboardSurveillanceDiseaseBurdenLayout extends CustomLayout {
 	}
 
 	public void refresh() {
-		int visibleDiseasesCount = isShowingAllDiseases ? Disease.values().length : 6;
-
-		diseaseBurdenComponent.refresh(visibleDiseasesCount);
-		diseaseDifferenceComponent.refresh(visibleDiseasesCount);
+		diseaseBurdenComponent.refresh(isShowingAllDiseases ? 0 : 6);
+		diseaseDifferenceComponent.refresh(isShowingAllDiseases ? 0 : 10);
 	}
 }

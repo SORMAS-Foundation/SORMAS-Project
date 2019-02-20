@@ -20,7 +20,9 @@ package de.symeda.sormas.ui.dashboard.surveillance;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -33,14 +35,14 @@ import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DiseaseBurdenGrid;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class DiseaseBurdenSurveillanceComponent extends VerticalLayout {
+public class DiseaseBurdenComponent extends VerticalLayout {
 
 	private static final long serialVersionUID = 6582975657305031105L;
 
 	private DashboardDataProvider dashboardDataProvider;
 	private DiseaseBurdenGrid grid;
 
-	public DiseaseBurdenSurveillanceComponent(DashboardDataProvider dashboardDataProvider) {
+	public DiseaseBurdenComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
 
 		Label title = new Label(I18nProperties.getCaption(Captions.dashboardDiseaseBurdenInfo));
@@ -55,26 +57,26 @@ public class DiseaseBurdenSurveillanceComponent extends VerticalLayout {
 
 		addComponent(title);
 		addComponent(grid);
-		setMargin(true);
+		setMargin(new MarginInfo(true, true, false, true));
 		setSpacing(false);
 		setExpandRatio(grid, 1);
 	}
 
-	public void refresh(int visibleDiseasesCount) {
+	public void refresh(int limitDiseasesCount) {
 		List<DiseaseBurdenDto> diseasesBurden = dashboardDataProvider.getDiseasesBurden();
-
 		// data mockup: manipulate the data
 //		diseasesBurden = mockDataUp(diseasesBurden);
 		
 		// sort, limit and filter
-		diseasesBurden = diseasesBurden.stream()
-									   .sorted((dto1, dto2) -> (int) (dto2.getCaseCount() - dto1.getCaseCount()))
-									   .limit(visibleDiseasesCount)
-									   //.filter((dto) -> dto.hasCount())
-									   .collect(Collectors.toList());
+		Stream<DiseaseBurdenDto> diseasesBurdenStream = diseasesBurden.stream()
+									   .sorted((dto1, dto2) -> (int) (dto2.getCaseCount() - dto1.getCaseCount()));
+		if (limitDiseasesCount > 0) {
+			diseasesBurdenStream = diseasesBurdenStream.limit(limitDiseasesCount);
+		}
+		diseasesBurden = diseasesBurdenStream.collect(Collectors.toList());
 
 		grid.reload(diseasesBurden);
-		grid.setHeightByRows(visibleDiseasesCount);
+		grid.setHeightByRows(diseasesBurden.size());
 	}
 	
 	@SuppressWarnings("unused")

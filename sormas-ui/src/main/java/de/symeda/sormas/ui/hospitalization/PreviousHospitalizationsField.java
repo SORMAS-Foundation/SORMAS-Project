@@ -56,7 +56,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
 				if (prevHospitalization.getAdmissionDate() == null && prevHospitalization.getDischargeDate() == null) {
-					return I18nProperties.getString(Strings.sUnknown);
+					return I18nProperties.getString(Strings.unknown);
 				} else {
 					StringBuilder periodBuilder = new StringBuilder();
 					periodBuilder.append(prevHospitalization.getAdmissionDate() != null ? DateHelper.formatLocalDate(prevHospitalization.getAdmissionDate()) : "?");
@@ -130,7 +130,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 
 		final CommitDiscardWrapperComponent<PreviousHospitalizationEditForm> editView = new CommitDiscardWrapperComponent<PreviousHospitalizationEditForm>(
 				editForm, editForm.getFieldGroup());
-		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.sDone));
+		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getCaption(PreviousHospitalizationDto.I18N_PREFIX));
 

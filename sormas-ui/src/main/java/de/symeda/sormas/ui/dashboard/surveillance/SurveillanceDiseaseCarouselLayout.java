@@ -36,22 +36,22 @@ import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
-public class DashboardSurveillanceDiseaseCarouselLayout extends VerticalLayout {
+public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 
 	private DashboardDataProvider dashboardDataProvider;
 	
-	private DiseaseStatisticsSubComponent statisticsComponent;
-	private EpiCurveSurveillanceComponent epiCurveComponent;
+	private DiseaseStatisticsComponent statisticsComponent;
+	private SurveillanceEpiCurveComponent epiCurveComponent;
 	private DashboardMapComponent mapComponent;
 	
 	private SubNavigationActionMenu carouselMenu;
 	private List<Disease> diseases;
 
-	public DashboardSurveillanceDiseaseCarouselLayout(DashboardDataProvider dashboardDataProvider) {
+	public SurveillanceDiseaseCarouselLayout(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
 		
-		statisticsComponent = new DiseaseStatisticsSubComponent(dashboardDataProvider);
-		epiCurveComponent = new EpiCurveSurveillanceComponent(dashboardDataProvider);
+		statisticsComponent = new DiseaseStatisticsComponent(dashboardDataProvider);
+		epiCurveComponent = new SurveillanceEpiCurveComponent(dashboardDataProvider);
 		mapComponent = new DashboardMapComponent(dashboardDataProvider);
 		
 		//convert diseases array to a list. needed for indexOf in auto-slideshow

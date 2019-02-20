@@ -42,20 +42,20 @@ import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
+public class ContactsEpiCurveComponent extends AbstractEpiCurveComponent {
 
 	private static final long serialVersionUID = 6582975657305031105L;
 
-	private EpiCurveContactsMode epiCurveContactsMode;
+	private ContactsEpiCurveMode epiCurveContactsMode;
 
-	public EpiCurveContactsComponent(DashboardDataProvider dashboardDataProvider) {
+	public ContactsEpiCurveComponent(DashboardDataProvider dashboardDataProvider) {
 		super(dashboardDataProvider);
 	}
 
 	@Override
 	protected PopupButton createEpiCurveModeSelector() {
 		if (epiCurveContactsMode == null) {
-			epiCurveContactsMode = EpiCurveContactsMode.FOLLOW_UP_STATUS;
+			epiCurveContactsMode = ContactsEpiCurveMode.FOLLOW_UP_STATUS;
 			epiCurveLabel.setValue(epiCurveContactsMode.toString() + " Chart");
 		}
 
@@ -69,11 +69,11 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 
 		OptionGroup dataSelect = new OptionGroup();
 		dataSelect.setWidth(100, Unit.PERCENTAGE);
-		dataSelect.addItems((Object[]) EpiCurveContactsMode.values());
+		dataSelect.addItems((Object[]) ContactsEpiCurveMode.values());
 		dataSelect.setValue(epiCurveContactsMode);
 		dataSelect.select(epiCurveContactsMode);
 		dataSelect.addValueChangeListener(e -> {
-			epiCurveContactsMode = (EpiCurveContactsMode) e.getProperty().getValue();
+			epiCurveContactsMode = (ContactsEpiCurveMode) e.getProperty().getValue();
 			epiCurveLabel.setValue(epiCurveContactsMode.toString() + " Chart");
 			clearAndFillEpiCurveChart();
 		});
@@ -136,7 +136,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 				+ "enabled: true, formatter: function() { if (this.y > 0) return this.y; },"
 				+ "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } } },");
 
-		if (epiCurveContactsMode == EpiCurveContactsMode.CONTACT_CLASSIFICATION) {
+		if (epiCurveContactsMode == ContactsEpiCurveMode.CONTACT_CLASSIFICATION) {
 			int[] unconfirmedNumbers = new int[newLabels.size()];
 			int[] confirmedNumbers = new int[newLabels.size()];
 
@@ -181,7 +181,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 					hcjs.append(confirmedNumbers[i] + ", ");
 				}
 			}
-		} else if (epiCurveContactsMode == EpiCurveContactsMode.FOLLOW_UP_STATUS) {
+		} else if (epiCurveContactsMode == ContactsEpiCurveMode.FOLLOW_UP_STATUS) {
 			int[] underFollowUpNumbers = new int[newLabels.size()];
 			int[] lostToFollowUpNumbers = new int[newLabels.size()];
 			int[] completedFollowUpNumbers = new int[newLabels.size()];
@@ -261,7 +261,7 @@ public class EpiCurveContactsComponent extends AbstractEpiCurveComponent {
 					hcjs.append(convertedNumbers[i] + ", ");
 				}
 			}
-		} else if (epiCurveContactsMode == EpiCurveContactsMode.FOLLOW_UP_UNTIL) {
+		} else if (epiCurveContactsMode == ContactsEpiCurveMode.FOLLOW_UP_UNTIL) {
 			int[] followUpUntilNumbers = new int[newLabels.size()];
 
 

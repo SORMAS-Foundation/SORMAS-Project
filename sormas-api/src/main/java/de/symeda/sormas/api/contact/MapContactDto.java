@@ -163,7 +163,7 @@ public class MapContactDto implements Serializable {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append(personFirstName).append(" ").append(personLastName.toUpperCase());
-		builder.append(StringUtils.wrap(I18nProperties.getString(Strings.sToCase), ""));
+		builder.append(StringUtils.wrap(I18nProperties.getString(Strings.toCase), ""));
 		builder.append(casePersonFirstName).append(" ").append(casePersonLastName.toUpperCase());
 		return builder.toString();
 	}

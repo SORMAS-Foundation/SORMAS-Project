@@ -59,8 +59,8 @@ public interface Captions {
 	public static String CaseData_region = "CaseData.region";
 	public static String CaseData_reportDate = "CaseData.reportDate";
 	public static String CaseData_reportingUser = "CaseData.reportingUser";
-	public static String CaseData_sequlae = "CaseData.sequlae";
-	public static String CaseData_sequlaeDetails = "CaseData.sequlaeDetails";
+	public static String CaseData_sequelae = "CaseData.sequelae";
+	public static String CaseData_sequelaeDetails = "CaseData.sequelaeDetails";
 	public static String CaseData_smallpoxVaccinationReceived = "CaseData.smallpoxVaccinationReceived";
 	public static String CaseData_smallpoxVaccinationScar = "CaseData.smallpoxVaccinationScar";
 	public static String CaseData_surveillanceOfficer = "CaseData.surveillanceOfficer";

@@ -40,30 +40,30 @@ import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class EpiCurveSurveillanceComponent extends AbstractEpiCurveComponent {
+public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 
 	private static final long serialVersionUID = 6582975657305031105L;
 
-	private EpiCurveSurveillanceMode epiCurveSurveillanceMode;
+	private SurveillanceEpiCurveMode epiCurveSurveillanceMode;
 	
-	public EpiCurveSurveillanceComponent(DashboardDataProvider dashboardDataProvider) {
+	public SurveillanceEpiCurveComponent(DashboardDataProvider dashboardDataProvider) {
 		super(dashboardDataProvider);
 	}
 
 	@Override
 	protected OptionGroup createEpiCurveModeSelector() {
 		if (epiCurveSurveillanceMode == null) {
-			epiCurveSurveillanceMode = EpiCurveSurveillanceMode.CASE_STATUS;
+			epiCurveSurveillanceMode = SurveillanceEpiCurveMode.CASE_STATUS;
 		}
 		
 		OptionGroup epiCurveModeOptionGroup = new OptionGroup();
 		epiCurveModeOptionGroup.setMultiSelect(false);
 		CssStyles.style(epiCurveModeOptionGroup, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_SUBTLE);
-		epiCurveModeOptionGroup.addItems((Object[]) EpiCurveSurveillanceMode.values());
+		epiCurveModeOptionGroup.addItems((Object[]) SurveillanceEpiCurveMode.values());
 		epiCurveModeOptionGroup.setValue(epiCurveSurveillanceMode);	
 		epiCurveModeOptionGroup.select(epiCurveSurveillanceMode);
 		epiCurveModeOptionGroup.addValueChangeListener(e -> {
-			epiCurveSurveillanceMode = (EpiCurveSurveillanceMode) e.getProperty().getValue();
+			epiCurveSurveillanceMode = (SurveillanceEpiCurveMode) e.getProperty().getValue();
 			clearAndFillEpiCurveChart();
 		});
 		return epiCurveModeOptionGroup;
@@ -123,7 +123,7 @@ public class EpiCurveSurveillanceComponent extends AbstractEpiCurveComponent {
 				+ "enabled: true, formatter: function() { if (this.y > 0) return this.y; },"
 				+ "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } } },");
 
-		if (epiCurveSurveillanceMode == EpiCurveSurveillanceMode.CASE_STATUS) {
+		if (epiCurveSurveillanceMode == SurveillanceEpiCurveMode.CASE_STATUS) {
 			// Adds the number of confirmed, probable and suspect cases for each day as data
 			int[] confirmedNumbers = new int[newLabels.size()];
 			int[] probableNumbers = new int[newLabels.size()];

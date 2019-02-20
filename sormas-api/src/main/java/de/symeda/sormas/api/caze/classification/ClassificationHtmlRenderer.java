@@ -130,7 +130,7 @@ public class ClassificationHtmlRenderer {
 				"}</style></header><body>");
 
 		html.append("<h1 style=\"text-align: center; color: #005A9C;\">").append(I18nProperties.getString(Strings.classificationClassificationRules)).append("</h1>");
-		html.append("<h4 style=\"text-align: center;\">").append(I18nProperties.getString(Strings.classificationGeneratedFor)).append(" ").append(InfoProvider.get().getVersion()).append(StringUtils.wrap(I18nProperties.getString(Strings.sOn), " ")).append(sormasServerUrl).append(StringUtils.wrap(I18nProperties.getString(Strings.sAt), " ")).append(DateHelper.formatLocalShortDateTime(new Date())).append("</h4>");
+		html.append("<h4 style=\"text-align: center;\">").append(I18nProperties.getString(Strings.classificationGeneratedFor)).append(" ").append(InfoProvider.get().getVersion()).append(StringUtils.wrap(I18nProperties.getString(Strings.on), " ")).append(sormasServerUrl).append(StringUtils.wrap(I18nProperties.getString(Strings.at), " ")).append(DateHelper.formatLocalShortDateTime(new Date())).append("</h4>");
 
 		for (Disease disease : Disease.values()) {
 			DiseaseClassificationCriteriaDto diseaseCriteria = FacadeProvider.getCaseClassificationFacade().getByDisease(disease);
@@ -189,7 +189,7 @@ public class ClassificationHtmlRenderer {
 			} else if (parentCriteria instanceof ClassificationCollectiveCriteria && !(parentCriteria instanceof ClassificationAllOfCriteriaDto)) {
 				// For collective criteria, but not ClassificationAllOfCriteria, add a sub div with a slightly different color to make clear
 				// that it belongs to the criteria listed before
-				String itemDiv = createCriteriaItemDiv("<b>" + I18nProperties.getString(Strings.sAnd).toUpperCase() + "</b>" + subCriteria.buildDescription());
+				String itemDiv = createCriteriaItemDiv("<b>" + I18nProperties.getString(Strings.and).toUpperCase() + "</b>" + subCriteria.buildDescription());
 				subCriteriaSb.append(createSubCriteriaSurroundingDiv(itemDiv));
 			} else {
 				// For everything else, recursively call this method to determine how to display the sub criteria

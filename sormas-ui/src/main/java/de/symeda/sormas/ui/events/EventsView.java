@@ -153,7 +153,7 @@ public class EventsView extends AbstractView {
 
 		reportedByFilter = new ComboBox();
 		reportedByFilter.setWidth(140, Unit.PIXELS);
-		reportedByFilter.setInputPrompt(I18nProperties.getString(Strings.sReportedBy));
+		reportedByFilter.setInputPrompt(I18nProperties.getString(Strings.reportedBy));
 		reportedByFilter.addItems((Object[]) UserRole.values());
 		reportedByFilter.addValueChangeListener(e -> {
 			criteria.reportingUserRole((UserRole) e.getProperty().getValue());

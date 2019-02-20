@@ -64,10 +64,10 @@ public class ClassificationPersonAgeBetweenYearsCriteriaDto extends Classificati
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(I18nProperties.getString(Strings.classificationPersonAged)).append(" ");
 		if (lowerYearsThreshold != null && upperYearsThreshold != null) {
-			stringBuilder.append(I18nProperties.getString(Strings.sBetween))
+			stringBuilder.append(I18nProperties.getString(Strings.between))
 					.append(" ").append(lowerYearsThreshold).append(" ")
-					.append(I18nProperties.getString(Strings.sAnd)).append(" ")
-					.append(upperYearsThreshold).append(" ").append(I18nProperties.getString(Strings.sYears));
+					.append(I18nProperties.getString(Strings.and)).append(" ")
+					.append(upperYearsThreshold).append(" ").append(I18nProperties.getString(Strings.years));
 		} else if (lowerYearsThreshold != null) {
 			stringBuilder.append(lowerYearsThreshold).append(" ").append(I18nProperties.getString(Strings.classificationYearsOrMore));
 		} else if (upperYearsThreshold != null) {
