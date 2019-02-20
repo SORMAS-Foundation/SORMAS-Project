@@ -25,6 +25,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -39,6 +40,8 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.sample.AdditionalTestType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
@@ -58,6 +61,8 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 public class SampleEditForm extends AbstractEditForm<SampleDto> {
 
 	private static final String REPORT_INFORMATION_LOC = "reportInformationLoc";
+	private static final String PATHOGEN_TESTING_INFO_LOC = "pathogenTestingInfoLoc";
+	private static final String ADDITIONAL_TESTING_INFO_LOC = "additionalTestingInfoLoc";
 
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.h3(I18nProperties.getString(Strings.headingLaboratorySample)) +
@@ -66,9 +71,14 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_CODE),
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_MATERIAL, SampleDto.SAMPLE_MATERIAL_TEXT),
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_SOURCE, ""),
-					LayoutUtil.fluidRowLocs(SampleDto.SUGGESTED_TYPE_OF_TEST, ""),
 					LayoutUtil.fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS)
 					) +
+			LayoutUtil.loc(SampleDto.PATHOGEN_TESTING_REQUESTED) +
+			LayoutUtil.loc(PATHOGEN_TESTING_INFO_LOC) +
+			LayoutUtil.loc(SampleDto.REQUESTED_PATHOGEN_TESTS) +
+			LayoutUtil.locCss(CssStyles.VSPACE_TOP_5, SampleDto.ADDITIONAL_TESTING_REQUESTED) +
+			LayoutUtil.loc(ADDITIONAL_TESTING_INFO_LOC) +
+			LayoutUtil.loc(SampleDto.REQUESTED_ADDITIONAL_TESTS) +
 			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.SHIPPED) +
 			LayoutUtil.fluidRowLocs(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS) +
 			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.RECEIVED) +
@@ -92,7 +102,22 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		ComboBox sampleSource = addField(SampleDto.SAMPLE_SOURCE, ComboBox.class);
 		DateField shipmentDate = addDateField(SampleDto.SHIPMENT_DATE, DateField.class, 7);
 		addField(SampleDto.SHIPMENT_DETAILS, TextField.class);		
-		addField(SampleDto.SUGGESTED_TYPE_OF_TEST, ComboBox.class);
+		OptionGroup pathogenTestingRequestedField = addField(SampleDto.PATHOGEN_TESTING_REQUESTED, OptionGroup.class);
+		CssStyles.style(pathogenTestingRequestedField, CssStyles.OPTIONGROUP_CAPTION_AREA_INLINE);
+		pathogenTestingRequestedField.setWidthUndefined();
+		OptionGroup requestedPathogenTestsField = addField(SampleDto.REQUESTED_PATHOGEN_TESTS, OptionGroup.class);
+		CssStyles.style(requestedPathogenTestsField, CssStyles.OPTIONGROUP_CHECKBOXES_HORIZONTAL);
+		requestedPathogenTestsField.setMultiSelect(true);
+		requestedPathogenTestsField.addItems((Object[]) PathogenTestType.values());
+		requestedPathogenTestsField.setCaption(null);
+		OptionGroup additionalTestingRequestedField = addField(SampleDto.ADDITIONAL_TESTING_REQUESTED, OptionGroup.class);
+		CssStyles.style(additionalTestingRequestedField, CssStyles.OPTIONGROUP_CAPTION_AREA_INLINE);
+		additionalTestingRequestedField.setWidthUndefined();
+		OptionGroup requestedAdditionalTestsField = addField(SampleDto.REQUESTED_ADDITIONAL_TESTS, OptionGroup.class);
+		CssStyles.style(requestedAdditionalTestsField, CssStyles.OPTIONGROUP_CHECKBOXES_HORIZONTAL);
+		requestedAdditionalTestsField.setMultiSelect(true);
+		requestedAdditionalTestsField.addItems((Object[]) AdditionalTestType.values());
+		requestedAdditionalTestsField.setCaption(null);
 		DateField receivedDate = addField(SampleDto.RECEIVED_DATE, DateField.class);
 		ComboBox lab = addField(SampleDto.LAB, ComboBox.class);
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(true));
@@ -123,6 +148,28 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SAMPLE_MATERIAL, Arrays.asList(SampleDto.SAMPLE_MATERIAL_TEXT), Arrays.asList(SampleMaterial.OTHER));
 		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SPECIMEN_CONDITION, Arrays.asList(SampleDto.NO_TEST_POSSIBLE_REASON), Arrays.asList(SpecimenCondition.NOT_ADEQUATE));
 
+		// Requested pathogen/additional test info texts
+		Label requestedPathogenInfoLabel = new Label(I18nProperties.getString(Strings.infoSamplePathogenTesting));
+		getContent().addComponent(requestedPathogenInfoLabel, PATHOGEN_TESTING_INFO_LOC);
+		Label requestedAdditionalPathogenInfoLabel = new Label(I18nProperties.getString(Strings.infoSampleAdditionalTesting));
+		getContent().addComponent(requestedAdditionalPathogenInfoLabel, ADDITIONAL_TESTING_INFO_LOC);
+		pathogenTestingRequestedField.addValueChangeListener(e -> {
+			requestedPathogenInfoLabel.setVisible(e.getProperty().getValue().equals(Boolean.TRUE));
+			requestedPathogenTestsField.setVisible(e.getProperty().getValue().equals(Boolean.TRUE));
+		});
+		pathogenTestingRequestedField.setRequired(true);
+
+		if (!UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+			additionalTestingRequestedField.setVisible(false);
+			requestedAdditionalPathogenInfoLabel.setVisible(false);
+		} else {
+			additionalTestingRequestedField.addValueChangeListener(e -> {
+				requestedAdditionalPathogenInfoLabel.setVisible(e.getProperty().getValue().equals(Boolean.TRUE));
+				requestedAdditionalTestsField.setVisible(e.getProperty().getValue().equals(Boolean.TRUE));
+			});
+			additionalTestingRequestedField.setRequired(true);
+		}
+
 		addValueChangeListener(e -> {
 			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getAssociatedCase().getUuid());
 
@@ -141,12 +188,15 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 				getField(SampleDto.SAMPLE_CODE).setEnabled(false);
 				getField(SampleDto.SAMPLE_MATERIAL).setEnabled(false);
 				getField(SampleDto.SAMPLE_MATERIAL_TEXT).setEnabled(false);
-				getField(SampleDto.SUGGESTED_TYPE_OF_TEST).setEnabled(false);
 				getField(SampleDto.LAB).setEnabled(false);
 				getField(SampleDto.SHIPPED).setEnabled(false);
 				getField(SampleDto.SHIPMENT_DATE).setEnabled(false);
 				getField(SampleDto.SHIPMENT_DETAILS).setEnabled(false);
 				getField(SampleDto.SAMPLE_SOURCE).setEnabled(false);
+				getField(SampleDto.PATHOGEN_TESTING_REQUESTED).setEnabled(false);
+				getField(SampleDto.ADDITIONAL_TESTING_REQUESTED).setEnabled(false);
+				requestedPathogenTestsField.setEnabled(false);
+				additionalTestingRequestedField.setEnabled(false);
 			}
 
 			shipped.addValueChangeListener(event -> {

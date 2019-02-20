@@ -74,7 +74,7 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.sample.SampleTest;
+import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.UserService;
@@ -164,7 +164,7 @@ public class ExportFacadeEjb implements ExportFacade {
 				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Sample.TABLE_NAME).getResultList();
 				break;
 			case SAMPLETESTS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, SampleTest.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, PathogenTest.TABLE_NAME).getResultList();
 				break;
 			case TASKS:
 				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Task.TABLE_NAME).getResultList();

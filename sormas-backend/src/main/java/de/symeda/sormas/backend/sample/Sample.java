@@ -17,8 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,12 +34,16 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.sample.AdditionalTestType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSource;
-import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -49,7 +57,7 @@ public class Sample extends AbstractDomainObject {
 	private static final long serialVersionUID = -7196712070188634978L;
 
 	public static final String TABLE_NAME = "samples";
-	
+
 	public static final String ASSOCIATED_CASE = "associatedCase";
 	public static final String SAMPLE_CODE = "sampleCode";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
@@ -66,13 +74,12 @@ public class Sample extends AbstractDomainObject {
 	public static final String NO_TEST_POSSIBLE_REASON = "noTestPossibleReason";
 	public static final String COMMENT = "comment";
 	public static final String SAMPLE_SOURCE = "sampleSource";
-	public static final String SUGGESTED_TYPE_OF_TEST = "suggestedTypeOfTest";
 	public static final String REFERRED_TO = "referredTo";
 	public static final String SHIPPED = "shipped";
 	public static final String RECEIVED = "received";
 	public static final String SPECIMEN_CONDITION = "specimenCondition";
 	public static final String MAIN_SAMPLE_TEST = "mainSampleTest";
-	
+
 	private Case associatedCase;
 	private String sampleCode;
 	private String labSampleID;
@@ -95,14 +102,20 @@ public class Sample extends AbstractDomainObject {
 	private String noTestPossibleReason;
 	private String comment;
 	private SampleSource sampleSource;
-	private SampleTestType suggestedTypeOfTest;
 	private Sample referredTo;
 	private boolean shipped;
 	private boolean received;
-	
-	private List<SampleTest> sampleTests;
-	private SampleTest mainSampleTest; 
-	
+
+	private Boolean pathogenTestingRequested;
+	private Boolean additionalTestingRequested;
+	private Set<PathogenTestType> requestedPathogenTests;
+	private Set<AdditionalTestType> requestedAdditionalTests;
+	private String requestedPathogenTestsString;
+	private String requestedAdditionalTestsString;
+
+	private List<PathogenTest> pathogenTests;
+	private PathogenTest mainSampleTest; 
+
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
 	public Case getAssociatedCase() {
@@ -111,7 +124,7 @@ public class Sample extends AbstractDomainObject {
 	public void setAssociatedCase(Case associatedCase) {
 		this.associatedCase = associatedCase;
 	}
-	
+
 	@Column(length=512)
 	public String getSampleCode() {
 		return sampleCode;
@@ -119,7 +132,7 @@ public class Sample extends AbstractDomainObject {
 	public void setSampleCode(String sampleCode) {
 		this.sampleCode = sampleCode;
 	}
-	
+
 	@Column(length=512)
 	public String getLabSampleID() {
 		return labSampleID;
@@ -127,7 +140,7 @@ public class Sample extends AbstractDomainObject {
 	public void setLabSampleID(String labSampleID) {
 		this.labSampleID = labSampleID;
 	}
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable=false)
 	public Date getSampleDateTime() {
@@ -136,7 +149,7 @@ public class Sample extends AbstractDomainObject {
 	public void setSampleDateTime(Date sampleDateTime) {
 		this.sampleDateTime = sampleDateTime;
 	}
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable=false)
 	public Date getReportDateTime() {
@@ -145,7 +158,7 @@ public class Sample extends AbstractDomainObject {
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
 	}
-	
+
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable=false)
 	public User getReportingUser() {
@@ -154,7 +167,7 @@ public class Sample extends AbstractDomainObject {
 	public void setReportingUser(User reportingUser) {
 		this.reportingUser = reportingUser;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable=false)
 	public SampleMaterial getSampleMaterial() {
@@ -163,7 +176,7 @@ public class Sample extends AbstractDomainObject {
 	public void setSampleMaterial(SampleMaterial sampleMaterial) {
 		this.sampleMaterial = sampleMaterial;
 	}
-	
+
 	@Column(length=512)
 	public String getSampleMaterialText() {
 		return sampleMaterialText;
@@ -171,7 +184,7 @@ public class Sample extends AbstractDomainObject {
 	public void setSampleMaterialText(String sampleMaterialText) {
 		this.sampleMaterialText = sampleMaterialText;
 	}
-	
+
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable=false)
 	public Facility getLab() {
@@ -188,7 +201,7 @@ public class Sample extends AbstractDomainObject {
 	public void setLabDetails(String labDetails) {
 		this.labDetails = labDetails;
 	}
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getShipmentDate() {
 		return shipmentDate;
@@ -196,7 +209,7 @@ public class Sample extends AbstractDomainObject {
 	public void setShipmentDate(Date shipmentDate) {
 		this.shipmentDate = shipmentDate;
 	}
-	
+
 	@Column(length=512)
 	public String getShipmentDetails() {
 		return shipmentDetails;
@@ -212,7 +225,7 @@ public class Sample extends AbstractDomainObject {
 	public void setReceivedDate(Date receivedDate) {
 		this.receivedDate = receivedDate;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public SpecimenCondition getSpecimenCondition() {
 		return specimenCondition;
@@ -220,7 +233,7 @@ public class Sample extends AbstractDomainObject {
 	public void setSpecimenCondition(SpecimenCondition specimenCondition) {
 		this.specimenCondition = specimenCondition;
 	}
-	
+
 	@Column(length=512)
 	public String getNoTestPossibleReason() {
 		return noTestPossibleReason;
@@ -228,15 +241,15 @@ public class Sample extends AbstractDomainObject {
 	public void setNoTestPossibleReason(String noTestPossibleReason) {
 		this.noTestPossibleReason = noTestPossibleReason;
 	}
-	
-	@OneToMany(cascade = {}, mappedBy = SampleTest.SAMPLE)
-	public List<SampleTest> getSampleTests() {
-		return sampleTests;
+
+	@OneToMany(cascade = {}, mappedBy = PathogenTest.SAMPLE)
+	public List<PathogenTest> getSampleTests() {
+		return pathogenTests;
 	}
-	public void setSampleTests(List<SampleTest> sampleTests) {
-		this.sampleTests = sampleTests;
+	public void setSampleTests(List<PathogenTest> pathogenTests) {
+		this.pathogenTests = pathogenTests;
 	}
-	
+
 	@Column(length=512)
 	public String getComment() {
 		return comment;
@@ -252,14 +265,6 @@ public class Sample extends AbstractDomainObject {
 	public void setSampleSource(SampleSource sampleSource) {
 		this.sampleSource = sampleSource;
 	}
-	
-	@Enumerated(EnumType.STRING)
-	public SampleTestType getSuggestedTypeOfTest() {
-		return suggestedTypeOfTest;
-	}
-	public void setSuggestedTypeOfTest(SampleTestType suggestedTypeOfTest) {
-		this.suggestedTypeOfTest = suggestedTypeOfTest;
-	}
 
 	@OneToOne(cascade = {})
 	@JoinColumn(nullable = true)
@@ -269,7 +274,7 @@ public class Sample extends AbstractDomainObject {
 	public void setReferredTo(Sample referredTo) {
 		this.referredTo = referredTo;
 	}
-	
+
 	@Column
 	public boolean isShipped() {
 		return shipped;
@@ -277,7 +282,7 @@ public class Sample extends AbstractDomainObject {
 	public void setShipped(boolean shipped) {
 		this.shipped = shipped;
 	}
-	
+
 	@Column
 	public boolean isReceived() {
 		return received;
@@ -285,18 +290,90 @@ public class Sample extends AbstractDomainObject {
 	public void setReceived(boolean received) {
 		this.received = received;
 	}
-	
+
+	@Column
+	public Boolean getPathogenTestingRequested() {
+		return pathogenTestingRequested;
+	}
+	public void setPathogenTestingRequested(Boolean pathogenTestingRequested) {
+		this.pathogenTestingRequested = pathogenTestingRequested;
+	}
+
+	@Column
+	public Boolean getAdditionalTestingRequested() {
+		return additionalTestingRequested;
+	}
+	public void setAdditionalTestingRequested(Boolean additionalTestingRequested) {
+		this.additionalTestingRequested = additionalTestingRequested;
+	}
+
+	@Transient
+	public Set<PathogenTestType> getRequestedPathogenTests() {
+		if (requestedPathogenTests == null) {
+			if (StringUtils.isEmpty(requestedPathogenTestsString)) {
+				requestedPathogenTests = new HashSet<>();
+			} else {
+				requestedPathogenTests = Arrays.stream(requestedPathogenTestsString.split(";"))
+						.map(PathogenTestType::valueOf)
+						.collect(Collectors.toSet());
+			}
+		}
+		return requestedPathogenTests;
+	}
+	public void setRequestedPathogenTests(Set<PathogenTestType> requestedPathogenTests) {
+		this.requestedPathogenTests = requestedPathogenTests;
+		StringBuilder sb = new StringBuilder();
+		requestedPathogenTests.stream().forEach(t -> sb.append(t.name()));
+		requestedPathogenTestsString = sb.toString();
+	}	
+
+	@Transient
+	public Set<AdditionalTestType> getRequestedAdditionalTests() {
+		if (requestedAdditionalTests == null) {
+			if (StringUtils.isEmpty(requestedAdditionalTestsString)) {
+				requestedAdditionalTests = new HashSet<>();
+			} else {
+				requestedAdditionalTests = Arrays.stream(requestedAdditionalTestsString.split(";"))
+						.map(AdditionalTestType::valueOf)
+						.collect(Collectors.toSet());
+			}
+		}
+		return requestedAdditionalTests;
+	}
+	public void setRequestedAdditionalTests(Set<AdditionalTestType> requestedAdditionalTests) {
+		this.requestedAdditionalTests = requestedAdditionalTests;
+		StringBuilder sb = new StringBuilder();
+		requestedAdditionalTests.stream().forEach(t -> sb.append(t.name()));
+		requestedAdditionalTestsString = sb.toString();
+	}
+
+	public String getRequestedPathogenTestsString() {
+		return requestedPathogenTestsString;
+	}
+	public void setRequestedPathogenTestsString(String requestedPathogenTestsString) {
+		this.requestedPathogenTestsString = requestedPathogenTestsString;
+		requestedPathogenTests = null;
+	}
+
+	public String getRequestedAdditionalTestsString() {
+		return requestedAdditionalTestsString;
+	}
+	public void setRequestedAdditionalTestsString(String requestedAdditionalTestsString) {
+		this.requestedAdditionalTestsString = requestedAdditionalTestsString;
+		requestedAdditionalTests = null;
+	}
+
 	@Override
 	public String toString() {
 		return SampleReferenceDto.buildCaption(getSampleMaterial(), 
 				getAssociatedCase() != null ? getAssociatedCase().getUuid() : null);
 	}
-	
+
 	public SampleReferenceDto toReference() {
 		return new SampleReferenceDto(getUuid(), getSampleMaterial(), 
 				getAssociatedCase() != null ? getAssociatedCase().getUuid() : null);
 	}
-	
+
 	public Double getReportLat() {
 		return reportLat;
 	}
@@ -315,7 +392,7 @@ public class Sample extends AbstractDomainObject {
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
-	
+
 	/**
 	 * The representative test.
 	 * Be default this should be set to the last done test.
@@ -323,13 +400,12 @@ public class Sample extends AbstractDomainObject {
 	 */
 	@OneToOne(cascade = {})
 	@JoinColumn(nullable = true)
-	public SampleTest getMainSampleTest() {
+	public PathogenTest getMainSampleTest() {
 		return mainSampleTest;
 	}
-	
-	public void setMainSampleTest(SampleTest mainSampleTest) {
+
+	public void setMainSampleTest(PathogenTest mainSampleTest) {
 		this.mainSampleTest = mainSampleTest;
 	}
-	
-	
+
 }

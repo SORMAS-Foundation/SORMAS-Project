@@ -17,31 +17,17 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
-import java.util.Date;
-import java.util.List;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
-import javax.ejb.Remote;
+public enum PathogenTestResultType {
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
-
-@Remote
-public interface SampleTestFacade {
-
-	List<SampleTestDto> getAllActiveSampleTestsAfter(Date date, String userUuid);
+	INDETERMINATE,
+	PENDING,
+	NEGATIVE,
+	POSITIVE;
 	
-	List<SampleTestDto> getAllBySample(SampleReferenceDto sampleRef);
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
+	}
 	
-	SampleTestDto getByUuid(String uuid);
-	
-	SampleTestDto saveSampleTest(SampleTestDto dto);
-
-	List<String> getAllActiveUuids(String userUuid);
-
-	List<SampleTestDto> getByUuids(List<String> uuids);
-	
-	List<DashboardTestResultDto> getNewTestResultsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
-	
-	void deleteSampleTest(SampleTestReferenceDto sampleTestRef, String userUuid);
 }

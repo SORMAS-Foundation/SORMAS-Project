@@ -28,8 +28,8 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleTestDto;
-import de.symeda.sormas.api.sample.SampleTestType;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -39,20 +39,20 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
-public class SampleTestEditForm extends AbstractEditForm<SampleTestDto> {
+public class SampleTestEditForm extends AbstractEditForm<PathogenTestDto> {
 
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.fluidRowLocs(SampleTestDto.TEST_TYPE, SampleTestDto.TEST_TYPE_TEXT) +
-			LayoutUtil.fluidRowLocs(SampleTestDto.TEST_DATE_TIME, SampleTestDto.LAB) +
-			LayoutUtil.fluidRowLocs(SampleTestDto.TEST_RESULT, SampleTestDto.TEST_RESULT_VERIFIED) +
-			LayoutUtil.fluidRowLocs(SampleTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, "") +
-			LayoutUtil.fluidRowLocs(SampleTestDto.TEST_RESULT_TEXT);
+			LayoutUtil.fluidRowLocs(PathogenTestDto.TEST_TYPE, PathogenTestDto.TEST_TYPE_TEXT) +
+			LayoutUtil.fluidRowLocs(PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.LAB) +
+			LayoutUtil.fluidRowLocs(PathogenTestDto.TEST_RESULT, PathogenTestDto.TEST_RESULT_VERIFIED) +
+			LayoutUtil.fluidRowLocs(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, "") +
+			LayoutUtil.fluidRowLocs(PathogenTestDto.TEST_RESULT_TEXT);
 
 	private final SampleDto sample;
 	private int caseSampleCount;
 	
 	public SampleTestEditForm(SampleDto sample, boolean create, UserRight editOrCreateUserRight, int caseSampleCount) {
-		super(SampleTestDto.class, SampleTestDto.I18N_PREFIX, editOrCreateUserRight);
+		super(PathogenTestDto.class, PathogenTestDto.I18N_PREFIX, editOrCreateUserRight);
 		
 		this.sample = sample;
 		this.caseSampleCount = caseSampleCount;
@@ -70,28 +70,28 @@ public class SampleTestEditForm extends AbstractEditForm<SampleTestDto> {
 			return;
 		}
 		
-		ComboBox testTypeField = addField(SampleTestDto.TEST_TYPE, ComboBox.class);
-		addField(SampleTestDto.TEST_TYPE_TEXT, TextField.class);
-		DateTimeField sampleTestDateField = addField(SampleTestDto.TEST_DATE_TIME, DateTimeField.class);
+		ComboBox testTypeField = addField(PathogenTestDto.TEST_TYPE, ComboBox.class);
+		addField(PathogenTestDto.TEST_TYPE_TEXT, TextField.class);
+		DateTimeField sampleTestDateField = addField(PathogenTestDto.TEST_DATE_TIME, DateTimeField.class);
 		sampleTestDateField.addValidator(new DateComparisonValidator(sampleTestDateField, sample.getSampleDateTime(), false, false,
 				I18nProperties.getValidationError(Validations.afterDate, sampleTestDateField.getCaption(), I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME))));
-		ComboBox lab = addField(SampleTestDto.LAB, ComboBox.class);
+		ComboBox lab = addField(PathogenTestDto.LAB, ComboBox.class);
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(true));
 		
-		addField(SampleTestDto.TEST_RESULT, ComboBox.class);
-		addField(SampleTestDto.TEST_RESULT_VERIFIED, CheckBox.class).addStyleName(CssStyles.FORCE_CAPTION);
-		CheckBox fourFoldIncrease = addField(SampleTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, CheckBox.class);
+		addField(PathogenTestDto.TEST_RESULT, ComboBox.class);
+		addField(PathogenTestDto.TEST_RESULT_VERIFIED, CheckBox.class).addStyleName(CssStyles.FORCE_CAPTION);
+		CheckBox fourFoldIncrease = addField(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, CheckBox.class);
 		CssStyles.style(fourFoldIncrease, CssStyles.VSPACE_3, CssStyles.VSPACE_TOP_4);
 		fourFoldIncrease.setVisible(false);
 		fourFoldIncrease.setEnabled(false);
-		addField(SampleTestDto.TEST_RESULT_TEXT, TextArea.class).setRows(3);
+		addField(PathogenTestDto.TEST_RESULT_TEXT, TextArea.class).setRows(3);
 
-		FieldHelper.setVisibleWhen(getFieldGroup(), SampleTestDto.TEST_TYPE_TEXT, SampleTestDto.TEST_TYPE, Arrays.asList(SampleTestType.OTHER), true);
-		FieldHelper.setRequiredWhen(getFieldGroup(), SampleTestDto.TEST_TYPE, Arrays.asList(SampleTestDto.TEST_TYPE_TEXT), Arrays.asList(SampleTestType.OTHER));
+		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.TEST_TYPE_TEXT, PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.OTHER), true);
+		FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestDto.TEST_TYPE_TEXT), Arrays.asList(PathogenTestType.OTHER));
 		
 		testTypeField.addValueChangeListener(e -> {
-			SampleTestType testType = (SampleTestType) e.getProperty().getValue();
-			if (testType == SampleTestType.IGM_SERUM_ANTIBODY || testType == SampleTestType.IGG_SERUM_ANTIBODY) {
+			PathogenTestType testType = (PathogenTestType) e.getProperty().getValue();
+			if (testType == PathogenTestType.IGM_SERUM_ANTIBODY || testType == PathogenTestType.IGG_SERUM_ANTIBODY) {
 				fourFoldIncrease.setVisible(true);
 				fourFoldIncrease.setEnabled(caseSampleCount >= 2);
 			} else {
@@ -100,8 +100,8 @@ public class SampleTestEditForm extends AbstractEditForm<SampleTestDto> {
 			}
 		});
 		
-		setRequired(true, SampleTestDto.TEST_TYPE, SampleTestDto.TEST_DATE_TIME, SampleTestDto.LAB,
-				SampleTestDto.TEST_RESULT);
+		setRequired(true, PathogenTestDto.TEST_TYPE, PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.LAB,
+				PathogenTestDto.TEST_RESULT);
 	}
 	
 	@Override

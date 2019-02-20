@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sample.SampleTestDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 
 /**
  * Classification criteria are used to automatically classify cases and to be able to display
@@ -51,7 +51,7 @@ public abstract class ClassificationCriteriaDto implements Serializable {
 	
 	private static final long serialVersionUID = -3686569295881034008L;
 	
-	public abstract boolean eval(CaseDataDto caze, PersonDto person, List<SampleTestDto> sampleTests);
+	public abstract boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> sampleTests);
 	public abstract String buildDescription();
 	
 	public String getType() {

@@ -26,14 +26,14 @@ import com.vaadin.ui.Label;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.sample.SampleTestDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 @SuppressWarnings("serial")
-public class SampleTestList extends PaginationList<SampleTestDto> {
+public class SampleTestList extends PaginationList<PathogenTestDto> {
 
 	private SampleReferenceDto sampleRef;
 	private int caseSampleCount;
@@ -46,7 +46,7 @@ public class SampleTestList extends PaginationList<SampleTestDto> {
 
 	@Override
 	public void reload() {
-		List<SampleTestDto> sampleTests = ControllerProvider.getSampleTestController()
+		List<PathogenTestDto> sampleTests = ControllerProvider.getSampleTestController()
 				.getSampleTestsBySample(sampleRef);
 		
 
@@ -62,7 +62,7 @@ public class SampleTestList extends PaginationList<SampleTestDto> {
 	
 	@Override
 	protected void drawDisplayedEntries() {
-		for (SampleTestDto sampleTest : getDisplayedEntries()) {
+		for (PathogenTestDto sampleTest : getDisplayedEntries()) {
 			SampleTestListEntry listEntry = new SampleTestListEntry(sampleTest);
 			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT)) {
 				listEntry.addEditListener(new ClickListener() {

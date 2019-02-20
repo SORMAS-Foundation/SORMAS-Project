@@ -15,25 +15,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.caze.classification;
+package de.symeda.sormas.api.sample;
 
-import java.util.Date;
-import java.util.List;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
-import javax.ejb.Remote;
+public enum PathogenTestType {
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.sample.PathogenTestDto;
-
-@Remote
-public interface CaseClassificationFacade {
-
-	CaseClassification getClassification(CaseDataDto caze, List<PathogenTestDto> sampleTests);
-
-	DiseaseClassificationCriteriaDto getByDisease(Disease disease);
-
-	List<DiseaseClassificationCriteriaDto> getAllSince(Date changeDate);
-
+	ANTIGEN_DETECTION,
+	RAPID_TEST,
+	CULTURE,
+	DENGUE_FEVER_IGM,
+	DENGUE_FEVER_ANTIBODIES,
+	HISTOPATHOLOGY,
+	ISOLATION,
+	IGM_SERUM_ANTIBODY,
+	IGG_SERUM_ANTIBODY,
+	MICROSCOPY,
+	NEUTRALIZING_ANTIBODIES,
+	PCR_RT_PCR,
+	WEST_NILE_FEVER_IGM,
+	WEST_NILE_FEVER_ANTIBODIES,
+	YELLOW_FEVER_IGM,
+	YELLOW_FEVER_ANTIBODIES,
+	YERSINIA_PESTIS_ANTIGEN,
+	OTHER;
+	
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
+	}
+	
 }

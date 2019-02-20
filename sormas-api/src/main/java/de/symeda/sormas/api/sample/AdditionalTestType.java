@@ -19,13 +19,23 @@ package de.symeda.sormas.api.sample;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public enum SampleTestResultType {
+public enum AdditionalTestType {
 
-	INDETERMINATE,
-	PENDING,
-	NEGATIVE,
-	POSITIVE,
-	;
+	HAEMOGLOBINURIA,
+	PROTEINURIA,
+	HEMATURIA,
+	ARTERIAL_VENOUS_BLOOD_GAS,
+	ALT_SGPT,
+	AST_SGOT,
+	CREATININE,
+	POTASSIUM,
+	UREA,
+	HAEMOGLOBIN,
+	TOTAL_BILIRUBIN,
+	CONJ_BILIRUBIN,
+	WBC_COUNT,
+	PLATELETS,
+	PROTHROMBIN_TIME;
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

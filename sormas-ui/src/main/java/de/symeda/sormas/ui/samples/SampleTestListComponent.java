@@ -55,8 +55,8 @@ public class SampleTestListComponent extends VerticalLayout {
 		Label tasksHeader = new Label(LayoutUtil.h3(I18nProperties.getString(Strings.headingTests)), ContentMode.HTML);
 		componentHeader.addComponent(tasksHeader);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLETEST_CREATE)) {
-			createButton = new Button(I18nProperties.getCaption(Captions.sampleTestNewTest));
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
+			createButton = new Button(I18nProperties.getCaption(Captions.pathogenTestNewTest));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
 			createButton.addClickListener(

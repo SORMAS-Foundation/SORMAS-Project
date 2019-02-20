@@ -55,7 +55,7 @@ import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleTestDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -85,7 +85,7 @@ public class DataDictionaryGenerator {
 		createEntitySheet(workbook, ContactDto.class, ContactDto.I18N_PREFIX);
 		createEntitySheet(workbook, VisitDto.class, VisitDto.I18N_PREFIX);
 		createEntitySheet(workbook, SampleDto.class, SampleDto.I18N_PREFIX);
-		createEntitySheet(workbook, SampleTestDto.class, SampleTestDto.I18N_PREFIX);
+		createEntitySheet(workbook, PathogenTestDto.class, PathogenTestDto.I18N_PREFIX);
 		createEntitySheet(workbook, TaskDto.class, TaskDto.I18N_PREFIX);
 		createEntitySheet(workbook, EventDto.class, EventDto.I18N_PREFIX);
 		createEntitySheet(workbook, EventParticipantDto.class, EventParticipantDto.I18N_PREFIX);

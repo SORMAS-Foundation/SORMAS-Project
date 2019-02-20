@@ -33,7 +33,7 @@ import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.sample.SampleTestDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Path("/sampletests")
@@ -44,28 +44,28 @@ public class SampleTestResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<SampleTestDto> getAllSampleTests(@Context SecurityContext sc, @PathParam("since") long since) {
+	public List<PathogenTestDto> getAllSampleTests(@Context SecurityContext sc, @PathParam("since") long since) {
 
 		UserReferenceDto userDto = FacadeProvider.getUserFacade()
 				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<SampleTestDto> sampleTests = FacadeProvider.getSampleTestFacade()
-				.getAllActiveSampleTestsAfter(new Date(since), userDto.getUuid());
+		List<PathogenTestDto> sampleTests = FacadeProvider.getPathogenTestFacade()
+				.getAllActivePathogenTestsAfter(new Date(since), userDto.getUuid());
 		return sampleTests;
 	}
 
 	@POST
 	@Path("/query")
-	public List<SampleTestDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<PathogenTestDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
 
-		List<SampleTestDto> result = FacadeProvider.getSampleTestFacade().getByUuids(uuids);
+		List<PathogenTestDto> result = FacadeProvider.getPathogenTestFacade().getByUuids(uuids);
 		return result;
 	}
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postSampleTests(List<SampleTestDto> dtos) {
+	public List<PushResult> postSampleTests(List<PathogenTestDto> dtos) {
 
-		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getSampleTestFacade()::saveSampleTest);
+		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getPathogenTestFacade()::savePathogenTest);
 		return result;
 	}
 
@@ -75,7 +75,7 @@ public class SampleTestResource extends EntityDtoResource {
 
 		UserReferenceDto userDto = FacadeProvider.getUserFacade()
 				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getSampleTestFacade().getAllActiveUuids(userDto.getUuid());
+		List<String> uuids = FacadeProvider.getPathogenTestFacade().getAllActiveUuids(userDto.getUuid());
 		return uuids;
 	}
 }

@@ -71,6 +71,10 @@
 	  &.v-select-optiongroup-caption-inline {
 	  	text-align: right;
 	  }
+	 
+	  &.v-select-optiongroup-caption-area-inline {
+	  	text-align: right;
+	  }
 	  	
 	  &.v-select-optiongroup-horizontal-subtle {
 	  	margin-bottom: 0px;
@@ -112,6 +116,18 @@
   	  }
   }
  
+  .v-select-optiongroup-checkboxes-horizontal {
+  
+  	.v-select-option {
+  	  display: inline-block;
+  	  
+  	  	.v-radiobutton {
+  	  	  padding-right: 10px;
+  	  	}
+  	}
+  	
+  }
+ 
   .v-select-optiongroup {
   	
   	.v-radiobutton {	 
@@ -148,6 +164,17 @@
     margin-bottom: -30px;
     margin-right: 160px;
     font-weight: 500;
+    font-size: 12px;
+    text-transform: none;
+    white-space: inherit;
+  }
+ 
+  .v-caption-caption-area-inline {
+    float: left;
+    padding-top: 7px;
+    margin-right: 20px;
+    margin-bottom: 2px;
+    font-weight: 600;
     font-size: 12px;
     text-transform: none;
     white-space: inherit;

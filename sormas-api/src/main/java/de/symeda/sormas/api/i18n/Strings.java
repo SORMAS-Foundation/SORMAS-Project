@@ -233,6 +233,8 @@ public interface Strings {
 	public static String infoLostToFollowUpBy = "infoLostToFollowUpBy";
 	public static String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
 	public static String infoNoPathogenTests = "infoNoPathogenTests";
+	public static String infoSampleAdditionalTesting = "infoSampleAdditionalTesting";
+	public static String infoSamplePathogenTesting = "infoSamplePathogenTesting";
 	public static String infoStatisticsDisclaimer = "infoStatisticsDisclaimer";
 	public static String infoStatisticsFilter = "infoStatisticsFilter";
 	public static String infoStatisticsResults = "infoStatisticsResults";

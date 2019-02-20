@@ -31,7 +31,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
-import de.symeda.sormas.api.sample.SampleTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -68,13 +68,13 @@ public class SampleListEntry extends HorizontalLayout {
 		topLabelLayout.addComponent(labelLeft);
 
 		String htmlRight;
-		if (sample.getSampleTestResult() != null && sample.getSampleTestResult() != SampleTestResultType.PENDING) {
+		if (sample.getPathogenTestResult() != null && sample.getPathogenTestResult() != PathogenTestResultType.PENDING) {
 			htmlRight = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE + " "
-					+ (sample.getSampleTestResult() == SampleTestResultType.POSITIVE ? CssStyles.LABEL_WARNING
-							: (sample.getSampleTestResult() == SampleTestResultType.INDETERMINATE
+					+ (sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE ? CssStyles.LABEL_WARNING
+							: (sample.getPathogenTestResult() == PathogenTestResultType.INDETERMINATE
 									? CssStyles.LABEL_IMPORTANT
 									: "")),
-					DataHelper.toStringNullable(sample.getSampleTestResult()));
+					DataHelper.toStringNullable(sample.getPathogenTestResult()));
 		} else if (sample.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
 			htmlRight = LayoutUtil.divCss(
 					CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE + " " + CssStyles.LABEL_WARNING,

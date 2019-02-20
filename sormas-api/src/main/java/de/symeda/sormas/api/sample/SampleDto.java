@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.sample;
 
 import java.util.Date;
+import java.util.Set;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -49,11 +50,14 @@ public class SampleDto extends EntityDto {
 	public static final String NO_TEST_POSSIBLE_REASON = "noTestPossibleReason";
 	public static final String COMMENT = "comment";
 	public static final String SAMPLE_SOURCE = "sampleSource";
-	public static final String SUGGESTED_TYPE_OF_TEST = "suggestedTypeOfTest";
 	public static final String REFERRED_TO = "referredTo";
 	public static final String SHIPPED = "shipped";
 	public static final String RECEIVED = "received";
-
+	public static final String PATHOGEN_TESTING_REQUESTED = "pathogenTestingRequested";
+	public static final String ADDITIONAL_TESTING_REQUESTED = "additionalTestingRequested";
+	public static final String REQUESTED_PATHOGEN_TESTS = "requestedPathogenTests";
+	public static final String REQUESTED_ADDITIONAL_TESTS = "requestedAdditionalTests";
+	
 	@Required
 	private CaseReferenceDto associatedCase;
 	private String sampleCode;
@@ -82,10 +86,14 @@ public class SampleDto extends EntityDto {
 	private String noTestPossibleReason;
 	private String comment;
 	private SampleSource sampleSource;
-	private SampleTestType suggestedTypeOfTest;
 	private SampleReferenceDto referredTo;
 	private boolean shipped;
 	private boolean received;
+
+	private Boolean pathogenTestingRequested;
+	private Boolean additionalTestingRequested;
+	private Set<PathogenTestType> requestedPathogenTests;
+	private Set<AdditionalTestType> requestedAdditionalTests;
 
 	public CaseReferenceDto getAssociatedCase() {
 		return associatedCase;
@@ -222,15 +230,7 @@ public class SampleDto extends EntityDto {
 	public void setSampleSource(SampleSource sampleSource) {
 		this.sampleSource = sampleSource;
 	}
-
-	public SampleTestType getSuggestedTypeOfTest() {
-		return suggestedTypeOfTest;
-	}
-
-	public void setSuggestedTypeOfTest(SampleTestType suggestedTypeOfTest) {
-		this.suggestedTypeOfTest = suggestedTypeOfTest;
-	}
-
+	
 	public SampleReferenceDto getReferredTo() {
 		return referredTo;
 	}
@@ -255,6 +255,38 @@ public class SampleDto extends EntityDto {
 		this.received = received;
 	}
 
+	public Boolean getPathogenTestingRequested() {
+		return pathogenTestingRequested;
+	}
+	
+	public void setPathogenTestingRequested(Boolean pathogenTestingRequested) {
+		this.pathogenTestingRequested = pathogenTestingRequested;
+	}
+
+	public Boolean getAdditionalTestingRequested() {
+		return additionalTestingRequested;
+	}
+	
+	public void setAdditionalTestingRequested(Boolean additionalTestingRequested) {
+		this.additionalTestingRequested = additionalTestingRequested;
+	}
+
+	public Set<PathogenTestType> getRequestedPathogenTests() {
+		return requestedPathogenTests;
+	}
+
+	public void setRequestedPathogenTests(Set<PathogenTestType> requestedPathogenTests) {
+		this.requestedPathogenTests = requestedPathogenTests;
+	}
+
+	public Set<AdditionalTestType> getRequestedAdditionalTests() {
+		return requestedAdditionalTests;
+	}
+
+	public void setRequestedAdditionalTests(Set<AdditionalTestType> requestedAdditionalTests) {
+		this.requestedAdditionalTests = requestedAdditionalTests;
+	}
+
 	public static SampleDto buildSample(UserReferenceDto userRef, CaseReferenceDto caseRef) {
 		SampleDto sample = new SampleDto();
 		sample.setUuid(DataHelper.createUuid());
@@ -271,8 +303,11 @@ public class SampleDto extends EntityDto {
 		sample.setSampleCode(referredSample.getSampleCode());
 		sample.setSampleMaterial(referredSample.getSampleMaterial());
 		sample.setSampleMaterialText(referredSample.getSampleMaterialText());
-		sample.setSuggestedTypeOfTest(referredSample.getSuggestedTypeOfTest());
 		sample.setSampleSource(referredSample.getSampleSource());
+		sample.setPathogenTestingRequested(referredSample.getPathogenTestingRequested());
+		sample.setAdditionalTestingRequested(referredSample.getAdditionalTestingRequested());
+		sample.setRequestedPathogenTests(referredSample.getRequestedPathogenTests());
+		sample.setRequestedAdditionalTests(referredSample.getRequestedAdditionalTests());
 
 		return sample;
 	}

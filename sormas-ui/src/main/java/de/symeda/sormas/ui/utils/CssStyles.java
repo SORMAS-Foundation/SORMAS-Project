@@ -165,7 +165,9 @@ public final class CssStyles {
 	public static final String OPTIONGROUP_HORIZONTAL_SUBTLE = "horizontal-subtle";
 	public static final String OPTIONGROUP_HORIZONTAL_PRIMARY = "horizontal-primary";
 	public static final String OPTIONGROUP_HORIZONTAL_SWITCH_CRITICAL = "horizontal-switch-critical";
+	public static final String OPTIONGROUP_CHECKBOXES_HORIZONTAL = "checkboxes-horizontal";
 	public static final String OPTIONGROUP_CAPTION_INLINE = "caption-inline";
+	public static final String OPTIONGROUP_CAPTION_AREA_INLINE = "caption-area-inline";
 
 	public static final String GRID_CELL_PRIORITY_HIGH = "priority-high";
 	public static final String GRID_CELL_PRIORITY_NORMAL = "priority-normal";

@@ -41,7 +41,7 @@ import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
-import de.symeda.sormas.api.sample.SampleTestFacade;
+import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
@@ -106,8 +106,8 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(SampleFacade.class);
 	}
 
-	public static SampleTestFacade getSampleTestFacade() {
-		return get().lookupEjbRemote(SampleTestFacade.class);
+	public static PathogenTestFacade getPathogenTestFacade() {
+		return get().lookupEjbRemote(PathogenTestFacade.class);
 	}
 
 	public static SymptomsFacade getSymptomsFacade() {

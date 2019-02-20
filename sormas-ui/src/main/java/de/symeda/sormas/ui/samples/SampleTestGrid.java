@@ -32,7 +32,7 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.sample.SampleTestDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -50,24 +50,24 @@ public class SampleTestGrid extends Grid implements ItemClickListener {
 	public SampleTestGrid(SampleReferenceDto sampleRef, int caseSampleCount) {
 		setSizeFull();
 
-		BeanItemContainer<SampleTestDto> container = new BeanItemContainer<SampleTestDto>(SampleTestDto.class);
+		BeanItemContainer<PathogenTestDto> container = new BeanItemContainer<PathogenTestDto>(PathogenTestDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		VaadinUiUtil.addIconColumn(generatedContainer, EDIT_BTN_ID, FontAwesome.PENCIL_SQUARE);
 		setContainerDataSource(generatedContainer);
 
-		setColumns(EDIT_BTN_ID, SampleTestDto.TEST_TYPE, SampleTestDto.TEST_DATE_TIME, SampleTestDto.LAB,
-				SampleTestDto.LAB_USER, SampleTestDto.TEST_RESULT, SampleTestDto.TEST_RESULT_VERIFIED);
+		setColumns(EDIT_BTN_ID, PathogenTestDto.TEST_TYPE, PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.LAB,
+				PathogenTestDto.LAB_USER, PathogenTestDto.TEST_RESULT, PathogenTestDto.TEST_RESULT_VERIFIED);
 
 		getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
 		getColumn(EDIT_BTN_ID).setWidth(60);
 		getColumn(EDIT_BTN_ID).setHeaderCaption("");
-		getColumn(SampleTestDto.TEST_RESULT_VERIFIED).setRenderer(new BooleanRenderer());
+		getColumn(PathogenTestDto.TEST_RESULT_VERIFIED).setRenderer(new BooleanRenderer());
 
-		getColumn(SampleTestDto.TEST_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalShortDateTimeFormat()));
+		getColumn(PathogenTestDto.TEST_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalShortDateTimeFormat()));
 
 		for(Column column : getColumns()) {
 			column.setHeaderCaption(I18nProperties.getPrefixCaption(
-					SampleTestDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
+					PathogenTestDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
@@ -84,26 +84,26 @@ public class SampleTestGrid extends Grid implements ItemClickListener {
 	}
 
 	@SuppressWarnings("unchecked")
-	private BeanItemContainer<SampleTestDto> getContainer() {
+	private BeanItemContainer<PathogenTestDto> getContainer() {
 		GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
-		return (BeanItemContainer<SampleTestDto>) container.getWrappedContainer();
+		return (BeanItemContainer<PathogenTestDto>) container.getWrappedContainer();
 	}
 
 	public void reload() {
-		List<SampleTestDto> sampleTests = ControllerProvider.getSampleTestController().getSampleTestsBySample(sampleRef);
+		List<PathogenTestDto> sampleTests = ControllerProvider.getSampleTestController().getSampleTestsBySample(sampleRef);
 		getContainer().removeAllItems();
 		getContainer().addAll(sampleTests);
 		this.setHeightByRows(getContainer().size() < 10 ? (getContainer().size() > 0 ? getContainer().size() : 1) : 10);
 	}
 
-	public void refresh(SampleTestDto sample) {
+	public void refresh(PathogenTestDto sample) {
 		// We avoid updating the whole table through the backend here so we can
 		// get a partial update for the grid
-		BeanItem<SampleTestDto> item = getContainer().getItem(sample);
+		BeanItem<PathogenTestDto> item = getContainer().getItem(sample);
 		if(item != null) {
 			// Updated product
 			@SuppressWarnings("rawtypes")
-			MethodProperty p = (MethodProperty) item.getItemProperty(SampleTestDto.UUID);
+			MethodProperty p = (MethodProperty) item.getItemProperty(PathogenTestDto.UUID);
 			p.fireValueChange();
 		} else {
 			// New product
@@ -111,13 +111,13 @@ public class SampleTestGrid extends Grid implements ItemClickListener {
 		}
 	}
 
-	public void remove(SampleTestDto sample) {
+	public void remove(PathogenTestDto sample) {
 		getContainer().removeItem(sample);
 	}
 
 	@Override
 	public void itemClick(ItemClickEvent event) {
-		SampleTestDto sampleTest = (SampleTestDto)event.getItemId();
+		PathogenTestDto sampleTest = (PathogenTestDto)event.getItemId();
 		if(event.getPropertyId() != null && (EDIT_BTN_ID.equals(event.getPropertyId()) || event.isDoubleClick())) {
 			ControllerProvider.getSampleTestController().edit(sampleTest, caseSampleCount, this::reload);
 		}

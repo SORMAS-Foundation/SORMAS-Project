@@ -100,7 +100,7 @@ public class SampleTestGridComponent extends VerticalLayout {
 			topLayout.setExpandRatio(bulkOperationsDropdown, 1);
 		}
 
-		Button createButton = new Button(I18nProperties.getCaption(Captions.sampleTestNewResult));
+		Button createButton = new Button(I18nProperties.getCaption(Captions.pathogenTestNewResult));
 		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		createButton.setIcon(FontAwesome.PLUS_CIRCLE);
 		createButton.addClickListener(e -> ControllerProvider.getSampleTestController().create(sampleRef, caseSampleCount, grid::reload));

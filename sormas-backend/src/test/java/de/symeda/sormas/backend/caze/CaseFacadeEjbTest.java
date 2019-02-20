@@ -55,8 +55,8 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.sample.SampleTestResultType;
-import de.symeda.sormas.api.sample.SampleTestType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
@@ -226,7 +226,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze = getCaseFacade().saveCase(caze);
 		
 		creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
-		creator.createSampleTest(caze, SampleTestType.ANTIGEN_DETECTION, SampleTestResultType.POSITIVE);
+		creator.createSampleTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
 		
 		List<CaseExportDto> results = getCaseFacade().getExportList(user.getUuid(), null, 0, 100);
 

@@ -17,23 +17,31 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
-import de.symeda.sormas.api.ReferenceDto;
+import java.util.Date;
+import java.util.List;
 
-public class SampleTestReferenceDto extends ReferenceDto {
+import javax.ejb.Remote;
 
-	private static final long serialVersionUID = -5213210080802372054L;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 
-	public SampleTestReferenceDto() {
-		
-	}
+@Remote
+public interface PathogenTestFacade {
+
+	List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date, String userUuid);
 	
-	public SampleTestReferenceDto(String uuid) {
-		setUuid(uuid);
-	}
+	List<PathogenTestDto> getAllBySample(SampleReferenceDto sampleRef);
 	
-	public SampleTestReferenceDto(String uuid, String caption) {
-		setUuid(uuid);
-		setCaption(caption);
-	}
+	PathogenTestDto getByUuid(String uuid);
 	
+	PathogenTestDto savePathogenTest(PathogenTestDto dto);
+
+	List<String> getAllActiveUuids(String userUuid);
+
+	List<PathogenTestDto> getByUuids(List<String> uuids);
+	
+	List<DashboardTestResultDto> getNewTestResultsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
+	
+	void deletePathogenTest(PathogenTestReferenceDto pathogenTestRef, String userUuid);
 }
