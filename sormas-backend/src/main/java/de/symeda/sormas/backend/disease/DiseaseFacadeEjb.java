@@ -84,12 +84,12 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 				.region(regionRef)
 				.district(districtRef);
 
-		Map<Disease, Long> newCases = caseFacade.getNewCaseCountPerDisease(caseCriteria, userUuid);
+		Map<Disease, Long> newCases = caseFacade.getCaseCountPerDisease(caseCriteria, userUuid);
 		
 		//previous cases
 		caseCriteria.newCaseDateBetween(previousFrom, previousTo, null);
 		
-		Map<Disease, Long> previousCases = caseFacade.getNewCaseCountPerDisease(caseCriteria, userUuid);
+		Map<Disease, Long> previousCases = caseFacade.getCaseCountPerDisease(caseCriteria, userUuid);
 				
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = null;

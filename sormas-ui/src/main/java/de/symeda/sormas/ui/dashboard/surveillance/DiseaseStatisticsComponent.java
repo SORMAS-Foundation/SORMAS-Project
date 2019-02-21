@@ -54,7 +54,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 	// "New Cases" elements
 	private Label caseCountLabel;
-	private Label caseDiseaseLabel;
+//	private Label caseDiseaseLabel;
 	private DashboardStatisticsCountElement caseClassificationConfirmed;
 	private DashboardStatisticsCountElement caseClassificationProbable;
 	private DashboardStatisticsCountElement caseClassificationSuspect;
@@ -119,9 +119,9 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		Label caseComponentTitle = new Label(I18nProperties.getCaption(Captions.dashboardNewCases));
 		CssStyles.style(caseComponentTitle, CssStyles.H2, CssStyles.HSPACE_LEFT_4);
 		headerLayout.addComponent(caseComponentTitle);
-		caseDiseaseLabel = new Label();
-		CssStyles.style(caseDiseaseLabel, CssStyles.H2, CssStyles.HSPACE_LEFT_4);
-		headerLayout.addComponent(caseDiseaseLabel);
+//		caseDiseaseLabel = new Label();
+//		CssStyles.style(caseDiseaseLabel, CssStyles.H2, CssStyles.HSPACE_LEFT_4);
+//		headerLayout.addComponent(caseDiseaseLabel);
 
 		caseComponent.addComponent(headerLayout);
 
@@ -302,7 +302,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	private void updateCaseComponent(Disease disease) {
 		List<DashboardCaseDto> cases = dashboardDataProvider.getCases();
 
-		caseDiseaseLabel.setValue("(" + disease.toString() + ")");
+		//caseDiseaseLabel.setValue("(" + disease.toString() + ")");
 		caseCountLabel.setValue(Integer.toString(cases.size()).toString());
 
 		int confirmedCasesCount = (int) cases.stream()
@@ -341,7 +341,8 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		Long fatalCasesCount = newCases.stream().filter((c) -> c.wasFatal()).count();
 		long previousFatalCasesCount = previousCases.stream().filter((c) -> c.wasFatal()).count();
 		long fatalCasesGrowth = fatalCasesCount - previousFatalCasesCount;
-		Float fatalityRate = 100 * ((float) fatalCasesCount / (float) (casesCount == 0 ? 1 : casesCount));
+		float fatalityRate = 100 * ((float) fatalCasesCount / (float) (casesCount == 0 ? 1 : casesCount));
+		fatalityRate = Math.round(fatalityRate * 100) / 100f;
 
 		// count
 		// current
@@ -368,7 +369,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 				+ "</div>");
 
 		// rate
-		caseFatalityRateValue.setValue(fatalityRate.toString() + "%");
+		caseFatalityRateValue.setValue(fatalityRate + "%");
 	}
 	
 	private void updateEventComponent(Disease disease) {

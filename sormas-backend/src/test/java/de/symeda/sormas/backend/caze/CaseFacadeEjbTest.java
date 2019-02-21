@@ -34,6 +34,7 @@ import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
@@ -41,6 +42,7 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
@@ -157,9 +159,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 
-		List<DashboardCaseDto> dashboardCaseDtos = getCaseFacade().getNewCasesForDashboard(caze.getRegion(),
-				caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(), 1),
-				DateHelper.addDays(new Date(), 1), user.getUuid());
+		CaseCriteria caseCriteria = new CaseCriteria()
+				.region(caze.getRegion()).district(caze.getDistrict()).disease(caze.getDisease())
+				.newCaseDateBetween(DateHelper.subtractDays(new Date(), 1), DateHelper.addDays(new Date(), 1), NewCaseDateType.MOST_RELEVANT);
+		
+		List<DashboardCaseDto> dashboardCaseDtos = getCaseFacade().getCasesForDashboard(caseCriteria, user.getUuid());
 
 		// List should have one entry
 		assertEquals(1, dashboardCaseDtos.size());

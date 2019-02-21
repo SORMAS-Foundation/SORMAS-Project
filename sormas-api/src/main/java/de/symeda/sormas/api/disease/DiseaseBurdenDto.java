@@ -25,7 +25,7 @@ public class DiseaseBurdenDto  implements Serializable {
 	
 	private static final long serialVersionUID = 2430932452606853497L;
 	
-	public static final String I18N_PREFIX = "DiseaseBurdenInformation";
+	public static final String I18N_PREFIX = "DiseaseBurden";
 	
 	public static final String DISEASE = "disease";
 	public static final String CASE_COUNT = "caseCount";
@@ -98,10 +98,11 @@ public class DiseaseBurdenDto  implements Serializable {
 		this.caseDeathCount = caseDeathCount;
 	}
 	
-	public Float getCaseFatalityRate() {
-		return 100 * ((float)getCaseDeathCount() / (float)(getCaseCount() == 0 ? 1 : getCaseCount()));
+	public float getCaseFatalityRate() {
+		float cfrPercentage = 100f * ((float)getCaseDeathCount() / (float)(getCaseCount() == 0 ? 1 : getCaseCount()));
+		cfrPercentage = Math.round(cfrPercentage * 100) / 100f;
+		return cfrPercentage;
 	}
-
 	
 	public Boolean hasCount () {
 		return (caseCount + previousCaseCount + eventCount + outbreakDistrictCount) > 0;

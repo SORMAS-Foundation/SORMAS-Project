@@ -21,9 +21,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -38,10 +36,8 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseLogic;
-import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -241,75 +237,6 @@ public class CaseService extends AbstractAdoService<Case> {
 		return resultList;
 	}	
 
-	/**
-	 * @param to will automatically be set to the end of the day
-	 */
-	public List<DashboardCaseDto> getNewCasesForDashboard(Region region, District district, Disease disease, Date from, Date to, User user) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DashboardCaseDto> cq = cb.createQuery(DashboardCaseDto.class);
-		Root<Case> caze = cq.from(getElementClass());
-		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
-		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
-
-		Predicate filter = createUserFilter(cb, cq, caze, user);
-
-		// Onset date > reception date > report date (use report date as a fallback if none of the other dates is available)
-		Predicate dateFilter = createNewCaseFilter(cb, caze, from, to, NewCaseDateType.MOST_RELEVANT);
-		if (filter != null) {
-			filter = cb.and(filter, dateFilter);
-		} else {
-			filter = dateFilter;
-		}
-
-		if (region != null) {
-			Predicate regionFilter = cb.equal(caze.get(Case.REGION), region);
-			if (filter != null) {
-				filter = cb.and(filter, regionFilter);
-			} else {
-				filter = regionFilter;
-			}
-		}
-
-		if (district != null) {
-			Predicate districtFilter = cb.equal(caze.get(Case.DISTRICT), district);
-			if (filter != null) {
-				filter = cb.and(filter, districtFilter);
-			} else {
-				filter = districtFilter;
-			}
-		}
-
-		if (disease != null) {
-			Predicate diseaseFilter = cb.equal(caze.get(Case.DISEASE), disease);
-			if (filter != null) {
-				filter = cb.and(filter, diseaseFilter);
-			} else {
-				filter = diseaseFilter;
-			}
-		}
-
-		List<DashboardCaseDto> result;
-		if (filter != null) {
-			cq.where(filter);
-			cq.multiselect(
-					caze.get(Case.REPORT_DATE),
-					symptoms.get(Symptoms.ONSET_DATE),
-					caze.get(Case.RECEPTION_DATE),
-					caze.get(Case.CASE_CLASSIFICATION),
-					caze.get(Case.DISEASE),
-					caze.get(Case.INVESTIGATION_STATUS),
-					person.get(Person.PRESENT_CONDITION),
-					person.get(Person.CAUSE_OF_DEATH_DISEASE)
-					);
-
-			result = em.createQuery(cq).getResultList();
-		} else {
-			result = Collections.emptyList();
-		}
-
-		return result;
-	}
-
 	public List<MapCaseDto> getCasesForMap(Region region, District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MapCaseDto> cq = cb.createQuery(MapCaseDto.class);
@@ -379,87 +306,6 @@ public class CaseService extends AbstractAdoService<Case> {
 		}
 
 		return result;
-	}
-
-	public Map<CaseClassification, Long> getNewCaseCountPerClassification(CaseCriteria caseCriteria, User user) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Case> caze = cq.from(getElementClass());
-
-		Predicate filter = createUserFilter(cb, cq, caze, user);
-		Predicate criteriaFilter = buildCriteriaFilter(caseCriteria, cb, caze);
-		if (filter != null) {
-			filter = cb.and(filter, criteriaFilter);
-		} else {
-			filter = criteriaFilter;
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.groupBy(caze.get(Case.CASE_CLASSIFICATION));
-		cq.multiselect(caze.get(Case.CASE_CLASSIFICATION), cb.count(caze));
-		List<Object[]> results = em.createQuery(cq).getResultList();
-
-		Map<CaseClassification, Long> resultMap = results.stream().collect(
-				Collectors.toMap(e -> (CaseClassification) e[0], e -> (Long) e[1]));
-		return resultMap;
-	}
-
-	public Map<PresentCondition, Long> getNewCaseCountPerPersonCondition(CaseCriteria caseCriteria, User user) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Case> caze = cq.from(getElementClass());
-		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
-
-		Predicate filter = createUserFilter(cb, cq, caze, user);
-		Predicate criteriaFilter = buildCriteriaFilter(caseCriteria, cb, caze);
-		if (filter != null) {
-			filter = cb.and(filter, criteriaFilter);
-		} else {
-			filter = criteriaFilter;
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.groupBy(person.get(Person.PRESENT_CONDITION));
-		cq.multiselect(person.get(Person.PRESENT_CONDITION), cb.count(caze));
-		List<Object[]> results = em.createQuery(cq).getResultList();
-																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																	
-		
-		Map<PresentCondition, Long> resultMap = results.stream().collect(
-				Collectors.toMap(e -> (PresentCondition) e[0], e -> (Long) e[1]));
-		return resultMap;
-	}
-
-	public Map<Disease, Long> getNewCaseCountPerDisease(CaseCriteria caseCriteria, User user) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Case> caze = cq.from(getElementClass());
-
-		Predicate filter = createUserFilter(cb, cq, caze, user);
-		Predicate criteriaFilter = buildCriteriaFilter(caseCriteria, cb, caze);
-		if (filter != null) {
-			filter = cb.and(filter, criteriaFilter);
-		} else {
-			filter = criteriaFilter;
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.groupBy(caze.get(Case.DISEASE));
-		cq.multiselect(caze.get(Case.DISEASE), cb.count(caze));
-		List<Object[]> results = em.createQuery(cq).getResultList();
-
-		Map<Disease, Long> resultMap = results.stream().collect(
-				Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
-		
-		return resultMap;
 	}
 	
 	public Case getLatestCaseByPerson(Person person, User user) {

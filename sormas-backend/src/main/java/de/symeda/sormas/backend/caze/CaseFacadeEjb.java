@@ -432,13 +432,47 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<DashboardCaseDto> getNewCasesForDashboard(RegionReferenceDto regionRef,
-			DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
-		Region region = regionService.getByReferenceDto(regionRef);
-		District district = districtService.getByReferenceDto(districtRef);
+	public List<DashboardCaseDto> getCasesForDashboard(CaseCriteria caseCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
-		return caseService.getNewCasesForDashboard(region, district, disease, from, to, user);
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<DashboardCaseDto> cq = cb.createQuery(DashboardCaseDto.class);
+		Root<Case> caze = cq.from(Case.class);
+		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
+		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
+
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
+		Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
+		if (filter != null) {
+			filter = cb.and(filter, criteriaFilter);
+		} else {
+			filter = criteriaFilter;
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		List<DashboardCaseDto> result;
+		if (filter != null) {
+			cq.where(filter);
+			cq.multiselect(
+					caze.get(Case.REPORT_DATE),
+					symptoms.get(Symptoms.ONSET_DATE),
+					caze.get(Case.RECEPTION_DATE),
+					caze.get(Case.CASE_CLASSIFICATION),
+					caze.get(Case.DISEASE),
+					caze.get(Case.INVESTIGATION_STATUS),
+					person.get(Person.PRESENT_CONDITION),
+					person.get(Person.CAUSE_OF_DEATH_DISEASE)
+					);
+
+			result = em.createQuery(cq).getResultList();
+		} else {
+			result = Collections.emptyList();
+		}
+
+		return result;
 	}
 
 	@Override
@@ -495,25 +529,93 @@ public class CaseFacadeEjb implements CaseFacade {
 				.collect(Collectors.toList());
 	}
 
-	@Override
-	public Map<CaseClassification, Long> getNewCaseCountPerClassification(CaseCriteria caseCriteria, String userUuid) {
+
+	public Map<CaseClassification, Long> getCaseCountPerClassification(CaseCriteria caseCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
-		return caseService.getNewCaseCountPerClassification(caseCriteria, user);
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Case> caze = cq.from(Case.class);
+
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
+		Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
+		if (filter != null) {
+			filter = cb.and(filter, criteriaFilter);
+		} else {
+			filter = criteriaFilter;
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.groupBy(caze.get(Case.CASE_CLASSIFICATION));
+		cq.multiselect(caze.get(Case.CASE_CLASSIFICATION), cb.count(caze));
+		List<Object[]> results = em.createQuery(cq).getResultList();
+
+		Map<CaseClassification, Long> resultMap = results.stream().collect(
+				Collectors.toMap(e -> (CaseClassification) e[0], e -> (Long) e[1]));
+		return resultMap;
+	}
+
+	public Map<PresentCondition, Long> getCaseCountPerPersonCondition(CaseCriteria caseCriteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Case> caze = cq.from(Case.class);
+		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
+
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
+		Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
+		if (filter != null) {
+			filter = cb.and(filter, criteriaFilter);
+		} else {
+			filter = criteriaFilter;
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.groupBy(person.get(Person.PRESENT_CONDITION));
+		cq.multiselect(person.get(Person.PRESENT_CONDITION), cb.count(caze));
+		List<Object[]> results = em.createQuery(cq).getResultList();
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																	
+		
+		Map<PresentCondition, Long> resultMap = results.stream().collect(
+				Collectors.toMap(e -> (PresentCondition) e[0], e -> (Long) e[1]));
+		return resultMap;
 	}
 
 	@Override
-	public Map<PresentCondition, Long> getNewCaseCountPerPersonCondition(CaseCriteria caseCriteria, String userUuid) {
+	public Map<Disease, Long> getCaseCountPerDisease(CaseCriteria caseCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
-		return caseService.getNewCaseCountPerPersonCondition(caseCriteria, user);
-	}
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Case> caze = cq.from(Case.class);
 
-	@Override
-	public Map<Disease, Long> getNewCaseCountPerDisease(CaseCriteria caseCriteria, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
+		Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
+		if (filter != null) {
+			filter = cb.and(filter, criteriaFilter);
+		} else {
+			filter = criteriaFilter;
+		}
 
-		return caseService.getNewCaseCountPerDisease(caseCriteria, user);
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.groupBy(caze.get(Case.DISEASE));
+		cq.multiselect(caze.get(Case.DISEASE), cb.count(caze));
+		List<Object[]> results = em.createQuery(cq).getResultList();
+
+		Map<Disease, Long> resultMap = results.stream().collect(
+				Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
+		
+		return resultMap;
 	}
 
 	@Override

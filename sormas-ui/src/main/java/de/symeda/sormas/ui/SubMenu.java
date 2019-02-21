@@ -20,6 +20,7 @@ package de.symeda.sormas.ui;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.AbstractComponent;
@@ -31,13 +32,13 @@ import com.vaadin.ui.Link;
  * It emulates the HTML components of a tabsheet to use it's styling.
  */
 @SuppressWarnings("serial")
-public class SubNavigationMenu extends CssLayout {
+public class SubMenu extends CssLayout {
 
     private Map<String, AbstractComponent> viewMenuItemMap = new HashMap<String, AbstractComponent>();
 
     private CssLayout menuItemsLayout;
     
-    public SubNavigationMenu() {
+    public SubMenu() {
         setWidth(100, Unit.PERCENTAGE);
         setHeightUndefined();
         setPrimaryStyleName("v-tabsheet");
@@ -77,6 +78,29 @@ public class SubNavigationMenu extends CssLayout {
     	if (isBackNavigation)
     		link.setIcon(FontAwesome.ARROW_CIRCLE_LEFT);
     	tabItem.addComponent(link);
+    	
+    	menuItemsLayout.addComponent(tabItemCell);
+    	viewMenuItemMap.put(name, tabItem);
+    }
+    
+    public void addView(final String name, String caption, LayoutClickListener onClick) {
+    	CssLayout tabItemCell = new CssLayout();
+    	tabItemCell.setSizeUndefined();
+    	tabItemCell.setPrimaryStyleName("v-tabsheet-tabitemcell");
+
+    	CssLayout tabItem = new CssLayout();
+    	tabItem.setSizeUndefined();
+    	tabItem.setPrimaryStyleName("v-tabsheet-tabitem");
+    	tabItemCell.addComponent(tabItem);
+
+    	Link link = new Link(caption, null);
+    	link.addStyleName("v-caption");
+    	
+    	tabItem.addComponent(link);
+    	tabItem.addLayoutClickListener(onClick);
+    	tabItem.addLayoutClickListener((e) -> {
+    		this.setActiveView(name);
+    	});
     	
     	menuItemsLayout.addComponent(tabItemCell);
     	viewMenuItemMap.put(name, tabItem);

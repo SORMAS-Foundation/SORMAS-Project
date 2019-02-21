@@ -89,7 +89,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
         if (defaultValue != null) {
             return defaultValue;
         } else {
-            return I18nProperties.getString(Strings.sNotAnswered);
+            return I18nProperties.getString(Strings.notAnswered);
         }
     }
 

@@ -34,7 +34,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SubNavigationMenu;
+import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseView;
@@ -94,7 +94,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 	}
 
 	@Override
-	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
+	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		String[] passedParams = params.split("\\?");
 		if (passedParams.length > 0) {
 			// Remove possible slash from filters

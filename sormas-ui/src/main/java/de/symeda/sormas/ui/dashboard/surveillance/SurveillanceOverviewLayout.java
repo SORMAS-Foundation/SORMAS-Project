@@ -18,10 +18,12 @@
 package de.symeda.sormas.ui.dashboard.surveillance;
 
 import com.vaadin.server.FontAwesome;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
@@ -37,6 +39,7 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 	protected CaseCountDifferenceComponent diseaseDifferenceComponent;
 	private Button showMoreButton;
 	private Button showLessButton;
+	private CheckBox hideOverview;
 	private Boolean isShowingAllDiseases;
 
 	private static String BURDEN_LOC = "burden";
@@ -62,17 +65,22 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 
 	private void addShowMoreAndLessButtons() {
 		
-		VerticalLayout buttonsLayout = new VerticalLayout();
+		HorizontalLayout buttonsLayout = new HorizontalLayout();
+		buttonsLayout.setHeightUndefined();
+		buttonsLayout.setWidth(100, Unit.PERCENTAGE);
+		buttonsLayout.setMargin(new MarginInfo(false, true));
 		
 		showMoreButton = new Button(I18nProperties.getCaption(Captions.dashboardShowAllDiseases), FontAwesome.CHEVRON_DOWN);
 		CssStyles.style(showMoreButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_4);
 		showLessButton = new Button(I18nProperties.getCaption(Captions.dashboardShowFirstDiseases), FontAwesome.CHEVRON_UP);
 		CssStyles.style(showLessButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_4);
+		hideOverview = new CheckBox(I18nProperties.getCaption(Captions.dashboardHideOverview));
+		CssStyles.style(hideOverview, CssStyles.VSPACE_3);
 
 		showMoreButton.addClickListener(e -> {
 			isShowingAllDiseases = true;
 			refresh();
-			
+
 			showMoreButton.setVisible(false);
 			showLessButton.setVisible(true);
 		});
@@ -80,20 +88,40 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 		showLessButton.addClickListener(e -> {
 			isShowingAllDiseases = false;
 			refresh();
-			
+
 			showLessButton.setVisible(false);
 			showMoreButton.setVisible(true);
+		});
+		
+		hideOverview.addValueChangeListener(e -> {
+			if (hideOverview.getValue()) {
+				diseaseBurdenComponent.setVisible(false);
+				diseaseDifferenceComponent.setVisible(false);
+				showLessButton.setVisible(false);
+				showMoreButton.setVisible(false);
+			} else {
+				diseaseBurdenComponent.setVisible(true);
+				diseaseDifferenceComponent.setVisible(true);
+				showLessButton.setVisible(isShowingAllDiseases);
+				showMoreButton.setVisible(!isShowingAllDiseases);
+			}
 		});
 
 		buttonsLayout.addComponent(showMoreButton);
 		buttonsLayout.addComponent(showLessButton);
-		buttonsLayout.setComponentAlignment(showMoreButton, Alignment.MIDDLE_CENTER);
-		buttonsLayout.setComponentAlignment(showLessButton, Alignment.MIDDLE_CENTER);
+		buttonsLayout.setComponentAlignment(showMoreButton, Alignment.BOTTOM_CENTER);
+		buttonsLayout.setExpandRatio(showMoreButton, 1);	
+		buttonsLayout.setComponentAlignment(showLessButton, Alignment.BOTTOM_CENTER);
+		buttonsLayout.setExpandRatio(showLessButton, 1);
+		buttonsLayout.addComponent(hideOverview);
+		buttonsLayout.setComponentAlignment(hideOverview, Alignment.BOTTOM_RIGHT);		
+		buttonsLayout.setExpandRatio(hideOverview, 0);		
 		
 		addComponent(buttonsLayout, EXTEND_BUTTONS_LOC);
 
 		isShowingAllDiseases = false;
 		showLessButton.setVisible(false);
+		buttonsLayout.setExpandRatio(showLessButton, 1);	
 	}
 
 	public void refresh() {

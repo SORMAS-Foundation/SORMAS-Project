@@ -58,6 +58,7 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 
 	public AbstractEpiCurveComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
+		setSizeFull();
 		epiCurveChart = new HighChart();
 		epiCurveChart.setSizeFull();
 		//epiCurveChart.setHeight(0, Unit.PIXELS);

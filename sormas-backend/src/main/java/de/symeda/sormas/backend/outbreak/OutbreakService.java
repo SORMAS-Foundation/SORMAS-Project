@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.outbreak;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.ejb.LocalBean;
@@ -25,16 +24,11 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.outbreak.DashboardOutbreakDto;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -126,77 +120,14 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 			filter = and(cb, filter, cb.equal(from.join(Outbreak.DISTRICT, JoinType.LEFT).join(District.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
 		}
 		if (criteria.getActive() != null) {
-			Date now = new Date();
 			Predicate activeFilter = cb.and(
-					cb.lessThanOrEqualTo(from.get(Outbreak.START_DATE), now),
-					cb.or(cb.isNull(from.get(Outbreak.END_DATE)), cb.greaterThanOrEqualTo(from.get(Outbreak.END_DATE), now)));
+					cb.lessThanOrEqualTo(from.get(Outbreak.START_DATE), criteria.getActiveUpper()),
+					cb.or(cb.isNull(from.get(Outbreak.END_DATE)), cb.greaterThanOrEqualTo(from.get(Outbreak.END_DATE), criteria.getActiveLower())));
 			if (Boolean.FALSE.equals(criteria.getActive())) {
 				activeFilter = cb.not(activeFilter);
 			}
 			filter = and(cb, filter, activeFilter);
 		}
 		return filter;
-	}
-
-	public List<DashboardOutbreakDto> getOutbreaksForDashboard(
-			RegionReferenceDto regionRef,
-			DistrictReferenceDto districtRef, 
-			Disease disease,
-			Date from, 
-			Date to, 
-			String userUuid) {
-		
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DashboardOutbreakDto> cq = cb.createQuery(DashboardOutbreakDto.class);
-
-		Root<Outbreak> outbreak = cq.from(Outbreak.class);
-		Join<Outbreak, District> outbreakDistrict = outbreak.join(Outbreak.DISTRICT, JoinType.LEFT);
-		
-		Predicate filter = null;
-		if (from != null || to != null) {
-			filter = createActiveCaseFilter(cb, outbreak, from, to);
-		}
-		if (districtRef != null) {
-			Predicate districtFilter = cb.equal(outbreak.join(Outbreak.DISTRICT, JoinType.LEFT).get(District.UUID), districtRef.getUuid());
-			filter = filter != null ? cb.and(filter, districtFilter) : districtFilter;
-		}
-		else if (regionRef != null) {
-			Predicate regionFilter = cb.equal(outbreak.join(Outbreak.DISTRICT, JoinType.LEFT).join(District.REGION, JoinType.LEFT).get(Region.UUID), regionRef.getUuid());
-			filter = filter != null ? cb.and(filter, regionFilter) : regionFilter;
-		}
-		if (disease != null) {
-			filter = and(cb, filter, cb.equal(outbreak.get(Outbreak.DISEASE), disease));
-		}
-		if (filter != null) {
-			cq.where(filter);
-		}
-		
-		cq.multiselect(outbreak.get(Outbreak.DISEASE), outbreakDistrict.get(District.UUID));
-		
-		return em.createQuery(cq).getResultList();
-	}
-	
-	public Predicate createActiveCaseFilter(CriteriaBuilder cb, Root<Outbreak> from, Date fromDate, Date toDate) {
-		Predicate dateFromFilter = null;
-		Predicate dateToFilter = null;
-		if (fromDate != null) {
-			dateFromFilter = cb.or(
-					cb.isNull(from.get(Outbreak.REPORT_DATE)),
-					cb.greaterThanOrEqualTo(from.get(Outbreak.REPORT_DATE), fromDate)
-					);
-		}
-		if (toDate != null) {
-			// Onset date > reception date > report date (use report date as a fallback if none of the other dates is available)
-			dateToFilter = cb.or(
-					cb.isNull(from.get(Outbreak.REPORT_DATE)),
-					cb.lessThanOrEqualTo(from.get(Outbreak.REPORT_DATE), toDate)
-					);
-		}
-
-		if (dateFromFilter != null && dateToFilter != null) {
-			return cb.and(dateFromFilter, dateToFilter);			
-		} else {
-			return dateFromFilter != null ? dateFromFilter : dateToFilter != null ? dateToFilter : null;
-		}
 	}
 }

@@ -23,7 +23,9 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
+import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.contact.DashboardContactDto;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.DashboardEventDto;
@@ -108,10 +110,11 @@ public class DashboardDataProvider {
 		previousToDate = DateHelper.getEndOfDay(DateHelper.subtractDays(toDate, period));
 		
 		// Cases
-		setCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(region, district, disease, fromDate, toDate,
-				userUuid));
-		setPreviousCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(region, district, disease,
-				previousFromDate, previousToDate, userUuid));
+		CaseCriteria caseCriteria = new CaseCriteria();
+		caseCriteria.region(region).district(district).disease(disease).newCaseDateBetween(fromDate, toDate, NewCaseDateType.MOST_RELEVANT);
+		setCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria, userUuid));
+		caseCriteria.newCaseDateBetween(previousFromDate, previousToDate, NewCaseDateType.MOST_RELEVANT);
+		setPreviousCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria, userUuid));
 		
 		// Events
 		setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(region, district, disease, fromDate, toDate,

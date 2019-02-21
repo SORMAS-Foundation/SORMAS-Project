@@ -64,16 +64,6 @@ public class DiseaseBurdenGrid extends Grid {
 			}
 		}
 
-		// rename columns
-		getColumn(DiseaseBurdenDto.DISEASE).setHeaderCaption(I18nProperties.getCaption(Captions.dashboardDisease));
-		getColumn(DiseaseBurdenDto.CASE_COUNT).setHeaderCaption(I18nProperties.getCaption(Captions.dashboardDiseaseBurdenCaseCount));
-		getColumn(DiseaseBurdenDto.PREVIOUS_CASE_COUNT).setHeaderCaption(I18nProperties.getCaption(Captions.dashboardDiseaseBurdenPreviousCaseCount));
-		getColumn(DiseaseBurdenDto.CASES_DIFFERENCE).setHeaderCaption(I18nProperties.getCaption(Captions.dashboardDiseaseBurdenDynamic));
-		getColumn(DiseaseBurdenDto.EVENT_COUNT).setHeaderCaption(I18nProperties.getCaption(Captions.dashboardDiseaseBurdenNumberOfEvents));
-		getColumn(DiseaseBurdenDto.OUTBREAK_DISTRICT_COUNT).setHeaderCaption(I18nProperties.getCaption(Captions.dashboardDiseaseBurdenOutbreakDistricts));
-		getColumn(DiseaseBurdenDto.CASE_DEATH_COUNT).setHeaderCaption(I18nProperties.getCaption(Captions.dashboardDiseaseBurdenDeaths));
-		getColumn(DiseaseBurdenDto.CASE_FATALITY_RATE).setHeaderCaption(I18nProperties.getCaption(Captions.dashboardCaseFatalityRateShort));
-
 		// format columns
 		getColumn(DiseaseBurdenDto.CASE_FATALITY_RATE).setRenderer(new PercentageRenderer());
 

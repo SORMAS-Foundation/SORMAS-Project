@@ -25,7 +25,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.SubNavigationMenu;
+import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
 @SuppressWarnings("serial")
@@ -40,7 +40,7 @@ public class AbstractEventView extends AbstractSubNavigationView {
 	}
 	
 	@Override
-	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
+	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		eventRef = FacadeProvider.getEventFacade().getReferenceByUuid(params);
 		
 		menu.removeAllViews();

@@ -24,16 +24,18 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.SubNavigationActionMenu;
+import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
 public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
@@ -44,7 +46,7 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 	private SurveillanceEpiCurveComponent epiCurveComponent;
 	private DashboardMapComponent mapComponent;
 	
-	private SubNavigationActionMenu carouselMenu;
+	private SubMenu carouselMenu;
 	private List<Disease> diseases;
 
 	public SurveillanceDiseaseCarouselLayout(DashboardDataProvider dashboardDataProvider) {
@@ -77,13 +79,13 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 	
 	private HorizontalLayout createCarouselOptions() {
 		HorizontalLayout layout = new HorizontalLayout();
-		CssStyles.style(layout, CssStyles.VSPACE_TOP_4, CssStyles.HSPACE_LEFT_2);
+		CssStyles.style(layout, CssStyles.HSPACE_LEFT_2);
 		
 		CheckBox autoSlide = this.setupSlideShow();
 		layout.addComponent(autoSlide);
 		layout.setComponentAlignment(autoSlide, Alignment.MIDDLE_LEFT);
 		
-		carouselMenu = new SubNavigationActionMenu();
+		carouselMenu = new SubMenu();
 		
 		for (Disease disease : diseases) {
 			carouselMenu.addView(disease.getName(), disease.toShortString(), (e) -> {
@@ -100,6 +102,41 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 		return layout;
 	}
 	
+	private HorizontalLayout createEpiCurveAndMapLayout() {
+		HorizontalLayout layout = new HorizontalLayout();
+		layout.setWidth(100, Unit.PERCENTAGE);
+		layout.setHeight(480, Unit.PIXELS);
+	
+		layout.addComponent(epiCurveComponent);	
+		layout.addComponent(mapComponent);
+		
+		epiCurveComponent.setExpandListener(e -> {
+			Window window = VaadinUiUtil.showPopupWindow(epiCurveComponent);
+			epiCurveComponent.setSizeFull();
+			window.setSizeFull();
+			window.addCloseListener(c -> {
+				layout.addComponent(epiCurveComponent, 0);
+			});		
+			epiCurveComponent.setCollapseListener(c -> {
+				window.close();
+			});	
+		});
+		
+		mapComponent.setExpandListener(e -> {
+			Window window = VaadinUiUtil.showPopupWindow(mapComponent);
+			mapComponent.setSizeFull();
+			window.setSizeFull();
+			window.addCloseListener(c -> {
+				layout.addComponent(mapComponent);
+			});		
+			mapComponent.setCollapseListener(c -> {
+				window.close();
+			});	
+		});
+		
+		return layout;
+	}
+
 	private CheckBox setupSlideShow() {
 		//slideshow option
 		CheckBox autoSlide = new CheckBox(I18nProperties.getCaption(Captions.dashboardDiseaseCarouselSlideShow));
@@ -146,17 +183,6 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 		else {
 			SormasUI.getCurrent().setPollInterval(-1);
 		}
-	}
-
-	protected HorizontalLayout createEpiCurveAndMapLayout() {
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.setWidth(100, Unit.PERCENTAGE);
-
-		layout.addComponent(epiCurveComponent);
-
-		layout.addComponent(mapComponent);
-
-		return layout;
 	}
 
 	public void refresh() {

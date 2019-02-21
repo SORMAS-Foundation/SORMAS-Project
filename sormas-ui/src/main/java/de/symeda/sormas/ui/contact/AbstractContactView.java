@@ -27,7 +27,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.SubNavigationMenu;
+import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
@@ -43,7 +43,7 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 	}
 
 	@Override
-	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
+	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(params);
 		contactRef = FacadeProvider.getContactFacade().getReferenceByUuid(contact.getUuid());

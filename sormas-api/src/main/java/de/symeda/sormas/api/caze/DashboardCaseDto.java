@@ -99,6 +99,6 @@ public class DashboardCaseDto implements Serializable {
 		this.causeOfDeathDisease = causeOfDeathDisease;
 	}
 	public Boolean wasFatal() {
-		return getCauseOfDeathDisease() != null;
+		return getCauseOfDeathDisease() == getDisease();
 	}
 }

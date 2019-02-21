@@ -28,7 +28,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.SubNavigationMenu;
+import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
@@ -45,7 +45,7 @@ public class AbstractSampleView extends AbstractSubNavigationView {
 	}
 	
 	@Override
-	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
+	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		sampleRef = FacadeProvider.getSampleFacade().getReferenceByUuid(params);
 		CaseReferenceDto caseRef = FacadeProvider.getSampleFacade().getSampleByUuid(params).getAssociatedCase();
 		

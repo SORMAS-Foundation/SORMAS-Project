@@ -135,6 +135,7 @@ public class DashboardMapComponent extends VerticalLayout {
 	public DashboardMapComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
 
+		setSizeFull();
 		map = new LeafletMap();
 		map.setSizeFull();
 		map.addMarkerClickListener(new MarkerClickListener() {
@@ -183,7 +184,6 @@ public class DashboardMapComponent extends VerticalLayout {
 		addComponent(map);
 		addComponent(createFooter());
 		setExpandRatio(map, 1);
-		map.setHeight(385, Unit.PIXELS);
 	}
 
 	public void refreshMap() {
