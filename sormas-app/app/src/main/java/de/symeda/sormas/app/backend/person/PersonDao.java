@@ -109,7 +109,7 @@ public class PersonDao extends AbstractAdoDao<Person> {
             if (changedPerson.getApproximateAge() == null) {
                 changedPerson.setApproximateAgeReferenceDate(null);
             } else {
-                changedPerson.setApproximateAgeReferenceDate(new Date());
+                changedPerson.setApproximateAgeReferenceDate(changedPerson.getDeathDate() != null ? changedPerson.getDeathDate() : new Date());
             }
         }
     }

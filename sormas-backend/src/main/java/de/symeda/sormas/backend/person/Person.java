@@ -208,6 +208,7 @@ public class Person extends AbstractDomainObject {
 	public void setApproximateAgeReferenceDate(Date approximateAgeReferenceDate) {
 		this.approximateAgeReferenceDate = approximateAgeReferenceDate;
 	}
+	
 	@Enumerated(EnumType.STRING)
 	public DeathPlaceType getDeathPlaceType() {
 		return deathPlaceType;
