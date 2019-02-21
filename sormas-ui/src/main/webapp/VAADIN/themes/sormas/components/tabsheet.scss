@@ -9,6 +9,7 @@
     
       border-top: $v-border;
       border-top-width: 3px;
+      border-top-color: transparent;
       vertical-align: top;
       
       .v-tabsheet-tabitem {
@@ -16,10 +17,13 @@
         overflow: visible;
         
         .v-caption {
+          padding-left: 8px;
+          padding-right: 8px;
           margin-top: -3px;
           border-bottom: none;
-          border-top: $v-border;
+          border-top: $v-border; 
           border-top-width: 3px;
+          border-top-color: transparent;
           color: $v-selection-color;
           font-weight: 600;
           text-decoration: none;
@@ -31,9 +35,12 @@
           padding-right: 16px;
         }
 
-        &.selected .v-caption {
-          border-top-color: $v-selection-color;
-        }
+        &.selected {
+          .v-caption {
+            border-top-color: $v-selection-color;
+            font-size: 16px;
+          }
+        } 
       }
       
       &:first-child {

@@ -29,6 +29,7 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -82,7 +83,7 @@ public class EventParticipantsView extends AbstractEventView {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
 			MenuBar bulkOperationsDropdown = new MenuBar();	
-			MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
+			MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 			Command deleteCommand = selectedItem -> {
 				ControllerProvider.getEventParticipantController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -92,7 +93,7 @@ public class EventParticipantsView extends AbstractEventView {
 					}
 				});
 			};
-			bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
+			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), FontAwesome.TRASH, deleteCommand);
 
 			topLayout.addComponent(bulkOperationsDropdown);
 			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
@@ -100,7 +101,7 @@ public class EventParticipantsView extends AbstractEventView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
-			addButton = new Button("Add person");
+			addButton = new Button(I18nProperties.getCaption(Captions.eventParticipantAddPerson));
 			addButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			addButton.setIcon(FontAwesome.PLUS_CIRCLE);
 			addButton.addClickListener(e -> {
@@ -117,9 +118,10 @@ public class EventParticipantsView extends AbstractEventView {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		if(event != null) {
+		if (event != null) {
 			super.enter(event);
 		}
+		
 		grid.reload(getEventRef());
 	}
 

@@ -25,6 +25,8 @@ import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -41,7 +43,7 @@ public class OutbreakController {
 		final CommitDiscardWrapperComponent<OutbreakRegionConfigurationForm> configurationComponent = new CommitDiscardWrapperComponent<OutbreakRegionConfigurationForm>(
 				configurationForm);
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(configurationComponent,
-				disease.toShortString() + " Outbreak in " + diseaseOutbreakInformation.getRegion().toString());
+				disease.toShortString() + " " + I18nProperties.getString(Strings.headingOutbreakIn) + " " + diseaseOutbreakInformation.getRegion().toString());
 
 		configurationComponent.addCommitListener(new CommitListener() {
 			@Override
@@ -63,7 +65,7 @@ public class OutbreakController {
 				}
 
 				popupWindow.close();
-				Notification.show("Outbreak information saved", Type.WARNING_MESSAGE);
+				Notification.show(I18nProperties.getString(Strings.messageOutbreakSaved), Type.WARNING_MESSAGE);
 				SormasUI.get().getNavigator().navigateTo(OutbreaksView.VIEW_NAME);
 			}
 		});

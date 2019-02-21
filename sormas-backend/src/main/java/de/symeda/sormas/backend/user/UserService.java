@@ -145,7 +145,7 @@ public class UserService extends AbstractAdoService<User> {
 	}
 
 	/**
-	 * @param district
+	 * @param entityDistrict
 	 * @param includeSupervisors If set to true, all supervisors are returned independent of the district
 	 * @param userRoles
 	 * @return

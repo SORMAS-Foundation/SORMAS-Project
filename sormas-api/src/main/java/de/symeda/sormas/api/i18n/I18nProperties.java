@@ -118,7 +118,7 @@ public class I18nProperties {
 			result = getInstance().captionProperties.getString(prefix+"."+key);
 		}
 		if (result == null) {
-			result = getCaption(key, defaultValue);
+			result = getCaption("."+key, defaultValue);
 		}
 		return result;
 	}

@@ -31,7 +31,9 @@ import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -45,8 +47,6 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 
 	private static final long serialVersionUID = -2015225571046243640L;
-
-	public static final String SEARCH = "search";
 	
 	private FacilityCriteria criteria;
 
@@ -82,8 +82,8 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		exportButton = new Button("Export");
-		exportButton.setDescription("Export the columns and rows that are shown in the table below.");
+		exportButton = new Button(I18nProperties.getCaption(Captions.export));
+		exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		exportButton.setIcon(FontAwesome.TABLE);
 		addHeaderComponent(exportButton);
@@ -114,7 +114,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setNullRepresentation("");
-		searchField.setInputPrompt(I18nProperties.getCaption(SEARCH));
+		searchField.setInputPrompt(I18nProperties.getString(Strings.promptSearch));
 		searchField.addTextChangeListener(e -> {
 			criteria.nameCityLike(e.getText());
 			navigateTo(criteria);
@@ -157,7 +157,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		});
 		filterLayout.addComponent(communityFilter);
 		
-		resetButton = new Button(I18nProperties.getCaption(Captions.resetFilters));
+		resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
 		resetButton.setVisible(false);
 		CssStyles.style(resetButton, CssStyles.FORCE_CAPTION);
 		resetButton.addClickListener(event -> {

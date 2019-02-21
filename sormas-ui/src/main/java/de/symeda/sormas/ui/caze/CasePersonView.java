@@ -27,15 +27,9 @@ import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.ViewMode;
 
-/**
- * View for reading and editing the patient information fields.
- * Contains the {@link PersonEditForm}.
- * @author Stefan Szczesny
- */
+@SuppressWarnings("serial")
 public class CasePersonView extends AbstractCaseView {
 
-	private static final long serialVersionUID = -1L;
-	
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/person";
 
     public CasePersonView() {

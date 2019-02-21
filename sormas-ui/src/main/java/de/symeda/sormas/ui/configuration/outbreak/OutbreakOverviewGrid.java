@@ -32,6 +32,8 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -45,7 +47,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 
-	private static final String REGION = "State";
+	private static final String REGION = Captions._region;
 
 	private UserDto user;
 
@@ -57,7 +59,8 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		user = UserProvider.getCurrent().getUser();
 
 		addColumn(REGION, RegionReferenceDto.class).setMaximumWidth(200);
-		
+		getColumn(REGION).setHeaderCaption(I18nProperties.getCaption(Captions._region));
+
 		for (Disease disease : Disease.values()) {
 			
 			if (!disease.isSupportingOutbreakMode()) {
@@ -145,11 +148,11 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		Set<DistrictReferenceDto> affectedDistricts = ((OutbreakRegionConfiguration) item.getItemProperty((Disease) cell.getPropertyId()).getValue()).getAffectedDistricts();
 		
 		if (affectedDistricts.isEmpty()) {
-			return "No outbreak";
+			return I18nProperties.getCaption(Captions.outbreakNoOutbreak);
 		}
 
 		StringBuilder affectedDistrictsStringBuilder = new StringBuilder();
-		affectedDistrictsStringBuilder.append("Affected districts: ");
+		affectedDistrictsStringBuilder.append(I18nProperties.getCaption(Captions.outbreakAffectedDistricts)).append(": ");
 		
 		int index = 0;
 		for (DistrictReferenceDto affectedDistrict : affectedDistricts) {

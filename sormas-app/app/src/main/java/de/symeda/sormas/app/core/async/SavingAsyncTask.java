@@ -59,11 +59,11 @@ public abstract class SavingAsyncTask extends DefaultAsyncTask {
                     NotificationHelper.showNotification(notificationView, NotificationType.ERROR, taskResult.getResultStatus().getMessage());
                 } else {
                     NotificationHelper.showNotification(notificationView, NotificationType.ERROR,
-                            String.format(notificationView.getResources().getString(R.string.snackbar_save_error), entityName));
+                            String.format(notificationView.getResources().getString(R.string.message_save_error), entityName));
                 }
             } else {
                 NotificationHelper.showNotification(notificationView, NotificationType.SUCCESS,
-                        String.format(notificationView.getResources().getString(R.string.snackbar_save_success), entityName));
+                        String.format(notificationView.getResources().getString(R.string.message_save_success), entityName));
             }
         }
     }

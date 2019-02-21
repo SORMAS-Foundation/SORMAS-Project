@@ -110,7 +110,7 @@ public class TaskGridComponent extends VerticalLayout {
 		});
 		filterLayout.addComponent(statusFilter);
 
-		resetButton = new Button(I18nProperties.getCaption(Captions.resetFilters));
+		resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
 		resetButton.setVisible(false);
 		resetButton.addClickListener(event -> {
 			ViewModelProviders.of(TasksView.class).remove(TaskCriteria.class);
@@ -132,16 +132,16 @@ public class TaskGridComponent extends VerticalLayout {
 		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
 		buttonFilterLayout.setSpacing(true);
 		{
-			Button allTasks = new Button("All", e -> processAssigneeFilterChange(null));
+			Button allTasks = new Button(I18nProperties.getCaption(Captions.all), e -> processAssigneeFilterChange(null));
 			CssStyles.style(allTasks, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 			allTasks.setCaptionAsHtml(true);
 			buttonFilterLayout.addComponent(allTasks);
-			statusButtons.put(allTasks, "All");			
+			statusButtons.put(allTasks, I18nProperties.getCaption(Captions.all));			
 			
-			Button officerTasks = new Button("Officer tasks", e -> processAssigneeFilterChange(OFFICER_TASKS));
-			initializeStatusButton(officerTasks, buttonFilterLayout, OFFICER_TASKS, "Officer tasks");
-			Button myTasks = new Button("My tasks", e -> processAssigneeFilterChange(MY_TASKS));
-			initializeStatusButton(myTasks, buttonFilterLayout, MY_TASKS, "My tasks");
+			Button officerTasks = new Button(I18nProperties.getCaption(Captions.taskOfficerTasks), e -> processAssigneeFilterChange(OFFICER_TASKS));
+			initializeStatusButton(officerTasks, buttonFilterLayout, OFFICER_TASKS, I18nProperties.getCaption(Captions.taskOfficerTasks));
+			Button myTasks = new Button(I18nProperties.getCaption(Captions.taskMyTasks), e -> processAssigneeFilterChange(MY_TASKS));
+			initializeStatusButton(myTasks, buttonFilterLayout, MY_TASKS, I18nProperties.getCaption(Captions.taskMyTasks));
 
 			// Default filter for lab users (that don't have any other role) is "My tasks"
 			if ((UserProvider.getCurrent().hasUserRole(UserRole.LAB_USER) || UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) && UserProvider.getCurrent().getUserRoles().size() == 1) {
@@ -157,7 +157,7 @@ public class TaskGridComponent extends VerticalLayout {
 		{
 			// Show archived/active cases button
 			if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW_ARCHIVED)) {
-				switchArchivedActiveButton = new Button(I18nProperties.getCaption("showArchivedTasks"));
+				switchArchivedActiveButton = new Button(I18nProperties.getCaption(I18nProperties.getCaption(Captions.taskShowArchived)));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
 					criteria.archived(Boolean.TRUE.equals(criteria.getArchived()) ? null : Boolean.TRUE);
@@ -170,7 +170,7 @@ public class TaskGridComponent extends VerticalLayout {
 				assigneeFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 				MenuBar bulkOperationsDropdown = new MenuBar();	
-				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
+				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 				Command deleteCommand = selectedItem -> {
 					ControllerProvider.getTaskController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -179,7 +179,7 @@ public class TaskGridComponent extends VerticalLayout {
 						}
 					});
 				};
-				bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), FontAwesome.TRASH, deleteCommand);
 				
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
 			}
@@ -267,11 +267,11 @@ public class TaskGridComponent extends VerticalLayout {
 		
 		if (Boolean.TRUE.equals(criteria.getArchived())) {
 			viewTitleLabel.setValue(I18nProperties.getPrefixCaption("View", TasksView.VIEW_NAME.replaceAll("/", ".") + ".archive"));
-			switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showActiveTasks"));
+			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(I18nProperties.getCaption(Captions.taskShowActive)));
 			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		} else {
 			viewTitleLabel.setValue(originalViewTitle);
-			switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showArchivedTasks"));
+			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(I18nProperties.getCaption(Captions.taskShowArchived)));
 			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 		} 
 	}

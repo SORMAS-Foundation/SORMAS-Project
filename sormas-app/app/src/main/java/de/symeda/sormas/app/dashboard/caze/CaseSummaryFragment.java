@@ -182,7 +182,7 @@ public class CaseSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
     //<editor-fold desc="More Overrides">
     @Override
     protected int getSectionTitleResId() {
-        return R.string.dashboard_section_title_case;
+        return R.string.heading_case_summary;
     }
 
     @Override
@@ -232,7 +232,7 @@ public class CaseSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
         List<SummaryTotalData> dataSet = new ArrayList<>();
 
         SummaryTotalData data = new SummaryTotalData();
-        data.dataTitle = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_total_cases);
+        data.dataTitle = ResourceUtils.getString(getActivity(), R.string.caption_total_cases);
         ;
         data.dataValue = String.valueOf(new Random().nextInt(10000));
         dataSet.add(data);
@@ -244,11 +244,11 @@ public class CaseSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
         Random random = new Random();
         List<SummaryCircularData> dataSet = new ArrayList<>();
 
-        String titleConfirmedCase = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_cases_confirmed_case);
-        String titleProbableCase = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_cases_probable_case);
-        String titleSuspectedCase = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_cases_suspected_case);
-        String titleFatalities = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_cases_fatalities);
-        String titleCaseFatalityRate = ResourceUtils.getString(getActivity(), R.string.title_landing_cell_cases_case_fatality_rate);
+        String titleConfirmedCase = ResourceUtils.getString(getActivity(), R.string.caption_confirmed_case);
+        String titleProbableCase = ResourceUtils.getString(getActivity(), R.string.caption_probable_case);
+        String titleSuspectedCase = ResourceUtils.getString(getActivity(), R.string.caption_suspected_case);
+        String titleFatalities = ResourceUtils.getString(getActivity(), R.string.caption_fatalities);
+        String titleCaseFatalityRate = ResourceUtils.getString(getActivity(), R.string.caption_case_fatality_rate);
 
         //Confirmed Cases
         SummaryCircularData data1 = new SummaryCircularData(titleConfirmedCase, random.nextInt(10000), random.nextInt(100));

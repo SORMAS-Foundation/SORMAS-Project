@@ -33,6 +33,7 @@ public class OutbreakCriteria extends BaseCriteria implements Serializable {
 	private DistrictReferenceDto district;
 	private Disease disease;
 	private Boolean active;
+	private Date activeLower, activeUpper;
 	private Date changeDateAfter;
 	
 	public RegionReferenceDto getRegion() {
@@ -58,12 +59,32 @@ public class OutbreakCriteria extends BaseCriteria implements Serializable {
 		this.disease = disease;
 		return this;
 	}
-	
+
 	public Boolean getActive() {
 		return active;
 	}
+	public Date getActiveLower() {
+		return activeLower;
+	}
+	public Date getActiveUpper() {
+		return activeUpper;
+	}
 	public OutbreakCriteria active(Boolean active) {
 		this.active = active;
+		if (active != null)
+		{
+			this.activeLower = new Date();
+			this.activeUpper = new Date();
+		} else {
+			this.activeLower = null;
+			this.activeUpper = null;			
+		}
+		return this;
+	}
+	public OutbreakCriteria active(boolean active, Date activeLower, Date activeUpper) {
+		this.active = active;
+		this.activeLower = activeLower;
+		this.activeUpper = activeUpper;
 		return this;
 	}
 	

@@ -34,6 +34,9 @@ public class SymptomsDto extends EntityDto {
 
 	public static final String TEMPERATURE = "temperature";
 	public static final String TEMPERATURE_SOURCE = "temperatureSource";
+	public static final String BLOOD_PRESSURE_SYSTOLIC = "bloodPressureSystolic";
+	public static final String BLOOD_PRESSURE_DIASTOLIC = "bloodPressureDiastolic";
+	public static final String HEART_RATE = "heartRate";
 	public static final String ONSET_DATE = "onsetDate";
 	public static final String ONSET_SYMPTOM = "onsetSymptom";
 	public static final String PATIENT_ILL_LOCATION = "patientIllLocation";
@@ -59,6 +62,7 @@ public class SymptomsDto extends EntityDto {
 	public static final String EYE_PAIN_LIGHT_SENSITIVE = "eyePainLightSensitive";
 	public static final String FATIGUE_WEAKNESS = "fatigueWeakness";
 	public static final String FEVER = "fever";
+	public static final String FLUID_IN_LUNG_CAVITY = "fluidInLungCavity";
 	public static final String HEADACHE = "headache";
 	public static final String HEARINGLOSS = "hearingloss";
 	public static final String HICCUPS = "hiccups";
@@ -82,26 +86,37 @@ public class SymptomsDto extends EntityDto {
 	public static final String LESIONS_RESEMBLE_IMG3 = "lesionsResembleImg3";
 	public static final String LESIONS_RESEMBLE_IMG4 = "lesionsResembleImg4";
 	public static final String LESIONS_ONSET_DATE = "lesionsOnsetDate";
-	public static final String LESIONS_THAT_ITCH = "lesionsThatItch";
+	public static final String LESIONS_THAT_ITCH = "lesionsThatItch";	
+	public static final String LOSS_SKIN_TURGOR = "lossSkinTurgor";
 	public static final String LYMPHADENOPATHY_AXILLARY = "lymphadenopathyAxillary";
 	public static final String LYMPHADENOPATHY_CERVICAL = "lymphadenopathyCervical";
-	public static final String LYMPHADENOPATHY_INGUINAL = "lymphadenopathyInguinal";
+	public static final String LYMPHADENOPATHY_INGUINAL = "lymphadenopathyInguinal";	
+	public static final String MALAISE = "malaise";
 	public static final String MENINGEAL_SIGNS = "meningealSigns";
 	public static final String MUSCLE_PAIN = "musclePain";
 	public static final String NAUSEA = "nausea";
 	public static final String NECK_STIFFNESS = "neckStiffness";
+	public static final String OEDEMA_FACE_NECK = "oedemaFaceNeck";
+	public static final String OEDEMA_LOWER_EXTREMITY = "oedemaLowerExtremity";
 	public static final String ORAL_ULCERS = "oralUlcers";
 	public static final String OTITIS_MEDIA = "otitisMedia";
-	public static final String PAINFUL_LYMPHADENITIS = "painfulLymphadenitis";
+	public static final String PAINFUL_LYMPHADENITIS = "painfulLymphadenitis";	
+	public static final String PALPABLE_LIVER = "palpableLiver";
+	public static final String PALPABLE_SPLEEN = "palpableSpleen";
+	public static final String PHARYNGEAL_ERYTHEMA = "pharyngealErythema";
+	public static final String PHARYNGEAL_EXUDATE = "pharyngealExudate";
 	public static final String RAPID_BREATHING = "rapidBreathing";
 	public static final String REFUSAL_FEEDOR_DRINK = "refusalFeedorDrink";
 	public static final String RUNNY_NOSE = "runnyNose";
 	public static final String SEIZURES = "seizures";
 	public static final String SHOCK = "shock";
+	public static final String SIDE_PAIN = "sidePain";
 	public static final String SKIN_RASH = "skinRash";
 	public static final String SORE_THROAT = "soreThroat";
+	public static final String SUNKEN_EYES_FONTANELLE = "sunkenEyesFontanelle";
 	public static final String SWOLLEN_GLANDS = "swollenGlands";
 	public static final String THROBOCYTOPENIA = "throbocytopenia";
+	public static final String TREMOR = "tremor";
 	public static final String VOMITING = "vomiting";
 	public static final String OTHER_NON_HEMORRHAGIC_SYMPTOMS = "otherNonHemorrhagicSymptoms";
 	public static final String OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT = "otherNonHemorrhagicSymptomsText";
@@ -120,8 +135,8 @@ public class SymptomsDto extends EntityDto {
 	public static final String BLOOD_URINE = "bloodUrine";
 	public static final String OTHER_HEMORRHAGIC_SYMPTOMS = "otherHemorrhagicSymptoms";
 	public static final String OTHER_HEMORRHAGIC_SYMPTOMS_TEXT = "otherHemorrhagicSymptomsText";
-	public static final String SYMPTOMS_COMMENTS = "symptomsComments";
-
+	public static final String SYMPTOMS_COMMENTS = "symptomsComments";	
+	
 	public static final String SYMPTOMATIC = "symptomatic";
 
 	// Fields are declared in the order they should appear in the import template
@@ -137,6 +152,10 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	@Outbreaks
 	private TemperatureSource temperatureSource;
+	private Integer bloodPressureSystolic;
+	private Integer bloodPressureDiastolic;
+	private Integer heartRate;
+	
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	@Outbreaks
 	private SymptomState fever;
@@ -275,7 +294,7 @@ public class SymptomsDto extends EntityDto {
 	private SymptomState hiccups;
 	@Diseases({Disease.YELLOW_FEVER,Disease.OTHER})
 	private SymptomState backache;
-	@Diseases({Disease.YELLOW_FEVER,Disease.OTHER})
+	@Diseases({Disease.YELLOW_FEVER,Disease.LASSA,Disease.OTHER})
 	private SymptomState jaundice;
 	@Diseases({Disease.YELLOW_FEVER,Disease.OTHER})
 	private SymptomState darkUrine;
@@ -353,6 +372,30 @@ public class SymptomsDto extends EntityDto {
 	private SymptomState bedridden;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState oralUlcers;
+	@Diseases({Disease.LASSA,Disease.OTHER})
+	private SymptomState pharyngealErythema;
+	@Diseases({Disease.LASSA,Disease.OTHER})
+	private SymptomState pharyngealExudate;
+	@Diseases({Disease.LASSA,Disease.OTHER})
+	private SymptomState oedemaFaceNeck;
+	@Diseases({Disease.LASSA,Disease.OTHER})
+	private SymptomState oedemaLowerExtremity;
+	@Diseases({Disease.LASSA,Disease.OTHER})
+	private SymptomState lossSkinTurgor;
+	@Diseases({Disease.LASSA,Disease.OTHER})
+	private SymptomState palpableLiver;
+	@Diseases({Disease.LASSA,Disease.OTHER})
+	private SymptomState palpableSpleen;
+	@Diseases({Disease.LASSA,Disease.OTHER})
+	private SymptomState malaise;
+	@Diseases({Disease.LASSA,Disease.OTHER})
+	private SymptomState sunkenEyesFontanelle;
+	@Diseases({Disease.LASSA,Disease.OTHER})
+	private SymptomState sidePain;
+	@Diseases({Disease.LASSA,Disease.OTHER})
+	private SymptomState fluidInLungCavity;
+	@Diseases({Disease.LASSA,Disease.OTHER})
+	private SymptomState tremor;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	@Outbreaks
 	private SymptomState otherNonHemorrhagicSymptoms;
@@ -400,6 +443,24 @@ public class SymptomsDto extends EntityDto {
 	}
 	public void setTemperatureSource(TemperatureSource temperatureSource) {
 		this.temperatureSource = temperatureSource;
+	}
+	public Integer getBloodPressureSystolic() {
+		return bloodPressureSystolic;
+	}
+	public void setBloodPressureSystolic(Integer bloodPressureSystolic) {
+		this.bloodPressureSystolic = bloodPressureSystolic;
+	}
+	public Integer getBloodPressureDiastolic() {
+		return bloodPressureDiastolic;
+	}
+	public void setBloodPressureDiastolic(Integer bloodPressureDiastolic) {
+		this.bloodPressureDiastolic = bloodPressureDiastolic;
+	}
+	public Integer getHeartRate() {
+		return heartRate;
+	}
+	public void setHeartRate(Integer heartRate) {
+		this.heartRate = heartRate;
 	}
 	public SymptomState getFever() {
 		return fever;
@@ -874,6 +935,78 @@ public class SymptomsDto extends EntityDto {
 	}
 	public void setBulgingFontanelle(SymptomState bulgingFontanelle) {
 		this.bulgingFontanelle = bulgingFontanelle;
+	}
+	public SymptomState getPharyngealErythema() {
+		return pharyngealErythema;
+	}
+	public void setPharyngealErythema(SymptomState pharyngealErythema) {
+		this.pharyngealErythema = pharyngealErythema;
+	}
+	public SymptomState getPharyngealExudate() {
+		return pharyngealExudate;
+	}
+	public void setPharyngealExudate(SymptomState pharyngealExudate) {
+		this.pharyngealExudate = pharyngealExudate;
+	}
+	public SymptomState getOedemaFaceNeck() {
+		return oedemaFaceNeck;
+	}
+	public void setOedemaFaceNeck(SymptomState oedemaFaceNeck) {
+		this.oedemaFaceNeck = oedemaFaceNeck;
+	}
+	public SymptomState getOedemaLowerExtremity() {
+		return oedemaLowerExtremity;
+	}
+	public void setOedemaLowerExtremity(SymptomState oedemaLowerExtremity) {
+		this.oedemaLowerExtremity = oedemaLowerExtremity;
+	}
+	public SymptomState getLossSkinTurgor() {
+		return lossSkinTurgor;
+	}
+	public void setLossSkinTurgor(SymptomState lossSkinTurgor) {
+		this.lossSkinTurgor = lossSkinTurgor;
+	}
+	public SymptomState getPalpableLiver() {
+		return palpableLiver;
+	}
+	public void setPalpableLiver(SymptomState palpableLiver) {
+		this.palpableLiver = palpableLiver;
+	}
+	public SymptomState getPalpableSpleen() {
+		return palpableSpleen;
+	}
+	public void setPalpableSpleen(SymptomState palpableSpleen) {
+		this.palpableSpleen = palpableSpleen;
+	}
+	public SymptomState getMalaise() {
+		return malaise;
+	}
+	public void setMalaise(SymptomState malaise) {
+		this.malaise = malaise;
+	}
+	public SymptomState getSunkenEyesFontanelle() {
+		return sunkenEyesFontanelle;
+	}
+	public void setSunkenEyesFontanelle(SymptomState sunkenEyesFontanelle) {
+		this.sunkenEyesFontanelle = sunkenEyesFontanelle;
+	}
+	public SymptomState getSidePain() {
+		return sidePain;
+	}
+	public void setSidePain(SymptomState sidePain) {
+		this.sidePain = sidePain;
+	}
+	public SymptomState getFluidInLungCavity() {
+		return fluidInLungCavity;
+	}
+	public void setFluidInLungCavity(SymptomState fluidInLungCavity) {
+		this.fluidInLungCavity = fluidInLungCavity;
+	}
+	public SymptomState getTremor() {
+		return tremor;
+	}
+	public void setTremor(SymptomState tremor) {
+		this.tremor = tremor;
 	}
 	public SymptomState getOtherNonHemorrhagicSymptoms() {
 		return otherNonHemorrhagicSymptoms;

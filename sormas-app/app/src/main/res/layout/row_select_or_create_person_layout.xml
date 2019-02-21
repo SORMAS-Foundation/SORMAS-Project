@@ -66,7 +66,7 @@
                 android:maxLines="1"
                 android:ellipsize="end"
                 app:personValue="@{data}"
-                app:defaultValue='@{@string/person_unknown}'
+                app:defaultValue='@{@string/value_person_unknown}'
                 />
 
             <RelativeLayout
@@ -82,8 +82,8 @@
                     android:textSize="@dimen/row_entry_secondary_text_size"
                     android:textColor="@color/row_entry_secondary_text"
                     app:value="@{data.sex}"
-                    app:prependValue="@{@string/label_gender}"
-                    app:defaultValue='@{@string/not_available}'
+                    app:prependValue="@{@string/caption_gender}"
+                    app:defaultValue='@{@string/value_not_available}'
                     app:valueFormat='@{@string/title_detail_format}'
                     />
 
@@ -95,8 +95,8 @@
                     android:textSize="@dimen/row_entry_secondary_text_size"
                     android:textColor="@color/row_entry_secondary_text"
                     app:ageWithDateValue="@{data}"
-                    app:prependValue="@{@string/label_age}"
-                    app:defaultValue='@{@string/not_available}'
+                    app:prependValue="@{@string/caption_age}"
+                    app:defaultValue='@{@string/value_not_available}'
                     app:valueFormat='@{@string/age_with_dob_and_prepend_format}'
                     />
 
@@ -110,8 +110,8 @@
                 android:textSize="@dimen/row_entry_secondary_text_size"
                 android:textColor="@color/row_entry_secondary_text"
                 app:value="@{data.presentCondition}"
-                app:prependValue="@{@string/label_present_condition}"
-                app:defaultValue='@{@string/not_available}'
+                app:prependValue="@{@string/caption_present_condition}"
+                app:defaultValue='@{@string/value_not_available}'
                 app:valueFormat='@{@string/title_detail_format}'
                 />
 
@@ -125,8 +125,8 @@
                 android:singleLine="false"
                 android:maxLines="5"
                 app:locationValue="@{data.address}"
-                app:prependValue="@{@string/label_address}"
-                app:defaultValue='@{@string/not_available}'
+                app:prependValue="@{@string/caption_address}"
+                app:defaultValue='@{@string/value_not_available}'
                 app:valueFormat='@{@string/title_detail_format}'
                 />
 

@@ -39,7 +39,6 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.validation.ValidationException;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
@@ -392,9 +391,6 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		// use only date, not time
 		target.setLastContactDate(source.getLastContactDate() != null ? DateHelper8.toDate(DateHelper8.toLocalDate(source.getLastContactDate())) : null);
-		if (target.getLastContactDate() != null && target.getLastContactDate().after(target.getReportDateTime())) {
-			throw new ValidationException(Contact.LAST_CONTACT_DATE + " has to be before " + Contact.REPORT_DATE_TIME);
-		}
 
 		target.setContactProximity(source.getContactProximity());
 		target.setContactClassification(source.getContactClassification());

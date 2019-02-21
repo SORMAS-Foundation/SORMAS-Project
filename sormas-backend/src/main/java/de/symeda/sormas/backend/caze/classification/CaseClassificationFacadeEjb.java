@@ -41,7 +41,7 @@ import de.symeda.sormas.api.caze.classification.ClassificationCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNoneOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNotInStartDateRangeCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationPersonAgeCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationPersonAgeBetweenYearsCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationSampleTestCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationSampleTestPositiveResultCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteriaDto;
@@ -50,7 +50,6 @@ import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto.Cla
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto.ClassificationXOfSubCriteriaDto;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestType;
@@ -290,7 +289,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 
 		// Cholera
 		suspect = allOf(
-				personAge(5, null, ApproximateAgeType.YEARS),
+				personAgeBetweenYears(5, null),
 				xOf(1, 
 						symptom(SymptomsDto.DEHYDRATION),
 						allOf(
@@ -402,9 +401,8 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		return new ClassificationNotInStartDateRangeCriteriaDto(propertyId, daysBeforeStartDate);
 	}
 
-	private static ClassificationPersonAgeCriteriaDto personAge(Integer lowerThreshold, Integer upperThreshold,
-			ApproximateAgeType ageType) {
-		return new ClassificationPersonAgeCriteriaDto(lowerThreshold, upperThreshold, ageType);
+	private static ClassificationPersonAgeBetweenYearsCriteriaDto personAgeBetweenYears(Integer lowerYearsThreshold, Integer upperYearsThreshold) {
+		return new ClassificationPersonAgeBetweenYearsCriteriaDto(lowerYearsThreshold, upperYearsThreshold);
 	}
 
 	@LocalBean

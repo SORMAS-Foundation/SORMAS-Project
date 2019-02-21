@@ -35,6 +35,9 @@ import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
 
 public class VaadinUiUtil {
@@ -63,7 +66,7 @@ public class VaadinUiUtil {
 		Label contentLabel = new Label(contentText);
 		contentLabel.setWidth(100, Unit.PERCENTAGE);
 		popupLayout.addComponent(contentLabel);
-		Button okayButton = new Button("Okay");
+		Button okayButton = new Button(I18nProperties.getCaption(Captions.actionOkay));
 		okayButton.addClickListener(e -> {
 			window.close();
 		});
@@ -195,12 +198,12 @@ public class VaadinUiUtil {
 				popupWindow.close();
 			}
 		};
-		deleteConfirmationComponent.getConfirmButton().setCaption("Yes");
-		deleteConfirmationComponent.getCancelButton().setCaption("No");
+		deleteConfirmationComponent.getConfirmButton().setCaption(I18nProperties.getString(Strings.yes));
+		deleteConfirmationComponent.getCancelButton().setCaption(I18nProperties.getString(Strings.no));
 		deleteLayout.addComponent(deleteConfirmationComponent);
 		deleteLayout.setComponentAlignment(deleteConfirmationComponent, Alignment.BOTTOM_RIGHT);
 		
-		popupWindow.setCaption("Confirm Deletion");
+		popupWindow.setCaption(I18nProperties.getString(Strings.headingConfirmDeletion));
 		popupWindow.setContent(deleteLayout);
 		UI.getCurrent().addWindow(popupWindow);
 		

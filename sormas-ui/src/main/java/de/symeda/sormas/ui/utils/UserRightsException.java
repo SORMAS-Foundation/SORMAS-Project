@@ -17,11 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+
 @SuppressWarnings("serial")
 public class UserRightsException extends Exception {
 
 	public UserRightsException() {
-		super("You do not have the required rights do perform this action.");
+		super(I18nProperties.getString(Strings.errorNotRequiredRights));
 	}
 	
 	public UserRightsException(String message) {

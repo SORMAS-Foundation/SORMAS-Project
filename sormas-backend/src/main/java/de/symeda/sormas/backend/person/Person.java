@@ -35,6 +35,7 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
+import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -60,6 +61,7 @@ public class Person extends AbstractDomainObject {
 	public static final String MOTHERS_MAIDEN_NAME = "mothersMaidenName";
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String APPROXIMATE_AGE_TYPE = "approximateAgeType";
+	public static final String APPROXIMATE_AGE_REFERENCE_DATE = "approximateAgeReferenceDate";
 	public static final String BIRTHDATE_DD = "birthdateDD";
 	public static final String BIRTHDATE_MM = "birthdateMM";
 	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
@@ -74,6 +76,8 @@ public class Person extends AbstractDomainObject {
 	public static final String CAZE = "caze";
 	public static final String DEATH_DATE = "deathDate";
 	public static final String PRESENT_CONDITION = "presentCondition";
+	public static final String EDUCATION_TYPE = "educationType";
+	public static final String EDUCATION_DETAILS = "educationDetails";
 	public static final String OCCUPATION_TYPE = "occupationType";
 	public static final String OCCUPATION_DETAILS = "occupationDetails";
 	public static final String OCCUPATION_REGION = "occupationRegion";
@@ -88,14 +92,14 @@ public class Person extends AbstractDomainObject {
 	private String lastName;
 	private String nickname;
 	private String mothersMaidenName;
+	
 	private Integer approximateAge;
 	private ApproximateAgeType approximateAgeType;
+	private Date approximateAgeReferenceDate;
 
 	private CauseOfDeath causeOfDeath;
 	private String causeOfDeathDetails;
 	private Disease causeOfDeathDisease;
-	//@Deprecated
-	//private String causeOfDeathDiseaseDetails;
 	private DeathPlaceType deathPlaceType;
 	private String deathPlaceDescription;
 	private Date burialDate;
@@ -106,7 +110,6 @@ public class Person extends AbstractDomainObject {
 	private String phone;
 	private String phoneOwner;
 	
-	// TODO private Ethnicity ethnicity;
 	private Sex sex;
 	
 	private PresentCondition presentCondition;
@@ -114,6 +117,9 @@ public class Person extends AbstractDomainObject {
 	private Integer birthdateMM;
 	private Integer birthdateYYYY;
 	private Date deathDate;
+
+	private EducationType educationType;
+	private String educationDetails;
 
 	private OccupationType occupationType;
 	private String occupationDetails;
@@ -196,6 +202,13 @@ public class Person extends AbstractDomainObject {
 		this.approximateAgeType = approximateAgeType;
 	}
 
+	public Date getApproximateAgeReferenceDate() {
+		return approximateAgeReferenceDate;
+	}
+	public void setApproximateAgeReferenceDate(Date approximateAgeReferenceDate) {
+		this.approximateAgeReferenceDate = approximateAgeReferenceDate;
+	}
+	
 	@Enumerated(EnumType.STRING)
 	public DeathPlaceType getDeathPlaceType() {
 		return deathPlaceType;
@@ -284,29 +297,6 @@ public class Person extends AbstractDomainObject {
 	}
 	
 	@Enumerated(EnumType.STRING)
-	public OccupationType getOccupationType() {
-		return occupationType;
-	}
-	public void setOccupationType(OccupationType occupationType) {
-		this.occupationType = occupationType;
-	}
-	
-	public String getOccupationDetails() {
-		return occupationDetails;
-	}
-	public void setOccupationDetails(String occupationDetails) {
-		this.occupationDetails = occupationDetails;
-	}
-	
-	@ManyToOne(cascade = {})
-	public Facility getOccupationFacility() {
-		return occupationFacility;
-	}
-	public void setOccupationFacility(Facility occupationFacility) {
-		this.occupationFacility = occupationFacility;
-	}
-
-	@Enumerated(EnumType.STRING)
 	public CauseOfDeath getCauseOfDeath() {
 		return causeOfDeath;
 	}
@@ -328,7 +318,42 @@ public class Person extends AbstractDomainObject {
 	public void setCauseOfDeathDisease(Disease causeOfDeathDisease) {
 		this.causeOfDeathDisease = causeOfDeathDisease;
 	}
+	
+	@Enumerated(EnumType.STRING)
+	public EducationType getEducationType() {
+		return educationType;
+	}
+	public void setEducationType(EducationType educationType) {
+		this.educationType = educationType;
+	}
+	
+	public String getEducationDetails() {
+		return educationDetails;
+	}
+	public void setEducationDetails(String educationDetails) {
+		this.educationDetails = educationDetails;
+	}
 
+	@Enumerated(EnumType.STRING)
+	public OccupationType getOccupationType() {
+		return occupationType;
+	}
+	public void setOccupationType(OccupationType occupationType) {
+		this.occupationType = occupationType;
+	}
+	public String getOccupationDetails() {
+		return occupationDetails;
+	}
+	public void setOccupationDetails(String occupationDetails) {
+		this.occupationDetails = occupationDetails;
+	}
+	@ManyToOne(cascade = {})
+	public Facility getOccupationFacility() {
+		return occupationFacility;
+	}
+	public void setOccupationFacility(Facility occupationFacility) {
+		this.occupationFacility = occupationFacility;
+	}
 	@ManyToOne(cascade = {})
 	public Region getOccupationRegion() {
 		return occupationRegion;
@@ -363,6 +388,5 @@ public class Person extends AbstractDomainObject {
 	@Override
 	public String toString() {
 		return PersonDto.buildCaption(firstName, lastName);
-	}
-	
+	}	
 }

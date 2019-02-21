@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -55,11 +54,8 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.FragmentReportWeeklyLayoutBinding;
-import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.SyncCallback;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -363,7 +359,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
     private void showSubmitReportConfirmationDialog() {
         final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActivity(),
                 R.string.heading_confirmation_dialog,
-                R.string.heading_sub_confirmation_submit_report,
+                R.string.info_add_cases_before_report_submit,
                 R.string.action_submit_report,
                 R.string.action_cancel);
 
@@ -395,7 +391,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                             return;
                         }
 
-                        NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.snackbar_weekly_report_submitted);
+                        NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.message_weekly_report_submitted);
                         ((ReportActivity)getActivity()).onResume(); // reload data
                     }
                 }.executeOnThreadPool();

@@ -2737,3 +2737,162 @@ ALTER TABLE treatment_history ADD COLUMN prescription_id bigint;
 ALTER TABLE treatment ADD CONSTRAINT fk_treatment_prescription_id FOREIGN KEY (prescription_id) REFERENCES prescription (id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (126, 'Type of drug and prescription link #936');
+
+-- 2019-02-11 Clinical course and visits #938
+
+CREATE TABLE clinicalcourse(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+ALTER TABLE clinicalcourse OWNER TO sormas_user;
+
+CREATE TABLE clinicalcourse_history (LIKE clinicalcourse);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON clinicalcourse
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'clinicalcourse_history', true);
+ALTER TABLE clinicalcourse_history OWNER TO sormas_user;
+
+CREATE TABLE clinicalvisit(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	clinicalcourse_id bigint not null,
+	symptoms_id bigint not null,
+	person_id bigint not null,
+	disease varchar(255),
+	visitdatetime timestamp,
+	visitremarks varchar(512),
+	visitingperson varchar(512),
+	sys_period tstzrange not null,
+	primary key(id)
+);
+ALTER TABLE clinicalvisit OWNER TO sormas_user;
+ALTER TABLE clinicalvisit ADD CONSTRAINT fk_clinicalvisit_clinicalcourse_id FOREIGN KEY (clinicalcourse_id) REFERENCES clinicalcourse (id);
+ALTER TABLE clinicalvisit ADD CONSTRAINT fk_clinicalvisit_symptoms_id FOREIGN KEY (symptoms_id) REFERENCES symptoms (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE clinicalvisit ADD CONSTRAINT fk_clinicalvisit_person_id FOREIGN KEY (person_id) REFERENCES person (id);
+
+CREATE TABLE clinicalvisit_history (LIKE clinicalvisit);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON clinicalvisit
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'clinicalvisit_history', true);
+ALTER TABLE clinicalvisit_history OWNER TO sormas_user;
+
+ALTER TABLE cases ADD COLUMN clinicalcourse_id bigint;
+ALTER TABLE cases_history ADD COLUMN clinicalcourse_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_clinicalcourse_id FOREIGN KEY (clinicalcourse_id) REFERENCES clinicalcourse (id);
+
+ALTER TABLE symptoms ADD COLUMN bloodpressuresystolic integer;
+ALTER TABLE symptoms ADD COLUMN bloodpressurediastolic integer;
+ALTER TABLE symptoms ADD COLUMN heartrate integer;
+ALTER TABLE symptoms_history ADD COLUMN bloodpressuresystolic integer;
+ALTER TABLE symptoms_history ADD COLUMN bloodpressurediastolic integer;
+ALTER TABLE symptoms_history ADD COLUMN heartrate integer;
+
+INSERT INTO schema_version (version_number, comment) VALUES (127, 'Clinical course and visits #938');
+
+-- 2019-02-13 Health conditions #952
+
+CREATE TABLE healthconditions(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	tuberculosis varchar(255),
+	asplenia varchar(255),
+	hepatitis varchar(255),
+	diabetes varchar(255),
+	hiv varchar(255),
+	hivart varchar(255),
+	chronicliverdisease varchar(255),
+	malignancychemotherapy varchar(255),
+	chronicheartfailure varchar(255),
+	chronicpulmonarydisease varchar(255),
+	chronickidneydisease varchar(255),
+	chronicneurologiccondition varchar(255),
+	otherconditions varchar(512),
+	sys_period tstzrange not null,
+	primary key(id)
+);
+ALTER TABLE healthconditions OWNER TO sormas_user;
+
+CREATE TABLE healthconditions_history (LIKE healthconditions);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON healthconditions
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'healthconditions_history', true);
+ALTER TABLE healthconditions_history OWNER TO sormas_user;
+
+ALTER TABLE clinicalcourse ADD COLUMN healthconditions_id bigint;
+ALTER TABLE clinicalcourse_history ADD COLUMN healthconditions_id bigint;
+ALTER TABLE clinicalcourse ADD CONSTRAINT fk_clinicalcourse_healthconditions_id FOREIGN KEY (healthconditions_id) REFERENCES healthconditions (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (128, 'Health conditions #952');
+
+-- 2019-02-13 Additional Case and Person fields #935
+
+ALTER TABLE cases ADD COLUMN sequelae varchar(255);
+ALTER TABLE cases ADD COLUMN sequelaedetails varchar(512);
+
+ALTER TABLE cases_history ADD COLUMN sequelae varchar(255);
+ALTER TABLE cases_history ADD COLUMN sequelaedetails varchar(512);
+
+ALTER TABLE person ADD COLUMN educationtype varchar(255);
+ALTER TABLE person ADD COLUMN educationdetails varchar(255);
+ALTER TABLE person ADD COLUMN approximateagereferencedate date;
+UPDATE person SET approximateagereferencedate=changedate WHERE person.approximateage IS NOT NULL;
+
+ALTER TABLE person_history ADD COLUMN educationtype varchar(255);
+ALTER TABLE person_history ADD COLUMN educationdetails varchar(255);
+ALTER TABLE person_history ADD COLUMN approximateagereferencedate date;
+
+INSERT INTO schema_version (version_number, comment) VALUES (129, 'Additional Case and Person fields #935');
+
+-- 2019-02-15 Additional Hospitalization fields and history table #935
+
+ALTER TABLE hospitalization ADD COLUMN accommodation varchar(255);
+ALTER TABLE hospitalization ADD COLUMN leftagainstadvice varchar(255);
+
+ALTER TABLE hospitalization ADD COLUMN sys_period tstzrange;
+UPDATE hospitalization SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE hospitalization ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE hospitalization_history (LIKE hospitalization);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON hospitalization
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'hospitalization_history', true);
+ALTER TABLE hospitalization_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (130, 'Additional Hospitalization fields and history table #935');
+
+-- 2019-02-20 Additional signs and symptoms #938
+
+ALTER TABLE symptoms ADD COLUMN pharyngealerythema varchar(255);
+ALTER TABLE symptoms ADD COLUMN pharyngealexudate varchar(255);
+ALTER TABLE symptoms ADD COLUMN oedemafaceneck varchar(255);
+ALTER TABLE symptoms ADD COLUMN oedemalowerextremity varchar(255);
+ALTER TABLE symptoms ADD COLUMN lossskinturgor varchar(255);
+ALTER TABLE symptoms ADD COLUMN palpableliver varchar(255);
+ALTER TABLE symptoms ADD COLUMN palpablespleen varchar(255);
+ALTER TABLE symptoms ADD COLUMN malaise varchar(255);
+ALTER TABLE symptoms ADD COLUMN sunkeneyesfontanelle varchar(255);
+ALTER TABLE symptoms ADD COLUMN sidepain varchar(255);
+ALTER TABLE symptoms ADD COLUMN fluidinlungcavity varchar(255);
+ALTER TABLE symptoms ADD COLUMN tremor varchar(255);
+
+ALTER TABLE symptoms_history ADD COLUMN pharyngealerythema varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN pharyngealexudate varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN oedemafaceneck varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN oedemalowerextremity varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lossskinturgor varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN palpableliver varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN palpablespleen varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN malaise varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN sunkeneyesfontanelle varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN sidepain varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN fluidinlungcavity varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN tremor varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (131, 'Additional signs and symptoms #938');

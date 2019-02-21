@@ -21,6 +21,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.DistrictDto;
@@ -35,7 +36,7 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 
 	private static final long serialVersionUID = 6726008587163831260L;
 	
-	private static final String REGION_LOC = "region";
+	private static final String REGION_LOC = Captions._region;
 	
 	private static final String HTML_LAYOUT =
 			LayoutUtil.loc(CommunityDto.NAME)

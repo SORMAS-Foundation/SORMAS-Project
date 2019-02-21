@@ -55,6 +55,8 @@ import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 /**
@@ -226,7 +228,7 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 
 	protected Button createAddButton() {
 
-		Button button = new Button("New entry");
+		Button button = new Button(I18nProperties.getCaption(Captions.actionNewEntry));
 		button.addStyleName(BaseTheme.BUTTON_LINK);
 
 		button.addClickListener(new ClickListener() {

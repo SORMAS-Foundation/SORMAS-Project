@@ -26,7 +26,10 @@ import org.joda.time.DateTimeComparator;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.hospitalization.AccommodationType;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.person.EducationType;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -40,6 +43,7 @@ import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentCaseEditHospitalizationLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCaseEditHospitalizationLayoutBinding, Hospitalization, Case> {
@@ -188,6 +192,7 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
 
         contentBinding.setData(record);
         contentBinding.setCaze(caze);
+        contentBinding.setAccommodationClass(AccommodationType.class);
         contentBinding.setPreviousHospitalizationList(getPreviousHospitalizations());
         contentBinding.setPrevHosItemClickCallback(onPrevHosItemClickListener);
     }

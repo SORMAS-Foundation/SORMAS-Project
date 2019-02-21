@@ -13,6 +13,7 @@ import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
@@ -51,7 +52,7 @@ public class PrescriptionGrid extends Grid implements AbstractGrid<PrescriptionC
 		generatedContainer.addGeneratedProperty(DOCUMENT_TREATMENT_BTN_ID, new PropertyValueGenerator<String>() {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
-				return I18nProperties.getPrefixCaption(TherapyDto.I18N_PREFIX, "documentTreatment");
+				return I18nProperties.getPrefixCaption(TherapyDto.I18N_PREFIX, I18nProperties.getCaption(Captions.treatmentCreateTreatment));
 			}
 			@Override
 			public Class<String> getType() {
@@ -65,7 +66,9 @@ public class PrescriptionGrid extends Grid implements AbstractGrid<PrescriptionC
 		
 		getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
 		getColumn(EDIT_BTN_ID).setWidth(60);
+		getColumn(EDIT_BTN_ID).setHeaderCaption("");
 		getColumn(DOCUMENT_TREATMENT_BTN_ID).setRenderer(new GridButtonRenderer());
+		getColumn(DOCUMENT_TREATMENT_BTN_ID).setHeaderCaption("");
 		getColumn(PrescriptionIndexDto.PRESCRIPTION_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateFormat()));
 	
 		for (Column column : getColumns()) {
@@ -79,7 +82,7 @@ public class PrescriptionGrid extends Grid implements AbstractGrid<PrescriptionC
 			}
 			
 			if (DOCUMENT_TREATMENT_BTN_ID.equals(e.getPropertyId())) {
-				PrescriptionDto prescription = FacadeProvider.getTherapyFacade().getPrescriptionByUuid(((PrescriptionIndexDto) e.getItemId()).getUuid());
+				PrescriptionDto prescription = FacadeProvider.getPrescriptionFacade().getPrescriptionByUuid(((PrescriptionIndexDto) e.getItemId()).getUuid());
 				ControllerProvider.getTherapyController().openTreatmentCreateForm(prescription, new Runnable() {
 					@Override
 					public void run() {
@@ -103,7 +106,7 @@ public class PrescriptionGrid extends Grid implements AbstractGrid<PrescriptionC
 			deselectAll();
 		}
 
-		List<PrescriptionIndexDto> entries = FacadeProvider.getTherapyFacade().getPrescriptionIndexList(prescriptionCriteria);
+		List<PrescriptionIndexDto> entries = FacadeProvider.getPrescriptionFacade().getIndexList(prescriptionCriteria);
 		
 		getContainer().removeAllItems();
 		getContainer().addAll(entries);

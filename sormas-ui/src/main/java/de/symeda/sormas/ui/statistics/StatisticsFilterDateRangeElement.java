@@ -22,6 +22,9 @@ import java.util.List;
 
 import com.vaadin.ui.DateField;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+
 @SuppressWarnings("serial")
 public class StatisticsFilterDateRangeElement extends StatisticsFilterElement {
 
@@ -31,8 +34,8 @@ public class StatisticsFilterDateRangeElement extends StatisticsFilterElement {
 	public StatisticsFilterDateRangeElement() {
 		setSpacing(true);
 		
-		dateFromField = new DateField("From");
-		dateToField = new DateField("To");
+		dateFromField = new DateField(I18nProperties.getCaption(Captions.from));
+		dateToField = new DateField(I18nProperties.getCaption(Captions.to));
 		
 		addComponent(dateFromField);
 		addComponent(dateToField);

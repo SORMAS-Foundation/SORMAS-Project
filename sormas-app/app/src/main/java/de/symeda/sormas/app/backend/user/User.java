@@ -201,7 +201,6 @@ public class User extends AbstractDomainObject {
         userRoles = null;
     }
 
-
     @Transient // Needed for merge logic
     public Set<UserRole> getUserRoles() {
         if (userRoles == null) {

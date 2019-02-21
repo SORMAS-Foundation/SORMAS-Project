@@ -25,14 +25,14 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.ui.SubNavigationMenu;
+import de.symeda.sormas.ui.SubMenu;
 
 @SuppressWarnings("serial")
 public abstract class AbstractSubNavigationView extends AbstractView {
 	
     private String params;
 
-    private SubNavigationMenu subNavigationMenu;
+    private SubMenu subNavigationMenu;
     private VerticalLayout infoLayout;
     private Label infoLabel;
     private Label infoLabelSub;
@@ -41,7 +41,7 @@ public abstract class AbstractSubNavigationView extends AbstractView {
     protected AbstractSubNavigationView(String viewName) {
         super(viewName);
 
-        subNavigationMenu = new SubNavigationMenu();
+        subNavigationMenu = new SubMenu();
         addComponent(subNavigationMenu);
         setExpandRatio(subNavigationMenu, 0);
         
@@ -71,7 +71,7 @@ public abstract class AbstractSubNavigationView extends AbstractView {
 		selectInMenu();
     }
     
-    public abstract void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params);
+    public abstract void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params);
     
     protected void setSubComponent(Component newComponent) {
     	if (subComponent != null) {

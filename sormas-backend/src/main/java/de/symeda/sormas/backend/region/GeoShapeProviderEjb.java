@@ -65,11 +65,13 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 
-	private Map<RegionReferenceDto, MultiPolygon> regionMultiPolygons;
-	private Map<RegionReferenceDto, GeoLatLon[][]> regionShapes;
+	private static final GeoLatLon defaultCenter = new GeoLatLon(13.5, 2);
+	
+	private Map<RegionReferenceDto, MultiPolygon> regionMultiPolygons = new HashMap<>();
+	private Map<RegionReferenceDto, GeoLatLon[][]> regionShapes = new HashMap<>();
 
-	private Map<DistrictReferenceDto, MultiPolygon> districtMultiPolygons;
-	private Map<DistrictReferenceDto, GeoLatLon[][]> districtShapes;
+	private Map<DistrictReferenceDto, MultiPolygon> districtMultiPolygons = new HashMap<>();
+	private Map<DistrictReferenceDto, GeoLatLon[][]> districtShapes = new HashMap<>();
 
 	@Override
 	public GeoLatLon[][] getRegionShape(RegionReferenceDto region) {
@@ -90,6 +92,10 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 	@Override
 	public GeoLatLon getCenterOfAllRegions() {
 
+		if (regionMultiPolygons.isEmpty()) {
+			return defaultCenter;
+		}
+		
 		double lat = 0, lon = 0;
 		int count = 0;
 		for (MultiPolygon polygon : regionMultiPolygons.values()) {
@@ -106,6 +112,11 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 
 	@Override
 	public GeoLatLon getCenterOfRegion(RegionReferenceDto region) {
+		
+		if (regionMultiPolygons.isEmpty()) {
+			return defaultCenter;
+		}
+		
 		Point polygonCenter = regionMultiPolygons.get(region).getCentroid();
 		return new GeoLatLon(polygonCenter.getX(), polygonCenter.getY());
 	}
@@ -129,6 +140,11 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 	
 	@Override
 	public GeoLatLon getCenterOfDistrict(DistrictReferenceDto district) {
+		
+		if (districtMultiPolygons.isEmpty()) {
+			return defaultCenter;
+		}
+		
 		Point polygonCenter = districtMultiPolygons.get(district).getCentroid();
 		return new GeoLatLon(polygonCenter.getX(), polygonCenter.getY());
 	}
@@ -142,8 +158,8 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 
 	private void loadRegionData() {
 
-		regionShapes = new HashMap<>();
-		regionMultiPolygons = new HashMap<>();
+		regionShapes.clear();
+		regionMultiPolygons.clear();
 
 		// load shapefile
 		String countryName = configFacade.getCountryName();
@@ -224,8 +240,8 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 
 	private void loadDistrictData() {
 
-		districtShapes = new HashMap<>();
-		districtMultiPolygons = new HashMap<>();
+		districtShapes.clear();
+		districtMultiPolygons.clear();
 
 		// load shapefile
 		String countryName = configFacade.getCountryName();

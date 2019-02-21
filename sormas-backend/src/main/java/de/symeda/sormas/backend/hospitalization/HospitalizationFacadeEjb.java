@@ -82,13 +82,15 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		HospitalizationDto source = dto;
 		DtoHelper.validateDto(source, target);
 		
+		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
 		target.setAdmissionDate(source.getAdmissionDate());
 		target.setDischargeDate(source.getDischargeDate());
 		target.setHospitalizedPreviously(source.getHospitalizedPreviously());
+		target.setAccommodation(source.getAccommodation());
 		target.setIsolated(source.getIsolated());
 		target.setIsolationDate(source.getIsolationDate());
-		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
-		
+		target.setLeftAgainstAdvice(source.getLeftAgainstAdvice());
+
 		// It would be better to merge with the existing hospitalizations
 		List<PreviousHospitalization> previousHospitalizations = new ArrayList<>();
 		for (PreviousHospitalizationDto prevDto : source.getPreviousHospitalizations()) {
@@ -147,12 +149,14 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setChangeDate(source.getChangeDate());
 		target.setUuid(source.getUuid());
 		
+		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
 		target.setAdmissionDate(source.getAdmissionDate());
 		target.setDischargeDate(source.getDischargeDate());
 		target.setHospitalizedPreviously(source.getHospitalizedPreviously());
+		target.setAccommodation(source.getAccommodation());
 		target.setIsolated(source.getIsolated());
 		target.setIsolationDate(source.getIsolationDate());
-		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
+		target.setLeftAgainstAdvice(source.getLeftAgainstAdvice());
 		
 		List<PreviousHospitalizationDto> previousHospitalizations = new ArrayList<>();
 		for (PreviousHospitalization prevDto : source.getPreviousHospitalizations()) {

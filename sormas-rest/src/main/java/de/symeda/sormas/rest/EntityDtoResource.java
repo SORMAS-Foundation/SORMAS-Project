@@ -29,7 +29,8 @@ public abstract class EntityDtoResource {
 				String errorMessage = dto.getClass().getSimpleName()
 						+ " " + dto.getUuid() + " " + DateHelper.formatLocalShortDateTime(dto.getChangeDate()) + "\n";
 				errorMessage += e.getMessage();
-				if (ExceptionUtils.getRootCause(e) instanceof OutdatedEntityException) {
+				if (e instanceof OutdatedEntityException
+						|| ExceptionUtils.getRootCause(e) instanceof OutdatedEntityException) {
 					logger.warn(errorMessage, e);
 					result = PushResult.TOO_OLD;
 				} else {

@@ -31,5 +31,9 @@ public class TherapyDto extends EntityDto {
 		therapy.setUuid(DataHelper.createUuid());
 		return therapy;
 	}
+	
+	public TherapyReferenceDto toReference() {
+		return new TherapyReferenceDto(getUuid());
+	}
 
 }

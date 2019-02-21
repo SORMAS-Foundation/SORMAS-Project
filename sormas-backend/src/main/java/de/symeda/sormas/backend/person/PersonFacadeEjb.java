@@ -39,6 +39,8 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.PersonDto;
@@ -216,10 +218,10 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public void validate(PersonDto source) throws ValidationRuntimeException {
 		if (StringUtils.isEmpty(source.getFirstName())) {
-			throw new ValidationRuntimeException("You have to specify a first name");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyFirstName));
 		}
 		if (StringUtils.isEmpty(source.getLastName())) {
-			throw new ValidationRuntimeException("You have to specify a last name");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyLastName));
 		}
 	}
 
@@ -315,6 +317,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setBirthdateYYYY(source.getBirthdateYYYY());
 		target.setApproximateAge(source.getApproximateAge());
 		target.setApproximateAgeType(source.getApproximateAgeType());
+		target.setApproximateAgeReferenceDate(source.getApproximateAgeReferenceDate());
 		target.setCauseOfDeath(source.getCauseOfDeath());
 		target.setCauseOfDeathDetails(source.getCauseOfDeathDetails());
 		target.setCauseOfDeathDisease(source.getCauseOfDeathDisease());
@@ -332,6 +335,9 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setPhoneOwner(source.getPhoneOwner());
 		target.setAddress(locationFacade.fromDto(source.getAddress()));
 
+		target.setEducationType(source.getEducationType());
+		target.setEducationDetails(source.getEducationDetails());
+		
 		target.setOccupationType(source.getOccupationType());
 		target.setOccupationDetails(source.getOccupationDetails());
 		target.setOccupationRegion(regionService.getByReferenceDto(source.getOccupationRegion()));
@@ -378,8 +384,14 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setBirthdateYYYY(source.getBirthdateYYYY());
 
 		if (source.getBirthdateYYYY() != null) {
+			
+			// calculate the approximate age based on the birth date
+			// still not sure whether this is a good solution
+			
 			Calendar birthdate = new GregorianCalendar();
-			birthdate.set(source.getBirthdateYYYY(), source.getBirthdateMM()!=null?source.getBirthdateMM()-1:0, source.getBirthdateDD()!=null?source.getBirthdateDD():1);
+			birthdate.set(source.getBirthdateYYYY(),
+					source.getBirthdateMM()!=null?source.getBirthdateMM()-1:0, 
+					source.getBirthdateDD()!=null?source.getBirthdateDD():1);
 
 			Pair<Integer, ApproximateAgeType> pair = ApproximateAgeHelper.getApproximateAge(
 					birthdate.getTime(),
@@ -387,10 +399,13 @@ public class PersonFacadeEjb implements PersonFacade {
 					);
 			target.setApproximateAge(pair.getElement0());
 			target.setApproximateAgeType(pair.getElement1());
+			target.setApproximateAgeReferenceDate(source.getDeathDate() != null ? source.getDeathDate() : new Date());
+
 		}
 		else {
 			target.setApproximateAge(source.getApproximateAge());
 			target.setApproximateAgeType(source.getApproximateAgeType());
+			target.setApproximateAgeReferenceDate(source.getApproximateAgeReferenceDate());
 		}
 
 		target.setCauseOfDeath(source.getCauseOfDeath());
@@ -409,6 +424,9 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setPhone(source.getPhone());
 		target.setPhoneOwner(source.getPhoneOwner());
 		target.setAddress(LocationFacadeEjb.toDto(source.getAddress()));
+
+		target.setEducationType(source.getEducationType());
+		target.setEducationDetails(source.getEducationDetails());
 
 		target.setOccupationType(source.getOccupationType());
 		target.setOccupationDetails(source.getOccupationDetails());

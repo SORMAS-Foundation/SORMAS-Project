@@ -29,7 +29,6 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
@@ -41,13 +40,16 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -76,9 +78,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String CLASSIFICATION_RULES_LOC = "classificationRulesLoc";
 	private static final String CLASSIFIED_BY_SYSTEM_LOC = "classifiedBySystemLoc";
 
-	public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
+	public static final String NONE_HEALTH_FACILITY_DETAILS = CaseDataDto.NONE_HEALTH_FACILITY_DETAILS;
 
-	private static final String HTML_LAYOUT = LayoutUtil.h3("Case data")
+	private static final String HTML_LAYOUT = LayoutUtil.h3(I18nProperties.getString(Strings.headingCaseData))
 			+ LayoutUtil.fluidRowLocs(4, CaseDataDto.UUID, 3, CaseDataDto.REPORT_DATE, 5, CaseDataDto.REPORTING_USER)
 			+ LayoutUtil.inlineLocs(CaseDataDto.CASE_CLASSIFICATION, CLASSIFICATION_RULES_LOC)
 			+ LayoutUtil.fluidRow(
@@ -87,12 +89,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 4, 0, CLASSIFIED_BY_SYSTEM_LOC))
 			+ LayoutUtil.fluidRowLocs(9, CaseDataDto.INVESTIGATION_STATUS, 3, CaseDataDto.INVESTIGATED_DATE)
 			+ LayoutUtil.fluidRowLocs(6, CaseDataDto.EPID_NUMBER, 3, null, 3, CaseDataDto.RECEPTION_DATE)
-			+ LayoutUtil.fluidRowLocs(9, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE)
 			+ LayoutUtil.fluidRow(
 					new FluidColumn(null, 6, 0, CaseDataDto.DISEASE, null),
 					new FluidColumn(null, 6, 0, null,
 							LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE,
 									CaseDataDto.DENGUE_FEVER_TYPE)))
+			+ LayoutUtil.fluidRowLocs(9, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE)
+			+ LayoutUtil.fluidRowLocs(3, CaseDataDto.SEQUELAE, 9, CaseDataDto.SEQUELAE_DETAILS)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY)
 			+ LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS)
@@ -123,41 +126,38 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 
 		// Add fields
-
-		addFields(CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER,
+		addFields(CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER, CaseDataDto.RECEPTION_DATE,
 				CaseDataDto.CLASSIFICATION_DATE, CaseDataDto.CLASSIFICATION_USER, CaseDataDto.CLASSIFICATION_COMMENT);
-		addField(CaseDataDto.RECEPTION_DATE, DateField.class);
+
 		TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
-		epidField.addValidator(new RegexpValidator(DataHelper.getEpidNumberRegexp(), true,
-				"The EPID number does not match the required pattern. You may still save the case and enter the correct number later."));
-		epidField.addValidator(new StringLengthValidator(
-				"An EPID number has to be provided. You may still save the case and enter the correct number later.", 1,
+		epidField.addValidator(new RegexpValidator(DataHelper.getEpidNumberRegexp(), true, I18nProperties.getValidationError(Validations.epidNumberPattern)));
+		epidField.addValidator(new StringLengthValidator(I18nProperties.getValidationError(Validations.epidNumber), 1,
 				null, false));
 		epidField.setInvalidCommitted(true);
 		CssStyles.style(epidField, CssStyles.ERROR_COLOR_PRIMARY);
+
 		addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
 		addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
-		DateField investigatedDate = addField(CaseDataDto.INVESTIGATED_DATE, DateField.class);
 		addField(CaseDataDto.OUTCOME, OptionGroup.class);
-		DateField outcomeDate = addField(CaseDataDto.OUTCOME_DATE, DateField.class);
+		addField(CaseDataDto.SEQUELAE, OptionGroup.class);
+		addFields(CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.SEQUELAE_DETAILS);
+
 		ComboBox diseaseField = addField(CaseDataDto.DISEASE, ComboBox.class);
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
-		OptionGroup plagueType = addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
+		addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, OptionGroup.class);
+		
 		TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		addField(CaseDataDto.REGION, ComboBox.class);
 		ComboBox district = addField(CaseDataDto.DISTRICT, ComboBox.class);
-		ComboBox community = addField(CaseDataDto.COMMUNITY, ComboBox.class);
+		addField(CaseDataDto.COMMUNITY, ComboBox.class);
 		ComboBox facility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
 		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		surveillanceOfficerField.setNullSelectionAllowed(true);
-		addField(CaseDataDto.PREGNANT, OptionGroup.class);
-		addField(CaseDataDto.VACCINATION, ComboBox.class);
-		addField(CaseDataDto.VACCINATION_DOSES, TextField.class);
-		addField(CaseDataDto.VACCINATION_INFO_SOURCE, ComboBox.class);
-		addField(CaseDataDto.SMALLPOX_VACCINATION_SCAR, OptionGroup.class);
-		addField(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, OptionGroup.class);
-		addField(CaseDataDto.VACCINATION_DATE, DateField.class);
+		
+		addFields(CaseDataDto.PREGNANT,
+				CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES, CaseDataDto.VACCINATION_INFO_SOURCE,
+				CaseDataDto.SMALLPOX_VACCINATION_SCAR,CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.VACCINATION_DATE);
 
 		// Set initial visibilities
 
@@ -167,8 +167,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		setRequired(true, CaseDataDto.REPORT_DATE, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.OUTCOME,
 				CaseDataDto.DISEASE, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY);
-		FieldHelper.addSoftRequiredStyle(investigatedDate, outcomeDate, plagueType, community,
-				surveillanceOfficerField);
+		setSoftRequired(true, CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.PLAGUE_TYPE,
+				CaseDataDto.COMMUNITY, CaseDataDto.SURVEILLANCE_OFFICER);
 		FieldHelper.setReadOnlyWhen(getFieldGroup(), CaseDataDto.INVESTIGATED_DATE, CaseDataDto.INVESTIGATION_STATUS, Arrays.asList(InvestigationStatus.PENDING), false);
 		setReadOnly(true, CaseDataDto.UUID, CaseDataDto.REPORTING_USER, CaseDataDto.CLASSIFICATION_USER, CaseDataDto.CLASSIFICATION_DATE, CaseDataDto.REGION,
 				CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
@@ -216,6 +216,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.OUTCOME_DATE, CaseDataDto.OUTCOME,
 					Arrays.asList(CaseOutcome.DECEASED, CaseOutcome.RECOVERED, CaseOutcome.UNKNOWN), true);
 		}
+		if (isVisibleAllowed(CaseDataDto.SEQUELAE)) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.SEQUELAE,
+					CaseDataDto.OUTCOME, Arrays.asList(CaseOutcome.RECOVERED, CaseOutcome.UNKNOWN), true);
+		}
+		if (isVisibleAllowed(CaseDataDto.SEQUELAE_DETAILS)) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.SEQUELAE_DETAILS,
+					CaseDataDto.SEQUELAE, Arrays.asList(YesNoUnknown.YES), true);
+		}
 
 		// Other initializations
 
@@ -240,7 +248,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		for (String medicalInformationField : medicalInformationFields) {
 			if (getFieldGroup().getField(medicalInformationField).isVisible()) {
-				String medicalInformationCaptionLayout = LayoutUtil.h3("Additional medical information");
+				String medicalInformationCaptionLayout = LayoutUtil.h3(I18nProperties.getString(Strings.headingMedicalInformation));
 				Label medicalInformationCaptionLabel = new Label(medicalInformationCaptionLayout);
 				medicalInformationCaptionLabel.setContentMode(ContentMode.HTML);
 				getContent().addComponent(medicalInformationCaptionLabel, MEDICAL_INFORMATION_LOC);
@@ -250,7 +258,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		// Automatic case classification rules button - invisible for other diseases
 		if (disease != Disease.OTHER) {
-			Button classificationRulesButton = new Button("Info", FontAwesome.INFO_CIRCLE);
+			Button classificationRulesButton = new Button(I18nProperties.getCaption(Captions.info), FontAwesome.INFO_CIRCLE);
 			CssStyles.style(classificationRulesButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
 			classificationRulesButton.addClickListener(e -> {
 				ControllerProvider.getCaseController().openClassificationRulesPopup(getValue());
@@ -264,8 +272,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			// Replace classification user if case has been automatically classified
 			if (getValue().getClassificationDate() != null && getValue().getClassificationUser() == null) {
 				getField(CaseDataDto.CLASSIFICATION_USER).setVisible(false);
-				Label classifiedBySystemLabel = new Label("System");
-				classifiedBySystemLabel.setCaption("Classified By");
+				Label classifiedBySystemLabel = new Label(I18nProperties.getCaption(Captions.system));
+				classifiedBySystemLabel.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLASSIFIED_BY));
 				getContent().addComponent(classifiedBySystemLabel, CLASSIFIED_BY_SYSTEM_LOC);
 			}
 		});
@@ -343,8 +351,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 						diseaseField.setValue(currentDisease);
 					}
 				};
-				confirmDiseaseChangeComponent.getConfirmButton().setCaption("Really change case disease?");
-				confirmDiseaseChangeComponent.getCancelButton().setCaption("Cancel");
+				confirmDiseaseChangeComponent.getConfirmButton().setCaption(I18nProperties.getString(Strings.confirmationChangeCaseDisease));
+				confirmDiseaseChangeComponent.getCancelButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
 				confirmDiseaseChangeComponent.setMargin(true);
 
 				Window popupWindow = VaadinUiUtil.showPopupWindow(confirmDiseaseChangeComponent);
@@ -361,7 +369,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 						popupWindow.close();
 					}
 				});
-				popupWindow.setCaption("Change case disease");
+				popupWindow.setCaption(I18nProperties.getString(Strings.headingChangeCaseDisease));
 			}
 		}
 	}

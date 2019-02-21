@@ -23,6 +23,8 @@ import com.vaadin.ui.Notification.Type;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionDto;
@@ -40,49 +42,49 @@ public class InfrastructureController {
 
 	public void createHealthFacility(boolean laboratory) {
 		CommitDiscardWrapperComponent<FacilityEditForm> createComponent = getFacilityEditComponent(null, laboratory);
-		VaadinUiUtil.showModalPopupWindow(createComponent, "Create entry");
+		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateEntry));
 	}
 
 	public void editHealthFacility(String uuid) {
 		FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(uuid);
 		CommitDiscardWrapperComponent<FacilityEditForm> editComponent = getFacilityEditComponent(facility, facility.getType() == FacilityType.LABORATORY);
-		String caption = "Edit " + facility.getName();
+		String caption = I18nProperties.getString(Strings.edit) + " " + facility.getName();
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
 	}
 	
 	public void createRegion() {
 		CommitDiscardWrapperComponent<RegionEditForm> createComponent = getRegionEditComponent(null);
-		VaadinUiUtil.showModalPopupWindow(createComponent, "Create entry");
+		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateEntry));
 	}
 	
 	public void editRegion(String uuid) {
 		RegionDto region = FacadeProvider.getRegionFacade().getRegionByUuid(uuid);
 		CommitDiscardWrapperComponent<RegionEditForm> editComponent = getRegionEditComponent(region);
-		String caption = "Edit " + region.getName();
+		String caption = I18nProperties.getString(Strings.edit) + " " + region.getName();
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
 	}
 	
 	public void createDistrict() {
 		CommitDiscardWrapperComponent<DistrictEditForm> createComponent = getDistrictEditComponent(null);
-		VaadinUiUtil.showModalPopupWindow(createComponent, "Create entry");
+		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateEntry));
 	}
 
 	public void editDistrict(String uuid) {
 		DistrictDto district = FacadeProvider.getDistrictFacade().getDistrictByUuid(uuid);
 		CommitDiscardWrapperComponent<DistrictEditForm> editComponent = getDistrictEditComponent(district);
-		String caption = "Edit " + district.getName();
+		String caption = I18nProperties.getString(Strings.edit) + " " + district.getName();
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
 	}
 
 	public void createCommunity() {
 		CommitDiscardWrapperComponent<CommunityEditForm> createComponent = getCommunityEditComponent(null);
-		VaadinUiUtil.showModalPopupWindow(createComponent, "Create entry");
+		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateEntry));
 	}
 
 	public void editCommunity(String uuid) {
 		CommunityDto community = FacadeProvider.getCommunityFacade().getByUuid(uuid);
 		CommitDiscardWrapperComponent<CommunityEditForm> editComponent = getCommunityEditComponent(community);
-		String caption = "Edit " + community.getName();
+		String caption = I18nProperties.getString(Strings.edit) + " " + community.getName();
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
 	}
 
@@ -106,10 +108,10 @@ public class InfrastructureController {
 			public void onCommit() {
 				FacadeProvider.getFacilityFacade().saveFacility(editForm.getValue());
 				if (laboratory) {
-					Notification.show("Entry created", Type.ASSISTIVE_NOTIFICATION);
+					Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 					SormasUI.get().getNavigator().navigateTo(LaboratoriesView.VIEW_NAME);
 				} else {
-					Notification.show("Entry created", Type.ASSISTIVE_NOTIFICATION);
+					Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 					SormasUI.get().getNavigator().navigateTo(HealthFacilitiesView.VIEW_NAME);
 				}
 			}
@@ -134,7 +136,7 @@ public class InfrastructureController {
 			@Override
 			public void onCommit() {
 				FacadeProvider.getRegionFacade().saveRegion(editForm.getValue());
-				Notification.show("Entry created", Type.ASSISTIVE_NOTIFICATION);
+				Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 				SormasUI.get().getNavigator().navigateTo(RegionsView.VIEW_NAME);
 			}
 		});
@@ -158,7 +160,7 @@ public class InfrastructureController {
 			@Override
 			public void onCommit() {
 				FacadeProvider.getDistrictFacade().saveDistrict(editForm.getValue());
-				Notification.show("Entry created", Type.ASSISTIVE_NOTIFICATION);
+				Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 				SormasUI.get().getNavigator().navigateTo(DistrictsView.VIEW_NAME);
 			}
 		});
@@ -182,7 +184,7 @@ public class InfrastructureController {
 			@Override
 			public void onCommit() {
 				FacadeProvider.getCommunityFacade().saveCommunity(editForm.getValue());
-				Notification.show("Entry created", Type.ASSISTIVE_NOTIFICATION);
+				Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 				SormasUI.get().getNavigator().navigateTo(CommunitiesView.VIEW_NAME);
 			}
 		});

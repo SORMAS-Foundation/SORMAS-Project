@@ -17,11 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
@@ -31,16 +31,16 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.events.EventParticipantsView;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -105,7 +105,7 @@ public class PersonController {
 				selectOrCreateComponent.getCommitButton().setEnabled(commitAllowed);
 			});
 
-			VaadinUiUtil.showModalPopupWindow(selectOrCreateComponent, "Pick or create person");
+			VaadinUiUtil.showModalPopupWindow(selectOrCreateComponent, I18nProperties.getString(Strings.headingPickOrCreatePerson));
 		} else {
 			create(personSelect.getFirstName(), personSelect.getLastName(), resultConsumer);
 		}
@@ -138,46 +138,19 @@ public class PersonController {
 
 
 	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid, Disease disease, String diseaseDetails, UserRight editOrCreateUserRight, final ViewMode viewMode) {
-		PersonEditForm personEditForm = new PersonEditForm(disease, diseaseDetails, editOrCreateUserRight, viewMode);
+		PersonEditForm editForm = new PersonEditForm(disease, diseaseDetails, editOrCreateUserRight, viewMode);
 
 		PersonDto personDto = personFacade.getPersonByUuid(personUuid);
-		personEditForm.setValue(personDto);
+		editForm.setValue(personDto);
 
-		return getPersonEditView(personEditForm, editOrCreateUserRight);
-	}
-
-	private CommitDiscardWrapperComponent<PersonEditForm> getPersonEditView(PersonEditForm editForm, UserRight editOrCreateUserRight) {
 		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(editForm, editForm.getFieldGroup());
-		CaseFacade caseFacade = FacadeProvider.getCaseFacade();
-		
-		List<CaseDataDto> personCases = caseFacade.getAllCasesOfPerson(editForm.getValue().getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
 		
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
 				if (!editForm.getFieldGroup().isModified()) {
 					PersonDto dto = editForm.getValue();
-					personFacade.savePerson(dto);
-					
-					// Check whether the classification of any of this person's cases has changed
-					CaseClassification newClassification = null;
-					for (CaseDataDto personCase : personCases) {
-						CaseDataDto updatedPersonCase = caseFacade.getCaseDataByUuid(personCase.getUuid());
-						if (personCase.getCaseClassification() != updatedPersonCase.getCaseClassification() && updatedPersonCase.getClassificationUser() == null) {
-							newClassification = updatedPersonCase.getCaseClassification();
-							break;
-						}
-					}
-					
-					if (newClassification != null) {
-						Notification notification = new Notification("Person data save. The classification of at least one case associated with this person was automatically changed to " + newClassification.toString() + ".", Type.WARNING_MESSAGE);
-						notification.setDelayMsec(-1);
-						notification.show(Page.getCurrent());
-					} else {
-						Notification.show("Person data saved", Type.WARNING_MESSAGE);
-					}
-					
-					refreshView();
+					savePerson(dto);
 				}
 			}
 		});
@@ -185,12 +158,46 @@ public class PersonController {
 		return editView;
 	}
 
-	private void refreshView() {
-		View currentView = SormasUI.get().getNavigator().getCurrentView();
-		if (currentView instanceof EventParticipantsView) {
-			// force refresh, because view didn't change
-			((EventParticipantsView)currentView).enter(null);
+	private void savePerson(PersonDto personDto) {
+
+		PersonDto existingPerson = FacadeProvider.getPersonFacade().getPersonByUuid(personDto.getUuid());
+		List<CaseDataDto> personCases = FacadeProvider.getCaseFacade().getAllCasesOfPerson(personDto.getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
+
+		onPersonChanged(existingPerson, personDto);
+		
+		personFacade.savePerson(personDto);
+		
+		// Check whether the classification of any of this person's cases has changed
+		CaseClassification newClassification = null;
+		for (CaseDataDto personCase : personCases) {
+			CaseDataDto updatedPersonCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(personCase.getUuid());
+			if (personCase.getCaseClassification() != updatedPersonCase.getCaseClassification() && updatedPersonCase.getClassificationUser() == null) {
+				newClassification = updatedPersonCase.getCaseClassification();
+				break;
+			}
 		}
+		
+		if (newClassification != null) {
+			Notification notification = new Notification(String.format(I18nProperties.getString(Strings.messagePersonSavedClassificationChanged), newClassification.toString()), Type.WARNING_MESSAGE);
+			notification.setDelayMsec(-1);
+			notification.show(Page.getCurrent());
+		} else {
+			Notification.show(I18nProperties.getString(Strings.messagePersonSaved), Type.WARNING_MESSAGE);
+		}
+		
+		SormasUI.refreshView();
 	}
 
+	private void onPersonChanged(PersonDto existingPerson, PersonDto changedPerson) {
+		// approximate age reference date
+		if (existingPerson == null
+				|| !DataHelper.equal(changedPerson.getApproximateAge(), existingPerson.getApproximateAge())
+				|| !DataHelper.equal(changedPerson.getApproximateAgeType(), existingPerson.getApproximateAgeType())) {
+			if (changedPerson.getApproximateAge() == null) {
+				changedPerson.setApproximateAgeReferenceDate(null);
+			} else {
+				changedPerson.setApproximateAgeReferenceDate(changedPerson.getDeathDate() != null ? changedPerson.getDeathDate() : new Date());
+			}
+		}
+	}
 }

@@ -19,12 +19,14 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.List;
 
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -53,7 +55,7 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 			showPage(1);
 		} else {
 			updatePaginationLayout();
-			Label noSamplesLabel = new Label("There are no samples for this Case.");
+			Label noSamplesLabel = new Label(I18nProperties.getCaption(Captions.sampleNoSamples));
 			listLayout.addComponent(noSamplesLabel);
 		}
 	}

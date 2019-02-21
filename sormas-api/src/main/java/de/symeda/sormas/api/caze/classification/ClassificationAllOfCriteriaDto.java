@@ -57,7 +57,7 @@ public class ClassificationAllOfCriteriaDto extends ClassificationCriteriaDto im
 	
 	@Override
 	public String getCriteriaName() {
-		return "<b>" + I18nProperties.getString(Strings.allOf).toUpperCase() + "</b>";
+		return "<b>" + I18nProperties.getString(Strings.classificationAllOf).toUpperCase() + "</b>";
 	}
 	
 	@Override

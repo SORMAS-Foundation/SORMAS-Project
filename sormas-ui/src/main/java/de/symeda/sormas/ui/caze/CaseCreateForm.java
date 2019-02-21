@@ -26,10 +26,10 @@ import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -42,9 +42,9 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	
-	public static final String FIRST_NAME = "firstName";
-	public static final String LAST_NAME = "lastName";
-	public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
+	public static final String FIRST_NAME = PersonDto.FIRST_NAME;
+	public static final String LAST_NAME = PersonDto.LAST_NAME;
+	public static final String NONE_HEALTH_FACILITY_DETAILS = CaseDataDto.NONE_HEALTH_FACILITY_DETAILS;
 
     private static final String HTML_LAYOUT = 
 			LayoutUtil.fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.DISEASE) +

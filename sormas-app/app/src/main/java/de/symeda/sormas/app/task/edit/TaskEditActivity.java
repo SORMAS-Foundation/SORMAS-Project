@@ -78,7 +78,7 @@ public class TaskEditActivity extends BaseEditActivity<Task> {
     public void saveData() {
 
         if (saveTask != null) {
-            NotificationHelper.showNotification(this, WARNING, getString(R.string.snackbar_already_saving));
+            NotificationHelper.showNotification(this, WARNING, getString(R.string.message_already_saving));
             return; // don't save multiple times
         }
 
@@ -116,7 +116,7 @@ public class TaskEditActivity extends BaseEditActivity<Task> {
         if (data.getTaskStatus() == TaskStatus.NOT_EXECUTABLE
                 && DataHelper.isNullOrEmpty(data.getAssigneeReply())) {
             // TODO I18n: Replace with text from I18nProperties?
-            throw new ValidationException(getContext().getResources().getString(R.string.snackbar_task_reply));
+            throw new ValidationException(getContext().getResources().getString(R.string.message_task_reply_required));
         }
 
         if (data.getTaskStatus() == TaskStatus.DONE
@@ -148,7 +148,7 @@ public class TaskEditActivity extends BaseEditActivity<Task> {
 
     @Override
     protected int getActivityTitle() {
-        return R.string.heading_level4_task_edit;
+        return R.string.heading_task_edit;
     }
 
     @Override

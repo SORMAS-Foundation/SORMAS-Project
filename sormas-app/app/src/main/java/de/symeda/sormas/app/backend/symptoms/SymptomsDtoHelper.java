@@ -146,6 +146,21 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         a.setPainfulLymphadenitis(b.getPainfulLymphadenitis());
         a.setBulgingFontanelle(b.getBulgingFontanelle());
         a.setMeningealSigns(b.getMeningealSigns());
+        a.setBloodPressureSystolic(b.getBloodPressureSystolic());
+        a.setBloodPressureDiastolic(b.getBloodPressureDiastolic());
+        a.setHeartRate(b.getHeartRate());
+        a.setPharyngealErythema(b.getPharyngealErythema());
+        a.setPharyngealExudate(b.getPharyngealExudate());
+        a.setOedemaFaceNeck(b.getOedemaFaceNeck());
+        a.setOedemaLowerExtremity(b.getOedemaLowerExtremity());
+        a.setLossSkinTurgor(b.getLossSkinTurgor());
+        a.setPalpableLiver(b.getPalpableLiver());
+        a.setPalpableSpleen(b.getPalpableSpleen());
+        a.setMalaise(b.getMalaise());
+        a.setSunkenEyesFontanelle(b.getSunkenEyesFontanelle());
+        a.setSidePain(b.getSidePain());
+        a.setFluidInLungCavity(b.getFluidInLungCavity());
+        a.setTremor(b.getTremor());
     }
 
     @Override
@@ -239,5 +254,20 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         a.setPainfulLymphadenitis(b.getPainfulLymphadenitis());
         a.setBulgingFontanelle(b.getBulgingFontanelle());
         a.setMeningealSigns(b.getMeningealSigns());
+        a.setBloodPressureSystolic(b.getBloodPressureSystolic());
+        a.setBloodPressureDiastolic(b.getBloodPressureDiastolic());
+        a.setHeartRate(b.getHeartRate());
+        a.setPharyngealErythema(b.getPharyngealErythema());
+        a.setPharyngealExudate(b.getPharyngealExudate());
+        a.setOedemaFaceNeck(b.getOedemaFaceNeck());
+        a.setOedemaLowerExtremity(b.getOedemaLowerExtremity());
+        a.setLossSkinTurgor(b.getLossSkinTurgor());
+        a.setPalpableLiver(b.getPalpableLiver());
+        a.setPalpableSpleen(b.getPalpableSpleen());
+        a.setMalaise(b.getMalaise());
+        a.setSunkenEyesFontanelle(b.getSunkenEyesFontanelle());
+        a.setSidePain(b.getSidePain());
+        a.setFluidInLungCavity(b.getFluidInLungCavity());
+        a.setTremor(b.getTremor());
     }
 }

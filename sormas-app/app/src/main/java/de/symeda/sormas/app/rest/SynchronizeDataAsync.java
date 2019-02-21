@@ -29,15 +29,11 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Callable;
 
-import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
-import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelper;
-import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteriaDao;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -52,7 +48,6 @@ import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 import de.symeda.sormas.app.backend.report.WeeklyReportDtoHelper;
-import de.symeda.sormas.app.backend.report.WeeklyReportEntryDtoHelper;
 import de.symeda.sormas.app.backend.sample.SampleDtoHelper;
 import de.symeda.sormas.app.backend.sample.SampleTestDtoHelper;
 import de.symeda.sormas.app.backend.task.TaskDtoHelper;
@@ -166,7 +161,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                 ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
 
                 syncFailed = true;
-                syncFailedMessage = DatabaseHelper.getContext().getString(R.string.sync_error);
+                syncFailedMessage = DatabaseHelper.getContext().getString(R.string.error_synchronization);
                 RetroProvider.disconnect();
             }
         }
@@ -422,8 +417,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
      * @param callback
      */
     public static ProgressDialog callWithProgressDialog(SyncMode syncMode, final Context context, final SyncCallback callback) {
-        final ProgressDialog progressDialog = ProgressDialog.show(context, context.getString(R.string.headline_synchronization),
-                context.getString(R.string.hint_synchronization), true);
+        final ProgressDialog progressDialog = ProgressDialog.show(context, context.getString(R.string.heading_synchronization),
+                context.getString(R.string.info_synchronizing), true);
 
         call(syncMode, context, new SyncCallback() {
             @Override

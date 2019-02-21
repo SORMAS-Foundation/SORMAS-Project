@@ -56,4 +56,12 @@ public interface OutbreakFacade {
 	 * @return The ended outbreak or null if none was active
 	 */
 	OutbreakDto endOutbreak(DistrictReferenceDto district, Disease disease);
+	
+	List<DashboardOutbreakDto> getOutbreaksForDashboard(
+			RegionReferenceDto regionRef,
+			DistrictReferenceDto districtRef, 
+			Disease disease,
+			Date from, 
+			Date to, 
+			String userUuid);
 }

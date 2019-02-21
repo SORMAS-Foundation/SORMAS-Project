@@ -22,6 +22,8 @@ import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -65,10 +67,10 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		addField(FacilityDto.CITY, TextField.class);
 		TextField latitude = addField(FacilityDto.LATITUDE, TextField.class);
 		latitude.setConverter(new StringToAngularLocationConverter());
-		latitude.setConversionError("Only geo coordinate values are allowed for " + latitude.getCaption());
+		latitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, latitude.getCaption()));
 		TextField longitude = addField(FacilityDto.LONGITUDE, TextField.class);
 		longitude.setConverter(new StringToAngularLocationConverter());
-		longitude.setConversionError("Only geo coordinate values are allowed for " + longitude.getCaption());
+		longitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, longitude.getCaption()));
 
 		name.setRequired(true);
 		if (!laboratory) {

@@ -33,6 +33,9 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.UserProvider;
@@ -43,8 +46,8 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	
-	private static final String FIRST_NAME = "firstName";
-	private static final String LAST_NAME = "lastName";
+	private static final String FIRST_NAME = PersonDto.FIRST_NAME;
+	private static final String LAST_NAME = PersonDto.LAST_NAME;
 	
     private static final String HTML_LAYOUT = 
 			LayoutUtil.fluidRowLocs(ContactDto.CAZE, ContactDto.LAST_CONTACT_DATE) +
@@ -105,7 +108,9 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     		}
     	}
     	if (getValue() != null) {
-	    	dateField.addValidator(new DateRangeValidator("Date of last contact has to be before date of report",
+	    	dateField.addValidator(new DateRangeValidator(I18nProperties.getValidationError(Validations.beforeDate, 
+	    			I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.LAST_CONTACT_DATE), 
+	    			I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.REPORT_DATE_TIME)),
 	    			null, new LocalDate(getValue().getReportDateTime()).toDate(), Resolution.SECOND));
     	}
     }

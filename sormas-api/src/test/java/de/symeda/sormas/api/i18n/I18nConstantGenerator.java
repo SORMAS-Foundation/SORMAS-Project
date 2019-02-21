@@ -4,8 +4,11 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.TreeSet;
 
 import org.junit.Test;
 
@@ -17,28 +20,43 @@ public class I18nConstantGenerator {
 	
 	@Test
 	public void generateI18nConstants() throws FileNotFoundException, IOException {
-		generateI18nConstantClass("captions.properties", "Captions");
-		generateI18nConstantClass("strings.properties", "Strings");
-		generateI18nConstantClass("validations.properties", "Validations");
+		generateI18nConstantClass("captions.properties", "Captions", false);
+		generateI18nConstantClass("strings.properties", "Strings", false);
+		generateI18nConstantClass("validations.properties", "Validations", false);
 	}
 	
-	private void generateI18nConstantClass(String propertiesFileName, String outputClassName) throws FileNotFoundException, IOException {
+	private void generateI18nConstantClass(String propertiesFileName, String outputClassName, boolean ignoreChildren) throws FileNotFoundException, IOException {
         Properties properties = new Properties();
         InputStream inputStream = I18nProperties.class.getClassLoader().getResourceAsStream(propertiesFileName);
-        if(null != inputStream ){
+        if (null != inputStream ){
             properties.load(inputStream);
         }
         
         Enumeration<?> e = properties.propertyNames();
-		String filePath = "src/main/java/de/symeda/sormas/api/i18n/"+outputClassName+".java";
+		String filePath = "src/main/java/de/symeda/sormas/api/i18n/" + outputClassName + ".java";
         FileWriter writer = new FileWriter(filePath, false);
         writer.write("package de.symeda.sormas.api.i18n;\n\n");
         writer.write("public interface " + outputClassName + " {\n\n");
+        
+        Collection<String> orderedKeys = new TreeSet<String>(new Comparator<String>() {
+            public int compare(String s1, String s2) {
+                return s1.compareToIgnoreCase(s2);
+            }
+        });
         while (e.hasMoreElements()) {
             String key = (String) e.nextElement();
-            String constant =  key.replaceAll("[\\.\\-]", "_");
-            writer.write("\tpublic static String "+constant+" = \""+key+"\";\n");
+            if (ignoreChildren 
+            		&& (key.contains(".") || key.contains("-") || key.contains("_"))) {
+            	continue;
+            }
+            orderedKeys.add(key);
         }
+
+        for (String key : orderedKeys) {
+	        String constant =  key.replaceAll("[\\.\\-]", "_");
+	        writer.write("\tpublic static String "+constant+" = \""+key+"\";\n");
+        }
+        
         writer.write(" }\n");
         writer.flush();      
         writer.close();

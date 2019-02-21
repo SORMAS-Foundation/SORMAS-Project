@@ -98,5 +98,7 @@ public class DashboardCaseDto implements Serializable {
 	public void setCauseOfDeathDisease(Disease causeOfDeathDisease) {
 		this.causeOfDeathDisease = causeOfDeathDisease;
 	}
-	
+	public Boolean wasFatal() {
+		return getCauseOfDeathDisease() == getDisease();
+	}
 }

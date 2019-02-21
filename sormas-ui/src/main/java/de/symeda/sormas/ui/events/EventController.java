@@ -36,6 +36,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -59,7 +60,7 @@ public class EventController {
 
 	public void create() {
 		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponent();
-		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, "Create new event");
+		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEvent));
 	}
 
 	public void navigateToIndex() {
@@ -112,7 +113,7 @@ public class EventController {
 				if(!eventCreateForm.getFieldGroup().isModified()) {
 					EventDto dto = eventCreateForm.getValue();
 					FacadeProvider.getEventFacade().saveEvent(dto);
-					Notification.show("New event created", Type.WARNING_MESSAGE);
+					Notification.show(I18nProperties.getString(Strings.messageEventCreated), Type.WARNING_MESSAGE);
 					navigateToParticipants(dto.getUuid());
 				}
 			}
@@ -133,8 +134,8 @@ public class EventController {
 				if(!eventEditForm.getFieldGroup().isModified()) {
 					EventDto eventDto = eventEditForm.getValue();
 					eventDto = FacadeProvider.getEventFacade().saveEvent(eventDto);
-					Notification.show("Event data saved", Type.WARNING_MESSAGE);
-					navigateToData(eventDto.getUuid());
+					Notification.show(I18nProperties.getString(Strings.messageEventSaved), Type.WARNING_MESSAGE);
+					SormasUI.refreshView();
 				}
 			}
 		});
@@ -146,7 +147,7 @@ public class EventController {
 					FacadeProvider.getEventFacade().deleteEvent(event.toReference(), UserProvider.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
 				}
-			}, I18nProperties.getString(Strings.event));
+			}, I18nProperties.getString(Strings.entityEvent));
 		}
 
 		// Initialize 'Archive' button
@@ -155,9 +156,9 @@ public class EventController {
 			Button archiveEventButton = new Button();
 			archiveEventButton.addStyleName(ValoTheme.BUTTON_LINK);
 			if (archived) {
-				archiveEventButton.setCaption(I18nProperties.getCaption("dearchive"));
+				archiveEventButton.setCaption(I18nProperties.getCaption(Captions.actionDearchive));
 			} else {
-				archiveEventButton.setCaption(I18nProperties.getCaption("archive"));
+				archiveEventButton.setCaption(I18nProperties.getCaption(Captions.actionArchive));
 			}
 			archiveEventButton.addClickListener(e -> {
 				editView.commit();
@@ -174,7 +175,8 @@ public class EventController {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void showBulkEventDataEditComponent(Collection<Object> selectedRows) {
 		if (selectedRows.size() == 0) {
-			new Notification("No events selected", "You have not selected any events.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(I18nProperties.getString(Strings.headingNoEventsSelected), 
+					I18nProperties.getString(Strings.messageNoEventsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 			return;
 		}
 
@@ -187,7 +189,7 @@ public class EventController {
 		form.setValue(tempEvent);
 		final CommitDiscardWrapperComponent<BulkEventDataForm> editView = new CommitDiscardWrapperComponent<BulkEventDataForm>(form, form.getFieldGroup());
 
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Edit events");
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditEvents));
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -206,7 +208,7 @@ public class EventController {
 				}
 				popupWindow.close();
 				navigateToIndex();
-				Notification.show("All events have been edited", Type.HUMANIZED_MESSAGE);
+				Notification.show(I18nProperties.getString(Strings.messageEventsEdited), Type.HUMANIZED_MESSAGE);
 			}
 		});
 
@@ -230,20 +232,20 @@ public class EventController {
 
 	private void archiveOrDearchiveEvent(String eventUuid, boolean archive) {
 		if (archive) {
-			Label contentLabel = new Label(String.format(I18nProperties.getString(Strings.archivePrompt), I18nProperties.getString(Strings.event).toLowerCase(), I18nProperties.getString(Strings.event).toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.archiveEvent), contentLabel, I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 640, e -> {
+			Label contentLabel = new Label(String.format(I18nProperties.getString(Strings.confirmationArchiveEvent), I18nProperties.getString(Strings.entityEvent).toLowerCase(), I18nProperties.getString(Strings.entityEvent).toLowerCase()));
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingArchiveEvent), contentLabel, I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 640, e -> {
 				if (e.booleanValue() == true) {
 					FacadeProvider.getEventFacade().archiveOrDearchiveEvent(eventUuid, true);
-					Notification.show(String.format(I18nProperties.getString(Strings.archiveNotification), I18nProperties.getString(Strings.event)), Type.ASSISTIVE_NOTIFICATION);
+					Notification.show(String.format(I18nProperties.getString(Strings.messageEventArchived), I18nProperties.getString(Strings.entityEvent)), Type.ASSISTIVE_NOTIFICATION);
 					navigateToData(eventUuid);
 				}
 			});
 		} else {
-			Label contentLabel = new Label(String.format(I18nProperties.getString(Strings.dearchivePrompt), I18nProperties.getString(Strings.event).toLowerCase(), I18nProperties.getString(Strings.event).toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.dearchiveEvent), contentLabel, I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 640, e -> {
+			Label contentLabel = new Label(String.format(I18nProperties.getString(Strings.confirmationDearchiveEvent), I18nProperties.getString(Strings.entityEvent).toLowerCase(), I18nProperties.getString(Strings.entityEvent).toLowerCase()));
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingDearchiveEvent), contentLabel, I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 640, e -> {
 				if (e.booleanValue()) {
 					FacadeProvider.getEventFacade().archiveOrDearchiveEvent(eventUuid, false);
-					Notification.show(String.format(I18nProperties.getString(Strings.dearchiveNotification), I18nProperties.getString(Strings.event)), Type.ASSISTIVE_NOTIFICATION);
+					Notification.show(String.format(I18nProperties.getString(Strings.messageEventDearchived), I18nProperties.getString(Strings.entityEvent)), Type.ASSISTIVE_NOTIFICATION);
 					navigateToData(eventUuid);
 				}
 			});
@@ -252,15 +254,17 @@ public class EventController {
 
 	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
-			new Notification("No events selected", "You have not selected any events.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(I18nProperties.getString(Strings.headingNoEventsSelected), 
+					I18nProperties.getString(Strings.messageNoEventsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected events?", new Runnable() {
+			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEvents), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
 						FacadeProvider.getEventFacade().deleteEvent(new EventReferenceDto(((EventIndexDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
-					new Notification("Events deleted", "All selected events have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+					new Notification(I18nProperties.getString(Strings.headingEventsDeleted), 
+							I18nProperties.getString(Strings.messageEventsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
 				}
 			});
 		}
@@ -269,15 +273,19 @@ public class EventController {
 
 	public void archiveAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
-			new Notification("No events selected", "You have not selected any events.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(I18nProperties.getString(Strings.headingNoEventsSelected), 
+					I18nProperties.getString(Strings.messageNoEventsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showConfirmationPopup("Confirm archiving", new Label("Are you sure you want to archive all " + selectedRows.size() + " selected events?"), "Yes", "No", null, e -> {
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingConfirmArchiving), 
+					new Label(String.format(I18nProperties.getString(Strings.confirmationArchiveEvents), selectedRows.size())), 
+					I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), null, e -> {
 				if (e.booleanValue() == true) {
 					for (Object selectedRow : selectedRows) {
 						FacadeProvider.getEventFacade().archiveOrDearchiveEvent(((EventIndexDto) selectedRow).getUuid(), true);
 					}
 					callback.run();
-					new Notification("Events archived", "All selected events have been archived.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+					new Notification(I18nProperties.getString(Strings.headingEventsArchived), 
+							I18nProperties.getString(Strings.messageEventsArchived), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
 				}
 			});
 		}
@@ -285,15 +293,19 @@ public class EventController {
 
 	public void dearchiveAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
-			new Notification("No events selected", "You have not selected any events.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(I18nProperties.getString(Strings.headingNoEventsSelected), 
+					I18nProperties.getString(Strings.messageNoEventsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showConfirmationPopup("Confirm de-archiving", new Label("Are you sure you want to de-archive all " + selectedRows.size() + " selected events?"), "Yes", "No", null, e -> {
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingConfirmDearchiving), 
+					new Label(String.format(I18nProperties.getString(Strings.confirmationDearchiveEvents), selectedRows.size())), 
+					I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), null, e -> {
 				if (e.booleanValue() == true) {
 					for (Object selectedRow : selectedRows) {
 						FacadeProvider.getEventFacade().archiveOrDearchiveEvent(((EventIndexDto) selectedRow).getUuid(), false);
 					}
 					callback.run();
-					new Notification("Events de-archived", "All selected events have been de-archived.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+					new Notification(I18nProperties.getString(Strings.headingEventsDearchived), 
+							I18nProperties.getString(Strings.messageEventsDearchived), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
 				}
 			});
 		}

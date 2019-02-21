@@ -37,6 +37,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -296,7 +298,7 @@ public class Event extends AbstractDomainObject {
 				? DataHelper.toStringNullable(getDisease())
 				: DataHelper.toStringNullable(getDiseaseDetails());
 		String eventTypeString = diseaseString.isEmpty() ? eventType.toString() : eventType.toString().toLowerCase();
-		return diseaseString + " " + eventTypeString + " on " + DateHelper.formatLocalDate(eventDate);
+		return diseaseString + " " + eventTypeString + " " + I18nProperties.getString(Strings.on) + " " + DateHelper.formatLocalDate(eventDate);
 	}
 
 	public Float getReportLatLonAccuracy() {

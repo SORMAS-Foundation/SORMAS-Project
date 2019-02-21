@@ -51,6 +51,10 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+
 
 public class CommitDiscardWrapperComponent<C extends Component> extends
 VerticalLayout implements Buffered {
@@ -320,7 +324,7 @@ VerticalLayout implements Buffered {
 	 */
 	public Button getCommitButton() {
 		if (commitButton == null) {
-			commitButton = new Button("save");
+			commitButton = new Button(I18nProperties.getCaption(Captions.actionSave));
 			commitButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 
 			commitButton.addClickListener(new ClickListener() { 
@@ -342,7 +346,7 @@ VerticalLayout implements Buffered {
 	 */
 	public Button getDiscardButton() {
 		if (discardButton == null) {
-			discardButton = new Button("discard");
+			discardButton = new Button(I18nProperties.getCaption(Captions.actionDiscard));
 
 			discardButton.addClickListener(new ClickListener() {
 				private static final long serialVersionUID = 1L;
@@ -357,13 +361,13 @@ VerticalLayout implements Buffered {
 
 	public Button getDeleteButton(String entityName) {
 		if (deleteButton == null) {
-			deleteButton = new Button("delete");
+			deleteButton = new Button(I18nProperties.getCaption(Captions.actionDelete));
 			CssStyles.style(deleteButton, ValoTheme.BUTTON_DANGER, CssStyles.BUTTON_BORDER_NEUTRAL);
 			deleteButton.addClickListener(new ClickListener() {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public void buttonClick(ClickEvent event) {
-					VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete this " + entityName + "? This action can not be reversed.", new Runnable() {
+					VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName), new Runnable() {
 						public void run() {
 							onDelete();
 						}
@@ -492,7 +496,7 @@ VerticalLayout implements Buffered {
 				}
 			}
 
-			new Notification("Please check the input data", htmlMsg.toString(), Type.ERROR_MESSAGE, true).show(Page.getCurrent());
+			new Notification(I18nProperties.getString(Strings.messageCheckInputData), htmlMsg.toString(), Type.ERROR_MESSAGE, true).show(Page.getCurrent());
 		} 
 	}
 

@@ -31,6 +31,8 @@ import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -237,7 +239,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         if (contentBinding.getData().getClassificationDate() != null && contentBinding.getData().getClassificationUser() == null) {
             contentBinding.caseDataClassificationUser.setVisibility(GONE);
             contentBinding.caseDataClassifiedBy.setVisibility(VISIBLE);
-            contentBinding.caseDataClassifiedBy.setValue("System");
+            contentBinding.caseDataClassifiedBy.setValue(I18nProperties.getCaption(Captions.system));
         }
     }
 

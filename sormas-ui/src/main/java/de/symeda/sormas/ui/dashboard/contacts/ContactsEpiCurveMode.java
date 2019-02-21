@@ -15,14 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.dashboard.surveillance;
+package de.symeda.sormas.ui.dashboard.contacts;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public enum EpiCurveSurveillanceMode {
+public enum ContactsEpiCurveMode {
 	
-	CASE_STATUS,
-	ALIVE_OR_DEAD;
+	FOLLOW_UP_STATUS,
+	CONTACT_CLASSIFICATION,
+	FOLLOW_UP_UNTIL;	
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

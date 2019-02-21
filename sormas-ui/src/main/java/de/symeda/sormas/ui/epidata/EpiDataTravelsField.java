@@ -22,8 +22,10 @@ import java.util.function.Consumer;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.caze.AbstractTableField;
@@ -35,7 +37,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 @SuppressWarnings("serial")
 public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 
-	private static final String PERIOD = "period";
+	private static final String PERIOD = Captions.EpiDataTravel_travelPeriod;
 	
 	@Override
 	public Class<EpiDataTravelDto> getEntryType() {
@@ -51,7 +53,7 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataTravelDto travel = (EpiDataTravelDto) itemId;
 				if (travel.getTravelDateFrom() == null && travel.getTravelDateTo() == null) {
-					return "Unknown";
+					return I18nProperties.getString(Strings.unknown);
 				} else {
 					StringBuilder periodBuilder = new StringBuilder();
 					periodBuilder.append(travel.getTravelDateFrom() != null ? DateHelper.formatLocalDate(travel.getTravelDateFrom()) : "?");
@@ -103,9 +105,9 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 		editForm.setValue(entry);
 		
 		final CommitDiscardWrapperComponent<EpiDataTravelEditForm> editView = new CommitDiscardWrapperComponent<EpiDataTravelEditForm>(editForm, editForm.getFieldGroup());
-		editView.getCommitButton().setCaption("done");
+		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 		
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Travel");
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.entityTravel));
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -123,7 +125,7 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 					popupWindow.close();
 					EpiDataTravelsField.this.removeEntry(entry);
 				}
-			}, I18nProperties.getCaption("EpiDataTravel"));
+			}, I18nProperties.getCaption(EpiDataTravelDto.I18N_PREFIX));
 		}
 	}
 	

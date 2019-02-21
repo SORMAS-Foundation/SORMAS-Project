@@ -84,7 +84,7 @@ public class SormasErrorHandler implements ErrorHandler {
 	    if (component != null) {
 	        // Shows the error in AbstractComponent
 	        if (errorMessage instanceof SystemError) {
-        		Notification.show(I18nProperties.getString(Strings.errorTitle, "An error has occurred"), I18nProperties.getString(Strings.errorWasReported), Notification.Type.ERROR_MESSAGE);
+        		Notification.show(I18nProperties.getString(Strings.errorOccurred, I18nProperties.getString(Strings.errorOccurred)), I18nProperties.getString(Strings.errorWasReported), Notification.Type.ERROR_MESSAGE);
 	        } else {
 	        	
 	        	// to prevent the original message from appearing, if necessary
@@ -92,7 +92,7 @@ public class SormasErrorHandler implements ErrorHandler {
 	        		((AbstractField<?>)component).setCurrentBufferedSourceException(null);
 	        	}
 	        	
-	        	Notification notification = new Notification(I18nProperties.getString(Strings.warningTitle, "A problem has occurred"), errorMessage.getFormattedHtmlMessage(), Notification.Type.WARNING_MESSAGE, true);
+	        	Notification notification = new Notification(I18nProperties.getString(Strings.errorProblemOccurred, I18nProperties.getString(Strings.errorProblemOccurred)), errorMessage.getFormattedHtmlMessage(), Notification.Type.WARNING_MESSAGE, true);
 	        	notification.setDelayMsec(-1);
 	        	notification.show(Page.getCurrent());
 	        	component.setComponentError(errorMessage);
@@ -138,7 +138,7 @@ public class SormasErrorHandler implements ErrorHandler {
         	if (rootCause instanceof ValidationRuntimeException) {
         		LocalUserError error;
         		if (rootCause instanceof OutdatedEntityException) {
-	        		error = new LocalUserError(I18nProperties.getString(Strings.entityOutdated), 
+	        		error = new LocalUserError(I18nProperties.getString(Strings.errorEntityOutdated), 
 	                        ContentMode.HTML, ErrorLevel.WARNING);
         		} else {
 	        		error = new LocalUserError(rootCause.getMessage(),
@@ -149,7 +149,7 @@ public class SormasErrorHandler implements ErrorHandler {
         	else {
 	            String message = t.getMessage();
 	            if (message == null) {
-	            	message = "An error has occurred"; 
+	            	message = I18nProperties.getString(Strings.errorOccurred); 
 	            }
 				return new SystemError(message);
         	}

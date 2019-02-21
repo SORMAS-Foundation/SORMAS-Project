@@ -26,6 +26,8 @@ import com.vaadin.ui.OptionGroup;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -76,11 +78,11 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseDataDto> {
 			return;
 		}
 		
-		classificationCheckBox = new CheckBox("Change case classification");
+		classificationCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkCaseClassification));
 		getContent().addComponent(classificationCheckBox, CLASSIFICATION_CHECKBOX);
-		investigationStatusCheckBox = new CheckBox("Change investigation status");
+		investigationStatusCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkInvestigationStatus));
 		getContent().addComponent(investigationStatusCheckBox, INVESTIGATION_STATUS_CHECKBOX);
-		outcomeCheckBox = new CheckBox("Change case outcome");
+		outcomeCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkCaseOutcome));
 		getContent().addComponent(outcomeCheckBox, OUTCOME_CHECKBOX);
 		OptionGroup caseClassification = addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
 		caseClassification.setEnabled(false);
@@ -90,7 +92,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseDataDto> {
 		outcome.setEnabled(false);
 		
 		if (singleSelectedDistrict != null) {
-			surveillanceOfficerCheckBox = new CheckBox("Change surveillance officer");
+			surveillanceOfficerCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkSurveillanceOfficer));
 			getContent().addComponent(surveillanceOfficerCheckBox, SURVEILLANCE_OFFICER_CHECKBOX);
 			ComboBox surveillanceOfficer = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
 			surveillanceOfficer.setEnabled(false);

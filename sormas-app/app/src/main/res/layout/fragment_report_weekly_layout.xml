@@ -72,9 +72,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        app:description="@string/desc_report_year"
-                        app:hint="@string/hint_report_year"
-                        app:labelCaption="@string/label_report_year" />
+                        app:description="@string/description_year"
+                        app:hint="@string/hint_select_year"
+                        app:labelCaption="@string/caption_year" />
 
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/weeklyReport_epiWeek"
@@ -82,9 +82,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/control_spacing"
                         android:layout_weight="2"
-                        app:description="@string/desc_report_epi_week"
-                        app:hint="@string/hint_report_epi_week"
-                        app:labelCaption="@string/label_report_epi_week" />
+                        app:description="@string/description_epi_week"
+                        app:hint="@string/hint_select_epi_week"
+                        app:labelCaption="@string/caption_epi_week" />
 
                 </LinearLayout>
 

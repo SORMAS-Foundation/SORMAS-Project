@@ -72,6 +72,7 @@ import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
@@ -104,6 +105,8 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
@@ -241,7 +244,9 @@ public class CaseFacadeEjb implements CaseFacade {
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private TherapyFacadeEjbLocal therapyFacade;
-
+	@EJB
+	private ClinicalCourseFacadeEjbLocal clinicalCourseFacade;
+	
 	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
 
 	@Override
@@ -427,13 +432,47 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<DashboardCaseDto> getNewCasesForDashboard(RegionReferenceDto regionRef,
-			DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
-		Region region = regionService.getByReferenceDto(regionRef);
-		District district = districtService.getByReferenceDto(districtRef);
+	public List<DashboardCaseDto> getCasesForDashboard(CaseCriteria caseCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
-		return caseService.getNewCasesForDashboard(region, district, disease, from, to, user);
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<DashboardCaseDto> cq = cb.createQuery(DashboardCaseDto.class);
+		Root<Case> caze = cq.from(Case.class);
+		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
+		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
+
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
+		Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
+		if (filter != null) {
+			filter = cb.and(filter, criteriaFilter);
+		} else {
+			filter = criteriaFilter;
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		List<DashboardCaseDto> result;
+		if (filter != null) {
+			cq.where(filter);
+			cq.multiselect(
+					caze.get(Case.REPORT_DATE),
+					symptoms.get(Symptoms.ONSET_DATE),
+					caze.get(Case.RECEPTION_DATE),
+					caze.get(Case.CASE_CLASSIFICATION),
+					caze.get(Case.DISEASE),
+					caze.get(Case.INVESTIGATION_STATUS),
+					person.get(Person.PRESENT_CONDITION),
+					person.get(Person.CAUSE_OF_DEATH_DISEASE)
+					);
+
+			result = em.createQuery(cq).getResultList();
+		} else {
+			result = Collections.emptyList();
+		}
+
+		return result;
 	}
 
 	@Override
@@ -490,18 +529,93 @@ public class CaseFacadeEjb implements CaseFacade {
 				.collect(Collectors.toList());
 	}
 
-	@Override
-	public Map<CaseClassification, Long> getNewCaseCountPerClassification(CaseCriteria caseCriteria, String userUuid) {
+
+	public Map<CaseClassification, Long> getCaseCountPerClassification(CaseCriteria caseCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
-		return caseService.getNewCaseCountPerClassification(caseCriteria, user);
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Case> caze = cq.from(Case.class);
+
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
+		Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
+		if (filter != null) {
+			filter = cb.and(filter, criteriaFilter);
+		} else {
+			filter = criteriaFilter;
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.groupBy(caze.get(Case.CASE_CLASSIFICATION));
+		cq.multiselect(caze.get(Case.CASE_CLASSIFICATION), cb.count(caze));
+		List<Object[]> results = em.createQuery(cq).getResultList();
+
+		Map<CaseClassification, Long> resultMap = results.stream().collect(
+				Collectors.toMap(e -> (CaseClassification) e[0], e -> (Long) e[1]));
+		return resultMap;
+	}
+
+	public Map<PresentCondition, Long> getCaseCountPerPersonCondition(CaseCriteria caseCriteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Case> caze = cq.from(Case.class);
+		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
+
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
+		Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
+		if (filter != null) {
+			filter = cb.and(filter, criteriaFilter);
+		} else {
+			filter = criteriaFilter;
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.groupBy(person.get(Person.PRESENT_CONDITION));
+		cq.multiselect(person.get(Person.PRESENT_CONDITION), cb.count(caze));
+		List<Object[]> results = em.createQuery(cq).getResultList();
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																	
+		
+		Map<PresentCondition, Long> resultMap = results.stream().collect(
+				Collectors.toMap(e -> (PresentCondition) e[0], e -> (Long) e[1]));
+		return resultMap;
 	}
 
 	@Override
-	public Map<PresentCondition, Long> getNewCaseCountPerPersonCondition(CaseCriteria caseCriteria, String userUuid) {
+	public Map<Disease, Long> getCaseCountPerDisease(CaseCriteria caseCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
-		return caseService.getNewCaseCountPerPersonCondition(caseCriteria, user);
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Case> caze = cq.from(Case.class);
+
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
+		Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
+		if (filter != null) {
+			filter = cb.and(filter, criteriaFilter);
+		} else {
+			filter = criteriaFilter;
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.groupBy(caze.get(Case.DISEASE));
+		cq.multiselect(caze.get(Case.DISEASE), cb.count(caze));
+		List<Object[]> results = em.createQuery(cq).getResultList();
+
+		Map<Disease, Long> resultMap = results.stream().collect(
+				Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
+		
+		return resultMap;
 	}
 
 	@Override
@@ -535,45 +649,35 @@ public class CaseFacadeEjb implements CaseFacade {
 		// Check whether any required field that does not have a not null constraint in
 		// the database is empty
 		if (caze.getRegion() == null) {
-			throw new ValidationRuntimeException("You have to specify a valid region");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
 		}
 		if (caze.getDistrict() == null) {
-			throw new ValidationRuntimeException("You have to specify a valid district");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 		}
 		if (caze.getHealthFacility() == null) {
-			throw new ValidationRuntimeException("You have to specify a valid health facility");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validFacility));
 		}
 		if (caze.getDisease() == null) {
-			throw new ValidationRuntimeException("You have to specify a valid disease");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDisease));
 		}
 		// Check whether there are any infrastructure errors
 		if (!districtFacade.getDistrictByUuid(caze.getDistrict().getUuid()).getRegion().equals(caze.getRegion())) {
-			throw new ValidationRuntimeException(
-					"Could not find a database entry for the specified district in the specified region");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noDistrictInRegion));
 		}
 		if (caze.getCommunity() != null && !communityFacade.getByUuid(caze.getCommunity().getUuid()).getDistrict().equals(caze.getDistrict())) {
-			throw new ValidationRuntimeException(
-					"Could not find a database entry for the specified community in the specified district");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noCommunityInDistrict));
 		}
 		if (caze.getCommunity() == null && facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getDistrict() != null
 				&& !facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getDistrict().equals(caze.getDistrict())) {
-			throw new ValidationRuntimeException(
-					"Could not find a database entry for the specified health facility in the specified district");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityInDistrict));
 		}
 		if (caze.getCommunity() != null && facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getCommunity() != null
 				&& !caze.getCommunity().equals(facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getCommunity())) {
-			throw new ValidationRuntimeException(
-					"Could not find a database entry for the specified health facility in the specified community");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityInCommunity));
 		}
 		if (facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getRegion() != null
 				&& !caze.getRegion().equals(facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getRegion())) {
-			throw new ValidationRuntimeException(
-					"Could not find a database entry for the specified health facility in the specified region");
-		}
-		if (facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getRegion() != null
-				&& !caze.getRegion().equals(facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getRegion())) {
-			throw new ValidationRuntimeException(
-					"Could not find a database entry for the specified health facility in the specified region");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityInRegion));
 		}
 	}
 
@@ -852,6 +956,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (source.getTherapy() != null) {
 			target.setTherapy(therapyFacade.fromDto(source.getTherapy()));
 		}
+		if (source.getClinicalCourse() != null) {
+			target.setClinicalCourse(clinicalCourseFacade.fromDto(source.getClinicalCourse()));
+		}
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
@@ -879,6 +986,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setOutcome(source.getOutcome());
 		target.setOutcomeDate(source.getOutcomeDate());
+		target.setSequelae(source.getSequelae());
+		target.setSequelaeDetails(source.getSequelaeDetails());
 
 		return target;
 	}
@@ -913,6 +1022,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (source.getTherapy() != null) {
 			target.setTherapy(TherapyFacadeEjb.toDto(source.getTherapy()));
 		}
+		if (source.getClinicalCourse() != null) {
+			target.setClinicalCourse(ClinicalCourseFacadeEjb.toDto(source.getClinicalCourse()));
+		}
 
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
@@ -945,6 +1057,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setOutcome(source.getOutcome());
 		target.setOutcomeDate(source.getOutcomeDate());
+		target.setSequelae(source.getSequelae());
+		target.setSequelaeDetails(source.getSequelaeDetails());
 
 		return target;
 	}

@@ -34,6 +34,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.highcharts.HighChart;
@@ -55,17 +58,20 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 
 	public AbstractEpiCurveComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
+		setSizeFull();
 		epiCurveChart = new HighChart();
 		epiCurveChart.setSizeFull();
+		//epiCurveChart.setHeight(0, Unit.PIXELS);
 		epiCurveGrouping = EpiCurveGrouping.WEEK;
 		showMinimumEntries = true;
 		this.setMargin(true);
 
 		addComponent(createHeader());
 		addComponent(epiCurveChart);
+		addComponent(createFooter());
 		setExpandRatio(epiCurveChart, 1);
 
-		clearAndFillEpiCurveChart();
+		//clearAndFillEpiCurveChart();
 	}
 
 	public void setExpandListener(ClickListener listener) {
@@ -82,58 +88,18 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 		epiCurveHeaderLayout.setSpacing(true);
 		CssStyles.style(epiCurveHeaderLayout, CssStyles.VSPACE_4);
 
-		epiCurveLabel = new Label("Epidemiological Curve");
+		epiCurveLabel = new Label(I18nProperties.getString(Strings.headingEpiCurve));
 		epiCurveLabel.setSizeUndefined();
 		CssStyles.style(epiCurveLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
-		
+
 		epiCurveHeaderLayout.addComponent(epiCurveLabel);
 		epiCurveHeaderLayout.setComponentAlignment(epiCurveLabel, Alignment.BOTTOM_LEFT);
 		epiCurveHeaderLayout.setExpandRatio(epiCurveLabel, 1);
 
-		// Grouping
-		PopupButton groupingDropdown = new PopupButton("Grouping");
-		CssStyles.style(groupingDropdown, CssStyles.BUTTON_SUBTLE);
-		{
-			VerticalLayout groupingLayout = new VerticalLayout();
-			groupingLayout.setMargin(true);
-			groupingLayout.setSizeUndefined();
-			groupingDropdown.setContent(groupingLayout);
-
-			// Grouping option group
-			OptionGroup groupingSelect = new OptionGroup();
-			groupingSelect.setWidth(100, Unit.PERCENTAGE);
-			groupingSelect.addItems((Object[]) EpiCurveGrouping.values());
-			groupingSelect.setValue(epiCurveGrouping);
-			groupingSelect.addValueChangeListener(e -> {
-				epiCurveGrouping = (EpiCurveGrouping) e.getProperty().getValue();
-				clearAndFillEpiCurveChart();
-			});
-			groupingLayout.addComponent(groupingSelect);
-
-			// "Always show at least 7 entries" checkbox
-			CheckBox minimumEntriesCheckbox = new CheckBox("Always show at least 7 entries");
-			CssStyles.style(minimumEntriesCheckbox, CssStyles.VSPACE_NONE);
-			minimumEntriesCheckbox.setValue(showMinimumEntries);
-			minimumEntriesCheckbox.addValueChangeListener(e -> {
-				showMinimumEntries = (boolean) e.getProperty().getValue();
-				clearAndFillEpiCurveChart();
-			});
-			groupingLayout.addComponent(minimumEntriesCheckbox);
-
-			groupingDropdown.setContent(groupingLayout);
-		}
-		epiCurveHeaderLayout.addComponent(groupingDropdown);
-		epiCurveHeaderLayout.setComponentAlignment(groupingDropdown, Alignment.MIDDLE_RIGHT);
-
-		// Epi curve mode
-		AbstractComponent epiCurveModeSelector = createEpiCurveModeSelector();
-		epiCurveHeaderLayout.addComponent(epiCurveModeSelector);
-		epiCurveHeaderLayout.setComponentAlignment(epiCurveModeSelector, Alignment.MIDDLE_RIGHT);
-
 		// "Expand" and "Collapse" buttons
 		Button expandEpiCurveButton = new Button("", FontAwesome.EXPAND);
 		CssStyles.style(expandEpiCurveButton, CssStyles.BUTTON_SUBTLE);
-		expandEpiCurveButton.addStyleName(CssStyles.VSPACE_NONE);   
+		expandEpiCurveButton.addStyleName(CssStyles.VSPACE_NONE);
 		Button collapseEpiCurveButton = new Button("", FontAwesome.COMPRESS);
 		CssStyles.style(collapseEpiCurveButton, CssStyles.BUTTON_SUBTLE);
 		collapseEpiCurveButton.addStyleName(CssStyles.VSPACE_NONE);
@@ -155,13 +121,66 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 
 		return epiCurveHeaderLayout;
 	}
-	
+
+	private HorizontalLayout createFooter() {
+		HorizontalLayout epiCurveFooterLayout = new HorizontalLayout();
+		epiCurveFooterLayout.setWidth(100, Unit.PERCENTAGE);
+		epiCurveFooterLayout.setSpacing(true);
+		CssStyles.style(epiCurveFooterLayout, CssStyles.VSPACE_4);
+
+		// Grouping
+		PopupButton groupingDropdown = new PopupButton(I18nProperties.getCaption(Captions.dashboardGrouping));
+		CssStyles.style(groupingDropdown, CssStyles.BUTTON_SUBTLE);
+		{
+			VerticalLayout groupingLayout = new VerticalLayout();
+			groupingLayout.setMargin(true);
+			groupingLayout.setSizeUndefined();
+			groupingDropdown.setContent(groupingLayout);
+
+			// Grouping option group
+			OptionGroup groupingSelect = new OptionGroup();
+			groupingSelect.setWidth(100, Unit.PERCENTAGE);
+			groupingSelect.addItems((Object[]) EpiCurveGrouping.values());
+			groupingSelect.setValue(epiCurveGrouping);
+			groupingSelect.addValueChangeListener(e -> {
+				epiCurveGrouping = (EpiCurveGrouping) e.getProperty().getValue();
+				clearAndFillEpiCurveChart();
+			});
+			groupingLayout.addComponent(groupingSelect);
+
+			// "Always show at least 7 entries" checkbox
+			CheckBox minimumEntriesCheckbox = new CheckBox(I18nProperties.getCaption(Captions.dashboardShowMinimumEntries));
+			CssStyles.style(minimumEntriesCheckbox, CssStyles.VSPACE_NONE);
+			minimumEntriesCheckbox.setValue(showMinimumEntries);
+			minimumEntriesCheckbox.addValueChangeListener(e -> {
+				showMinimumEntries = (boolean) e.getProperty().getValue();
+				clearAndFillEpiCurveChart();
+			});
+			groupingLayout.addComponent(minimumEntriesCheckbox);
+
+			groupingDropdown.setContent(groupingLayout);
+		}
+		epiCurveFooterLayout.addComponent(groupingDropdown);
+		epiCurveFooterLayout.setComponentAlignment(groupingDropdown, Alignment.MIDDLE_RIGHT);
+		epiCurveFooterLayout.setExpandRatio(groupingDropdown, 1);
+		
+		// Epi curve mode
+		AbstractComponent epiCurveModeSelector = createEpiCurveModeSelector();
+		epiCurveFooterLayout.addComponent(epiCurveModeSelector);
+		epiCurveFooterLayout.setComponentAlignment(epiCurveModeSelector, Alignment.MIDDLE_RIGHT);
+		epiCurveFooterLayout.setExpandRatio(epiCurveModeSelector, 0);
+		
+		return epiCurveFooterLayout;
+	}
+
 	protected abstract AbstractComponent createEpiCurveModeSelector();
+
 	public abstract void clearAndFillEpiCurveChart();
 
 	/**
-	 * Builds a list that contains an object for each day, week or month between the from and to dates. 
-	 * Additional previous days, weeks or months might be added when showMinimumEntries is true.
+	 * Builds a list that contains an object for each day, week or month between the
+	 * from and to dates. Additional previous days, weeks or months might be added
+	 * when showMinimumEntries is true.
 	 */
 	protected List<Date> buildListOfFilteredDates() {
 		List<Date> filteredDates = new ArrayList<>();

@@ -108,25 +108,25 @@ public final class TimeAgo {
                 case XHOURS_PAST:
                     int hours = Math.round(dim / 60);
                     final String xHoursText = handlePeriodKeyAsPlural(resources,
-                            R.string.timeago_aboutanhour_past, periodKey, hours);
+                            R.string.time_past_one_hour, periodKey, hours);
                     timeAgo.append(xHoursText);
                     break;
                 case XDAYS_PAST:
                     int days = Math.round(dim / 1440);
                     final String xDaysText = handlePeriodKeyAsPlural(resources,
-                            R.string.timeago_oneday_past, periodKey, days);
+                            R.string.time_past_one_day, periodKey, days);
                     timeAgo.append(xDaysText);
                     break;
                 case XWEEKS_PAST:
                     int weeks = Math.round(dim / 7560);
                     final String xWeeksText = handlePeriodKeyAsPlural(resources,
-                            R.string.timeago_oneweek_past, periodKey, weeks);
+                            R.string.time_past_one_week, periodKey, weeks);
                     timeAgo.append(xWeeksText);
                     break;
                 case XMONTHS_PAST:
                     int months = Math.round(dim / 43200);
                     final String xMonthsText = handlePeriodKeyAsPlural(resources,
-                            R.string.timeago_aboutamonth_past, periodKey, months);
+                            R.string.time_past_one_month, periodKey, months);
                     timeAgo.append(xMonthsText);
                     break;
                 case XYEARS_PAST:
@@ -139,28 +139,28 @@ public final class TimeAgo {
                 case XHOURS_FUTURE:
                     int hours1 = Math.abs(Math.round(dim / 60f));
                     final String yHoursText = hours1 == 24
-                            ? resources.getPropertyValue(R.string.timeago_oneday_future)
-                            : handlePeriodKeyAsPlural(resources, R.string.timeago_aboutanhour_future,
+                            ? resources.getPropertyValue(R.string.time_future_one_day)
+                            : handlePeriodKeyAsPlural(resources, R.string.time_future_one_hour,
                             periodKey, hours1);
                     timeAgo.append(yHoursText);
                     break;
                 case XDAYS_FUTURE:
                     int days1 = Math.abs(Math.round(dim / 1440f));
                     final String yDaysText = handlePeriodKeyAsPlural(resources,
-                            R.string.timeago_oneday_future, periodKey, days1);
+                            R.string.time_future_one_day, periodKey, days1);
                     timeAgo.append(yDaysText);
                     break;
                 case XWEEKS_FUTURE:
                     int weeks1 = Math.abs(Math.round(dim / 7560f));
                     final String yWeeksText = handlePeriodKeyAsPlural(resources,
-                            R.string.timeago_oneweek_future, periodKey, weeks1);
+                            R.string.time_future_one_week, periodKey, weeks1);
                     timeAgo.append(yWeeksText);
                 case XMONTHS_FUTURE:
                     int months1 = Math.abs(Math.round(dim / 43200f));
                     final String yMonthsText = months1 == 12
-                            ? resources.getPropertyValue(R.string.timeago_aboutayear_future)
+                            ? resources.getPropertyValue(R.string.time_future_one_year)
                             : handlePeriodKeyAsPlural(resources,
-                            R.string.timeago_aboutamonth_future, periodKey, months1);
+                            R.string.time_future_one_month, periodKey, months1);
                     timeAgo.append(yMonthsText);
                     break;
                 case XYEARS_FUTURE:
@@ -211,175 +211,175 @@ public final class TimeAgo {
      */
     private enum Periods {
 
-        NOW(R.string.timeago_now, new DistancePredicate() {
+        NOW(R.string.time_now, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance == 0;
             }
         }),
-        ONEMINUTE_PAST(R.string.timeago_oneminute_past, new DistancePredicate() {
+        ONEMINUTE_PAST(R.string.time_past_one_minute, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance == 1;
             }
         }),
-        XMINUTES_PAST(R.string.timeago_xminutes_past, new DistancePredicate() {
+        XMINUTES_PAST(R.string.time_past_x_minutes, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance >= 2 && distance <= 44;
             }
         }),
-        ABOUTANHOUR_PAST(R.string.timeago_aboutanhour_past, new DistancePredicate() {
+        ABOUTANHOUR_PAST(R.string.time_past_one_hour, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance >= 45 && distance <= 89;
             }
         }),
-        XHOURS_PAST(R.string.timeago_xhours_past, new DistancePredicate() {
+        XHOURS_PAST(R.string.time_past_x_hours, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance >= 90 && distance <= 1439;
             }
         }),
-        ONEDAY_PAST(R.string.timeago_oneday_past, new DistancePredicate() {
+        ONEDAY_PAST(R.string.time_past_one_day, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance >= 1440 && distance <= 2519;
             }
         }),
-        XDAYS_PAST(R.string.timeago_xdays_past, new DistancePredicate() {
+        XDAYS_PAST(R.string.time_past_x_days, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance >= 2520 && distance <= 7559;
             }
         }),
-        ONEWEEK_PAST(R.string.timeago_oneweek_past, new DistancePredicate() {
+        ONEWEEK_PAST(R.string.time_past_one_week, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance >= 7560 && distance <= 14918;
             }
         }),
-        XWEEKS_PAST(R.string.timeago_xweeks_past, new DistancePredicate() {
+        XWEEKS_PAST(R.string.time_past_x_weeks, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance >= 14919 && distance <= 43199;
             }
         }),
-        ABOUTAMONTH_PAST(R.string.timeago_aboutamonth_past, new DistancePredicate() {
+        ABOUTAMONTH_PAST(R.string.time_past_one_month, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance >= 43200 && distance <= 86399;
             }
         }),
-        XMONTHS_PAST(R.string.timeago_xmonths_past, new DistancePredicate() {
+        XMONTHS_PAST(R.string.time_past_x_months, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance >= 86400 && distance <= 525599;
             }
         }),
-        ABOUTAYEAR_PAST(R.string.timeago_aboutayear_past, new DistancePredicate() {
+        ABOUTAYEAR_PAST(R.string.time_past_one_year, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance >= 525600 && distance <= 655199;
             }
         }),
-        OVERAYEAR_PAST(R.string.timeago_overayear_past, new DistancePredicate() {
+        OVERAYEAR_PAST(R.string.time_past_over_one_year, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance >= 655200 && distance <= 914399;
             }
         }),
-        ALMOSTTWOYEARS_PAST(R.string.timeago_almosttwoyears_past, new DistancePredicate() {
+        ALMOSTTWOYEARS_PAST(R.string.time_past_almost_two_years, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance >= 914400 && distance <= 1051199;
             }
         }),
-        XYEARS_PAST(R.string.timeago_xyears_past, new DistancePredicate() {
+        XYEARS_PAST(R.string.time_past_x_years, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return Math.round(distance / 525600) > 1;
             }
         }),
-        ONEMINUTE_FUTURE(R.string.timeago_oneminute_future, new DistancePredicate() {
+        ONEMINUTE_FUTURE(R.string.time_future_one_minute, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance == -1;
             }
         }),
-        XMINUTES_FUTURE(R.string.timeago_xminutes_future, new DistancePredicate() {
+        XMINUTES_FUTURE(R.string.time_future_x_minutes, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance <= -2 && distance >= -44;
             }
         }),
-        ABOUTANHOUR_FUTURE(R.string.timeago_aboutanhour_future, new DistancePredicate() {
+        ABOUTANHOUR_FUTURE(R.string.time_future_one_hour, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance <= -45 && distance >= -89;
             }
         }),
-        XHOURS_FUTURE(R.string.timeago_xhours_future, new DistancePredicate() {
+        XHOURS_FUTURE(R.string.time_future_x_hours, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance <= -90 && distance >= -1439;
             }
         }),
-        ONEDAY_FUTURE(R.string.timeago_oneday_future, new DistancePredicate() {
+        ONEDAY_FUTURE(R.string.time_future_one_day, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance <= -1440 && distance >= -2519;
             }
         }),
-        XDAYS_FUTURE(R.string.timeago_xdays_future, new DistancePredicate() {
+        XDAYS_FUTURE(R.string.time_future_x_days, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance <= -2520 && distance >= -7559;
             }
         }),
-        ONEWEEK_FUTURE(R.string.timeago_oneweek_future, new DistancePredicate() {
+        ONEWEEK_FUTURE(R.string.time_future_one_week, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance >= -7560 && distance <= -14918;
             }
         }),
-        XWEEKS_FUTURE(R.string.timeago_xweeks_future, new DistancePredicate() {
+        XWEEKS_FUTURE(R.string.time_future_x_weeks, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance >= -14919 && distance <= -43199;
             }
         }),
-        ABOUTAMONTH_FUTURE(R.string.timeago_aboutamonth_future, new DistancePredicate() {
+        ABOUTAMONTH_FUTURE(R.string.time_future_one_month, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance <= -43200 && distance >= -86399;
             }
         }),
-        XMONTHS_FUTURE(R.string.timeago_xmonths_future, new DistancePredicate() {
+        XMONTHS_FUTURE(R.string.time_future_x_months, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance <= -86400 && distance >= -525599;
             }
         }),
-        ABOUTAYEAR_FUTURE(R.string.timeago_aboutayear_future, new DistancePredicate() {
+        ABOUTAYEAR_FUTURE(R.string.time_future_one_year, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance <= -525600 && distance >= -655199;
             }
         }),
-        OVERAYEAR_FUTURE(R.string.timeago_overayear_future, new DistancePredicate() {
+        OVERAYEAR_FUTURE(R.string.time_future_over_one_year, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance <= -655200 && distance >= -914399;
             }
         }),
-        ALMOSTTWOYEARS_FUTURE(R.string.timeago_almosttwoyears_future, new DistancePredicate() {
+        ALMOSTTWOYEARS_FUTURE(R.string.time_future_almost_two_years, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return distance <= -914400 && distance >= -1051199;
             }
         }),
-        XYEARS_FUTURE(R.string.timeago_xyears_future, new DistancePredicate() {
+        XYEARS_FUTURE(R.string.time_future_x_years, new DistancePredicate() {
             @Override
             public boolean validateDistanceMinutes(final long distance) {
                 return Math.round(distance / 525600) < -1;

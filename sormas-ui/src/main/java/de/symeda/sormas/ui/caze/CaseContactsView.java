@@ -38,6 +38,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.i18n.Captions;
@@ -131,7 +132,7 @@ public class CaseContactsView extends AbstractCaseView {
 		});
 		topLayout.addComponent(officerFilter);
 
-		resetButton = new Button(I18nProperties.getCaption(Captions.resetFilters));
+		resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
 		resetButton.setVisible(false);
 		resetButton.addClickListener(event -> {
 			ViewModelProviders.of(CaseContactsView.class).remove(ContactCriteria.class);
@@ -151,14 +152,14 @@ public class CaseContactsView extends AbstractCaseView {
 
 		statusButtons = new HashMap<>();
 
-		Button statusAll = new Button("All", e -> {
+		Button statusAll = new Button(I18nProperties.getCaption(Captions.all), e -> {
 			criteria.contactStatus(null);
 			navigateTo(criteria);
 		});
 		CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 		statusAll.setCaptionAsHtml(true);
 		statusFilterLayout.addComponent(statusAll);
-		statusButtons.put(statusAll, "All");
+		statusButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
 		activeStatusButton = statusAll;
 
 		for (ContactStatus status : ContactStatus.values()) {
@@ -179,12 +180,12 @@ public class CaseContactsView extends AbstractCaseView {
 			statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 			MenuBar bulkOperationsDropdown = new MenuBar();	
-			MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
+			MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 			Command changeCommand = selectedItem -> {
 				ControllerProvider.getContactController().showBulkContactDataEditComponent(grid.getSelectedRows(), getCaseRef().getUuid());
 			};
-			bulkOperationsItem.addItem("Edit...", FontAwesome.ELLIPSIS_H, changeCommand);
+			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkEdit), FontAwesome.ELLIPSIS_H, changeCommand);
 
 			Command cancelFollowUpCommand = selectedItem -> {
 				ControllerProvider.getContactController().cancelFollowUpOfAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -194,7 +195,7 @@ public class CaseContactsView extends AbstractCaseView {
 					}
 				});
 			};
-			bulkOperationsItem.addItem("Cancel follow-up", FontAwesome.TIMES, cancelFollowUpCommand);
+			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkCancelFollowUp), FontAwesome.TIMES, cancelFollowUpCommand);
 
 			Command lostToFollowUpCommand = selectedItem -> {
 				ControllerProvider.getContactController().setAllSelectedItemsToLostToFollowUp(grid.getSelectedRows(), new Runnable() {
@@ -204,7 +205,7 @@ public class CaseContactsView extends AbstractCaseView {
 					}
 				});
 			};
-			bulkOperationsItem.addItem("Set to lost to follow-up", FontAwesome.UNLINK, lostToFollowUpCommand);
+			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkLostToFollowUp), FontAwesome.UNLINK, lostToFollowUpCommand);
 
 			Command deleteCommand = selectedItem -> {
 				ControllerProvider.getContactController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -214,7 +215,7 @@ public class CaseContactsView extends AbstractCaseView {
 					}
 				});
 			};
-			bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
+			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), FontAwesome.TRASH, deleteCommand);
 
 			statusFilterLayout.addComponent(bulkOperationsDropdown);
 			statusFilterLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
@@ -222,7 +223,7 @@ public class CaseContactsView extends AbstractCaseView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
-			Button exportButton = new Button("Export");
+			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
 			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
 
@@ -238,7 +239,7 @@ public class CaseContactsView extends AbstractCaseView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
-			newButton = new Button("New contact");
+			newButton = new Button(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, Captions.contactNewContact));
 			newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			newButton.setIcon(FontAwesome.PLUS_CIRCLE);
 			newButton.addClickListener(e -> ControllerProvider.getContactController().create(this.getCaseRef()));

@@ -32,6 +32,7 @@ public class TreatmentDto extends EntityDto {
 	public static final String EXECUTING_CLINICIAN = "executingClinician";
 	public static final String TREATMENT_TYPE = "treatmentType";
 	public static final String TREATMENT_DETAILS = "treatmentDetails";
+	public static final String DRUG_INTAKE_DETAILS = "drugIntakeDetails";
 	public static final String TYPE_OF_DRUG = "typeOfDrug";
 	public static final String DOSE = "dose";
 	public static final String ROUTE = "route";
@@ -39,7 +40,7 @@ public class TreatmentDto extends EntityDto {
 	public static final String ADDITIONAL_NOTES = "additionalNotes";
 	public static final String PRESCRIPTION = "prescription";
 	
-	private TherapyDto therapy;
+	private TherapyReferenceDto therapy;
 	private Date treatmentDateTime;
 	private String executingClinician;
 	private TreatmentType treatmentType;
@@ -51,7 +52,7 @@ public class TreatmentDto extends EntityDto {
 	private String additionalNotes;
 	private PrescriptionReferenceDto prescription;
 	
-	public static TreatmentDto buildTreatment(TherapyDto therapy) {
+	public static TreatmentDto buildTreatment(TherapyReferenceDto therapy) {
 		TreatmentDto treatment = new TreatmentDto();
 		treatment.setUuid(DataHelper.createUuid());
 		treatment.setTherapy(therapy);
@@ -76,10 +77,10 @@ public class TreatmentDto extends EntityDto {
 		return treatment;
 	}
 	
-	public TherapyDto getTherapy() {
+	public TherapyReferenceDto getTherapy() {
 		return therapy;
 	}
-	public void setTherapy(TherapyDto therapy) {
+	public void setTherapy(TherapyReferenceDto therapy) {
 		this.therapy = therapy;
 	}
 	public Date getTreatmentDateTime() {

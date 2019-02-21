@@ -32,11 +32,13 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
@@ -58,7 +60,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 	private static final String REPORT_INFORMATION_LOC = "reportInformationLoc";
 
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.h3("Laboratory sample") +
+			LayoutUtil.h3(I18nProperties.getString(Strings.headingLaboratorySample)) +
 			LayoutUtil.locCss(CssStyles.VSPACE_2, REPORT_INFORMATION_LOC) +
 			LayoutUtil.divs(
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_CODE),
@@ -166,7 +168,9 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			// Initialize referral and report information
 			VerticalLayout reportInfoLayout = new VerticalLayout();
 
-			String reportInfoText = "Reported on " + DateHelper.formatLocalDateTime(getValue().getReportDateTime()) + " by " + getValue().getReportingUser().toString();
+			String reportInfoText = I18nProperties.getString(Strings.reportedOn) + " "
+					+ DateHelper.formatLocalDateTime(getValue().getReportDateTime()) + " "
+					+ I18nProperties.getString(Strings.by) + " " + getValue().getReportingUser().toString();
 			Label reportInfoLabel = new Label(reportInfoText);
 			reportInfoLabel.setEnabled(false);
 			reportInfoLayout.addComponent(reportInfoLabel);
@@ -174,7 +178,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			SampleReferenceDto referredFromRef = FacadeProvider.getSampleFacade().getReferredFrom(getValue().getUuid());
 			if (referredFromRef != null) {
 				SampleDto referredFrom = FacadeProvider.getSampleFacade().getSampleByUuid(referredFromRef.getUuid());
-				Button referredButton = new Button("Referred from " + referredFrom.getLab().toString());
+				Button referredButton = new Button(I18nProperties.getCaption(Captions.sampleReferredFrom) + " " + referredFrom.getLab().toString());
 				referredButton.addStyleName(ValoTheme.BUTTON_LINK);
 				referredButton.addStyleName(CssStyles.VSPACE_NONE);
 				referredButton.addClickListener(s -> ControllerProvider.getSampleController().navigateToData(referredFrom.getUuid()));

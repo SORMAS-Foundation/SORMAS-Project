@@ -42,12 +42,14 @@ public class PersonDto extends EntityDto {
 	public static final String LAST_NAME = "lastName";
 
 	public static final String PRESENT_CONDITION = "presentCondition";
+	public static final String BIRTH_DATE = "birthdate";
 	public static final String BIRTH_DATE_DD = "birthdateDD";
 	public static final String BIRTH_DATE_MM = "birthdateMM";
 	public static final String BIRTH_DATE_YYYY = "birthdateYYYY";
 
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String APPROXIMATE_AGE_TYPE = "approximateAgeType";
+	public static final String APPROXIMATE_AGE_REFERENCE_DATE = "approximateAgeReferenceDate";
 
 	public static final String CAUSE_OF_DEATH = "causeOfDeath";
 	public static final String CAUSE_OF_DEATH_DISEASE = "causeOfDeathDisease";
@@ -67,6 +69,8 @@ public class PersonDto extends EntityDto {
 	public static final String PHONE_OWNER = "phoneOwner";
 	public static final String ADDRESS = "address";
 
+	public static final String EDUCATION_TYPE = "educationType";
+	public static final String EDUCATION_DETAILS = "educationDetails";
 	public static final String OCCUPATION_TYPE = "occupationType";
 	public static final String OCCUPATION_DETAILS = "occupationDetails";
 	public static final String OCCUPATION_REGION = "occupationRegion";
@@ -98,6 +102,9 @@ public class PersonDto extends EntityDto {
 	@Outbreaks
 	private ApproximateAgeType approximateAgeType;
 	@Outbreaks
+	private Date approximateAgeReferenceDate;
+	
+	@Outbreaks
 	private PresentCondition presentCondition;
 	private Date deathDate;
 	private CauseOfDeath causeOfDeath;
@@ -116,6 +123,10 @@ public class PersonDto extends EntityDto {
 	private String phone;
 	private String phoneOwner;
 	private LocationDto address;
+
+	private EducationType educationType;
+	private String educationDetails;
+	
 	private OccupationType occupationType;
 	private String occupationDetails;
 	private RegionReferenceDto occupationRegion;
@@ -162,6 +173,14 @@ public class PersonDto extends EntityDto {
 
 	public void setApproximateAgeType(ApproximateAgeType approximateAgeType) {
 		this.approximateAgeType = approximateAgeType;
+	}
+
+	public Date getApproximateAgeReferenceDate() {
+		return approximateAgeReferenceDate;
+	}
+
+	public void setApproximateAgeReferenceDate(Date approximateAgeReferenceDate) {
+		this.approximateAgeReferenceDate = approximateAgeReferenceDate;
 	}
 
 	public DeathPlaceType getDeathPlaceType() {
@@ -276,30 +295,6 @@ public class PersonDto extends EntityDto {
 		this.address = address;
 	}
 
-	public OccupationType getOccupationType() {
-		return occupationType;
-	}
-
-	public void setOccupationType(OccupationType occupationType) {
-		this.occupationType = occupationType;
-	}
-
-	public String getOccupationDetails() {
-		return occupationDetails;
-	}
-
-	public void setOccupationDetails(String occupationDetails) {
-		this.occupationDetails = occupationDetails;
-	}
-
-	public FacilityReferenceDto getOccupationFacility() {
-		return occupationFacility;
-	}
-
-	public void setOccupationFacility(FacilityReferenceDto occupationFacility) {
-		this.occupationFacility = occupationFacility;
-	}
-
 	public String getNickname() {
 		return nickname;
 	}
@@ -330,6 +325,44 @@ public class PersonDto extends EntityDto {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+	
+	public EducationType getEducationType() {
+		return educationType;
+	}
+	public void setEducationType(EducationType educationType) {
+		this.educationType = educationType;
+	}
+	
+	public String getEducationDetails() {
+		return educationDetails;
+	}
+	public void setEducationDetails(String educationDetails) {
+		this.educationDetails = educationDetails;
+	}
+
+	public OccupationType getOccupationType() {
+		return occupationType;
+	}
+
+	public void setOccupationType(OccupationType occupationType) {
+		this.occupationType = occupationType;
+	}
+
+	public String getOccupationDetails() {
+		return occupationDetails;
+	}
+
+	public void setOccupationDetails(String occupationDetails) {
+		this.occupationDetails = occupationDetails;
+	}
+
+	public FacilityReferenceDto getOccupationFacility() {
+		return occupationFacility;
+	}
+
+	public void setOccupationFacility(FacilityReferenceDto occupationFacility) {
+		this.occupationFacility = occupationFacility;
 	}
 
 	public RegionReferenceDto getOccupationRegion() {

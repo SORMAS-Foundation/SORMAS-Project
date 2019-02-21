@@ -171,7 +171,7 @@ public class AppUpdateController {
     private ConfirmationDialog buildDownloadAppDialog() {
         dismissExistingDialog();
 
-        int headingResId = R.string.headline_update_app;
+        int headingResId = R.string.heading_app_update_required;
         int subHeadingResId = R.string.message_update_app_required;
         int positiveButtonTextResId = R.string.action_download;
         int negativeButtonTextResId = allowDismiss ? R.string.action_download_later : R.string.action_close_app;
@@ -202,7 +202,7 @@ public class AppUpdateController {
     private ConfirmationDialog buildDownloadFailedDialog() {
         dismissExistingDialog();
 
-        int headingResId = R.string.headline_download_app_failed;
+        int headingResId = R.string.heading_app_download_failed;
         int subHeadingResId = R.string.message_download_app_failed;
         int positiveButtonTextResId = R.string.action_try_again;
         int negativeButtonTextResId = allowDismiss ? R.string.action_download_later : R.string.action_close_app;
@@ -233,7 +233,7 @@ public class AppUpdateController {
     private ConfirmationDialog buildInstallAppDialog() {
         dismissExistingDialog();
 
-        int headingResId = R.string.headline_install_app;
+        int headingResId = R.string.heading_install_app;
         int subHeadingResId = R.string.message_install_app;
         int positiveButtonTextResId = R.string.action_install_app;
         int negativeButtonTextResId = allowDismiss ? R.string.action_install_later : R.string.action_close_app;
@@ -264,7 +264,7 @@ public class AppUpdateController {
     private ConfirmationDialog buildInstallFailedDialog() {
         dismissExistingDialog();
 
-        int headingResId = R.string.headline_install_app_failed;
+        int headingResId = R.string.heading_install_app_failed;
         int subHeadingResId = R.string.message_install_app_failed;
         int positiveButtonTextResId = R.string.action_redownload_app;
         int negativeButtonTextResId = allowDismiss ? R.string.action_redownload_app_later : R.string.action_close_app;
@@ -295,7 +295,7 @@ public class AppUpdateController {
     private ConfirmationDialog buildInstallNotPossibleDialog() {
         dismissExistingDialog();
 
-        int headingResId = R.string.headline_install_app_failed;
+        int headingResId = R.string.heading_install_app_failed;
         int subHeadingResId = R.string.message_install_app_not_possible;
         int positiveButtonTextResId = allowDismiss ? R.string.action_ok : R.string.action_close_app;
 
@@ -322,7 +322,7 @@ public class AppUpdateController {
         DownloadManager downloadManager = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
         Uri downloadUri = Uri.parse(appUrl);
         DownloadManager.Request request = new DownloadManager.Request(downloadUri);
-        request.setTitle("New SORMAS version");
+        request.setTitle(activity.getString(R.string.heading_new_sormas_version));
 
         File newFile = new File("", fileName);
         // Save the .apk file to the app's local external storage
@@ -338,8 +338,8 @@ public class AppUpdateController {
             // Allow users to move the download process to the background; will not automatically open
             // the InstallAppDialog after the download has been finished
             progressDialog = new ProgressDialog(activity);
-            progressDialog.setTitle(activity.getString(R.string.headline_app_download));
-            progressDialog.setMessage(activity.getString(R.string.hint_app_download));
+            progressDialog.setTitle(activity.getString(R.string.heading_app_downloading));
+            progressDialog.setMessage(activity.getString(R.string.info_app_download));
             progressDialog.setCancelable(false);
             progressDialog.setIndeterminate(true);
             progressDialog.setButton(DialogInterface.BUTTON_POSITIVE, activity.getString(R.string.action_download_background), new DialogInterface.OnClickListener() {
@@ -351,8 +351,8 @@ public class AppUpdateController {
             });
             progressDialog.show();
         } else {
-            progressDialog = ProgressDialog.show(activity, activity.getString(R.string.headline_app_download),
-                    activity.getString(R.string.hint_app_download), true);
+            progressDialog = ProgressDialog.show(activity, activity.getString(R.string.heading_app_downloading),
+                    activity.getString(R.string.info_app_download), true);
         }
     }
 

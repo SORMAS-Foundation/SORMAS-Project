@@ -33,6 +33,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -55,8 +56,8 @@ public class SampleGrid extends Grid implements AbstractGrid<SampleCriteria> {
 
 	public static final String EDIT_BTN_ID = "edit";
 	
-	private static final String TEST_RESULT_AND_SPECIMEN = "testResultAndSpecimen";
-	private static final String DISEASE_SHORT = "diseaseShort";
+	private static final String TEST_RESULT_AND_SPECIMEN = Captions.Sample_testResultAndSpecimen;
+	private static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 	
 	private SampleCriteria sampleCriteria = new SampleCriteria();
 	
@@ -82,11 +83,11 @@ public class SampleGrid extends Grid implements AbstractGrid<SampleCriteria> {
 				SampleIndexDto sampleIndexDto = (SampleIndexDto) itemId;
 				
 				if (sampleIndexDto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
-					return "Specimen not adequate";
+					return I18nProperties.getCaption(Captions.sampleSpecimenNotAdequate);
 				} else if (sampleIndexDto.getSampleTestResult() != null) {
 					return sampleIndexDto.getSampleTestResult().toString();
 				} else {
-					return "Pending";
+					return I18nProperties.getCaption(Captions.samplePending);
 				}
 			}
 			@Override

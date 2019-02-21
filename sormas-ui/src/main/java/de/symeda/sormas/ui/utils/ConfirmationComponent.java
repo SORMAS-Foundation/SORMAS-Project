@@ -26,6 +26,8 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
 
 /**
@@ -63,7 +65,7 @@ public abstract class ConfirmationComponent extends HorizontalLayout {
 	
 	public Button getConfirmButton() {
 		if (confirmButton == null) {
-			confirmButton = new Button("Übernehmen");
+			confirmButton = new Button(I18nProperties.getCaption(Captions.actionConfirm));
 			cancelButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 
 			confirmButton.addClickListener(new ClickListener() {
@@ -78,7 +80,7 @@ public abstract class ConfirmationComponent extends HorizontalLayout {
 	
 	public Button getCancelButton() {
 		if (cancelButton == null) {
-			cancelButton = new Button("Abbrechen");
+			cancelButton = new Button(I18nProperties.getCaption(Captions.actionCancel));
 			cancelButton.addStyleName(ValoTheme.BUTTON_LINK);
 
 			cancelButton.addClickListener(new ClickListener() {

@@ -68,13 +68,15 @@ public interface CaseFacade {
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
 	
-	List<DashboardCaseDto> getNewCasesForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
+	List<DashboardCaseDto> getCasesForDashboard(CaseCriteria caseCriteria, String userUuid);
 
 	List<MapCaseDto> getCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 	
-	Map<CaseClassification, Long> getNewCaseCountPerClassification(CaseCriteria caseCriteria, String userUuid);
+	Map<CaseClassification, Long> getCaseCountPerClassification(CaseCriteria caseCriteria, String userUuid);
 	
-	Map<PresentCondition, Long> getNewCaseCountPerPersonCondition(CaseCriteria caseCriteria, String userUuid);
+	Map<PresentCondition, Long> getCaseCountPerPersonCondition(CaseCriteria caseCriteria, String userUuid);
+	
+	Map<Disease, Long> getCaseCountPerDisease(CaseCriteria caseCriteria, String userUuid);
 	
 	/**
 	 * @param fromDate optional

@@ -1,6 +1,10 @@
 
 @mixin sormas-dashboard-view {
 
+  .dashboard-screen {
+	  overflow-x: hidden;
+  }
+  
   .dashboard-key {
   	text-align: center;
   	outline: none;
@@ -23,7 +27,6 @@
  
   .highlighted-statistics-component {
   	background-color: $v-focus-light-color;
-  	border-radius: 8px;
   	padding-top: 16px;
   }
  

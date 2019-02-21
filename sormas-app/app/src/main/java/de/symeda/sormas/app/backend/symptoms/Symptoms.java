@@ -69,6 +69,13 @@ public class Symptoms extends AbstractDomainObject {
     private Float temperature;
     @Enumerated(EnumType.STRING)
     private TemperatureSource temperatureSource;
+    @Column
+    private Integer bloodPressureSystolic;
+    @Column
+    private Integer bloodPressureDiastolic;
+    @Column
+    private Integer heartRate;
+
     @Enumerated(EnumType.STRING)
     private SymptomState fever;
     @Enumerated(EnumType.STRING)
@@ -229,6 +236,30 @@ public class Symptoms extends AbstractDomainObject {
     @Enumerated(EnumType.STRING)
     private SymptomState meningealSigns;
     @Enumerated(EnumType.STRING)
+    private SymptomState pharyngealErythema;
+    @Enumerated(EnumType.STRING)
+    private SymptomState pharyngealExudate;
+    @Enumerated(EnumType.STRING)
+    private SymptomState oedemaFaceNeck;
+    @Enumerated(EnumType.STRING)
+    private SymptomState oedemaLowerExtremity;
+    @Enumerated(EnumType.STRING)
+    private SymptomState lossSkinTurgor;
+    @Enumerated(EnumType.STRING)
+    private SymptomState palpableLiver;
+    @Enumerated(EnumType.STRING)
+    private SymptomState palpableSpleen;
+    @Enumerated(EnumType.STRING)
+    private SymptomState malaise;
+    @Enumerated(EnumType.STRING)
+    private SymptomState sunkenEyesFontanelle;
+    @Enumerated(EnumType.STRING)
+    private SymptomState sidePain;
+    @Enumerated(EnumType.STRING)
+    private SymptomState fluidInLungCavity;
+    @Enumerated(EnumType.STRING)
+    private SymptomState tremor;
+    @Enumerated(EnumType.STRING)
     private SymptomState otherHemorrhagicSymptoms;
     @Column(length = 255)
     private String otherHemorrhagicSymptomsText;
@@ -236,7 +267,6 @@ public class Symptoms extends AbstractDomainObject {
     private SymptomState otherNonHemorrhagicSymptoms;
     @Column(length = 255)
     private String otherNonHemorrhagicSymptomsText;
-
 
     public Date getOnsetDate() {
         return onsetDate;
@@ -260,6 +290,30 @@ public class Symptoms extends AbstractDomainObject {
 
     public void setTemperatureSource(TemperatureSource temperatureSource) {
         this.temperatureSource = temperatureSource;
+    }
+
+    public Integer getBloodPressureSystolic() {
+        return bloodPressureSystolic;
+    }
+
+    public void setBloodPressureSystolic(Integer bloodPressureSystolic) {
+        this.bloodPressureSystolic = bloodPressureSystolic;
+    }
+
+    public Integer getBloodPressureDiastolic() {
+        return bloodPressureDiastolic;
+    }
+
+    public void setBloodPressureDiastolic(Integer bloodPressureDiastolic) {
+        this.bloodPressureDiastolic = bloodPressureDiastolic;
+    }
+
+    public Integer getHeartRate() {
+        return heartRate;
+    }
+
+    public void setHeartRate(Integer heartRate) {
+        this.heartRate = heartRate;
     }
 
     public SymptomState getFever() {
@@ -934,6 +988,102 @@ public class Symptoms extends AbstractDomainObject {
         this.bulgingFontanelle = bulgingFontanelle;
     }
 
+    public SymptomState getPharyngealErythema() {
+        return pharyngealErythema;
+    }
+
+    public void setPharyngealErythema(SymptomState pharyngealErythema) {
+        this.pharyngealErythema = pharyngealErythema;
+    }
+
+    public SymptomState getPharyngealExudate() {
+        return pharyngealExudate;
+    }
+
+    public void setPharyngealExudate(SymptomState pharyngealExudate) {
+        this.pharyngealExudate = pharyngealExudate;
+    }
+
+    public SymptomState getOedemaFaceNeck() {
+        return oedemaFaceNeck;
+    }
+
+    public void setOedemaFaceNeck(SymptomState oedemaFaceNeck) {
+        this.oedemaFaceNeck = oedemaFaceNeck;
+    }
+
+    public SymptomState getOedemaLowerExtremity() {
+        return oedemaLowerExtremity;
+    }
+
+    public void setOedemaLowerExtremity(SymptomState oedemaLowerExtremity) {
+        this.oedemaLowerExtremity = oedemaLowerExtremity;
+    }
+
+    public SymptomState getLossSkinTurgor() {
+        return lossSkinTurgor;
+    }
+
+    public void setLossSkinTurgor(SymptomState lossSkinTurgor) {
+        this.lossSkinTurgor = lossSkinTurgor;
+    }
+
+    public SymptomState getPalpableLiver() {
+        return palpableLiver;
+    }
+
+    public void setPalpableLiver(SymptomState palpableLiver) {
+        this.palpableLiver = palpableLiver;
+    }
+
+    public SymptomState getPalpableSpleen() {
+        return palpableSpleen;
+    }
+
+    public void setPalpableSpleen(SymptomState palpableSpleen) {
+        this.palpableSpleen = palpableSpleen;
+    }
+
+    public SymptomState getMalaise() {
+        return malaise;
+    }
+
+    public void setMalaise(SymptomState malaise) {
+        this.malaise = malaise;
+    }
+
+    public SymptomState getSunkenEyesFontanelle() {
+        return sunkenEyesFontanelle;
+    }
+
+    public void setSunkenEyesFontanelle(SymptomState sunkenEyesFontanelle) {
+        this.sunkenEyesFontanelle = sunkenEyesFontanelle;
+    }
+
+    public SymptomState getSidePain() {
+        return sidePain;
+    }
+
+    public void setSidePain(SymptomState sidePain) {
+        this.sidePain = sidePain;
+    }
+
+    public SymptomState getFluidInLungCavity() {
+        return fluidInLungCavity;
+    }
+
+    public void setFluidInLungCavity(SymptomState fluidInLungCavity) {
+        this.fluidInLungCavity = fluidInLungCavity;
+    }
+
+    public SymptomState getTremor() {
+        return tremor;
+    }
+
+    public void setTremor(SymptomState tremor) {
+        this.tremor = tremor;
+    }
+
     public String getPatientIllLocation() {
         return patientIllLocation;
     }
@@ -954,4 +1104,5 @@ public class Symptoms extends AbstractDomainObject {
     public void setMeningealSigns(SymptomState meningealSigns) {
         this.meningealSigns = meningealSigns;
     }
+
 }

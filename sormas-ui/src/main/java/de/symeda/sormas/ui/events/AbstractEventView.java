@@ -20,11 +20,12 @@ package de.symeda.sormas.ui.events;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.SubNavigationMenu;
+import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
 @SuppressWarnings("serial")
@@ -39,13 +40,13 @@ public class AbstractEventView extends AbstractSubNavigationView {
 	}
 	
 	@Override
-	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
+	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		eventRef = FacadeProvider.getEventFacade().getReferenceByUuid(params);
 		
 		menu.removeAllViews();
-		menu.addView(EventsView.VIEW_NAME, "Events list");
-		menu.addView(EventDataView.VIEW_NAME, "Event", params);
-		menu.addView(EventParticipantsView.VIEW_NAME, I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, "eventParticipants"), params);
+		menu.addView(EventsView.VIEW_NAME, I18nProperties.getCaption(Captions.eventEventsList));
+		menu.addView(EventDataView.VIEW_NAME, I18nProperties.getCaption(EventDto.I18N_PREFIX), params);
+		menu.addView(EventParticipantsView.VIEW_NAME, I18nProperties.getCaption(Captions.eventEventParticipants), params);
 		infoLabel.setValue(eventRef.getCaption());
 		infoLabelSub.setValue(DataHelper.getShortUuid(eventRef.getUuid()));
 	}

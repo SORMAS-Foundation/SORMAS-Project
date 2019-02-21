@@ -20,14 +20,16 @@ package de.symeda.sormas.ui.samples;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.SubNavigationMenu;
 import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
@@ -43,14 +45,14 @@ public class AbstractSampleView extends AbstractSubNavigationView {
 	}
 	
 	@Override
-	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
+	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		sampleRef = FacadeProvider.getSampleFacade().getReferenceByUuid(params);
 		CaseReferenceDto caseRef = FacadeProvider.getSampleFacade().getSampleByUuid(params).getAssociatedCase();
 		
 		menu.removeAllViews();
-		menu.addView(SamplesView.VIEW_NAME, "Samples list");
+		menu.addView(SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.sampleSamplesList));
 		if (caseRef != null && UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
-			menu.addView(CaseDataView.VIEW_NAME, "Case", caseRef.getUuid(), true);
+			menu.addView(CaseDataView.VIEW_NAME, I18nProperties.getString(Strings.entityCase), caseRef.getUuid(), true);
 		}
 		menu.addView(SampleDataView.VIEW_NAME, I18nProperties.getCaption(SampleDto.I18N_PREFIX), params);
 		infoLabel.setValue(sampleRef.getCaption());

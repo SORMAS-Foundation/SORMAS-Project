@@ -66,7 +66,7 @@ public class TaskController {
 			}
 		});
 
-		VaadinUiUtil.showModalPopupWindow(editView, "Create new task");   
+		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewTask));   
 	}
 
 	public void createSampleCollectionTask(TaskContext context, ReferenceDto entityRef, SampleDto sample) {
@@ -88,7 +88,7 @@ public class TaskController {
 			}
 		});
 
-		VaadinUiUtil.showModalPopupWindow(createView, "Create new task");
+		VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingCreateNewTask));
 	}
 
 	public void edit(TaskIndexDto dto, Runnable callback) {
@@ -99,7 +99,7 @@ public class TaskController {
 		form.setValue(newDto);
 		final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(form, form.getFieldGroup());
 
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Edit task");
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditTask));
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -128,7 +128,7 @@ public class TaskController {
 					UI.getCurrent().removeWindow(popupWindow);
 					callback.run();
 				}
-			}, I18nProperties.getString(Strings.task));
+			}, I18nProperties.getString(Strings.entityTask));
 		}
 	}
 
@@ -145,15 +145,17 @@ public class TaskController {
 	
 	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
-			new Notification("No tasks selected", "You have not selected any tasks.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(I18nProperties.getString(Strings.headingNoTasksSelected), 
+					I18nProperties.getString(Strings.messageNoTasksSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected tasks?", new Runnable() {
+			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteTasks), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
 						FacadeProvider.getTaskFacade().deleteTask(FacadeProvider.getTaskFacade().getByUuid(((TaskIndexDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
-					new Notification("Tasks deleted", "All selected tasks have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+					new Notification(I18nProperties.getString(Strings.headingTasksDeleted), 
+							I18nProperties.getString(Strings.messageTasksDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
 				}
 			});
 		}

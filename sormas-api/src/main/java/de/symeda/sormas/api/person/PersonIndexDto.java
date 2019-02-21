@@ -47,6 +47,8 @@ public class PersonIndexDto implements Serializable {
 	public static final String CASE_DISEASE = "caseDisease";
 	public static final String CASE_DISEASE_START_DATE = "caseDiseaseStartDate";
 	public static final String CASE_UUID = "caseUuid";
+	public static final String LAST_DISEASE = "lastDisease";
+	public static final String MATCHING_CASE = "matchingCase";
 	
 	private String uuid;
 	private Sex sex;

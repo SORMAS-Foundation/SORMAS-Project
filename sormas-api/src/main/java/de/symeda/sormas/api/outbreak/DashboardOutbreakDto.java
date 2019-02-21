@@ -15,32 +15,45 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.hospitalization;
+package de.symeda.sormas.api.outbreak;
 
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import java.io.Serializable;
 
-import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.caze.AbstractCaseView;
-import de.symeda.sormas.ui.utils.ViewMode;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 
-@SuppressWarnings("serial")
-public class CaseHospitalizationView extends AbstractCaseView {
+public class DashboardOutbreakDto  implements Serializable {
 	
-	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/hospitalization";
+	private static final long serialVersionUID = 2430932452606853497L;
 	
-	public CaseHospitalizationView() {
-		super(VIEW_NAME); 	
+	public static final String I18N_PREFIX = "DiseaseBurdenInformation";
+	
+	public static final String DISEASE = "disease";
+	public static final String DISTRICT = "district";
+	
+	private Disease disease;
+	private DistrictReferenceDto district;
+	
+	public DashboardOutbreakDto(Disease disease, String districtUuid) {
+		this.disease = disease;
+		this.district = new DistrictReferenceDto(districtUuid);
+	}
+
+	public Disease getDisease() {
+		return disease;
+	}
+
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
+
+	public DistrictReferenceDto getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(DistrictReferenceDto district) {
+		this.district = district;
 	}
 	
-	@Override
-	public void enter(ViewChangeEvent event) {
-		super.enter(event);
-		
-    	if (getViewMode() == ViewMode.SIMPLE) {
-    		ControllerProvider.getCaseController().navigateToCase(getCaseRef().getUuid());
-    		return;
-    	}
-		
-		setSubComponent(ControllerProvider.getCaseController().getCaseHospitalizationComponent(getCaseRef().getUuid(), getViewMode()));
-	}
+	
 }

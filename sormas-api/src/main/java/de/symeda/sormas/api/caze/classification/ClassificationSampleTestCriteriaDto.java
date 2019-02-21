@@ -87,11 +87,11 @@ public class ClassificationSampleTestCriteriaDto extends ClassificationCaseCrite
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(I18nProperties.getPrefixCaption(SampleTestDto.I18N_PREFIX, propertyId));
 		if (testTypes != null && !testTypes.isEmpty()) {
-			stringBuilder.append(" ").append(I18nProperties.getString(Strings.criteriaForTestType)).append(" ");
+			stringBuilder.append(" ").append(I18nProperties.getString(Strings.classificationCriteriaForTestType)).append(" ");
 			for (int i = 0; i < testTypes.size(); i++) {
 				if (i > 0) {
 					if (i == testTypes.size() - 1) {
-						stringBuilder.append(" <b>OR</b> ");
+						stringBuilder.append(" <b>").append(I18nProperties.getString(Strings.or).toUpperCase()).append("</b> ");
 					} else {
 						stringBuilder.append(", ");
 					}

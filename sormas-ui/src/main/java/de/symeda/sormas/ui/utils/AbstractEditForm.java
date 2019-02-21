@@ -48,8 +48,8 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -57,6 +57,7 @@ import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
 import de.symeda.sormas.ui.epidata.EpiDataGatheringsField;
 import de.symeda.sormas.ui.epidata.EpiDataTravelsField;
@@ -110,8 +111,9 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			public <T extends Field> T createField(Class<?> type, Class<T> fieldType) {
 
 				if (type.isEnum()) {
-					if (SymptomState.class.isAssignableFrom(type)
-							|| YesNoUnknown.class.isAssignableFrom(type)) {
+					if (fieldType.isAssignableFrom(Field.class) // no specific fieldType defined?
+							&& (SymptomState.class.isAssignableFrom(type)
+							|| YesNoUnknown.class.isAssignableFrom(type))) {
 						OptionGroup field = super.createField(type, OptionGroup.class);
 						CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
 						return (T) field;
@@ -137,6 +139,9 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 				else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
 					return (T) new LocationEditForm(editOrCreateUserRight);
 				} 
+				else if (HealthConditionsForm.class.isAssignableFrom(fieldType)) {
+					return (T) new HealthConditionsForm(editOrCreateUserRight);
+				}
 				else if (DateTimeField.class.isAssignableFrom(fieldType)) {
 					DateTimeField field = new DateTimeField();
 					field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
@@ -472,6 +477,17 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		for (String propertyId : fieldOrPropertyIds) {
 			Field<?> field = getField(propertyId);
 			field.setRequired(required);
+		}
+	}
+	
+	protected void setSoftRequired(boolean required, String ...fieldOrPropertyIds) {
+		for (String propertyId : fieldOrPropertyIds) {
+			Field<?> field = getField(propertyId);
+			if (required) {
+				FieldHelper.addSoftRequiredStyle(field);
+			} else {
+				FieldHelper.removeSoftRequiredStyle(field);
+			}
 		}
 	}
 

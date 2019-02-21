@@ -35,6 +35,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.CommunityCriteria;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityFacade;
@@ -91,8 +93,10 @@ public class CommunityFacadeEjb implements CommunityFacade {
 			}
 		}
 		
-		cq.multiselect(community.get(Community.CREATION_DATE), community.get(Community.CHANGE_DATE), community.get(Community.UUID), 
-				community.get(Community.NAME), district.get(District.UUID), district.get(District.NAME));
+		cq.multiselect(community.get(Community.CREATION_DATE), community.get(Community.CHANGE_DATE),
+				community.get(Community.UUID), community.get(Community.NAME),
+				region.get(Region.UUID), region.get(Region.NAME),
+				district.get(District.UUID), district.get(District.NAME));
 		cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)), cb.asc(community.get(Community.NAME)));
 
 		List<CommunityDto> resultList = em.createQuery(cq).getResultList();
@@ -134,7 +138,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		Community community = communityService.getByUuid(dto.getUuid());
 		
 		if (dto.getDistrict() == null) {
-			throw new ValidationRuntimeException("You have to specify a valid district");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 		}
 
 		community = fillOrBuildEntity(dto, community);
@@ -163,6 +167,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		
 		dto.setName(entity.getName());
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
+		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getDistrict().getRegion()));
 
 		return dto;
 	}

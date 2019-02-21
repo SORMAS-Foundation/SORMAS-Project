@@ -43,29 +43,29 @@ import de.symeda.sormas.backend.user.UserService;
 public class MessagingService {
 
 	// Message subjects
-	public static final String SUBJECT_CASE_CLASSIFICATION_CHANGED = "caseClassificationChangedSubject";
-	public static final String SUBJECT_CASE_INVESTIGATION_DONE = "caseInvestigationDoneSubject";
-	public static final String SUBJECT_LAB_RESULT_ARRIVED = "labResultArrivedSubject";
-	public static final String SUBJECT_LAB_RESULT_SPECIFIED = "labResultSpecifiedSubject";
-	public static final String SUBJECT_LAB_SAMPLE_SHIPPED = "labSampleShippedSubject";
-	public static final String SUBJECT_CONTACT_SYMPTOMATIC = "contactSymptomaticSubject";
-	public static final String SUBJECT_TASK_START = "taskStartSubject";
-	public static final String SUBJECT_TASK_DUE = "taskDueSubject";
-	public static final String SUBJECT_VISIT_COMPLETED = "visitCompletedSubject";
+	public static final String SUBJECT_CASE_CLASSIFICATION_CHANGED = "notificationCaseClassificationChangedSubject";
+	public static final String SUBJECT_CASE_INVESTIGATION_DONE = "notificationCaseInvestigationDoneSubject";
+	public static final String SUBJECT_LAB_RESULT_ARRIVED = "notificationLabResultArrivedSubject";
+	public static final String SUBJECT_LAB_RESULT_SPECIFIED = "notificationLabResultSpecifiedSubject";
+	public static final String SUBJECT_LAB_SAMPLE_SHIPPED = "notificationLabSampleShippedSubject";
+	public static final String SUBJECT_CONTACT_SYMPTOMATIC = "notificationContactSymptomaticSubject";
+	public static final String SUBJECT_TASK_START = "notificationTaskStartSubject";
+	public static final String SUBJECT_TASK_DUE = "notificationTtaskDueSubject";
+	public static final String SUBJECT_VISIT_COMPLETED = "notificationVisitCompletedSubject";
 	
 	// Message contents (via properties file)
-	public static final String CONTENT_CASE_CLASSIFICATION_CHANGED = "caseClassificationChanged";
-	public static final String CONTENT_CASE_INVESTIGATION_DONE = "caseInvestigationDone";
-	public static final String CONTENT_LAB_RESULT_ARRIVED = "labResultArrived";
-	public static final String CONTENT_LAB_RESULT_SPECIFIED = "labResultSpecified";
-	public static final String CONTENT_LAB_SAMPLE_SHIPPED = "labSampleShipped";
-	public static final String CONTENT_LAB_SAMPLE_SHIPPED_SHORT = "labSampleShippedShort";
-	public static final String CONTENT_CONTACT_SYMPTOMATIC = "contactSymptomatic";
-	public static final String CONTENT_TASK_START_GENERAL = "taskStartGeneral";
-	public static final String CONTENT_TASK_START_SPECIFIC = "taskStartSpecific";
-	public static final String CONTENT_TASK_DUE_GENERAL = "taskDueGeneral";
-	public static final String CONTENT_TASK_DUE_SPECIFIC = "taskDueSpecific";
-	public static final String CONTENT_VISIT_COMPLETED = "visitCompleted";
+	public static final String CONTENT_CASE_CLASSIFICATION_CHANGED = "notificationCaseClassificationChanged";
+	public static final String CONTENT_CASE_INVESTIGATION_DONE = "notificationCaseInvestigationDone";
+	public static final String CONTENT_LAB_RESULT_ARRIVED = "notificationLabResultArrived";
+	public static final String CONTENT_LAB_RESULT_SPECIFIED = "notificationLabResultSpecified";
+	public static final String CONTENT_LAB_SAMPLE_SHIPPED = "notificationLabSampleShipped";
+	public static final String CONTENT_LAB_SAMPLE_SHIPPED_SHORT = "notificationLabSampleShippedShort";
+	public static final String CONTENT_CONTACT_SYMPTOMATIC = "notificationContactSymptomatic";
+	public static final String CONTENT_TASK_START_GENERAL = "notificationTaskStartGeneral";
+	public static final String CONTENT_TASK_START_SPECIFIC = "notificationTaskStartSpecific";
+	public static final String CONTENT_TASK_DUE_GENERAL = "notificationTaskDueGeneral";
+	public static final String CONTENT_TASK_DUE_SPECIFIC = "notificationTaskDueSpecific";
+	public static final String CONTENT_VISIT_COMPLETED = "notificationVisitCompleted";
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessagingService.class);
 

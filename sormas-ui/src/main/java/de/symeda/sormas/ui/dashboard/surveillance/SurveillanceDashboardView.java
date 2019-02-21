@@ -17,31 +17,44 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.surveillance;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardType;
-import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 
 @SuppressWarnings("serial")
-public class DashboardSurveillanceView extends AbstractDashboardView {
+public class SurveillanceDashboardView extends AbstractDashboardView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/surveillance";
 
-	public DashboardSurveillanceView() {
+	protected SurveillanceOverviewLayout surveillanceOverviewLayout;
+	protected SurveillanceDiseaseCarouselLayout diseaseCarouselLayout;
+	
+	public SurveillanceDashboardView() {
 		super(VIEW_NAME, DashboardType.SURVEILLANCE);
 
-		filterLayout.setInfoLabelText("All Dashboard elements that display cases (the 'New Cases' statistics, the Epidemiological Curve and the Case Status Map) use the onset date of the first symptom for the date/epi week filter. If this date is not available, the reception date or date of report is used instead.");
+		filterLayout.setInfoLabelText(I18nProperties.getString(Strings.infoSurveillanceDashboard));
+		dashboardLayout.setSpacing(false);
 
-		// Add statistics
-		statisticsComponent = new DashboardSurveillanceStatisticsComponent(dashboardDataProvider);
-		dashboardLayout.addComponent(statisticsComponent);
+		//add disease burden and cases
+		surveillanceOverviewLayout = new SurveillanceOverviewLayout(dashboardDataProvider);
+		dashboardLayout.addComponent(surveillanceOverviewLayout);
 
-		epiCurveComponent = new EpiCurveSurveillanceComponent(dashboardDataProvider);
-		mapComponent = new DashboardMapComponent(dashboardDataProvider);
-		
-		// Add epi curve and map
-		epiCurveAndMapLayout = createEpiCurveAndMapLayout();
-		dashboardLayout.addComponent(epiCurveAndMapLayout);
-		dashboardLayout.setExpandRatio(epiCurveAndMapLayout, 1);
+		//add diseaseCarousel and map
+		diseaseCarouselLayout = new SurveillanceDiseaseCarouselLayout(dashboardDataProvider);
+		dashboardLayout.addComponent(diseaseCarouselLayout);
+		dashboardLayout.setExpandRatio(diseaseCarouselLayout, 1);
 	}
+	
+	public void refreshDashboard() {
+		super.refreshDashboard();
 
+		// Update disease burden
+		if (surveillanceOverviewLayout != null)
+			surveillanceOverviewLayout.refresh();
+
+		//Update disease carousel
+		if (diseaseCarouselLayout != null)
+			diseaseCarouselLayout.refresh();
+	}
 }

@@ -30,6 +30,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import de.symeda.sormas.api.hospitalization.AccommodationType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
@@ -48,24 +49,23 @@ public class Hospitalization extends AbstractDomainObject {
     public static final String TABLE_NAME = "hospitalizations";
     public static final String I18N_PREFIX = "CaseHospitalization";
 
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown admittedToHealthFacility;
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date admissionDate;
-
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date dischargeDate;
-
+    @Enumerated(EnumType.STRING)
+    private AccommodationType accommodation;
     @Enumerated(EnumType.STRING)
     private YesNoUnknown isolated;
-
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date isolationDate;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown leftAgainstAdvice;
 
     @Enumerated(EnumType.STRING)
     private YesNoUnknown hospitalizedPreviously;
-
-    @Enumerated(EnumType.STRING)
-    private YesNoUnknown admittedToHealthFacility;
-
     // just for reference, not persisted in DB
     private List<PreviousHospitalization> previousHospitalizations = new ArrayList<PreviousHospitalization>();
 
@@ -132,5 +132,21 @@ public class Hospitalization extends AbstractDomainObject {
     @Override
     public String getI18nPrefix() {
         return I18N_PREFIX;
+    }
+
+    public AccommodationType getAccommodation() {
+        return accommodation;
+    }
+
+    public void setAccommodation(AccommodationType accommodation) {
+        this.accommodation = accommodation;
+    }
+
+    public YesNoUnknown getLeftAgainstAdvice() {
+        return leftAgainstAdvice;
+    }
+
+    public void setLeftAgainstAdvice(YesNoUnknown leftAgainstAdvice) {
+        this.leftAgainstAdvice = leftAgainstAdvice;
     }
 }

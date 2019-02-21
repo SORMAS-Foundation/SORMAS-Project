@@ -27,6 +27,9 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -48,13 +51,13 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 	private static final String USER_PHONE_DESC_LOC = "userPhoneDescLoc";
 	
     private static final String HTML_LAYOUT = 
-    		LayoutUtil.h3("Person data")+
+    		LayoutUtil.h3(I18nProperties.getString(Strings.headingPersonData))+
 			LayoutUtil.fluidRowLocs(UserDto.FIRST_NAME, UserDto.LAST_NAME)+
 			LayoutUtil.fluidRowLocs(UserDto.USER_EMAIL, UserDto.PHONE)+
 			LayoutUtil.fluidRowLocs(USER_EMAIL_DESC_LOC, USER_PHONE_DESC_LOC)+
-			LayoutUtil.h3("Adress") +
+			LayoutUtil.h3(I18nProperties.getString(Strings.address)) +
 			LayoutUtil.fluidRowLocs(UserDto.ADDRESS) +
-			LayoutUtil.h3("User data") +
+			LayoutUtil.h3(I18nProperties.getString(Strings.headingUserData)) +
 			LayoutUtil.fluidRowLocs(UserDto.ACTIVE) +
 			LayoutUtil.fluidRowLocs(UserDto.USER_NAME, UserDto.USER_ROLES) +
 			LayoutUtil.fluidRowLocs(UserDto.REGION, UserDto.DISTRICT, UserDto.COMMUNITY) +
@@ -78,12 +81,11 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	addField(UserDto.LAST_NAME, TextField.class);
     	addField(UserDto.USER_EMAIL, TextField.class);
     	TextField phone = addField(UserDto.PHONE, TextField.class);
-    	phone.addValidator(new PhoneNumberValidator("Phone numbers have to start with a + followed by the country code. "
-    			+ "Using a different format will make the user unable to receive SMS notifications."));
+    	phone.addValidator(new PhoneNumberValidator(I18nProperties.getValidationError(Validations.phoneNumberValidation)));
     	
-    	Label userEmailDesc = new Label("Used to send Email notifications.");
+    	Label userEmailDesc = new Label(I18nProperties.getString(Strings.infoUserEmail));
     	getContent().addComponent(userEmailDesc, USER_EMAIL_DESC_LOC);
-    	Label userPhoneDesc = new Label("Used to send SMS notifications. Needs to contain country code.");
+    	Label userPhoneDesc = new Label(I18nProperties.getString(Strings.infoUserPhoneNumber));
     	getContent().addComponent(userPhoneDesc, USER_PHONE_DESC_LOC);
     	    	
     	addField(UserDto.ADDRESS, LocationEditForm.class).setCaption(null);
@@ -214,7 +216,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 	            throws InvalidValueException {
 	    	UserDto dto = getValue();
 	        if (!(value instanceof String && ControllerProvider.getUserController().isLoginUnique(dto.getUuid(),(String)value)))
-	            throw new InvalidValueException("User name is not unique!");
+	            throw new InvalidValueException(I18nProperties.getValidationError(Validations.userNameNotUnique));
 	    }
 	}
 }

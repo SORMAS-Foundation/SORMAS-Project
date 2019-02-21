@@ -52,7 +52,7 @@ public class MoveCaseDialog extends AbstractDialog {
 
     MoveCaseDialog(final FragmentActivity activity, Case caze) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_move_case_layout,
-                R.layout.dialog_root_two_button_panel_layout, R.string.heading_move_case_dialog, -1);
+                R.layout.dialog_root_two_button_panel_layout, R.string.heading_transfer_case, -1);
 
         this.data = caze;
     }
@@ -129,7 +129,7 @@ public class MoveCaseDialog extends AbstractDialog {
 
     @Override
     public int getPositiveButtonText() {
-        return R.string.action_move;
+        return R.string.action_transfer_case;
     }
 
 }

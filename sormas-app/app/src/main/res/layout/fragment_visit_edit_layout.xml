@@ -40,8 +40,8 @@
 
             <de.symeda.sormas.app.component.controls.ControlDateTimeField
                 android:id="@+id/visit_visitDateTime"
-                app:dateHint="@string/hint_contact_visit_visit_date"
-                app:timeHint="@string/hint_contact_visit_visit_time"
+                app:dateHint="@string/caption_visit_date"
+                app:timeHint="@string/caption_visit_time"
                 app:required="true"
                 app:value="@={data.visitDateTime}"
                 style="@style/ControlSingleColumnStyle" />

@@ -76,6 +76,6 @@ public class EventParticipantReadActivity extends BaseReadActivity<EventParticip
 
     @Override
     protected int getActivityTitle() {
-        return R.string.heading_level3_1_event_read_person_involved_info;
+        return R.string.heading_person_involved;
     }
 }

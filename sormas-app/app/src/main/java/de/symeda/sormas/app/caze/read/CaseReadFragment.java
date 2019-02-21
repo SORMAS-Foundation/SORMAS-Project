@@ -24,6 +24,8 @@ import android.webkit.WebView;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseReadFragment;
@@ -106,7 +108,7 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
         if (contentBinding.getData().getClassificationDate() != null && contentBinding.getData().getClassificationUser() == null) {
             contentBinding.caseDataClassificationUser.setVisibility(GONE);
             contentBinding.caseDataClassifiedBy.setVisibility(VISIBLE);
-            contentBinding.caseDataClassifiedBy.setValue("System");
+            contentBinding.caseDataClassifiedBy.setValue(I18nProperties.getCaption(Captions.system));
         }
     }
 

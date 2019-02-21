@@ -67,12 +67,15 @@ public class HospitalizationDtoHelper extends AdoDtoHelper<Hospitalization, Hosp
     @Override
     public void fillInnerFromDto(Hospitalization a, HospitalizationDto b) {
 
+        a.setAdmittedToHealthFacility(b.getAdmittedToHealthFacility());
         a.setAdmissionDate(b.getAdmissionDate());
         a.setDischargeDate(b.getDischargeDate());
-        a.setHospitalizedPreviously(b.getHospitalizedPreviously());
+        a.setAccommodation(b.getAccommodation());
         a.setIsolated(b.getIsolated());
         a.setIsolationDate(b.getIsolationDate());
-        a.setAdmittedToHealthFacility(b.getAdmittedToHealthFacility());
+        a.setLeftAgainstAdvice(b.getLeftAgainstAdvice());
+
+        a.setHospitalizedPreviously(b.getHospitalizedPreviously());
 
         // It would be better to merge with the existing hospitalizations
         List<PreviousHospitalization> previousHospitalizations = new ArrayList<>();
@@ -89,12 +92,15 @@ public class HospitalizationDtoHelper extends AdoDtoHelper<Hospitalization, Hosp
     @Override
     public void fillInnerFromAdo(HospitalizationDto a, Hospitalization b) {
 
+        a.setAdmittedToHealthFacility(b.getAdmittedToHealthFacility());
         a.setAdmissionDate(b.getAdmissionDate());
         a.setDischargeDate(b.getDischargeDate());
-        a.setHospitalizedPreviously(b.getHospitalizedPreviously());
+        a.setAccommodation(b.getAccommodation());
         a.setIsolated(b.getIsolated());
         a.setIsolationDate(b.getIsolationDate());
-        a.setAdmittedToHealthFacility(b.getAdmittedToHealthFacility());
+        a.setLeftAgainstAdvice(b.getLeftAgainstAdvice());
+
+        a.setHospitalizedPreviously(b.getHospitalizedPreviously());
 
         List<PreviousHospitalizationDto> previousHospitalizationDtos = new ArrayList<>();
         for (PreviousHospitalization prevHosp : b.getPreviousHospitalizations()) {

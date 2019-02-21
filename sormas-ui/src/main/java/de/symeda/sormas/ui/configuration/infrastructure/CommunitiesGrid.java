@@ -32,20 +32,16 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.CommunityCriteria;
 import de.symeda.sormas.api.region.CommunityDto;
-import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractGrid;
 
-@SuppressWarnings("serial")
 public class CommunitiesGrid extends Grid implements AbstractGrid<CommunityCriteria> {
 
 	private static final long serialVersionUID = 3355810665696318673L;
 
 	public static final String EDIT_BTN_ID = "edit";
-	private static final String REGION_LOC = "region";
 	
 	private CommunityCriteria communityCriteria = new CommunityCriteria();
 	
@@ -56,19 +52,6 @@ public class CommunitiesGrid extends Grid implements AbstractGrid<CommunityCrite
 		BeanItemContainer<CommunityDto> container = new BeanItemContainer<CommunityDto>(CommunityDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		setContainerDataSource(generatedContainer);
-		
-		generatedContainer.addGeneratedProperty(REGION_LOC, new PropertyValueGenerator<RegionReferenceDto>() {
-			@Override
-			public RegionReferenceDto getValue(Item item, Object itemId, Object propertyId) {
-				CommunityDto dto = (CommunityDto) itemId;
-				DistrictDto district = FacadeProvider.getDistrictFacade().getDistrictByUuid(dto.getDistrict().getUuid());
-				return district.getRegion();
-			}
-			@Override
-			public Class<RegionReferenceDto> getType() {
-				return RegionReferenceDto.class;
-			}
-		});
 		
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			generatedContainer.addGeneratedProperty(EDIT_BTN_ID, new PropertyValueGenerator<String>() {
@@ -86,7 +69,7 @@ public class CommunitiesGrid extends Grid implements AbstractGrid<CommunityCrite
 			});
 		}
 		
-		setColumns(CommunityDto.NAME, REGION_LOC, CommunityDto.DISTRICT);
+		setColumns(CommunityDto.NAME, CommunityDto.REGION, CommunityDto.DISTRICT);
 		
         for (Column column : getColumns()) {
         	column.setHeaderCaption(I18nProperties.getPrefixCaption(
@@ -97,6 +80,7 @@ public class CommunitiesGrid extends Grid implements AbstractGrid<CommunityCrite
 			addColumn(EDIT_BTN_ID);
 			getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
 			getColumn(EDIT_BTN_ID).setWidth(40);
+			getColumn(EDIT_BTN_ID).setHeaderCaption("");
 
 			addItemClickListener(e -> {
 				if (e.getPropertyId() != null && (e.getPropertyId().equals(EDIT_BTN_ID) || e.isDoubleClick())) {

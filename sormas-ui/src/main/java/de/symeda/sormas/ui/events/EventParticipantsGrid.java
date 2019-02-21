@@ -28,10 +28,11 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRight;
@@ -44,11 +45,11 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 @SuppressWarnings("serial")
 public class EventParticipantsGrid extends Grid {
 	
-	public static final String PERSON_UUID = "personUuid";
-	public static final String PERSON_NAME = "personName";
-	public static final String PERSON_AGE = "personAge";
-	public static final String PERSON_SEX = "personSex";
-	public static final String CASE_ID = "caseId";
+	public static final String PERSON_UUID = Captions.EventParticipant_personUuid;
+	public static final String PERSON_NAME = Captions.EventParticipant_personName;
+	public static final String PERSON_AGE = Captions.EventParticipant_personAge;
+	public static final String PERSON_SEX = Captions.EventParticipant_personSex;
+	public static final String CASE_ID = Captions.EventParticipant_caseId;
 
 	private static final String EDIT_BTN_ID = "edit";
 	
@@ -136,6 +137,7 @@ public class EventParticipantsGrid extends Grid {
 
         getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
         getColumn(EDIT_BTN_ID).setWidth(60);
+        getColumn(EDIT_BTN_ID).setHeaderCaption("");
 		getColumn(PERSON_UUID).setRenderer(new UuidRenderer());
 		getColumn(CASE_ID).setRenderer(new CaseUuidRenderer(true));
 		

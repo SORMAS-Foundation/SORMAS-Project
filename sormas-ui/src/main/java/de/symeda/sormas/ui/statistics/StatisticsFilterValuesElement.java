@@ -38,6 +38,9 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -97,7 +100,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		addDropdown = new ComboBox("", getFilterValues());
 		addDropdown.addStyleName(CssStyles.VSPACE_NONE);
 		addDropdown.setFilteringMode(FilteringMode.CONTAINS);
-		addDropdown.setInputPrompt("Type here to add...");
+		addDropdown.setInputPrompt(I18nProperties.getString(Strings.promptTypeToAdd));
 		tokenField.setInputField(addDropdown);
 		addDropdown.addValueChangeListener(e -> {
 			TokenizableValue token = (TokenizableValue) e.getProperty().getValue();
@@ -114,7 +117,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		VerticalLayout utilityButtonsLayout = new VerticalLayout();
 		utilityButtonsLayout.setSizeUndefined();
 
-		Button addAllButton = new Button("All", FontAwesome.PLUS_CIRCLE);
+		Button addAllButton = new Button(I18nProperties.getCaption(Captions.all), FontAwesome.PLUS_CIRCLE);
 		CssStyles.style(addAllButton, ValoTheme.BUTTON_LINK);
 		addAllButton.addClickListener(e -> {
 			for (TokenizableValue tokenizable : getFilterValues()) {
@@ -122,7 +125,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 			}
 		});
 
-		Button removeAllButton = new Button("Clear", FontAwesome.TIMES_CIRCLE);
+		Button removeAllButton = new Button(I18nProperties.getCaption(Captions.actionClear), FontAwesome.TIMES_CIRCLE);
 		CssStyles.style(removeAllButton, ValoTheme.BUTTON_LINK);
 		removeAllButton.addClickListener(e -> {
 			for (Tokenizable tokenizable : tokenField.getValue()) {
@@ -174,7 +177,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 			switch (attribute) {
 			case SEX:
 				List<TokenizableValue> tokens = createTokens((Object[]) Sex.values());
-				tokens.add(new TokenizableValue("Unknown", tokens.size()));
+				tokens.add(new TokenizableValue(I18nProperties.getCaption(Captions.unknown), tokens.size()));
 				return tokens;
 			case AGE_INTERVAL_1_YEAR:
 			case AGE_INTERVAL_5_YEARS:

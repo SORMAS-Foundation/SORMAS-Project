@@ -34,6 +34,9 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -54,7 +57,7 @@ public class UserController {
 
 	public void create() {
 		CommitDiscardWrapperComponent<UserEditForm> userCreateComponent = getUserCreateComponent();
-		Window window = VaadinUiUtil.showModalPopupWindow(userCreateComponent, "Create new user");
+		Window window = VaadinUiUtil.showModalPopupWindow(userCreateComponent, I18nProperties.getString(Strings.headingCreateNewUser));
 		// user form is too big for typical screens
 		window.setWidth(userCreateComponent.getWrappedComponent().getWidth() + 64+20, Unit.PIXELS);
 		window.setHeight(90, Unit.PERCENTAGE); 
@@ -62,7 +65,7 @@ public class UserController {
 
 	public void edit(UserDto user) {
 		CommitDiscardWrapperComponent<UserEditForm> userComponent = getUserEditComponent(user.getUuid());
-		Window window = VaadinUiUtil.showModalPopupWindow(userComponent, "Edit a user");
+		Window window = VaadinUiUtil.showModalPopupWindow(userComponent, I18nProperties.getString(Strings.headingEditUser));
 		// user form is too big for typical screens
 		window.setWidth(userComponent.getWrappedComponent().getWidth() + 64+20, Unit.PIXELS); 
 		window.setHeight(90, Unit.PERCENTAGE); 
@@ -154,10 +157,10 @@ public class UserController {
 		String newPassword = FacadeProvider.getUserFacade().resetPassword(userUuid);
 
 		VerticalLayout layout = new VerticalLayout();
-		layout.addComponent(new Label("Please copy this password, it is shown only once."));
+		layout.addComponent(new Label(I18nProperties.getString(Strings.messageCopyPassword)));
 		layout.addComponent(new Label("<h2>"+newPassword+"</h2>", ContentMode.HTML));
 		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
-		popupWindow.setCaption("New password");
+		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
 		layout.setMargin(true);    	
 	}
 
@@ -187,7 +190,7 @@ public class UserController {
 
 	public Button createResetPasswordButton(String userUuid, CommitDiscardWrapperComponent<UserEditForm> editView) {
 		Button resetPasswordButton = new Button(null, FontAwesome.UNLOCK_ALT);
-		resetPasswordButton.setCaption("create new password");
+		resetPasswordButton.setCaption(I18nProperties.getCaption(Captions.userResetPassword));
 		resetPasswordButton.addStyleName(ValoTheme.BUTTON_LINK);
 		resetPasswordButton.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -207,7 +210,7 @@ public class UserController {
 						popupWindow.close();
 					}
 				});
-				popupWindow.setCaption("Update password");
+				popupWindow.setCaption(I18nProperties.getString(Strings.headingUpdatePassword));
 			}
 		});
 
@@ -227,8 +230,8 @@ public class UserController {
 			protected void onCancel() {
 			}
 		};
-		resetPasswordConfirmationComponent.getConfirmButton().setCaption("Really update password?");
-		resetPasswordConfirmationComponent.getCancelButton().setCaption("Cancel");
+		resetPasswordConfirmationComponent.getConfirmButton().setCaption(I18nProperties.getCaption(Captions.userUpdatePasswordConfirmation));
+		resetPasswordConfirmationComponent.getCancelButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
 		resetPasswordConfirmationComponent.setMargin(true);
 		return resetPasswordConfirmationComponent;
 	}

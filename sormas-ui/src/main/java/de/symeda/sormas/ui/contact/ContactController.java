@@ -72,7 +72,7 @@ public class ContactController {
 
 	public void create(CaseReferenceDto caze) {
 		CommitDiscardWrapperComponent<ContactCreateForm> createComponent = getContactCreateComponent(caze);
-		VaadinUiUtil.showModalPopupWindow(createComponent, "Create new contact");    	
+		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewContact));    	
 	}
 
 	public void navigateToData(String contactUuid) {
@@ -165,7 +165,7 @@ public class ContactController {
 									}
 
 									FacadeProvider.getContactFacade().saveContact(dto);
-									Notification.show("New contact created", Type.WARNING_MESSAGE);
+									Notification.show(I18nProperties.getString(Strings.messageContactCreated), Type.WARNING_MESSAGE);
 									editData(dto.getUuid());
 								}
 							});
@@ -204,8 +204,8 @@ public class ContactController {
 					}
 
 					dto = FacadeProvider.getContactFacade().saveContact(dto);
-					Notification.show("Contact data saved", Type.WARNING_MESSAGE);
-					editData(dto.getUuid());
+					Notification.show(I18nProperties.getString(Strings.messageContactSaved), Type.WARNING_MESSAGE);
+					SormasUI.refreshView();
 				}
 			}
 		});
@@ -217,7 +217,7 @@ public class ContactController {
 					FacadeProvider.getContactFacade().deleteContact(contact.toReference(), UserProvider.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
 				}
-			}, I18nProperties.getString(Strings.contact));
+			}, I18nProperties.getString(Strings.entityContact));
 		}
 
 		return editComponent;
@@ -226,7 +226,8 @@ public class ContactController {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void showBulkContactDataEditComponent(Collection<Object> selectedRows, String caseUuid) {
 		if (selectedRows.size() == 0) {
-			new Notification("No contacts selected", "You have not selected any contacts.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 
+					I18nProperties.getString(Strings.messageNoContactsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 			return;
 		}
 
@@ -250,7 +251,7 @@ public class ContactController {
 		form.setValue(tempContact);
 		final CommitDiscardWrapperComponent<BulkContactDataForm> editView = new CommitDiscardWrapperComponent<BulkContactDataForm>(form, form.getFieldGroup());
 
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Edit contacts");
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditContacts));
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -274,7 +275,7 @@ public class ContactController {
 				} else {
 					caseContactsOverview(caseUuid);
 				}
-				Notification.show("All contacts have been edited", Type.HUMANIZED_MESSAGE);
+				Notification.show(I18nProperties.getString(Strings.messageContactsEdited), Type.HUMANIZED_MESSAGE);
 			}
 		});
 
@@ -288,15 +289,17 @@ public class ContactController {
 
 	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
-			new Notification("No contacts selected", "You have not selected any contacts.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 
+					I18nProperties.getString(Strings.messageNoContactsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected contacts?", new Runnable() {
+			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteContacts), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
 						FacadeProvider.getContactFacade().deleteContact(new ContactReferenceDto(((ContactIndexDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
-					new Notification("Contacts deleted", "All selected contacts have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+					new Notification(I18nProperties.getString(Strings.headingContactsDeleted), 
+							I18nProperties.getString(Strings.messageContactsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
 				}
 			});
 		}
@@ -304,21 +307,23 @@ public class ContactController {
 	
 	public void cancelFollowUpOfAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
-			new Notification("No contacts selected", "You have not selected any contacts.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 
+					I18nProperties.getString(Strings.messageNoContactsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to cancel the follow-up of all " + selectedRows.size() + " selected contacts?", new Runnable() {
+			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationCancelFollowUp), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
 						ContactIndexDto contact = (ContactIndexDto) selectedRow;
 						if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 							ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
 							contactDto.setFollowUpStatus(FollowUpStatus.CANCELED);
-							contactDto.setFollowUpComment("Canceled by " + UserProvider.getCurrent().getUserName() + " using bulk action");
+							contactDto.setFollowUpComment(String.format(I18nProperties.getString(Strings.infoCanceledBy), UserProvider.getCurrent().getUserName()));
 							FacadeProvider.getContactFacade().saveContact(contactDto);
 						}
 					}
 					callback.run();
-					new Notification("Follow-up canceled", "Follow-up of all selected contacts has been canceled.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+					new Notification(I18nProperties.getString(Strings.headingFollowUpCanceled), 
+							I18nProperties.getString(Strings.messageFollowUpCanceled), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
 				}
 			});
 		}
@@ -326,21 +331,23 @@ public class ContactController {
 	
 	public void setAllSelectedItemsToLostToFollowUp(Collection<Object> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
-			new Notification("No contacts selected", "You have not selected any contacts.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 
+					I18nProperties.getString(Strings.messageNoContactsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to set the follow-up of all " + selectedRows.size() + " selected contacts to lost to follow-up?", new Runnable() {
+			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationLostToFollowUp), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
 						ContactIndexDto contact = (ContactIndexDto) selectedRow;
 						if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 							ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
 							contactDto.setFollowUpStatus(FollowUpStatus.LOST);
-							contactDto.setFollowUpComment("Set to lost to follow-up by " + UserProvider.getCurrent().getUserName() + " using bulk action");
+							contactDto.setFollowUpComment(String.format(I18nProperties.getString(Strings.infoLostToFollowUpBy), UserProvider.getCurrent().getUserName()));
 							FacadeProvider.getContactFacade().saveContact(contactDto);
 						}
 					}
 					callback.run();
-					new Notification("Follow-up status changed", "Follow-up of all selected contacts that have follow-up has been set to lost to follow-up.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+					new Notification(I18nProperties.getString(Strings.headingFollowUpStatusChanged), 
+							I18nProperties.getString(Strings.messageFollowUpStatusChanged), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
 				}
 			});
 		}

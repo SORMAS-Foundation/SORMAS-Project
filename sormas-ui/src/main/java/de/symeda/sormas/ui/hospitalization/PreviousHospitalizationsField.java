@@ -22,7 +22,9 @@ import java.util.function.Consumer;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -35,9 +37,9 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 @SuppressWarnings("serial")
 public class PreviousHospitalizationsField extends AbstractTableField<PreviousHospitalizationDto> {
 
-	private static final String PERIOD = "period";
-	private static final String WARD = "ward";
-	private static final String LGA = "lga";
+	private static final String PERIOD = Captions.CasePreviousHospitalization_prevHospPeriod;
+	private static final String COMMUNITY = Captions._community;
+	private static final String DISTRICT = Captions._district;
 
 	@Override
 	public Class<PreviousHospitalizationDto> getEntryType() {
@@ -54,7 +56,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
 				if (prevHospitalization.getAdmissionDate() == null && prevHospitalization.getDischargeDate() == null) {
-					return "Unknown";
+					return I18nProperties.getString(Strings.unknown);
 				} else {
 					StringBuilder periodBuilder = new StringBuilder();
 					periodBuilder.append(prevHospitalization.getAdmissionDate() != null ? DateHelper.formatLocalDate(prevHospitalization.getAdmissionDate()) : "?");
@@ -65,7 +67,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 			}
 		});
 
-		table.addGeneratedColumn(WARD, new Table.ColumnGenerator() {
+		table.addGeneratedColumn(COMMUNITY, new Table.ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
@@ -73,7 +75,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 			}
 		});
 
-		table.addGeneratedColumn(LGA, new Table.ColumnGenerator() {
+		table.addGeneratedColumn(DISTRICT, new Table.ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
@@ -81,14 +83,14 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 			}
 		});
 
-		table.setVisibleColumns(EDIT_COLUMN_ID, PERIOD, PreviousHospitalizationDto.HEALTH_FACILITY, WARD, LGA,
+		table.setVisibleColumns(EDIT_COLUMN_ID, PERIOD, PreviousHospitalizationDto.HEALTH_FACILITY, COMMUNITY, DISTRICT,
 				PreviousHospitalizationDto.DESCRIPTION, PreviousHospitalizationDto.ISOLATED);
 
 		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
 		table.setColumnExpandRatio(PERIOD, 0);
 		table.setColumnExpandRatio(PreviousHospitalizationDto.HEALTH_FACILITY, 0);
-		table.setColumnExpandRatio(WARD, 0);
-		table.setColumnExpandRatio(LGA, 0);
+		table.setColumnExpandRatio(COMMUNITY, 0);
+		table.setColumnExpandRatio(DISTRICT, 0);
 		table.setColumnExpandRatio(PreviousHospitalizationDto.DESCRIPTION, 0);
 		table.setColumnExpandRatio(PreviousHospitalizationDto.ISOLATED, 0);
 
@@ -128,9 +130,9 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 
 		final CommitDiscardWrapperComponent<PreviousHospitalizationEditForm> editView = new CommitDiscardWrapperComponent<PreviousHospitalizationEditForm>(
 				editForm, editForm.getFieldGroup());
-		editView.getCommitButton().setCaption("done");
+		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Previous hospitalization");
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getCaption(PreviousHospitalizationDto.I18N_PREFIX));
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -148,7 +150,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 					popupWindow.close();
 					PreviousHospitalizationsField.this.removeEntry(entry);
 				}
-			}, I18nProperties.getCaption("CasePreviousHospitalization"));
+			}, I18nProperties.getCaption(PreviousHospitalizationDto.I18N_PREFIX));
 		}
 
 	}

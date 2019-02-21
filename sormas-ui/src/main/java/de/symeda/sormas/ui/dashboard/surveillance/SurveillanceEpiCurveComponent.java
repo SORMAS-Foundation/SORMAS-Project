@@ -30,6 +30,8 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
@@ -38,30 +40,30 @@ import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class EpiCurveSurveillanceComponent extends AbstractEpiCurveComponent {
+public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 
 	private static final long serialVersionUID = 6582975657305031105L;
 
-	private EpiCurveSurveillanceMode epiCurveSurveillanceMode;
+	private SurveillanceEpiCurveMode epiCurveSurveillanceMode;
 	
-	public EpiCurveSurveillanceComponent(DashboardDataProvider dashboardDataProvider) {
+	public SurveillanceEpiCurveComponent(DashboardDataProvider dashboardDataProvider) {
 		super(dashboardDataProvider);
 	}
 
 	@Override
 	protected OptionGroup createEpiCurveModeSelector() {
 		if (epiCurveSurveillanceMode == null) {
-			epiCurveSurveillanceMode = EpiCurveSurveillanceMode.CASE_STATUS;
+			epiCurveSurveillanceMode = SurveillanceEpiCurveMode.CASE_STATUS;
 		}
 		
 		OptionGroup epiCurveModeOptionGroup = new OptionGroup();
 		epiCurveModeOptionGroup.setMultiSelect(false);
 		CssStyles.style(epiCurveModeOptionGroup, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_SUBTLE);
-		epiCurveModeOptionGroup.addItems((Object[]) EpiCurveSurveillanceMode.values());
+		epiCurveModeOptionGroup.addItems((Object[]) SurveillanceEpiCurveMode.values());
 		epiCurveModeOptionGroup.setValue(epiCurveSurveillanceMode);	
 		epiCurveModeOptionGroup.select(epiCurveSurveillanceMode);
 		epiCurveModeOptionGroup.addValueChangeListener(e -> {
-			epiCurveSurveillanceMode = (EpiCurveSurveillanceMode) e.getProperty().getValue();
+			epiCurveSurveillanceMode = (SurveillanceEpiCurveMode) e.getProperty().getValue();
 			clearAndFillEpiCurveChart();
 		});
 		return epiCurveModeOptionGroup;
@@ -111,17 +113,17 @@ public class EpiCurveSurveillanceComponent extends AbstractEpiCurveComponent {
 			}
 		}
 
-		hcjs.append("yAxis: { min: 0, title: { text: 'Number of Cases' }, allowDecimals: false, softMax: 10, "
+		hcjs.append("yAxis: { min: 0, title: { text: '" + I18nProperties.getCaption(Captions.dashboardNumberOfCases) + "' }, allowDecimals: false, softMax: 10, "
 				+ "stackLabels: { enabled: true, "
 				+ "style: {fontWeight: 'normal', textOutline: '0', gridLineColor: '#000000', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } } },"
 				+ "legend: { verticalAlign: 'top', backgroundColor: 'transparent', align: 'left', "
 				+ "borderWidth: 0, shadow: false, margin: 30, padding: 0 },"
-				+ "tooltip: { headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'},"
+				+ "tooltip: { headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}<br/>" + I18nProperties.getCaption(Captions.dashboardTotal) + ": {point.stackTotal}'},"
 				+ "plotOptions: { column: { borderWidth: 0, stacking: 'normal', groupPadding: 0, pointPadding: 0, dataLabels: {"
 				+ "enabled: true, formatter: function() { if (this.y > 0) return this.y; },"
 				+ "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } } },");
 
-		if (epiCurveSurveillanceMode == EpiCurveSurveillanceMode.CASE_STATUS) {
+		if (epiCurveSurveillanceMode == SurveillanceEpiCurveMode.CASE_STATUS) {
 			// Adds the number of confirmed, probable and suspect cases for each day as data
 			int[] confirmedNumbers = new int[newLabels.size()];
 			int[] probableNumbers = new int[newLabels.size()];
@@ -144,7 +146,7 @@ public class EpiCurveSurveillanceComponent extends AbstractEpiCurveComponent {
 				}
 
 				Map<CaseClassification, Long> caseCounts = FacadeProvider.getCaseFacade()
-						.getNewCaseCountPerClassification(caseCriteria, UserProvider.getCurrent().getUuid());
+						.getCaseCountPerClassification(caseCriteria, UserProvider.getCurrent().getUuid());
 
 				Long confirmedCount = caseCounts.get(CaseClassification.CONFIRMED);
 				Long probableCount = caseCounts.get(CaseClassification.PROBABLE);
@@ -157,7 +159,7 @@ public class EpiCurveSurveillanceComponent extends AbstractEpiCurveComponent {
 			}
 
 			hcjs.append("series: [");
-			hcjs.append("{ name: 'Confirmed', color: '#B22222', dataLabels: { allowOverlap: false }, data: [");
+			hcjs.append("{ name: '" + I18nProperties.getCaption(Captions.dashboardConfirmed) + "', color: '#B22222', dataLabels: { allowOverlap: false }, data: [");
 			for (int i = 0; i < confirmedNumbers.length; i++) {
 				if (i == confirmedNumbers.length - 1) {
 					hcjs.append(confirmedNumbers[i] + "]},");
@@ -165,7 +167,7 @@ public class EpiCurveSurveillanceComponent extends AbstractEpiCurveComponent {
 					hcjs.append(confirmedNumbers[i] + ", ");
 				}
 			}
-			hcjs.append("{ name: 'Probable', color: '#FF4500', dataLabels: { allowOverlap: false },  data: [");
+			hcjs.append("{ name: '" + I18nProperties.getCaption(Captions.dashboardProbable) + "', color: '#FF4500', dataLabels: { allowOverlap: false },  data: [");
 			for (int i = 0; i < probableNumbers.length; i++) {
 				if (i == probableNumbers.length - 1) {
 					hcjs.append(probableNumbers[i] + "]},");
@@ -173,7 +175,7 @@ public class EpiCurveSurveillanceComponent extends AbstractEpiCurveComponent {
 					hcjs.append(probableNumbers[i] + ", ");
 				}
 			}
-			hcjs.append("{ name: 'Suspect', color: '#FFD700', dataLabels: { allowOverlap: false },  data: [");
+			hcjs.append("{ name: '" + I18nProperties.getCaption(Captions.dashboardSuspect) + "', color: '#FFD700', dataLabels: { allowOverlap: false },  data: [");
 			for (int i = 0; i < suspectNumbers.length; i++) {
 				if (i == suspectNumbers.length - 1) {
 					hcjs.append(suspectNumbers[i] + "]},");
@@ -181,7 +183,7 @@ public class EpiCurveSurveillanceComponent extends AbstractEpiCurveComponent {
 					hcjs.append(suspectNumbers[i] + ", ");
 				}
 			}
-			hcjs.append("{name: 'Not Yet Classified', color: '#808080', dataLabels: { allowOverlap: false }, data: [");
+			hcjs.append("{name: '" + I18nProperties.getCaption(Captions.dashboardNotYetClassified) + "', color: '#808080', dataLabels: { allowOverlap: false }, data: [");
 			for (int i = 0; i < notYetClassifiedNumbers.length; i++) {
 				if (i == notYetClassifiedNumbers.length - 1) {
 					hcjs.append(notYetClassifiedNumbers[i] + "]}]};");
@@ -210,7 +212,7 @@ public class EpiCurveSurveillanceComponent extends AbstractEpiCurveComponent {
 				}
 
 				Map<PresentCondition, Long> caseCounts = FacadeProvider.getCaseFacade()
-						.getNewCaseCountPerPersonCondition(caseCriteria, UserProvider.getCurrent().getUuid());
+						.getCaseCountPerPersonCondition(caseCriteria, UserProvider.getCurrent().getUuid());
 
 				Long aliveCount = caseCounts.get(PresentCondition.ALIVE);
 				Long deadCount = caseCounts.get(PresentCondition.DEAD);
@@ -219,7 +221,7 @@ public class EpiCurveSurveillanceComponent extends AbstractEpiCurveComponent {
 			}
 
 			hcjs.append("series: [");
-			hcjs.append("{ name: 'Alive', color: '#32CD32', dataLabels: { allowOverlap: false }, data: [");
+			hcjs.append("{ name: '" + I18nProperties.getCaption(Captions.dashboardAlive) + "', color: '#32CD32', dataLabels: { allowOverlap: false }, data: [");
 			for (int i = 0; i < aliveNumbers.length; i++) {
 				if (i == aliveNumbers.length - 1) {
 					hcjs.append(aliveNumbers[i] + "]},");
@@ -227,7 +229,7 @@ public class EpiCurveSurveillanceComponent extends AbstractEpiCurveComponent {
 					hcjs.append(aliveNumbers[i] + ", ");
 				}
 			}
-			hcjs.append("{ name: 'Dead', color: '#B22222', dataLabels: { allowOverlap: false },  data: [");
+			hcjs.append("{ name: '" + I18nProperties.getCaption(Captions.dashboardDead) + "', color: '#B22222', dataLabels: { allowOverlap: false },  data: [");
 			for (int i = 0; i < deadNumbers.length; i++) {
 				if (i == deadNumbers.length - 1) {
 					hcjs.append(deadNumbers[i] + "]}]};");

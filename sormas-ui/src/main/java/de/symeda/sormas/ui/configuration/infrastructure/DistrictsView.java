@@ -32,7 +32,9 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.DistrictCriteria;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -48,8 +50,6 @@ import de.symeda.sormas.ui.utils.DownloadUtil;
 public class DistrictsView extends AbstractConfigurationView {
 
 	private static final long serialVersionUID = -3487830069266335042L;
-
-	public static final String SEARCH = "search";
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/districts";
 
@@ -81,8 +81,8 @@ public class DistrictsView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		Button exportButton = new Button("Export");
-		exportButton.setDescription("Export the columns and rows that are shown in the table below.");
+		Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
+		exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		exportButton.setIcon(FontAwesome.TABLE);
 		addHeaderComponent(exportButton);
@@ -92,7 +92,7 @@ public class DistrictsView extends AbstractConfigurationView {
 		fileDownloader.extend(exportButton);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			createButton = new Button("New entry");
+			createButton = new Button(I18nProperties.getCaption(Captions.actionNewEntry));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
 			createButton.addClickListener(
@@ -111,7 +111,7 @@ public class DistrictsView extends AbstractConfigurationView {
 		searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setNullRepresentation("");
-		searchField.setInputPrompt(I18nProperties.getCaption(SEARCH));
+		searchField.setInputPrompt(I18nProperties.getString(Strings.promptSearch));
 		searchField.addTextChangeListener(e -> {
 			criteria.nameEpidLike(e.getText());
 			navigateTo(criteria);
@@ -129,7 +129,7 @@ public class DistrictsView extends AbstractConfigurationView {
 		});
 		filterLayout.addComponent(regionFilter);
 
-		resetButton = new Button(I18nProperties.getCaption(Captions.resetFilters));
+		resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
 		resetButton.setVisible(false);
 		CssStyles.style(resetButton, CssStyles.FORCE_CAPTION);
 		resetButton.addClickListener(event -> {

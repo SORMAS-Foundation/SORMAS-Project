@@ -56,7 +56,9 @@ import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -90,8 +92,6 @@ public class CasesView extends AbstractView {
 	private static final long serialVersionUID = -3533557348144005469L;
 
 	public static final String VIEW_NAME = "cases";
-
-	public static final String SEARCH_FIELD = "searchField";
 
 	private CaseCriteria criteria;
 	
@@ -152,12 +152,12 @@ public class CasesView extends AbstractView {
 		});
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
-			Button importButton = new Button("Import");
+			Button importButton = new Button(I18nProperties.getCaption(Captions.actionImport));
 			importButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			importButton.setIcon(FontAwesome.UPLOAD);
 			importButton.addClickListener(e -> {
 				Window popupWindow = VaadinUiUtil.showPopupWindow(new CaseImportLayout());
-				popupWindow.setCaption("Import cases");
+				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCases));
 				popupWindow.addCloseListener(c -> {
 					grid.reload();
 				});
@@ -166,7 +166,7 @@ public class CasesView extends AbstractView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EXPORT)) {
-			PopupButton exportButton = new PopupButton("Export"); 
+			PopupButton exportButton = new PopupButton(I18nProperties.getCaption(Captions.export)); 
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
 			VerticalLayout exportLayout = new VerticalLayout();
 			exportLayout.setSpacing(true); 
@@ -176,8 +176,8 @@ public class CasesView extends AbstractView {
 			exportButton.setContent(exportLayout);
 			addHeaderComponent(exportButton);
 
-			Button basicExportButton = new Button("Basic Export");
-			basicExportButton.setDescription("Export the columns and rows that are shown in the table below.");
+			Button basicExportButton = new Button(I18nProperties.getCaption(Captions.exportBasic));
+			basicExportButton.setDescription(I18nProperties.getString(Strings.infoBasicExport));
 			basicExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			basicExportButton.setIcon(FontAwesome.TABLE);
 			basicExportButton.setWidth(100, Unit.PERCENTAGE);
@@ -187,8 +187,8 @@ public class CasesView extends AbstractView {
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(basicExportButton);
 
-			Button extendedExportButton = new Button("Detailed Export");
-			extendedExportButton.setDescription("Export the rows that are shown in the table below with an extended set of columns. This may take a while.");
+			Button extendedExportButton = new Button(I18nProperties.getCaption(Captions.exportDetailed));
+			extendedExportButton.setDescription(I18nProperties.getString(Strings.infoDetailedExport));
 			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			extendedExportButton.setIcon(FontAwesome.FILE_TEXT);
 			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
@@ -207,7 +207,7 @@ public class CasesView extends AbstractView {
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
 
 			// Warning if no filters have been selected
-			Label warningLabel = new Label("<b>Warning:</b> No filters have been selected. Export may take a while.", ContentMode.HTML);
+			Label warningLabel = new Label(I18nProperties.getString(Strings.infoExportNoFilters), ContentMode.HTML);
 			exportLayout.addComponent(warningLabel);
 			warningLabel.setVisible(false);
 
@@ -217,7 +217,7 @@ public class CasesView extends AbstractView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
-			createButton = new Button("New case");
+			createButton = new Button(I18nProperties.getCaption(Captions.caseNewCase));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
 			createButton.addClickListener(e -> ControllerProvider.getCaseController().create());
@@ -268,7 +268,7 @@ public class CasesView extends AbstractView {
 			searchField = new TextField();
 			searchField.setWidth(200, Unit.PIXELS);
 			searchField.setNullRepresentation("");
-			searchField.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, SEARCH_FIELD));
+			searchField.setInputPrompt(I18nProperties.getString(Strings.promptCasesSearchField));
 			searchField.addTextChangeListener(e -> {
 				criteria.nameUuidEpidNumberLike(e.getText());
 				grid.reload();
@@ -277,7 +277,7 @@ public class CasesView extends AbstractView {
 
 			addShowMoreOrLessFiltersButtons(firstFilterRowLayout);
 			
-			resetButton = new Button(I18nProperties.getCaption(Captions.resetFilters));
+			resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
 			resetButton.setVisible(false);
 			resetButton.addClickListener(event -> {
 				ViewModelProviders.of(CasesView.class).remove(CaseCriteria.class);
@@ -319,7 +319,7 @@ public class CasesView extends AbstractView {
 			districtFilter = new ComboBox();
 			districtFilter.setWidth(140, Unit.PIXELS);
 			districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
-			districtFilter.setDescription("Select a district in the state");
+			districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
 			districtFilter.addValueChangeListener(e -> {
 				DistrictReferenceDto district = (DistrictReferenceDto)e.getProperty().getValue();
 				criteria.district(district);
@@ -347,7 +347,7 @@ public class CasesView extends AbstractView {
 			facilityFilter = new ComboBox();
 			facilityFilter.setWidth(140, Unit.PIXELS);
 			facilityFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
-			facilityFilter.setDescription("Select a facility in the LGA");
+			facilityFilter.setDescription(I18nProperties.getDescription(Descriptions.descFacilityFilter));
 			facilityFilter.addValueChangeListener(e -> {
 				criteria.healthFacility(((FacilityReferenceDto)e.getProperty().getValue()));
 				navigateTo(criteria);
@@ -380,7 +380,7 @@ public class CasesView extends AbstractView {
 
 			reportedByFilter = new ComboBox();
 			reportedByFilter.setWidth(140, Unit.PIXELS);
-			reportedByFilter.setInputPrompt("Reported By");
+			reportedByFilter.setInputPrompt(I18nProperties.getString(Strings.reportedBy));
 			reportedByFilter.addItems((Object[]) UserRole.values());
 			reportedByFilter.addValueChangeListener(e -> {
 				criteria.reportingUserRole((UserRole) e.getProperty().getValue());
@@ -390,8 +390,8 @@ public class CasesView extends AbstractView {
 
 			casesWithoutGeoCoordsFilter = new CheckBox();
 			CssStyles.style(casesWithoutGeoCoordsFilter, CssStyles.CHECKBOX_FILTER_INLINE);
-			casesWithoutGeoCoordsFilter.setCaption("Only cases without geo coordinates");
-			casesWithoutGeoCoordsFilter.setDescription("Only list cases that don't have address or report geo coordinates");
+			casesWithoutGeoCoordsFilter.setCaption(I18nProperties.getCaption(Captions.caseFilterWithoutGeo));
+			casesWithoutGeoCoordsFilter.setDescription(I18nProperties.getDescription(Descriptions.descCaseFilterWithoutGeo));
 			casesWithoutGeoCoordsFilter.addValueChangeListener(e -> {
 				criteria.mustHaveNoGeoCoordinates((Boolean) e.getProperty().getValue());
 				navigateTo(criteria);
@@ -405,13 +405,13 @@ public class CasesView extends AbstractView {
 		dateFilterRowLayout.setSpacing(true);
 		dateFilterRowLayout.setSizeUndefined();
 		{
-			Button applyButton = new Button("Apply date filter");
+			Button applyButton = new Button(I18nProperties.getCaption(Captions.actionApplyDateFilter));
 
 			weekAndDateFilter = new EpiWeekAndDateFilterComponent(applyButton, false, false, true);
-			weekAndDateFilter.getWeekFromFilter().setInputPrompt("New cases from epi week...");
-			weekAndDateFilter.getWeekToFilter().setInputPrompt("... to epi week");
-			weekAndDateFilter.getDateFromFilter().setInputPrompt("New cases from...");
-			weekAndDateFilter.getDateToFilter().setInputPrompt("... to");
+			weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesEpiWeekFrom));
+			weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesEpiWeekTo));
+			weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesDateFrom));
+			weekAndDateFilter.getDateToFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesDateTo));
 			dateFilterRowLayout.addComponent(weekAndDateFilter);
 			dateFilterRowLayout.addComponent(applyButton);
 
@@ -429,13 +429,16 @@ public class CasesView extends AbstractView {
 					applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
 					NewCaseDateType newCaseDateType = (NewCaseDateType) weekAndDateFilter.getNewCaseDateTypeSelector().getValue();
 					criteria.newCaseDateBetween(fromDate, toDate, newCaseDateType != null ? newCaseDateType : NewCaseDateType.MOST_RELEVANT);
+					navigateTo(criteria);
 				} else {
 					if (dateFilterOption == DateFilterOption.DATE) {
-						Notification notification = new Notification("Missing date filter", "Please fill in both date filter fields", Type.WARNING_MESSAGE, false);
+						Notification notification = new Notification(I18nProperties.getString(Strings.headingMissingDateFilter), 
+								I18nProperties.getString(Strings.messageMissingDateFilter), Type.WARNING_MESSAGE, false);
 						notification.setDelayMsec(-1);
 						notification.show(Page.getCurrent());
 					} else {
-						Notification notification = new Notification("Missing epi week filter", "Please fill in both epi week filter fields", Type.WARNING_MESSAGE, false);
+						Notification notification = new Notification(I18nProperties.getString(Strings.headingMissingEpiWeekFilter), 
+								I18nProperties.getString(Strings.messageMissingEpiWeekFilter), Type.WARNING_MESSAGE, false);
 						notification.setDelayMsec(-1);
 						notification.show(Page.getCurrent());
 					}
@@ -456,14 +459,14 @@ public class CasesView extends AbstractView {
 
 		statusButtons = new HashMap<>();
 
-		Button statusAll = new Button("All", e -> {
+		Button statusAll = new Button(I18nProperties.getCaption(Captions.all), e -> {
 			criteria.investigationStatus(null);
 			navigateTo(criteria);
 		});
 		CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 		statusAll.setCaptionAsHtml(true);
 		statusFilterLayout.addComponent(statusAll);
-		statusButtons.put(statusAll, "All");
+		statusButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
 		activeStatusButton = statusAll;
 
 		for (InvestigationStatus status : InvestigationStatus.values()) {
@@ -483,7 +486,7 @@ public class CasesView extends AbstractView {
 		{
 			// Show archived/active cases button
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW_ARCHIVED)) {
-				switchArchivedActiveButton = new Button(I18nProperties.getCaption("showArchivedCases"));
+				switchArchivedActiveButton = new Button(I18nProperties.getCaption(Captions.caseShowArchived));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
 					criteria.archived(Boolean.TRUE.equals(criteria.getArchived()) ? null : Boolean.TRUE);
@@ -495,12 +498,12 @@ public class CasesView extends AbstractView {
 			// Bulk operation dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				MenuBar bulkOperationsDropdown = new MenuBar();	
-				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
+				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 				Command changeCommand = selectedItem -> {
 					ControllerProvider.getCaseController().showBulkCaseDataEditComponent(grid.getSelectedRows());
 				};
-				bulkOperationsItem.addItem("Edit...", FontAwesome.ELLIPSIS_H, changeCommand);
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkEdit), FontAwesome.ELLIPSIS_H, changeCommand);
 
 				Command deleteCommand = selectedItem -> {
 					ControllerProvider.getCaseController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -509,7 +512,7 @@ public class CasesView extends AbstractView {
 						}
 					});
 				};
-				bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), FontAwesome.TRASH, deleteCommand);
 
 				Command archiveCommand = selectedItem -> {
 					ControllerProvider.getCaseController().archiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -518,7 +521,7 @@ public class CasesView extends AbstractView {
 						}
 					});
 				};
-				archiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption("archive"), FontAwesome.ARCHIVE, archiveCommand);
+				archiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.actionArchive), FontAwesome.ARCHIVE, archiveCommand);
 
 				Command dearchiveCommand = selectedItem -> {
 					ControllerProvider.getCaseController().dearchiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -527,7 +530,7 @@ public class CasesView extends AbstractView {
 						}
 					});
 				};
-				dearchiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption("dearchive"), FontAwesome.ARCHIVE, dearchiveCommand);
+				dearchiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.actionDearchive), FontAwesome.ARCHIVE, dearchiveCommand);
 				dearchiveItem.setVisible(false);
 
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
@@ -541,9 +544,9 @@ public class CasesView extends AbstractView {
 	}
 
 	private void addShowMoreOrLessFiltersButtons(HorizontalLayout parentLayout) {
-		Button showMoreButton = new Button("Show More Filters", FontAwesome.CHEVRON_DOWN);
+		Button showMoreButton = new Button(I18nProperties.getCaption(Captions.actionShowMoreFilters), FontAwesome.CHEVRON_DOWN);
 		CssStyles.style(showMoreButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		Button showLessButton = new Button("Show Less Filters", FontAwesome.CHEVRON_UP);
+		Button showLessButton = new Button(I18nProperties.getCaption(Captions.actionShowLessFilters), FontAwesome.CHEVRON_UP);
 		CssStyles.style(showLessButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 
 		showMoreButton.addClickListener(e -> {
@@ -631,7 +634,7 @@ public class CasesView extends AbstractView {
 		
 		if (Boolean.TRUE.equals(criteria.getArchived())) {
 			getViewTitleLabel().setValue(I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", ".") + ".archive"));
-			switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showActiveCases"));
+			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(Captions.caseShowActive));
 			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
 			if (archiveItem != null && dearchiveItem != null) {
 				archiveItem.setVisible(false);
@@ -639,7 +642,7 @@ public class CasesView extends AbstractView {
 			}
 		} else {
 			getViewTitleLabel().setValue(originalViewTitle);
-			switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showArchivedCases"));
+			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(Captions.caseShowArchived));
 			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 			if (archiveItem != null && dearchiveItem != null) {
 				dearchiveItem.setVisible(false);

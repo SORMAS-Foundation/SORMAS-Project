@@ -31,6 +31,9 @@ import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.dashboard.DateFilterOption;
@@ -103,7 +106,7 @@ public class EpiWeekAndDateFilterComponent extends HorizontalLayout {
 		if (showNewCaseDateTypeSelector) {
 			newCaseDateTypeSelector.setWidth(200, Unit.PIXELS);
 			newCaseDateTypeSelector.addItems((Object[]) NewCaseDateType.values());
-			newCaseDateTypeSelector.setNullSelectionAllowed(false);
+			newCaseDateTypeSelector.setInputPrompt(I18nProperties.getString(Strings.promptNewCaseDateType));
 			newCaseDateTypeSelector.select(NewCaseDateType.MOST_RELEVANT);
 			if (showCaption) {
 				CssStyles.style(newCaseDateTypeSelector, CssStyles.FORCE_CAPTION);
@@ -112,12 +115,7 @@ public class EpiWeekAndDateFilterComponent extends HorizontalLayout {
 			
 			Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 			infoLabel.setSizeUndefined();
-			infoLabel.setDescription("By default, cases are filtered by the most relevant date available:<br/><ul><li>Symptom onset date</li><li>Case reception date</li><li>Case report date</li></ul>"
-					+ "This means that, when a case e.g. has a symptom onset date, only this date will be taken into account when searching the list for cases in the specified date range. You can specify a date type "
-					+ "in the dropdown menu to instead specifically filter by this date.<br/><br/>"
-					+ "<b>Example:</b> Case A has been created this week and therefore has a report date that lies in this week as well. However, Case A also has a symptom onset date that is set to last week (because it has been entered retrospectively). "
-					+ "By default, when \"Most relevant date\" is selected and you have set the filter to only display cases of this week, Case A will not appear in the list because its symptom onset date lies in the previous week. "
-					+ "For the case to appear in the list, you need to select \"Case report date\" which will result in only the report date being considered when filtering the list.");
+			infoLabel.setDescription(I18nProperties.getString(Strings.infoCaseDate));
 			CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
 			addComponent(infoLabel);
 		}
@@ -134,7 +132,7 @@ public class EpiWeekAndDateFilterComponent extends HorizontalLayout {
 			weekFromFilter.setValue(DateHelper.getEpiWeek(c.getTime()));
 		}
 		if (showCaption) {
-			weekFromFilter.setCaption("From Epi Week");
+			weekFromFilter.setCaption(I18nProperties.getCaption(Captions.epiWeekFrom));
 		}
 		if (applyButton != null) {
 			weekFromFilter.addValueChangeListener(e -> {
@@ -152,7 +150,7 @@ public class EpiWeekAndDateFilterComponent extends HorizontalLayout {
 			weekToFilter.setValue(DateHelper.getEpiWeek(c.getTime()));
 		}
 		if (showCaption) {
-			weekToFilter.setCaption("To Epi Week");
+			weekToFilter.setCaption(I18nProperties.getCaption(Captions.epiWeekTo));
 		}
 		if (applyButton != null) {
 			weekToFilter.addValueChangeListener(e -> {
@@ -164,7 +162,7 @@ public class EpiWeekAndDateFilterComponent extends HorizontalLayout {
 		// Date filter
 		dateFromFilter.setWidth(200, Unit.PIXELS);
 		if (showCaption) {
-			dateFromFilter.setCaption("From");
+			dateFromFilter.setCaption(I18nProperties.getCaption(Captions.from));
 		}
 		if (applyButton != null) {
 			dateFromFilter.addValueChangeListener(e -> {
@@ -174,7 +172,7 @@ public class EpiWeekAndDateFilterComponent extends HorizontalLayout {
 
 		dateToFilter.setWidth(200, Unit.PIXELS);
 		if (showCaption) {
-			dateToFilter.setCaption("To");
+			dateToFilter.setCaption(I18nProperties.getCaption(Captions.to));
 		}
 		if (applyButton != null) {
 			dateToFilter.addValueChangeListener(e -> {

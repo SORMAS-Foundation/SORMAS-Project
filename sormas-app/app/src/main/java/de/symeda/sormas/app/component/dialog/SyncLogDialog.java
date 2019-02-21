@@ -53,7 +53,7 @@ public class SyncLogDialog extends AbstractDialog {
 
     public SyncLogDialog(final FragmentActivity activity) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_sync_log_layout,
-                R.layout.dialog_root_two_button_panel_layout, R.string.headline_sync_log, -1);
+                R.layout.dialog_root_two_button_panel_layout, R.string.heading_sync_conflicts, -1);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class SyncLogDialog extends AbstractDialog {
                 if (logs.size() > lastDisplayCount) {
                     buildAndDisplayDialogContent();
                 } else {
-                    NotificationHelper.showDialogNotification(SyncLogDialog.this, NotificationType.INFO,  R.string.snackbar_no_more_entries);
+                    NotificationHelper.showDialogNotification(SyncLogDialog.this, NotificationType.INFO,  R.string.message_no_more_entries);
                 }
             }
         });

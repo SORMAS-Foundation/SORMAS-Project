@@ -79,29 +79,29 @@ public class ClassificationXOfCriteriaDto extends ClassificationCriteriaDto impl
 	protected String parseAmountNumber() {
 		switch (requiredAmount) {
 		case 1:
-			return I18nProperties.getString(Strings.one).toUpperCase();
+			return I18nProperties.getString(Strings.numberOne).toUpperCase();
 		case 2:
-			return I18nProperties.getString(Strings.two).toUpperCase();
+			return I18nProperties.getString(Strings.numberTwo).toUpperCase();
 		case 3:
-			return I18nProperties.getString(Strings.three).toUpperCase();
+			return I18nProperties.getString(Strings.numberThree).toUpperCase();
 		case 4:
-			return I18nProperties.getString(Strings.four).toUpperCase();
+			return I18nProperties.getString(Strings.numberFour).toUpperCase();
 		case 5:
-			return I18nProperties.getString(Strings.five).toUpperCase();
+			return I18nProperties.getString(Strings.numberFive).toUpperCase();
 		case 6:
-			return I18nProperties.getString(Strings.six).toUpperCase();
+			return I18nProperties.getString(Strings.numberSix).toUpperCase();
 		case 7:
-			return I18nProperties.getString(Strings.seven).toUpperCase();
+			return I18nProperties.getString(Strings.numberSeven).toUpperCase();
 		case 8:
-			return I18nProperties.getString(Strings.eight).toUpperCase();
+			return I18nProperties.getString(Strings.numberEight).toUpperCase();
 		case 9:
-			return I18nProperties.getString(Strings.nine).toUpperCase();
+			return I18nProperties.getString(Strings.numberNine).toUpperCase();
 		case 10:
-			return I18nProperties.getString(Strings.ten).toUpperCase();
+			return I18nProperties.getString(Strings.numberTen).toUpperCase();
 		case 11:
-			return I18nProperties.getString(Strings.eleven).toUpperCase();
+			return I18nProperties.getString(Strings.numberEleven).toUpperCase();
 		case 12:
-			return I18nProperties.getString(Strings.twelve).toUpperCase();
+			return I18nProperties.getString(Strings.numberTwelve).toUpperCase();
 		default:
 			return Integer.toString(requiredAmount);
 		}
@@ -142,7 +142,7 @@ public class ClassificationXOfCriteriaDto extends ClassificationCriteriaDto impl
 		@Override
 		public String buildDescription() {
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("<b> ").append(I18nProperties.getString(Strings.oneOf).toUpperCase()).append("</b>");
+			stringBuilder.append("<b> ").append(I18nProperties.getString(Strings.classificationOneOf).toUpperCase()).append("</b>");
 			for (int i = 0; i < classificationCriteria.size(); i++) {
 				stringBuilder.append("<br/>- ");
 				stringBuilder.append(classificationCriteria.get(i).buildDescription());	

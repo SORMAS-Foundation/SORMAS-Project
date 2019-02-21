@@ -31,6 +31,7 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -42,8 +43,8 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 @SuppressWarnings("serial")
 public class CaseGrid extends Grid implements AbstractGrid<CaseCriteria> {
 
-	public static final String DISEASE_SHORT = "diseaseShort";
-	public static final String NUMBER_OF_PENDING_TASKS = "numberOfPendingTasks";
+	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
+	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
 
 	private CaseCriteria caseCriteria = new CaseCriteria();
 
@@ -67,7 +68,7 @@ public class CaseGrid extends Grid implements AbstractGrid<CaseCriteria> {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				CaseIndexDto caseDto = (CaseIndexDto)itemId;
-				return String.format(I18nProperties.getPrefixCaption(CaseIndexDto.I18N_PREFIX, NUMBER_OF_PENDING_TASKS + "Format"), 
+				return String.format(I18nProperties.getCaption(Captions.formatSimpleNumberFormat), 
 						FacadeProvider.getTaskFacade().getPendingTaskCountByCase(caseDto.toReference()));
 			}
 			@Override

@@ -28,6 +28,8 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 
 import de.symeda.sormas.api.BaseCriteria;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -42,8 +44,8 @@ import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
 import de.symeda.sormas.ui.configuration.userrights.UserRightsView;
 import de.symeda.sormas.ui.contact.ContactsView;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
-import de.symeda.sormas.ui.dashboard.contacts.DashboardContactsView;
-import de.symeda.sormas.ui.dashboard.surveillance.DashboardSurveillanceView;
+import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
+import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.events.EventsView;
 import de.symeda.sormas.ui.reports.ReportsView;
 import de.symeda.sormas.ui.samples.SamplesView;
@@ -79,7 +81,7 @@ public class MainScreen extends HorizontalLayout {
 			public View getView(String viewName) {
 				try {
 					// Add new views to this clause to make sure that the right error page is shown
-					if (viewName.equals(DashboardSurveillanceView.VIEW_NAME) || viewName.equals(DashboardContactsView.VIEW_NAME) 
+					if (viewName.equals(SurveillanceDashboardView.VIEW_NAME) || viewName.equals(ContactsDashboardView.VIEW_NAME) 
 							|| viewName.equals(TasksView.VIEW_NAME) || viewName.equals(CasesView.VIEW_NAME)
 							|| viewName.equals(ContactsView.VIEW_NAME) || viewName.equals(EventsView.VIEW_NAME)
 							|| viewName.equals(SamplesView.VIEW_NAME) || viewName.equals(ReportsView.VIEW_NAME) 
@@ -103,48 +105,48 @@ public class MainScreen extends HorizontalLayout {
 			ControllerProvider.getDashboardController().registerViews(navigator);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
-			menu.addView(DashboardSurveillanceView.class, AbstractDashboardView.ROOT_VIEW_NAME, "Dashboard", FontAwesome.DASHBOARD);
+			menu.addView(SurveillanceDashboardView.class, AbstractDashboardView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuDashboard), FontAwesome.DASHBOARD);
 		} else if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_CONTACT_ACCESS)) {
-			menu.addView(DashboardContactsView.class, AbstractDashboardView.ROOT_VIEW_NAME, "Dashboard", FontAwesome.DASHBOARD);
+			menu.addView(ContactsDashboardView.class, AbstractDashboardView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuDashboard), FontAwesome.DASHBOARD);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
-			menu.addView(TasksView.class, TasksView.VIEW_NAME, "Tasks", FontAwesome.TASKS);
+			menu.addView(TasksView.class, TasksView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuTasks), FontAwesome.TASKS);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 			ControllerProvider.getCaseController().registerViews(navigator);
-			menu.addView(CasesView.class, CasesView.VIEW_NAME, "Cases", FontAwesome.EDIT);
+			menu.addView(CasesView.class, CasesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuCases), FontAwesome.EDIT);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 			ControllerProvider.getContactController().registerViews(navigator);
-			menu.addView(ContactsView.class, ContactsView.VIEW_NAME, "Contacts", FontAwesome.HAND_PAPER_O);
+			menu.addView(ContactsView.class, ContactsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuContacts), FontAwesome.HAND_PAPER_O);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
 			ControllerProvider.getEventController().registerViews(navigator);
-			menu.addView(EventsView.class, EventsView.VIEW_NAME, "Events", FontAwesome.PHONE);
+			menu.addView(EventsView.class, EventsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuEvents), FontAwesome.PHONE);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
 			ControllerProvider.getSampleController().registerViews(navigator);
-			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, "Samples", FontAwesome.DATABASE);
+			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSamples), FontAwesome.DATABASE);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.WEEKLYREPORT_VIEW)) {
-			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, "Reports", FontAwesome.FILE_TEXT);
+			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuReports), FontAwesome.FILE_TEXT);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.STATISTICS_ACCESS)) {
 			ControllerProvider.getStatisticsController().registerViews(navigator);
-			menu.addView(StatisticsView.class, AbstractStatisticsView.ROOT_VIEW_NAME, "Statistics", FontAwesome.BAR_CHART);
+			menu.addView(StatisticsView.class, AbstractStatisticsView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuStatistics), FontAwesome.BAR_CHART);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.USER_VIEW)) {
-			menu.addView(UsersView.class, UsersView.VIEW_NAME, "Users", FontAwesome.USERS);
+			menu.addView(UsersView.class, UsersView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers), FontAwesome.USERS);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONFIGURATION_ACCESS)) {
 			AbstractConfigurationView.registerViews(navigator);
 			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
-				menu.addView(RegionsView.class, AbstractConfigurationView.ROOT_VIEW_NAME, "Configuration", FontAwesome.COGS);
+				menu.addView(RegionsView.class, AbstractConfigurationView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuConfiguration), FontAwesome.COGS);
 			} else {
-				menu.addView(OutbreaksView.class, AbstractConfigurationView.ROOT_VIEW_NAME, "Configuration", FontAwesome.COGS);
+				menu.addView(OutbreaksView.class, AbstractConfigurationView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuConfiguration), FontAwesome.COGS);
 			}
 		}
-		menu.addView(AboutView.class, AboutView.VIEW_NAME, "About", FontAwesome.INFO_CIRCLE);
+		menu.addView(AboutView.class, AboutView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAbout), FontAwesome.INFO_CIRCLE);
 
 		navigator.addViewChangeListener(viewChangeListener);
 				
@@ -193,7 +195,7 @@ public class MainScreen extends HorizontalLayout {
 			if (event.getViewName().isEmpty()) {
 				// redirect to default view
 				if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_VIEW)) {
-					SormasUI.get().getNavigator().navigateTo(DashboardSurveillanceView.VIEW_NAME);
+					SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME);
 				} else if (UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
 					SormasUI.get().getNavigator().navigateTo(SamplesView.VIEW_NAME);
 				} else if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {

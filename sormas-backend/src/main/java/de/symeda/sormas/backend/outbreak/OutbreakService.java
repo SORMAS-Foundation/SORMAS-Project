@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.outbreak;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.ejb.LocalBean;
@@ -121,10 +120,9 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 			filter = and(cb, filter, cb.equal(from.join(Outbreak.DISTRICT, JoinType.LEFT).join(District.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
 		}
 		if (criteria.getActive() != null) {
-			Date now = new Date();
 			Predicate activeFilter = cb.and(
-					cb.lessThanOrEqualTo(from.get(Outbreak.START_DATE), now),
-					cb.or(cb.isNull(from.get(Outbreak.END_DATE)), cb.greaterThanOrEqualTo(from.get(Outbreak.END_DATE), now)));
+					cb.lessThanOrEqualTo(from.get(Outbreak.START_DATE), criteria.getActiveUpper()),
+					cb.or(cb.isNull(from.get(Outbreak.END_DATE)), cb.greaterThanOrEqualTo(from.get(Outbreak.END_DATE), criteria.getActiveLower())));
 			if (Boolean.FALSE.equals(criteria.getActive())) {
 				activeFilter = cb.not(activeFilter);
 			}

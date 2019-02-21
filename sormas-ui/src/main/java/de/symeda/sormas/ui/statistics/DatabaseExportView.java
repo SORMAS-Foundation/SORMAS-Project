@@ -36,6 +36,9 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.DatabaseTable;
 import de.symeda.sormas.api.importexport.DatabaseTableType;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -58,13 +61,13 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		databaseExportLayout = new VerticalLayout();
 		HorizontalLayout headerLayout = new HorizontalLayout();
 		headerLayout.setSpacing(true);
-		Label infoLabel = new Label("Please select the database tables you want to export.");
+		Label infoLabel = new Label(I18nProperties.getString(Strings.infoDatabaseExportTables));
 		headerLayout.addComponent(infoLabel);
 		headerLayout.setComponentAlignment(infoLabel, Alignment.MIDDLE_LEFT);
 		headerLayout.addComponent(createSelectionButtonsLayout());
 		databaseExportLayout.addComponent(headerLayout);
 		databaseExportLayout.addComponent(createDatabaseTablesLayout());
-		Button exportButton = new Button("Export", FontAwesome.DOWNLOAD);
+		Button exportButton = new Button(I18nProperties.getCaption(Captions.export), FontAwesome.DOWNLOAD);
 		CssStyles.style(exportButton, ValoTheme.BUTTON_PRIMARY);
 		StreamResource streamResource = DownloadUtil.createDatabaseExportStreamResource(this, "sormas_export_" + DateHelper.formatDateForExport(new Date()) + ".zip", "application/zip");
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
@@ -77,14 +80,15 @@ public class DatabaseExportView extends AbstractStatisticsView {
 	}
 
 	public void showExportErrorNotification() {
-		new Notification("Database export failed", "Please contact an admin and notify them about this problem.", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+		new Notification(I18nProperties.getString(Strings.headingDatabaseExportFailed), 
+				I18nProperties.getString(Strings.messageDatabaseExportFailed), Type.ERROR_MESSAGE, false).show(Page.getCurrent());
 	}
 	
 	private HorizontalLayout createSelectionButtonsLayout() {
 		HorizontalLayout selectionButtonsLayout = new HorizontalLayout();
 		selectionButtonsLayout.setSpacing(true);
 		
-		Button selectAll = new Button("Select all");
+		Button selectAll = new Button(I18nProperties.getCaption(Captions.actionSelectAll));
 		CssStyles.style(selectAll, ValoTheme.BUTTON_LINK);
 		selectAll.addClickListener(e -> {
 			for (CheckBox checkBox : databaseTableToggles.keySet()) {
@@ -93,7 +97,7 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		});
 		selectionButtonsLayout.addComponent(selectAll);
 		
-		Button selectAllSormasData = new Button("Select all SORMAS data");
+		Button selectAllSormasData = new Button(I18nProperties.getCaption(Captions.exportSelectSormasData));
 		CssStyles.style(selectAllSormasData, ValoTheme.BUTTON_LINK);
 		selectAllSormasData.addClickListener(e -> {
 			for (CheckBox checkBox : databaseTableToggles.keySet()) {
@@ -104,7 +108,7 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		});
 		selectionButtonsLayout.addComponent(selectAllSormasData);
 		
-		Button deselectAll = new Button ("Deselect all");
+		Button deselectAll = new Button (I18nProperties.getCaption(Captions.actionDeselectAll));
 		CssStyles.style(deselectAll, ValoTheme.BUTTON_LINK);
 		deselectAll.addClickListener(e -> {
 			for (CheckBox checkBox : databaseTableToggles.keySet()) {
@@ -121,12 +125,12 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		databaseTablesLayout.setSpacing(true);
 		
 		VerticalLayout sormasDataLayout = new VerticalLayout();
-		Label sormasDataHeadline = new Label("SORMAS data");
+		Label sormasDataHeadline = new Label(I18nProperties.getCaption(Captions.exportSormasData));
 		CssStyles.style(sormasDataHeadline, CssStyles.H4);
 		sormasDataLayout.addComponent(sormasDataHeadline);
 		
 		VerticalLayout infrastructureDataLayout = new VerticalLayout();
-		Label infrastructureDataHeadline = new Label("Infrastructure data");
+		Label infrastructureDataHeadline = new Label(I18nProperties.getCaption(Captions.exportInfrastructureData));
 		CssStyles.style(infrastructureDataHeadline, CssStyles.H4);
 		infrastructureDataLayout.addComponent(infrastructureDataHeadline);
 		

@@ -31,7 +31,9 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.report.WeeklyReportRegionSummaryDto;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -116,7 +118,7 @@ public class WeeklyReportRegionsGrid extends Grid implements ItemClickListener {
 				WeeklyReportRegionSummaryDto.OFFICER_REPORTS,
 				WeeklyReportRegionSummaryDto.OFFICER_REPORT_PERCENTAGE,
 				WeeklyReportRegionSummaryDto.OFFICER_ZERO_REPORTS);
-		preHeaderCell.setHtml(I18nProperties.getPrefixCaption(WeeklyReportRegionSummaryDto.I18N_PREFIX, "regionOfficers"));
+		preHeaderCell.setHtml(I18nProperties.getCaption(Captions.weeklyReportRegionOfficers));
 		preHeaderCell.setStyleName(CssStyles.GRID_CELL_ODD);		
 		
 		preHeaderRow.join(
@@ -124,7 +126,7 @@ public class WeeklyReportRegionsGrid extends Grid implements ItemClickListener {
 				WeeklyReportRegionSummaryDto.INFORMANT_REPORTS,
 				WeeklyReportRegionSummaryDto.INFORMANT_REPORT_PERCENTAGE,
 				WeeklyReportRegionSummaryDto.INFORMANT_ZERO_REPORTS)
-			.setHtml(I18nProperties.getPrefixCaption(WeeklyReportRegionSummaryDto.I18N_PREFIX, "regionInformants"));
+			.setHtml(I18nProperties.getCaption(Captions.weeklyReportRegionInformants));
 
 		getColumn(VIEW_DETAILS_BTN_ID).setRenderer(new HtmlRenderer());
 		getColumn(VIEW_DETAILS_BTN_ID).setWidth(60);
@@ -172,8 +174,8 @@ public class WeeklyReportRegionsGrid extends Grid implements ItemClickListener {
 			grid.setHeightMode(HeightMode.ROW);
 			grid.setHeightUndefined();
 			layout.addComponent(grid);
-			window.setCaption(
-					"Weekly Reports in " + summaryDto.getRegion().toString() + " - Epi Week " + week + "/" + year);
+			window.setCaption(String.format(I18nProperties.getCaption(Captions.weeklyReportsInDistrict), summaryDto.getRegion().toString())
+					+ " - " + I18nProperties.getString(Strings.epiWeek) + " " + week + "/" + year);
 		}
 	}
 }

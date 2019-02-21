@@ -52,7 +52,9 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -82,8 +84,6 @@ public class ContactsView extends AbstractView {
 	private static final long serialVersionUID = -3533557348144005469L;
 
 	public static final String VIEW_NAME = "contacts";
-
-	public static final String SEARCH_FIELD = "searchField";
 
 	private ContactCriteria criteria;
 
@@ -132,7 +132,7 @@ public class ContactsView extends AbstractView {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
 
-			PopupButton exportButton = new PopupButton("Export"); 
+			PopupButton exportButton = new PopupButton(I18nProperties.getCaption(Captions.export)); 
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
 			VerticalLayout exportLayout = new VerticalLayout();
 			exportLayout.setSpacing(true); 
@@ -142,8 +142,8 @@ public class ContactsView extends AbstractView {
 			exportButton.setContent(exportLayout);
 			addHeaderComponent(exportButton);
 
-			Button basicExportButton = new Button("Basic Export");
-			basicExportButton.setDescription("Export the columns and rows that are shown in the table below.");
+			Button basicExportButton = new Button(I18nProperties.getCaption(Captions.exportBasic));
+			basicExportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			basicExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			basicExportButton.setIcon(FontAwesome.TABLE);
 			basicExportButton.setWidth(100, Unit.PERCENTAGE);
@@ -153,8 +153,8 @@ public class ContactsView extends AbstractView {
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(basicExportButton);
 
-			Button extendedExportButton = new Button("Detailed Export");
-			extendedExportButton.setDescription("Export the rows that are shown in the table below with an extended set of columns. This may take a while.");
+			Button extendedExportButton = new Button(I18nProperties.getCaption(Captions.exportDetailed));
+			extendedExportButton.setDescription(I18nProperties.getDescription(Descriptions.descDetailedExportButton));
 			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			extendedExportButton.setIcon(FontAwesome.FILE_TEXT);
 			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
@@ -174,7 +174,7 @@ public class ContactsView extends AbstractView {
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
 
 			// Warning if no filters have been selected
-			Label warningLabel = new Label("<b>Warning:</b> No filters have been selected. Export may take a while.", ContentMode.HTML);
+			Label warningLabel = new Label(I18nProperties.getString(Strings.infoExportNoFilters), ContentMode.HTML);
 			exportLayout.addComponent(warningLabel);
 			warningLabel.setVisible(false);
 
@@ -229,7 +229,7 @@ public class ContactsView extends AbstractView {
 		districtFilter = new ComboBox();
 		districtFilter.setWidth(140, Unit.PIXELS);
 		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISTRICT_UUID));
-		districtFilter.setDescription("Select a district in the state");
+		districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
 		districtFilter.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
 			criteria.caseDistrict(district);
@@ -257,7 +257,7 @@ public class ContactsView extends AbstractView {
 		facilityFilter = new ComboBox();
 		facilityFilter.setWidth(140, Unit.PIXELS);
 		facilityFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_HEALTH_FACILITY_UUID));
-		facilityFilter.setDescription("Select a facility in the LGA");
+		facilityFilter.setDescription(I18nProperties.getDescription(Descriptions.descFacilityFilter));
 		facilityFilter.addValueChangeListener(e -> {
 			FacilityReferenceDto facility = (FacilityReferenceDto) e.getProperty().getValue();
 			criteria.caseFacility(facility);
@@ -302,7 +302,7 @@ public class ContactsView extends AbstractView {
 
 		reportedByFilter = new ComboBox();
 		reportedByFilter.setWidth(140, Unit.PIXELS);
-		reportedByFilter.setInputPrompt("Reported By");
+		reportedByFilter.setInputPrompt(I18nProperties.getString(Strings.reportedBy));
 		reportedByFilter.addItems((Object[]) UserRole.values());
 		reportedByFilter.addValueChangeListener(e -> {
 			criteria.reportingUserRole((UserRole) e.getProperty().getValue());
@@ -313,14 +313,14 @@ public class ContactsView extends AbstractView {
 		searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setNullRepresentation("");
-		searchField.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, SEARCH_FIELD));
+		searchField.setInputPrompt(I18nProperties.getString(Strings.promptContactsSearchField));
 		searchField.addTextChangeListener(e -> {
 			criteria.nameUuidCaseLike(e.getText());
 			grid.reload();
 		});
 		filterLayout.addComponent(searchField);
 		
-		resetButton = new Button(I18nProperties.getCaption(Captions.resetFilters));
+		resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
 		resetButton.setVisible(false);
 		resetButton.addClickListener(event -> {
 			ViewModelProviders.of(ContactsView.class).remove(ContactCriteria.class);
@@ -339,14 +339,14 @@ public class ContactsView extends AbstractView {
 
 		statusButtons = new HashMap<>();
 
-		Button statusAll = new Button("All", e -> {
+		Button statusAll = new Button(I18nProperties.getCaption(Captions.all), e -> {
 			criteria.contactStatus(null);
 			navigateTo(criteria);
 		});
 		CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 		statusAll.setCaptionAsHtml(true);
 		statusFilterLayout.addComponent(statusAll);
-		statusButtons.put(statusAll, "All");
+		statusButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
 		activeStatusButton = statusAll;
 
 		for (ContactStatus status : ContactStatus.values()) {
@@ -366,7 +366,7 @@ public class ContactsView extends AbstractView {
 		{
 			// Show archived/active cases button
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
-				switchArchivedActiveButton = new Button(I18nProperties.getCaption("showArchivedContacts"));
+				switchArchivedActiveButton = new Button(I18nProperties.getCaption(Captions.contactShowArchived));
 				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 				switchArchivedActiveButton.addClickListener(e -> {
 					criteria.archived(Boolean.TRUE.equals(criteria.getArchived()) ? null : Boolean.TRUE);
@@ -380,12 +380,12 @@ public class ContactsView extends AbstractView {
 				statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 				MenuBar bulkOperationsDropdown = new MenuBar();	
-				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem("Bulk Actions", null);
+				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 				Command changeCommand = selectedItem -> {
 					ControllerProvider.getContactController().showBulkContactDataEditComponent(grid.getSelectedRows(), null);
 				};
-				bulkOperationsItem.addItem("Edit...", FontAwesome.ELLIPSIS_H, changeCommand);
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkEdit), FontAwesome.ELLIPSIS_H, changeCommand);
 
 				Command cancelFollowUpCommand = selectedItem -> {
 					ControllerProvider.getContactController().cancelFollowUpOfAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -394,7 +394,7 @@ public class ContactsView extends AbstractView {
 						}
 					});
 				};
-				bulkOperationsItem.addItem("Cancel follow-up", FontAwesome.TIMES, cancelFollowUpCommand);
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkCancelFollowUp), FontAwesome.TIMES, cancelFollowUpCommand);
 
 				Command lostToFollowUpCommand = selectedItem -> {
 					ControllerProvider.getContactController().setAllSelectedItemsToLostToFollowUp(grid.getSelectedRows(), new Runnable() {
@@ -403,7 +403,7 @@ public class ContactsView extends AbstractView {
 						}
 					});
 				};
-				bulkOperationsItem.addItem("Set to lost to follow-up", FontAwesome.UNLINK, lostToFollowUpCommand);
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkLostToFollowUp), FontAwesome.UNLINK, lostToFollowUpCommand);
 
 				Command deleteCommand = selectedItem -> {
 					ControllerProvider.getContactController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -412,7 +412,7 @@ public class ContactsView extends AbstractView {
 						}
 					});
 				};
-				bulkOperationsItem.addItem("Delete", FontAwesome.TRASH, deleteCommand);
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), FontAwesome.TRASH, deleteCommand);
 
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
 			}
@@ -477,11 +477,11 @@ public class ContactsView extends AbstractView {
 		
 		if (Boolean.TRUE.equals(criteria.getArchived())) {
 			getViewTitleLabel().setValue(I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", ".") + ".archive"));
-			switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showActiveContacts"));
+			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(I18nProperties.getCaption(Captions.contactShowActive)));
 			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		} else {
 			getViewTitleLabel().setValue(originalViewTitle);
-			switchArchivedActiveButton.setCaption(I18nProperties.getCaption("showArchivedContacts"));
+			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(I18nProperties.getCaption(Captions.contactShowArchived)));
 			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
 		} 
 	}

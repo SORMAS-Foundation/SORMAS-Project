@@ -25,6 +25,8 @@ import com.vaadin.server.Page;
 import com.vaadin.server.VaadinServletService;
 import com.vaadin.server.VaadinSession;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.utils.UserRightsException;
 
@@ -45,7 +47,7 @@ public final class LoginHelper {
 			// check user role
 			if (!VaadinServletService.getCurrentServletRequest().isUserInRole(UserRole._USER)) {
 				VaadinServletService.getCurrentServletRequest().logout();
-				throw new UserRightsException("Your user account does not have access to the web application.");
+				throw new UserRightsException(I18nProperties.getString(Strings.errorNoAccessToWeb));
 			}
 		} catch (ServletException e) {
 			return false;

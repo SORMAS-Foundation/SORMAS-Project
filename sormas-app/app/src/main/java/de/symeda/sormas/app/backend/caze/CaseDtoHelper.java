@@ -129,6 +129,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
         target.setOutcome(source.getOutcome());
         target.setOutcomeDate(source.getOutcomeDate());
+        target.setSequelae(source.getSequelae());
+        target.setSequelaeDetails(source.getSequelaeDetails());
     }
 
     @Override
@@ -239,6 +241,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
         target.setOutcome(source.getOutcome());
         target.setOutcomeDate(source.getOutcomeDate());
+        target.setSequelae(source.getSequelae());
+        target.setSequelaeDetails(source.getSequelaeDetails());
     }
 
     public static CaseReferenceDto toReferenceDto(Case ado) {

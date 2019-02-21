@@ -20,16 +20,12 @@ package de.symeda.sormas.app.contact.edit;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.visit.VisitDto;
-import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.databinding.FragmentContactEditLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentContactNewLayoutBinding;
-import de.symeda.sormas.app.databinding.FragmentVisitEditLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
 
 public final class ContactValidator {
@@ -40,11 +36,11 @@ public final class ContactValidator {
                 public void call() {
                     Date lastContactDate = contentBinding.contactLastContactDate.getValue();
                     Date contactReferenceDate = contact.getReportDateTime();
-                    if (lastContactDate.after(contactReferenceDate)) {
+                    if (lastContactDate != null && contactReferenceDate != null && lastContactDate.after(contactReferenceDate)) {
                         contentBinding.contactLastContactDate.enableErrorState(I18nProperties.getValidationError(Validations.beforeDate, contentBinding.contactLastContactDate.getCaption(),
                                 contentBinding.contactReportDateTime.getCaption()));
                     }
-                }
+            }
             };
             contentBinding.contactLastContactDate.setValidationCallback(lastContactDateCallback);
         }
@@ -56,7 +52,7 @@ public final class ContactValidator {
                 public void call() {
                     Date lastContactDate = contentBinding.contactLastContactDate.getValue();
                     Date contactReferenceDate = contact.getReportDateTime();
-                    if (lastContactDate.after(contactReferenceDate)) {
+                    if (lastContactDate != null && contactReferenceDate != null && lastContactDate.after(contactReferenceDate)) {
                         contentBinding.contactLastContactDate.enableErrorState(I18nProperties.getValidationError(Validations.beforeDate, contentBinding.contactLastContactDate.getCaption(), I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.REPORT_DATE_TIME)));
                     }
                 }
