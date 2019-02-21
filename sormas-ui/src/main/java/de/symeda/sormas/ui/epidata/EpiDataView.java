@@ -41,7 +41,7 @@ public class EpiDataView extends AbstractCaseView {
     		return;
     	}
 		
-		setSubComponent(ControllerProvider.getCaseController().getCaseEpiDataComponent(getCaseRef().getUuid(), getViewMode()));
+		setSubComponent(ControllerProvider.getCaseController().getEpiDataComponent(getCaseRef().getUuid(), getViewMode()));
 	}
 
 }

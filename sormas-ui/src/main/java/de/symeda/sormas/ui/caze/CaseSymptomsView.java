@@ -41,6 +41,6 @@ public class CaseSymptomsView extends AbstractCaseView {
     		return;
     	}
 
-    	setSubComponent(ControllerProvider.getCaseController().getCaseSymptomsEditComponent(getCaseRef().getUuid(), getViewMode()));
+    	setSubComponent(ControllerProvider.getCaseController().getSymptomsEditComponent(getCaseRef().getUuid(), getViewMode()));
     }
 }

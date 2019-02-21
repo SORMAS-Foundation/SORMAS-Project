@@ -24,11 +24,11 @@ import de.symeda.sormas.ui.caze.AbstractCaseView;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 @SuppressWarnings("serial")
-public class CaseHospitalizationView extends AbstractCaseView {
+public class HospitalizationView extends AbstractCaseView {
 	
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/hospitalization";
 	
-	public CaseHospitalizationView() {
+	public HospitalizationView() {
 		super(VIEW_NAME); 	
 	}
 	
@@ -41,6 +41,6 @@ public class CaseHospitalizationView extends AbstractCaseView {
     		return;
     	}
 		
-		setSubComponent(ControllerProvider.getCaseController().getCaseHospitalizationComponent(getCaseRef().getUuid(), getViewMode()));
+		setSubComponent(ControllerProvider.getCaseController().getHospitalizationComponent(getCaseRef().getUuid(), getViewMode()));
 	}
 }

@@ -45,7 +45,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 @SuppressWarnings("serial")
-public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto> {
+public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
 	private static final String HEALTH_FACILITY = Captions.CaseHospitalization_healthFacility;	
 	private final CaseDataDto caze;
@@ -60,7 +60,7 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 			LayoutUtil.fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS)
 			;		
 
-	public CaseHospitalizationForm(CaseDataDto caze, UserRight editOrCreateUserRight, ViewMode viewMode) {
+	public HospitalizationForm(CaseDataDto caze, UserRight editOrCreateUserRight, ViewMode viewMode) {
 		super(HospitalizationDto.class, HospitalizationDto.I18N_PREFIX, editOrCreateUserRight);
 		this.caze = caze;
 		this.viewMode = viewMode;

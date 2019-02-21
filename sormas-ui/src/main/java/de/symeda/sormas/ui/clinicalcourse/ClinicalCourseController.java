@@ -10,7 +10,6 @@ import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitIndexDto;
@@ -18,14 +17,12 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import de.symeda.sormas.ui.utils.ViewMode;
 
 public class ClinicalCourseController {
 
@@ -111,27 +108,6 @@ public class ClinicalCourseController {
 				}
 			}, I18nProperties.getString(Strings.entityClinicalVisit));
 		}
-	}
-	
-	public CommitDiscardWrapperComponent<ClinicalCourseForm> getClinicalCourseView(String caseUuid, ViewMode viewMode) {
-		ClinicalCourseForm form = new ClinicalCourseForm(UserRight.CLINICAL_COURSE_EDIT);
-		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-		form.setValue(caze.getClinicalCourse());
-		
-		final CommitDiscardWrapperComponent<ClinicalCourseForm> view = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
-		view.addCommitListener(new CommitListener() {
-			@Override
-			public void onCommit() {
-				if (!form.getFieldGroup().isModified()) {
-					ClinicalCourseDto dto = form.getValue();
-					FacadeProvider.getClinicalCourseFacade().saveClinicalCourse(dto);
-					Notification.show(I18nProperties.getString(Strings.messageClinicalCourseSaved), Type.TRAY_NOTIFICATION);
-					ControllerProvider.getCaseController().navigateToView(ClinicalCourseView.VIEW_NAME, caseUuid, viewMode);
-				}
-			}
-		});
-		
-		return view;
 	}
 	
 	public void deleteAllSelectedClinicalVisits(Collection<Object> selectedRows, Runnable callback) {
