@@ -66,7 +66,7 @@ public class VaadinUiUtil {
 		Label contentLabel = new Label(contentText);
 		contentLabel.setWidth(100, Unit.PERCENTAGE);
 		popupLayout.addComponent(contentLabel);
-		Button okayButton = new Button(I18nProperties.getCaption(Captions.cOkay));
+		Button okayButton = new Button(I18nProperties.getCaption(Captions.actionOkay));
 		okayButton.addClickListener(e -> {
 			window.close();
 		});

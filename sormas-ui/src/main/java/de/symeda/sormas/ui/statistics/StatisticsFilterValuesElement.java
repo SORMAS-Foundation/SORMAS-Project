@@ -117,7 +117,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		VerticalLayout utilityButtonsLayout = new VerticalLayout();
 		utilityButtonsLayout.setSizeUndefined();
 
-		Button addAllButton = new Button(I18nProperties.getCaption(Captions.cAll), FontAwesome.PLUS_CIRCLE);
+		Button addAllButton = new Button(I18nProperties.getCaption(Captions.all), FontAwesome.PLUS_CIRCLE);
 		CssStyles.style(addAllButton, ValoTheme.BUTTON_LINK);
 		addAllButton.addClickListener(e -> {
 			for (TokenizableValue tokenizable : getFilterValues()) {
@@ -125,7 +125,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 			}
 		});
 
-		Button removeAllButton = new Button(I18nProperties.getCaption(Captions.cClear), FontAwesome.TIMES_CIRCLE);
+		Button removeAllButton = new Button(I18nProperties.getCaption(Captions.actionClear), FontAwesome.TIMES_CIRCLE);
 		CssStyles.style(removeAllButton, ValoTheme.BUTTON_LINK);
 		removeAllButton.addClickListener(e -> {
 			for (Tokenizable tokenizable : tokenField.getValue()) {
@@ -177,7 +177,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 			switch (attribute) {
 			case SEX:
 				List<TokenizableValue> tokens = createTokens((Object[]) Sex.values());
-				tokens.add(new TokenizableValue(I18nProperties.getCaption(Captions.cUnknown), tokens.size()));
+				tokens.add(new TokenizableValue(I18nProperties.getCaption(Captions.unknown), tokens.size()));
 				return tokens;
 			case AGE_INTERVAL_1_YEAR:
 			case AGE_INTERVAL_5_YEARS:

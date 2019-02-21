@@ -258,7 +258,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		// Automatic case classification rules button - invisible for other diseases
 		if (disease != Disease.OTHER) {
-			Button classificationRulesButton = new Button(I18nProperties.getCaption(Captions.cInfo), FontAwesome.INFO_CIRCLE);
+			Button classificationRulesButton = new Button(I18nProperties.getCaption(Captions.info), FontAwesome.INFO_CIRCLE);
 			CssStyles.style(classificationRulesButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
 			classificationRulesButton.addClickListener(e -> {
 				ControllerProvider.getCaseController().openClassificationRulesPopup(getValue());
@@ -272,7 +272,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			// Replace classification user if case has been automatically classified
 			if (getValue().getClassificationDate() != null && getValue().getClassificationUser() == null) {
 				getField(CaseDataDto.CLASSIFICATION_USER).setVisible(false);
-				Label classifiedBySystemLabel = new Label(I18nProperties.getCaption(Captions.cSystem));
+				Label classifiedBySystemLabel = new Label(I18nProperties.getCaption(Captions.system));
 				classifiedBySystemLabel.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLASSIFIED_BY));
 				getContent().addComponent(classifiedBySystemLabel, CLASSIFIED_BY_SYSTEM_LOC);
 			}
@@ -352,7 +352,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					}
 				};
 				confirmDiseaseChangeComponent.getConfirmButton().setCaption(I18nProperties.getString(Strings.confirmationChangeCaseDisease));
-				confirmDiseaseChangeComponent.getCancelButton().setCaption(I18nProperties.getCaption(Captions.cCancel));
+				confirmDiseaseChangeComponent.getCancelButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
 				confirmDiseaseChangeComponent.setMargin(true);
 
 				Window popupWindow = VaadinUiUtil.showPopupWindow(confirmDiseaseChangeComponent);

@@ -96,7 +96,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 		fileDownloader.extend(exportButton);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			createButton = new Button(I18nProperties.getCaption(Captions.cNewEntry));
+			createButton = new Button(I18nProperties.getCaption(Captions.actionNewEntry));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
 			createButton.addClickListener(e -> ControllerProvider.getInfrastructureController().createCommunity());
@@ -145,7 +145,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 		});
 		filterLayout.addComponent(districtFilter);
 
-		resetButton = new Button(I18nProperties.getCaption(Captions.cResetFilters));
+		resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
 		resetButton.setVisible(false);
 		CssStyles.style(resetButton, CssStyles.FORCE_CAPTION);
 		resetButton.addClickListener(event -> {

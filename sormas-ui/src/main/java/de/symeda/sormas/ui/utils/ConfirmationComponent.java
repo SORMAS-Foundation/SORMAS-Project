@@ -65,7 +65,7 @@ public abstract class ConfirmationComponent extends HorizontalLayout {
 	
 	public Button getConfirmButton() {
 		if (confirmButton == null) {
-			confirmButton = new Button(I18nProperties.getCaption(Captions.cConfirm));
+			confirmButton = new Button(I18nProperties.getCaption(Captions.actionConfirm));
 			cancelButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 
 			confirmButton.addClickListener(new ClickListener() {
@@ -80,7 +80,7 @@ public abstract class ConfirmationComponent extends HorizontalLayout {
 	
 	public Button getCancelButton() {
 		if (cancelButton == null) {
-			cancelButton = new Button(I18nProperties.getCaption(Captions.cCancel));
+			cancelButton = new Button(I18nProperties.getCaption(Captions.actionCancel));
 			cancelButton.addStyleName(ValoTheme.BUTTON_LINK);
 
 			cancelButton.addClickListener(new ClickListener() {

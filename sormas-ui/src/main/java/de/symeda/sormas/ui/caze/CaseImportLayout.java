@@ -305,9 +305,9 @@ public class CaseImportLayout extends VerticalLayout {
 					}
 				};
 				selectOrCreateComponent.addDiscardListener(discardListener);
-				selectOrCreateComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.cCancel));
+				selectOrCreateComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
 
-				Button skipButton = new Button(I18nProperties.getCaption(Captions.cSkip));
+				Button skipButton = new Button(I18nProperties.getCaption(Captions.actionSkip));
 				skipButton.addClickListener(e -> {
 					currentUI.accessSynchronously(new Runnable() {
 						@Override

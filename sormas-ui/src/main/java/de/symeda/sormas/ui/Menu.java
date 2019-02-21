@@ -86,7 +86,7 @@ public class Menu extends CssLayout {
 
         // logout menu item
         MenuBar logoutMenu = new MenuBar();
-        logoutMenu.addItem(I18nProperties.getCaption(Captions.cLogout) + " (" + UserProvider.getCurrent().getUserName() + ")", FontAwesome.SIGN_OUT, new Command() {
+        logoutMenu.addItem(I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName() + ")", FontAwesome.SIGN_OUT, new Command() {
 
             @Override
             public void menuSelected(MenuItem selectedItem) {
@@ -98,7 +98,7 @@ public class Menu extends CssLayout {
         menuPart.addComponent(logoutMenu);
 
         // button for toggling the visibility of the menu when on a small screen
-        final Button showMenu = new Button(I18nProperties.getCaption(Captions.cMenu), new ClickListener() {
+        final Button showMenu = new Button(I18nProperties.getCaption(Captions.menu), new ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
                 if (menuPart.getStyleName().contains(VALO_MENU_VISIBLE)) {

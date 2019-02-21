@@ -34,8 +34,8 @@ public class StatisticsFilterDateRangeElement extends StatisticsFilterElement {
 	public StatisticsFilterDateRangeElement() {
 		setSpacing(true);
 		
-		dateFromField = new DateField(I18nProperties.getCaption(Captions.cFrom));
-		dateToField = new DateField(I18nProperties.getCaption(Captions.cTo));
+		dateFromField = new DateField(I18nProperties.getCaption(Captions.from));
+		dateToField = new DateField(I18nProperties.getCaption(Captions.to));
 		
 		addComponent(dateFromField);
 		addComponent(dateToField);

@@ -38,7 +38,7 @@ public class CaseUuidRenderer extends HtmlRenderer {
 	@Override
 	public JsonValue encode(String value) {
 		if(withCreateCaseIfEmpty && (value == null || value.isEmpty())) {
-			value = "<a title='" + I18nProperties.getString(Strings.headingCreateNewCase) +"'>" + I18nProperties.getCaption(Captions.cCreate) + "</a> " + FontAwesome.EDIT.getHtml();
+			value = "<a title='" + I18nProperties.getString(Strings.headingCreateNewCase) +"'>" + I18nProperties.getCaption(Captions.actionCreate) + "</a> " + FontAwesome.EDIT.getHtml();
 			return super.encode(value);
 		}
 		

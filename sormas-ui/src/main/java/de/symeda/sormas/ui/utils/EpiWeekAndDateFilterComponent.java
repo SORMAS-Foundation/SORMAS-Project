@@ -132,7 +132,7 @@ public class EpiWeekAndDateFilterComponent extends HorizontalLayout {
 			weekFromFilter.setValue(DateHelper.getEpiWeek(c.getTime()));
 		}
 		if (showCaption) {
-			weekFromFilter.setCaption(I18nProperties.getCaption(Captions.cEpiWeekFrom));
+			weekFromFilter.setCaption(I18nProperties.getCaption(Captions.epiWeekFrom));
 		}
 		if (applyButton != null) {
 			weekFromFilter.addValueChangeListener(e -> {
@@ -150,7 +150,7 @@ public class EpiWeekAndDateFilterComponent extends HorizontalLayout {
 			weekToFilter.setValue(DateHelper.getEpiWeek(c.getTime()));
 		}
 		if (showCaption) {
-			weekToFilter.setCaption(I18nProperties.getCaption(Captions.cEpiWeekTo));
+			weekToFilter.setCaption(I18nProperties.getCaption(Captions.epiWeekTo));
 		}
 		if (applyButton != null) {
 			weekToFilter.addValueChangeListener(e -> {
@@ -162,7 +162,7 @@ public class EpiWeekAndDateFilterComponent extends HorizontalLayout {
 		// Date filter
 		dateFromFilter.setWidth(200, Unit.PIXELS);
 		if (showCaption) {
-			dateFromFilter.setCaption(I18nProperties.getCaption(Captions.cFrom));
+			dateFromFilter.setCaption(I18nProperties.getCaption(Captions.from));
 		}
 		if (applyButton != null) {
 			dateFromFilter.addValueChangeListener(e -> {
@@ -172,7 +172,7 @@ public class EpiWeekAndDateFilterComponent extends HorizontalLayout {
 
 		dateToFilter.setWidth(200, Unit.PIXELS);
 		if (showCaption) {
-			dateToFilter.setCaption(I18nProperties.getCaption(Captions.cTo));
+			dateToFilter.setCaption(I18nProperties.getCaption(Captions.to));
 		}
 		if (applyButton != null) {
 			dateToFilter.addValueChangeListener(e -> {

@@ -156,9 +156,9 @@ public class EventController {
 			Button archiveEventButton = new Button();
 			archiveEventButton.addStyleName(ValoTheme.BUTTON_LINK);
 			if (archived) {
-				archiveEventButton.setCaption(I18nProperties.getCaption(Captions.cDearchive));
+				archiveEventButton.setCaption(I18nProperties.getCaption(Captions.actionDearchive));
 			} else {
-				archiveEventButton.setCaption(I18nProperties.getCaption(Captions.cArchive));
+				archiveEventButton.setCaption(I18nProperties.getCaption(Captions.actionArchive));
 			}
 			archiveEventButton.addClickListener(e -> {
 				editView.commit();

@@ -157,7 +157,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		});
 		filterLayout.addComponent(communityFilter);
 		
-		resetButton = new Button(I18nProperties.getCaption(Captions.cResetFilters));
+		resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
 		resetButton.setVisible(false);
 		CssStyles.style(resetButton, CssStyles.FORCE_CAPTION);
 		resetButton.addClickListener(event -> {

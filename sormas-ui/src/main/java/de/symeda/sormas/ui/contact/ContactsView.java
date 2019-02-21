@@ -320,7 +320,7 @@ public class ContactsView extends AbstractView {
 		});
 		filterLayout.addComponent(searchField);
 		
-		resetButton = new Button(I18nProperties.getCaption(Captions.cResetFilters));
+		resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
 		resetButton.setVisible(false);
 		resetButton.addClickListener(event -> {
 			ViewModelProviders.of(ContactsView.class).remove(ContactCriteria.class);
@@ -339,14 +339,14 @@ public class ContactsView extends AbstractView {
 
 		statusButtons = new HashMap<>();
 
-		Button statusAll = new Button(I18nProperties.getCaption(Captions.cAll), e -> {
+		Button statusAll = new Button(I18nProperties.getCaption(Captions.all), e -> {
 			criteria.contactStatus(null);
 			navigateTo(criteria);
 		});
 		CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 		statusAll.setCaptionAsHtml(true);
 		statusFilterLayout.addComponent(statusAll);
-		statusButtons.put(statusAll, I18nProperties.getCaption(Captions.cAll));
+		statusButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
 		activeStatusButton = statusAll;
 
 		for (ContactStatus status : ContactStatus.values()) {

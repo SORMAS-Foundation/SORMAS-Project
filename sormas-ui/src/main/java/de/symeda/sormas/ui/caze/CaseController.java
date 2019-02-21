@@ -409,9 +409,9 @@ public class CaseController {
 			Button archiveCaseButton = new Button();
 			archiveCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
 			if (archived) {
-				archiveCaseButton.setCaption(I18nProperties.getCaption(Captions.cDearchive));
+				archiveCaseButton.setCaption(I18nProperties.getCaption(Captions.actionDearchive));
 			} else {
-				archiveCaseButton.setCaption(I18nProperties.getCaption(Captions.cArchive));
+				archiveCaseButton.setCaption(I18nProperties.getCaption(Captions.actionArchive));
 			}
 			archiveCaseButton.addClickListener(e -> {
 				editView.commit();
@@ -597,7 +597,7 @@ public class CaseController {
 			}
 		});
 
-		Button cancelButton = new Button(I18nProperties.getCaption(Captions.cCancel));
+		Button cancelButton = new Button(I18nProperties.getCaption(Captions.actionCancel));
 		cancelButton.setStyleName(ValoTheme.BUTTON_LINK);
 		cancelButton.addClickListener(e -> {
 			popupWindow.close();

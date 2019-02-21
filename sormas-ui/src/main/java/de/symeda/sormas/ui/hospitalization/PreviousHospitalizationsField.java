@@ -38,8 +38,8 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class PreviousHospitalizationsField extends AbstractTableField<PreviousHospitalizationDto> {
 
 	private static final String PERIOD = Captions.CasePreviousHospitalization_prevHospPeriod;
-	private static final String COMMUNITY = Captions.CasePreviousHospitalization_community;
-	private static final String DISTRICT = Captions.CasePreviousHospitalization_district;
+	private static final String COMMUNITY = Captions._community;
+	private static final String DISTRICT = Captions._district;
 
 	@Override
 	public Class<PreviousHospitalizationDto> getEntryType() {

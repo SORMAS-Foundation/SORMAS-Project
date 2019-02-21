@@ -108,7 +108,7 @@ public class CaseImportProgressLayout extends VerticalLayout {
 		setComponentAlignment(progressInfoLayout, Alignment.TOP_RIGHT);
 		
 		// Cancel button
-		closeCancelButton = new Button(I18nProperties.getCaption(Captions.cCancel));
+		closeCancelButton = new Button(I18nProperties.getCaption(Captions.actionCancel));
 		CssStyles.style(closeCancelButton, CssStyles.VSPACE_TOP_2);
 		cancelListener = e -> {
 			cancelCallback.run();
@@ -156,7 +156,7 @@ public class CaseImportProgressLayout extends VerticalLayout {
 	}
 	
 	public void makeClosable(Runnable closeCallback) {
-		closeCancelButton.setCaption(I18nProperties.getCaption(Captions.cClose));
+		closeCancelButton.setCaption(I18nProperties.getCaption(Captions.actionClose));
 		closeCancelButton.removeClickListener(cancelListener);
 		closeCancelButton.addClickListener(e -> {
 			closeCallback.run();

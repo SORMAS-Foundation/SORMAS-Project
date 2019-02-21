@@ -44,7 +44,7 @@ public class HealthFacilitiesView extends AbstractFacilitiesView {
 		fileDownloader.extend(exportButton);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			createButton.setCaption(I18nProperties.getCaption(Captions.cNewEntry));
+			createButton.setCaption(I18nProperties.getCaption(Captions.actionNewEntry));
 			createButton.addClickListener(
 					e -> ControllerProvider.getInfrastructureController().createHealthFacility(false));
 		}

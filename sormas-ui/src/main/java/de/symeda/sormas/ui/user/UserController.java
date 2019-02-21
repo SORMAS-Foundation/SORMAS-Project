@@ -231,7 +231,7 @@ public class UserController {
 			}
 		};
 		resetPasswordConfirmationComponent.getConfirmButton().setCaption(I18nProperties.getCaption(Captions.userUpdatePasswordConfirmation));
-		resetPasswordConfirmationComponent.getCancelButton().setCaption(I18nProperties.getCaption(Captions.cCancel));
+		resetPasswordConfirmationComponent.getCancelButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
 		resetPasswordConfirmationComponent.setMargin(true);
 		return resetPasswordConfirmationComponent;
 	}

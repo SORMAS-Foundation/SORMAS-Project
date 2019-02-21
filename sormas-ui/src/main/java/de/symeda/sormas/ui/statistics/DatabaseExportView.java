@@ -88,7 +88,7 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		HorizontalLayout selectionButtonsLayout = new HorizontalLayout();
 		selectionButtonsLayout.setSpacing(true);
 		
-		Button selectAll = new Button(I18nProperties.getCaption(Captions.cSelectAll));
+		Button selectAll = new Button(I18nProperties.getCaption(Captions.actionSelectAll));
 		CssStyles.style(selectAll, ValoTheme.BUTTON_LINK);
 		selectAll.addClickListener(e -> {
 			for (CheckBox checkBox : databaseTableToggles.keySet()) {
@@ -108,7 +108,7 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		});
 		selectionButtonsLayout.addComponent(selectAllSormasData);
 		
-		Button deselectAll = new Button (I18nProperties.getCaption(Captions.cDeselectAll));
+		Button deselectAll = new Button (I18nProperties.getCaption(Captions.actionDeselectAll));
 		CssStyles.style(deselectAll, ValoTheme.BUTTON_LINK);
 		deselectAll.addClickListener(e -> {
 			for (CheckBox checkBox : databaseTableToggles.keySet()) {

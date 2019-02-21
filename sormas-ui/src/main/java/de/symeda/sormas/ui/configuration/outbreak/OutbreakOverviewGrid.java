@@ -47,7 +47,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 
-	private static final String REGION = Captions.cRegion;
+	private static final String REGION = Captions._region;
 
 	private UserDto user;
 
@@ -59,7 +59,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		user = UserProvider.getCurrent().getUser();
 
 		addColumn(REGION, RegionReferenceDto.class).setMaximumWidth(200);
-		getColumn(REGION).setHeaderCaption(I18nProperties.getCaption(Captions.cRegion));
+		getColumn(REGION).setHeaderCaption(I18nProperties.getCaption(Captions._region));
 
 		for (Disease disease : Disease.values()) {
 			

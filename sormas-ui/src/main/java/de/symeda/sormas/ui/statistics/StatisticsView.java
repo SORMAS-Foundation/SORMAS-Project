@@ -218,7 +218,7 @@ public class StatisticsView extends AbstractStatisticsView {
 	}
 
 	private void addOptionsLayout(VerticalLayout statisticsLayout) {
-		Label optionsTitle = new Label(I18nProperties.getCaption(Captions.cOptions));
+		Label optionsTitle = new Label(I18nProperties.getCaption(Captions.options));
 		optionsTitle.setWidthUndefined();
 		CssStyles.style(optionsTitle, CssStyles.STATISTICS_TITLE);
 		statisticsLayout.addComponent(optionsTitle);
@@ -236,7 +236,7 @@ public class StatisticsView extends AbstractStatisticsView {
 	}
 
 	private void addGenerateButton(VerticalLayout statisticsLayout) {
-		Button generateButton = new Button(I18nProperties.getCaption(Captions.cGenerate));
+		Button generateButton = new Button(I18nProperties.getCaption(Captions.actionGenerate));
 		CssStyles.style(generateButton, ValoTheme.BUTTON_PRIMARY);
 		generateButton.addClickListener(e -> {
 			// Check whether there is any invalid empty filter or grouping data
@@ -423,7 +423,7 @@ public class StatisticsView extends AbstractStatisticsView {
 							+ "style: {fontWeight: 'normal', textOutline: '0', gridLineColor: '#000000', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } } },");
 
 			hcjs.append(
-					"tooltip: { headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}<br/>" + I18nProperties.getCaption(Captions.cTotal) + ": {point.stackTotal}'},");
+					"tooltip: { headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}<br/>" + I18nProperties.getCaption(Captions.total) + ": {point.stackTotal}'},");
 		}
 
 		hcjs.append("legend: { verticalAlign: 'top', backgroundColor: 'transparent', align: 'left', "

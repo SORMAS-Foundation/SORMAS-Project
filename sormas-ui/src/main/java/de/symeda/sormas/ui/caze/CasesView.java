@@ -152,7 +152,7 @@ public class CasesView extends AbstractView {
 		});
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
-			Button importButton = new Button(I18nProperties.getCaption(Captions.cImport));
+			Button importButton = new Button(I18nProperties.getCaption(Captions.actionImport));
 			importButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			importButton.setIcon(FontAwesome.UPLOAD);
 			importButton.addClickListener(e -> {
@@ -277,7 +277,7 @@ public class CasesView extends AbstractView {
 
 			addShowMoreOrLessFiltersButtons(firstFilterRowLayout);
 			
-			resetButton = new Button(I18nProperties.getCaption(Captions.cResetFilters));
+			resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
 			resetButton.setVisible(false);
 			resetButton.addClickListener(event -> {
 				ViewModelProviders.of(CasesView.class).remove(CaseCriteria.class);
@@ -405,7 +405,7 @@ public class CasesView extends AbstractView {
 		dateFilterRowLayout.setSpacing(true);
 		dateFilterRowLayout.setSizeUndefined();
 		{
-			Button applyButton = new Button(I18nProperties.getCaption(Captions.cApplyDateFilter));
+			Button applyButton = new Button(I18nProperties.getCaption(Captions.actionApplyDateFilter));
 
 			weekAndDateFilter = new EpiWeekAndDateFilterComponent(applyButton, false, false, true);
 			weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesEpiWeekFrom));
@@ -458,14 +458,14 @@ public class CasesView extends AbstractView {
 
 		statusButtons = new HashMap<>();
 
-		Button statusAll = new Button(I18nProperties.getCaption(Captions.cAll), e -> {
+		Button statusAll = new Button(I18nProperties.getCaption(Captions.all), e -> {
 			criteria.investigationStatus(null);
 			navigateTo(criteria);
 		});
 		CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 		statusAll.setCaptionAsHtml(true);
 		statusFilterLayout.addComponent(statusAll);
-		statusButtons.put(statusAll, I18nProperties.getCaption(Captions.cAll));
+		statusButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
 		activeStatusButton = statusAll;
 
 		for (InvestigationStatus status : InvestigationStatus.values()) {
@@ -520,7 +520,7 @@ public class CasesView extends AbstractView {
 						}
 					});
 				};
-				archiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.cArchive), FontAwesome.ARCHIVE, archiveCommand);
+				archiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.actionArchive), FontAwesome.ARCHIVE, archiveCommand);
 
 				Command dearchiveCommand = selectedItem -> {
 					ControllerProvider.getCaseController().dearchiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -529,7 +529,7 @@ public class CasesView extends AbstractView {
 						}
 					});
 				};
-				dearchiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.cDearchive), FontAwesome.ARCHIVE, dearchiveCommand);
+				dearchiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.actionDearchive), FontAwesome.ARCHIVE, dearchiveCommand);
 				dearchiveItem.setVisible(false);
 
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
@@ -543,9 +543,9 @@ public class CasesView extends AbstractView {
 	}
 
 	private void addShowMoreOrLessFiltersButtons(HorizontalLayout parentLayout) {
-		Button showMoreButton = new Button(I18nProperties.getCaption(Captions.cShowMoreFilters), FontAwesome.CHEVRON_DOWN);
+		Button showMoreButton = new Button(I18nProperties.getCaption(Captions.actionShowMoreFilters), FontAwesome.CHEVRON_DOWN);
 		CssStyles.style(showMoreButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		Button showLessButton = new Button(I18nProperties.getCaption(Captions.cShowLessFilters), FontAwesome.CHEVRON_UP);
+		Button showLessButton = new Button(I18nProperties.getCaption(Captions.actionShowLessFilters), FontAwesome.CHEVRON_UP);
 		CssStyles.style(showLessButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 
 		showMoreButton.addClickListener(e -> {

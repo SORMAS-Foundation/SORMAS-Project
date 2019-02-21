@@ -228,7 +228,7 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 
 	protected Button createAddButton() {
 
-		Button button = new Button(I18nProperties.getCaption(Captions.cNewEntry));
+		Button button = new Button(I18nProperties.getCaption(Captions.actionNewEntry));
 		button.addStyleName(BaseTheme.BUTTON_LINK);
 
 		button.addClickListener(new ClickListener() {

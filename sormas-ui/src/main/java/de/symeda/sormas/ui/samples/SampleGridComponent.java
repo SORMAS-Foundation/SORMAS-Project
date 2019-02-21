@@ -224,7 +224,7 @@ public class SampleGridComponent extends VerticalLayout {
 		});
 		filterLayout.addComponent(searchField);
 
-		resetButton = new Button(I18nProperties.getCaption(Captions.cResetFilters));
+		resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
 		resetButton.setVisible(false);
 		resetButton.addClickListener(event -> {
 			ViewModelProviders.of(SamplesView.class).remove(SampleCriteria.class);
@@ -246,11 +246,11 @@ public class SampleGridComponent extends VerticalLayout {
 		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
 		buttonFilterLayout.setSpacing(true);
 		{
-			Button statusAll = new Button(I18nProperties.getCaption(Captions.cAll), e -> processStatusChange(null));
+			Button statusAll = new Button(I18nProperties.getCaption(Captions.all), e -> processStatusChange(null));
 			CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 			statusAll.setCaptionAsHtml(true);
 			buttonFilterLayout.addComponent(statusAll);
-			statusButtons.put(statusAll, I18nProperties.getCaption(Captions.cAll));
+			statusButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
 			activeStatusButton = statusAll;
 
 			Button notShippedButton = new Button(I18nProperties.getCaption(Captions.sampleNotShipped), e -> processStatusChange(NOT_SHIPPED));

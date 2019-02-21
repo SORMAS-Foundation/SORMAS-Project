@@ -110,7 +110,7 @@ public class TaskGridComponent extends VerticalLayout {
 		});
 		filterLayout.addComponent(statusFilter);
 
-		resetButton = new Button(I18nProperties.getCaption(Captions.cResetFilters));
+		resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
 		resetButton.setVisible(false);
 		resetButton.addClickListener(event -> {
 			ViewModelProviders.of(TasksView.class).remove(TaskCriteria.class);
@@ -132,11 +132,11 @@ public class TaskGridComponent extends VerticalLayout {
 		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
 		buttonFilterLayout.setSpacing(true);
 		{
-			Button allTasks = new Button(I18nProperties.getCaption(Captions.cAll), e -> processAssigneeFilterChange(null));
+			Button allTasks = new Button(I18nProperties.getCaption(Captions.all), e -> processAssigneeFilterChange(null));
 			CssStyles.style(allTasks, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 			allTasks.setCaptionAsHtml(true);
 			buttonFilterLayout.addComponent(allTasks);
-			statusButtons.put(allTasks, I18nProperties.getCaption(Captions.cAll));			
+			statusButtons.put(allTasks, I18nProperties.getCaption(Captions.all));			
 			
 			Button officerTasks = new Button(I18nProperties.getCaption(Captions.taskOfficerTasks), e -> processAssigneeFilterChange(OFFICER_TASKS));
 			initializeStatusButton(officerTasks, buttonFilterLayout, OFFICER_TASKS, I18nProperties.getCaption(Captions.taskOfficerTasks));

@@ -36,7 +36,7 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 
 	private static final long serialVersionUID = 6726008587163831260L;
 	
-	private static final String REGION_LOC = Captions.cRegion;
+	private static final String REGION_LOC = Captions._region;
 	
 	private static final String HTML_LAYOUT =
 			LayoutUtil.loc(CommunityDto.NAME)

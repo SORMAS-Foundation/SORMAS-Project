@@ -316,7 +316,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		addListenerForOnsetSymptom(onsetSymptom);
 
-		Button clearAllButton = new Button(I18nProperties.getCaption(Captions.cClearAll));
+		Button clearAllButton = new Button(I18nProperties.getCaption(Captions.actionClearAll));
 		clearAllButton.addStyleName(ValoTheme.BUTTON_LINK);
 
 		clearAllButton.addClickListener(new ClickListener() {
