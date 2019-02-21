@@ -108,7 +108,7 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
         if (contentBinding.getData().getClassificationDate() != null && contentBinding.getData().getClassificationUser() == null) {
             contentBinding.caseDataClassificationUser.setVisibility(GONE);
             contentBinding.caseDataClassifiedBy.setVisibility(VISIBLE);
-            contentBinding.caseDataClassifiedBy.setValue(I18nProperties.getCaption(Captions.cSystem));
+            contentBinding.caseDataClassifiedBy.setValue(I18nProperties.getCaption(Captions.system));
         }
     }
 
