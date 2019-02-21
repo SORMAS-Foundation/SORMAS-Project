@@ -45,7 +45,6 @@ import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;

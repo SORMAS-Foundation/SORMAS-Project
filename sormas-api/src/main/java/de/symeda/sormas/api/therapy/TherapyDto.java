@@ -18,7 +18,6 @@
 package de.symeda.sormas.api.therapy;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
 public class TherapyDto extends EntityDto {
