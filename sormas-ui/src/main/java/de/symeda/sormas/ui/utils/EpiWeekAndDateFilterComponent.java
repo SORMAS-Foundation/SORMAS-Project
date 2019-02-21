@@ -106,7 +106,7 @@ public class EpiWeekAndDateFilterComponent extends HorizontalLayout {
 		if (showNewCaseDateTypeSelector) {
 			newCaseDateTypeSelector.setWidth(200, Unit.PIXELS);
 			newCaseDateTypeSelector.addItems((Object[]) NewCaseDateType.values());
-			newCaseDateTypeSelector.setNullSelectionAllowed(false);
+			newCaseDateTypeSelector.setInputPrompt(I18nProperties.getString(Strings.promptNewCaseDateType));
 			newCaseDateTypeSelector.select(NewCaseDateType.MOST_RELEVANT);
 			if (showCaption) {
 				CssStyles.style(newCaseDateTypeSelector, CssStyles.FORCE_CAPTION);

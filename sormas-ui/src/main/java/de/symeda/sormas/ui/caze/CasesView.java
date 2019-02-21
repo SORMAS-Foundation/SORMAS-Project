@@ -429,6 +429,7 @@ public class CasesView extends AbstractView {
 					applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
 					NewCaseDateType newCaseDateType = (NewCaseDateType) weekAndDateFilter.getNewCaseDateTypeSelector().getValue();
 					criteria.newCaseDateBetween(fromDate, toDate, newCaseDateType != null ? newCaseDateType : NewCaseDateType.MOST_RELEVANT);
+					navigateTo(criteria);
 				} else {
 					if (dateFilterOption == DateFilterOption.DATE) {
 						Notification notification = new Notification(I18nProperties.getString(Strings.headingMissingDateFilter), 

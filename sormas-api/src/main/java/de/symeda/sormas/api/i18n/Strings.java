@@ -382,6 +382,7 @@ public interface Strings {
 	public static String promptContactsSearchField = "promptContactsSearchField";
 	public static String promptDisease = "promptDisease";
 	public static String promptDistrict = "promptDistrict";
+	public static String promptNewCaseDateType = "promptNewCaseDateType";
 	public static String promptPrescriptionTextFilter = "promptPrescriptionTextFilter";
 	public static String promptRegion = "promptRegion";
 	public static String promptSamplesSearchField = "promptSamplesSearchField";
