@@ -195,6 +195,58 @@ public class CaseController {
 		return caze;
 	}
 
+	private void saveCase(CaseDataDto cazeDto) {
+		// Compare old and new case
+		CaseDataDto existingDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(cazeDto.getUuid());
+		onCaseChanged(existingDto, cazeDto);
+	
+		CaseDataDto resultDto = FacadeProvider.getCaseFacade().saveCase(cazeDto);
+	
+		if (resultDto.getPlagueType() != cazeDto.getPlagueType()) {
+			// TODO would be much better to have a notification for this triggered in the backend
+			Window window = VaadinUiUtil.showSimplePopupWindow(I18nProperties.getString(Strings.headingSaveNotification), 
+					String.format(I18nProperties.getString(Strings.messagePlagueTypeChange), resultDto.getPlagueType().toString(), resultDto.getPlagueType().toString()));
+			window.addCloseListener(new CloseListener() {
+				private static final long serialVersionUID = 1L;
+				@Override
+				public void windowClose(CloseEvent e) {
+					if (existingDto.getCaseClassification() != resultDto.getCaseClassification() &&
+							resultDto.getClassificationUser() == null) {
+						Notification notification = new Notification(String.format(I18nProperties.getString(Strings.messageCaseSavedClassificationChanged), resultDto.getCaseClassification().toString()), Type.WARNING_MESSAGE);
+						notification.setDelayMsec(-1);
+						notification.show(Page.getCurrent());
+					} else {
+						Notification.show(I18nProperties.getString(Strings.messageCaseSaved), Type.WARNING_MESSAGE);
+					}
+					SormasUI.refreshView();
+				}
+			});
+		} else {
+			// Notify user about an automatic case classification change
+			if (existingDto.getCaseClassification() != resultDto.getCaseClassification() &&
+					resultDto.getClassificationUser() == null) {
+				Notification notification = new Notification(String.format(I18nProperties.getString(Strings.messageCaseSavedClassificationChanged), resultDto.getCaseClassification().toString()), Type.WARNING_MESSAGE);
+				notification.setDelayMsec(-1);
+				notification.show(Page.getCurrent());
+			} else {
+				Notification.show(I18nProperties.getString(Strings.messageCaseSaved), Type.WARNING_MESSAGE);
+			}
+			SormasUI.refreshView();
+		}
+	}
+
+	private void onCaseChanged(CaseDataDto existingCase, CaseDataDto changedCase) {
+		if (existingCase == null) {
+			return;
+		}
+	
+		// classification
+		if (changedCase.getCaseClassification() != existingCase.getCaseClassification()) {
+			changedCase.setClassificationDate(new Date());
+			changedCase.setClassificationUser(UserProvider.getCurrent().getUserReference());
+		}
+	}
+
 	public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent(PersonReferenceDto person, Disease disease, ContactDto contact, EventParticipantDto eventParticipant) {
 
 		CaseCreateForm createForm = new CaseCreateForm(UserRight.CASE_CREATE);
@@ -297,7 +349,7 @@ public class CaseController {
 				cazeDto.setSymptoms(symptomsForm.getValue());
 				cazeDto.setEpiData(epiDataForm.getValue());
 
-				saveCase(cazeDto, CaseDataView.VIEW_NAME, viewMode);
+				saveCase(cazeDto);
 			}
 		});
 
@@ -316,7 +368,7 @@ public class CaseController {
 			@Override
 			public void onCommit() {
 				CaseDataDto cazeDto = caseEditForm.getValue();   
-				saveCase(cazeDto, CaseDataView.VIEW_NAME, viewMode);
+				saveCase(cazeDto);
 			}
 		});
 
@@ -454,7 +506,7 @@ public class CaseController {
 			public void onCommit() {
 				CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 				cazeDto.setHospitalization(hospitalizationForm.getValue());
-				saveCase(cazeDto, HospitalizationView.VIEW_NAME, viewMode);
+				saveCase(cazeDto);
 			}
 		});
 
@@ -475,64 +527,12 @@ public class CaseController {
 			public void onCommit() {
 				CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 				cazeDto.setSymptoms(symptomsForm.getValue());
-				saveCase(cazeDto, CaseSymptomsView.VIEW_NAME, viewMode);
+				saveCase(cazeDto);
 			}
 		});
 
 		return editView;
 	}    
-
-	private void saveCase(CaseDataDto cazeDto, String viewName, final ViewMode viewMode) {
-		// Compare old and new case
-		CaseDataDto existingDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(cazeDto.getUuid());
-		onCaseChanged(existingDto, cazeDto);
-
-		CaseDataDto resultDto = FacadeProvider.getCaseFacade().saveCase(cazeDto);
-
-		if (resultDto.getPlagueType() != cazeDto.getPlagueType()) {
-			// TODO would be much better to have a notification for this triggered in the backend
-			Window window = VaadinUiUtil.showSimplePopupWindow(I18nProperties.getString(Strings.headingSaveNotification), 
-					String.format(I18nProperties.getString(Strings.messagePlagueTypeChange), resultDto.getPlagueType().toString(), resultDto.getPlagueType().toString()));
-			window.addCloseListener(new CloseListener() {
-				private static final long serialVersionUID = 1L;
-				@Override
-				public void windowClose(CloseEvent e) {
-					if (existingDto.getCaseClassification() != resultDto.getCaseClassification() &&
-							resultDto.getClassificationUser() == null) {
-						Notification notification = new Notification(String.format(I18nProperties.getString(Strings.messageCaseSavedClassificationChanged), resultDto.getCaseClassification().toString()), Type.WARNING_MESSAGE);
-						notification.setDelayMsec(-1);
-						notification.show(Page.getCurrent());
-					} else {
-						Notification.show(I18nProperties.getString(Strings.messageCaseSaved), Type.WARNING_MESSAGE);
-					}
-					SormasUI.refreshView();
-				}
-			});
-		} else {
-			// Notify user about an automatic case classification change
-			if (existingDto.getCaseClassification() != resultDto.getCaseClassification() &&
-					resultDto.getClassificationUser() == null) {
-				Notification notification = new Notification(String.format(I18nProperties.getString(Strings.messageCaseSavedClassificationChanged), resultDto.getCaseClassification().toString()), Type.WARNING_MESSAGE);
-				notification.setDelayMsec(-1);
-				notification.show(Page.getCurrent());
-			} else {
-				Notification.show(I18nProperties.getString(Strings.messageCaseSaved), Type.WARNING_MESSAGE);
-			}
-			SormasUI.refreshView();
-		}
-	}
-
-	private void onCaseChanged(CaseDataDto existingCase, CaseDataDto changedCase) {
-		if (existingCase == null) {
-			return;
-		}
-
-		// classification
-		if (changedCase.getCaseClassification() != existingCase.getCaseClassification()) {
-			changedCase.setClassificationDate(new Date());
-			changedCase.setClassificationUser(UserProvider.getCurrent().getUserReference());
-		}
-	}
 
 	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String caseUuid, ViewMode viewMode) {
 		CaseDataDto caze = findCase(caseUuid);
@@ -546,7 +546,7 @@ public class CaseController {
 			public void onCommit() {
 				CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 				cazeDto.setEpiData(epiDataForm.getValue());
-				saveCase(cazeDto, EpiDataView.VIEW_NAME, viewMode);
+				saveCase(cazeDto);
 			}
 		});
 

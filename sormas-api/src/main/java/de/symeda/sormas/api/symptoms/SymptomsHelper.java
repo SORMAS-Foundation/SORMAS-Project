@@ -193,7 +193,7 @@ public final class SymptomsHelper {
 					}
 				} else if (pd.getReadMethod().getReturnType() == Boolean.class) {
 					// Booleans are carried over when they are TRUE
-					if (pd.getName().equals("symptomatic")) {
+					if (pd.getName().equals(SymptomsDto.SYMPTOMATIC)) {
 						continue;
 					} else {
 						Boolean result = (Boolean) pd.getReadMethod().invoke(sourceSymptoms);
@@ -201,7 +201,7 @@ public final class SymptomsHelper {
 							pd.getWriteMethod().invoke(targetSymptoms, result);
 						}
 					}
-				} else if (pd.getName().equals("temperature")) {
+				} else if (pd.getName().equals(SymptomsDto.TEMPERATURE)) {
 					// Temperature is carried over when it's higher than the targetSymptoms temperature
 					Float sourceResult = (Float) pd.getReadMethod().invoke(sourceSymptoms);
 					Float targetResult = (Float) pd.getReadMethod().invoke(targetSymptoms);
@@ -212,7 +212,7 @@ public final class SymptomsHelper {
 				} else if (pd.getReadMethod().getReturnType() == String.class) {
 					// Strings are added to the targetSymptoms when they are not contained within the
 					// respective targetSymptoms String
-					if (pd.getName().equals("onsetSymptom")) {
+					if (pd.getName().equals(SymptomsDto.ONSET_DATE)) {
 						continue;
 					} else {
 						String sourceResult = (String) pd.getReadMethod().invoke(sourceSymptoms);
