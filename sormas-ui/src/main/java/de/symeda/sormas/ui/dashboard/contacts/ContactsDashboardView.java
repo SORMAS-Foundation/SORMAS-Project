@@ -40,10 +40,10 @@ public class ContactsDashboardView extends AbstractDashboardView {
 	protected HorizontalLayout epiCurveAndMapLayout;
 	private VerticalLayout epiCurveLayout;
 	private VerticalLayout mapLayout;
-	
+
 	public ContactsDashboardView() {
 		super(VIEW_NAME, DashboardType.CONTACTS);
-		
+
 		filterLayout.setInfoLabelText(I18nProperties.getString(Strings.infoContactDashboard));
 
 		// Add statistics
@@ -53,7 +53,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 
 		epiCurveComponent = new ContactsEpiCurveComponent(dashboardDataProvider);
 		mapComponent = new DashboardMapComponent(dashboardDataProvider);
-		
+
 		// Add epi curve and map
 		epiCurveAndMapLayout = createEpiCurveAndMapLayout();
 		dashboardLayout.addComponent(epiCurveAndMapLayout);
@@ -75,8 +75,8 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		layout.addComponent(mapLayout);
 
 		return layout;
-	}	
-	
+	}
+
 	protected VerticalLayout createEpiCurveLayout() {
 		if (epiCurveComponent == null) {
 			throw new UnsupportedOperationException(
@@ -92,20 +92,20 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		layout.addComponent(epiCurveComponent);
 		layout.setExpandRatio(epiCurveComponent, 1);
 
-		epiCurveComponent.setExpandListener(e -> {
-			dashboardLayout.removeComponent(statisticsComponent);
-			epiCurveAndMapLayout.removeComponent(mapLayout);
-			ContactsDashboardView.this.setHeight(100, Unit.PERCENTAGE);
-			epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
-			epiCurveLayout.setSizeFull();
-		});
-
-		epiCurveComponent.setCollapseListener(e -> {
-			dashboardLayout.addComponent(statisticsComponent, 1);
-			epiCurveAndMapLayout.addComponent(mapLayout, 1);
-			epiCurveLayout.setHeight(400, Unit.PIXELS);
-			ContactsDashboardView.this.setHeightUndefined();
-			epiCurveAndMapLayout.setHeightUndefined();
+		epiCurveComponent.setExpandListener(expanded -> {
+			if (expanded) {
+				dashboardLayout.removeComponent(statisticsComponent);
+				epiCurveAndMapLayout.removeComponent(mapLayout);
+				ContactsDashboardView.this.setHeight(100, Unit.PERCENTAGE);
+				epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
+				epiCurveLayout.setSizeFull();
+			} else {
+				dashboardLayout.addComponent(statisticsComponent, 1);
+				epiCurveAndMapLayout.addComponent(mapLayout, 1);
+				epiCurveLayout.setHeight(400, Unit.PIXELS);
+				ContactsDashboardView.this.setHeightUndefined();
+				epiCurveAndMapLayout.setHeightUndefined();
+			}
 		});
 
 		return layout;
@@ -125,20 +125,20 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		layout.addComponent(mapComponent);
 		layout.setExpandRatio(mapComponent, 1);
 
-		mapComponent.setExpandListener(e -> {
-			dashboardLayout.removeComponent(statisticsComponent);
-			epiCurveAndMapLayout.removeComponent(epiCurveLayout);
-			ContactsDashboardView.this.setHeight(100, Unit.PERCENTAGE);
-			epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
-			mapLayout.setSizeFull();
-		});
-
-		mapComponent.setCollapseListener(e -> {
-			dashboardLayout.addComponent(statisticsComponent, 1);
-			epiCurveAndMapLayout.addComponent(epiCurveLayout, 0);
-			mapLayout.setHeight(400, Unit.PIXELS);
-			ContactsDashboardView.this.setHeightUndefined();
-			epiCurveAndMapLayout.setHeightUndefined();
+		mapComponent.setExpandListener(expanded -> {
+			if (expanded) {
+				dashboardLayout.removeComponent(statisticsComponent);
+				epiCurveAndMapLayout.removeComponent(epiCurveLayout);
+				ContactsDashboardView.this.setHeight(100, Unit.PERCENTAGE);
+				epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
+				mapLayout.setSizeFull();
+			} else {
+				dashboardLayout.addComponent(statisticsComponent, 1);
+				epiCurveAndMapLayout.addComponent(epiCurveLayout, 0);
+				mapLayout.setHeight(400, Unit.PIXELS);
+				ContactsDashboardView.this.setHeightUndefined();
+				epiCurveAndMapLayout.setHeightUndefined();
+			}
 		});
 
 		return layout;
