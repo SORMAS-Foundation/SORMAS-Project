@@ -160,7 +160,7 @@ public class I18nProperties {
 		String result = getInstance().validationProperties.getString(key, null);
 		if (result != null) {
 			return String.format(result, formatArgs);
-		} else if (formatArgs.length > 0) {
+		} else if (formatArgs.length > 0 && formatArgs[0] != null) {
 			return formatArgs[0].toString();
 		} else {
 			return "";
