@@ -20,10 +20,6 @@ package de.symeda.sormas.app.component.controls;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import androidx.databinding.BindingAdapter;
-import androidx.databinding.BindingMethod;
-import androidx.databinding.BindingMethods;
-import androidx.databinding.InverseBindingListener;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -38,8 +34,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.BindingMethod;
+import androidx.databinding.BindingMethods;
+import androidx.databinding.InverseBindingListener;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
@@ -85,11 +84,11 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 
     // Instance methods
 
-    protected static String getDefaultValue(String defaultValue) {
+    protected String getDefaultValue(String defaultValue) {
         if (defaultValue != null) {
             return defaultValue;
         } else {
-            return I18nProperties.getString(Strings.notAnswered);
+            return getContext().getResources().getString(R.string.notAnswered);
         }
     }
 
@@ -232,7 +231,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 
     public static void setValue(ControlTextReadField textField, String stringValue, String appendValue, String valueFormat, String defaultValue, Object originalValue) {
         if (StringUtils.isEmpty(stringValue)) {
-            textField.setValue(getDefaultValue(defaultValue), originalValue);
+            textField.setValue(textField.getDefaultValue(defaultValue), originalValue);
             textField.applyDefaultValueStyle();
         } else {
             // TODO reset default style?

@@ -22,6 +22,8 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.webkit.WebView;
 
+import com.google.android.gms.common.util.Strings;
+
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -31,8 +33,6 @@ import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -239,7 +239,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         if (contentBinding.getData().getClassificationDate() != null && contentBinding.getData().getClassificationUser() == null) {
             contentBinding.caseDataClassificationUser.setVisibility(GONE);
             contentBinding.caseDataClassifiedBy.setVisibility(VISIBLE);
-            contentBinding.caseDataClassifiedBy.setValue(I18nProperties.getCaption(Captions.system));
+            contentBinding.caseDataClassifiedBy.setValue(getResources().getString(R.string.system));
         }
     }
 
@@ -257,5 +257,4 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     public boolean isShowNewAction() {
         return false;
     }
-
 }

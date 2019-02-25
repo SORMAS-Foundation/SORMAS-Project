@@ -29,10 +29,7 @@ import java.util.List;
 
 import androidx.core.content.ContextCompat;
 import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -90,7 +87,8 @@ public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemL
                 int numberOfVisits = DatabaseHelper.getVisitDao().getVisitCount(record, null);
                 int numberOfCooperativeVisits = DatabaseHelper.getVisitDao().getVisitCount(record, VisitStatus.COOPERATIVE);
 
-                holder.binding.numberOfVisits.setText(String.format(I18nProperties.getCaption(Captions.formatNumberOfVisitsLongFormat),
+                holder.binding.numberOfVisits.setText(String.format(
+                        holder.binding.getRoot().getResources().getString(R.string.number_of_visits_long_format),
                         numberOfCooperativeVisits, numberOfVisits - numberOfCooperativeVisits));
             } else {
                 holder.binding.numberOfVisits.setVisibility(View.GONE);
@@ -101,7 +99,8 @@ public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemL
                 int numberOfVisits = DatabaseHelper.getVisitDao().getVisitCount(record, null);
                 int numberOfCooperativeVisits = DatabaseHelper.getVisitDao().getVisitCount(record, VisitStatus.COOPERATIVE);
 
-                holder.binding.numberOfVisits.setText(String.format(I18nProperties.getCaption(Captions.formatNumberOfVisitsLongFormat),
+                holder.binding.numberOfVisits.setText(String.format(
+                        holder.binding.getRoot().getResources().getString(R.string.number_of_visits_long_format),
                         numberOfCooperativeVisits, numberOfVisits - numberOfCooperativeVisits));
             } else {
                 holder.binding.numberOfVisits.setVisibility(View.GONE);

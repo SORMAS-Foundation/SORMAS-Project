@@ -59,7 +59,7 @@ public class ValidationErrorInfo {
         for (ControlPropertyEditField field : fieldsWithError) {
             errorStringBuilder.append(field.getCaption());
             if (fieldsWithError.indexOf(field) == fieldsWithError.size() - 2) {
-                errorStringBuilder.append(" ").append(resources.getString(R.string.s_and)).append(" ");
+                errorStringBuilder.append(" ").append(resources.getString(R.string.and)).append(" ");
             } else if (fieldsWithError.indexOf(field) != fieldsWithError.size() - 1) {
                 errorStringBuilder.append(", ");
             } else {

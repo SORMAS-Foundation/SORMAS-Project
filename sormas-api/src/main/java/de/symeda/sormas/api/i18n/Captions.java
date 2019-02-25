@@ -2,12 +2,6 @@ package de.symeda.sormas.api.i18n;
 
 public interface Captions {
 
-	public static String _city = ".city";
-	public static String _community = ".community";
-	public static String _disease = ".disease";
-	public static String _district = ".district";
-	public static String _name = ".name";
-	public static String _region = ".region";
 	public static String aboutCaseClassificationRules = "aboutCaseClassificationRules";
 	public static String aboutDataDictionary = "aboutDataDictionary";
 	public static String aboutSormasVersion = "aboutSormasVersion";
@@ -62,7 +56,6 @@ public interface Captions {
 	public static String CaseData_contactOfficer = "CaseData.contactOfficer";
 	public static String CaseData_dengueFeverType = "CaseData.dengueFeverType";
 	public static String CaseData_diseaseDetails = "CaseData.diseaseDetails";
-	public static String CaseData_districtName = "CaseData.districtName";
 	public static String CaseData_doses = "CaseData.doses";
 	public static String CaseData_epiData = "CaseData.epiData";
 	public static String CaseData_epidNumber = "CaseData.epidNumber";
@@ -130,6 +123,7 @@ public interface Captions {
 	public static String caseShowActive = "caseShowActive";
 	public static String caseShowArchived = "caseShowArchived";
 	public static String caseTransferCase = "caseTransferCase";
+	public static String city = "city";
 	public static String ClinicalVisit_bloodPressure = "ClinicalVisit.bloodPressure";
 	public static String ClinicalVisit_heartRate = "ClinicalVisit.heartRate";
 	public static String ClinicalVisit_temperature = "ClinicalVisit.temperature";
@@ -139,6 +133,8 @@ public interface Captions {
 	public static String clinicalVisitNewClinicalVisit = "clinicalVisitNewClinicalVisit";
 	public static String columnDiseaseShort = "columnDiseaseShort";
 	public static String columnNumberOfPendingTasks = "columnNumberOfPendingTasks";
+	public static String community = "community";
+	public static String communityName = "communityName";
 	public static String Configuration_HealthFacilities = "Configuration.HealthFacilities";
 	public static String Configuration_Laboratories = "Configuration.Laboratories";
 	public static String Configuration_Outbreaks = "Configuration.Outbreaks";
@@ -169,8 +165,6 @@ public interface Captions {
 	public static String Contact_lastName = "Contact.lastName";
 	public static String Contact_numberOfVisits = "Contact.numberOfVisits";
 	public static String Contact_person = "Contact.person";
-	public static String Contact_person_firstName = "Contact.person.firstName";
-	public static String Contact_person_lastName = "Contact.person.lastName";
 	public static String Contact_relationToCase = "Contact.relationToCase";
 	public static String Contact_reportDateTime = "Contact.reportDateTime";
 	public static String Contact_reportingUser = "Contact.reportingUser";
@@ -291,6 +285,7 @@ public interface Captions {
 	public static String dashboardUnderFollowUp = "dashboardUnderFollowUp";
 	public static String dashboardUnderFollowUpShort = "dashboardUnderFollowUpShort";
 	public static String dashboardYesterday = "dashboardYesterday";
+	public static String disease = "disease";
 	public static String DiseaseBurden_caseCount = "DiseaseBurden.caseCount";
 	public static String DiseaseBurden_caseDeathCount = "DiseaseBurden.caseDeathCount";
 	public static String DiseaseBurden_caseFatalityRate = "DiseaseBurden.caseFatalityRate";
@@ -298,9 +293,11 @@ public interface Captions {
 	public static String DiseaseBurden_eventCount = "DiseaseBurden.eventCount";
 	public static String DiseaseBurden_outbreakDistrictCount = "DiseaseBurden.outbreakDistrictCount";
 	public static String DiseaseBurden_previousCaseCount = "DiseaseBurden.previousCaseCount";
+	public static String district = "district";
 	public static String District_epidCode = "District.epidCode";
 	public static String District_growthRate = "District.growthRate";
 	public static String District_population = "District.population";
+	public static String districtName = "districtName";
 	public static String EpiData = "EpiData";
 	public static String EpiData_animalCondition = "EpiData.animalCondition";
 	public static String EpiData_areaConfirmedCases = "EpiData.areaConfirmedCases";
@@ -398,9 +395,7 @@ public interface Captions {
 	public static String EventParticipant = "EventParticipant";
 	public static String EventParticipant_caseId = "EventParticipant.caseId";
 	public static String EventParticipant_event = "EventParticipant.event";
-	public static String EventParticipant_firstName = "EventParticipant.firstName";
 	public static String EventParticipant_involvementDescription = "EventParticipant.involvementDescription";
-	public static String EventParticipant_lastName = "EventParticipant.lastName";
 	public static String EventParticipant_person = "EventParticipant.person";
 	public static String EventParticipant_personAge = "EventParticipant.personAge";
 	public static String EventParticipant_personName = "EventParticipant.personName";
@@ -420,6 +415,7 @@ public interface Captions {
 	public static String Facility_NO_FACILITY = "Facility.NO_FACILITY";
 	public static String Facility_OTHER_FACILITY = "Facility.OTHER_FACILITY";
 	public static String Facility_OTHER_LABORATORY = "Facility.OTHER_LABORATORY";
+	public static String firstName = "firstName";
 	public static String formatNumberOfVisitsFormat = "formatNumberOfVisitsFormat";
 	public static String formatNumberOfVisitsLongFormat = "formatNumberOfVisitsLongFormat";
 	public static String formatSimpleNumberFormat = "formatSimpleNumberFormat";
@@ -447,6 +443,7 @@ public interface Captions {
 	public static String importSkips = "importSkips";
 	public static String importUploadCaseList = "importUploadCaseList";
 	public static String info = "info";
+	public static String lastName = "lastName";
 	public static String Location = "Location";
 	public static String Location_address = "Location.address";
 	public static String Location_details = "Location.details";
@@ -466,6 +463,7 @@ public interface Captions {
 	public static String mainMenuTasks = "mainMenuTasks";
 	public static String mainMenuUsers = "mainMenuUsers";
 	public static String menu = "menu";
+	public static String name = "name";
 	public static String options = "options";
 	public static String outbreakAffectedDistricts = "outbreakAffectedDistricts";
 	public static String outbreakNoOutbreak = "outbreakNoOutbreak";
@@ -488,17 +486,14 @@ public interface Captions {
 	public static String Person_causeOfDeathDetails = "Person.causeOfDeathDetails";
 	public static String Person_causeOfDeathDisease = "Person.causeOfDeathDisease";
 	public static String Person_causeOfDeathDiseaseDetails = "Person.causeOfDeathDiseaseDetails";
-	public static String Person_communityName = "Person.communityName";
 	public static String Person_deathDate = "Person.deathDate";
 	public static String Person_deathPlaceDescription = "Person.deathPlaceDescription";
 	public static String Person_deathPlaceType = "Person.deathPlaceType";
 	public static String Person_districtName = "Person.districtName";
 	public static String Person_educationDetails = "Person.educationDetails";
 	public static String Person_educationType = "Person.educationType";
-	public static String Person_firstName = "Person.firstName";
 	public static String Person_healthcare_occupationDetails = "Person.healthcare.occupationDetails";
 	public static String Person_lastDisease = "Person.lastDisease";
-	public static String Person_lastName = "Person.lastName";
 	public static String Person_matchingCase = "Person.matchingCase";
 	public static String Person_mothersMaidenName = "Person.mothersMaidenName";
 	public static String Person_nickname = "Person.nickname";
@@ -532,9 +527,11 @@ public interface Captions {
 	public static String Prescription_routeDetails = "Prescription.routeDetails";
 	public static String Prescription_typeOfDrug = "Prescription.typeOfDrug";
 	public static String prescriptionNewPrescription = "prescriptionNewPrescription";
+	public static String region = "region";
 	public static String Region_epidCode = "Region.epidCode";
 	public static String Region_growthRate = "Region.growthRate";
 	public static String Region_population = "Region.population";
+	public static String regionName = "regionName";
 	public static String Sample = "Sample";
 	public static String Sample_associatedCase = "Sample.associatedCase";
 	public static String Sample_caseClassification = "Sample.caseClassification";
@@ -775,10 +772,8 @@ public interface Captions {
 	public static String User = "User";
 	public static String User_active = "User.active";
 	public static String User_associatedOfficer = "User.associatedOfficer";
-	public static String User_firstName = "User.firstName";
 	public static String User_healthFacility = "User.healthFacility";
 	public static String User_laboratory = "User.laboratory";
-	public static String User_lastName = "User.lastName";
 	public static String User_phone = "User.phone";
 	public static String User_userEmail = "User.userEmail";
 	public static String User_userName = "User.userName";

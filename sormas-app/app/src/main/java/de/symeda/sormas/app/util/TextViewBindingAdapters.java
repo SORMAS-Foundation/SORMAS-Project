@@ -801,8 +801,8 @@ public class TextViewBindingAdapters {
     public static void setHasValue(TextView textView, ObservableList list) {
         Resources resources = textView.getContext().getResources();
 
-        String yes = resources.getString(R.string.s_yes);
-        String no = resources.getString(R.string.s_no);
+        String yes = resources.getString(R.string.yes);
+        String no = resources.getString(R.string.no);
 
         if (list != null && list.size() > 0) {
             textView.setText(yes);

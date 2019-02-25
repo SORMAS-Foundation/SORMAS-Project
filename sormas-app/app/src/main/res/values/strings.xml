@@ -20,6 +20,12 @@
 
     <string name="app_name">SORMAS</string>
 
+    <string name="and">and</string>
+    <string name="no">No</string>
+    <string name="notAnswered">Not answered</string>
+    <string name="system">System</string>
+    <string name="yes">Yes</string>
+
     <string name="action_add_missing_case">Add Missing Case</string>
     <string name="action_allow_gps_access">Allow GPS Access</string>
     <string name="action_back_to_settings">Back to settings</string>
@@ -389,11 +395,8 @@
     <string name="message_version_too_new">Could not synchronize because the app version is newer than the server version.</string>
     <string name="message_weekly_report_submitted">Thank you for submitting your weekly report.</string>
 
-    <string name="s_and">and</string>
-    <string name="s_no">No</string>
-    <string name="s_synclog_server">Server: </string>
-    <string name="s_synclog_yours">Yours: </string>
-    <string name="s_yes">Yes</string>
+    <string name="synclog_server">Server: </string>
+    <string name="synclog_yours">Yours: </string>
 
     <string name="tag_row_item_select_or_create_person">rowItemSelectOrCreatePerson</string>
 
