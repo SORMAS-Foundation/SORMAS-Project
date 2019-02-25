@@ -1,0 +1,31 @@
+
+@mixin sormas-loadingindicator {
+  
+  .v-loading-indicator {
+    height: 6px;
+  }
+
+  .v-loading-indicator[style*="none"]:before {
+    display: none;
+  }
+
+  .v-loading-indicator-wait {
+    @include animation(v-progress-wait 5s forwards);
+  }
+
+  .v-loading-indicator-delay:before, .v-loading-indicator-wait:before {
+    content: "";
+    position: fixed;
+    background-color: rgba(255,255,255,.5);
+    background-image: url(../img/spinner.gif);
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: auto;
+  }
+
+}

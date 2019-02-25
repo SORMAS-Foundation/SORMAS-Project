@@ -80,6 +80,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 @import "components/leaflet.scss";
 @import "components/list.scss";
 @import "components/link.scss";
+@import "components/loadingindicator.scss";
 @import "components/menu.scss";
 @import "components/notification.scss";
 @import "components/optiongroup.scss";
@@ -140,6 +141,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
   @include sormas-leaflet;
   @include sormas-list;
   @include sormas-link;
+  @include sormas-loadingindicator;
   @include sormas-menu;
   @include sormas-notification;
   @include sormas-optiongroup;
