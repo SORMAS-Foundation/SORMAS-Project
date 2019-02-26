@@ -32,7 +32,7 @@ public class SampleIndexDto implements Serializable {
 	private static final long serialVersionUID = -6298614717044087479L;
 
 	public static final String I18N_PREFIX = "Sample";
-	
+
 	public static final String UUID = "uuid";
 	public static final String ASSOCIATED_CASE = "associatedCase";
 	public static final String DISEASE = "disease";
@@ -51,7 +51,8 @@ public class SampleIndexDto implements Serializable {
 	public static final String REFERRED = "referred";
 	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
 	public static final String PATHOGEN_TEST_LAB_USER_NAME = "pathogenTestLabUserName";
-	
+	public static final String ADDITIONAL_TESTING_STATUS = "additionalTestingStatus";
+
 	private String uuid;
 	private CaseReferenceDto associatedCase;
 	private String sampleCode;
@@ -71,7 +72,8 @@ public class SampleIndexDto implements Serializable {
 	private SpecimenCondition specimenCondition;
 	private PathogenTestResultType pathogenTestResult;
 	private String pathogenTestLabUserName;
-	
+	private AdditionalTestingStatus additionalTestingStatus;
+
 	public SampleIndexDto(String uuid, String sampleCode, String labSampleId, Date sampleDateTime,
 			boolean shipped, Date shipmentDate, boolean received, Date receivedDate, 
 			SampleMaterial sampleMaterial, SpecimenCondition specimenCondition,
@@ -79,7 +81,8 @@ public class SampleIndexDto implements Serializable {
 			String associatedCaseUuid, String associatedCaseFirstName, String associatedCaseLastName,
 			Disease disease, String diseaseDetails, String caseRegionUuid, 
 			String caseDistrictUuid, String caseDistrictName, PathogenTestResultType pathogenTestResult,
-			String pathogenTestLabUserFirstName, String pathogenTestLabUserLastName) {
+			String pathogenTestLabUserFirstName, String pathogenTestLabUserLastName,
+			Boolean additionalTestingRequested, Boolean additionalTestPerformed) {
 		this.uuid = uuid;
 		this.associatedCase = new CaseReferenceDto(associatedCaseUuid, associatedCaseFirstName, associatedCaseLastName);
 		this.sampleCode = sampleCode;
@@ -99,8 +102,10 @@ public class SampleIndexDto implements Serializable {
 		this.specimenCondition = specimenCondition;
 		this.pathogenTestResult = pathogenTestResult;
 		this.pathogenTestLabUserName = UserReferenceDto.buildCaption(pathogenTestLabUserFirstName, pathogenTestLabUserLastName, null);
+		this.additionalTestingStatus =  Boolean.TRUE.equals(additionalTestPerformed) ? AdditionalTestingStatus.PERFORMED : 
+			(Boolean.TRUE.equals(additionalTestingRequested) ? AdditionalTestingStatus.REQUESTED : AdditionalTestingStatus.NOT_REQUESTED);
 	}
-	
+
 	public String getUuid() {
 		return uuid;
 	}
@@ -197,32 +202,32 @@ public class SampleIndexDto implements Serializable {
 	public void setSpecimenCondition(SpecimenCondition specimenCondition) {
 		this.specimenCondition = specimenCondition;
 	}
-	
 	public SampleReferenceDto toReference() {
 		return new SampleReferenceDto(uuid, getSampleMaterial(), getAssociatedCase().getUuid());
 	}
-
 	public PathogenTestResultType getPathogenTestResult() {
 		return pathogenTestResult;
 	}
-
 	public void setPathogenTestResult(PathogenTestResultType pathogenTestResult) {
 		this.pathogenTestResult = pathogenTestResult;
 	}
-
 	public String getPathogenTestLabUserName() {
 		return pathogenTestLabUserName;
 	}
-
 	public void setPathogenTestLabUserName(String pathogenTestLabUserName) {
 		this.pathogenTestLabUserName = pathogenTestLabUserName;
 	}
-
 	public Date getSampleDateTime() {
 		return sampleDateTime;
 	}
-
 	public void setSampleDateTime(Date sampleDateTime) {
 		this.sampleDateTime = sampleDateTime;
 	}
+	public AdditionalTestingStatus getAdditionalTestingStatus() {
+		return additionalTestingStatus;
+	}
+	public void setAdditionalTestingStatus(AdditionalTestingStatus additionalTestingStatus) {
+		this.additionalTestingStatus = additionalTestingStatus;
+	}
+
 }

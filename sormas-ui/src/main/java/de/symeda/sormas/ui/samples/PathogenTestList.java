@@ -33,12 +33,12 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 @SuppressWarnings("serial")
-public class SampleTestList extends PaginationList<PathogenTestDto> {
+public class PathogenTestList extends PaginationList<PathogenTestDto> {
 
 	private SampleReferenceDto sampleRef;
 	private int caseSampleCount;
 
-	public SampleTestList(SampleReferenceDto sampleRef) {
+	public PathogenTestList(SampleReferenceDto sampleRef) {
 		super(5);
 
 		this.sampleRef = sampleRef;
@@ -46,30 +46,30 @@ public class SampleTestList extends PaginationList<PathogenTestDto> {
 
 	@Override
 	public void reload() {
-		List<PathogenTestDto> sampleTests = ControllerProvider.getSampleTestController()
-				.getSampleTestsBySample(sampleRef);
+		List<PathogenTestDto> pathogenTests = ControllerProvider.getPathogenTestController()
+				.getPathogenTestsBySample(sampleRef);
 		
 
-		setEntries(sampleTests);
-		if (!sampleTests.isEmpty()) {
+		setEntries(pathogenTests);
+		if (!pathogenTests.isEmpty()) {
 			showPage(1);
 		} else {
 			updatePaginationLayout();
-			Label noSampleTestsLabel = new Label(I18nProperties.getString(Strings.infoNoPathogenTests));
-			listLayout.addComponent(noSampleTestsLabel);
+			Label noPathogenTestsLabel = new Label(I18nProperties.getString(Strings.infoNoPathogenTests));
+			listLayout.addComponent(noPathogenTestsLabel);
 		}
 	}
 	
 	@Override
 	protected void drawDisplayedEntries() {
-		for (PathogenTestDto sampleTest : getDisplayedEntries()) {
-			SampleTestListEntry listEntry = new SampleTestListEntry(sampleTest);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT)) {
+		for (PathogenTestDto pathogenTest : getDisplayedEntries()) {
+			PathogenTestListEntry listEntry = new PathogenTestListEntry(pathogenTest);
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT)) {
 				listEntry.addEditListener(new ClickListener() {
 					@Override
 					public void buttonClick(ClickEvent event) {
-						ControllerProvider.getSampleTestController().edit(sampleTest, caseSampleCount,
-								SampleTestList.this::reload);
+						ControllerProvider.getPathogenTestController().edit(pathogenTest, caseSampleCount,
+								PathogenTestList.this::reload);
 					}
 				});
 			}

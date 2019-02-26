@@ -39,7 +39,7 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
-public class SampleTestEditForm extends AbstractEditForm<PathogenTestDto> {
+public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.fluidRowLocs(PathogenTestDto.TEST_TYPE, PathogenTestDto.TEST_TYPE_TEXT) +
@@ -51,7 +51,7 @@ public class SampleTestEditForm extends AbstractEditForm<PathogenTestDto> {
 	private final SampleDto sample;
 	private int caseSampleCount;
 	
-	public SampleTestEditForm(SampleDto sample, boolean create, UserRight editOrCreateUserRight, int caseSampleCount) {
+	public PathogenTestForm(SampleDto sample, boolean create, UserRight editOrCreateUserRight, int caseSampleCount) {
 		super(PathogenTestDto.class, PathogenTestDto.I18N_PREFIX, editOrCreateUserRight);
 		
 		this.sample = sample;

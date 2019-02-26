@@ -78,6 +78,8 @@ public class Sample extends AbstractDomainObject {
 	public static final String SHIPPED = "shipped";
 	public static final String RECEIVED = "received";
 	public static final String SPECIMEN_CONDITION = "specimenCondition";
+	public static final String ADDITIONAL_TESTING_REQUESTED = "additionalTestingRequested";
+	public static final String ADDITIONAL_TESTS = "additionalTests";
 	public static final String MAIN_SAMPLE_TEST = "mainSampleTest";
 
 	private Case associatedCase;
@@ -114,6 +116,7 @@ public class Sample extends AbstractDomainObject {
 	private String requestedAdditionalTestsString;
 
 	private List<PathogenTest> pathogenTests;
+	private List<AdditionalTest> additionalTests;
 	private PathogenTest mainSampleTest; 
 
 	@ManyToOne(cascade = {})
@@ -249,6 +252,14 @@ public class Sample extends AbstractDomainObject {
 	public void setSampleTests(List<PathogenTest> pathogenTests) {
 		this.pathogenTests = pathogenTests;
 	}
+	
+	@OneToMany(cascade = {}, mappedBy = AdditionalTest.SAMPLE)
+	public List<AdditionalTest> getAdditionalTests() {
+		return additionalTests;
+	}
+	public void setAdditionalTests(List<AdditionalTest> additionalTests) {
+		this.additionalTests = additionalTests;
+	}
 
 	@Column(length=512)
 	public String getComment() {
@@ -313,7 +324,7 @@ public class Sample extends AbstractDomainObject {
 			if (StringUtils.isEmpty(requestedPathogenTestsString)) {
 				requestedPathogenTests = new HashSet<>();
 			} else {
-				requestedPathogenTests = Arrays.stream(requestedPathogenTestsString.split(";"))
+				requestedPathogenTests = Arrays.stream(requestedPathogenTestsString.split(","))
 						.map(PathogenTestType::valueOf)
 						.collect(Collectors.toSet());
 			}
@@ -322,8 +333,19 @@ public class Sample extends AbstractDomainObject {
 	}
 	public void setRequestedPathogenTests(Set<PathogenTestType> requestedPathogenTests) {
 		this.requestedPathogenTests = requestedPathogenTests;
+		
+		if (this.requestedPathogenTests == null) {
+			return;
+		}
+		
 		StringBuilder sb = new StringBuilder();
-		requestedPathogenTests.stream().forEach(t -> sb.append(t.name()));
+		requestedPathogenTests.stream().forEach(t -> {
+			sb.append(t.name());
+			sb.append(",");
+		});
+		if (sb.length() > 0) {
+			sb.substring(0, sb.lastIndexOf(","));
+		}
 		requestedPathogenTestsString = sb.toString();
 	}	
 
@@ -333,7 +355,7 @@ public class Sample extends AbstractDomainObject {
 			if (StringUtils.isEmpty(requestedAdditionalTestsString)) {
 				requestedAdditionalTests = new HashSet<>();
 			} else {
-				requestedAdditionalTests = Arrays.stream(requestedAdditionalTestsString.split(";"))
+				requestedAdditionalTests = Arrays.stream(requestedAdditionalTestsString.split(","))
 						.map(AdditionalTestType::valueOf)
 						.collect(Collectors.toSet());
 			}
@@ -342,8 +364,19 @@ public class Sample extends AbstractDomainObject {
 	}
 	public void setRequestedAdditionalTests(Set<AdditionalTestType> requestedAdditionalTests) {
 		this.requestedAdditionalTests = requestedAdditionalTests;
+		
+		if (this.requestedAdditionalTests == null) {
+			return;
+		}
+		
 		StringBuilder sb = new StringBuilder();
-		requestedAdditionalTests.stream().forEach(t -> sb.append(t.name()));
+		requestedAdditionalTests.stream().forEach(t -> {
+			sb.append(t.name());
+			sb.append(",");
+		});
+		if (sb.length() > 0) {
+			sb.substring(0, sb.lastIndexOf(","));
+		}
 		requestedAdditionalTestsString = sb.toString();
 	}
 

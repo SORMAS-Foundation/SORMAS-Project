@@ -51,6 +51,8 @@ public interface Strings {
 	public static String confirmationLostToFollowUp = "confirmationLostToFollowUp";
 	public static String done = "done";
 	public static String edit = "edit";
+	public static String entityAdditionalTest = "entityAdditionalTest";
+	public static String entityAdditionalTests = "entityAdditionalTests";
 	public static String entityBurial = "entityBurial";
 	public static String entityCase = "entityCase";
 	public static String entityCases = "entityCases";
@@ -87,6 +89,7 @@ public interface Strings {
 	public static String errorWasReported = "errorWasReported";
 	public static String forCase = "forCase";
 	public static String headingAccessDenied = "headingAccessDenied";
+	public static String headingAdditionalTests = "headingAdditionalTests";
 	public static String headingAllContacts = "headingAllContacts";
 	public static String headingAnimalContacts = "headingAnimalContacts";
 	public static String headingArchiveCase = "headingArchiveCase";
@@ -106,6 +109,7 @@ public interface Strings {
 	public static String headingContactFollowUp = "headingContactFollowUp";
 	public static String headingContactMap = "headingContactMap";
 	public static String headingContactsDeleted = "headingContactsDeleted";
+	public static String headingCreateAdditionalTest = "headingCreateAdditionalTest";
 	public static String headingCreateEntry = "headingCreateEntry";
 	public static String headingCreateNewCase = "headingCreateNewCase";
 	public static String headingCreateNewClinicalVisit = "headingCreateNewClinicalVisit";
@@ -128,6 +132,7 @@ public interface Strings {
 	public static String headingDownloadCaseImportTemplate = "headingDownloadCaseImportTemplate";
 	public static String headingDownloadErrorReport = "headingDownloadErrorReport";
 	public static String headingDownloadImportGuide = "headingDownloadImportGuide";
+	public static String headingEditAdditionalTest = "headingEditAdditionalTest";
 	public static String headingEditCases = "headingEditCases";
 	public static String headingEditClinicalVisit = "headingEditClinicalVisit";
 	public static String headingEditContacts = "headingEditContacts";
@@ -193,6 +198,8 @@ public interface Strings {
 	public static String headingPickOrCreatePerson = "headingPickOrCreatePerson";
 	public static String headingPrescriptionsDeleted = "headingPrescriptionsDeleted";
 	public static String headingReferSample = "headingReferSample";
+	public static String headingRequestedAdditionalTests = "headingRequestedAdditionalTests";
+	public static String headingRequestedPathogenTests = "headingRequestedPathogenTests";
 	public static String headingResults = "headingResults";
 	public static String headingSamplesDeleted = "headingSamplesDeleted";
 	public static String headingSaveNotification = "headingSaveNotification";
@@ -231,6 +238,7 @@ public interface Strings {
 	public static String infoImportProcess = "infoImportProcess";
 	public static String infoImportSimilarity = "infoImportSimilarity";
 	public static String infoLostToFollowUpBy = "infoLostToFollowUpBy";
+	public static String infoNoAdditionalTests = "infoNoAdditionalTests";
 	public static String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
 	public static String infoNoPathogenTests = "infoNoPathogenTests";
 	public static String infoSampleAdditionalTesting = "infoSampleAdditionalTesting";
@@ -247,6 +255,8 @@ public interface Strings {
 	public static String lastTwoYears = "lastTwoYears";
 	public static String lastWeek = "lastWeek";
 	public static String lastYear = "lastYear";
+	public static String messageAdditionalTestDeleted = "messageAdditionalTestDeleted";
+	public static String messageAdditionalTestSaved = "messageAdditionalTestSaved";
 	public static String messageAnimalContactsHint = "messageAnimalContactsHint";
 	public static String messageCaseArchived = "messageCaseArchived";
 	public static String messageCaseCreated = "messageCaseCreated";

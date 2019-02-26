@@ -6,6 +6,7 @@ public interface Captions {
 	public static String aboutDataDictionary = "aboutDataDictionary";
 	public static String aboutSormasVersion = "aboutSormasVersion";
 	public static String aboutTechnicalManual = "aboutTechnicalManual";
+	public static String additionalTestNewTest = "additionalTestNewTest";
 	public static String actionApplyDateFilter = "actionApplyDateFilter";
 	public static String actionArchive = "actionArchive";
 	public static String actionCancel = "actionCancel";
@@ -864,4 +865,6 @@ public interface Captions {
 	public static String WeeklyReportRegionSummary_officers = "WeeklyReportRegionSummary.officers";
 	public static String WeeklyReportRegionSummary_officerZeroReports = "WeeklyReportRegionSummary.officerZeroReports";
 	public static String weeklyReportsInDistrict = "weeklyReportsInDistrict";
+	public static String columnAdditionalTests = "columnAdditionalTests";
+	
  }

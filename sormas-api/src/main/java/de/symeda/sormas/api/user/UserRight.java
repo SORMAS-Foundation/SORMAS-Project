@@ -187,6 +187,10 @@ public enum UserRight {
 			LAB_USER,
 			EXTERNAL_LAB_USER
 			),
+	SAMPLE_EDIT_NOT_OWNED(
+			ADMIN,
+			NATIONAL_USER
+			),
 	SAMPLE_DELETE(
 			ADMIN
 			),
@@ -254,6 +258,9 @@ public enum UserRight {
 			CASE_OFFICER,
 			LAB_USER,
 			EXTERNAL_LAB_USER
+			),
+	ADDITIONAL_TEST_DELETE(
+			ADMIN
 			),
 	CONTACT_CREATE(
 			ADMIN,

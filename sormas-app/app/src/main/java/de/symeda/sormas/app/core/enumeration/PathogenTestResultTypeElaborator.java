@@ -20,14 +20,14 @@ package de.symeda.sormas.app.core.enumeration;
 
 import android.content.Context;
 
-import de.symeda.sormas.api.sample.SampleTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.app.R;
 
-public class SampleTestResultTypeElaborator implements StatusElaborator {
+public class PathogenTestResultTypeElaborator implements StatusElaborator {
 
-    private SampleTestResultType resultType = null;
+    private PathogenTestResultType resultType = null;
 
-    public SampleTestResultTypeElaborator(SampleTestResultType resultType) {
+    public PathogenTestResultTypeElaborator(PathogenTestResultType resultType) {
         this.resultType = resultType;
     }
 

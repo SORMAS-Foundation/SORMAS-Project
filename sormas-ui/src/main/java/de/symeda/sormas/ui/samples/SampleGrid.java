@@ -112,7 +112,7 @@ public class SampleGrid extends Grid implements AbstractGrid<SampleCriteria> {
 		
 		setColumns(EDIT_BTN_ID, SampleIndexDto.SAMPLE_CODE, SampleIndexDto.LAB_SAMPLE_ID, SampleIndexDto.ASSOCIATED_CASE, DISEASE_SHORT,
 				SampleIndexDto.CASE_DISTRICT, SampleIndexDto.SHIPPED, SampleIndexDto.RECEIVED, SampleIndexDto.SHIPMENT_DATE, SampleIndexDto.RECEIVED_DATE, SampleIndexDto.LAB,
-				SampleIndexDto.SAMPLE_MATERIAL, SampleIndexDto.PATHOGEN_TEST_LAB_USER_NAME, TEST_RESULT_AND_SPECIMEN);
+				SampleIndexDto.SAMPLE_MATERIAL, SampleIndexDto.PATHOGEN_TEST_LAB_USER_NAME, TEST_RESULT_AND_SPECIMEN, SampleIndexDto.ADDITIONAL_TESTING_STATUS);
 		
 		getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
         getColumn(EDIT_BTN_ID).setWidth(60);
@@ -141,6 +141,10 @@ public class SampleGrid extends Grid implements AbstractGrid<SampleCriteria> {
 		
 		if (UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
 			removeColumn(SampleIndexDto.ASSOCIATED_CASE);
+		}
+		
+		if (!UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+			removeColumn(SampleIndexDto.ADDITIONAL_TESTING_STATUS);
 		}
 	}
 	

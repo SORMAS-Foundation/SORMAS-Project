@@ -26,8 +26,8 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.sample.SampleTestResultType;
-import de.symeda.sormas.api.sample.SampleTestType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -261,14 +261,14 @@ public class TestEntityCreator {
     }
 
     public static SampleTest createSampleTest(Sample sample) {
-        SampleTestType sampleTestType = SampleTestType.RAPID_TEST;
-        SampleTestResultType sampleTestResultType = SampleTestResultType.NEGATIVE;
+        PathogenTestType PathogenTestType = PathogenTestType.RAPID_TEST;
+        PathogenTestResultType PathogenTestResultType = PathogenTestResultType.NEGATIVE;
         Date sampleTestDateTime = new Date();
 
         SampleTest sampleTest = DatabaseHelper.getSampleTestDao().build();
         sampleTest.setSample(sample);
-        sampleTest.setTestType(sampleTestType);
-        sampleTest.setTestResult(sampleTestResultType);
+        sampleTest.setTestType(PathogenTestType);
+        sampleTest.setTestResult(PathogenTestResultType);
         sampleTest.setTestDateTime(sampleTestDateTime);
 
         try {

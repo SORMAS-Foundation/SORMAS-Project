@@ -2928,6 +2928,7 @@ CREATE TABLE additionaltest(
 	wbccount integer,
 	platelets integer,
 	prothrombintime integer,	
+	othertestresults varchar(512), 
 	sys_period tstzrange not null,
 	primary key(id));
 	

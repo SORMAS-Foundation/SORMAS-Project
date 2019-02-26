@@ -106,7 +106,7 @@ public final class CssStyles {
 	public static final String LABEL_ROUNDED_CORNERS_SLIM = "rounded-corners-slim";
 	public static final String LABEL_BACKGROUND_FOCUS_LIGHT = "background-focus-light";
 	
-	// Layout stlyes
+	// Layout styles
 	public static final String LAYOUT_MINIMAL = "minimal";
 	public static final String BACKGROUND_ROUNDED_CORNERS = "background-rounded-corners";
 	public static final String BACKGROUND_CRITERIA = "background-criteria";

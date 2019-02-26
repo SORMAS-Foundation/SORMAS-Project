@@ -25,7 +25,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.location.Location;
-import androidx.core.app.NotificationCompat;
 import android.text.Html;
 import android.util.Log;
 
@@ -37,6 +36,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import androidx.core.app.NotificationCompat;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;

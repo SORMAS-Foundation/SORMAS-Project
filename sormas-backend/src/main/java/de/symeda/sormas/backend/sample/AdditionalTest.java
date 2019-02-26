@@ -64,6 +64,7 @@ public class AdditionalTest extends AbstractDomainObject {
 	private Integer wbcCount;
 	private Integer platelets;
 	private Integer prothrombinTime;
+	private String otherTestResults;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -217,6 +218,14 @@ public class AdditionalTest extends AbstractDomainObject {
 	}
 	public void setProthrombinTime(Integer prothrombinTime) {
 		this.prothrombinTime = prothrombinTime;
+	}
+
+	@Column(length=512)
+	public String getOtherTestResults() {
+		return otherTestResults;
+	}
+	public void setOtherTestResults(String otherTestResults) {
+		this.otherTestResults = otherTestResults;
 	}
 	
 }

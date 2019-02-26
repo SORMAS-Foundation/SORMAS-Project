@@ -101,7 +101,7 @@ public final class RetroProvider {
     private VisitFacadeRetro visitFacadeRetro;
     private EventFacadeRetro eventFacadeRetro;
     private SampleFacadeRetro sampleFacadeRetro;
-    private SampleTestFacadeRetro sampleTestFacadeRetro;
+    private PathogenTestFacadeRetro pathogenTestFacadeRetro;
     private EventParticipantFacadeRetro eventParticipantFacadeRetro;
     private WeeklyReportFacadeRetro weeklyReportFacadeRetro;
     private OutbreakFacadeRetro outbreakFacadeRetro;
@@ -562,15 +562,15 @@ public final class RetroProvider {
         return instance.sampleFacadeRetro;
     }
 
-    public static SampleTestFacadeRetro getSampleTestFacade() {
-        if (instance.sampleTestFacadeRetro == null) {
+    public static PathogenTestFacadeRetro getSampleTestFacade() {
+        if (instance.pathogenTestFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
-                if (instance.sampleTestFacadeRetro == null) {
-                    instance.sampleTestFacadeRetro = instance.retrofit.create(SampleTestFacadeRetro.class);
+                if (instance.pathogenTestFacadeRetro == null) {
+                    instance.pathogenTestFacadeRetro = instance.retrofit.create(PathogenTestFacadeRetro.class);
                 }
             }
         }
-        return instance.sampleTestFacadeRetro;
+        return instance.pathogenTestFacadeRetro;
     }
 
     public static EventParticipantFacadeRetro getEventParticipantFacade() {

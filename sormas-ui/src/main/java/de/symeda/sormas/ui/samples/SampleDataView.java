@@ -24,7 +24,9 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -38,8 +40,9 @@ public class SampleDataView extends AbstractSampleView {
 
 	public static final String EDIT_LOC = "edit";
 	public static final String CASE_LOC = "case";
-	public static final String SAMPLE_TESTS_LOC = "sampleTests";
-
+	public static final String PATHOGEN_TESTS_LOC = "pathogenTests";
+	public static final String ADDITIONAL_TESTS_LOC = "additionalTests";
+	
 	public SampleDataView() {
 		super(VIEW_NAME);
 	}
@@ -51,7 +54,8 @@ public class SampleDataView extends AbstractSampleView {
 
 		String htmlLayout = LayoutUtil.fluidRow(LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EDIT_LOC),
 				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_LOC),
-				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLE_TESTS_LOC));
+				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, PATHOGEN_TESTS_LOC),
+				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ADDITIONAL_TESTS_LOC));
 
 		VerticalLayout container = new VerticalLayout();
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -78,8 +82,17 @@ public class SampleDataView extends AbstractSampleView {
 		caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(caseInfoLayout, CASE_LOC);
 
-		SampleTestListComponent sampleTestList = new SampleTestListComponent(getSampleRef());
-		sampleTestList.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(sampleTestList, SAMPLE_TESTS_LOC);
+		if (Boolean.TRUE.equals(sampleDto.getPathogenTestingRequested())) {
+			PathogenTestListComponent pathogenTestList = new PathogenTestListComponent(getSampleRef());
+			pathogenTestList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(pathogenTestList, PATHOGEN_TESTS_LOC);
+		}
+		
+		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW) &&
+				Boolean.TRUE.equals(sampleDto.getAdditionalTestingRequested())) {
+			AdditionalTestListComponent additionalTestList = new AdditionalTestListComponent(getSampleRef().getUuid());
+			additionalTestList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(additionalTestList, ADDITIONAL_TESTS_LOC);
+		}
 	}
 }

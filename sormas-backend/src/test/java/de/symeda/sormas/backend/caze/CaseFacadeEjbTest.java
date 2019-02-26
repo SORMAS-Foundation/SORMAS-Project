@@ -226,7 +226,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze = getCaseFacade().saveCase(caze);
 		
 		creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
-		creator.createSampleTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
 		
 		List<CaseExportDto> results = getCaseFacade().getExportList(user.getUuid(), null, 0, 100);
 

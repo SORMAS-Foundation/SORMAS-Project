@@ -36,31 +36,31 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
-public class SampleTestListComponent extends VerticalLayout {
+public class PathogenTestListComponent extends VerticalLayout {
 
-	private SampleTestList list;
+	private PathogenTestList list;
 	private Button createButton;
 
-	public SampleTestListComponent(SampleReferenceDto sampleRef) {
+	public PathogenTestListComponent(SampleReferenceDto sampleRef) {
 		setWidth(100, Unit.PERCENTAGE);
 
 		HorizontalLayout componentHeader = new HorizontalLayout();
 		componentHeader.setWidth(100, Unit.PERCENTAGE);
 		addComponent(componentHeader);
 
-		list = new SampleTestList(sampleRef);
+		list = new PathogenTestList(sampleRef);
 		addComponent(list);
 		list.reload();
 
-		Label tasksHeader = new Label(LayoutUtil.h3(I18nProperties.getString(Strings.headingTests)), ContentMode.HTML);
-		componentHeader.addComponent(tasksHeader);
+		Label testsHeader = new Label(LayoutUtil.h3(I18nProperties.getString(Strings.headingTests)), ContentMode.HTML);
+		componentHeader.addComponent(testsHeader);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
 			createButton = new Button(I18nProperties.getCaption(Captions.pathogenTestNewTest));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
 			createButton.addClickListener(
-					e -> ControllerProvider.getSampleTestController().create(sampleRef, 0, list::reload));
+					e -> ControllerProvider.getPathogenTestController().create(sampleRef, 0, list::reload));
 			componentHeader.addComponent(createButton);
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
 		}

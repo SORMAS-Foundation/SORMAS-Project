@@ -180,6 +180,15 @@ public class SampleFacadeEjb implements SampleFacade {
 	public SampleDto saveSample(SampleDto dto) {
 		SampleDto existingSample = toDto(sampleService.getByUuid(dto.getUuid()));
 		Sample sample = fromDto(dto);
+		
+		// Set defaults for testing requests
+		if (sample.getPathogenTestingRequested() == null) {
+			sample.setPathogenTestingRequested(false);
+		}
+		if (sample.getAdditionalTestingRequested() == null) {
+			sample.setAdditionalTestingRequested(false);
+		}
+		
 		sampleService.ensurePersisted(sample);
 
 		onSampleChanged(existingSample, sample);
@@ -216,7 +225,8 @@ public class SampleFacadeEjb implements SampleFacade {
 				caze.get(Case.UUID), cazePerson.get(Person.FIRST_NAME), cazePerson.get(Person.LAST_NAME),
 				caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), 
 				caseRegion.get(Region.UUID), caseDistrict.get(District.UUID), caseDistrict.get(District.NAME), 
-				mainTest.get(PathogenTest.TEST_RESULT), mainTestLabUser.get(User.FIRST_NAME), mainTestLabUser.get(User.LAST_NAME));
+				mainTest.get(PathogenTest.TEST_RESULT), mainTestLabUser.get(User.FIRST_NAME), mainTestLabUser.get(User.LAST_NAME),
+				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED), cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)));
 
 		Predicate filter = null;
 		if (userUuid != null) {
@@ -232,6 +242,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}
+		
+		cq.orderBy(cb.desc(sample.get(Sample.SAMPLE_DATE_TIME)));
 
 		List<SampleIndexDto> resultList = em.createQuery(cq).getResultList();
 

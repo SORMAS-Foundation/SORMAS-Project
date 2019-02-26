@@ -27,7 +27,7 @@ import java.util.List;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
-import de.symeda.sormas.api.sample.SampleTestType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -54,7 +54,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
     // Enum lists
 
     private List<Item> sampleMaterialList;
-    private List<Item> sampleTestTypeList;
+    private List<Item> PathogenTestTypeList;
     private List<Item> sampleSourceList;
     private List<Facility> labList;
 
@@ -114,7 +114,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         }
 
         sampleMaterialList = DataUtils.getEnumItems(SampleMaterial.class, true);
-        sampleTestTypeList = DataUtils.getEnumItems(SampleTestType.class, true);
+        PathogenTestTypeList = DataUtils.getEnumItems(PathogenTestType.class, true);
         sampleSourceList = DataUtils.getEnumItems(SampleSource.class, true);
         labList = DatabaseHelper.getFacilityDao().getLaboratories(true);
     }
@@ -136,7 +136,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 
         // Initialize ControlSpinnerFields
         contentBinding.sampleSampleMaterial.initializeSpinner(sampleMaterialList);
-        contentBinding.sampleSuggestedTypeOfTest.initializeSpinner(sampleTestTypeList);
+        contentBinding.sampleSuggestedTypeOfTest.initializeSpinner(PathogenTestTypeList);
         contentBinding.sampleSampleSource.initializeSpinner(sampleSourceList);
         contentBinding.sampleLab.initializeSpinner(DataUtils.toItems(labList), new ValueChangeListener() {
             @Override

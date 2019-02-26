@@ -29,8 +29,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-import de.symeda.sormas.api.sample.SampleTestResultType;
-import de.symeda.sormas.api.sample.SampleTestType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
@@ -55,11 +55,11 @@ public class SampleTest extends AbstractDomainObject {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private SampleTestType testType;
+    private PathogenTestType testType;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private SampleTestResultType testResult;
+    private PathogenTestResultType testResult;
 
     @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
     private Date testDateTime;
@@ -72,19 +72,19 @@ public class SampleTest extends AbstractDomainObject {
         this.sample = sample;
     }
 
-    public SampleTestType getTestType() {
+    public PathogenTestType getTestType() {
         return testType;
     }
 
-    public void setTestType(SampleTestType testType) {
+    public void setTestType(PathogenTestType testType) {
         this.testType = testType;
     }
 
-    public SampleTestResultType getTestResult() {
+    public PathogenTestResultType getTestResult() {
         return testResult;
     }
 
-    public void setTestResult(SampleTestResultType testResult) {
+    public void setTestResult(PathogenTestResultType testResult) {
         this.testResult = testResult;
     }
 

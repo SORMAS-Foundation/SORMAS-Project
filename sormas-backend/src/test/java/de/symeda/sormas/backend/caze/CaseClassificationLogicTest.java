@@ -103,17 +103,17 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 		// Confirmed
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.EVD));
-		creator.createSampleTest(caze, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.EVD));
-		creator.createSampleTest(caze, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.EVD));
-		creator.createSampleTest(caze, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 	}
@@ -191,7 +191,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 		// Confirmed
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.CSM));
-		creator.createSampleTest(caze, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 
@@ -312,17 +312,17 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 		// Confirmed
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.LASSA));
-		creator.createSampleTest(caze, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.LASSA));
-		creator.createSampleTest(caze, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.LASSA));
-		creator.createSampleTest(caze, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 	}
@@ -385,49 +385,49 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		caze = buildSuspectCase(Disease.YELLOW_FEVER);
 		caze.setOutcome(CaseOutcome.DECEASED);
 		caze = getCaseFacade().saveCase(caze);
-		creator.createSampleTest(caze, PathogenTestType.HISTOPATHOLOGY, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.HISTOPATHOLOGY, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.PROBABLE, caze.getCaseClassification());
 
 		// Confirmed
 		caze = getCaseFacade().saveCase(buildConfirmedCaseBasis(Disease.YELLOW_FEVER));
-		creator.createSampleTest(caze, PathogenTestType.YELLOW_FEVER_IGM, PathogenTestResultType.POSITIVE);
-		creator.createSampleTest(caze, PathogenTestType.DENGUE_FEVER_IGM, PathogenTestResultType.NEGATIVE);
-		creator.createSampleTest(caze, PathogenTestType.WEST_NILE_FEVER_IGM, PathogenTestResultType.NEGATIVE);
+		creator.createPathogenTest(caze, PathogenTestType.YELLOW_FEVER_IGM, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.DENGUE_FEVER_IGM, PathogenTestResultType.NEGATIVE);
+		creator.createPathogenTest(caze, PathogenTestType.WEST_NILE_FEVER_IGM, PathogenTestResultType.NEGATIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 
 		caze = getCaseFacade().saveCase(buildConfirmedCaseBasis(Disease.YELLOW_FEVER));
-		creator.createSampleTest(caze, PathogenTestType.YELLOW_FEVER_ANTIBODIES, PathogenTestResultType.POSITIVE);
-		creator.createSampleTest(caze, PathogenTestType.DENGUE_FEVER_ANTIBODIES, PathogenTestResultType.NEGATIVE);
-		creator.createSampleTest(caze, PathogenTestType.WEST_NILE_FEVER_ANTIBODIES, PathogenTestResultType.NEGATIVE);
+		creator.createPathogenTest(caze, PathogenTestType.YELLOW_FEVER_ANTIBODIES, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.DENGUE_FEVER_ANTIBODIES, PathogenTestResultType.NEGATIVE);
+		creator.createPathogenTest(caze, PathogenTestType.WEST_NILE_FEVER_ANTIBODIES, PathogenTestResultType.NEGATIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 
 		caze = getCaseFacade().saveCase(buildConfirmedCaseBasis(Disease.YELLOW_FEVER));
-		creator.createSampleTest(caze, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 
 		caze = getCaseFacade().saveCase(buildConfirmedCaseBasis(Disease.YELLOW_FEVER));
-		creator.createSampleTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 
 		caze = getCaseFacade().saveCase(buildConfirmedCaseBasis(Disease.YELLOW_FEVER));
-		creator.createSampleTest(caze, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 
 		caze = getCaseFacade().saveCase(buildConfirmedCaseBasis(Disease.YELLOW_FEVER));
-		PathogenTestDto sampleTest = creator.createSampleTest(caze, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
+		PathogenTestDto sampleTest = creator.createPathogenTest(caze, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
 		sampleTest.setFourFoldIncreaseAntibodyTiter(true);
 		getSampleTestFacade().savePathogenTest(sampleTest);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 
 		caze = getCaseFacade().saveCase(buildConfirmedCaseBasis(Disease.YELLOW_FEVER));
-		sampleTest = creator.createSampleTest(caze, PathogenTestType.IGG_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
+		sampleTest = creator.createPathogenTest(caze, PathogenTestType.IGG_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
 		sampleTest.setFourFoldIncreaseAntibodyTiter(true);
 		getSampleTestFacade().savePathogenTest(sampleTest);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
@@ -461,7 +461,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 		caze.setOutcome(CaseOutcome.NO_OUTCOME);
 		caze = getCaseFacade().saveCase(caze);
-		creator.createSampleTest(caze, PathogenTestType.HISTOPATHOLOGY, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.HISTOPATHOLOGY, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 
@@ -471,11 +471,11 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 				PathogenTestType.PCR_RT_PCR, PathogenTestType.ANTIGEN_DETECTION, PathogenTestType.ISOLATION);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
-		creator.createSampleTest(caze, PathogenTestType.YELLOW_FEVER_IGM, PathogenTestResultType.POSITIVE);
-		creator.createSampleTest(caze, PathogenTestType.YELLOW_FEVER_ANTIBODIES, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.YELLOW_FEVER_IGM, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.YELLOW_FEVER_ANTIBODIES, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
-		creator.createSampleTest(caze, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		caze.setVaccinationDate(DateHelper.subtractDays(new Date(), 1));
 		caze = getCaseFacade().saveCase(caze);
@@ -518,24 +518,24 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 		// Confirmed
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.DENGUE));
-		creator.createSampleTest(caze, PathogenTestType.DENGUE_FEVER_IGM, PathogenTestResultType.POSITIVE);
-		creator.createSampleTest(caze, PathogenTestType.YELLOW_FEVER_IGM, PathogenTestResultType.NEGATIVE);
-		creator.createSampleTest(caze, PathogenTestType.WEST_NILE_FEVER_IGM, PathogenTestResultType.NEGATIVE);
+		creator.createPathogenTest(caze, PathogenTestType.DENGUE_FEVER_IGM, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.YELLOW_FEVER_IGM, PathogenTestResultType.NEGATIVE);
+		creator.createPathogenTest(caze, PathogenTestType.WEST_NILE_FEVER_IGM, PathogenTestResultType.NEGATIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.DENGUE));
-		creator.createSampleTest(caze, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.DENGUE));
-		creator.createSampleTest(caze, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.DENGUE));
-		PathogenTestDto sampleTest = creator.createSampleTest(caze, PathogenTestType.IGG_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
+		PathogenTestDto sampleTest = creator.createPathogenTest(caze, PathogenTestType.IGG_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
 		sampleTest.setFourFoldIncreaseAntibodyTiter(true);
 		getSampleTestFacade().savePathogenTest(sampleTest);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
@@ -574,7 +574,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 				PathogenTestType.ISOLATION);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
-		creator.createSampleTest(caze, PathogenTestType.DENGUE_FEVER_IGM, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.DENGUE_FEVER_IGM, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 	}
@@ -626,17 +626,17 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 		// Confirmed
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.NEW_INFLUENCA));
-		creator.createSampleTest(caze, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.NEW_INFLUENCA));
-		creator.createSampleTest(caze, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.NEW_INFLUENCA));
-		PathogenTestDto sampleTest = creator.createSampleTest(caze, PathogenTestType.IGG_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
+		PathogenTestDto sampleTest = creator.createPathogenTest(caze, PathogenTestType.IGG_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
 		sampleTest.setFourFoldIncreaseAntibodyTiter(true);
 		getSampleTestFacade().savePathogenTest(sampleTest);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
@@ -711,7 +711,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 		// Confirmed
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.MEASLES));
-		creator.createSampleTest(caze, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 	}
@@ -772,7 +772,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 		// Confirmed
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.CHOLERA));
-		creator.createSampleTest(caze, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());		
 	}
@@ -820,17 +820,17 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 		// Confirmed
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.MONKEYPOX));
-		creator.createSampleTest(caze, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());		
 
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.MONKEYPOX));
-		creator.createSampleTest(caze, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());	
 
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.MONKEYPOX));
-		creator.createSampleTest(caze, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());	
 	}
@@ -891,7 +891,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 		// Probable
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.PLAGUE));
-		creator.createSampleTest(caze, PathogenTestType.YERSINIA_PESTIS_ANTIGEN, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.YERSINIA_PESTIS_ANTIGEN, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.PROBABLE, caze.getCaseClassification());
 
@@ -903,12 +903,12 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 		// Confirmed
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.PLAGUE));
-		creator.createSampleTest(caze, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());		
 
 		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.MONKEYPOX));
-		creator.createSampleTest(caze, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());			
 	}
@@ -1115,7 +1115,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		List<PathogenTestType> excludedTestsList = Arrays.asList(excludedTests);
 		for (PathogenTestType testType : PathogenTestType.values()) {
 			if (!excludedTestsList.contains(testType)) {
-				creator.createSampleTest(caze, testType, PathogenTestResultType.POSITIVE);
+				creator.createPathogenTest(caze, testType, PathogenTestResultType.POSITIVE);
 			}
 		}
 	}

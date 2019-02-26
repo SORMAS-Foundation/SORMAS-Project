@@ -34,6 +34,11 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 	private UserService userService;
 	
 	@Override
+	public AdditionalTestDto getByUuid(String uuid) {
+		return toDto(service.getByUuid(uuid));
+	}
+	
+	@Override
 	public List<AdditionalTestDto> getAllBySample(String sampleUuid) {
 		if (sampleUuid == null) {
 			return Collections.emptyList();
@@ -100,6 +105,7 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 		target.setWbcCount(source.getWbcCount());
 		target.setPlatelets(source.getPlatelets());
 		target.setProthrombinTime(source.getPlatelets());
+		target.setOtherTestResults(source.getOtherTestResults());
 		
 		return target;
 	}
@@ -133,6 +139,7 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 		target.setWbcCount(source.getWbcCount());
 		target.setPlatelets(source.getPlatelets());
 		target.setProthrombinTime(source.getPlatelets());
+		target.setOtherTestResults(source.getOtherTestResults());
 		
 		return target;
 	}

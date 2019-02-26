@@ -33,7 +33,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
-import de.symeda.sormas.api.sample.SampleTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -56,7 +56,7 @@ import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.core.TimeAgo;
-import de.symeda.sormas.app.core.enumeration.SampleTestResultTypeElaborator;
+import de.symeda.sormas.app.core.enumeration.PathogenTestResultTypeElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 
 public class TextViewBindingAdapters {
@@ -812,11 +812,11 @@ public class TextViewBindingAdapters {
     }
 
     @BindingAdapter("resultType")
-    public static void setResultType(TextView textView, SampleTestResultType resultType) {
+    public static void setResultType(TextView textView, PathogenTestResultType resultType) {
         if (resultType != null) {
             Context context = textView.getContext();
-            SampleTestResultTypeElaborator elaborator =
-                    (SampleTestResultTypeElaborator) StatusElaboratorFactory.getElaborator(resultType);
+            PathogenTestResultTypeElaborator elaborator =
+                    (PathogenTestResultTypeElaborator) StatusElaboratorFactory.getElaborator(resultType);
             textView.setText(resultType.name());
             textView.setTextColor(context.getResources().getColor(elaborator.getColorIndicatorResource()));
         }

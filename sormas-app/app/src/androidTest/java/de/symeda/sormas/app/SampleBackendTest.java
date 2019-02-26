@@ -30,7 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
-import de.symeda.sormas.api.sample.SampleTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -80,7 +80,7 @@ public class SampleBackendTest {
         SampleTest sampleTest = TestEntityCreator.createSampleTest(sample);
 
         sample.setComment("AppSampleComment");
-        sampleTest.setTestResult(SampleTestResultType.NEGATIVE);
+        sampleTest.setTestResult(PathogenTestResultType.NEGATIVE);
 
         DatabaseHelper.getSampleDao().saveAndSnapshot(sample);
         DatabaseHelper.getSampleDao().accept(sample);
@@ -94,7 +94,7 @@ public class SampleBackendTest {
 
         SampleTest mergeSampleTest = (SampleTest) sampleTest.clone();
         mergeSampleTest.setId(null);
-        mergeSampleTest.setTestResult(SampleTestResultType.POSITIVE);
+        mergeSampleTest.setTestResult(PathogenTestResultType.POSITIVE);
 
         DatabaseHelper.getSampleDao().mergeOrCreate(mergeSample);
         DatabaseHelper.getSampleTestDao().mergeOrCreate(mergeSampleTest);
@@ -102,7 +102,7 @@ public class SampleBackendTest {
         Sample updatedSample = DatabaseHelper.getSampleDao().queryUuid(sample.getUuid());
         assertThat(updatedSample.getComment(), is("ServerSampleComment"));
         SampleTest updatedSampleTest = DatabaseHelper.getSampleTestDao().queryUuid(sampleTest.getUuid());
-        assertThat(updatedSampleTest.getTestResult(), is(SampleTestResultType.POSITIVE));
+        assertThat(updatedSampleTest.getTestResult(), is(PathogenTestResultType.POSITIVE));
     }
 
     @Test

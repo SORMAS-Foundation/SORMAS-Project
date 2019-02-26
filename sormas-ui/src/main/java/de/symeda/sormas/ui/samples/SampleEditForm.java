@@ -23,6 +23,7 @@ import java.util.Date;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
@@ -63,22 +64,30 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 	private static final String REPORT_INFORMATION_LOC = "reportInformationLoc";
 	private static final String PATHOGEN_TESTING_INFO_LOC = "pathogenTestingInfoLoc";
 	private static final String ADDITIONAL_TESTING_INFO_LOC = "additionalTestingInfoLoc";
+	private static final String PATHOGEN_TESTING_READ_HEADLINE_LOC = "pathogenTestingReadHeadlineLoc";
+	private static final String ADDITIONAL_TESTING_READ_HEADLINE_LOC = "additionalTestingReadHeadlineLoc";
+	private static final String REQUESTED_PATHOGEN_TESTS_READ_LOC = "requestedPathogenTestsReadLoc";
+	private static final String REQUESTED_ADDITIONAL_TESTS_READ_LOC = "requestedAdditionalTestsReadLoc";
 
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.h3(I18nProperties.getString(Strings.headingLaboratorySample)) +
 			LayoutUtil.locCss(CssStyles.VSPACE_2, REPORT_INFORMATION_LOC) +
-			LayoutUtil.divs(
+			LayoutUtil.divsCss(CssStyles.VSPACE_3,
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_CODE),
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_MATERIAL, SampleDto.SAMPLE_MATERIAL_TEXT),
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_SOURCE, ""),
 					LayoutUtil.fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS)
 					) +
 			LayoutUtil.loc(SampleDto.PATHOGEN_TESTING_REQUESTED) +
+			LayoutUtil.loc(PATHOGEN_TESTING_READ_HEADLINE_LOC) +
 			LayoutUtil.loc(PATHOGEN_TESTING_INFO_LOC) +
 			LayoutUtil.loc(SampleDto.REQUESTED_PATHOGEN_TESTS) +
-			LayoutUtil.locCss(CssStyles.VSPACE_TOP_5, SampleDto.ADDITIONAL_TESTING_REQUESTED) +
+			LayoutUtil.loc(REQUESTED_PATHOGEN_TESTS_READ_LOC) +
+			LayoutUtil.loc(SampleDto.ADDITIONAL_TESTING_REQUESTED) +
+			LayoutUtil.loc(ADDITIONAL_TESTING_READ_HEADLINE_LOC) +
 			LayoutUtil.loc(ADDITIONAL_TESTING_INFO_LOC) +
 			LayoutUtil.loc(SampleDto.REQUESTED_ADDITIONAL_TESTS) +
+			LayoutUtil.loc(REQUESTED_ADDITIONAL_TESTS_READ_LOC) +
 			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.SHIPPED) +
 			LayoutUtil.fluidRowLocs(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS) +
 			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.RECEIVED) +
@@ -86,6 +95,8 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			LayoutUtil.fluidRowLocs(SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON) +
 			LayoutUtil.fluidRowLocs(SampleDto.COMMENT)
 			;
+
+	private boolean requestedTestsInitialized = false;
 
 	public SampleEditForm(UserRight editOrCreateUserRight) {
 		super(SampleDto.class, SampleDto.I18N_PREFIX, editOrCreateUserRight);
@@ -102,22 +113,6 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		ComboBox sampleSource = addField(SampleDto.SAMPLE_SOURCE, ComboBox.class);
 		DateField shipmentDate = addDateField(SampleDto.SHIPMENT_DATE, DateField.class, 7);
 		addField(SampleDto.SHIPMENT_DETAILS, TextField.class);		
-		OptionGroup pathogenTestingRequestedField = addField(SampleDto.PATHOGEN_TESTING_REQUESTED, OptionGroup.class);
-		CssStyles.style(pathogenTestingRequestedField, CssStyles.OPTIONGROUP_CAPTION_AREA_INLINE);
-		pathogenTestingRequestedField.setWidthUndefined();
-		OptionGroup requestedPathogenTestsField = addField(SampleDto.REQUESTED_PATHOGEN_TESTS, OptionGroup.class);
-		CssStyles.style(requestedPathogenTestsField, CssStyles.OPTIONGROUP_CHECKBOXES_HORIZONTAL);
-		requestedPathogenTestsField.setMultiSelect(true);
-		requestedPathogenTestsField.addItems((Object[]) PathogenTestType.values());
-		requestedPathogenTestsField.setCaption(null);
-		OptionGroup additionalTestingRequestedField = addField(SampleDto.ADDITIONAL_TESTING_REQUESTED, OptionGroup.class);
-		CssStyles.style(additionalTestingRequestedField, CssStyles.OPTIONGROUP_CAPTION_AREA_INLINE);
-		additionalTestingRequestedField.setWidthUndefined();
-		OptionGroup requestedAdditionalTestsField = addField(SampleDto.REQUESTED_ADDITIONAL_TESTS, OptionGroup.class);
-		CssStyles.style(requestedAdditionalTestsField, CssStyles.OPTIONGROUP_CHECKBOXES_HORIZONTAL);
-		requestedAdditionalTestsField.setMultiSelect(true);
-		requestedAdditionalTestsField.addItems((Object[]) AdditionalTestType.values());
-		requestedAdditionalTestsField.setCaption(null);
 		DateField receivedDate = addField(SampleDto.RECEIVED_DATE, DateField.class);
 		ComboBox lab = addField(SampleDto.LAB, ComboBox.class);
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(true));
@@ -128,6 +123,8 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.COMMENT, TextArea.class).setRows(2);
 		CheckBox shipped = addField(SampleDto.SHIPPED, CheckBox.class);
 		CheckBox received = addField(SampleDto.RECEIVED, CheckBox.class);
+
+		initializeRequestedTests();
 
 		// Validators
 		sampleDateField.addValidator(new DateComparisonValidator(sampleDateField, shipmentDate, true, false,
@@ -148,28 +145,6 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SAMPLE_MATERIAL, Arrays.asList(SampleDto.SAMPLE_MATERIAL_TEXT), Arrays.asList(SampleMaterial.OTHER));
 		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SPECIMEN_CONDITION, Arrays.asList(SampleDto.NO_TEST_POSSIBLE_REASON), Arrays.asList(SpecimenCondition.NOT_ADEQUATE));
 
-		// Requested pathogen/additional test info texts
-		Label requestedPathogenInfoLabel = new Label(I18nProperties.getString(Strings.infoSamplePathogenTesting));
-		getContent().addComponent(requestedPathogenInfoLabel, PATHOGEN_TESTING_INFO_LOC);
-		Label requestedAdditionalPathogenInfoLabel = new Label(I18nProperties.getString(Strings.infoSampleAdditionalTesting));
-		getContent().addComponent(requestedAdditionalPathogenInfoLabel, ADDITIONAL_TESTING_INFO_LOC);
-		pathogenTestingRequestedField.addValueChangeListener(e -> {
-			requestedPathogenInfoLabel.setVisible(e.getProperty().getValue().equals(Boolean.TRUE));
-			requestedPathogenTestsField.setVisible(e.getProperty().getValue().equals(Boolean.TRUE));
-		});
-		pathogenTestingRequestedField.setRequired(true);
-
-		if (!UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
-			additionalTestingRequestedField.setVisible(false);
-			requestedAdditionalPathogenInfoLabel.setVisible(false);
-		} else {
-			additionalTestingRequestedField.addValueChangeListener(e -> {
-				requestedAdditionalPathogenInfoLabel.setVisible(e.getProperty().getValue().equals(Boolean.TRUE));
-				requestedAdditionalTestsField.setVisible(e.getProperty().getValue().equals(Boolean.TRUE));
-			});
-			additionalTestingRequestedField.setRequired(true);
-		}
-
 		addValueChangeListener(e -> {
 			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getAssociatedCase().getUuid());
 
@@ -179,7 +154,8 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			if (caze.getDisease() != Disease.NEW_INFLUENCA) {
 				sampleSource.setVisible(false);
 			}
-			if ((UserProvider.getCurrent().getUuid().equals(getValue().getReportingUser().getUuid()))) {
+
+			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT_NOT_OWNED) || UserProvider.getCurrent().getUuid().equals(getValue().getReportingUser().getUuid())) {
 				FieldHelper.setEnabledWhen(getFieldGroup(), shipped, Arrays.asList(true), Arrays.asList(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS), true);
 				FieldHelper.setRequiredWhen(getFieldGroup(), shipped, Arrays.asList(SampleDto.SHIPMENT_DATE), Arrays.asList(true));
 				setRequired(true, SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_MATERIAL, SampleDto.LAB);
@@ -193,10 +169,6 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 				getField(SampleDto.SHIPMENT_DATE).setEnabled(false);
 				getField(SampleDto.SHIPMENT_DETAILS).setEnabled(false);
 				getField(SampleDto.SAMPLE_SOURCE).setEnabled(false);
-				getField(SampleDto.PATHOGEN_TESTING_REQUESTED).setEnabled(false);
-				getField(SampleDto.ADDITIONAL_TESTING_REQUESTED).setEnabled(false);
-				requestedPathogenTestsField.setEnabled(false);
-				additionalTestingRequestedField.setEnabled(false);
 			}
 
 			shipped.addValueChangeListener(event -> {
@@ -247,6 +219,113 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 				labDetails.setRequired(false);
 				labDetails.clear();
 			}
+		});
+	}
+
+	private void initializeRequestedTests() {
+		// Yes/No fields for requesting pathogen/additional tests
+		OptionGroup pathogenTestingRequestedField = addField(SampleDto.PATHOGEN_TESTING_REQUESTED, OptionGroup.class);
+		CssStyles.style(pathogenTestingRequestedField, CssStyles.OPTIONGROUP_CAPTION_AREA_INLINE);
+		pathogenTestingRequestedField.setWidthUndefined();
+		pathogenTestingRequestedField.setRequired(true);
+		OptionGroup additionalTestingRequestedField = addField(SampleDto.ADDITIONAL_TESTING_REQUESTED, OptionGroup.class);
+		CssStyles.style(additionalTestingRequestedField, CssStyles.OPTIONGROUP_CAPTION_AREA_INLINE);
+		additionalTestingRequestedField.setWidthUndefined();
+
+		// CheckBox groups to select the requested pathogen/additional tests
+		OptionGroup requestedPathogenTestsField = addField(SampleDto.REQUESTED_PATHOGEN_TESTS, OptionGroup.class);
+		CssStyles.style(requestedPathogenTestsField, CssStyles.OPTIONGROUP_CHECKBOXES_HORIZONTAL);
+		requestedPathogenTestsField.setMultiSelect(true);
+		requestedPathogenTestsField.addItems((Object[]) PathogenTestType.values());
+		requestedPathogenTestsField.setCaption(null);
+		OptionGroup requestedAdditionalTestsField = addField(SampleDto.REQUESTED_ADDITIONAL_TESTS, OptionGroup.class);
+		CssStyles.style(requestedAdditionalTestsField, CssStyles.OPTIONGROUP_CHECKBOXES_HORIZONTAL);
+		requestedAdditionalTestsField.setMultiSelect(true);
+		requestedAdditionalTestsField.addItems((Object[]) AdditionalTestType.values());
+		requestedAdditionalTestsField.setCaption(null);
+		
+		// The code below relies on getValue() to return the sample of the form and therefore has to be delayed until the sample is set
+		addValueChangeListener(e -> {
+			if (!requestedTestsInitialized) {
+				if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT_NOT_OWNED) || UserProvider.getCurrent().getUuid().equals(getValue().getReportingUser().getUuid())) {
+					// Information texts for users that can edit the requested tests
+					Label requestedPathogenInfoLabel = new Label(I18nProperties.getString(Strings.infoSamplePathogenTesting));
+					getContent().addComponent(requestedPathogenInfoLabel, PATHOGEN_TESTING_INFO_LOC);
+					Label requestedAdditionalInfoLabel = new Label(I18nProperties.getString(Strings.infoSampleAdditionalTesting));
+					getContent().addComponent(requestedAdditionalInfoLabel, ADDITIONAL_TESTING_INFO_LOC);
+
+					// Set initial visibility
+					requestedPathogenTestsField.setVisible(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()));
+					requestedPathogenInfoLabel.setVisible(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()));
+					
+					// CheckBoxes should be hidden when no tests are requested
+					pathogenTestingRequestedField.addValueChangeListener(f -> {
+						requestedPathogenInfoLabel.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
+						requestedPathogenTestsField.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
+					});
+
+					if (!UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+						// Hide additional testing fields when user is not allowed to see them
+						additionalTestingRequestedField.setVisible(false);
+						requestedAdditionalTestsField.setVisible(false);
+						requestedAdditionalInfoLabel.setVisible(false);
+					} else {
+						requestedAdditionalTestsField.setVisible(Boolean.TRUE.equals(getValue().getAdditionalTestingRequested()));
+						requestedAdditionalInfoLabel.setVisible(Boolean.TRUE.equals(getValue().getAdditionalTestingRequested()));
+						additionalTestingRequestedField.setRequired(true);
+						
+						additionalTestingRequestedField.addValueChangeListener(f -> {
+							requestedAdditionalInfoLabel.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
+							requestedAdditionalTestsField.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
+						});
+					}
+				} else {
+					// If the user can't edit the sample, they see a read-only list of requested tests
+					setVisible(false, SampleDto.PATHOGEN_TESTING_REQUESTED, SampleDto.ADDITIONAL_TESTING_REQUESTED,
+							SampleDto.REQUESTED_PATHOGEN_TESTS, SampleDto.REQUESTED_ADDITIONAL_TESTS);
+					
+					// Display a label for every requested pathogen test or hide the whole section if no tests have been requested
+					if (Boolean.TRUE.equals(getValue().getPathogenTestingRequested()) && !getValue().getRequestedPathogenTests().isEmpty()) {
+						Label pathogenTestsHeading = new Label(I18nProperties.getString(Strings.headingRequestedPathogenTests));
+						CssStyles.style(pathogenTestsHeading, CssStyles.LABEL_BOLD, CssStyles.LABEL_SECONDARY, CssStyles.VSPACE_4);
+						getContent().addComponent(pathogenTestsHeading, PATHOGEN_TESTING_READ_HEADLINE_LOC);
+
+						CssLayout requestedPathogenTestsLayout = new CssLayout();
+						CssStyles.style(requestedPathogenTestsLayout, CssStyles.VSPACE_3);
+						for (PathogenTestType testType : getValue().getRequestedPathogenTests()) {
+							Label testLabel = new Label(testType.toString());
+							testLabel.setWidthUndefined();
+							CssStyles.style(testLabel, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT,
+									CssStyles.VSPACE_4, CssStyles.HSPACE_RIGHT_4);
+							requestedPathogenTestsLayout.addComponent(testLabel);
+						}
+						getContent().addComponent(requestedPathogenTestsLayout, REQUESTED_PATHOGEN_TESTS_READ_LOC);
+					}
+
+					// If the user can view additional tests, display a label for every requested additional test
+					// or hide the whole section if no tests have been requested
+					if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW) && Boolean.TRUE.equals(getValue().getAdditionalTestingRequested())
+							&& !getValue().getRequestedAdditionalTests().isEmpty()) {
+						Label additionalTestsHeading = new Label(I18nProperties.getString(Strings.headingRequestedAdditionalTests));
+						CssStyles.style(additionalTestsHeading, CssStyles.LABEL_BOLD, CssStyles.LABEL_SECONDARY, CssStyles.VSPACE_4);
+						getContent().addComponent(additionalTestsHeading, ADDITIONAL_TESTING_READ_HEADLINE_LOC);
+
+						CssLayout requestedAdditionalTestsLayout = new CssLayout();
+						CssStyles.style(requestedAdditionalTestsLayout, CssStyles.VSPACE_3);
+						for (AdditionalTestType testType : getValue().getRequestedAdditionalTests()) {
+							Label testLabel = new Label(testType.toString());
+							testLabel.setWidthUndefined();
+							CssStyles.style(testLabel, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT,
+									CssStyles.VSPACE_4, CssStyles.HSPACE_RIGHT_4);
+							requestedAdditionalTestsLayout.addComponent(testLabel);
+						}
+						getContent().addComponent(requestedAdditionalTestsLayout, REQUESTED_ADDITIONAL_TESTS_READ_LOC);
+					}
+
+				}
+			}
+
+			requestedTestsInitialized = true;
 		});
 	}
 

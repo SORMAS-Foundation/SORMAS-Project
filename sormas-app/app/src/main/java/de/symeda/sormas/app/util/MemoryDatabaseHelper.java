@@ -55,8 +55,8 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
-import de.symeda.sormas.api.sample.SampleTestResultType;
-import de.symeda.sormas.api.sample.SampleTestType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
@@ -194,8 +194,8 @@ public class MemoryDatabaseHelper {
 
     public static class TEST_TYPE {
 
-        public static List<SampleTestType> getTestTypes() {
-            return BaseDataGenerator.getAllSampleTestType();
+        public static List<PathogenTestType> getTestTypes() {
+            return BaseDataGenerator.getAllPathogenTestType();
         }
     }
 
@@ -1008,8 +1008,8 @@ class SampleTestGenerator extends BaseDataGenerator {
             SampleTest data1 = new SampleTest();
             data1.setUuid(getRandomUuid());
             data1.setSample(SampleGenerator.getSingle());
-            data1.setTestType(getRandomSampleTestType());
-            data1.setTestResult(getRandomSampleTestResultType());
+            data1.setTestType(getRandomPathogenTestType());
+            data1.setTestResult(getRandomPathogenTestResultType());
             data1.setTestDateTime(getRandomDate());
 
             pool.add(data1);
@@ -1030,12 +1030,12 @@ class SampleTestGenerator extends BaseDataGenerator {
         return randomItem(pool);
     }
 
-    private static SampleTestResultType getRandomSampleTestResultType() {
-        List<SampleTestResultType> list = new ArrayList<SampleTestResultType>() {{
-            add(SampleTestResultType.INDETERMINATE);
-            add(SampleTestResultType.PENDING);
-            add(SampleTestResultType.NEGATIVE);
-            add(SampleTestResultType.POSITIVE);
+    private static PathogenTestResultType getRandomPathogenTestResultType() {
+        List<PathogenTestResultType> list = new ArrayList<PathogenTestResultType>() {{
+            add(PathogenTestResultType.INDETERMINATE);
+            add(PathogenTestResultType.PENDING);
+            add(PathogenTestResultType.NEGATIVE);
+            add(PathogenTestResultType.POSITIVE);
         }};
 
         return randomItem(list);
@@ -1066,7 +1066,7 @@ class SampleGenerator extends BaseDataGenerator {
             data1.setSpecimenCondition(getRandomSpecimenCondition());
             data1.setComment(getRandomSentence());
             data1.setSampleSource(getRandomSampleSource());
-            data1.setSuggestedTypeOfTest(getRandomSampleTestType());
+            data1.setSuggestedTypeOfTest(getRandomPathogenTestType());
             data1.setShipped(getRandomBoolean());
             data1.setReceived(getRandomBoolean());
 
@@ -2719,14 +2719,14 @@ abstract class BaseDataGenerator {
         return randomItem(list);
     }
 
-    public static SampleTestType getRandomSampleTestType() {
-        List<SampleTestType> list = new ArrayList<SampleTestType>() {{
-            add(SampleTestType.PCR_RT_PCR);
-            add(SampleTestType.CULTURE);
-            add(SampleTestType.MICROSCOPY);
-            add(SampleTestType.ISOLATION);
-            add(SampleTestType.RAPID_TEST);
-            add(SampleTestType.OTHER);
+    public static PathogenTestType getRandomPathogenTestType() {
+        List<PathogenTestType> list = new ArrayList<PathogenTestType>() {{
+            add(PathogenTestType.PCR_RT_PCR);
+            add(PathogenTestType.CULTURE);
+            add(PathogenTestType.MICROSCOPY);
+            add(PathogenTestType.ISOLATION);
+            add(PathogenTestType.RAPID_TEST);
+            add(PathogenTestType.OTHER);
         }};
 
         return randomItem(list);
@@ -2760,14 +2760,14 @@ abstract class BaseDataGenerator {
         }};
     }
 
-    public static List<SampleTestType> getAllSampleTestType() {
-        return new ArrayList<SampleTestType>() {{
-            add(SampleTestType.PCR_RT_PCR);
-            add(SampleTestType.CULTURE);
-            add(SampleTestType.MICROSCOPY);
-            add(SampleTestType.ISOLATION);
-            add(SampleTestType.RAPID_TEST);
-            add(SampleTestType.OTHER);
+    public static List<PathogenTestType> getAllPathogenTestType() {
+        return new ArrayList<PathogenTestType>() {{
+            add(PathogenTestType.PCR_RT_PCR);
+            add(PathogenTestType.CULTURE);
+            add(PathogenTestType.MICROSCOPY);
+            add(PathogenTestType.ISOLATION);
+            add(PathogenTestType.RAPID_TEST);
+            add(PathogenTestType.OTHER);
         }};
     }
 

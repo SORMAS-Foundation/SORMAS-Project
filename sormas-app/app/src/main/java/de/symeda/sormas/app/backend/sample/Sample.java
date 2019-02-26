@@ -31,7 +31,7 @@ import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
-import de.symeda.sormas.api.sample.SampleTestType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -116,9 +116,6 @@ public class Sample extends AbstractDomainObject {
 
     @Enumerated(EnumType.STRING)
     private SampleSource sampleSource;
-
-    @Enumerated(EnumType.STRING)
-    private SampleTestType suggestedTypeOfTest;
 
     /**
      * referredToUuid should be used to avoid referred samples not being linked due to
@@ -278,14 +275,6 @@ public class Sample extends AbstractDomainObject {
 
     public void setSampleSource(SampleSource sampleSource) {
         this.sampleSource = sampleSource;
-    }
-
-    public SampleTestType getSuggestedTypeOfTest() {
-        return suggestedTypeOfTest;
-    }
-
-    public void setSuggestedTypeOfTest(SampleTestType suggestedTypeOfTest) {
-        this.suggestedTypeOfTest = suggestedTypeOfTest;
     }
 
     public String getReferredToUuid() {

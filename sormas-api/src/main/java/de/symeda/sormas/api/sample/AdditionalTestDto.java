@@ -3,6 +3,8 @@ package de.symeda.sormas.api.sample;
 import java.util.Date;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class AdditionalTestDto extends EntityDto {
 
@@ -15,7 +17,8 @@ public class AdditionalTestDto extends EntityDto {
 	public static final String HAEMOGLOBINURIA = "haemoglobinuria";
 	public static final String PROTEINURIA = "proteinuria";
 	public static final String HEMATURIA = "hematuria";
-	public static final String ARTERIAL_VENOUS_GAS_PH = "arterialVenouGasPH";
+	public static final String ARTERIAL_VENOUS_BLOOD_GAS = "arterialVenousBloodGas";
+	public static final String ARTERIAL_VENOUS_GAS_PH = "arterialVenousGasPH";
 	public static final String ARTERIAL_VENOUS_GAS_PCO2 = "arterialVenousGasPco2";
 	public static final String ARTERIAL_VENOUS_GAS_PAO2 = "arterialVenousGasPao2";
 	public static final String ARTERIAL_VENOUS_GAS_HCO3 = "arterialVenousGasHco3";
@@ -31,7 +34,8 @@ public class AdditionalTestDto extends EntityDto {
 	public static final String WBC_COUNT = "wbcCount";
 	public static final String PLATELETS = "platelets";
 	public static final String PROTHROMBIN_TIME = "prothrombinTime";
-
+	public static final String OTHER_TEST_RESULTS = "otherTestResults";
+	
 	private SampleReferenceDto sample;
 	private Date testDateTime;
 	private SimpleTestResultType haemoglobinuria;
@@ -53,6 +57,39 @@ public class AdditionalTestDto extends EntityDto {
 	private Integer wbcCount;
 	private Integer platelets;
 	private Integer prothrombinTime;
+	private String otherTestResults;
+	
+	public static AdditionalTestDto build(SampleReferenceDto sample) {
+		AdditionalTestDto additionalTest = new AdditionalTestDto();
+		additionalTest.setUuid(DataHelper.createUuid());
+		additionalTest.setSample(sample);
+		return additionalTest;
+	}
+	
+	public boolean hasArterialVenousGasValue() {
+		return arterialVenousGasPH != null || arterialVenousGasPco2 != null
+				|| arterialVenousGasPao2 != null || arterialVenousGasHco3 != null;
+	}
+	
+	public String buildArterialVenousGasValuesString() {
+		StringBuilder sb = new StringBuilder();
+		if (arterialVenousGasPH != null) {
+			sb.append(I18nProperties.getPrefixCaption(I18N_PREFIX, ARTERIAL_VENOUS_GAS_PH)).append(": ").append(arterialVenousGasPH);
+		}
+		if (arterialVenousGasPco2 != null) {
+			String pCo2String = I18nProperties.getPrefixCaption(I18N_PREFIX, ARTERIAL_VENOUS_GAS_PCO2);
+			sb.append(sb.length() > 0 ? " - " + pCo2String + ": " : pCo2String + ": ").append(arterialVenousGasPco2);
+		}
+		if (arterialVenousGasPao2 != null) {
+			String paO2String = I18nProperties.getPrefixCaption(I18N_PREFIX, ARTERIAL_VENOUS_GAS_PAO2);
+			sb.append(sb.length() > 0 ? " - " + paO2String + ": " : paO2String+ ": ").append(arterialVenousGasPao2);
+		}
+		if (arterialVenousGasHco3 != null) {
+			String hCo3String = I18nProperties.getPrefixCaption(I18N_PREFIX, ARTERIAL_VENOUS_GAS_HCO3);
+			sb.append(sb.length() > 0 ? " - " + hCo3String + ": " : hCo3String + ": ").append(arterialVenousGasHco3);
+		}
+		return sb.toString();
+	}
 	
 	public SampleReferenceDto getSample() {
 		return sample;
@@ -179,6 +216,12 @@ public class AdditionalTestDto extends EntityDto {
 	}
 	public void setProthrombinTime(Integer prothrombinTime) {
 		this.prothrombinTime = prothrombinTime;
+	}
+	public String getOtherTestResults() {
+		return otherTestResults;
+	}
+	public void setOtherTestResults(String otherTestResults) {
+		this.otherTestResults = otherTestResults;
 	}
 	
 }

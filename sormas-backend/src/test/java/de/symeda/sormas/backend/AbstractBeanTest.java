@@ -37,8 +37,9 @@ import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
-import de.symeda.sormas.api.sample.SampleFacade;
+import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
+import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
@@ -71,8 +72,9 @@ import de.symeda.sormas.backend.region.GeoShapeProviderEjb.GeoShapeProviderEjbLo
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
-import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.SampleTestFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb.PrescriptionFacadeEjbLocal;
@@ -142,6 +144,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public PathogenTestFacade getSampleTestFacade() {
 		return getBean(SampleTestFacadeEjbLocal.class);
+	}
+	
+	public AdditionalTestFacade getAdditionalTestFacade() {
+		return getBean(AdditionalTestFacadeEjbLocal.class);
 	}
 
 	public SymptomsFacade getSymptomsFacade() {
