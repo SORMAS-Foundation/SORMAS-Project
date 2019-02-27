@@ -34,10 +34,6 @@ import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
-/**
- * Created by Mate Strysewske on 06.02.2017.
- */
-
 public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
 
     @Override
@@ -88,7 +84,6 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         target.setNoTestPossibleReason(source.getNoTestPossibleReason());
         target.setComment(source.getComment());
         target.setSampleSource(source.getSampleSource());
-        target.setSuggestedTypeOfTest(source.getSuggestedTypeOfTest());
         if (source.getReferredTo() != null) {
             target.setReferredToUuid(source.getReferredTo().getUuid());
         } else {
@@ -96,6 +91,10 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         }
         target.setShipped(source.isShipped());
         target.setReceived(source.isReceived());
+        target.setPathogenTestingRequested(source.getPathogenTestingRequested());
+        target.setAdditionalTestingRequested(source.getAdditionalTestingRequested());
+        target.setRequestedPathogenTests(source.getRequestedPathogenTests());
+        target.setRequestedAdditionalTests(source.getRequestedAdditionalTests());
 
         target.setReportLat(source.getReportLat());
         target.setReportLon(source.getReportLon());
@@ -145,9 +144,12 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         target.setNoTestPossibleReason(source.getNoTestPossibleReason());
         target.setComment(source.getComment());
         target.setSampleSource(source.getSampleSource());
-        target.setSuggestedTypeOfTest(source.getSuggestedTypeOfTest());
         target.setShipped(source.isShipped());
         target.setReceived(source.isReceived());
+        target.setPathogenTestingRequested(source.getPathogenTestingRequested());
+        target.setAdditionalTestingRequested(source.getAdditionalTestingRequested());
+        target.setRequestedPathogenTests(source.getRequestedPathogenTests());
+        target.setRequestedAdditionalTests(source.getRequestedAdditionalTests());
 
         target.setReportLat(source.getReportLat());
         target.setReportLon(source.getReportLon());

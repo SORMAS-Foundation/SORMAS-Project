@@ -25,7 +25,7 @@
     <data>
         <import type="android.view.View" />
 
-        <variable name="data" type="de.symeda.sormas.app.backend.sample.SampleTest" />
+        <variable name="data" type="de.symeda.sormas.app.backend.sample.PathogenTest" />
     </data>
 
     <LinearLayout

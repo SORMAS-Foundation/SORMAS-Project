@@ -49,7 +49,7 @@ import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 import de.symeda.sormas.app.backend.report.WeeklyReportDtoHelper;
 import de.symeda.sormas.app.backend.sample.SampleDtoHelper;
-import de.symeda.sormas.app.backend.sample.SampleTestDtoHelper;
+import de.symeda.sormas.app.backend.sample.PathogenTestDtoHelper;
 import de.symeda.sormas.app.backend.task.TaskDtoHelper;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.backend.user.UserRoleConfigDtoHelper;
@@ -188,7 +188,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         EventDtoHelper eventDtoHelper = new EventDtoHelper();
         EventParticipantDtoHelper eventParticipantDtoHelper = new EventParticipantDtoHelper();
         SampleDtoHelper sampleDtoHelper = new SampleDtoHelper();
-        SampleTestDtoHelper sampleTestDtoHelper = new SampleTestDtoHelper();
+        PathogenTestDtoHelper pathogenTestDtoHelper = new PathogenTestDtoHelper();
         ContactDtoHelper contactDtoHelper = new ContactDtoHelper();
         VisitDtoHelper visitDtoHelper = new VisitDtoHelper();
         TaskDtoHelper taskDtoHelper = new TaskDtoHelper();
@@ -203,7 +203,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         boolean eventsNeedPull = eventDtoHelper.pullAndPushEntities();
         boolean eventParticipantsNeedPull = eventParticipantDtoHelper.pullAndPushEntities();
         boolean samplesNeedPull = sampleDtoHelper.pullAndPushEntities();
-        boolean sampleTestsNeedPull = sampleTestDtoHelper.pullAndPushEntities();
+        boolean sampleTestsNeedPull = pathogenTestDtoHelper.pullAndPushEntities();
         boolean contactsNeedPull = contactDtoHelper.pullAndPushEntities();
         boolean visitsNeedPull = visitDtoHelper.pullAndPushEntities();
         boolean tasksNeedPull = taskDtoHelper.pullAndPushEntities();
@@ -220,7 +220,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         if (samplesNeedPull)
             sampleDtoHelper.pullEntities(true);
         if (sampleTestsNeedPull)
-            sampleTestDtoHelper.pullEntities(true);
+            pathogenTestDtoHelper.pullEntities(true);
         if (contactsNeedPull)
             contactDtoHelper.pullEntities(true);
         if (visitsNeedPull)
@@ -237,7 +237,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         EventDtoHelper eventDtoHelper = new EventDtoHelper();
         EventParticipantDtoHelper eventParticipantDtoHelper = new EventParticipantDtoHelper();
         SampleDtoHelper sampleDtoHelper = new SampleDtoHelper();
-        SampleTestDtoHelper sampleTestDtoHelper = new SampleTestDtoHelper();
+        PathogenTestDtoHelper pathogenTestDtoHelper = new PathogenTestDtoHelper();
         ContactDtoHelper contactDtoHelper = new ContactDtoHelper();
         VisitDtoHelper visitDtoHelper = new VisitDtoHelper();
         TaskDtoHelper taskDtoHelper = new TaskDtoHelper();
@@ -254,7 +254,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         eventDtoHelper.repullEntities();
         eventParticipantDtoHelper.repullEntities();
         sampleDtoHelper.repullEntities();
-        sampleTestDtoHelper.repullEntities();
+        pathogenTestDtoHelper.repullEntities();
         contactDtoHelper.repullEntities();
         visitDtoHelper.repullEntities();
         taskDtoHelper.repullEntities();
@@ -355,7 +355,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new EventDtoHelper().pullMissing(eventUuids);
         new EventParticipantDtoHelper().pullMissing(eventParticipantUuids);
         new SampleDtoHelper().pullMissing(sampleUuids);
-        new SampleTestDtoHelper().pullMissing(sampleTestUuids);
+        new PathogenTestDtoHelper().pullMissing(sampleTestUuids);
         new ContactDtoHelper().pullMissing(contactUuids);
         new VisitDtoHelper().pullMissing(visitUuids);
         new TaskDtoHelper().pullMissing(taskUuids);

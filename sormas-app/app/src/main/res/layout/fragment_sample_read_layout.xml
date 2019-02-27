@@ -30,7 +30,7 @@
 
         <variable name="data" type="de.symeda.sormas.app.backend.sample.Sample"/>
         <variable name="referredSample" type="de.symeda.sormas.app.backend.sample.Sample"/>
-        <variable name="sampleTest" type="de.symeda.sormas.app.backend.sample.SampleTest" />
+        <variable name="pathogenTest" type="de.symeda.sormas.app.backend.sample.PathogenTest" />
     </data>
 
     <ScrollView
@@ -116,21 +116,16 @@
                     android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/sample_suggestedTypeOfTest"
-                        app:value="@{data.suggestedTypeOfTest}"
+                        android:id="@+id/sample_lab"
+                        app:value="@{data.lab}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/sample_lab"
-                        app:value="@{data.lab}"
+                        android:id="@+id/sample_labDetails"
+                        app:value="@{data.labDetails}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/sample_labDetails"
-                    app:value="@{data.labDetails}"
-                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/sample_comment"
@@ -223,7 +218,7 @@
                 <include
                     android:id="@+id/most_recent_test"
                     layout="@layout/row_sample_test_layout"
-                    app:data="@{sampleTest}"
+                    app:data="@{pathogenTest}"
                     android:padding="@dimen/rowListItemParentPadding" />
 
                 <TextView

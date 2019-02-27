@@ -44,7 +44,7 @@ public class DataUtils {
         return list;
     }
 
-    public static <E>  List<Item> getEnumItems(Class<E> clazz, boolean withNull) {
+    public static <E> List<Item> getEnumItems(Class<E> clazz, boolean withNull) {
         E[] enumConstants = clazz.getEnumConstants();
         List<Item> list = new ArrayList<Item>();
 

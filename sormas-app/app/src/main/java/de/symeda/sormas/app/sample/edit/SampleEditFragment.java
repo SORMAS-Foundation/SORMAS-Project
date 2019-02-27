@@ -35,7 +35,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.backend.sample.SampleTest;
+import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
@@ -49,12 +49,11 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 
     private Sample record;
     private Sample referredSample;
-    private SampleTest mostRecentTest;
+    private PathogenTest mostRecentTest;
 
     // Enum lists
 
     private List<Item> sampleMaterialList;
-    private List<Item> PathogenTestTypeList;
     private List<Item> sampleSourceList;
     private List<Facility> labList;
 
@@ -114,7 +113,6 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         }
 
         sampleMaterialList = DataUtils.getEnumItems(SampleMaterial.class, true);
-        PathogenTestTypeList = DataUtils.getEnumItems(PathogenTestType.class, true);
         sampleSourceList = DataUtils.getEnumItems(SampleSource.class, true);
         labList = DatabaseHelper.getFacilityDao().getLaboratories(true);
     }
@@ -124,7 +122,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         setUpControlListeners(contentBinding);
 
         contentBinding.setData(record);
-        contentBinding.setSampleTest(mostRecentTest);
+        contentBinding.setPathogenTest(mostRecentTest);
         contentBinding.setReferredSample(referredSample);
 
         SampleValidator.initializeSampleValidation(contentBinding);
@@ -136,7 +134,6 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 
         // Initialize ControlSpinnerFields
         contentBinding.sampleSampleMaterial.initializeSpinner(sampleMaterialList);
-        contentBinding.sampleSuggestedTypeOfTest.initializeSpinner(PathogenTestTypeList);
         contentBinding.sampleSampleSource.initializeSpinner(sampleSourceList);
         contentBinding.sampleLab.initializeSpinner(DataUtils.toItems(labList), new ValueChangeListener() {
             @Override
@@ -162,7 +159,6 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
             contentBinding.sampleSampleMaterial.setEnabled(false);
             contentBinding.sampleSampleMaterialText.setEnabled(false);
             contentBinding.sampleSampleSource.setEnabled(false);
-            contentBinding.sampleSuggestedTypeOfTest.setEnabled(false);
             contentBinding.sampleLab.setEnabled(false);
             contentBinding.sampleLabDetails.setEnabled(false);
             contentBinding.sampleShipped.setEnabled(false);

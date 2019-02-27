@@ -50,8 +50,8 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
@@ -704,8 +704,8 @@ public class TextViewBindingAdapters {
             String result = "";
             SpecimenCondition condition = sample.getSpecimenCondition();
             //TODO: Orson - Replace
-            //SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(sample);
-            SampleTest mostRecentTest = null;
+            //PathogenTest mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(sample);
+            PathogenTest mostRecentTest = null;
 
             if (condition == null) {
                 textField.setText(defaultValue);

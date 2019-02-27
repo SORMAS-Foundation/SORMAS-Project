@@ -85,8 +85,8 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
@@ -106,7 +106,7 @@ public class MemoryDatabaseHelper {
     private static List<Contact> contactList = new ArrayList<>();
     private static List<Event> eventList = new ArrayList<>();
     private static List<Sample> sampleList = new ArrayList<>();
-    private static List<SampleTest> sampleTestList = new ArrayList<>();
+    private static List<PathogenTest> pathogenTestList = new ArrayList<>();
     private static List<EventParticipant> eventParticipantList = new ArrayList<>();
     private static List<Person> personList = new ArrayList<>();
     private static List<Visit> visitList = new ArrayList<>();
@@ -768,11 +768,11 @@ public class MemoryDatabaseHelper {
 
     public static class TEST {
 
-        public static List<SampleTest> getSampleTests(int number) {
-            sampleTestList.clear();
+        public static List<PathogenTest> getSampleTests(int number) {
+            pathogenTestList.clear();
             int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
-            sampleTestList.addAll(SampleTestGenerator.get(min));
-            return sampleTestList;
+            pathogenTestList.addAll(SampleTestGenerator.get(min));
+            return pathogenTestList;
         }
     }
 
@@ -1001,11 +1001,11 @@ class EventParticipantGenerator extends BaseDataGenerator {
 
 class SampleTestGenerator extends BaseDataGenerator {
 
-    private static final List<SampleTest> pool = new ArrayList<SampleTest>();
+    private static final List<PathogenTest> pool = new ArrayList<PathogenTest>();
 
     public static void initialize() {
         for (int i = 0; i < DEFAULT_RECORD_NUMBER; i++) {
-            SampleTest data1 = new SampleTest();
+            PathogenTest data1 = new PathogenTest();
             data1.setUuid(getRandomUuid());
             data1.setSample(SampleGenerator.getSingle());
             data1.setTestType(getRandomPathogenTestType());
@@ -1016,8 +1016,8 @@ class SampleTestGenerator extends BaseDataGenerator {
         }
     }
 
-    public static List<SampleTest> get(int number) {
-        List<SampleTest> toReturn = new ArrayList<>();
+    public static List<PathogenTest> get(int number) {
+        List<PathogenTest> toReturn = new ArrayList<>();
 
         for (int index = 0; index < number; index++) {
             toReturn.add(pool.get(index));
@@ -1026,7 +1026,7 @@ class SampleTestGenerator extends BaseDataGenerator {
         return toReturn;
     }
 
-    public static SampleTest getSingle() {
+    public static PathogenTest getSingle() {
         return randomItem(pool);
     }
 
@@ -1066,7 +1066,6 @@ class SampleGenerator extends BaseDataGenerator {
             data1.setSpecimenCondition(getRandomSpecimenCondition());
             data1.setComment(getRandomSentence());
             data1.setSampleSource(getRandomSampleSource());
-            data1.setSuggestedTypeOfTest(getRandomPathogenTestType());
             data1.setShipped(getRandomBoolean());
             data1.setReceived(getRandomBoolean());
 

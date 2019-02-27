@@ -29,7 +29,7 @@ import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.backend.sample.SampleTest;
+import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.databinding.FragmentSampleReadLayoutBinding;
 
 import static android.view.View.GONE;
@@ -38,7 +38,7 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
 
     private Sample record;
     private Sample referredSample;
-    private SampleTest mostRecentTest;
+    private PathogenTest mostRecentTest;
 
     public static SampleReadFragment newInstance(Sample activityRootData) {
         return newInstance(SampleReadFragment.class, null, activityRootData);
@@ -96,7 +96,7 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
         setUpControlListeners(contentBinding);
 
         contentBinding.setData(record);
-        contentBinding.setSampleTest(mostRecentTest);
+        contentBinding.setPathogenTest(mostRecentTest);
         contentBinding.setReferredSample(referredSample);
     }
 

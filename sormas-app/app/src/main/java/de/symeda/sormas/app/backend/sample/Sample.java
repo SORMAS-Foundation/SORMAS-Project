@@ -22,26 +22,28 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Transient;
 
+import de.symeda.sormas.api.sample.AdditionalTestType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
-import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.user.User;
-
-/**
- * Created by Mate Strysewske on 06.02.2017.
- */
 
 @Entity(name=Sample.TABLE_NAME)
 @DatabaseTable(tableName = Sample.TABLE_NAME)
@@ -117,14 +119,6 @@ public class Sample extends AbstractDomainObject {
     @Enumerated(EnumType.STRING)
     private SampleSource sampleSource;
 
-    /**
-     * referredToUuid should be used to avoid referred samples not being linked due to
-     * synchronization prioritization
-     */
-    @Deprecated
-    @DatabaseField(foreign = true, foreignAutoRefresh = true)
-    private Sample referredTo;
-
     @DatabaseField
     private String referredToUuid;
 
@@ -134,12 +128,23 @@ public class Sample extends AbstractDomainObject {
     @DatabaseField
     private boolean received;
 
-    @Deprecated
-    @DatabaseField(defaultValue = "", canBeNull = false)
-    private String shipmentStatus;
+    @DatabaseField
+    private Boolean pathogenTestingRequested;
 
-    @DatabaseField(foreign = true)
-    private Facility otherLab;
+    @DatabaseField
+    private Boolean additionalTestingRequested;
+
+    @Column(length = 512)
+    private String requestedPathogenTestsString;
+
+    @Column(length = 512)
+    private String requestedAdditionalTestsString;
+
+    @Transient
+    private Set<PathogenTestType> requestedPathogenTests;
+
+    @Transient
+    private Set<AdditionalTestType> requestedAdditionalTests;
 
     public Case getAssociatedCase() {
         return associatedCase;
@@ -299,6 +304,102 @@ public class Sample extends AbstractDomainObject {
 
     public void setReceived(boolean received) {
         this.received = received;
+    }
+
+    public Boolean getPathogenTestingRequested() {
+        return pathogenTestingRequested;
+    }
+
+    public void setPathogenTestingRequested(Boolean pathogenTestingRequested) {
+        this.pathogenTestingRequested = pathogenTestingRequested;
+    }
+
+    public Boolean getAdditionalTestingRequested() {
+        return additionalTestingRequested;
+    }
+
+    public void setAdditionalTestingRequested(Boolean additionalTestingRequested) {
+        this.additionalTestingRequested = additionalTestingRequested;
+    }
+
+    public String getRequestedPathogenTestsString() {
+        return requestedPathogenTestsString;
+    }
+
+    public void setRequestedPathogenTestsString(String requestedPathogenTestsString) {
+        this.requestedPathogenTestsString = requestedPathogenTestsString;
+        requestedPathogenTests = null;
+    }
+
+    public String getRequestedAdditionalTestsString() {
+        return requestedAdditionalTestsString;
+    }
+
+    public void setRequestedAdditionalTestsString(String requestedAdditionalTestsString) {
+        this.requestedAdditionalTestsString = requestedAdditionalTestsString;
+        requestedAdditionalTests = null;
+    }
+
+    public Set<PathogenTestType> getRequestedPathogenTests() {
+        if (requestedPathogenTests == null) {
+            requestedPathogenTests = new HashSet<>();
+            if (!StringUtils.isEmpty(requestedPathogenTestsString)) {
+                String[] testTypes = requestedPathogenTestsString.split(",");
+                for (String testType : testTypes) {
+                    requestedPathogenTests.add(PathogenTestType.valueOf(testType));
+                }
+            }
+        }
+        return requestedPathogenTests;
+    }
+
+    public void setRequestedPathogenTests(Set<PathogenTestType> requestedPathogenTests) {
+        this.requestedPathogenTests = requestedPathogenTests;
+
+        if (this.requestedPathogenTests == null) {
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (PathogenTestType test : requestedPathogenTests) {
+            sb.append(test.name());
+            sb.append(",");
+        }
+        if (sb.length() > 0) {
+            sb.substring(0, sb.lastIndexOf(","));
+        }
+        requestedPathogenTestsString = sb.toString();
+    }
+
+    public Set<AdditionalTestType> getRequestedAdditionalTests() {
+        if (requestedAdditionalTests == null) {
+            requestedAdditionalTests = new HashSet<>();
+            if (!StringUtils.isEmpty(requestedAdditionalTestsString)) {
+                String[] testTypes = requestedAdditionalTestsString.split(",");
+                for (String testType : testTypes) {
+                    requestedAdditionalTests.add(AdditionalTestType.valueOf(testType));
+                }
+            }
+        }
+        return requestedAdditionalTests;
+    }
+
+    public void setRequestedAdditionalTests(Set<AdditionalTestType> requestedAdditionalTests) {
+        this.requestedAdditionalTests = requestedAdditionalTests;
+
+        if (this.requestedAdditionalTests == null) {
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (AdditionalTestType test : requestedAdditionalTests) {
+            sb.append(test.name());
+            sb.append(",");
+        }
+        if (sb.length() > 0) {
+            sb.substring(0, sb.lastIndexOf(","));
+        }
+        requestedAdditionalTestsString = sb.toString();
     }
 
     @Override

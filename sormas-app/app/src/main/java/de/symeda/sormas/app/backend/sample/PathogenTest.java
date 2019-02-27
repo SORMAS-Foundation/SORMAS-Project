@@ -38,17 +38,17 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
  * Created by Mate Strysewske on 09.02.2017.
  */
 
-@Entity(name=SampleTest.TABLE_NAME)
-@DatabaseTable(tableName = SampleTest.TABLE_NAME)
-public class SampleTest extends AbstractDomainObject {
+@Entity(name= PathogenTest.TABLE_NAME)
+@DatabaseTable(tableName = PathogenTest.TABLE_NAME)
+public class PathogenTest extends AbstractDomainObject {
 
     private static final long serialVersionUID = 2290351143518627813L;
 
     public static final String TEST_DATE_TIME = "testDateTime";
     public static final String SAMPLE = "sample";
 
-    public static final String TABLE_NAME = "sampleTests";
-    public static final String I18N_PREFIX = "SampleTest";
+    public static final String TABLE_NAME = "pathogenTests";
+    public static final String I18N_PREFIX = "PathogenTest";
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false)
     private Sample sample;

@@ -21,7 +21,7 @@ package de.symeda.sormas.app.backend.sample;
 import java.util.List;
 
 import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.sample.SampleTestDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.rest.RetroProvider;
@@ -31,35 +31,35 @@ import retrofit2.Call;
  * Created by Mate Strysewske on 09.02.2017.
  */
 
-public class SampleTestDtoHelper extends AdoDtoHelper<SampleTest, SampleTestDto> {
+public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTestDto> {
 
     @Override
-    protected Class<SampleTest> getAdoClass() {
-        return SampleTest.class;
+    protected Class<PathogenTest> getAdoClass() {
+        return PathogenTest.class;
     }
 
     @Override
-    protected Class<SampleTestDto> getDtoClass() {
-        return SampleTestDto.class;
+    protected Class<PathogenTestDto> getDtoClass() {
+        return PathogenTestDto.class;
     }
 
     @Override
-    protected Call<List<SampleTestDto>> pullAllSince(long since) {
+    protected Call<List<PathogenTestDto>> pullAllSince(long since) {
         return RetroProvider.getSampleTestFacade().pullAllSince(since);
     }
 
     @Override
-    protected Call<List<SampleTestDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<PathogenTestDto>> pullByUuids(List<String> uuids) {
         return RetroProvider.getSampleTestFacade().pullByUuids(uuids);
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<SampleTestDto> sampleTestDtos) {
+    protected Call<List<PushResult>> pushAll(List<PathogenTestDto> PathogenTestDtos) {
         throw new UnsupportedOperationException("Can't change sample tests in app");
     }
 
     @Override
-    protected void fillInnerFromDto(SampleTest target, SampleTestDto source) {
+    protected void fillInnerFromDto(PathogenTest target, PathogenTestDto source) {
 
         target.setSample(DatabaseHelper.getSampleDao().getByReferenceDto(source.getSample()));
         target.setTestDateTime(source.getTestDateTime());
@@ -68,7 +68,7 @@ public class SampleTestDtoHelper extends AdoDtoHelper<SampleTest, SampleTestDto>
     }
 
     @Override
-    protected void fillInnerFromAdo(SampleTestDto dto, SampleTest ado) {
+    protected void fillInnerFromAdo(PathogenTestDto dto, PathogenTest ado) {
         if(ado.getSample() != null) {
             Sample sample = DatabaseHelper.getSampleDao().queryForId(ado.getSample().getId());
             dto.setSample(SampleDtoHelper.toReferenceDto(sample));

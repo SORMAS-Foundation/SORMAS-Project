@@ -26,19 +26,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
-import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.District;
-import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.backend.user.User;
 
 import static org.hamcrest.Matchers.contains;

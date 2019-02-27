@@ -108,11 +108,6 @@
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/sample_suggestedTypeOfTest"
-                app:value="@={data.suggestedTypeOfTest}"
-                style="@style/ControlSingleColumnStyle" />
-
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/sample_lab"
                 app:required="true"
                 app:value="@={data.lab}"

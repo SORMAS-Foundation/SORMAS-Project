@@ -31,7 +31,8 @@
 
         <variable name="data" type="de.symeda.sormas.app.backend.sample.Sample"/>
         <variable name="referredSample" type="de.symeda.sormas.app.backend.sample.Sample"/>
-        <variable name="sampleTest" type="de.symeda.sormas.app.backend.sample.SampleTest" />
+        <variable name="pathogenTest" type="de.symeda.sormas.app.backend.sample.PathogenTest" />
+        <variable name="pathogenTestTypeClass" type="Class" />
     </data>
 
     <ScrollView
@@ -116,11 +117,6 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/sample_suggestedTypeOfTest"
-                    app:value="@={data.suggestedTypeOfTest}"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/sample_lab"
                     app:required="true"
                     app:value="@={data.lab}"
@@ -138,6 +134,12 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxGroupField
+                    android:id="@+id/sample_requestedPathogenTests"
+                    app:value="@={data.requestedPathogenTests}"
+                    app:enumClass="@{pathogenTestTypeClass}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -234,7 +236,7 @@
                 <include
                     android:id="@+id/most_recent_test"
                     layout="@layout/row_sample_test_layout"
-                    app:data="@{sampleTest}"
+                    app:data="@{pathogenTest}"
                     android:padding="@dimen/rowListItemParentPadding" />
 
                 <TextView
