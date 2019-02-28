@@ -78,6 +78,7 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -128,6 +129,10 @@ public class CasesView extends AbstractView {
 	private Button switchArchivedActiveButton;
 
 	private Button resetButton;
+
+	private Button expandFiltersButton;
+
+	private Button collapsFiltersButton;
 
 	public CasesView() {
 		super(VIEW_NAME);
@@ -544,30 +549,31 @@ public class CasesView extends AbstractView {
 	}
 
 	private void addShowMoreOrLessFiltersButtons(HorizontalLayout parentLayout) {
-		Button showMoreButton = new Button(I18nProperties.getCaption(Captions.actionShowMoreFilters), FontAwesome.CHEVRON_DOWN);
-		CssStyles.style(showMoreButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		Button showLessButton = new Button(I18nProperties.getCaption(Captions.actionShowLessFilters), FontAwesome.CHEVRON_UP);
-		CssStyles.style(showLessButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
+		expandFiltersButton = new Button(I18nProperties.getCaption(Captions.actionShowMoreFilters), FontAwesome.CHEVRON_DOWN);
+		CssStyles.style(expandFiltersButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
+		collapsFiltersButton = new Button(I18nProperties.getCaption(Captions.actionShowLessFilters), FontAwesome.CHEVRON_UP);
+		CssStyles.style(collapsFiltersButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 
-		showMoreButton.addClickListener(e -> {
-			showMoreButton.setVisible(false);
-			showLessButton.setVisible(true);
-			secondFilterRowLayout.setVisible(true);
-			dateFilterRowLayout.setVisible(true);
+		expandFiltersButton.addClickListener(e -> {
+			setFiltersExpanded(true);
 		});
 
-		showLessButton.addClickListener(e -> {
-			showLessButton.setVisible(false);
-			showMoreButton.setVisible(true);
-			secondFilterRowLayout.setVisible(false);
-			dateFilterRowLayout.setVisible(false);
+		collapsFiltersButton.addClickListener(e -> {
+			setFiltersExpanded(false);
 		});
 
-		parentLayout.addComponent(showMoreButton);
-		parentLayout.addComponent(showLessButton);
-		parentLayout.setComponentAlignment(showMoreButton, Alignment.TOP_LEFT);
-		parentLayout.setComponentAlignment(showLessButton, Alignment.TOP_LEFT);
-		showLessButton.setVisible(false);
+		parentLayout.addComponent(expandFiltersButton);
+		parentLayout.addComponent(collapsFiltersButton);
+		parentLayout.setComponentAlignment(expandFiltersButton, Alignment.TOP_LEFT);
+		parentLayout.setComponentAlignment(collapsFiltersButton, Alignment.TOP_LEFT);
+		collapsFiltersButton.setVisible(false);
+	}
+	
+	public void setFiltersExpanded(boolean expanded) {
+		expandFiltersButton.setVisible(!expanded);
+		collapsFiltersButton.setVisible(expanded);
+		secondFilterRowLayout.setVisible(expanded);
+		dateFilterRowLayout.setVisible(expanded);
 	}
 
 	@Override
@@ -605,6 +611,15 @@ public class CasesView extends AbstractView {
 		weekAndDateFilter.getDateFromFilter().setValue(criteria.getNewCaseDateFrom());
 		weekAndDateFilter.getDateToFilter().setValue(criteria.getNewCaseDateTo());
 		weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.DATE);
+		
+		boolean hasExpandedFilter = FieldHelper.streamFields(secondFilterRowLayout)
+				.anyMatch(f -> !f.isEmpty());
+		hasExpandedFilter |=  FieldHelper.streamFields(dateFilterRowLayout)
+				.filter(f -> f != weekAndDateFilter.getDateFilterOptionFilter())
+				.anyMatch(f -> !f.isEmpty());
+		if (hasExpandedFilter) {
+			setFiltersExpanded(true);
+		}		    
 		
 		applyingCriteria = false;
 	}
