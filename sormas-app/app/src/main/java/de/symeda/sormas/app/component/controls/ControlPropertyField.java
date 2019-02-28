@@ -32,11 +32,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.util.ControlLabelOnTouchListener;
 
@@ -108,8 +106,8 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
     // Instance methods
 
     private void initializePropertyField(Context context, AttributeSet attrs) {
-        caption = I18nProperties.getCaption(getCaptionPropertyId());
-        description = I18nProperties.getDescription(getCaptionPropertyId());
+        caption = I18nProperties.getPrefixCaption(getPropertyIdPrefix(), getSubPropertyId());
+        description = I18nProperties.getPrefixDescription(getPropertyIdPrefix(), getSubPropertyId());
 
         if (attrs != null) {
             TypedArray a = context.getTheme().obtainStyledAttributes(
@@ -159,26 +157,26 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
         return getResources().getResourceName(getId());
     }
 
-    public String getPropertyId() {
-        String fieldId = getFieldIdString();
+    public static String getPropertyIdPrefix(String fieldId) {
         int separatorIndex = fieldId.lastIndexOf("/");
-        return fieldId.substring(separatorIndex + 1);
+        int endSeparatorIndex = fieldId.lastIndexOf("_");
+        if (endSeparatorIndex == -1) endSeparatorIndex = fieldId.length();
+        return fieldId.substring(separatorIndex + 1, separatorIndex + 2).toUpperCase() + fieldId.substring(separatorIndex + 2, endSeparatorIndex).replaceAll("_", ".");
     }
 
-    public String getCaptionPropertyId() {
-        String fieldId = getFieldIdString();
-        return toPrefixPropertyId(fieldId);
-    }
-
-    public static String toPrefixPropertyId(String fieldId) {
-        int separatorIndex = fieldId.lastIndexOf("/");
-        return fieldId.substring(separatorIndex + 1, separatorIndex + 2).toUpperCase() + fieldId.substring(separatorIndex + 2).replaceAll("_", ".");
-    }
-
-    public String getPropertyIdWithoutPrefix() {
-        String fieldId = getFieldIdString();
+    public static String getSubPropertyId(String fieldId) {
         int separatorIndex = fieldId.lastIndexOf("_");
         return fieldId.substring(separatorIndex + 1);
+    }
+
+    public String getPropertyIdPrefix() {
+        String fieldId = getFieldIdString();
+        return getPropertyIdPrefix(fieldId);
+    }
+
+    public String getSubPropertyId() {
+        String fieldId = getFieldIdString();
+        return getSubPropertyId(fieldId);
     }
 
     protected void setBackgroundResourceFor(View input, int resId) {

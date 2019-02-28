@@ -85,7 +85,7 @@ public class BaseFragment extends Fragment {
     }
 
     protected boolean isVisibleAllowed(Class<?> dtoClass, Disease disease, ControlPropertyField field) {
-        String propertyId = field.getPropertyIdWithoutPrefix();
+        String propertyId = field.getSubPropertyId();
         return Diseases.DiseasesConfiguration.isDefinedOrMissing(dtoClass, propertyId, disease);
     }
 
@@ -112,7 +112,7 @@ public class BaseFragment extends Fragment {
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             View child = viewGroup.getChildAt(i);
             if (child instanceof ControlPropertyField) {
-                if (propertyIdWithoutPrefix.equals(((ControlPropertyField) child).getPropertyIdWithoutPrefix())) {
+                if (propertyIdWithoutPrefix.equals(((ControlPropertyField) child).getSubPropertyId())) {
                     return (ControlPropertyField) child;
                 }
             } else if (child instanceof ViewGroup) {

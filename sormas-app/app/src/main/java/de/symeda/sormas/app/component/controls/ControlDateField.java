@@ -289,7 +289,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
         super.onAttachedToWindow();
 
         if (getHint() == null) {
-            setHint(I18nProperties.getCaption(getCaptionPropertyId()));
+            setHint(I18nProperties.getPrefixCaption(getPropertyIdPrefix(), getSubPropertyId()));
         }
     }
 

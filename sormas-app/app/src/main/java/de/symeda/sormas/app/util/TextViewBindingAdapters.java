@@ -384,7 +384,7 @@ public class TextViewBindingAdapters {
         } else {
             String val = yesNoUnknown.toString();
             String fieldId = textField.getResources().getResourceName(textField.getId());
-            String caption = I18nProperties.getCaption(ControlPropertyField.toPrefixPropertyId(fieldId));
+            String caption = I18nProperties.getCaption(ControlPropertyField.getPropertyIdPrefix(fieldId), ControlPropertyField.getSubPropertyId(fieldId));
 
             if (DataHelper.isNullOrEmpty(caption)) {
                 textField.setText(val);

@@ -233,7 +233,7 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
         super.onAttachedToWindow();
 
         if (getHint() == null) {
-            setHint(I18nProperties.getCaption(getCaptionPropertyId()));
+            setHint(I18nProperties.getPrefixCaption(getPropertyIdPrefix(), getSubPropertyId()));
         }
     }
 
