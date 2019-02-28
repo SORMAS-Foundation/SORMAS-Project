@@ -1,9 +1,9 @@
 # How to add a new field?
 
 This guide explains how to add a new plain field to the SORMAS data schema.
-It does *not* explain how to add list fields, new sections or concepts to SORMAS.
+It does **not** explain how to add list fields, new sections or concepts to SORMAS.
 
-*Important:* This is the first version of this guide. Please get in contact if anything is not clear or you have suggestions on how to improve the guide, the source code or the underlying architecture.
+**Important:** This is the first version of this guide. Please get in contact if anything is not clear or you have suggestions on how to improve the guide, the source code or the underlying architecture.
 
 ### Example use cases
 
@@ -30,11 +30,17 @@ The SORMAS API is the heart of the data schema. Accordingly, this is where you h
 1. Identify the class where the field needs to be added. For most scenarios you will only need to have a look at CaseDataDto.java and all the fields used in there, e.g. SymptomsDto.
 2. Add the field as a private member of the class with a get- and set-method. In addition a static final String to be used as a constant to identify the field.
 3. If the field has pre-defined values add a enum in the package of the class. Have a look at one of the existing enums for reference.
-3. Add the caption to captions.properties and description to description.properties in the project resources. For enums add all values to enum.properties.
+4. Add the caption to captions.properties and description to description.properties in the project resources. For enums add all values to enum.properties.
    ```
    Symptoms.soreThroat = Sore throat/pharyngitis
    ```
-
+5. *Very important*: We have now officially made a change to the API which likely means that old versions are no longer fully compatible.
+   When data with the new field is send to a mobile device with an old version, it will not now about the field and the data is lost on the device.
+   When the data is send back to the server the empty field may override any existing data and it's now also lost on the server itself.
+   To avoid this the following has to be done:
+   * Open the InfoProvider.getMinimumRequiredVersion method.
+   * Set the version to the current development version (without the -SNAPSHOT). You can find the current version in the maven pom.xml configuration file.
+   
 ## II. Adding the field to the SORMAS backend
 
 The SORMAS backend is responsible for persisting all data into the servers database and to make this data accessible.
@@ -49,29 +55,32 @@ Accordingly it's necessary to extend the persistence logic with the new field.
 		return soreThroat;
 	}
    ```
-4. Identify the *FacadeEjb class for the entity (e.g. CaseFacadeEjb).
-5. Extend the toDto and fromDto/fillOrBuildEntity methods to exchange data between the API class and the backend entity class that is persisted.
-   ```
-	target.setSoreThroat(source.getSoreThroat());
-   ```
 
 In addition to this the sormas_schema.sql file in sormas-base/sql has to be extended:
 
-6. Scroll to the bottom and add a new schema_version block. 
+4. Scroll to the bottom and add a new schema_version block. 
    It starts with a comment that contains the date and a short info on the changes and the github issue id and ends with and "INSERT INTO schema_version..." where the version has to be incremented.
    ```
    -- 2019-02-20 Additional signs and symptoms #938
    
    INSERT INTO schema_version (version_number, comment) VALUES (131, 'Additional signs and symptoms #938');
    ```
-7. Within this block add a new column to the table that matches the entity where the new field was added in sormas-backend.
+5. Within this block add a new column to the table that matches the entity where the new field was added in sormas-backend.
    You can scroll up to see examples of this for all the different field types. Note that the column name is all lower case.
    ```
    ALTER TABLE symptoms ADD COLUMN sorethroat varchar(255);
    ```
-8. Make sure to also add the column to the corresponding history table in the database.
-9. Update default values if needed.
-10. Try to execute the SQL on your system!
+6. Make sure to also add the column to the corresponding history table in the database.
+7. Update default values if needed.
+8. Try to execute the SQL on your system!
+
+Now we need to make sure data in the new field is exchanged between the backend entity classes and the API data transfer objects.
+
+9. Identify the *FacadeEjb class for the entity (e.g. CaseFacadeEjb).
+10. Extend the toDto and fromDto/fillOrBuildEntity methods to exchange data between the API class and the backend entity class that is persisted.
+    ```
+	target.setSoreThroat(source.getSoreThroat());
+    ```
 
 ### III. Adding the field to the SORMAS UI
 

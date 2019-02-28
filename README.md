@@ -37,7 +37,6 @@ The project consists of the following modules:
 * TODO: Reporting an issue
 * TODO: Code of conduct
 * [Setting up your local environment](DEVELOPMENT_ENVIRONMENT.md)
-* [Adding license headers](ADDING_LICENSE.md)
 
 ### Developers
 1. Use the Eclipse code formatter (Ctrl+Shift+F).  
@@ -48,3 +47,9 @@ The project consists of the following modules:
    > build model to define classification  
    > apply automatic case classification whenever a field value changes
 3. Each pull request should be related to a single issue as-well (if possible). 
+
+## Implementation Guides
+
+* [Adding license headers](ADDING_LICENSE.md)
+* [How to add a new disease?](GUIDE_ADD_NEW_DISEASE.md)
+* [How to add a new field?](GUIDE_ADD_NEW_FIELD.md)
