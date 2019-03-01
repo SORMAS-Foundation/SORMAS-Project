@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -143,6 +144,36 @@ public class EventFacadeEjb implements EventFacade {
 		District district = districtService.getByReferenceDto(districtRef);
 		
 		return eventService.getNewEventsForDashboard(region, district, disease, from, to, user);
+	}
+	
+	public Map<Disease, Long> getEventCountByDisease (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Date from, Date to) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Event> event = cq.from(Event.class);
+		Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
+		cq.multiselect(event.get(Event.DISEASE), cb.count(event));
+		cq.groupBy(event.get(Event.DISEASE));
+		
+		Predicate filter = null;
+		if (from != null || to != null) {
+			filter = AbstractAdoService.and(cb, filter, cb.between(event.get(Event.REPORT_DATE_TIME), from, to));
+		}
+		if (districtRef != null) {
+			filter = AbstractAdoService.and(cb, filter, cb.equal(eventLocation.join(Location.DISTRICT, JoinType.LEFT).get(District.UUID), districtRef.getUuid()));
+		}
+		else if (regionRef != null) {
+			filter = AbstractAdoService.and(cb, filter, cb.equal(eventLocation.join(Location.REGION, JoinType.LEFT).get(Region.UUID), regionRef.getUuid()));
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		List<Object[]> results = em.createQuery(cq).getResultList();
+		
+		Map<Disease, Long> events = results.stream().collect(
+				Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));	
+		
+		return events;
 	}
 	
 	@Override
