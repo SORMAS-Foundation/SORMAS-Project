@@ -644,6 +644,11 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                         collectionProperties = new ArrayList<>();
                     }
                     collectionProperties.add(property);
+
+
+                    // TODO: DA WEITER OBEN MUSS SCHON GECHECKT WERDEN, OB ES EINE COLLECTION VON ENUMS IST, WENN JA DANN MACH DAS ANDERE -> ELEMENT TYPE RAUSFINDEN
+
+
                 } else {
                     // Other objects are not supported
                     throw new UnsupportedOperationException(property.getPropertyType().getName() + " is not supported as a property type.");
@@ -793,6 +798,10 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             Iterator<PropertyDescriptor> propertyIterator = AdoPropertyHelper.getCollectionProperties(ado.getClass());
             while (propertyIterator.hasNext()) {
                 PropertyDescriptor property = propertyIterator.next();
+
+                if (!AdoPropertyHelper.isModifiableProperty(property)) {
+                    continue;
+                }
 
                 // accept all collection elements
                 Collection<AbstractDomainObject> sourceCollection = (Collection<AbstractDomainObject>) property.getReadMethod().invoke(ado);

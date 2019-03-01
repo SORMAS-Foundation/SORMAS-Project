@@ -42,8 +42,8 @@ import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteriaDto
 import de.symeda.sormas.api.caze.classification.ClassificationNoneOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNotInStartDateRangeCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPersonAgeBetweenYearsCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationSampleTestCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationSampleTestPositiveResultCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestPositiveResultCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto.ClassificationOneOfCompactCriteriaDto;
@@ -386,14 +386,14 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		return new ClassificationEpiDataCriteriaDto(propertyId);
 	}
 
-	private static ClassificationSampleTestCriteriaDto sampleTest(String propertyId, List<PathogenTestType> testTypes,
+	private static ClassificationPathogenTestCriteriaDto sampleTest(String propertyId, List<PathogenTestType> testTypes,
 			Object... propertyValues) {
-		return new ClassificationSampleTestCriteriaDto(propertyId, testTypes, propertyValues);
+		return new ClassificationPathogenTestCriteriaDto(propertyId, testTypes, propertyValues);
 	}
 
-	private static ClassificationSampleTestPositiveResultCriteriaDto positiveTestResult(
-			PathogenTestType... sampleTestTypes) {
-		return new ClassificationSampleTestPositiveResultCriteriaDto(sampleTestTypes);
+	private static ClassificationPathogenTestPositiveResultCriteriaDto positiveTestResult(
+			PathogenTestType... pathogenTestTypes) {
+		return new ClassificationPathogenTestPositiveResultCriteriaDto(pathogenTestTypes);
 	}
 
 	private static ClassificationNotInStartDateRangeCriteriaDto notInStartDateRange(String propertyId,

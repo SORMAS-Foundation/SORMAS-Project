@@ -23,7 +23,11 @@ import android.view.View;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
@@ -39,6 +43,7 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
     private Sample record;
     private Sample referredSample;
     private PathogenTest mostRecentTest;
+    private List<String> requestedPathogenTests;
 
     public static SampleReadFragment newInstance(Sample activityRootData) {
         return newInstance(SampleReadFragment.class, null, activityRootData);
@@ -89,6 +94,11 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
         } else {
             referredSample = null;
         }
+
+        requestedPathogenTests = new ArrayList<>();
+        for (PathogenTestType pathogenTest : record.getRequestedPathogenTests()) {
+            requestedPathogenTests.add(pathogenTest.toString());
+        }
     }
 
     @Override
@@ -103,6 +113,13 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
     @Override
     public void onAfterLayoutBinding(FragmentSampleReadLayoutBinding contentBinding) {
         setUpFieldVisibilities(contentBinding);
+
+        if (!requestedPathogenTests.isEmpty()) {
+            contentBinding.sampleRequestedPathogenTestsTags.setTags(requestedPathogenTests);
+        } else {
+            contentBinding.sampleRequestedPathogenTestsTags.setVisibility(GONE);
+            contentBinding.pathogenTestingDivider.setVisibility(GONE);
+        }
     }
 
     @Override

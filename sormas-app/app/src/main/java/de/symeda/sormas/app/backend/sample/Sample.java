@@ -340,6 +340,7 @@ public class Sample extends AbstractDomainObject {
         requestedAdditionalTests = null;
     }
 
+    @Transient
     public Set<PathogenTestType> getRequestedPathogenTests() {
         if (requestedPathogenTests == null) {
             requestedPathogenTests = new HashSet<>();
@@ -371,6 +372,7 @@ public class Sample extends AbstractDomainObject {
         requestedPathogenTestsString = sb.toString();
     }
 
+    @Transient
     public Set<AdditionalTestType> getRequestedAdditionalTests() {
         if (requestedAdditionalTests == null) {
             requestedAdditionalTests = new HashSet<>();

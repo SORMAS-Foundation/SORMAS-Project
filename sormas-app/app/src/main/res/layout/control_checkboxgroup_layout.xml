@@ -24,23 +24,55 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/label"
-            android:labelFor="@+id/checkboxes_frame"
+        <LinearLayout
+            android:id="@+id/label_frame"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:includeFontPadding="false"
-            android:maxLines="1"
-            android:ellipsize="end"
-            style="@style/ControlLabelStyle" />
+            android:orientation="horizontal">
 
-        <RelativeLayout
+            <TextView
+                android:id="@+id/label"
+                style="@style/ControlLabelStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="60dp"
+                android:labelFor="@+id/checkboxes_frame"/>
+            <!-- 60dp margin makes sure indicators are always visible -->
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="-60dp">
+
+                <TextView
+                    android:id="@+id/required_indicator"
+                    style="@style/RequiredIndicatorStyle"/>
+
+                <TextView
+                    android:id="@+id/soft_required_indicator"
+                    style="@style/SoftRequiredIndicatorStyle"/>
+
+                <TextView
+                    android:id="@+id/error_indicator"
+                    style="@style/ErrorIndicatorStyle"/>
+
+                <TextView
+                    android:id="@+id/warning_indicator"
+                    style="@style/WarningIndicatorStyle"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
             android:id="@+id/checkboxes_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clipChildren="true"
             android:layout_marginBottom="@dimen/controlHalfMarginBottom">
 
-        </RelativeLayout>
+        </LinearLayout>
 
     </LinearLayout>
 

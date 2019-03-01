@@ -29,17 +29,17 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestType;
 
-public class ClassificationSampleTestCriteriaDto extends ClassificationCaseCriteriaDto {
+public class ClassificationPathogenTestCriteriaDto extends ClassificationCaseCriteriaDto {
 
 	private static final long serialVersionUID = 856637988490366395L;
 
 	private List<PathogenTestType> testTypes;
 
-	public ClassificationSampleTestCriteriaDto() {
+	public ClassificationPathogenTestCriteriaDto() {
 		super();
 	}
 	
-	public ClassificationSampleTestCriteriaDto(String propertyId, List<PathogenTestType> testTypes, Object... propertyValues) {
+	public ClassificationPathogenTestCriteriaDto(String propertyId, List<PathogenTestType> testTypes, Object... propertyValues) {
 		super(propertyId, propertyValues);
 		this.testTypes = testTypes;
 	}
@@ -50,9 +50,9 @@ public class ClassificationSampleTestCriteriaDto extends ClassificationCaseCrite
 	}
 
 	@Override
-	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> sampleTests) {		
-		for (PathogenTestDto sampleTest : sampleTests) {
-			if (!testTypes.contains(sampleTest.getTestType())) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests) {		
+		for (PathogenTestDto pathogenTest : pathogenTests) {
+			if (!testTypes.contains(pathogenTest.getTestType())) {
 				continue;
 			}
 
@@ -70,7 +70,7 @@ public class ClassificationSampleTestCriteriaDto extends ClassificationCaseCrite
 			}
 
 			try {
-				Object value = method.invoke(sampleTest);
+				Object value = method.invoke(pathogenTest);
 				if (propertyValues.contains(value)) {
 					return true;
 				}

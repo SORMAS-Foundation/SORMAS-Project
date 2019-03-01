@@ -679,14 +679,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Sample.class).executeRaw("INSERT INTO samples(associatedCase_id, comment, lab_id, labDetails, labSampleID, noTestPossibleReason, " +
 							"received, receivedDate, referredToUuid, reportDateTime, reportLat, reportLatLonAccuracy, reportLon, reportingUser_id, sampleCode, " +
 							"sampleDateTime, sampleMaterial, sampleMaterialText, sampleSource, shipmentDate, shipmentDetails, shipped, specimenCondition, " +
-							"changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid) " +
+							"requestedPathogenTestsString, changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid) " +
 							"SELECT associatedCase_id, comment, lab_id, labDetails, labSampleID, noTestPossibleReason, received, receivedDate, referredToUuid, " +
 							"reportDateTime, reportLat, reportLatLonAccuracy, reportLon, reportingUser_id, sampleCode, sampleDateTime, sampleMaterial, " +
-							"sampleMaterialText, sampleSource, shipmentDate, shipped, specimenCondition, changeDate, creationDate, id, lastOpenedDate, " +
-							"localChangeDate, modified, snapshot, uuid FROM tmp_contacts;");
+							"sampleMaterialText, sampleSource, shipmentDate, shipmentDetails, shipped, specimenCondition, suggestedTypeOfTest, changeDate, creationDate, " +
+                            "id, lastOpenedDate, localChangeDate, modified, snapshot, uuid FROM tmp_samples;");
 					getDao(Sample.class).executeRaw("UPDATE samples SET pathogenTestingRequested = 1;");
 					getDao(Sample.class).executeRaw("UPDATE samples SET additionalTestingRequested = 0;");
-					getDao(Sample.class).executeRaw("UPDATE samples SET requestedPathogenTestsString = samples.suggestedTypeOfTest;");
 					getDao(Sample.class).executeRaw("DROP TABLE tmp_samples;");
 
 					// ATTENTION: break should only be done after last version

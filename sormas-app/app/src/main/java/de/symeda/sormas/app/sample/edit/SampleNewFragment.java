@@ -80,6 +80,8 @@ SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutBinding, Sampl
         contentBinding.setData(record);
 
         SampleValidator.initializeSampleValidation(contentBinding);
+
+        contentBinding.setPathogenTestTypeClass(PathogenTestType.class);
     }
 
     @Override

@@ -133,13 +133,31 @@
                     app:value="@={data.comment}"
                     style="@style/ControlSingleColumnStyle" />
 
-                <ImageView style="@style/FullHorizontalDividerStyle"/>
+                <ImageView
+                    android:id="@+id/pathogenTestingDivider"
+                    style="@style/FullHorizontalDividerStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/sample_pathogenTestingRequested"
+                    app:useBoolean="true"
+                    app:value="@={data.pathogenTestingRequested}"
+                    app:required="true"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlCheckBoxGroupField
                     android:id="@+id/sample_requestedPathogenTests"
-                    app:value="@={data.requestedPathogenTests}"
                     app:enumClass="@{pathogenTestTypeClass}"
+                    app:value="@={data.requestedPathogenTests}"
+                    app:dependencyParentField="@{samplePathogenTestingRequested}"
+                    app:dependencyParentValue="@{true}"
+                    app:dependencyParentClearOnHide="@{false}"
                     style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTagViewField
+                    android:id="@+id/sample_requestedPathogenTestsTags"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <ImageView style="@style/FullHorizontalDividerStyle"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"

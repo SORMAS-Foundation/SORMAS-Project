@@ -34,7 +34,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 @JsonSubTypes({
 	@JsonSubTypes.Type(value = ClassificationEpiDataCriteriaDto.class, name = "ClassificationEpiDataCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationNotInStartDateRangeCriteriaDto.class, name = "ClassificationNotInStartDateRangeCriteriaDto"),
-	@JsonSubTypes.Type(value = ClassificationSampleTestCriteriaDto.class, name = "ClassificationSampleTestCriteriaDto"),
+	@JsonSubTypes.Type(value = ClassificationPathogenTestCriteriaDto.class, name = "ClassificationPathogenTestCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationSymptomsCriteriaDto.class, name = "ClassificationSymptomsCriteriaDto"),
 })
 public class ClassificationCaseCriteriaDto extends ClassificationCriteriaDto {

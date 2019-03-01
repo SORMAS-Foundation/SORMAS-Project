@@ -28,25 +28,25 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 
-public class ClassificationSampleTestPositiveResultCriteriaDto extends ClassificationCriteriaDto {
+public class ClassificationPathogenTestPositiveResultCriteriaDto extends ClassificationCriteriaDto {
 
 	private static final long serialVersionUID = 3811127784970509183L;
 	
 	protected List<PathogenTestType> pathogenTestTypes;
 
-	public ClassificationSampleTestPositiveResultCriteriaDto() {
+	public ClassificationPathogenTestPositiveResultCriteriaDto() {
 		
 	}
 	
-	public ClassificationSampleTestPositiveResultCriteriaDto(PathogenTestType... sampleTestTypes) {
-		this.pathogenTestTypes = Arrays.asList(sampleTestTypes);
+	public ClassificationPathogenTestPositiveResultCriteriaDto(PathogenTestType... pathogenTestTypes) {
+		this.pathogenTestTypes = Arrays.asList(pathogenTestTypes);
 	}
 
 	@Override
-	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> sampleTests) {
-		for (PathogenTestDto sampleTest : sampleTests) {
-			if (sampleTest.getTestResult() == PathogenTestResultType.POSITIVE
-					&& pathogenTestTypes.contains(sampleTest.getTestType())) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests) {
+		for (PathogenTestDto pathogenTest : pathogenTests) {
+			if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE
+					&& pathogenTestTypes.contains(pathogenTest.getTestType())) {
 				return true;
 			}
 		}
@@ -72,7 +72,7 @@ public class ClassificationSampleTestPositiveResultCriteriaDto extends Classific
 		return stringBuilder.toString();
 	}
 
-	public List<PathogenTestType> getSampleTestTypes() {
+	public List<PathogenTestType> getPathogenTestTypes() {
 		return pathogenTestTypes;
 	}
 

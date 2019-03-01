@@ -19,12 +19,17 @@
 package de.symeda.sormas.app.component.controls;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Size;
+import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.RelativeLayout;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -40,12 +45,12 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.util.DataUtils;
 
-public class ControlCheckBoxGroupField extends ControlPropertyEditField<Set<Object>> {
+public class ControlCheckBoxGroupField extends ControlPropertyEditField<Object> {
 
-    private Map<Object, ControlCheckBoxField> checkBoxes = new HashMap<>();
+    private Map<Object, CheckBox> checkBoxes = new HashMap<>();
     private InverseBindingListener inverseBindingListener;
     private Class<? extends Enum> enumClass = null;
-    private RelativeLayout checkBoxesFrame;
+    private LinearLayout checkBoxesFrame;
 
     // Constructors
 
@@ -79,21 +84,27 @@ public class ControlCheckBoxGroupField extends ControlPropertyEditField<Set<Obje
     }
 
     private void addItem(int index, int lastIndex, Item item) {
-        final ControlCheckBoxField checkBox = createCheckBox(index, lastIndex, item);
+        final CheckBox checkBox = createCheckBox(index, lastIndex, item);
         checkBoxesFrame.addView(checkBox);
         checkBoxes.put(item.getValue(), checkBox);
     }
 
-    private ControlCheckBoxField createCheckBox(int index, int lastIndex, Item item) {
-        ControlCheckBoxField checkBox = new ControlCheckBoxField(getContext());
+    private CheckBox createCheckBox(int index, int lastIndex, Item item) {
+        CheckBox checkBox = new CheckBox(new ContextThemeWrapper(getContext(), R.style.ControlCheckboxStyle));
         checkBox.setId(index);
-        checkBox.setCaption(item.getKey());
+        checkBox.setText(item.getKey());
+        checkBox.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+        checkBox.setOnCheckedChangeListener((b, i) -> {
+            if (inverseBindingListener != null) {
+                inverseBindingListener.onChange();
+            }
+        });
         return checkBox;
     }
 
     private void uncheckAll() {
-        for (ControlCheckBoxField checkBox : checkBoxes.values()) {
-            checkBox.setValue(false);
+        for (CheckBox checkBox : checkBoxes.values()) {
+            checkBox.setChecked(false);
         }
     }
 
@@ -124,18 +135,14 @@ public class ControlCheckBoxGroupField extends ControlPropertyEditField<Set<Obje
         super.onFinishInflate();
 
         checkBoxesFrame = this.findViewById(R.id.checkboxes_frame);
-
-        if (enumClass == null) {
-            throw new RuntimeException("enumClass must be set for this type of field");
-        }
     }
 
     @Override
-    protected Set<Object> getFieldValue() {
+    protected Object getFieldValue() {
         Set<Object> selectedElements = new HashSet<>();
 
         for (Object key : checkBoxes.keySet()) {
-            if (Boolean.TRUE.equals(checkBoxes.get(key).getValue())) {
+            if (checkBoxes.get(key).isChecked()) {
                 selectedElements.add(key);
             }
         }
@@ -144,18 +151,18 @@ public class ControlCheckBoxGroupField extends ControlPropertyEditField<Set<Obje
     }
 
     @Override
-    protected void setFieldValue(Set<Object> value) {
+    protected void setFieldValue(Object value) {
         if (value == null) {
             uncheckAll();
         } else {
-            for (Object element : value) {
-                ControlCheckBoxField checkBox = checkBoxes.get(element);
+            for (Object element : (Set<Object>) value) {
+                CheckBox checkBox = checkBoxes.get(element);
 
                 if (checkBox == null) {
                     throw new IllegalArgumentException("Passed list arguments contains an element that is not part of this ControlCheckBoxGroupField");
                 }
 
-                checkBox.setValue(true);
+                checkBox.setChecked(true);
             }
         }
     }
@@ -172,18 +179,18 @@ public class ControlCheckBoxGroupField extends ControlPropertyEditField<Set<Obje
 
     @Override
     public void setHint(String hint) {
-        // CheckBoxGroup does not have a hint
+        // Not needed
     }
 
     // Data binding, getters & setters
 
     @BindingAdapter("value")
-    public static void setValue(ControlCheckBoxGroupField view, Set<Object> value) {
+    public static void setValue(ControlCheckBoxGroupField view, Object value) {
         view.setFieldValue(value);
     }
 
     @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
-    public static Set<?> getValue(ControlCheckBoxGroupField view) {
+    public static Object getValue(ControlCheckBoxGroupField view) {
         return view.getFieldValue();
     }
 
@@ -192,8 +199,8 @@ public class ControlCheckBoxGroupField extends ControlPropertyEditField<Set<Obje
         view.inverseBindingListener = listener;
     }
 
-    @BindingAdapter(value = {"value", "enumClass"}, requireAll = true)
-    public static void setValue(ControlCheckBoxGroupField view, Set<Object> value, Class enumClass) {
+    @BindingAdapter(value = {"value", "enumClass"})
+    public static void setValue(ControlCheckBoxGroupField view, Object value, Class enumClass) {
         if (enumClass != null) {
             view.setEnumClass((Class<? extends Enum>) enumClass);
         }

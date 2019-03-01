@@ -30,8 +30,8 @@ public enum SampleMaterial {
 	CEREBROSPINAL_FLUID,
 	CRUST,
 	TISSUE,
-	OTHER,
-	;
+	URINE,
+	OTHER;
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

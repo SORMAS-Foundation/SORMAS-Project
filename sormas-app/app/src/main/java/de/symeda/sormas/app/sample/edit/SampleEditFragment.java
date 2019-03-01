@@ -22,9 +22,11 @@ import android.view.View;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -56,6 +58,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
     private List<Item> sampleMaterialList;
     private List<Item> sampleSourceList;
     private List<Facility> labList;
+    private List<String> requestedPathogenTests;
 
     public static SampleEditFragment newInstance(Sample activityRootData) {
         return newInstance(SampleEditFragment.class, null, activityRootData);
@@ -115,6 +118,11 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         sampleMaterialList = DataUtils.getEnumItems(SampleMaterial.class, true);
         sampleSourceList = DataUtils.getEnumItems(SampleSource.class, true);
         labList = DatabaseHelper.getFacilityDao().getLaboratories(true);
+
+        requestedPathogenTests = new ArrayList<>();
+        for (PathogenTestType pathogenTest : record.getRequestedPathogenTests()) {
+            requestedPathogenTests.add(pathogenTest.toString());
+        }
     }
 
     @Override
@@ -126,6 +134,8 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         contentBinding.setReferredSample(referredSample);
 
         SampleValidator.initializeSampleValidation(contentBinding);
+
+        contentBinding.setPathogenTestTypeClass(PathogenTestType.class);
     }
 
     @Override
@@ -164,6 +174,17 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
             contentBinding.sampleShipped.setEnabled(false);
             contentBinding.sampleShipmentDate.setEnabled(false);
             contentBinding.sampleShipmentDetails.setEnabled(false);
+            contentBinding.samplePathogenTestingRequested.setVisibility(GONE);
+            contentBinding.sampleRequestedPathogenTests.setVisibility(GONE);
+
+            if (!requestedPathogenTests.isEmpty()) {
+                contentBinding.sampleRequestedPathogenTestsTags.setTags(requestedPathogenTests);
+            } else {
+                contentBinding.sampleRequestedPathogenTestsTags.setVisibility(GONE);
+                contentBinding.pathogenTestingDivider.setVisibility(GONE);
+            }
+        } else {
+            contentBinding.sampleRequestedPathogenTestsTags.setVisibility(GONE);
         }
     }
 
