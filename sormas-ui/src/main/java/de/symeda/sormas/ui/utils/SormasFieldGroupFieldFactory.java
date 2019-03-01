@@ -13,6 +13,7 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -57,6 +58,11 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 				}
 				return field;
 			}
+		}
+		else if (Boolean.class.isAssignableFrom(type)) {
+			OptionGroup field = createBooleanField(OptionGroup.class);
+			CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
+			return (T) field;
 		}
 		else if (AbstractSelect.class.isAssignableFrom(fieldType)) {
 			AbstractSelect field = createCompatibleSelect((Class<? extends AbstractSelect>) fieldType);
@@ -116,4 +122,20 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 		textField.setNullRepresentation("");
 		return textField;
 	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	protected <T extends Field> T createBooleanField(Class<T> fieldType) {
+		if (OptionGroup.class.isAssignableFrom(fieldType)) {
+			AbstractSelect s = createCompatibleSelect(OptionGroup.class);
+			s.addItem(Boolean.TRUE);
+			s.setItemCaption(Boolean.TRUE, I18nProperties.getEnumCaption(YesNoUnknown.YES));
+			s.addItem(Boolean.FALSE);
+			s.setItemCaption(Boolean.FALSE, I18nProperties.getEnumCaption(YesNoUnknown.NO));
+			return (T) s;
+		} else {
+			return super.createBooleanField(fieldType);
+		}
+    }
+	
 }
