@@ -48,6 +48,7 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.outbreak.Outbreak;
+import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -68,6 +69,9 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 	
 	@EJB
 	private EventFacadeEjbLocal eventFacade;
+	
+	@EJB
+	private OutbreakFacadeEjbLocal outbreakFacade;
 	
 	//@Override
 	public List<DiseaseBurdenDto> getDiseaseBurdenForDashboard(
@@ -104,29 +108,8 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		Map<Disease, Long> events = eventFacade.getEventCountByDisease(regionRef, districtRef, from, to);
 					
 		//outbreaks
-		cq = cb.createQuery(Object[].class);
-		Root<Outbreak> outbreak = cq.from(Outbreak.class);
-		cq.multiselect(outbreak.get(Outbreak.DISEASE), cb.countDistinct(outbreak.get(Outbreak.DISTRICT)));
-		cq.groupBy(outbreak.get(Outbreak.DISEASE));
+		Map<Disease, Long> outbreaks = outbreakFacade.getOutbreakCountByDisease(regionRef, districtRef, from, to);
 		
-		filter = null;
-		if (from != null || to != null) {
-			filter = AbstractAdoService.and(cb, filter, cb.between(outbreak.get(Outbreak.REPORT_DATE), from, to));
-		}
-		if (districtRef != null) {
-			filter = AbstractAdoService.and(cb, filter, cb.equal(outbreak.join(Outbreak.DISTRICT, JoinType.LEFT).get(District.UUID), districtRef.getUuid()));
-		}
-		else if (regionRef != null) {
-			filter = AbstractAdoService.and(cb, filter, cb.equal(outbreak.join(Outbreak.DISTRICT, JoinType.LEFT).join(District.REGION, JoinType.LEFT).get(Region.UUID), regionRef.getUuid()));
-		}
-		if (filter != null) {
-			cq.where(filter);
-		}
-		
-		results = em.createQuery(cq).getResultList();
-		
-		Map<Disease, Long> outbreaks = results.stream().collect(
-				Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
 				
 		//case fatalities
 		cq = cb.createQuery(Object[].class);

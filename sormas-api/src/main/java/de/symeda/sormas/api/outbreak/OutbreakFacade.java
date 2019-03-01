@@ -19,6 +19,7 @@ package de.symeda.sormas.api.outbreak;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Remote;
 
@@ -64,4 +65,6 @@ public interface OutbreakFacade {
 			Date from, 
 			Date to, 
 			String userUuid);
+	
+	Map<Disease, Long> getOutbreakCountByDisease (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Date from, Date to);
 }
