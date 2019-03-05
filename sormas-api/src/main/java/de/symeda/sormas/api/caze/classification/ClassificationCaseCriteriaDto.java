@@ -28,13 +28,13 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sample.SampleTestDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 @JsonSubTypes({
 	@JsonSubTypes.Type(value = ClassificationEpiDataCriteriaDto.class, name = "ClassificationEpiDataCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationNotInStartDateRangeCriteriaDto.class, name = "ClassificationNotInStartDateRangeCriteriaDto"),
-	@JsonSubTypes.Type(value = ClassificationSampleTestCriteriaDto.class, name = "ClassificationSampleTestCriteriaDto"),
+	@JsonSubTypes.Type(value = ClassificationPathogenTestCriteriaDto.class, name = "ClassificationPathogenTestCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationSymptomsCriteriaDto.class, name = "ClassificationSymptomsCriteriaDto"),
 })
 public class ClassificationCaseCriteriaDto extends ClassificationCriteriaDto {
@@ -62,7 +62,7 @@ public class ClassificationCaseCriteriaDto extends ClassificationCriteriaDto {
 	}
 
 	@Override
-	public boolean eval(CaseDataDto caze, PersonDto person, List<SampleTestDto> sampleTests) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> sampleTests) {
 		try {
 			Method method = getInvokeClass().getMethod("get" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));
 			Object value = method.invoke(getInvokeObject(caze));

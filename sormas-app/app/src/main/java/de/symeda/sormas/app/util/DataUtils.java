@@ -25,7 +25,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.Month;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.Item;
 
 /**
@@ -44,7 +46,7 @@ public class DataUtils {
         return list;
     }
 
-    public static <E>  List<Item> getEnumItems(Class<E> clazz, boolean withNull) {
+    public static <E> List<Item> getEnumItems(Class<E> clazz, boolean withNull) {
         E[] enumConstants = clazz.getEnumConstants();
         List<Item> list = new ArrayList<Item>();
 
@@ -54,6 +56,13 @@ public class DataUtils {
         for (int i = 0; i < enumConstants.length; i++) {
             list.add(new Item<E>(enumConstants[i].toString(),enumConstants[i]));
         }
+        return list;
+    }
+
+    public static List<Item> getBooleanItems() {
+        List<Item> list = new ArrayList<>();
+        list.add(new Item<>(DatabaseHelper.getString(R.string.yes), Boolean.TRUE));
+        list.add(new Item<>(DatabaseHelper.getString(R.string.no), Boolean.FALSE));
         return list;
     }
 

@@ -133,7 +133,7 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
 
     @Override
     protected void initialize(Context context, AttributeSet attrs, int defStyle) {
-        // Nothing to initializeSpinner
+        // Nothing to initialize
     }
 
     @Override

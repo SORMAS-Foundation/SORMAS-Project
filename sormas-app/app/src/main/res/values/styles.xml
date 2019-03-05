@@ -314,8 +314,7 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_gravity">center_vertical</item>
         <item name="android:textSize">@dimen/defaultControlTextSize</item>
-        <item name="android:scaleX">1.2</item>
-        <item name="android:scaleY">1.2</item>
+        <item name="android:button">@null</item>
         <item name="android:background">?android:attr/listChoiceIndicatorMultiple</item>
     </style>
 

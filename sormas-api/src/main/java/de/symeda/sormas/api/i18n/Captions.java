@@ -6,6 +6,7 @@ public interface Captions {
 	public static String aboutDataDictionary = "aboutDataDictionary";
 	public static String aboutSormasVersion = "aboutSormasVersion";
 	public static String aboutTechnicalManual = "aboutTechnicalManual";
+	public static String additionalTestNewTest = "additionalTestNewTest";
 	public static String actionApplyDateFilter = "actionApplyDateFilter";
 	public static String actionArchive = "actionArchive";
 	public static String actionCancel = "actionCancel";
@@ -469,6 +470,18 @@ public interface Captions {
 	public static String outbreakNoOutbreak = "outbreakNoOutbreak";
 	public static String outbreakNormal = "outbreakNormal";
 	public static String outbreakOutbreak = "outbreakOutbreak";
+	public static String PathogenTest = "PathogenTest";
+	public static String PathogenTest_fourFoldIncreaseAntibodyTiter = "PathogenTest.fourFoldIncreaseAntibodyTiter";
+	public static String PathogenTest_lab = "PathogenTest.lab";
+	public static String PathogenTest_labDetails = "PathogenTest.labDetails";
+	public static String PathogenTest_testDateTime = "PathogenTest.testDateTime";
+	public static String PathogenTest_testResult = "PathogenTest.testResult";
+	public static String PathogenTest_testResultText = "PathogenTest.testResultText";
+	public static String PathogenTest_testResultVerified = "PathogenTest.testResultVerified";
+	public static String PathogenTest_testType = "PathogenTest.testType";
+	public static String PathogenTest_testTypeText = "PathogenTest.testTypeText";
+	public static String pathogenTestNewResult = "pathogenTestNewResult";
+	public static String pathogenTestNewTest = "pathogenTestNewTest";
 	public static String Person = "Person";
 	public static String Person_address = "Person.address";
 	public static String Person_approximateAge = "Person.approximateAge";
@@ -584,18 +597,6 @@ public interface Captions {
 	public static String sampleShowActive = "sampleShowActive";
 	public static String sampleShowArchived = "sampleShowArchived";
 	public static String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
-	public static String SampleTest = "SampleTest";
-	public static String SampleTest_fourFoldIncreaseAntibodyTiter = "SampleTest.fourFoldIncreaseAntibodyTiter";
-	public static String SampleTest_lab = "SampleTest.lab";
-	public static String SampleTest_labDetails = "SampleTest.labDetails";
-	public static String SampleTest_testDateTime = "SampleTest.testDateTime";
-	public static String SampleTest_testResult = "SampleTest.testResult";
-	public static String SampleTest_testResultText = "SampleTest.testResultText";
-	public static String SampleTest_testResultVerified = "SampleTest.testResultVerified";
-	public static String SampleTest_testType = "SampleTest.testType";
-	public static String SampleTest_testTypeText = "SampleTest.testTypeText";
-	public static String sampleTestNewResult = "sampleTestNewResult";
-	public static String sampleTestNewTest = "sampleTestNewTest";
 	public static String statisticsAddFilter = "statisticsAddFilter";
 	public static String statisticsAttribute = "statisticsAttribute";
 	public static String statisticsAttributeSelect = "statisticsAttributeSelect";
@@ -864,4 +865,6 @@ public interface Captions {
 	public static String WeeklyReportRegionSummary_officers = "WeeklyReportRegionSummary.officers";
 	public static String WeeklyReportRegionSummary_officerZeroReports = "WeeklyReportRegionSummary.officerZeroReports";
 	public static String weeklyReportsInDistrict = "weeklyReportsInDistrict";
+	public static String columnAdditionalTests = "columnAdditionalTests";
+	
  }

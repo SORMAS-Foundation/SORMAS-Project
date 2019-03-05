@@ -29,12 +29,15 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
-import de.symeda.sormas.api.sample.SampleTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -68,13 +71,13 @@ public class SampleListEntry extends HorizontalLayout {
 		topLabelLayout.addComponent(labelLeft);
 
 		String htmlRight;
-		if (sample.getSampleTestResult() != null && sample.getSampleTestResult() != SampleTestResultType.PENDING) {
+		if (sample.getPathogenTestResult() != null && sample.getPathogenTestResult() != PathogenTestResultType.PENDING) {
 			htmlRight = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE + " "
-					+ (sample.getSampleTestResult() == SampleTestResultType.POSITIVE ? CssStyles.LABEL_WARNING
-							: (sample.getSampleTestResult() == SampleTestResultType.INDETERMINATE
+					+ (sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE ? CssStyles.LABEL_WARNING
+							: (sample.getPathogenTestResult() == PathogenTestResultType.INDETERMINATE
 									? CssStyles.LABEL_IMPORTANT
 									: "")),
-					DataHelper.toStringNullable(sample.getSampleTestResult()));
+					DataHelper.toStringNullable(sample.getPathogenTestResult()));
 		} else if (sample.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
 			htmlRight = LayoutUtil.divCss(
 					CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE + " " + CssStyles.LABEL_WARNING,
@@ -96,9 +99,14 @@ public class SampleListEntry extends HorizontalLayout {
 		topLabelLayout.addComponent(labelRight);
 		topLabelLayout.setComponentAlignment(labelRight, Alignment.TOP_RIGHT);
 
-		String htmlBottom = LayoutUtil.div(DataHelper.toStringNullable(sample.getLab()));
-		Label labelBottom = new Label(htmlBottom, ContentMode.HTML);
-		labelLayout.addComponent(labelBottom);
+		String htmlLab = LayoutUtil.div(DataHelper.toStringNullable(sample.getLab()));
+		Label labelLab = new Label(htmlLab, ContentMode.HTML);
+		labelLayout.addComponent(labelLab);
+		
+		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+			Label labelAdditionalTests = new Label(I18nProperties.getString(Strings.entityAdditionalTests) + " " + sample.getAdditionalTestingStatus().toString().toLowerCase());
+			labelLayout.addComponent(labelAdditionalTests);
+		}
 	}
 
 	public void addEditListener(ClickListener editClickListener) {

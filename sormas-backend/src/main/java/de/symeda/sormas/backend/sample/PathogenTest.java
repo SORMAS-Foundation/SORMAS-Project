@@ -29,19 +29,19 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
-import de.symeda.sormas.api.sample.SampleTestResultType;
-import de.symeda.sormas.api.sample.SampleTestType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.user.User;
 
-@Entity(name="sampletest")
+@Entity
 @Audited
-public class SampleTest extends AbstractDomainObject {
+public class PathogenTest extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 2290351143518627813L;
 
-	public static final String TABLE_NAME = "sampletest";
+	public static final String TABLE_NAME = "pathogentest";
 	
 	public static final String SAMPLE = "sample";
 	public static final String TEST_TYPE = "testType";
@@ -56,13 +56,13 @@ public class SampleTest extends AbstractDomainObject {
 	public static final String FOUR_FOLD_INCREASE_ANTIBODY_TITER = "fourFoldIncreaseAntibodyTiter";
 	
 	private Sample sample;
-	private SampleTestType testType;
+	private PathogenTestType testType;
 	private String testTypeText;
 	private Date testDateTime;
 	private Facility lab;
 	private String labDetails;
 	private User labUser;
-	private SampleTestResultType testResult;
+	private PathogenTestResultType testResult;
 	private String testResultText;
 	private boolean testResultVerified;
 	private boolean fourFoldIncreaseAntibodyTiter;
@@ -78,10 +78,10 @@ public class SampleTest extends AbstractDomainObject {
 	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	public SampleTestType getTestType() {
+	public PathogenTestType getTestType() {
 		return testType;
 	}
-	public void setTestType(SampleTestType testType) {
+	public void setTestType(PathogenTestType testType) {
 		this.testType = testType;
 	}
 	
@@ -130,10 +130,10 @@ public class SampleTest extends AbstractDomainObject {
 	
 	@Enumerated(EnumType.STRING)
 	@JoinColumn(nullable = false)
-	public SampleTestResultType getTestResult() {
+	public PathogenTestResultType getTestResult() {
 		return testResult;
 	}
-	public void setTestResult(SampleTestResultType testResult) {
+	public void setTestResult(PathogenTestResultType testResult) {
 		this.testResult = testResult;
 	}
 	

@@ -205,19 +205,19 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
      * Handles automatic visibility setting based on the dependencyParentField and
      * dependencyParentValue set in the layout.
      *
-     * @param calledFromListener When fields are hidden, their value should generally be set to
-     *                           null. However, this may only be done when this method is called
-     *                           from the InternalValueChangedListener to prevent data loss in case
-     *                           this method is called before the parent field's internal value
-     *                           has been set
+     * @param clearOnHide When fields are hidden, their value should generally be set to
+     *                    null. However, this may only be done when this method is called
+     *                    from the InternalValueChangedListener to prevent data loss in case
+     *                    this method is called before the parent field's internal value
+     *                    has been set.
      */
-    private void setVisibilityBasedOnParentField(boolean calledFromListener) {
+    private void setVisibilityBasedOnParentField(boolean clearOnHide) {
         if (dependencyParentField == null || dependencyParentValues == null) {
             return;
         }
 
         if (dependencyParentField.getVisibility() != VISIBLE) {
-            hideField(calledFromListener);
+            hideField(clearOnHide);
             return;
         }
 
@@ -225,11 +225,11 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
             if (dependencyParentVisibility) {
                 setVisibility(VISIBLE);
             } else {
-                hideField(calledFromListener);
+                hideField(clearOnHide);
             }
         } else {
             if (dependencyParentVisibility) {
-                hideField(calledFromListener);
+                hideField(clearOnHide);
             } else {
                 setVisibility(VISIBLE);
             }
@@ -367,8 +367,8 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
         return getFieldValue();
     }
 
-    @BindingAdapter(value = {"dependencyParentField", "dependencyParentValue", "dependencyParentValue2", "dependencyParentVisibility"}, requireAll = false)
-    public static void setDependencyParentField(ControlPropertyField field, ControlPropertyField dependencyParentField, Object dependencyParentValue, Object dependencyParentValue2, Boolean dependencyParentVisibility) {
+    @BindingAdapter(value = {"dependencyParentField", "dependencyParentValue", "dependencyParentValue2", "dependencyParentVisibility", "dependencyParentClearOnHide"}, requireAll = false)
+    public static void setDependencyParentField(ControlPropertyField field, ControlPropertyField dependencyParentField, Object dependencyParentValue, Object dependencyParentValue2, Boolean dependencyParentVisibility, Boolean dependencyParentClearOnHide) {
         field.dependencyParentField = dependencyParentField;
         field.dependencyParentValues = new ArrayList();
         field.dependencyParentValues.add(dependencyParentValue);
@@ -386,7 +386,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
             dependencyParentField.addValueChangedListener(new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
-                    thisField.setVisibilityBasedOnParentField(true);
+                    thisField.setVisibilityBasedOnParentField(dependencyParentClearOnHide != null ? dependencyParentClearOnHide : true);
                 }
             });
         }

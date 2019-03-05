@@ -51,9 +51,9 @@ import de.symeda.sormas.api.report.WeeklyReportDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.sample.SampleTestDto;
-import de.symeda.sormas.api.sample.SampleTestResultType;
-import de.symeda.sormas.api.sample.SampleTestType;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
@@ -252,10 +252,10 @@ public class TestDataCreator {
 		return sample;
 	}
 
-	public SampleTestDto createSampleTest(SampleReferenceDto sample, SampleTestType testType, Date testDateTime,
-			FacilityReferenceDto lab, UserReferenceDto labUser, SampleTestResultType testResult, String testResultText,
+	public PathogenTestDto createSampleTest(SampleReferenceDto sample, PathogenTestType testType, Date testDateTime,
+			FacilityReferenceDto lab, UserReferenceDto labUser, PathogenTestResultType testResult, String testResultText,
 			boolean verified) {
-		SampleTestDto sampleTest = new SampleTestDto();
+		PathogenTestDto sampleTest = new PathogenTestDto();
 		sampleTest.setUuid(DataHelper.createUuid());
 		sampleTest.setSample(sample);
 		sampleTest.setTestType(testType);
@@ -266,13 +266,13 @@ public class TestDataCreator {
 		sampleTest.setTestResultText(testResultText);
 		sampleTest.setTestResultVerified(verified);
 
-		sampleTest = FacadeProvider.getSampleTestFacade().saveSampleTest(sampleTest);
+		sampleTest = FacadeProvider.getPathogenTestFacade().savePathogenTest(sampleTest);
 
 		return sampleTest;
 	}
 
-	public SampleTestDto createSampleTest(CaseDataDto associatedCase, SampleTestType testType,
-			SampleTestResultType resultType) {
+	public PathogenTestDto createSampleTest(CaseDataDto associatedCase, PathogenTestType testType,
+			PathogenTestResultType resultType) {
 		RDCF rdcf = createRDCF("Region", "District", "Community", "Facility");
 		SampleDto sample = createSample(new CaseReferenceDto(associatedCase.getUuid()), new Date(), new Date(),
 				associatedCase.getReportingUser(), SampleMaterial.BLOOD, rdcf.facility.toReference());

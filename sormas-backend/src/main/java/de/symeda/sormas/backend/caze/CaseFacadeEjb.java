@@ -83,7 +83,7 @@ import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.sample.SampleTestDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
@@ -153,8 +153,8 @@ import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sample.SampleTestFacadeEjb.SampleTestFacadeEjbLocal;
-import de.symeda.sormas.backend.sample.SampleTestService;
+import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.SampleTestFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.PathogenTestService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
@@ -223,7 +223,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	@EJB
 	private SampleService sampleService;
 	@EJB
-	private SampleTestService sampleTestService;
+	private PathogenTestService pathogenTestService;
 	@EJB
 	private SampleTestFacadeEjbLocal sampleTestFacade;
 	@EJB
@@ -382,7 +382,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			List<Date> sampleDates = sampleService.getSampleDatesForCase(exportDto.getId());
 			exportDto.setSampleTaken((sampleDates == null || sampleDates.isEmpty()) ? YesNoUnknown.NO : YesNoUnknown.YES);
 			exportDto.setSampleDates(sampleDates);
-			exportDto.setLabResults(sampleTestService.getSampleTestResultsForCase(exportDto.getId()));
+			exportDto.setLabResults(pathogenTestService.getPathogenTestResultsForCase(exportDto.getId()));
 			exportDto.setSymptoms(symptomsService.getById(exportDto.getSymptomsId()).toHumanString(false));
 			exportDto.setAddress(personService.getAddressByPersonId(exportDto.getPersonId()).toString());
 
@@ -770,7 +770,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (newCase.getCaseClassification() != CaseClassification.NO_CASE) {
 				// calculate classification
 				CaseDataDto newCaseDto = toDto(newCase);
-				List<SampleTestDto> sampleTests = sampleTestService.getAllByCase(newCase).stream()
+				List<PathogenTestDto> sampleTests = pathogenTestService.getAllByCase(newCase).stream()
 						.map(s -> sampleTestFacade.toDto(s)).collect(Collectors.toList());
 				CaseClassification classification = caseClassificationFacade.getClassification(newCaseDto, sampleTests);
 

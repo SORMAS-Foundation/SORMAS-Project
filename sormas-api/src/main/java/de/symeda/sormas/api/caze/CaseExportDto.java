@@ -31,7 +31,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.sample.SampleTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -425,7 +425,7 @@ public class CaseExportDto implements Serializable {
 		this.labResults = labResults;
 	}
 
-	public void setLabResults(List<SampleTestResultType> labResults) {
+	public void setLabResults(List<PathogenTestResultType> labResults) {
 		StringBuilder testResultsBuilder = new StringBuilder();
 		for (int i = 0; i < labResults.size(); i++) {
 			if (i > 0) {

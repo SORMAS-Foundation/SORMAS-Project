@@ -129,10 +129,10 @@ public class DashboardDataProvider {
 		setEventCountByStatus(FacadeProvider.getEventFacade().getEventCountByStatus(region, district, disease, fromDate, toDate, userUuid));
 		
 		// Test results
-//		setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district, disease,
-//				fromDate, toDate, userUuid));
-//		setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district,
-//				disease, previousFromDate, previousToDate, userUuid));
+		setTestResults(FacadeProvider.getPathogenTestFacade().getNewTestResultsForDashboard(region, district, disease,
+				fromDate, toDate, userUuid));
+		setPreviousTestResults(FacadeProvider.getPathogenTestFacade().getNewTestResultsForDashboard(region, district,
+				disease, previousFromDate, previousToDate, userUuid));
 		setTestResultCountByResultType(FacadeProvider.getSampleTestFacade().getTestResultCountByResultType(region, district, disease, fromDate, toDate, userUuid));
 		
 		// Outbreaks

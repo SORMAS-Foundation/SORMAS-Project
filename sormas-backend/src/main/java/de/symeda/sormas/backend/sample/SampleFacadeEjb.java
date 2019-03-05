@@ -73,7 +73,7 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.sample.SampleTestFacadeEjb.SampleTestFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.SampleTestFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -89,7 +89,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	@EJB
 	private SampleService sampleService;
 	@EJB
-	private SampleTestService sampleTestService;
+	private PathogenTestService pathogenTestService;
 	@EJB
 	private UserService userService;
 	@EJB
@@ -113,7 +113,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	@EJB
 	private MessagingService messagingService;
 
-	private static final Logger logger = LoggerFactory.getLogger(SampleTestFacadeEjb.class);
+	private static final Logger logger = LoggerFactory.getLogger(PathogenTestFacadeEjb.class);
 
 	@Override
 	public List<String> getAllActiveUuids(String userUuid) {
@@ -180,6 +180,15 @@ public class SampleFacadeEjb implements SampleFacade {
 	public SampleDto saveSample(SampleDto dto) {
 		SampleDto existingSample = toDto(sampleService.getByUuid(dto.getUuid()));
 		Sample sample = fromDto(dto);
+		
+		// Set defaults for testing requests
+		if (sample.getPathogenTestingRequested() == null) {
+			sample.setPathogenTestingRequested(false);
+		}
+		if (sample.getAdditionalTestingRequested() == null) {
+			sample.setAdditionalTestingRequested(false);
+		}
+		
 		sampleService.ensurePersisted(sample);
 
 		onSampleChanged(existingSample, sample);
@@ -200,8 +209,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		Root<Sample> sample = cq.from(Sample.class);
 
 		Join<Sample, Sample> referredSample = sample.join(Sample.REFERRED_TO, JoinType.LEFT);
-		Join<Sample, SampleTest> mainTest = sample.join(Sample.MAIN_SAMPLE_TEST, JoinType.LEFT);
-		Join<SampleTest, User> mainTestLabUser = mainTest.join(SampleTest.LAB_USER, JoinType.LEFT);
+		Join<Sample, PathogenTest> mainTest = sample.join(Sample.MAIN_SAMPLE_TEST, JoinType.LEFT);
+		Join<PathogenTest, User> mainTestLabUser = mainTest.join(PathogenTest.LAB_USER, JoinType.LEFT);
 		Join<Sample, Facility> lab = sample.join(Sample.LAB, JoinType.LEFT);
 		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 		Join<Case, Person> cazePerson = caze.join(Case.PERSON, JoinType.LEFT);
@@ -216,7 +225,8 @@ public class SampleFacadeEjb implements SampleFacade {
 				caze.get(Case.UUID), cazePerson.get(Person.FIRST_NAME), cazePerson.get(Person.LAST_NAME),
 				caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), 
 				caseRegion.get(Region.UUID), caseDistrict.get(District.UUID), caseDistrict.get(District.NAME), 
-				mainTest.get(SampleTest.TEST_RESULT), mainTestLabUser.get(User.FIRST_NAME), mainTestLabUser.get(User.LAST_NAME));
+				mainTest.get(PathogenTest.TEST_RESULT), mainTestLabUser.get(User.FIRST_NAME), mainTestLabUser.get(User.LAST_NAME),
+				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED), cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)));
 
 		Predicate filter = null;
 		if (userUuid != null) {
@@ -232,6 +242,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}
+		
+		cq.orderBy(cb.desc(sample.get(Sample.SAMPLE_DATE_TIME)));
 
 		List<SampleIndexDto> resultList = em.createQuery(cq).getResultList();
 
@@ -294,11 +306,14 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setNoTestPossibleReason(source.getNoTestPossibleReason());
 		target.setComment(source.getComment());
 		target.setSampleSource(source.getSampleSource());
-		target.setSuggestedTypeOfTest(source.getSuggestedTypeOfTest());
 		target.setReferredTo(sampleService.getByReferenceDto(source.getReferredTo()));
 		target.setShipped(source.isShipped());
 		target.setReceived(source.isReceived());
-
+		target.setPathogenTestingRequested(source.getPathogenTestingRequested());
+		target.setAdditionalTestingRequested(source.getAdditionalTestingRequested());
+		target.setRequestedPathogenTests(source.getRequestedPathogenTests());
+		target.setRequestedAdditionalTests(source.getRequestedAdditionalTests());
+		
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
@@ -330,10 +345,13 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setNoTestPossibleReason(source.getNoTestPossibleReason());
 		target.setComment(source.getComment());
 		target.setSampleSource(source.getSampleSource());
-		target.setSuggestedTypeOfTest(source.getSuggestedTypeOfTest());
 		target.setReferredTo(SampleFacadeEjb.toReferenceDto(source.getReferredTo()));
 		target.setShipped(source.isShipped());
 		target.setReceived(source.isReceived());
+		target.setPathogenTestingRequested(source.getPathogenTestingRequested());
+		target.setAdditionalTestingRequested(source.getAdditionalTestingRequested());
+		target.setRequestedPathogenTests(source.getRequestedPathogenTests());
+		target.setRequestedAdditionalTests(source.getRequestedAdditionalTests());
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());

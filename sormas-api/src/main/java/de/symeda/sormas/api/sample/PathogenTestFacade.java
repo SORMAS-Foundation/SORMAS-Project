@@ -28,23 +28,23 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 
 @Remote
-public interface SampleTestFacade {
+public interface PathogenTestFacade {
 
-	List<SampleTestDto> getAllActiveSampleTestsAfter(Date date, String userUuid);
+	List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date, String userUuid);
 	
-	List<SampleTestDto> getAllBySample(SampleReferenceDto sampleRef);
+	List<PathogenTestDto> getAllBySample(SampleReferenceDto sampleRef);
 	
-	SampleTestDto getByUuid(String uuid);
+	PathogenTestDto getByUuid(String uuid);
 	
-	SampleTestDto saveSampleTest(SampleTestDto dto);
+	PathogenTestDto savePathogenTest(PathogenTestDto dto);
 
 	List<String> getAllActiveUuids(String userUuid);
 
-	List<SampleTestDto> getByUuids(List<String> uuids);
+	List<PathogenTestDto> getByUuids(List<String> uuids);
 	
 	List<DashboardTestResultDto> getNewTestResultsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 	
 	Map<SampleTestResultType, Long> getTestResultCountByResultType (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 	
-	void deleteSampleTest(SampleTestReferenceDto sampleTestRef, String userUuid);
+	void deletePathogenTest(PathogenTestReferenceDto pathogenTestRef, String userUuid);
 }

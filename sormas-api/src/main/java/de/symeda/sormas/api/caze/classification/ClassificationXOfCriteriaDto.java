@@ -24,7 +24,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sample.SampleTestDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 
 /**
  * A criteria determining that a specific number of sub criteria need to be true in order for the whole criteria
@@ -47,7 +47,7 @@ public class ClassificationXOfCriteriaDto extends ClassificationCriteriaDto impl
 	}
 
 	@Override
-	public boolean eval(CaseDataDto caze, PersonDto person, List<SampleTestDto> sampleTests) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> sampleTests) {
 		int amount = 0;
 		for (ClassificationCriteriaDto classificationCriteria : classificationCriteria) {
 			if (classificationCriteria.eval(caze, person, sampleTests)) {

@@ -37,10 +37,6 @@ import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.user.User;
 
-/**
- * Created by Mate Strysewske on 14.06.2017.
- */
-
 public class TestHelper {
 
     public static final String REGION_UUID = "R1R1R1-R1R1R1-R1R1R1-R1R1R1R1";

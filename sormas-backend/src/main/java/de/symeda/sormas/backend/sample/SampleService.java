@@ -38,7 +38,7 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.DashboardSampleDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
-import de.symeda.sormas.api.sample.SampleTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -57,7 +57,7 @@ public class SampleService extends AbstractAdoService<Sample> {
 	@EJB
 	private CaseService caseService;	
 	@EJB
-	private SampleTestService sampleTestService;
+	private PathogenTestService pathogenTestService;
 
 	public SampleService() {
 		super(Sample.class);
@@ -66,8 +66,8 @@ public class SampleService extends AbstractAdoService<Sample> {
 	@Override
 	public void delete(Sample sample) {
 		sample.setMainSampleTest(null);
-		for (SampleTest sampleTest : sample.getSampleTests()) {
-			sampleTestService.delete(sampleTest);
+		for (PathogenTest pathogenTest : sample.getSampleTests()) {
+			pathogenTestService.delete(pathogenTest);
 		}
 
 		// Remove the reference from another sample to this sample, if existing
@@ -178,7 +178,7 @@ public class SampleService extends AbstractAdoService<Sample> {
 			sample.setMainSampleTest(null);
 		} else {
 			sample.setMainSampleTest(sample.getSampleTests().stream()
-					.sorted(Comparator.comparing(SampleTest::getTestDateTime, Comparator.nullsLast(Comparator.reverseOrder())))
+					.sorted(Comparator.comparing(PathogenTest::getTestDateTime, Comparator.nullsLast(Comparator.reverseOrder())))
 					.findFirst().get());
 		}
 	}
@@ -313,9 +313,9 @@ public class SampleService extends AbstractAdoService<Sample> {
 			}
 		}
 		if (criteria.getTestResult() != null) {
-			Predicate subFilter = cb.equal(from.join(Sample.MAIN_SAMPLE_TEST, JoinType.LEFT).get(SampleTest.TEST_RESULT), criteria.getTestResult());
-			if (criteria.getTestResult() == SampleTestResultType.PENDING) {
-				subFilter = or(cb, subFilter, cb.isNull(from.join(Sample.MAIN_SAMPLE_TEST, JoinType.LEFT).get(SampleTest.TEST_RESULT)));
+			Predicate subFilter = cb.equal(from.join(Sample.MAIN_SAMPLE_TEST, JoinType.LEFT).get(PathogenTest.TEST_RESULT), criteria.getTestResult());
+			if (criteria.getTestResult() == PathogenTestResultType.PENDING) {
+				subFilter = or(cb, subFilter, cb.isNull(from.join(Sample.MAIN_SAMPLE_TEST, JoinType.LEFT).get(PathogenTest.TEST_RESULT)));
 			}
 			filter = and(cb, filter, subFilter);
 		}

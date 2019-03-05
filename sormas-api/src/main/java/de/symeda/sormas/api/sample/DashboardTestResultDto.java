@@ -31,9 +31,9 @@ public class DashboardTestResultDto implements Serializable {
 	public static final String DISEASE = "disease";
 	
 	private Disease disease;
-	private SampleTestResultType testResult;
+	private PathogenTestResultType testResult;
 	
-	public DashboardTestResultDto(Disease disease, SampleTestResultType testResult) {
+	public DashboardTestResultDto(Disease disease, PathogenTestResultType testResult) {
 		this.disease = disease;
 		this.testResult = testResult;
 	}
@@ -46,11 +46,11 @@ public class DashboardTestResultDto implements Serializable {
 		this.disease = disease;
 	}
 
-	public SampleTestResultType getTestResult() {
+	public PathogenTestResultType getTestResult() {
 		return testResult;
 	}
 
-	public void setTestResult(SampleTestResultType testResult) {
+	public void setTestResult(PathogenTestResultType testResult) {
 		this.testResult = testResult;
 	}
 	

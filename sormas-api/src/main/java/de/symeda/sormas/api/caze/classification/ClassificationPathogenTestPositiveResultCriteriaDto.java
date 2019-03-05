@@ -24,29 +24,29 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sample.SampleTestDto;
-import de.symeda.sormas.api.sample.SampleTestResultType;
-import de.symeda.sormas.api.sample.SampleTestType;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 
-public class ClassificationSampleTestPositiveResultCriteriaDto extends ClassificationCriteriaDto {
+public class ClassificationPathogenTestPositiveResultCriteriaDto extends ClassificationCriteriaDto {
 
 	private static final long serialVersionUID = 3811127784970509183L;
 	
-	protected List<SampleTestType> sampleTestTypes;
+	protected List<PathogenTestType> pathogenTestTypes;
 
-	public ClassificationSampleTestPositiveResultCriteriaDto() {
+	public ClassificationPathogenTestPositiveResultCriteriaDto() {
 		
 	}
 	
-	public ClassificationSampleTestPositiveResultCriteriaDto(SampleTestType... sampleTestTypes) {
-		this.sampleTestTypes = Arrays.asList(sampleTestTypes);
+	public ClassificationPathogenTestPositiveResultCriteriaDto(PathogenTestType... pathogenTestTypes) {
+		this.pathogenTestTypes = Arrays.asList(pathogenTestTypes);
 	}
 
 	@Override
-	public boolean eval(CaseDataDto caze, PersonDto person, List<SampleTestDto> sampleTests) {
-		for (SampleTestDto sampleTest : sampleTests) {
-			if (sampleTest.getTestResult() == SampleTestResultType.POSITIVE
-					&& sampleTestTypes.contains(sampleTest.getTestType())) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests) {
+		for (PathogenTestDto pathogenTest : pathogenTests) {
+			if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE
+					&& pathogenTestTypes.contains(pathogenTest.getTestType())) {
 				return true;
 			}
 		}
@@ -57,27 +57,27 @@ public class ClassificationSampleTestPositiveResultCriteriaDto extends Classific
 	public String buildDescription() {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(I18nProperties.getString(Strings.classificationOnePositiveTestResult)).append(" ");
-		for (int i = 0; i < sampleTestTypes.size(); i++) {
+		for (int i = 0; i < pathogenTestTypes.size(); i++) {
 			if (i > 0) {
-				if (i < sampleTestTypes.size() - 1) {
+				if (i < pathogenTestTypes.size() - 1) {
 					stringBuilder.append(", ");
 				} else {
 					stringBuilder.append(" <b>").append(I18nProperties.getString(Strings.or).toUpperCase()).append("</b> ");
 				}
 			}
 
-			stringBuilder.append(sampleTestTypes.get(i).toString());	
+			stringBuilder.append(pathogenTestTypes.get(i).toString());	
 		}
 
 		return stringBuilder.toString();
 	}
 
-	public List<SampleTestType> getSampleTestTypes() {
-		return sampleTestTypes;
+	public List<PathogenTestType> getPathogenTestTypes() {
+		return pathogenTestTypes;
 	}
 
-	public void setSampleTestTypes(List<SampleTestType> sampleTestTypes) {
-		this.sampleTestTypes = sampleTestTypes;
+	public void setSampleTestTypes(List<PathogenTestType> pathogenTestTypes) {
+		this.pathogenTestTypes = pathogenTestTypes;
 	}
 
 }

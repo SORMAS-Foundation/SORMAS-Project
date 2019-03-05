@@ -26,33 +26,33 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sample.SampleTestDto;
-import de.symeda.sormas.api.sample.SampleTestType;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestType;
 
-public class ClassificationSampleTestCriteriaDto extends ClassificationCaseCriteriaDto {
+public class ClassificationPathogenTestCriteriaDto extends ClassificationCaseCriteriaDto {
 
 	private static final long serialVersionUID = 856637988490366395L;
 
-	private List<SampleTestType> testTypes;
+	private List<PathogenTestType> testTypes;
 
-	public ClassificationSampleTestCriteriaDto() {
+	public ClassificationPathogenTestCriteriaDto() {
 		super();
 	}
 	
-	public ClassificationSampleTestCriteriaDto(String propertyId, List<SampleTestType> testTypes, Object... propertyValues) {
+	public ClassificationPathogenTestCriteriaDto(String propertyId, List<PathogenTestType> testTypes, Object... propertyValues) {
 		super(propertyId, propertyValues);
 		this.testTypes = testTypes;
 	}
 
 	@Override
 	protected Class<? extends EntityDto> getInvokeClass() {
-		return SampleTestDto.class;
+		return PathogenTestDto.class;
 	}
 
 	@Override
-	public boolean eval(CaseDataDto caze, PersonDto person, List<SampleTestDto> sampleTests) {		
-		for (SampleTestDto sampleTest : sampleTests) {
-			if (!testTypes.contains(sampleTest.getTestType())) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests) {		
+		for (PathogenTestDto pathogenTest : pathogenTests) {
+			if (!testTypes.contains(pathogenTest.getTestType())) {
 				continue;
 			}
 
@@ -70,7 +70,7 @@ public class ClassificationSampleTestCriteriaDto extends ClassificationCaseCrite
 			}
 
 			try {
-				Object value = method.invoke(sampleTest);
+				Object value = method.invoke(pathogenTest);
 				if (propertyValues.contains(value)) {
 					return true;
 				}
@@ -85,7 +85,7 @@ public class ClassificationSampleTestCriteriaDto extends ClassificationCaseCrite
 	@Override
 	public String buildDescription() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(I18nProperties.getPrefixCaption(SampleTestDto.I18N_PREFIX, propertyId));
+		stringBuilder.append(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, propertyId));
 		if (testTypes != null && !testTypes.isEmpty()) {
 			stringBuilder.append(" ").append(I18nProperties.getString(Strings.classificationCriteriaForTestType)).append(" ");
 			for (int i = 0; i < testTypes.size(); i++) {
@@ -103,11 +103,11 @@ public class ClassificationSampleTestCriteriaDto extends ClassificationCaseCrite
 		return stringBuilder.toString();
 	}
 
-	public List<SampleTestType> getTestTypes() {
+	public List<PathogenTestType> getTestTypes() {
 		return testTypes;
 	}
 
-	public void setTestTypes(List<SampleTestType> testTypes) {
+	public void setTestTypes(List<PathogenTestType> testTypes) {
 		this.testTypes = testTypes;
 	}
 

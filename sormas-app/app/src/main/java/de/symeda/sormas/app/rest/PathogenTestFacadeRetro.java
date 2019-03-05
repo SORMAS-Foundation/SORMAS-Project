@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -14,26 +14,32 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
-package de.symeda.sormas.api.sample;
+ */
 
-import de.symeda.sormas.api.ReferenceDto;
+package de.symeda.sormas.app.rest;
 
-public class SampleTestReferenceDto extends ReferenceDto {
+import java.util.List;
 
-	private static final long serialVersionUID = -5213210080802372054L;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.Path;
 
-	public SampleTestReferenceDto() {
-		
-	}
-	
-	public SampleTestReferenceDto(String uuid) {
-		setUuid(uuid);
-	}
-	
-	public SampleTestReferenceDto(String uuid, String caption) {
-		setUuid(uuid);
-		setCaption(caption);
-	}
-	
+/**
+ * Created by Mate Strysewske on 09.02.2017.
+ */
+
+public interface PathogenTestFacadeRetro {
+
+    @GET("sampletests/all/{since}")
+    Call<List<PathogenTestDto>> pullAllSince(@Path("since") long since);
+
+    @POST("sampletests/query")
+    Call<List<PathogenTestDto>> pullByUuids(@Body List<String> uuids);
+
+    @GET("sampletests/uuids")
+    Call<List<String>> pullUuids();
+
 }

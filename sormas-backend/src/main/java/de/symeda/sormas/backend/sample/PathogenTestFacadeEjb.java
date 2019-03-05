@@ -40,10 +40,10 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.sample.SampleTestDto;
-import de.symeda.sormas.api.sample.SampleTestFacade;
-import de.symeda.sormas.api.sample.SampleTestReferenceDto;
-import de.symeda.sormas.api.sample.SampleTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestFacade;
+import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -63,8 +63,8 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
-@Stateless(name = "SampleTestFacade")
-public class SampleTestFacadeEjb implements SampleTestFacade {
+@Stateless(name = "PathogenTestFacade")
+public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
@@ -72,7 +72,7 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
 	@EJB
-	private SampleTestService sampleTestService;
+	private PathogenTestService pathogenTestService;
 	@EJB
 	private SampleService sampleService;
 	@EJB
@@ -86,7 +86,7 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	@EJB
 	private MessagingService messagingService;
 
-	private static final Logger logger = LoggerFactory.getLogger(SampleTestFacadeEjb.class);
+	private static final Logger logger = LoggerFactory.getLogger(PathogenTestFacadeEjb.class);
 
 	@Override
 	public List<String> getAllActiveUuids(String userUuid) {
@@ -96,39 +96,39 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 			return Collections.emptyList();
 		}
 
-		return sampleTestService.getAllActiveUuids(user);
+		return pathogenTestService.getAllActiveUuids(user);
 	}	
 
 	@Override
-	public List<SampleTestDto> getAllActiveSampleTestsAfter(Date date, String userUuid) {
+	public List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		if(user == null) {
 			return Collections.emptyList();
 		}
 
-		return sampleTestService.getAllActiveSampleTestsAfter(date, user).stream()
+		return pathogenTestService.getAllActivePathogenTestsAfter(date, user).stream()
 				.map(e -> toDto(e))
 				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<SampleTestDto> getByUuids(List<String> uuids) {
-		return sampleTestService.getByUuids(uuids)
+	public List<PathogenTestDto> getByUuids(List<String> uuids) {
+		return pathogenTestService.getByUuids(uuids)
 				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<SampleTestDto> getAllBySample(SampleReferenceDto sampleRef) {
+	public List<PathogenTestDto> getAllBySample(SampleReferenceDto sampleRef) {
 		if(sampleRef == null) {
 			return Collections.emptyList();
 		}
 
 		Sample sample = sampleService.getByUuid(sampleRef.getUuid());
 
-		return sampleTestService.getAllBySample(sample).stream()
+		return pathogenTestService.getAllBySample(sample).stream()
 				.map(s -> toDto(s))
 				.collect(Collectors.toList());
 	}
@@ -139,7 +139,7 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 
-		return sampleTestService.getNewTestResultsForDashboard(region, district, disease, from, to, user);
+		return pathogenTestService.getNewTestResultsForDashboard(region, district, disease, from, to, user);
 	}
 
 	@Override
@@ -152,44 +152,44 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	}
 	
 	@Override
-	public SampleTestDto getByUuid(String uuid) {
-		return toDto(sampleTestService.getByUuid(uuid));
+	public PathogenTestDto getByUuid(String uuid) {
+		return toDto(pathogenTestService.getByUuid(uuid));
 	}
 
 	@Override
-	public SampleTestDto saveSampleTest(SampleTestDto dto) {
-		SampleTestDto existingSampleTest = toDto(sampleTestService.getByUuid(dto.getUuid()));		
-		SampleTest sampleTest = fromDto(dto);
-		sampleTestService.ensurePersisted(sampleTest);
+	public PathogenTestDto savePathogenTest(PathogenTestDto dto) {
+		PathogenTestDto existingSampleTest = toDto(pathogenTestService.getByUuid(dto.getUuid()));		
+		PathogenTest pathogenTest = fromDto(dto);
+		pathogenTestService.ensurePersisted(pathogenTest);
 		
-		sampleService.updateMainSampleTest(sampleTest.getSample());
+		sampleService.updateMainSampleTest(pathogenTest.getSample());
 
-		onSampleTestChanged(existingSampleTest, sampleTest);
+		onSampleTestChanged(existingSampleTest, pathogenTest);
 		
 		// Update case classification if necessary
-		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(sampleTest.getSample().getAssociatedCase()), sampleTest.getSample().getAssociatedCase());
+		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(pathogenTest.getSample().getAssociatedCase()), pathogenTest.getSample().getAssociatedCase());
 
-		return toDto(sampleTest);
+		return toDto(pathogenTest);
 	}
 
 	@Override
-	public void deleteSampleTest(SampleTestReferenceDto sampleTestRef, String userUuid) {
+	public void deletePathogenTest(PathogenTestReferenceDto sampleTestRef, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
 			throw new UnsupportedOperationException("Only admins are allowed to delete entities.");
 		}
 
-		SampleTest sampleTest = sampleTestService.getByReferenceDto(sampleTestRef);
-		sampleTestService.delete(sampleTest);
+		PathogenTest pathogenTest = pathogenTestService.getByReferenceDto(sampleTestRef);
+		pathogenTestService.delete(pathogenTest);
 		
-		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(sampleTest.getSample().getAssociatedCase()), sampleTest.getSample().getAssociatedCase());
+		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(pathogenTest.getSample().getAssociatedCase()), pathogenTest.getSample().getAssociatedCase());
 	}
 
-	public SampleTest fromDto(@NotNull SampleTestDto source) {
+	public PathogenTest fromDto(@NotNull PathogenTestDto source) {
 
-		SampleTest target = sampleTestService.getByUuid(source.getUuid());
+		PathogenTest target = pathogenTestService.getByUuid(source.getUuid());
 		if(target == null) {
-			target = new SampleTest();
+			target = new PathogenTest();
 			target.setUuid(source.getUuid());
 			if(source.getCreationDate() != null) {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
@@ -212,11 +212,11 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 		return target;
 	}
 
-	public SampleTestDto toDto(SampleTest source) {
+	public PathogenTestDto toDto(PathogenTest source) {
 		if(source == null) {
 			return null;
 		}
-		SampleTestDto target = new SampleTestDto();
+		PathogenTestDto target = new PathogenTestDto();
 		DtoHelper.fillDto(target, source);
 
 		target.setSample(SampleFacadeEjb.toReferenceDto(source.getSample()));
@@ -234,10 +234,10 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 		return target;
 	}
 
-	private void onSampleTestChanged(SampleTestDto existingSampleTest, SampleTest newSampleTest) {
+	private void onSampleTestChanged(PathogenTestDto existingSampleTest, PathogenTest newSampleTest) {
 		
 		// Send an email to all responsible supervisors when a new non-pending sample test is created or the status of a formerly pending test result has changed
-		if (existingSampleTest == null && newSampleTest.getTestResult() != SampleTestResultType.PENDING) {
+		if (existingSampleTest == null && newSampleTest.getTestResult() != PathogenTestResultType.PENDING) {
 			Case existingSampleCase = sampleService.getByUuid(newSampleTest.getSample().getUuid()).getAssociatedCase();
 			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(existingSampleCase.getRegion(), 
 					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
@@ -253,8 +253,8 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
 				}
 			}
-		} else if (existingSampleTest != null && existingSampleTest.getTestResult() == SampleTestResultType.PENDING && 
-				newSampleTest.getTestResult() != SampleTestResultType.PENDING) {
+		} else if (existingSampleTest != null && existingSampleTest.getTestResult() == PathogenTestResultType.PENDING && 
+				newSampleTest.getTestResult() != PathogenTestResultType.PENDING) {
 			Case existingSampleCase = sampleService.getByUuid(newSampleTest.getSample().getUuid()).getAssociatedCase();
 			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(existingSampleCase.getRegion(), 
 					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
@@ -275,6 +275,6 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 
 	@LocalBean
 	@Stateless
-	public static class SampleTestFacadeEjbLocal extends SampleTestFacadeEjb {
+	public static class SampleTestFacadeEjbLocal extends PathogenTestFacadeEjb {
 	}
 }

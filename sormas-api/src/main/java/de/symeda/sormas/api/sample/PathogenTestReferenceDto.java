@@ -17,32 +17,23 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.ReferenceDto;
 
-public enum SampleTestType {
+public class PathogenTestReferenceDto extends ReferenceDto {
 
-	ANTIGEN_DETECTION,
-	RAPID_TEST,
-	CULTURE,
-	DENGUE_FEVER_IGM,
-	DENGUE_FEVER_ANTIBODIES,
-	HISTOPATHOLOGY,
-	ISOLATION,
-	IGM_SERUM_ANTIBODY,
-	IGG_SERUM_ANTIBODY,
-	MICROSCOPY,
-	NEUTRALIZING_ANTIBODIES,
-	PCR_RT_PCR,
-	WEST_NILE_FEVER_IGM,
-	WEST_NILE_FEVER_ANTIBODIES,
-	YELLOW_FEVER_IGM,
-	YELLOW_FEVER_ANTIBODIES,
-	YERSINIA_PESTIS_ANTIGEN,
-	OTHER,
-	;
+	private static final long serialVersionUID = -5213210080802372054L;
+
+	public PathogenTestReferenceDto() {
+		
+	}
 	
-	public String toString() {
-		return I18nProperties.getEnumCaption(this);
+	public PathogenTestReferenceDto(String uuid) {
+		setUuid(uuid);
+	}
+	
+	public PathogenTestReferenceDto(String uuid, String caption) {
+		setUuid(uuid);
+		setCaption(caption);
 	}
 	
 }

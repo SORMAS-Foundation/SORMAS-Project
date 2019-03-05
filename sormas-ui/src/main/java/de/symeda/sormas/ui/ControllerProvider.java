@@ -26,8 +26,9 @@ import de.symeda.sormas.ui.dashboard.DashboardController;
 import de.symeda.sormas.ui.events.EventController;
 import de.symeda.sormas.ui.events.EventParticipantsController;
 import de.symeda.sormas.ui.person.PersonController;
+import de.symeda.sormas.ui.samples.AdditionalTestController;
+import de.symeda.sormas.ui.samples.PathogenTestController;
 import de.symeda.sormas.ui.samples.SampleController;
-import de.symeda.sormas.ui.samples.SampleTestController;
 import de.symeda.sormas.ui.statistics.StatisticsController;
 import de.symeda.sormas.ui.task.TaskController;
 import de.symeda.sormas.ui.therapy.TherapyController;
@@ -50,7 +51,8 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final UserController userController;
 	private final TaskController taskController;
 	private final SampleController sampleController;
-	private final SampleTestController sampleTestController;
+	private final PathogenTestController pathogenTestController;
+	private final AdditionalTestController additionalTestController;
 	private final OutbreakController outbreakController;
 	private final StatisticsController statisticsController;
 	private final DashboardController dashboardController;
@@ -70,7 +72,8 @@ public class ControllerProvider extends BaseControllerProvider {
 		userController = new UserController();
 		taskController = new TaskController();
 		sampleController = new SampleController();
-		sampleTestController = new SampleTestController();
+		pathogenTestController = new PathogenTestController();
+		additionalTestController = new AdditionalTestController();
 		outbreakController = new OutbreakController();
 		statisticsController = new StatisticsController();
 		dashboardController = new DashboardController();
@@ -122,8 +125,12 @@ public class ControllerProvider extends BaseControllerProvider {
 		return get().sampleController;
 	}
 	
-	public static SampleTestController getSampleTestController() {
-		return get().sampleTestController;
+	public static AdditionalTestController getAdditionalTestController() {
+		return get().additionalTestController;
+	}
+	
+	public static PathogenTestController getPathogenTestController() {
+		return get().pathogenTestController;
 	}
 	
 	public static OutbreakController getOutbreakController() {

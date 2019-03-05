@@ -397,8 +397,8 @@
     <dimen name="ttlm_default_elevation">2dp</dimen>
 
 
-    <dimen name="checkBoxWidth">48dp</dimen>
-    <dimen name="checkBoxHeight">48dp</dimen>
+    <dimen name="checkBoxWidth">54dp</dimen>
+    <dimen name="checkBoxHeight">54dp</dimen>
     <dimen name="dropdownListSlimItemHeight">@dimen/slimControlHeight</dimen>
 
 

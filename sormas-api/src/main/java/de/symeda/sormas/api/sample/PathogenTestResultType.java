@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -14,34 +14,20 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+ *******************************************************************************/
+package de.symeda.sormas.api.sample;
 
-package de.symeda.sormas.app.rest;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
-import java.util.List;
+public enum PathogenTestResultType {
 
-import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleTestDto;
-import retrofit2.Call;
-import retrofit2.http.Body;
-import retrofit2.http.GET;
-import retrofit2.http.POST;
-import retrofit2.http.Path;
-import retrofit2.http.Query;
-
-/**
- * Created by Mate Strysewske on 09.02.2017.
- */
-
-public interface SampleTestFacadeRetro {
-
-    @GET("sampletests/all/{since}")
-    Call<List<SampleTestDto>> pullAllSince(@Path("since") long since);
-
-    @POST("sampletests/query")
-    Call<List<SampleTestDto>> pullByUuids(@Body List<String> uuids);
-
-    @GET("sampletests/uuids")
-    Call<List<String>> pullUuids();
-
+	INDETERMINATE,
+	PENDING,
+	NEGATIVE,
+	POSITIVE;
+	
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
+	}
+	
 }

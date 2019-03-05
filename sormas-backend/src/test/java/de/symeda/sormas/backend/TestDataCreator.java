@@ -42,9 +42,10 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.sample.SampleTestDto;
-import de.symeda.sormas.api.sample.SampleTestResultType;
-import de.symeda.sormas.api.sample.SampleTestType;
+import de.symeda.sormas.api.sample.AdditionalTestDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
@@ -253,7 +254,11 @@ public class TestDataCreator {
 
 		return eventParticipant;
 	}
-
+	
+	public SampleDto createSample(CaseReferenceDto associatedCase, UserReferenceDto reportingUser, Facility lab) {
+		return createSample(associatedCase, new Date(), new Date(), reportingUser, SampleMaterial.BLOOD, lab);
+	}
+	
 	public SampleDto createSample(CaseReferenceDto associatedCase, Date sampleDateTime, Date reportDateTime,
 			UserReferenceDto reportingUser, SampleMaterial sampleMaterial, Facility lab) {
 		SampleDto sample = new SampleDto();
@@ -270,10 +275,10 @@ public class TestDataCreator {
 		return sample;
 	}
 
-	public SampleTestDto createSampleTest(SampleReferenceDto sample, SampleTestType testType, Date testDateTime,
-			Facility lab, UserReferenceDto labUser, SampleTestResultType testResult, String testResultText,
+	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, PathogenTestType testType, Date testDateTime,
+			Facility lab, UserReferenceDto labUser, PathogenTestResultType testResult, String testResultText,
 			boolean verified) {
-		SampleTestDto sampleTest = new SampleTestDto();
+		PathogenTestDto sampleTest = new PathogenTestDto();
 		sampleTest.setUuid(DataHelper.createUuid());
 		sampleTest.setSample(sample);
 		sampleTest.setTestType(testType);
@@ -284,18 +289,27 @@ public class TestDataCreator {
 		sampleTest.setTestResultText(testResultText);
 		sampleTest.setTestResultVerified(verified);
 
-		sampleTest = beanTest.getSampleTestFacade().saveSampleTest(sampleTest);
+		sampleTest = beanTest.getSampleTestFacade().savePathogenTest(sampleTest);
 
 		return sampleTest;
 	}
 
-	public SampleTestDto createSampleTest(CaseDataDto associatedCase, SampleTestType testType,
-			SampleTestResultType resultType) {
+	public PathogenTestDto createPathogenTest(CaseDataDto associatedCase, PathogenTestType testType,
+			PathogenTestResultType resultType) {
 		RDCF rdcf = createRDCF("Region", "District", "Community", "Facility");
 		SampleDto sample = createSample(new CaseReferenceDto(associatedCase.getUuid()), new Date(), new Date(),
 				associatedCase.getReportingUser(), SampleMaterial.BLOOD, rdcf.facility);
-		return createSampleTest(new SampleReferenceDto(sample.getUuid()), testType, new Date(), rdcf.facility,
+		return createPathogenTest(new SampleReferenceDto(sample.getUuid()), testType, new Date(), rdcf.facility,
 				associatedCase.getReportingUser(), resultType, "", true);
+	}
+	
+	public AdditionalTestDto createAdditionalTest(SampleReferenceDto sample) {
+		AdditionalTestDto test = AdditionalTestDto.build(sample);
+		test.setTestDateTime(new Date());
+		
+		test = beanTest.getAdditionalTestFacade().saveAdditionalTest(test);
+		
+		return test;
 	}
 
 	public RDCF createRDCF() {

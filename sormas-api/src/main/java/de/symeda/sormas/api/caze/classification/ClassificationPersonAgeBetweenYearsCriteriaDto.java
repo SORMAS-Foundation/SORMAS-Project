@@ -24,7 +24,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sample.SampleTestDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 
 public class ClassificationPersonAgeBetweenYearsCriteriaDto extends ClassificationCriteriaDto {
 	
@@ -43,7 +43,7 @@ public class ClassificationPersonAgeBetweenYearsCriteriaDto extends Classificati
 	}
 	
 	@Override
-	public boolean eval(CaseDataDto caze, PersonDto person, List<SampleTestDto> sampleTests) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> sampleTests) {
 		Integer approximateAge = ApproximateAgeHelper.getAgeYears(person.getApproximateAge(), person.getApproximateAgeType());
 		if (approximateAge == null) {
 			return false;

@@ -333,8 +333,7 @@ public final class ConfigProvider {
             KeyStore.PrivateKeyEntry privateKeyEntry;
             try {
                 privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(keyStoreAlias, null);
-            } catch (KeyStoreException e) {
-                // try again #866
+            } catch (Exception e) { // root cause can be a KeyStoreException - try again (see #866)
                 privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(keyStoreAlias, null);
             }
             RSAPublicKey publicKey = (RSAPublicKey) privateKeyEntry.getCertificate().getPublicKey();
@@ -389,8 +388,7 @@ public final class ConfigProvider {
             KeyStore.PrivateKeyEntry privateKeyEntry;
             try {
                 privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(keyStoreAlias, null);
-            } catch (KeyStoreException e) {
-                // try again #866
+            } catch (KeyStoreException e) { // root cause can be a KeyStoreException - try again (see #866)
                 privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(keyStoreAlias, null);
             }
             if (privateKeyEntry == null) {

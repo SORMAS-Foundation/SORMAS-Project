@@ -27,7 +27,7 @@
 		<class>de.symeda.sormas.backend.report.WeeklyReport</class>
 		<class>de.symeda.sormas.backend.report.WeeklyReportEntry</class>
 		<class>de.symeda.sormas.backend.sample.Sample</class>
-		<class>de.symeda.sormas.backend.sample.SampleTest</class>
+		<class>de.symeda.sormas.backend.sample.PathogenTest</class>
 		<class>de.symeda.sormas.backend.symptoms.Symptoms</class>
 		<class>de.symeda.sormas.backend.task.Task</class>
 		<class>de.symeda.sormas.backend.user.User</class>
@@ -39,6 +39,7 @@
 		<class>de.symeda.sormas.backend.clinicalcourse.ClinicalCourse</class>
 		<class>de.symeda.sormas.backend.clinicalcourse.ClinicalVisit</class>
 		<class>de.symeda.sormas.backend.clinicalcourse.HealthConditions</class>
+		<class>de.symeda.sormas.backend.sample.AdditionalTest</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

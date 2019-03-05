@@ -25,7 +25,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.location.Location;
-import androidx.core.app.NotificationCompat;
 import android.text.Html;
 import android.util.Log;
 
@@ -37,6 +36,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import androidx.core.app.NotificationCompat;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -62,7 +62,7 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.backend.sample.SampleTest;
+import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
@@ -426,9 +426,9 @@ public class CaseDao extends AbstractAdoDao<Case> {
         // Delete samples and sample tests
         List<Sample> samples = DatabaseHelper.getSampleDao().queryByCase(caze);
         for (Sample sample : samples) {
-            List<SampleTest> sampleTests = DatabaseHelper.getSampleTestDao().queryBySample(sample);
-            for (SampleTest sampleTest : sampleTests) {
-                DatabaseHelper.getSampleTestDao().deleteCascade(sampleTest);
+            List<PathogenTest> pathogenTests = DatabaseHelper.getSampleTestDao().queryBySample(sample);
+            for (PathogenTest pathogenTest : pathogenTests) {
+                DatabaseHelper.getSampleTestDao().deleteCascade(pathogenTest);
             }
 
             DatabaseHelper.getSampleDao().deleteCascade(sample);

@@ -61,6 +61,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
     // Attributes
 
     private boolean useAbbreviations;
+    private boolean useBoolean;
     private Drawable background;
     private ColorStateList textColor;
 
@@ -118,6 +119,20 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
             enumClass = c;
             suppressListeners = false;
         }
+    }
+
+    public void setBooleanContent() {
+        suppressListeners = true;
+        removeAllItems();
+
+        List<Item> items = DataUtils.getBooleanItems();
+
+        int itemTotal = items.size();
+        for (int i = 0; i < items.size(); i++) {
+            addItem(i, itemTotal - 1, items.get(i));
+        }
+
+        suppressListeners = false;
     }
 
     private void addItem(int index, int lastIndex, Item item) {
@@ -233,7 +248,8 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 
             try {
                 useAbbreviations = a.getBoolean(R.styleable.ControlSwitchField_useAbbreviations, isSlim());
-            } finally { // why?
+                useBoolean = a.getBoolean(R.styleable.ControlSwitchField_useBoolean, false);
+            } finally {
                 a.recycle();
             }
         }
@@ -265,7 +281,9 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
         textColor = getResources().getColorStateList(R.color.control_switch_color_selector);
         input.setBackground(background.mutate());
 
-        if (enumClass == null) {
+        if (useBoolean) {
+            setBooleanContent();
+        } else if (enumClass == null) {
             setEnumClass(YesNoUnknown.class);
         }
 
@@ -400,8 +418,8 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
         view.inverseBindingListener = listener;
     }
 
-    @BindingAdapter(value = {"value", "enumClass", "defaultValue"}, requireAll = false)
-    public static void setValue(ControlSwitchField view, Object value, Class enumClass, Object defaultValue) {
+    @BindingAdapter(value = {"value", "useBoolean", "enumClass", "defaultValue"}, requireAll = false)
+    public static void setValue(ControlSwitchField view, Object value, Boolean useBoolean, Class enumClass, Object defaultValue) {
         if (enumClass != null) {
             view.setEnumClass((Class<? extends Enum>) enumClass);
         }

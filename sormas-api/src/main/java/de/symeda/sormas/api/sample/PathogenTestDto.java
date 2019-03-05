@@ -24,11 +24,11 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.Required;
 
-public class SampleTestDto extends EntityDto {
+public class PathogenTestDto extends EntityDto {
 
 	private static final long serialVersionUID = -5213210080802372054L;
 
-	public static final String I18N_PREFIX = "SampleTest";
+	public static final String I18N_PREFIX = "PathogenTest";
 
 	public static final String SAMPLE = "sample";
 	public static final String TEST_TYPE = "testType";
@@ -45,7 +45,7 @@ public class SampleTestDto extends EntityDto {
 	@Required
 	private SampleReferenceDto sample;
 	@Required
-	private SampleTestType testType;
+	private PathogenTestType testType;
 	private String testTypeText;
 	@Required
 	private Date testDateTime;
@@ -55,7 +55,7 @@ public class SampleTestDto extends EntityDto {
 	@Required
 	private UserReferenceDto labUser;
 	@Required
-	private SampleTestResultType testResult;
+	private PathogenTestResultType testResult;
 	@Required
 	private String testResultText;
 	private boolean testResultVerified;
@@ -69,11 +69,11 @@ public class SampleTestDto extends EntityDto {
 		this.sample = sample;
 	}
 
-	public SampleTestType getTestType() {
+	public PathogenTestType getTestType() {
 		return testType;
 	}
 
-	public void setTestType(SampleTestType testType) {
+	public void setTestType(PathogenTestType testType) {
 		this.testType = testType;
 	}
 
@@ -117,11 +117,11 @@ public class SampleTestDto extends EntityDto {
 		this.labUser = labUser;
 	}
 
-	public SampleTestResultType getTestResult() {
+	public PathogenTestResultType getTestResult() {
 		return testResult;
 	}
 
-	public void setTestResult(SampleTestResultType testResult) {
+	public void setTestResult(PathogenTestResultType testResult) {
 		this.testResult = testResult;
 	}
 
@@ -149,8 +149,8 @@ public class SampleTestDto extends EntityDto {
 		this.fourFoldIncreaseAntibodyTiter = fourFoldIncreaseAntibodyTiter;
 	}
 
-	public SampleTestReferenceDto toReference() {
-		return new SampleTestReferenceDto(getUuid());
+	public PathogenTestReferenceDto toReference() {
+		return new PathogenTestReferenceDto(getUuid());
 	}
 
 }
