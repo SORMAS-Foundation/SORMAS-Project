@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.dashboard;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -33,6 +34,7 @@ import de.symeda.sormas.api.outbreak.DashboardOutbreakDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
+import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
 
@@ -61,8 +63,9 @@ public class DashboardDataProvider {
 	private List<DashboardOutbreakDto> outbreaks = new ArrayList<>();
 	private List<DashboardEventDto> events = new ArrayList<>();
 	private List<DashboardEventDto> previousEvents = new ArrayList<>();
-	private List<DashboardTestResultDto> testResults = new ArrayList<>();
-	private List<DashboardTestResultDto> previousTestResults = new ArrayList<>();
+	private Map<SampleTestResultType, Long> testResultCountByResultType;
+//	private List<DashboardTestResultDto> testResults = new ArrayList<>();
+//	private List<DashboardTestResultDto> previousTestResults = new ArrayList<>();
 //	private List<DashboardSampleDto> samples = new ArrayList<>();
 //	private List<DashboardTaskDto> tasks = new ArrayList<>();
 //	private List<DashboardTaskDto> pendingTasks = new ArrayList<>();
@@ -123,10 +126,11 @@ public class DashboardDataProvider {
 				previousFromDate, previousToDate, userUuid));
 		
 		// Test results
-		setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district, disease,
-				fromDate, toDate, userUuid));
-		setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district,
-				disease, previousFromDate, previousToDate, userUuid));
+		setTestResultCountByResultType(FacadeProvider.getSampleTestFacade().getTestResultCountPerResultType(region, district, disease, fromDate, toDate, userUuid));
+//		setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district, disease,
+//				fromDate, toDate, userUuid));
+//		setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district,
+//				disease, previousFromDate, previousToDate, userUuid));
 		
 		// Outbreaks
 		setOutbreaks(FacadeProvider.getOutbreakFacade().getOutbreaksForDashboard(region, district, disease, fromDate, toDate,
@@ -164,22 +168,30 @@ public class DashboardDataProvider {
 	public void setPreviousEvents(List<DashboardEventDto> previousEvents) {
 		this.previousEvents = previousEvents;
 	}
-
-	public List<DashboardTestResultDto> getTestResults() {
-		return testResults;
+	
+	public Map<SampleTestResultType, Long> getTestResultCountByResultType() {
+		return testResultCountByResultType;
+	}
+	
+	public void setTestResultCountByResultType(Map<SampleTestResultType, Long> testResults) {
+		this.testResultCountByResultType = testResults;
 	}
 
-	public void setTestResults(List<DashboardTestResultDto> testResults) {
-		this.testResults = testResults;
-	}
+//	public List<DashboardTestResultDto> getTestResults() {
+//		return testResults;
+//	}
+//
+//	public void setTestResults(List<DashboardTestResultDto> testResults) {
+//		this.testResults = testResults;
+//	}
 
-	public List<DashboardTestResultDto> getPreviousTestResults() {
-		return previousTestResults;
-	}
-
-	public void setPreviousTestResults(List<DashboardTestResultDto> previousTestResults) {
-		this.previousTestResults = previousTestResults;
-	}
+//	public List<DashboardTestResultDto> getPreviousTestResults() {
+//		return previousTestResults;
+//	}
+//
+//	public void setPreviousTestResults(List<DashboardTestResultDto> previousTestResults) {
+//		this.previousTestResults = previousTestResults;
+//	}
 
 //	public List<DashboardSampleDto> getSamples() {
 //		return samples;

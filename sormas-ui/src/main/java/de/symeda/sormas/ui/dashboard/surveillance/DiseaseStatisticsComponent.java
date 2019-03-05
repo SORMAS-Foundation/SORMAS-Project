@@ -18,6 +18,8 @@
 package de.symeda.sormas.ui.dashboard.surveillance;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -388,21 +390,13 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	}
 
 	private void updateTestResultComponent(Disease disease) {
-		List<DashboardTestResultDto> testResults = dashboardDataProvider.getTestResults();
+		Map<SampleTestResultType, Long> testResults = dashboardDataProvider.getTestResultCountByResultType();
 
-		testResultCountLabel.setValue(Integer.toString(testResults.size()).toString());
+		testResultCountLabel.setValue(testResults.values().stream().collect(Collectors.summingLong(Long::longValue)).toString());
 
-		int positiveTestResultsCount = (int) testResults.stream()
-				.filter(r -> r.getTestResult() == SampleTestResultType.POSITIVE).count();
-		testResultPositive.updateCountLabel(positiveTestResultsCount);
-		int negativeTestResultsCount = (int) testResults.stream()
-				.filter(r -> r.getTestResult() == SampleTestResultType.NEGATIVE).count();
-		testResultNegative.updateCountLabel(negativeTestResultsCount);
-		int pendingTestResultsCount = (int) testResults.stream()
-				.filter(r -> r.getTestResult() == SampleTestResultType.PENDING).count();
-		testResultPending.updateCountLabel(pendingTestResultsCount);
-		int indeterminateTestResultsCount = (int) testResults.stream()
-				.filter(r -> r.getTestResult() == SampleTestResultType.INDETERMINATE).count();
-		testResultIndeterminate.updateCountLabel(indeterminateTestResultsCount);
+		testResultPositive.updateCountLabel(testResults.getOrDefault(SampleTestResultType.POSITIVE, 0L).toString());
+		testResultNegative.updateCountLabel(testResults.getOrDefault(SampleTestResultType.NEGATIVE, 0L).toString());
+		testResultPending.updateCountLabel(testResults.getOrDefault(SampleTestResultType.PENDING, 0L).toString());
+		testResultIndeterminate.updateCountLabel(testResults.getOrDefault(SampleTestResultType.INDETERMINATE, 0L).toString());
 	}
 }

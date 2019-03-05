@@ -20,6 +20,8 @@ package de.symeda.sormas.backend.sample;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -38,6 +40,7 @@ import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.outbreak.Outbreak;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
@@ -138,7 +141,7 @@ public class SampleTestService extends AbstractAdoService<SampleTest> {
 		return resultList;
 	}
 
-	public List<DashboardTestResultDto> getNewTestResultsForDashboard(Region region, District district, Disease disease,
+	public List<DashboardTestResultDto> getNewTestResultsForDashboard (Region region, District district, Disease disease,
 			Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardTestResultDto> cq = cb.createQuery(DashboardTestResultDto.class);
@@ -192,6 +195,59 @@ public class SampleTestService extends AbstractAdoService<SampleTest> {
 		}
 
 		return result;
+	}
+
+	public Map<SampleTestResultType, Long> getTestResultCountPerResultType (Region region, District district, Disease disease, Date from, Date to, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<SampleTest> sampleTest = cq.from(SampleTest.class);
+		Join<SampleTest, Sample> sample = sampleTest.join(SampleTest.SAMPLE, JoinType.LEFT);
+		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
+		
+		cq.multiselect(sampleTest.get(SampleTest.TEST_RESULT), cb.countDistinct(sampleTest));
+		cq.groupBy(sampleTest.get(SampleTest.TEST_RESULT));
+		
+		Predicate filter = createUserFilter(cb, cq, sampleTest, user);
+		Predicate dateFilter = cb.between(sampleTest.get(SampleTest.TEST_DATE_TIME), from, to);
+		if (filter != null) {
+			filter = cb.and(filter, dateFilter);
+		} else {
+			filter = dateFilter;
+		}
+
+		if (region != null) {
+			Predicate regionFilter = cb.equal(caze.get(Case.REGION), region);
+			if (filter != null) {
+				filter = cb.and(filter, regionFilter);
+			} else {
+				filter = regionFilter;
+			}
+		}
+
+		if (district != null) {
+			Predicate districtFilter = cb.equal(caze.get(Case.DISTRICT), district);
+			if (filter != null) {
+				filter = cb.and(filter, districtFilter);
+			} else {
+				filter = districtFilter;
+			}
+		}
+
+		if (disease != null) {
+			Predicate diseaseFilter = cb.equal(caze.get(Case.DISEASE), disease);
+			if (filter != null) {
+				filter = cb.and(filter, diseaseFilter);
+			} else {
+				filter = diseaseFilter;
+			}
+		}
+		
+		List<Object[]> results = em.createQuery(cq).getResultList();
+		
+		Map<SampleTestResultType, Long> testResults = results.stream().collect(
+				Collectors.toMap(e -> (SampleTestResultType) e[0], e -> (Long) e[1]));
+		
+		return testResults;
 	}
 
 	public List<SampleTestResultType> getSampleTestResultsForCase(long caseId) {

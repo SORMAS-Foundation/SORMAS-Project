@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -141,6 +142,15 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 		return sampleTestService.getNewTestResultsForDashboard(region, district, disease, from, to, user);
 	}
 
+	@Override
+	public Map<SampleTestResultType, Long> getTestResultCountPerResultType (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		Region region = regionService.getByReferenceDto(regionRef);
+		District district = districtService.getByReferenceDto(districtRef);
+
+		return sampleTestService.getTestResultCountPerResultType(region, district, disease, from, to, user);
+	}
+	
 	@Override
 	public SampleTestDto getByUuid(String uuid) {
 		return toDto(sampleTestService.getByUuid(uuid));

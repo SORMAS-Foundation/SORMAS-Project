@@ -19,11 +19,13 @@ package de.symeda.sormas.api.person;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
@@ -51,4 +53,6 @@ public interface PersonFacade {
 	PersonIndexDto getIndexDto(String uuid);
 	
 	PersonDto buildPerson();
+	
+	Map<Disease, Long> getDeathCountByDisease (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Date from, Date to);
 }

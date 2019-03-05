@@ -50,6 +50,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.outbreak.Outbreak;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -73,6 +74,9 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 	@EJB
 	private OutbreakFacadeEjbLocal outbreakFacade;
 	
+	@EJB
+	private PersonFacadeEjbLocal personFacade;
+	
 	//@Override
 	public List<DiseaseBurdenDto> getDiseaseBurdenForDashboard(
 			RegionReferenceDto regionRef,
@@ -91,50 +95,21 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 				.newCaseDateBetween(from, to, null)
 				.region(regionRef)
 				.district(districtRef);
-
+		
 		Map<Disease, Long> newCases = caseFacade.getCaseCountPerDisease(caseCriteria, userUuid);
 		
 		//previous cases
-		caseCriteria.newCaseDateBetween(previousFrom, previousTo, null);
-		
+		caseCriteria.newCaseDateBetween(previousFrom, previousTo, null);		
 		Map<Disease, Long> previousCases = caseFacade.getCaseCountPerDisease(caseCriteria, userUuid);
-				
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = null;
-		Predicate filter = null;
-		List<Object[]> results;
 		
 		//events
 		Map<Disease, Long> events = eventFacade.getEventCountByDisease(regionRef, districtRef, from, to);
 					
 		//outbreaks
 		Map<Disease, Long> outbreaks = outbreakFacade.getOutbreakCountByDisease(regionRef, districtRef, from, to);
-		
-				
+						
 		//case fatalities
-		cq = cb.createQuery(Object[].class);
-		Root<Person> deceasedPerson = cq.from(Person.class);
-		cq.multiselect(deceasedPerson.get(Person.CAUSE_OF_DEATH_DISEASE), cb.count(deceasedPerson));
-		cq.groupBy(deceasedPerson.get(Person.CAUSE_OF_DEATH_DISEASE));
-
-		filter = cb.isNotNull(deceasedPerson.get(Person.CAUSE_OF_DEATH_DISEASE));
-		if (from != null || to != null) {
-			filter = AbstractAdoService.and(cb, filter, cb.between(deceasedPerson.get(Person.DEATH_DATE), from, to));
-		}
-		if (districtRef != null) {
-			filter = AbstractAdoService.and(cb, filter, cb.equal(deceasedPerson.join(Person.ADDRESS, JoinType.LEFT).join(Location.DISTRICT, JoinType.LEFT).get(District.UUID), districtRef.getUuid()));
-		}
-		else if (regionRef != null) {
-			filter = AbstractAdoService.and(cb, filter, cb.equal(deceasedPerson.join(Person.ADDRESS, JoinType.LEFT).join(Location.DISTRICT, JoinType.LEFT).join(District.REGION, JoinType.LEFT).get(Region.UUID), regionRef.getUuid()));
-		}
-		if (filter != null) {
-			cq.where(filter);
-		}
-		
-		results = em.createQuery(cq).getResultList();
-		
-		Map<Disease, Long> caseFatalities = results.stream().collect(
-				Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
+		Map<Disease, Long> caseFatalities = personFacade.getDeathCountByDisease(regionRef, districtRef, from, to);
 		
 		//build diseasesBurden
 		List<DiseaseBurdenDto> diseasesBurden = diseases.stream().map(disease -> {
