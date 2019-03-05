@@ -427,7 +427,7 @@ public class CaseService extends AbstractAdoService<Case> {
 				Root<Sample> sampleRoot = sampleCaseSubquery.from(Sample.class);
 				sampleCaseSubquery.where(sampleService.createUserFilterWithoutCase(cb, cq, sampleRoot, user));
 				sampleCaseSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CASE).get(Case.ID));
-				filter = cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery);
+				filter = cb.or(filter, cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery));
 				break;
 			case ADMIN:
 			case EXTERNAL_LAB_USER:
