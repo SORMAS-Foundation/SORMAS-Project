@@ -161,6 +161,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	//
 	//		List<PersonIndexDto> resultList = em.createQuery(cq).getResultList();
 	//		return resultList;
+	//	}
 	
 	public Map<Disease, Long> getDeathCountByDisease (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Date from, Date to) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -190,7 +191,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		
 		return outbreaks;
 	}
-	//	}
 
 	@Override
 	public List<PersonDto> getPersonsAfter(Date date, String uuid) {

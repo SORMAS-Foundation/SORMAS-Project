@@ -39,6 +39,8 @@ public interface EventFacade {
 	
 	Map<Disease, Long> getEventCountByDisease (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Date from, Date to);
 	
+	Map<EventStatus, Long> getEventCountByStatus (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
+	
 	EventDto getEventByUuid(String uuid);
 	
 	EventDto saveEvent(EventDto dto);

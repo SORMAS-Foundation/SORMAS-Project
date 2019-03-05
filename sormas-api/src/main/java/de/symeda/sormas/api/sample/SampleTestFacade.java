@@ -44,7 +44,7 @@ public interface SampleTestFacade {
 	
 	List<DashboardTestResultDto> getNewTestResultsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 	
-	Map<SampleTestResultType, Long> getTestResultCountPerResultType (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
+	Map<SampleTestResultType, Long> getTestResultCountByResultType (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 	
 	void deleteSampleTest(SampleTestReferenceDto sampleTestRef, String userUuid);
 }

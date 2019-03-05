@@ -30,6 +30,7 @@ import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.contact.DashboardContactDto;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.DashboardEventDto;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.outbreak.DashboardOutbreakDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -64,6 +65,7 @@ public class DashboardDataProvider {
 	private List<DashboardEventDto> events = new ArrayList<>();
 	private List<DashboardEventDto> previousEvents = new ArrayList<>();
 	private Map<SampleTestResultType, Long> testResultCountByResultType;
+	private Map<EventStatus, Long> eventCountByStatus;
 //	private List<DashboardTestResultDto> testResults = new ArrayList<>();
 //	private List<DashboardTestResultDto> previousTestResults = new ArrayList<>();
 //	private List<DashboardSampleDto> samples = new ArrayList<>();
@@ -123,18 +125,18 @@ public class DashboardDataProvider {
 		setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(region, district, disease, fromDate, toDate,
 				userUuid));
 		setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(region, district, disease,
-				previousFromDate, previousToDate, userUuid));
+				previousFromDate, previousToDate, userUuid));		
+		setEventCountByStatus(FacadeProvider.getEventFacade().getEventCountByStatus(region, district, disease, fromDate, toDate, userUuid));
 		
 		// Test results
-		setTestResultCountByResultType(FacadeProvider.getSampleTestFacade().getTestResultCountPerResultType(region, district, disease, fromDate, toDate, userUuid));
 //		setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district, disease,
 //				fromDate, toDate, userUuid));
 //		setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district,
 //				disease, previousFromDate, previousToDate, userUuid));
+		setTestResultCountByResultType(FacadeProvider.getSampleTestFacade().getTestResultCountByResultType(region, district, disease, fromDate, toDate, userUuid));
 		
 		// Outbreaks
-		setOutbreaks(FacadeProvider.getOutbreakFacade().getOutbreaksForDashboard(region, district, disease, fromDate, toDate,
-				userUuid));
+		setOutbreaks(FacadeProvider.getOutbreakFacade().getOutbreaksForDashboard(region, district, disease, fromDate, toDate, userUuid));
 	}
 	
 	public List<DashboardCaseDto> getCases() {
@@ -167,6 +169,14 @@ public class DashboardDataProvider {
 
 	public void setPreviousEvents(List<DashboardEventDto> previousEvents) {
 		this.previousEvents = previousEvents;
+	}
+	
+	public Map<EventStatus, Long> getEventCountByStatus() {
+		return eventCountByStatus;
+	}
+	
+	public void setEventCountByStatus(Map<EventStatus, Long> events) {
+		this.eventCountByStatus = events;
 	}
 	
 	public Map<SampleTestResultType, Long> getTestResultCountByResultType() {

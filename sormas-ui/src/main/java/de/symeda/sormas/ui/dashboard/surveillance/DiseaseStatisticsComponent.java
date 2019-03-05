@@ -375,18 +375,13 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	}
 	
 	private void updateEventComponent(Disease disease) {
-		List<DashboardEventDto> events = dashboardDataProvider.getEvents();
+		Map<EventStatus, Long> events = dashboardDataProvider.getEventCountByStatus();
 
-		eventCountLabel.setValue(Integer.toString(events.size()).toString());
+		eventCountLabel.setValue(events.values().stream().collect(Collectors.summingLong(Long::longValue)).toString());
 
-		int confirmedEventsCount = (int) events.stream().filter(e -> e.getEventStatus() == EventStatus.CONFIRMED)
-				.count();
-		eventStatusConfirmed.updateCountLabel(confirmedEventsCount);
-		int possibleEventsCount = (int) events.stream().filter(e -> e.getEventStatus() == EventStatus.POSSIBLE).count();
-		eventStatusPossible.updateCountLabel(possibleEventsCount);
-		int notAnEventEventsCount = (int) events.stream().filter(e -> e.getEventStatus() == EventStatus.NO_EVENT)
-				.count();
-		eventStatusNotAnEvent.updateCountLabel(notAnEventEventsCount);
+		eventStatusConfirmed.updateCountLabel(events.getOrDefault(EventStatus.CONFIRMED, 0L).toString());
+		eventStatusPossible.updateCountLabel(events.getOrDefault(EventStatus.POSSIBLE, 0L).toString());
+		eventStatusNotAnEvent.updateCountLabel(events.getOrDefault(EventStatus.NO_EVENT, 0L).toString());
 	}
 
 	private void updateTestResultComponent(Disease disease) {

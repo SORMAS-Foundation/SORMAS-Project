@@ -44,6 +44,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskCriteria;
@@ -174,6 +175,14 @@ public class EventFacadeEjb implements EventFacade {
 				Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));	
 		
 		return events;
+	}
+	
+	public Map<EventStatus, Long> getEventCountByStatus (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		Region region = regionService.getByReferenceDto(regionRef);
+		District district = districtService.getByReferenceDto(districtRef);
+
+		return eventService.getEventCountByStatus(region, district, disease, from, to, user);
 	}
 	
 	@Override

@@ -197,7 +197,7 @@ public class SampleTestService extends AbstractAdoService<SampleTest> {
 		return result;
 	}
 
-	public Map<SampleTestResultType, Long> getTestResultCountPerResultType (Region region, District district, Disease disease, Date from, Date to, User user) {
+	public Map<SampleTestResultType, Long> getTestResultCountByResultType (Region region, District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<SampleTest> sampleTest = cq.from(SampleTest.class);

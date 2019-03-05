@@ -20,6 +20,8 @@ package de.symeda.sormas.backend.event;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -35,12 +37,17 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleTest;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 
@@ -202,6 +209,58 @@ public class EventService extends AbstractAdoService<Event> {
 		return result;
 	}
 
+	public Map<EventStatus, Long> getEventCountByStatus(Region region, District district, Disease disease, Date from, Date to, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Event> event = cq.from(Event.class);
+		Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
+		
+		cq.multiselect(event.get(Event.EVENT_STATUS), cb.count(event));
+		cq.groupBy(event.get(Event.EVENT_STATUS));
+		
+		Predicate filter = createUserFilter(cb, cq, event, user);
+		Predicate dateFilter = cb.between(event.get(Event.EVENT_DATE), from, to);
+		if (filter != null) {
+			filter = cb.and(filter, dateFilter);
+		} else {
+			filter = dateFilter;
+		}
+
+		if (region != null) {
+			Predicate regionFilter = cb.equal(eventLocation.get(Location.REGION), region);
+			if (filter != null) {
+				filter = cb.and(filter, regionFilter);
+			} else {
+				filter = regionFilter;
+			}
+		}
+
+		if (district != null) {
+			Predicate districtFilter = cb.equal(eventLocation.get(Location.DISTRICT), district);
+			if (filter != null) {
+				filter = cb.and(filter, districtFilter);
+			} else {
+				filter = districtFilter;
+			}
+		}
+
+		if (disease != null) {
+			Predicate diseaseFilter = cb.equal(event.get(Event.DISEASE), disease);
+			if (filter != null) {
+				filter = cb.and(filter, diseaseFilter);
+			} else {
+				filter = diseaseFilter;
+			}
+		}
+		
+		List<Object[]> results = em.createQuery(cq).getResultList();
+		
+		Map<EventStatus, Long> events = results.stream().collect(
+				Collectors.toMap(e -> (EventStatus) e[0], e -> (Long) e[1]));
+		
+		return events;
+	}
+	
 	public List<String> getArchivedUuidsSince(User user, Date since) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);

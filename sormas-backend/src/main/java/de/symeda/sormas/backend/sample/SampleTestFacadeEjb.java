@@ -143,12 +143,12 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	}
 
 	@Override
-	public Map<SampleTestResultType, Long> getTestResultCountPerResultType (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+	public Map<SampleTestResultType, Long> getTestResultCountByResultType (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 
-		return sampleTestService.getTestResultCountPerResultType(region, district, disease, from, to, user);
+		return sampleTestService.getTestResultCountByResultType(region, district, disease, from, to, user);
 	}
 	
 	@Override
