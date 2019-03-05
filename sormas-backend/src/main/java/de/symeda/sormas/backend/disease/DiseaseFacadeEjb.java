@@ -26,14 +26,6 @@ import java.util.stream.Stream;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -41,29 +33,16 @@ import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.disease.DiseaseFacade;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.outbreak.Outbreak;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.util.ModelConstants;
-//import de.symeda.sormas.ui.UserProvider;
 
 /**
  * Provides the application configuration settings
  */
 @Stateless(name="DiseaseFacade")
 public class DiseaseFacadeEjb implements DiseaseFacade {
-	
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
 	
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
@@ -106,7 +85,7 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		Map<Disease, Long> events = eventFacade.getEventCountByDisease(regionRef, districtRef, from, to);
 					
 		//outbreaks
-		Map<Disease, Long> outbreaks = outbreakFacade.getOutbreakCountByDisease(regionRef, districtRef, from, to);
+		Map<Disease, Long> outbreaks = outbreakFacade.getOutbreakCountByDisease(regionRef, districtRef, from, to, userUuid);
 						
 		//case fatalities
 		Map<Disease, Long> caseFatalities = personFacade.getDeathCountByDisease(regionRef, districtRef, from, to);

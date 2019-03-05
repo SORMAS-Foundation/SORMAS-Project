@@ -17,21 +17,30 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.outbreak;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sample.PathogenTest;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -129,5 +138,62 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 			filter = and(cb, filter, activeFilter);
 		}
 		return filter;
+	}
+	
+	public Map<Disease, Long> getOutbreakCountByDisease (Region region, District district, Date from, Date to, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Outbreak> outbreak = cq.from(Outbreak.class);
+		cq.multiselect(outbreak.get(Outbreak.DISEASE), cb.countDistinct(outbreak.get(Outbreak.DISTRICT)));
+		cq.groupBy(outbreak.get(Outbreak.DISEASE));
+		
+		Predicate filter = this.createUserFilter(cb, cq, outbreak, user);
+		if (from != null || to != null) {
+			filter = and(cb, filter, cb.between(outbreak.get(Outbreak.REPORT_DATE), from, to));
+		}
+		if (district != null) {
+			filter = and(cb, filter, cb.equal(outbreak.join(Outbreak.DISTRICT, JoinType.LEFT), district));
+		}
+		else if (region != null) {
+			filter = and(cb, filter, cb.equal(outbreak.join(Outbreak.DISTRICT, JoinType.LEFT).join(District.REGION, JoinType.LEFT), region));
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		List<Object[]> results = em.createQuery(cq).getResultList();
+		
+		Map<Disease, Long> outbreaks = results.stream().collect(
+				Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
+		
+		return outbreaks;
+	}
+	
+	public Long getOutbreakDistrictCount (Region region, District district, Disease disease, Date from, Date to, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Outbreak> outbreak = cq.from(getElementClass());
+		cq.groupBy(outbreak.get(Outbreak.DISTRICT));
+		
+		Predicate filter = this.createUserFilter(cb, cq, outbreak, user);
+		if (from != null || to != null) {
+			filter = and(cb, filter, cb.between(outbreak.get(Outbreak.REPORT_DATE), from, to));
+		}
+		if (district != null) {
+			filter = and(cb, filter, cb.equal(outbreak.join(Outbreak.DISTRICT, JoinType.LEFT), district));
+		}
+		else if (region != null) {
+			filter = and(cb, filter, cb.equal(outbreak.join(Outbreak.DISTRICT, JoinType.LEFT).join(District.REGION, JoinType.LEFT), region));
+		}
+		if (disease != null) {
+			filter = and(cb, filter, cb.equal(outbreak.get(Outbreak.DISEASE), disease));
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}		
+		
+		cq.select(cb.count(outbreak));
+		
+		return em.createQuery(cq).getResultList().stream().findFirst().orElse(0L);
 	}
 }

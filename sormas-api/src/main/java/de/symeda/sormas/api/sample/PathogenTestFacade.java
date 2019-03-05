@@ -44,7 +44,7 @@ public interface PathogenTestFacade {
 	
 	List<DashboardTestResultDto> getNewTestResultsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 	
-	Map<SampleTestResultType, Long> getTestResultCountByResultType (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
+	Map<PathogenTestResultType, Long> getTestResultCountByResultType (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 	
 	void deletePathogenTest(PathogenTestReferenceDto pathogenTestRef, String userUuid);
 }

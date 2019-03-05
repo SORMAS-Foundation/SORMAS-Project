@@ -197,18 +197,18 @@ public class PathogenTestService extends AbstractAdoService<PathogenTest> {
 		return result;
 	}
 
-	public Map<SampleTestResultType, Long> getTestResultCountByResultType (Region region, District district, Disease disease, Date from, Date to, User user) {
+	public Map<PathogenTestResultType, Long> getTestResultCountByResultType (Region region, District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<SampleTest> sampleTest = cq.from(SampleTest.class);
-		Join<SampleTest, Sample> sample = sampleTest.join(SampleTest.SAMPLE, JoinType.LEFT);
+		Root<PathogenTest> sampleTest = cq.from(PathogenTest.class);
+		Join<PathogenTest, Sample> sample = sampleTest.join(PathogenTest.SAMPLE, JoinType.LEFT);
 		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 		
-		cq.multiselect(sampleTest.get(SampleTest.TEST_RESULT), cb.countDistinct(sampleTest));
-		cq.groupBy(sampleTest.get(SampleTest.TEST_RESULT));
+		cq.multiselect(sampleTest.get(PathogenTest.TEST_RESULT), cb.countDistinct(sampleTest));
+		cq.groupBy(sampleTest.get(PathogenTest.TEST_RESULT));
 		
 		Predicate filter = createUserFilter(cb, cq, sampleTest, user);
-		Predicate dateFilter = cb.between(sampleTest.get(SampleTest.TEST_DATE_TIME), from, to);
+		Predicate dateFilter = cb.between(sampleTest.get(PathogenTest.TEST_DATE_TIME), from, to);
 		if (filter != null) {
 			filter = cb.and(filter, dateFilter);
 		} else {
@@ -244,8 +244,8 @@ public class PathogenTestService extends AbstractAdoService<PathogenTest> {
 		
 		List<Object[]> results = em.createQuery(cq).getResultList();
 		
-		Map<SampleTestResultType, Long> testResults = results.stream().collect(
-				Collectors.toMap(e -> (SampleTestResultType) e[0], e -> (Long) e[1]));
+		Map<PathogenTestResultType, Long> testResults = results.stream().collect(
+				Collectors.toMap(e -> (PathogenTestResultType) e[0], e -> (Long) e[1]));
 		
 		return testResults;
 	}

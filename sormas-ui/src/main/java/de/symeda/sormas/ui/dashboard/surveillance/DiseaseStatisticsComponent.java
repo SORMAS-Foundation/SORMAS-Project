@@ -33,14 +33,10 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
-import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.outbreak.DashboardOutbreakDto;
-import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
-//import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.statistics.CountElementStyle;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsCountElement;
@@ -325,14 +321,14 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	}
 
 	private void updateOutbreakDistrictComponent(Disease disease) {
-		List<DashboardOutbreakDto> outbreaks = dashboardDataProvider.getOutbreaks();
+		Long districtCount = dashboardDataProvider.getOutbreakDistrictCount();
 		
-		Long districtsCount = outbreaks.stream()
-									   .map(o -> o.getDistrict())
-									   .distinct()
-									   .count();
+//		Long districtsCount = outbreaks.stream()
+//									   .map(o -> o.getDistrict())
+//									   .distinct()
+//									   .count();
 
-		outbreakDistrictCountLabel.setValue(districtsCount.toString());
+		outbreakDistrictCountLabel.setValue(districtCount.toString());
 	}
 
 	private void updateCaseFatalityComponent(Disease disease) {
@@ -385,13 +381,13 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	}
 
 	private void updateTestResultComponent(Disease disease) {
-		Map<SampleTestResultType, Long> testResults = dashboardDataProvider.getTestResultCountByResultType();
+		Map<PathogenTestResultType, Long> testResults = dashboardDataProvider.getTestResultCountByResultType();
 
 		testResultCountLabel.setValue(testResults.values().stream().collect(Collectors.summingLong(Long::longValue)).toString());
 
-		testResultPositive.updateCountLabel(testResults.getOrDefault(SampleTestResultType.POSITIVE, 0L).toString());
-		testResultNegative.updateCountLabel(testResults.getOrDefault(SampleTestResultType.NEGATIVE, 0L).toString());
-		testResultPending.updateCountLabel(testResults.getOrDefault(SampleTestResultType.PENDING, 0L).toString());
-		testResultIndeterminate.updateCountLabel(testResults.getOrDefault(SampleTestResultType.INDETERMINATE, 0L).toString());
+		testResultPositive.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.POSITIVE, 0L).toString());
+		testResultNegative.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.NEGATIVE, 0L).toString());
+		testResultPending.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.PENDING, 0L).toString());
+		testResultIndeterminate.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.INDETERMINATE, 0L).toString());
 	}
 }

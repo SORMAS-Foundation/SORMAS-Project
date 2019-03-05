@@ -26,41 +26,27 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.outbreak.DashboardOutbreakDto;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "OutbreakFacade")
 public class OutbreakFacadeEjb implements OutbreakFacade {
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
 	@EJB
 	private OutbreakService outbreakService;
 	@EJB
@@ -209,60 +195,48 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	}
 	
 	@Override
-	public List<DashboardOutbreakDto> getOutbreaksForDashboard(
-			RegionReferenceDto regionRef,
-			DistrictReferenceDto districtRef, 
-			Disease disease,
-			Date activeLower, 
-			Date activeUpper, 
-			String userUuid) {
-		
-		OutbreakCriteria outbreakCriteria = new OutbreakCriteria();
-		outbreakCriteria.disease(disease).region(regionRef).district(districtRef)
-			.active(true, activeLower, activeUpper);
-		
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DashboardOutbreakDto> cq = cb.createQuery(DashboardOutbreakDto.class);
+//	public List<DashboardOutbreakDto> getOutbreaksForDashboard(
+//			RegionReferenceDto regionRef,
+//			DistrictReferenceDto districtRef, 
+//			Disease disease,
+//			Date activeLower, 
+//			Date activeUpper, 
+//			String userUuid) {
+//		
+//		OutbreakCriteria outbreakCriteria = new OutbreakCriteria();
+//		outbreakCriteria.disease(disease).region(regionRef).district(districtRef)
+//			.active(true, activeLower, activeUpper);
+//		
+//		CriteriaBuilder cb = em.getCriteriaBuilder();
+//		CriteriaQuery<DashboardOutbreakDto> cq = cb.createQuery(DashboardOutbreakDto.class);
+//
+//		Root<Outbreak> from = cq.from(Outbreak.class);
+//		Join<Outbreak, District> outbreakDistrict = from.join(Outbreak.DISTRICT, JoinType.LEFT);
+//		
+//		Predicate filter = outbreakService.buildCriteriaFilter(outbreakCriteria, cb, from);
+//		if (filter != null) {
+//			cq.where(filter);
+//		}
+//		
+//		cq.multiselect(from.get(Outbreak.DISEASE), outbreakDistrict.get(District.UUID));		
+//		return em.createQuery(cq).getResultList();
+//	}
+	
+	public Map<Disease, Long> getOutbreakCountByDisease (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Date from, Date to, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		Region region = regionService.getByReferenceDto(regionRef);
+		District district = districtService.getByReferenceDto(districtRef);
 
-		Root<Outbreak> from = cq.from(Outbreak.class);
-		Join<Outbreak, District> outbreakDistrict = from.join(Outbreak.DISTRICT, JoinType.LEFT);
-		
-		Predicate filter = outbreakService.buildCriteriaFilter(outbreakCriteria, cb, from);
-		if (filter != null) {
-			cq.where(filter);
-		}
-		
-		cq.multiselect(from.get(Outbreak.DISEASE), outbreakDistrict.get(District.UUID));		
-		return em.createQuery(cq).getResultList();
+		return outbreakService.getOutbreakCountByDisease(region, district, from, to, user);
 	}
 	
-	public Map<Disease, Long> getOutbreakCountByDisease (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Date from, Date to) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Outbreak> outbreak = cq.from(Outbreak.class);
-		cq.multiselect(outbreak.get(Outbreak.DISEASE), cb.countDistinct(outbreak.get(Outbreak.DISTRICT)));
-		cq.groupBy(outbreak.get(Outbreak.DISEASE));
-		
-		Predicate filter = null;
-		if (from != null || to != null) {
-			filter = AbstractAdoService.and(cb, filter, cb.between(outbreak.get(Outbreak.REPORT_DATE), from, to));
-		}
-		if (districtRef != null) {
-			filter = AbstractAdoService.and(cb, filter, cb.equal(outbreak.join(Outbreak.DISTRICT, JoinType.LEFT).get(District.UUID), districtRef.getUuid()));
-		}
-		else if (regionRef != null) {
-			filter = AbstractAdoService.and(cb, filter, cb.equal(outbreak.join(Outbreak.DISTRICT, JoinType.LEFT).join(District.REGION, JoinType.LEFT).get(Region.UUID), regionRef.getUuid()));
-		}
-		if (filter != null) {
-			cq.where(filter);
-		}
-		
-		List<Object[]> results = em.createQuery(cq).getResultList();
-		
-		Map<Disease, Long> outbreaks = results.stream().collect(
-				Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
-		
-		return outbreaks;
+	@Override
+	public Long getOutbreakDistrictCount (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		Region region = regionService.getByReferenceDto(regionRef);
+		District district = districtService.getByReferenceDto(districtRef);
+
+		return outbreakService.getOutbreakDistrictCount(region, district, disease, from, to, user);
 	}
 	
 	

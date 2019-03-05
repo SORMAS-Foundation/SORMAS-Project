@@ -38,16 +38,12 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
-import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.sample.SampleTest;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 
