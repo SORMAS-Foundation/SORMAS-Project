@@ -117,9 +117,6 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		Label caseComponentTitle = new Label(I18nProperties.getCaption(Captions.dashboardNewCases));
 		CssStyles.style(caseComponentTitle, CssStyles.H2, CssStyles.HSPACE_LEFT_4);
 		headerLayout.addComponent(caseComponentTitle);
-//		caseDiseaseLabel = new Label();
-//		CssStyles.style(caseDiseaseLabel, CssStyles.H2, CssStyles.HSPACE_LEFT_4);
-//		headerLayout.addComponent(caseDiseaseLabel);
 
 		caseComponent.addComponent(headerLayout);
 
@@ -323,11 +320,6 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	private void updateOutbreakDistrictComponent(Disease disease) {
 		Long districtCount = dashboardDataProvider.getOutbreakDistrictCount();
 		
-//		Long districtsCount = outbreaks.stream()
-//									   .map(o -> o.getDistrict())
-//									   .distinct()
-//									   .count();
-
 		outbreakDistrictCountLabel.setValue(districtCount.toString());
 	}
 

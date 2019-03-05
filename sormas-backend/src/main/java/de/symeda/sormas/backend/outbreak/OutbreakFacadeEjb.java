@@ -194,34 +194,6 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 		return target;
 	}
 	
-	@Override
-//	public List<DashboardOutbreakDto> getOutbreaksForDashboard(
-//			RegionReferenceDto regionRef,
-//			DistrictReferenceDto districtRef, 
-//			Disease disease,
-//			Date activeLower, 
-//			Date activeUpper, 
-//			String userUuid) {
-//		
-//		OutbreakCriteria outbreakCriteria = new OutbreakCriteria();
-//		outbreakCriteria.disease(disease).region(regionRef).district(districtRef)
-//			.active(true, activeLower, activeUpper);
-//		
-//		CriteriaBuilder cb = em.getCriteriaBuilder();
-//		CriteriaQuery<DashboardOutbreakDto> cq = cb.createQuery(DashboardOutbreakDto.class);
-//
-//		Root<Outbreak> from = cq.from(Outbreak.class);
-//		Join<Outbreak, District> outbreakDistrict = from.join(Outbreak.DISTRICT, JoinType.LEFT);
-//		
-//		Predicate filter = outbreakService.buildCriteriaFilter(outbreakCriteria, cb, from);
-//		if (filter != null) {
-//			cq.where(filter);
-//		}
-//		
-//		cq.multiselect(from.get(Outbreak.DISEASE), outbreakDistrict.get(District.UUID));		
-//		return em.createQuery(cq).getResultList();
-//	}
-	
 	public Map<Disease, Long> getOutbreakCountByDisease (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Date from, Date to, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		Region region = regionService.getByReferenceDto(regionRef);
