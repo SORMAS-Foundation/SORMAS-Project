@@ -24,7 +24,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sample.SampleTestDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 
 /**
  * Classification criteria that specifies that none of the sub criteria may be true in order for the whole
@@ -46,7 +46,7 @@ public class ClassificationNoneOfCriteriaDto extends ClassificationCriteriaDto i
 	}
 
 	@Override
-	public boolean eval(CaseDataDto caze, PersonDto person, List<SampleTestDto> sampleTests) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> sampleTests) {
 		for (ClassificationCriteriaDto classificationCriteria : classificationCriteria) {
 			if (classificationCriteria.eval(caze, person, sampleTests)) {
 				return false;

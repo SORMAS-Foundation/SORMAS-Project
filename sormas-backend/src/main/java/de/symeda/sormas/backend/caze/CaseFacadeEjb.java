@@ -83,7 +83,7 @@ import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.sample.SampleTestDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
@@ -153,8 +153,8 @@ import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sample.SampleTestFacadeEjb.SampleTestFacadeEjbLocal;
-import de.symeda.sormas.backend.sample.SampleTestService;
+import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.SampleTestFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.PathogenTestService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
@@ -223,7 +223,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	@EJB
 	private SampleService sampleService;
 	@EJB
-	private SampleTestService sampleTestService;
+	private PathogenTestService pathogenTestService;
 	@EJB
 	private SampleTestFacadeEjbLocal sampleTestFacade;
 	@EJB
@@ -297,6 +297,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}
+		cq.orderBy(cb.desc(caze.get(Case.CHANGE_DATE)));
 
 		List<CaseIndexDto> resultList = em.createQuery(cq).getResultList();
 		return resultList;
@@ -332,29 +333,41 @@ public class CaseFacadeEjb implements CaseFacade {
 				person.get(Person.SEX),
 				person.get(Person.APPROXIMATE_AGE),
 				person.get(Person.APPROXIMATE_AGE_TYPE),
+				person.get(Person.BIRTHDATE_DD),
+				person.get(Person.BIRTHDATE_MM),
+				person.get(Person.BIRTHDATE_YYYY),
 				caze.get(Case.REPORT_DATE),
 				region.get(Region.NAME),
 				district.get(District.NAME),
 				community.get(Community.NAME),
-				hospitalization.get(Hospitalization.ADMITTED_TO_HEALTH_FACILITY),
-				hospitalization.get(Hospitalization.ADMISSION_DATE),
 				facility.get(Facility.NAME),
 				facility.get(Facility.UUID),
 				caze.get(Case.HEALTH_FACILITY_DETAILS),
 				caze.get(Case.CASE_CLASSIFICATION),
 				caze.get(Case.INVESTIGATION_STATUS),
-				person.get(Person.PRESENT_CONDITION),
 				caze.get(Case.OUTCOME),
+				hospitalization.get(Hospitalization.ADMITTED_TO_HEALTH_FACILITY),
+				hospitalization.get(Hospitalization.ADMISSION_DATE),
+				hospitalization.get(Hospitalization.DISCHARGE_DATE),
+				hospitalization.get(Hospitalization.LEFT_AGAINST_ADVICE),
+				person.get(Person.PRESENT_CONDITION),
 				person.get(Person.DEATH_DATE),
+				person.get(Person.BURIAL_DATE),
+				person.get(Person.BURIAL_CONDUCTOR),
+				person.get(Person.BURIAL_PLACE_DESCRIPTION),
 				person.get(Person.PHONE),
 				person.get(Person.PHONE_OWNER),
+				person.get(Person.EDUCATION_TYPE),
+				person.get(Person.EDUCATION_DETAILS),
 				person.get(Person.OCCUPATION_TYPE),
 				person.get(Person.OCCUPATION_DETAILS),
 				occupationFacility.get(Facility.NAME),
 				occupationFacility.get(Facility.UUID),
 				person.get(Person.OCCUPATION_FACILITY_DETAILS),
-				epiData.get(EpiData.RODENTS),
+				epiData.get(EpiData.TRAVELED),
+				epiData.get(EpiData.BURIAL_ATTENDED),
 				epiData.get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE),
+				epiData.get(EpiData.RODENTS),
 				symptoms.get(Symptoms.ONSET_DATE),
 				caze.get(Case.VACCINATION),
 				caze.get(Case.VACCINATION_DOSES),
@@ -382,9 +395,14 @@ public class CaseFacadeEjb implements CaseFacade {
 			List<Date> sampleDates = sampleService.getSampleDatesForCase(exportDto.getId());
 			exportDto.setSampleTaken((sampleDates == null || sampleDates.isEmpty()) ? YesNoUnknown.NO : YesNoUnknown.YES);
 			exportDto.setSampleDates(sampleDates);
-			exportDto.setLabResults(sampleTestService.getSampleTestResultsForCase(exportDto.getId()));
+			exportDto.setLabResults(pathogenTestService.getPathogenTestResultsForCase(exportDto.getId()));
 			exportDto.setSymptoms(symptomsService.getById(exportDto.getSymptomsId()).toHumanString(false));
 			exportDto.setAddress(personService.getAddressByPersonId(exportDto.getPersonId()).toString());
+			List<CaseClassification> sourceCaseClassifications = contactService.getSourceCaseClassifications(exportDto.getId());
+			exportDto.setMaxSourceCaseClassifcation(sourceCaseClassifications.stream()
+					.filter(c -> c != CaseClassification.NO_CASE)
+					.max(Comparator.naturalOrder())
+					.orElse(null));
 
 			// Build travel history - done here to avoid transforming EpiDataTravel to EpiDataTravelDto
 			List<EpiDataTravel> travels = epiDataTravelService.getAllByEpiDataId(exportDto.getEpiDataId());
@@ -397,6 +415,9 @@ public class CaseFacadeEjb implements CaseFacade {
 				travelHistoryBuilder.append(EpiDataTravelHelper.buildTravelString(
 						travel.getTravelType(), travel.getTravelDestination(),
 						travel.getTravelDateFrom(), travel.getTravelDateTo()));
+			}
+			if (travelHistoryBuilder.length() == 0 && exportDto.getTraveled() != null) {
+				travelHistoryBuilder.append(exportDto.getTraveled());
 			}
 			exportDto.setTravelHistory(travelHistoryBuilder.toString());
 
@@ -770,7 +791,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (newCase.getCaseClassification() != CaseClassification.NO_CASE) {
 				// calculate classification
 				CaseDataDto newCaseDto = toDto(newCase);
-				List<SampleTestDto> sampleTests = sampleTestService.getAllByCase(newCase).stream()
+				List<PathogenTestDto> sampleTests = pathogenTestService.getAllByCase(newCase).stream()
 						.map(s -> sampleTestFacade.toDto(s)).collect(Collectors.toList());
 				CaseClassification classification = caseClassificationFacade.getClassification(newCaseDto, sampleTests);
 

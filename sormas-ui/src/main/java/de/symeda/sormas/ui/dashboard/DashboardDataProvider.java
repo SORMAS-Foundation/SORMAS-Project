@@ -123,9 +123,9 @@ public class DashboardDataProvider {
 				previousFromDate, previousToDate, userUuid));
 		
 		// Test results
-		setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district, disease,
+		setTestResults(FacadeProvider.getPathogenTestFacade().getNewTestResultsForDashboard(region, district, disease,
 				fromDate, toDate, userUuid));
-		setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district,
+		setPreviousTestResults(FacadeProvider.getPathogenTestFacade().getNewTestResultsForDashboard(region, district,
 				disease, previousFromDate, previousToDate, userUuid));
 		
 		// Outbreaks

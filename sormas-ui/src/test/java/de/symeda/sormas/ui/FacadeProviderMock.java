@@ -20,7 +20,7 @@ import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
-import de.symeda.sormas.api.sample.SampleTestFacade;
+import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.user.UserFacade;
@@ -44,7 +44,7 @@ import de.symeda.sormas.backend.region.GeoShapeProviderEjb.GeoShapeProviderEjbLo
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
-import de.symeda.sormas.backend.sample.SampleTestFacadeEjb.SampleTestFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.SampleTestFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
@@ -72,7 +72,7 @@ public final class FacadeProviderMock extends FacadeProvider {
 			return (P) bm.getBean(TaskFacadeEjbLocal.class);
 		} else if (SampleFacade.class == clazz) {
 			return (P) bm.getBean(SampleFacadeEjbLocal.class);
-		} else if (SampleTestFacade.class == clazz) {
+		} else if (PathogenTestFacade.class == clazz) {
 			return (P) bm.getBean(SampleTestFacadeEjbLocal.class);
 		} else if (SymptomsFacade.class == clazz) {
 			return (P) bm.getBean(SymptomsFacadeEjbLocal.class);

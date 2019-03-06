@@ -37,7 +37,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.outbreak.DashboardOutbreakDto;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
-import de.symeda.sormas.api.sample.SampleTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 //import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.statistics.CountElementStyle;
@@ -393,16 +393,16 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		testResultCountLabel.setValue(Integer.toString(testResults.size()).toString());
 
 		int positiveTestResultsCount = (int) testResults.stream()
-				.filter(r -> r.getTestResult() == SampleTestResultType.POSITIVE).count();
+				.filter(r -> r.getTestResult() == PathogenTestResultType.POSITIVE).count();
 		testResultPositive.updateCountLabel(positiveTestResultsCount);
 		int negativeTestResultsCount = (int) testResults.stream()
-				.filter(r -> r.getTestResult() == SampleTestResultType.NEGATIVE).count();
+				.filter(r -> r.getTestResult() == PathogenTestResultType.NEGATIVE).count();
 		testResultNegative.updateCountLabel(negativeTestResultsCount);
 		int pendingTestResultsCount = (int) testResults.stream()
-				.filter(r -> r.getTestResult() == SampleTestResultType.PENDING).count();
+				.filter(r -> r.getTestResult() == PathogenTestResultType.PENDING).count();
 		testResultPending.updateCountLabel(pendingTestResultsCount);
 		int indeterminateTestResultsCount = (int) testResults.stream()
-				.filter(r -> r.getTestResult() == SampleTestResultType.INDETERMINATE).count();
+				.filter(r -> r.getTestResult() == PathogenTestResultType.INDETERMINATE).count();
 		testResultIndeterminate.updateCountLabel(indeterminateTestResultsCount);
 	}
 }

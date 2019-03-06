@@ -32,11 +32,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.util.ControlLabelOnTouchListener;
 
@@ -108,8 +106,8 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
     // Instance methods
 
     private void initializePropertyField(Context context, AttributeSet attrs) {
-        caption = I18nProperties.getCaption(getCaptionPropertyId());
-        description = I18nProperties.getDescription(getCaptionPropertyId());
+        caption = I18nProperties.getPrefixCaption(getPropertyIdPrefix(), getSubPropertyId());
+        description = I18nProperties.getPrefixDescription(getPropertyIdPrefix(), getSubPropertyId());
 
         if (attrs != null) {
             TypedArray a = context.getTheme().obtainStyledAttributes(
@@ -159,26 +157,26 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
         return getResources().getResourceName(getId());
     }
 
-    public String getPropertyId() {
-        String fieldId = getFieldIdString();
+    public static String getPropertyIdPrefix(String fieldId) {
         int separatorIndex = fieldId.lastIndexOf("/");
-        return fieldId.substring(separatorIndex + 1);
+        int endSeparatorIndex = fieldId.lastIndexOf("_");
+        if (endSeparatorIndex == -1) endSeparatorIndex = fieldId.length();
+        return fieldId.substring(separatorIndex + 1, separatorIndex + 2).toUpperCase() + fieldId.substring(separatorIndex + 2, endSeparatorIndex).replaceAll("_", ".");
     }
 
-    public String getCaptionPropertyId() {
-        String fieldId = getFieldIdString();
-        return toPrefixPropertyId(fieldId);
-    }
-
-    public static String toPrefixPropertyId(String fieldId) {
-        int separatorIndex = fieldId.lastIndexOf("/");
-        return fieldId.substring(separatorIndex + 1, separatorIndex + 2).toUpperCase() + fieldId.substring(separatorIndex + 2).replaceAll("_", ".");
-    }
-
-    public String getPropertyIdWithoutPrefix() {
-        String fieldId = getFieldIdString();
+    public static String getSubPropertyId(String fieldId) {
         int separatorIndex = fieldId.lastIndexOf("_");
         return fieldId.substring(separatorIndex + 1);
+    }
+
+    public String getPropertyIdPrefix() {
+        String fieldId = getFieldIdString();
+        return getPropertyIdPrefix(fieldId);
+    }
+
+    public String getSubPropertyId() {
+        String fieldId = getFieldIdString();
+        return getSubPropertyId(fieldId);
     }
 
     protected void setBackgroundResourceFor(View input, int resId) {
@@ -207,19 +205,19 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
      * Handles automatic visibility setting based on the dependencyParentField and
      * dependencyParentValue set in the layout.
      *
-     * @param calledFromListener When fields are hidden, their value should generally be set to
-     *                           null. However, this may only be done when this method is called
-     *                           from the InternalValueChangedListener to prevent data loss in case
-     *                           this method is called before the parent field's internal value
-     *                           has been set
+     * @param clearOnHide When fields are hidden, their value should generally be set to
+     *                    null. However, this may only be done when this method is called
+     *                    from the InternalValueChangedListener to prevent data loss in case
+     *                    this method is called before the parent field's internal value
+     *                    has been set.
      */
-    private void setVisibilityBasedOnParentField(boolean calledFromListener) {
+    private void setVisibilityBasedOnParentField(boolean clearOnHide) {
         if (dependencyParentField == null || dependencyParentValues == null) {
             return;
         }
 
         if (dependencyParentField.getVisibility() != VISIBLE) {
-            hideField(calledFromListener);
+            hideField(clearOnHide);
             return;
         }
 
@@ -227,11 +225,11 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
             if (dependencyParentVisibility) {
                 setVisibility(VISIBLE);
             } else {
-                hideField(calledFromListener);
+                hideField(clearOnHide);
             }
         } else {
             if (dependencyParentVisibility) {
-                hideField(calledFromListener);
+                hideField(clearOnHide);
             } else {
                 setVisibility(VISIBLE);
             }
@@ -369,8 +367,8 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
         return getFieldValue();
     }
 
-    @BindingAdapter(value = {"dependencyParentField", "dependencyParentValue", "dependencyParentValue2", "dependencyParentVisibility"}, requireAll = false)
-    public static void setDependencyParentField(ControlPropertyField field, ControlPropertyField dependencyParentField, Object dependencyParentValue, Object dependencyParentValue2, Boolean dependencyParentVisibility) {
+    @BindingAdapter(value = {"dependencyParentField", "dependencyParentValue", "dependencyParentValue2", "dependencyParentVisibility", "dependencyParentClearOnHide"}, requireAll = false)
+    public static void setDependencyParentField(ControlPropertyField field, ControlPropertyField dependencyParentField, Object dependencyParentValue, Object dependencyParentValue2, Boolean dependencyParentVisibility, Boolean dependencyParentClearOnHide) {
         field.dependencyParentField = dependencyParentField;
         field.dependencyParentValues = new ArrayList();
         field.dependencyParentValues.add(dependencyParentValue);
@@ -388,7 +386,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
             dependencyParentField.addValueChangedListener(new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
-                    thisField.setVisibilityBasedOnParentField(true);
+                    thisField.setVisibilityBasedOnParentField(dependencyParentClearOnHide != null ? dependencyParentClearOnHide : true);
                 }
             });
         }

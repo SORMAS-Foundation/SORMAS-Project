@@ -44,6 +44,14 @@ public class SurveillanceDashboardView extends AbstractDashboardView {
 		diseaseCarouselLayout = new SurveillanceDiseaseCarouselLayout(dashboardDataProvider);
 		dashboardLayout.addComponent(diseaseCarouselLayout);
 		dashboardLayout.setExpandRatio(diseaseCarouselLayout, 1);
+		
+		diseaseCarouselLayout.setExpandListener(expanded -> {
+			if (expanded) {
+				dashboardLayout.removeComponent(surveillanceOverviewLayout);
+			} else {
+				dashboardLayout.addComponent(surveillanceOverviewLayout, 1);
+			}
+		});
 	}
 	
 	public void refreshDashboard() {

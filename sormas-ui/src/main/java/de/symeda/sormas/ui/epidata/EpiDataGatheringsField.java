@@ -40,8 +40,8 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 @SuppressWarnings("serial")
 public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringDto> {
 	
-	private static final String CITY = Captions._city;
-	private static final String DISTRICT = Captions._district;
+	private static final String CITY = Captions.city;
+	private static final String DISTRICT = Captions.district;
 	private static final String GATHERING_DAY = Captions.EpiDataGathering_gatheringDay;
 	
 	@Override

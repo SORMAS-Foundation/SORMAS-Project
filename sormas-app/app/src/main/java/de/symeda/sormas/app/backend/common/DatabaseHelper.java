@@ -73,10 +73,10 @@ import de.symeda.sormas.app.backend.report.WeeklyReport;
 import de.symeda.sormas.app.backend.report.WeeklyReportDao;
 import de.symeda.sormas.app.backend.report.WeeklyReportEntry;
 import de.symeda.sormas.app.backend.report.WeeklyReportEntryDao;
+import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleDao;
-import de.symeda.sormas.app.backend.sample.SampleTest;
-import de.symeda.sormas.app.backend.sample.SampleTestDao;
+import de.symeda.sormas.app.backend.sample.PathogenTestDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
 import de.symeda.sormas.app.backend.synclog.SyncLog;
@@ -100,7 +100,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 140;
+	public static final int DATABASE_VERSION = 142;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -142,7 +142,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, Visit.class);
 			TableUtils.clearTable(connectionSource, Event.class);
 			TableUtils.clearTable(connectionSource, Sample.class);
-			TableUtils.clearTable(connectionSource, SampleTest.class);
+			TableUtils.clearTable(connectionSource, PathogenTest.class);
 			TableUtils.clearTable(connectionSource, EventParticipant.class);
 			TableUtils.clearTable(connectionSource, Hospitalization.class);
 			TableUtils.clearTable(connectionSource, PreviousHospitalization.class);
@@ -202,7 +202,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Task.class);
 			TableUtils.createTable(connectionSource, Event.class);
 			TableUtils.createTable(connectionSource, Sample.class);
-			TableUtils.createTable(connectionSource, SampleTest.class);
+			TableUtils.createTable(connectionSource, PathogenTest.class);
 			TableUtils.createTable(connectionSource, EventParticipant.class);
 			TableUtils.createTable(connectionSource, Hospitalization.class);
 			TableUtils.createTable(connectionSource, PreviousHospitalization.class);
@@ -508,9 +508,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN meningealSigns varchar(255);");
 				case 126:
 					currentVersion = 126;
-					getDao(SampleTest.class).executeRaw("UPDATE sampleTests SET testType = 'IGM_SERUM_ANTIBODY' WHERE testType = 'SERUM_ANTIBODY_TITER';");
-					getDao(SampleTest.class).executeRaw("UPDATE sampleTests SET testType = 'IGM_SERUM_ANTIBODY' WHERE testType = 'ELISA';");
-					getDao(SampleTest.class).executeRaw("UPDATE sampleTests SET testType = 'PCR_RT_PCR' WHERE testType = 'PCR' OR testType = 'RT_PCR';");
+					getDao(PathogenTest.class).executeRaw("UPDATE sampleTests SET testType = 'IGM_SERUM_ANTIBODY' WHERE testType = 'SERUM_ANTIBODY_TITER';");
+					getDao(PathogenTest.class).executeRaw("UPDATE sampleTests SET testType = 'IGM_SERUM_ANTIBODY' WHERE testType = 'ELISA';");
+					getDao(PathogenTest.class).executeRaw("UPDATE sampleTests SET testType = 'PCR_RT_PCR' WHERE testType = 'PCR' OR testType = 'RT_PCR';");
 					getDao(Sample.class).executeRaw("UPDATE samples SET suggestedTypeOfTest = 'IGM_SERUM_ANTIBODY' WHERE suggestedTypeOfTest = 'SERUM_ANTIBODY_TITER';");
 					getDao(Sample.class).executeRaw("UPDATE samples SET suggestedTypeOfTest = 'IGM_SERUM_ANTIBODY' WHERE suggestedTypeOfTest = 'ELISA';");
 					getDao(Sample.class).executeRaw("UPDATE samples SET suggestedTypeOfTest = 'PCR_RT_PCR' WHERE suggestedTypeOfTest = 'PCR' OR suggestedTypeOfTest = 'RT_PCR';");
@@ -602,7 +602,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				case 135:
 					currentVersion = 135;
 					getDao(Sample.class).executeRaw("UPDATE samples SET suggestedTypeOfTest='ISOLATION' WHERE suggestedTypeOfTest='VIRUS_ISOLATION'");
-					getDao(SampleTest.class).executeRaw("UPDATE sampleTests SET testType='ISOLATION' WHERE testType='VIRUS_ISOLATION'");
+					getDao(PathogenTest.class).executeRaw("UPDATE sampleTests SET testType='ISOLATION' WHERE testType='VIRUS_ISOLATION'");
 				case 136:
 					currentVersion = 136;
 					try {
@@ -664,6 +664,40 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN sidePain varchar(255);");
 					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN fluidInLungCavity varchar(255);");
 					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN tremor varchar(255);");
+				case 140:
+					currentVersion = 140;
+					getDao(PathogenTest.class).executeRaw("ALTER TABLE sampleTests RENAME TO pathogenTests;");
+					getDao(Sample.class).executeRaw("ALTER TABLE samples RENAME TO tmp_samples;");
+					getDao(Sample.class).executeRaw("CREATE TABLE samples (associatedCase_id BIGINT, comment VARCHAR, lab_id BIGINT, " +
+							"labDetails VARCHAR, labSampleID VARCHAR, noTestPossibleReason VARCHAR, received SMALLINT, receivedDate BIGINT, referredToUuid VARCHAR, " +
+							"reportDateTime BIGINT, reportLat DOUBLE PRECISION, reportLatLonAccuracy FLOAT, reportLon DOUBLE PRECISION, " +
+							"reportingUser_id BIGINT, sampleCode VARCHAR, sampleDateTime BIGINT, sampleMaterial VARCHAR, sampleMaterialText VARCHAR, " +
+							"sampleSource VARCHAR, shipmentDate BIGINT, shipmentDetails VARCHAR, shipped SMALLINT, specimenCondition VARCHAR, " +
+							"pathogenTestingRequested SMALLINT, additionalTestingRequested SMALLINT, requestedPathogenTestsString VARCHAR, requestedAdditionalTestsString VARCHAR, " +
+							"changeDate BIGINT NOT NULL, creationDate BIGINT NOT NULL, id INTEGER PRIMARY KEY AUTOINCREMENT, lastOpenedDate BIGINT, " +
+							"localChangeDate BIGINT NOT NULL, modified SMALLINT, snapshot SMALLINT, uuid VARCHAR NOT NULL, UNIQUE (snapshot, uuid));");
+					getDao(Sample.class).executeRaw("INSERT INTO samples(associatedCase_id, comment, lab_id, labDetails, labSampleID, noTestPossibleReason, " +
+							"received, receivedDate, referredToUuid, reportDateTime, reportLat, reportLatLonAccuracy, reportLon, reportingUser_id, sampleCode, " +
+							"sampleDateTime, sampleMaterial, sampleMaterialText, sampleSource, shipmentDate, shipmentDetails, shipped, specimenCondition, " +
+							"requestedPathogenTestsString, changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid) " +
+							"SELECT associatedCase_id, comment, lab_id, labDetails, labSampleID, noTestPossibleReason, received, receivedDate, referredToUuid, " +
+							"reportDateTime, reportLat, reportLatLonAccuracy, reportLon, reportingUser_id, sampleCode, sampleDateTime, sampleMaterial, " +
+							"sampleMaterialText, sampleSource, shipmentDate, shipmentDetails, shipped, specimenCondition, suggestedTypeOfTest, changeDate, creationDate, " +
+                            "id, lastOpenedDate, localChangeDate, modified, snapshot, uuid FROM tmp_samples;");
+					getDao(Sample.class).executeRaw("UPDATE samples SET pathogenTestingRequested = 1;");
+					getDao(Sample.class).executeRaw("UPDATE samples SET additionalTestingRequested = 0;");
+					getDao(Sample.class).executeRaw("DROP TABLE tmp_samples;");
+				case 141:
+					currentVersion = 141;
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN respiratoryRate integer;");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN weight integer;");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN height integer;");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN midUpperArmCircumference integer;");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN glasgowComaScale integer;");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN hemorrhagicSyndrome varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN hyperglycemia varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN hypoglycemia varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN sepsis varchar(255);");
 
 					// ATTENTION: break should only be done after last version
 					break;
@@ -693,7 +727,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Visit.class, true);
 			TableUtils.dropTable(connectionSource, Event.class, true);
 			TableUtils.dropTable(connectionSource, Sample.class, true);
-			TableUtils.dropTable(connectionSource, SampleTest.class, true);
+			TableUtils.dropTable(connectionSource, PathogenTest.class, true);
 			TableUtils.dropTable(connectionSource, EventParticipant.class, true);
 			TableUtils.dropTable(connectionSource, Hospitalization.class, true);
 			TableUtils.dropTable(connectionSource, PreviousHospitalization.class, true);
@@ -761,8 +795,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new EventParticipantDao((Dao<EventParticipant, Long>) innerDao);
 				} else if (type.equals(Sample.class)) {
 					dao = (AbstractAdoDao<ADO>) new SampleDao((Dao<Sample, Long>) innerDao);
-				} else if (type.equals(SampleTest.class)) {
-					dao = (AbstractAdoDao<ADO>) new SampleTestDao((Dao<SampleTest, Long>) innerDao);
+				} else if (type.equals(PathogenTest.class)) {
+					dao = (AbstractAdoDao<ADO>) new PathogenTestDao((Dao<PathogenTest, Long>) innerDao);
 				} else if (type.equals(Hospitalization.class)) {
 					dao = (AbstractAdoDao<ADO>) new HospitalizationDao((Dao<Hospitalization, Long>) innerDao);
 				} else if (type.equals(PreviousHospitalization.class)) {
@@ -904,8 +938,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return (SampleDao) getAdoDao(Sample.class);
 	}
 
-	public static SampleTestDao getSampleTestDao() {
-		return (SampleTestDao) getAdoDao(SampleTest.class);
+	public static PathogenTestDao getSampleTestDao() {
+		return (PathogenTestDao) getAdoDao(PathogenTest.class);
 	}
 
 	public static HospitalizationDao getHospitalizationDao() {

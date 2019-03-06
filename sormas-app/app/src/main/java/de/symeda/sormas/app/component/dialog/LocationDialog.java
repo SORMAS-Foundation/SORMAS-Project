@@ -91,8 +91,8 @@ public class LocationDialog extends AbstractDialog {
                 final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActivity(),
                         R.string.heading_confirmation_dialog,
                         R.string.confirmation_pick_gps,
-                        R.string.s_yes,
-                        R.string.s_no);
+                        R.string.yes,
+                        R.string.no);
 
                 confirmationDialog.setPositiveCallback(new Callback() {
                     @Override

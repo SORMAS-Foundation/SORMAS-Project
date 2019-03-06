@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sample.SampleTestDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 
 /**
  * Classification criteria are used to automatically classify cases and to be able to display
@@ -42,7 +42,7 @@ import de.symeda.sormas.api.sample.SampleTestDto;
 	@JsonSubTypes.Type(value = ClassificationCaseCriteriaDto.class, name = "ClassificationCaseCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationNoneOfCriteriaDto.class, name = "ClassificationNoneOfCrieriaDto"),
 	@JsonSubTypes.Type(value = ClassificationPersonAgeBetweenYearsCriteriaDto.class, name = "ClassificationPersonAgeBetweenYearsCriteriaDto"),
-	@JsonSubTypes.Type(value = ClassificationSampleTestPositiveResultCriteriaDto.class, name = "ClassificationSampleTestPositiveResultCriteriaDto"),
+	@JsonSubTypes.Type(value = ClassificationPathogenTestPositiveResultCriteriaDto.class, name = "ClassificationPathogenTestPositiveResultCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationXOfCriteriaDto.class, name = "ClassificationXOfCriteriaDto"),
 })
 public abstract class ClassificationCriteriaDto implements Serializable {
@@ -51,7 +51,7 @@ public abstract class ClassificationCriteriaDto implements Serializable {
 	
 	private static final long serialVersionUID = -3686569295881034008L;
 	
-	public abstract boolean eval(CaseDataDto caze, PersonDto person, List<SampleTestDto> sampleTests);
+	public abstract boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> sampleTests);
 	public abstract String buildDescription();
 	
 	public String getType() {

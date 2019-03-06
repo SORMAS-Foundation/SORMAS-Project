@@ -39,7 +39,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
-import de.symeda.sormas.api.sample.SampleTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -84,8 +84,8 @@ public class SampleGrid extends Grid implements AbstractGrid<SampleCriteria> {
 				
 				if (sampleIndexDto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
 					return I18nProperties.getCaption(Captions.sampleSpecimenNotAdequate);
-				} else if (sampleIndexDto.getSampleTestResult() != null) {
-					return sampleIndexDto.getSampleTestResult().toString();
+				} else if (sampleIndexDto.getPathogenTestResult() != null) {
+					return sampleIndexDto.getPathogenTestResult().toString();
 				} else {
 					return I18nProperties.getCaption(Captions.samplePending);
 				}
@@ -112,7 +112,7 @@ public class SampleGrid extends Grid implements AbstractGrid<SampleCriteria> {
 		
 		setColumns(EDIT_BTN_ID, SampleIndexDto.SAMPLE_CODE, SampleIndexDto.LAB_SAMPLE_ID, SampleIndexDto.ASSOCIATED_CASE, DISEASE_SHORT,
 				SampleIndexDto.CASE_DISTRICT, SampleIndexDto.SHIPPED, SampleIndexDto.RECEIVED, SampleIndexDto.SHIPMENT_DATE, SampleIndexDto.RECEIVED_DATE, SampleIndexDto.LAB,
-				SampleIndexDto.SAMPLE_MATERIAL, SampleIndexDto.SAMPLE_TEST_LAB_USER_NAME, TEST_RESULT_AND_SPECIMEN);
+				SampleIndexDto.SAMPLE_MATERIAL, SampleIndexDto.PATHOGEN_TEST_LAB_USER_NAME, TEST_RESULT_AND_SPECIMEN, SampleIndexDto.ADDITIONAL_TESTING_STATUS);
 		
 		getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
         getColumn(EDIT_BTN_ID).setWidth(60);
@@ -142,6 +142,10 @@ public class SampleGrid extends Grid implements AbstractGrid<SampleCriteria> {
 		if (UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
 			removeColumn(SampleIndexDto.ASSOCIATED_CASE);
 		}
+		
+		if (!UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+			removeColumn(SampleIndexDto.ADDITIONAL_TESTING_STATUS);
+		}
 	}
 	
 	public void setRegionFilter(RegionReferenceDto region) {
@@ -159,7 +163,7 @@ public class SampleGrid extends Grid implements AbstractGrid<SampleCriteria> {
 		reload();
 	}	
 	
-	public void setTestResultFilter(SampleTestResultType testResult) {
+	public void setTestResultFilter(PathogenTestResultType testResult) {
 		sampleCriteria.testResult(testResult);
 		reload();
 	}

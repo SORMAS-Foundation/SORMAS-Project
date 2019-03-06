@@ -17,10 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.api.person;
 
+import java.util.Date;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 
 public class PersonHelper {
 
@@ -100,6 +103,14 @@ public class PersonHelper {
 
 		return totalDistance / similarityResults.length;
 	}
+	
+	public static String formatBirthdate(Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY) {
+		String birthDate = DateHelper.getLocalDateFormat().toPattern();
+		birthDate = birthDate.replaceAll("d+", birthdateDD != null ? birthdateDD.toString() : "");
+		birthDate = birthDate.replaceAll("M+", birthdateMM != null ? birthdateMM.toString() : "");
+		birthDate = birthDate.replaceAll("y+", birthdateYYYY != null ? birthdateYYYY.toString() : "");
+		return birthDate;
+	}
 
 	private static double getSimilarity(String str1, String str2) {
 		if (str1 == null || str2 == null) {
@@ -114,6 +125,26 @@ public class PersonHelper {
 		int levenshteinDistance = new LevenshteinDistance().apply(str1, str2);
 
 		return 1 - ((double) levenshteinDistance / (double) len);
+	}
+	
+	public static String buildBurialInfoString(Date burialDate, BurialConductor burialConductor, String burialPlaceDescription) {
+		StringBuilder result = new StringBuilder();
+		if (burialDate != null) {
+			result.append(DateHelper.formatLocalShortDate(burialDate));
+		}
+		if (burialConductor != null) {
+			if (result.length() > 0) {
+				result.append(" ");
+			} 
+			result.append(burialConductor);
+		}
+		if (burialPlaceDescription != null) {
+			if (result.length() > 0) {
+				result.append(" ");
+			} 
+			result.append(burialPlaceDescription);
+		}
+		return result.toString();
 	}
 
 	public static String buildPhoneString(String phone, String phoneOwner) {
@@ -143,6 +174,16 @@ public class PersonHelper {
 			}
 			result.append(occupationFacilityName);
 		}
-		return result.length() > 0 ? result.toString() : "";
+		return result.toString();
+	}
+
+	public static String buildEducationString(EducationType educationType, String educationDetails) {
+		StringBuilder result = new StringBuilder();
+		if (educationType == EducationType.OTHER) {
+			result.append(educationDetails);
+		} else if (educationType != null) {
+			result.append(educationType);
+		}
+		return result.toString();
 	}
 }

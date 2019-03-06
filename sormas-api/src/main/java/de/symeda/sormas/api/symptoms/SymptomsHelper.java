@@ -39,6 +39,7 @@ public final class SymptomsHelper {
 	private static List<String> specialSymptomPropertyIds;
 	private static List<String> lesionsLocationsPropertyIds;
 
+	
 	public static List<Float> getTemperatureValues() {
 		List<Float> x = new ArrayList<Float>();
 		for (int i = 350; i <= 440; i++) {
@@ -47,20 +48,40 @@ public final class SymptomsHelper {
 		return x;
 	}
 
-	public static List<Integer> getBloodPressureValues() {
+	private static List<Integer> getIntegerValues(int min, int max) {
 		List<Integer> x = new ArrayList<>();
-		for (int i = 0; i <= 300; i++) {
+		for (int i = min; i <= max; i++) {
 			x.add(i);
 		}
 		return x;
 	}
+	
+	public static List<Integer> getBloodPressureValues() {
+		return getIntegerValues(0, 300);
+	}
 
 	public static List<Integer> getHeartRateValues() {
-		List<Integer> x = new ArrayList<>();
-		for (int i = 0; i <= 300; i++) {
-			x.add(i);
-		}
-		return x;
+		return getIntegerValues(0, 300);
+	}
+
+	public static List<Integer> getRespiratoryRateValues() {
+		return getIntegerValues(0, 120);
+	}
+
+	public static List<Integer> getGlasgowComaScaleValues() {
+		return getIntegerValues(1, 6);
+	}
+
+	public static List<Integer> getWeightValues() {
+		return getIntegerValues(0, 300);
+	}
+
+	public static List<Integer> getHeightValues() {
+		return getIntegerValues(1, 300);
+	}
+
+	public static List<Integer> getMidUpperArmCircumferenceValues() {
+		return getIntegerValues(1, 100);
 	}
 
 	public static String getTemperatureString(float value) {
@@ -193,7 +214,7 @@ public final class SymptomsHelper {
 					}
 				} else if (pd.getReadMethod().getReturnType() == Boolean.class) {
 					// Booleans are carried over when they are TRUE
-					if (pd.getName().equals("symptomatic")) {
+					if (pd.getName().equals(SymptomsDto.SYMPTOMATIC)) {
 						continue;
 					} else {
 						Boolean result = (Boolean) pd.getReadMethod().invoke(sourceSymptoms);
@@ -201,7 +222,7 @@ public final class SymptomsHelper {
 							pd.getWriteMethod().invoke(targetSymptoms, result);
 						}
 					}
-				} else if (pd.getName().equals("temperature")) {
+				} else if (pd.getName().equals(SymptomsDto.TEMPERATURE)) {
 					// Temperature is carried over when it's higher than the targetSymptoms temperature
 					Float sourceResult = (Float) pd.getReadMethod().invoke(sourceSymptoms);
 					Float targetResult = (Float) pd.getReadMethod().invoke(targetSymptoms);
@@ -212,7 +233,7 @@ public final class SymptomsHelper {
 				} else if (pd.getReadMethod().getReturnType() == String.class) {
 					// Strings are added to the targetSymptoms when they are not contained within the
 					// respective targetSymptoms String
-					if (pd.getName().equals("onsetSymptom")) {
+					if (pd.getName().equals(SymptomsDto.ONSET_DATE)) {
 						continue;
 					} else {
 						String sourceResult = (String) pd.getReadMethod().invoke(sourceSymptoms);

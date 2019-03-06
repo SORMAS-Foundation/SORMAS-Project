@@ -37,6 +37,12 @@ public class SymptomsDto extends EntityDto {
 	public static final String BLOOD_PRESSURE_SYSTOLIC = "bloodPressureSystolic";
 	public static final String BLOOD_PRESSURE_DIASTOLIC = "bloodPressureDiastolic";
 	public static final String HEART_RATE = "heartRate";
+	public static final String MID_UPPER_ARM_CIRCUMFERENCE = "midUpperArmCircumference";
+	public static final String RESPIRATORY_RATE = "respiratoryRate";
+	public static final String WEIGHT = "weight";
+	public static final String HEIGHT = "height";
+	public static final String GLASGOW_COMA_SCALE = "glasgowComaScale";
+		
 	public static final String ONSET_DATE = "onsetDate";
 	public static final String ONSET_SYMPTOM = "onsetSymptom";
 	public static final String PATIENT_ILL_LOCATION = "patientIllLocation";
@@ -65,7 +71,10 @@ public class SymptomsDto extends EntityDto {
 	public static final String FLUID_IN_LUNG_CAVITY = "fluidInLungCavity";
 	public static final String HEADACHE = "headache";
 	public static final String HEARINGLOSS = "hearingloss";
+	public static final String HEMORRHAGIC_SYNDROME = "hemorrhagicSyndrome";
 	public static final String HICCUPS = "hiccups";
+	public static final String HYPERGLYCEMIA = "hyperglycemia";
+	public static final String HYPOGLYCEMIA = "hypoglycemia";
 	public static final String JAUNDICE = "jaundice";
 	public static final String JOINT_PAIN = "jointPain";
 	public static final String KOPLIKS_SPOTS = "kopliksSpots";
@@ -109,6 +118,7 @@ public class SymptomsDto extends EntityDto {
 	public static final String REFUSAL_FEEDOR_DRINK = "refusalFeedorDrink";
 	public static final String RUNNY_NOSE = "runnyNose";
 	public static final String SEIZURES = "seizures";
+	public static final String SEPSIS = "sepsis";
 	public static final String SHOCK = "shock";
 	public static final String SIDE_PAIN = "sidePain";
 	public static final String SKIN_RASH = "skinRash";
@@ -154,7 +164,12 @@ public class SymptomsDto extends EntityDto {
 	private TemperatureSource temperatureSource;
 	private Integer bloodPressureSystolic;
 	private Integer bloodPressureDiastolic;
-	private Integer heartRate;
+	private Integer heartRate;	
+	private Integer midUpperArmCircumference;
+	private Integer respiratoryRate;
+	private Integer weight;
+	private Integer height;
+	private Integer glasgowComaScale;
 	
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	@Outbreaks
@@ -239,9 +254,6 @@ public class SymptomsDto extends EntityDto {
 	private SymptomState skinRash;
 	@Diseases({Disease.CSM,Disease.OTHER})
 	@Outbreaks
-	private SymptomState meningealSigns;
-	@Diseases({Disease.CSM,Disease.OTHER})
-	@Outbreaks
 	private SymptomState neckStiffness;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.MEASLES,Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState soreThroat;
@@ -255,15 +267,6 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.PLAGUE,Disease.OTHER})
 	@Outbreaks
 	private SymptomState chestPain;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.PLAGUE,Disease.OTHER})
-	@Outbreaks
-	private SymptomState confusedDisoriented;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.OTHER})
-	@Outbreaks
-	private SymptomState seizures;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.OTHER})
-	@Outbreaks
-	private SymptomState alteredConsciousness;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.MEASLES,Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState conjunctivitis;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.MEASLES,Disease.DENGUE,Disease.MONKEYPOX,Disease.OTHER})
@@ -287,9 +290,6 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.MEASLES,Disease.DENGUE,Disease.OTHER})
 	@Outbreaks
 	private SymptomState jointPain;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.PLAGUE,Disease.OTHER})
-	@Outbreaks
-	private SymptomState shock;
 	@Diseases({Disease.EVD,Disease.OTHER})
 	private SymptomState hiccups;
 	@Diseases({Disease.YELLOW_FEVER,Disease.OTHER})
@@ -407,7 +407,36 @@ public class SymptomsDto extends EntityDto {
 	private String symptomsComments;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
 	private String patientIllLocation;
-
+	
+	// complications
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.OTHER})
+	@Outbreaks
+	private SymptomState alteredConsciousness;
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
+	private SymptomState confusedDisoriented;
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
+	private SymptomState hemorrhagicSyndrome;
+	@Diseases({Disease.CSM,Disease.LASSA,Disease.OTHER})
+	@Outbreaks
+	private SymptomState hyperglycemia;
+	@Diseases({Disease.CSM,Disease.LASSA,Disease.OTHER})
+	@Outbreaks
+	private SymptomState hypoglycemia;
+	@Diseases({Disease.CSM,Disease.LASSA,Disease.OTHER})
+	@Outbreaks
+	private SymptomState meningealSigns;
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.OTHER})
+	@Outbreaks
+	private SymptomState seizures;
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.OTHER})
+	@Outbreaks
+	private SymptomState sepsis;
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
+	private SymptomState shock;
+	
 	public Boolean getSymptomatic() {
 		return symptomatic;
 	}
@@ -1037,6 +1066,60 @@ public class SymptomsDto extends EntityDto {
 		SymptomsDto symptoms = new SymptomsDto();
 		symptoms.setUuid(DataHelper.createUuid());
 		return symptoms;
+	}
+	public SymptomState getSepsis() {
+		return sepsis;
+	}
+	public void setSepsis(SymptomState sepsis) {
+		this.sepsis = sepsis;
+	}
+	public SymptomState getHyperglycemia() {
+		return hyperglycemia;
+	}
+	public void setHyperglycemia(SymptomState hyperglycemia) {
+		this.hyperglycemia = hyperglycemia;
+	}
+	public SymptomState getHypoglycemia() {
+		return hypoglycemia;
+	}
+	public void setHypoglycemia(SymptomState hypoglycemia) {
+		this.hypoglycemia = hypoglycemia;
+	}
+	public SymptomState getHemorrhagicSyndrome() {
+		return hemorrhagicSyndrome;
+	}
+	public void setHemorrhagicSyndrome(SymptomState hemorrhagicSyndrome) {
+		this.hemorrhagicSyndrome = hemorrhagicSyndrome;
+	}
+	public Integer getMidUpperArmCircumference() {
+		return midUpperArmCircumference;
+	}
+	public void setMidUpperArmCircumference(Integer midUpperArmCircumference) {
+		this.midUpperArmCircumference = midUpperArmCircumference;
+	}
+	public Integer getRespiratoryRate() {
+		return respiratoryRate;
+	}
+	public void setRespiratoryRate(Integer respiratoryRate) {
+		this.respiratoryRate = respiratoryRate;
+	}
+	public Integer getWeight() {
+		return weight;
+	}
+	public void setWeight(Integer weight) {
+		this.weight = weight;
+	}
+	public Integer getHeight() {
+		return height;
+	}
+	public void setHeight(Integer height) {
+		this.height = height;
+	}
+	public Integer getGlasgowComaScale() {
+		return glasgowComaScale;
+	}
+	public void setGlasgowComaScale(Integer glasgowComaScale) {
+		this.glasgowComaScale = glasgowComaScale;
 	}
 	
 }

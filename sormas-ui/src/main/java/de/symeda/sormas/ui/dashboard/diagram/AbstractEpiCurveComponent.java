@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.dashboard.diagram;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -27,7 +28,6 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -53,8 +53,7 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 	// Others
 	protected EpiCurveGrouping epiCurveGrouping;
 	private boolean showMinimumEntries;
-	private ClickListener externalExpandButtonListener;
-	private ClickListener externalCollapseButtonListener;
+	private Consumer<Boolean> externalExpandListener;
 
 	public AbstractEpiCurveComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
@@ -74,12 +73,8 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 		//clearAndFillEpiCurveChart();
 	}
 
-	public void setExpandListener(ClickListener listener) {
-		externalExpandButtonListener = listener;
-	}
-
-	public void setCollapseListener(ClickListener listener) {
-		externalCollapseButtonListener = listener;
+	public void setExpandListener(Consumer<Boolean> listener) {
+		externalExpandListener = listener;
 	}
 
 	private HorizontalLayout createHeader() {
@@ -105,13 +100,13 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 		collapseEpiCurveButton.addStyleName(CssStyles.VSPACE_NONE);
 
 		expandEpiCurveButton.addClickListener(e -> {
-			externalExpandButtonListener.buttonClick(e);
+			externalExpandListener.accept(true);
 			epiCurveHeaderLayout.removeComponent(expandEpiCurveButton);
 			epiCurveHeaderLayout.addComponent(collapseEpiCurveButton);
 			epiCurveHeaderLayout.setComponentAlignment(collapseEpiCurveButton, Alignment.MIDDLE_RIGHT);
 		});
 		collapseEpiCurveButton.addClickListener(e -> {
-			externalCollapseButtonListener.buttonClick(e);
+			externalExpandListener.accept(false);
 			epiCurveHeaderLayout.removeComponent(collapseEpiCurveButton);
 			epiCurveHeaderLayout.addComponent(expandEpiCurveButton);
 			epiCurveHeaderLayout.setComponentAlignment(expandEpiCurveButton, Alignment.MIDDLE_RIGHT);

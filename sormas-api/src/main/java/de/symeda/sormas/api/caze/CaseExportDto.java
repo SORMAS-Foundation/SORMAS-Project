@@ -26,12 +26,14 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
+import de.symeda.sormas.api.person.BurialConductor;
+import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.sample.SampleTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -54,28 +56,36 @@ public class CaseExportDto implements Serializable {
 	private Sex sex;
 	private String approximateAge;
 	private String ageGroup;
+	private String birthdate;
 	private Date reportDate;
 	private String region;
 	private String district;
 	private String community;
-	private Date admissionDate;
 	private String healthFacility;
+	private CaseClassification caseClassification;
+	private InvestigationStatus investigationStatus;
+	private CaseClassification maxSourceCaseClassifcation;
+	private CaseOutcome outcome;
 	private YesNoUnknown admittedToHealthFacility;
+	private Date admissionDate;
+	private Date dischargeDate;
+	private YesNoUnknown leftAgainstAdvice;
 	private String initialDetectionPlace;
 	private YesNoUnknown sampleTaken;
 	private String sampleDates;
 	private String labResults;
-	private CaseClassification caseClassification;
-	private InvestigationStatus investigationStatus;
 	private PresentCondition presentCondition;
-	private CaseOutcome outcome;
 	private Date deathDate;
+	private String burialInfo;
 	private String address;
 	private String phone;
 	private String occupationType;
+	private String educationType;
 	private String travelHistory;
+	private YesNoUnknown traveled;
+	private YesNoUnknown burialAttended;
+	private YesNoUnknown directContactConfirmedCase;
 	private YesNoUnknown contactWithRodent;
-	private YesNoUnknown contactWithConfirmedCase;
 	private Date onsetDate;
 	private String symptoms;
 	private Vaccination vaccination;
@@ -83,14 +93,17 @@ public class CaseExportDto implements Serializable {
 	private Date vaccinationDate;
 	private VaccinationInfoSource vaccinationInfoSource;
 
-	public CaseExportDto(long id, long personId, long epiDataId, long symptomsId, long hospitalizationId, String uuid, String epidNumber, Disease disease, String diseaseDetails, String firstName, String lastName, 
-			Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType, Date reportDate, String region, 
-			String district, String community, YesNoUnknown admittedToHealthFacility, Date admissionDate, String healthFacility, String healthFacilityUuid, String healthFacilityDetails, 
-			CaseClassification caseClassification, InvestigationStatus investigationStatus, 
-			PresentCondition presentCondition, CaseOutcome outcome, Date deathDate, String phone, String phoneOwner,
+	public CaseExportDto(long id, long personId, long epiDataId, long symptomsId, long hospitalizationId, String uuid, String epidNumber,
+			Disease disease, String diseaseDetails, String firstName, String lastName, Sex sex,
+			Integer approximateAge, ApproximateAgeType approximateAgeType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, 
+			Date reportDate, String region, String district, String community, String healthFacility, String healthFacilityUuid, String healthFacilityDetails, 
+			CaseClassification caseClassification, InvestigationStatus investigationStatus, CaseOutcome outcome, 
+			YesNoUnknown admittedToHealthFacility, Date admissionDate, Date dischargeDate, YesNoUnknown leftAgainstAdvice, 
+			PresentCondition presentCondition,  Date deathDate, Date burialDate, BurialConductor burialConductor,String burialPlaceDescription, 
+			String phone, String phoneOwner, EducationType educationType, String educationDetails,
 			OccupationType occupationType, String occupationDetails, String occupationFacility, String occupationFacilityUuid, String occupationFacilityDetails,
-			YesNoUnknown contactWithRodent, YesNoUnknown contactWithConfirmedCase, Date onsetDate, Vaccination vaccination, String vaccinationDoses,
-			Date vaccinationDate, VaccinationInfoSource vaccinationInfoSource) {
+			YesNoUnknown traveled, YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown contactWithRodent,
+			Date onsetDate, Vaccination vaccination, String vaccinationDoses, Date vaccinationDate, VaccinationInfoSource vaccinationInfoSource) {
 		this.id = id;
 		this.personId = personId;
 		this.epiDataId = epiDataId;
@@ -103,23 +116,30 @@ public class CaseExportDto implements Serializable {
 		this.sex = sex;
 		this.approximateAge = ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
 		this.ageGroup = ApproximateAgeHelper.getAgeGroupFromAge(approximateAge, approximateAgeType);
+		this.birthdate = PersonHelper.formatBirthdate(birthdateDD, birthdateMM, birthdateYYYY);
 		this.reportDate = reportDate;
 		this.region = region;
 		this.district = district;
 		this.community = community;
-		this.admittedToHealthFacility = admittedToHealthFacility;
-		this.admissionDate = admissionDate;
-		this.healthFacility = FacilityHelper.buildFacilityString(healthFacilityUuid, healthFacility, healthFacilityDetails);
 		this.caseClassification = caseClassification;
 		this.investigationStatus = investigationStatus;
-		this.presentCondition = presentCondition;
 		this.outcome = outcome;
+		this.healthFacility = FacilityHelper.buildFacilityString(healthFacilityUuid, healthFacility, healthFacilityDetails);
+		this.admittedToHealthFacility = admittedToHealthFacility;
+		this.admissionDate = admissionDate;
+		this.dischargeDate = dischargeDate;
+		this.leftAgainstAdvice = leftAgainstAdvice;
+		this.presentCondition = presentCondition;
 		this.deathDate = deathDate;
+		this.burialInfo = PersonHelper.buildBurialInfoString(burialDate, burialConductor, burialPlaceDescription);
 		this.phone = PersonHelper.buildPhoneString(phone, phoneOwner);
+		this.educationType = PersonHelper.buildEducationString(educationType, educationDetails);
 		this.occupationType = PersonHelper.buildOccupationString(occupationType, occupationDetails,
 				FacilityHelper.buildFacilityString(occupationFacilityUuid, occupationFacility, occupationFacilityDetails));
+		this.traveled = traveled;
+		this.burialAttended = burialAttended;
+		this.directContactConfirmedCase = directContactConfirmedCase;
 		this.contactWithRodent = contactWithRodent;
-		this.contactWithConfirmedCase = contactWithConfirmedCase;
 		this.onsetDate = onsetDate;
 		this.vaccination = vaccination;
 		this.vaccinationDoses = vaccinationDoses;
@@ -131,6 +151,7 @@ public class CaseExportDto implements Serializable {
 		return new CaseReferenceDto(uuid, person);
 	}
 
+	@Order(0)
 	public long getId() {
 		return id;
 	}
@@ -151,180 +172,256 @@ public class CaseExportDto implements Serializable {
 		return hospitalizationId;
 	}
 	
-	@Order(0)
+	@Order(1)
 	public String getUuid() {
 		return uuid;
 	}
 
-	@Order(1)
+	@Order(2)
 	public String getEpidNumber() {
 		return epidNumber;
 	}
 
-	@Order(2)
+	@Order(3)
 	public String getDisease() {
 		return disease;
 	}
 
-	@Order(3)
+	@Order(10)
 	public String getPerson() {
 		return person;
 	}
 
-	@Order(4)
+	@Order(11)
 	public Sex getSex() {
 		return sex;
 	}
 
-	@Order(5)
+	@Order(12)
 	public String getApproximateAge() {
 		return approximateAge;
 	}
 	
-	@Order(6)
+	@Order(13)
 	public String getAgeGroup() {
 		return ageGroup;
 	}
 
-	@Order(7)
+	@Order(14)
+	public String getBirthdate() {
+		return birthdate;
+	}
+
+	public void setBirthdate(String birthdate) {
+		this.birthdate = birthdate;
+	}
+
+	@Order(20)
 	public Date getReportDate() {
 		return reportDate;
 	}
 
-	@Order(8)
+	@Order(21)
 	public String getRegion() {
 		return region;
 	}
 
-	@Order(9)
+	@Order(22)
 	public String getDistrict() {
 		return district;
 	}
 
-	@Order(10)
+	@Order(23)
 	public String getCommunity() {
 		return community;
 	}
-	
-	@Order(11)
-	public YesNoUnknown getAdmittedToHealthFacility() {
-		return admittedToHealthFacility;
-	}
 
-	@Order(12)
-	public Date getAdmissionDate() {
-		return admissionDate;
-	}
-
-	@Order(13)
+	@Order(24)
 	public String getHealthFacility() {
 		return healthFacility;
 	}
 	
-	@Order(14)
+	@Order(25)
 	public String getInitialDetectionPlace() {
 		return initialDetectionPlace;
 	}
 
-	@Order(15)
-	public YesNoUnknown getSampleTaken() {
-		return sampleTaken;
-	}
-
-	@Order(16)
-	public String getSampleDates() {
-		return sampleDates;
-	}
-
-	@Order(17)
-	public String getLabResults() {
-		return labResults;
-	}
-
-	@Order(18)
+	@Order(30)
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}
 
-	@Order(19)
+	@Order(31)
 	public InvestigationStatus getInvestigationStatus() {
 		return investigationStatus;
 	}
 
-	@Order(20)
-	public PresentCondition getPresentCondition() {
-		return presentCondition;
-	}
-
-	@Order(21)
+	@Order(32)
 	public CaseOutcome getOutcome() {
 		return outcome;
 	}
 
-	@Order(22)
+	@Order(33)
+	public CaseClassification getMaxSourceCaseClassifcation() {
+		return maxSourceCaseClassifcation;
+	}
+
+	public void setMaxSourceCaseClassifcation(CaseClassification maxSourceCaseClassifcation) {
+		this.maxSourceCaseClassifcation = maxSourceCaseClassifcation;
+	}
+	
+	@Order(40)
+	public YesNoUnknown getAdmittedToHealthFacility() {
+		return admittedToHealthFacility;
+	}
+
+	@Order(41)
+	public Date getAdmissionDate() {
+		return admissionDate;
+	}
+
+	@Order(42)
+	public Date getDischargeDate() {
+		return dischargeDate;
+	}
+
+	public void setDischargeDate(Date dischargeDate) {
+		this.dischargeDate = dischargeDate;
+	}
+
+	@Order(43)
+	public YesNoUnknown getLeftAgainstAdvice() {
+		return leftAgainstAdvice;
+	}
+
+	public void setLeftAgainstAdvice(YesNoUnknown leftAgainstAdvice) {
+		this.leftAgainstAdvice = leftAgainstAdvice;
+	}
+
+	@Order(50)
+	public PresentCondition getPresentCondition() {
+		return presentCondition;
+	}
+
+	@Order(51)
 	public Date getDeathDate() {
 		return deathDate;
 	}
 
-	@Order(23)
+	@Order(52)
+	public String getBurialInfo() {
+		return burialInfo;
+	}
+
+	public void setBurialInfo(String burialInfo) {
+		this.burialInfo = burialInfo;
+	}
+
+	@Order(60)
 	public String getAddress() {
 		return address;
 	}
 
-	@Order(24)
+	@Order(61)
 	public String getPhone() {
 		return phone;
 	}
 
-	@Order(25)
+	@Order(62)
+	public String getEducationType() {
+		return educationType;
+	}
+
+	public void setEducationType(String educationType) {
+		this.educationType = educationType;
+	}
+
+	@Order(63)
 	public String getOccupationType() {
 		return occupationType;
 	}
 
-	@Order(26)
+	public YesNoUnknown getTraveled() {
+		return traveled;
+	}
+
+	public void setTraveled(YesNoUnknown traveled) {
+		this.traveled = traveled;
+	}
+
+	@Order(70)
 	public String getTravelHistory() {
 		return travelHistory;
 	}
 
-	@Order(27)
+	@Order(71)
+	public YesNoUnknown getBurialAttended() {
+		return burialAttended;
+	}
+
+	public void setBurialAttended(YesNoUnknown burialAttended) {
+		this.burialAttended = burialAttended;
+	}
+
+	@Order(72)
+	public YesNoUnknown getDirectContactConfirmedCase() {
+		return directContactConfirmedCase;
+	}
+
+	public void setDirectContactConfirmedCase(YesNoUnknown directContactConfirmedCase) {
+		this.directContactConfirmedCase = directContactConfirmedCase;
+	}
+
+	@Order(73)
 	public YesNoUnknown getContactWithRodent() {
 		return contactWithRodent;
 	}
-
-	@Order(28)
-	public YesNoUnknown getContactWithConfirmedCase() {
-		return contactWithConfirmedCase;
-	}
 	
-	@Order(29)
+	@Order(80)
 	public Vaccination getVaccination() {
 		return vaccination;
 	}
 	
-	@Order(30)
+	@Order(81)
 	public String getVaccinationDoses() {
 		return vaccinationDoses;
 	}
 	
-	@Order(31)
+	@Order(82)
 	public Date getVaccinationDate() {
 		return vaccinationDate;
 	}
 	
-	@Order(32)
+	@Order(83)
 	public VaccinationInfoSource getVaccinationInfoSource() {
 		return vaccinationInfoSource;
 	}
 
-	@Order(33)
+	@Order(90)
 	public Date getOnsetDate() {
 		return onsetDate;
 	}
 
-	@Order(34)
+	@Order(91)
 	public String getSymptoms() {
 		return symptoms;
+	}	
+	
+	@Order(100)
+	public YesNoUnknown getSampleTaken() {
+		return sampleTaken;
 	}
+
+	@Order(101)
+	public String getSampleDates() {
+		return sampleDates;
+	}
+
+	@Order(102)
+	public String getLabResults() {
+		return labResults;
+	}
+
 	
 	public void setId(long id) {
 		this.id = id;
@@ -425,7 +522,7 @@ public class CaseExportDto implements Serializable {
 		this.labResults = labResults;
 	}
 
-	public void setLabResults(List<SampleTestResultType> labResults) {
+	public void setLabResults(List<PathogenTestResultType> labResults) {
 		StringBuilder testResultsBuilder = new StringBuilder();
 		for (int i = 0; i < labResults.size(); i++) {
 			if (i > 0) {
@@ -474,10 +571,6 @@ public class CaseExportDto implements Serializable {
 
 	public void setContactWithRodent(YesNoUnknown contactWithRodent) {
 		this.contactWithRodent = contactWithRodent;
-	}
-
-	public void setContactWithConfirmedCase(YesNoUnknown contactWithConfirmedCase) {
-		this.contactWithConfirmedCase = contactWithConfirmedCase;
 	}
 
 	public void setOnsetDate(Date onsetDate) {

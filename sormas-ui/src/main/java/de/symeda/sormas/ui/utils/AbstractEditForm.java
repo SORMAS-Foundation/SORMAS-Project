@@ -18,25 +18,19 @@
 package de.symeda.sormas.ui.utils;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
-import com.vaadin.data.fieldgroup.DefaultFieldGroupFieldFactory;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitEvent;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitHandler;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.converter.Converter.ConversionException;
-import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.AbstractTextField;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.CustomLayout;
@@ -48,21 +42,11 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
-import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
-import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
-import de.symeda.sormas.ui.epidata.EpiDataGatheringsField;
-import de.symeda.sormas.ui.epidata.EpiDataTravelsField;
-import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
-import de.symeda.sormas.ui.location.LocationEditForm;
 
 @SuppressWarnings("serial")
 public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomField<DTO> implements CommitHandler {// implements DtoEditForm<DTO> {
@@ -105,91 +89,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 
 		fieldGroup.addCommitHandler(this);
 
-		fieldGroup.setFieldFactory(new DefaultFieldGroupFieldFactory() {
-			@SuppressWarnings({ "unchecked", "rawtypes" })
-			@Override
-			public <T extends Field> T createField(Class<?> type, Class<T> fieldType) {
-
-				if (type.isEnum()) {
-					if (fieldType.isAssignableFrom(Field.class) // no specific fieldType defined?
-							&& (SymptomState.class.isAssignableFrom(type)
-							|| YesNoUnknown.class.isAssignableFrom(type))) {
-						OptionGroup field = super.createField(type, OptionGroup.class);
-						CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
-						return (T) field;
-					} else {
-						if (!AbstractSelect.class.isAssignableFrom(fieldType)) {
-							fieldType = (Class<T>) ComboBox.class;
-						}
-						T field = super.createField(type, fieldType);
-						if (field instanceof OptionGroup) {
-							CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL);
-						} else if (field instanceof ComboBox) {
-							((ComboBox) field).setFilteringMode(FilteringMode.CONTAINS);
-							((ComboBox) field).setNullSelectionAllowed(true);
-						}
-						return field;
-					}
-				}
-				else if (AbstractSelect.class.isAssignableFrom(fieldType)) {
-					AbstractSelect field = createCompatibleSelect((Class<? extends AbstractSelect>) fieldType);
-					field.setNullSelectionAllowed(true);
-					return (T) field;
-				} 
-				else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
-					return (T) new LocationEditForm(editOrCreateUserRight);
-				} 
-				else if (HealthConditionsForm.class.isAssignableFrom(fieldType)) {
-					return (T) new HealthConditionsForm(editOrCreateUserRight);
-				}
-				else if (DateTimeField.class.isAssignableFrom(fieldType)) {
-					DateTimeField field = new DateTimeField();
-					field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
-					return (T) field;
-				} 
-				else if (DateField.class.isAssignableFrom(fieldType)) {
-					DateField field = super.createField(type, DateField.class);
-					field.setDateFormat(DateHelper.getLocalDatePattern());
-					field.setLenient(true);
-					field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
-					return (T) field;
-				}
-				else if (PreviousHospitalizationsField.class.isAssignableFrom(fieldType)) {
-					return (T) new PreviousHospitalizationsField();
-				} 
-				else if (EpiDataBurialsField.class.isAssignableFrom(fieldType)) {
-					return (T) new EpiDataBurialsField();
-				}
-				else if (EpiDataGatheringsField.class.isAssignableFrom(fieldType)) {
-					return (T) new EpiDataGatheringsField();
-				}
-				else if (EpiDataTravelsField.class.isAssignableFrom(fieldType)) {
-					return (T) new EpiDataTravelsField();
-				}
-				else if (fieldType.equals(Field.class)) {
-					// no specific field type defined -> fallbacks
-					if (Date.class.isAssignableFrom(type)) {
-						DateField field = super.createField(type, DateField.class);
-						field.setDateFormat(DateHelper.getLocalDatePattern());
-						field.setLenient(true);
-						field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
-						return (T) field;
-					}
-					else if (ReferenceDto.class.isAssignableFrom(type)) {
-						return (T) new ComboBox();
-					}
-				}
-
-				return super.createField(type, fieldType);
-			}
-
-			@Override
-			protected <T extends AbstractTextField> T createAbstractTextField(Class<T> fieldType) {
-				T textField = super.createAbstractTextField(fieldType);
-				textField.setNullRepresentation("");
-				return textField;
-			}
-		});
+		fieldGroup.setFieldFactory(new SormasFieldGroupFieldFactory(editOrCreateUserRight));
 
 		setWidth(900, Unit.PIXELS);
 		setHeightUndefined();

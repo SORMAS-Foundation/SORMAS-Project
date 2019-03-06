@@ -29,7 +29,7 @@ import android.widget.RelativeLayout;
 
 import java.util.List;
 
-import de.symeda.sormas.api.sample.SampleTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -40,7 +40,7 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.controls.ControlLinkField;
-import de.symeda.sormas.app.core.enumeration.SampleTestResultTypeElaborator;
+import de.symeda.sormas.app.core.enumeration.PathogenTestResultTypeElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 
 import static android.view.View.GONE;
@@ -48,10 +48,10 @@ import static android.view.View.GONE;
 public class FormBindingAdapters {
 
     @BindingAdapter("resultStatusIcon")
-    public static void setResultStatusIcon(ImageView imageView, SampleTestResultType resultType) {
+    public static void setResultStatusIcon(ImageView imageView, PathogenTestResultType resultType) {
         if (resultType != null) {
             Context context = imageView.getContext();
-            SampleTestResultTypeElaborator elaborator = (SampleTestResultTypeElaborator)
+            PathogenTestResultTypeElaborator elaborator = (PathogenTestResultTypeElaborator)
                     StatusElaboratorFactory.getElaborator(resultType);
 
             int iconResource = elaborator.getIconResourceId();

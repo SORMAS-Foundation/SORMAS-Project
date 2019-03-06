@@ -49,9 +49,9 @@ import de.symeda.sormas.api.caze.classification.ClassificationCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNoneOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNotInStartDateRangeCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestPositiveResultCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPersonAgeBetweenYearsCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationSampleTestCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationSampleTestPositiveResultCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
@@ -101,7 +101,7 @@ public final class RetroProvider {
     private VisitFacadeRetro visitFacadeRetro;
     private EventFacadeRetro eventFacadeRetro;
     private SampleFacadeRetro sampleFacadeRetro;
-    private SampleTestFacadeRetro sampleTestFacadeRetro;
+    private PathogenTestFacadeRetro pathogenTestFacadeRetro;
     private EventParticipantFacadeRetro eventParticipantFacadeRetro;
     private WeeklyReportFacadeRetro weeklyReportFacadeRetro;
     private OutbreakFacadeRetro outbreakFacadeRetro;
@@ -118,12 +118,12 @@ public final class RetroProvider {
                 .registerSubtype(ClassificationCaseCriteriaDto.class, "ClassificationCaseCriteriaDto")
                 .registerSubtype(ClassificationNoneOfCriteriaDto.class, "ClassificationNoneOfCriteriaDto")
                 .registerSubtype(ClassificationPersonAgeBetweenYearsCriteriaDto.class, "ClassificationPersonAgeBetweenYearsCriteriaDto")
-                .registerSubtype(ClassificationSampleTestPositiveResultCriteriaDto.class, "ClassificationSampleTestPositiveResultCriteriaDto")
+                .registerSubtype(ClassificationPathogenTestPositiveResultCriteriaDto.class, "ClassificationPathogenTestPositiveResultCriteriaDto")
                 .registerSubtype(ClassificationXOfCriteriaDto.class, "ClassificationXOfCriteriaDto")
                 .registerSubtype(ClassificationEpiDataCriteriaDto.class, "ClassificationEpiDataCriteriaDto")
                 .registerSubtype(ClassificationNotInStartDateRangeCriteriaDto.class, "ClassificationNotInStartDateRangeCriteriaDto")
                 .registerSubtype(ClassificationSymptomsCriteriaDto.class, "ClassificationSymptomsCriteriaDto")
-                .registerSubtype(ClassificationSampleTestCriteriaDto.class, "ClassificationSampleTestCriteriaDto")
+                .registerSubtype(ClassificationPathogenTestCriteriaDto.class, "ClassificationPathogenTestCriteriaDto")
                 .registerSubtype(ClassificationXOfCriteriaDto.ClassificationXOfSubCriteriaDto.class, "ClassificationXOfSubCriteriaDto")
                 .registerSubtype(ClassificationXOfCriteriaDto.ClassificationOneOfCompactCriteriaDto.class, "ClassificationOneOfCompactCriteriaDto")
                 .registerSubtype(ClassificationAllOfCriteriaDto.ClassificationAllOfCompactCriteriaDto.class, "ClassificationAllOfCompactCriteriaDto");
@@ -562,15 +562,15 @@ public final class RetroProvider {
         return instance.sampleFacadeRetro;
     }
 
-    public static SampleTestFacadeRetro getSampleTestFacade() {
-        if (instance.sampleTestFacadeRetro == null) {
+    public static PathogenTestFacadeRetro getSampleTestFacade() {
+        if (instance.pathogenTestFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
-                if (instance.sampleTestFacadeRetro == null) {
-                    instance.sampleTestFacadeRetro = instance.retrofit.create(SampleTestFacadeRetro.class);
+                if (instance.pathogenTestFacadeRetro == null) {
+                    instance.pathogenTestFacadeRetro = instance.retrofit.create(PathogenTestFacadeRetro.class);
                 }
             }
         }
-        return instance.sampleTestFacadeRetro;
+        return instance.pathogenTestFacadeRetro;
     }
 
     public static EventParticipantFacadeRetro getEventParticipantFacade() {

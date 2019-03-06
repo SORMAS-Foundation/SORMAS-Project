@@ -223,8 +223,8 @@ public abstract class AbstractDialog implements NotificationContext {
             final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActivity(),
                     R.string.heading_confirmation_dialog,
                     R.string.confirmation_delete,
-                    R.string.s_yes,
-                    R.string.s_no);
+                    R.string.yes,
+                    R.string.no);
             confirmationDialog.setPositiveCallback(new Callback() {
                 @Override
                 public void call() {

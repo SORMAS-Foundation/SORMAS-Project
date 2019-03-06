@@ -33,7 +33,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
-import de.symeda.sormas.api.sample.SampleTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -50,13 +50,13 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.core.TimeAgo;
-import de.symeda.sormas.app.core.enumeration.SampleTestResultTypeElaborator;
+import de.symeda.sormas.app.core.enumeration.PathogenTestResultTypeElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 
 public class TextViewBindingAdapters {
@@ -384,7 +384,7 @@ public class TextViewBindingAdapters {
         } else {
             String val = yesNoUnknown.toString();
             String fieldId = textField.getResources().getResourceName(textField.getId());
-            String caption = I18nProperties.getCaption(ControlPropertyField.toPrefixPropertyId(fieldId));
+            String caption = I18nProperties.getCaption(ControlPropertyField.getPropertyIdPrefix(fieldId), ControlPropertyField.getSubPropertyId(fieldId));
 
             if (DataHelper.isNullOrEmpty(caption)) {
                 textField.setText(val);
@@ -704,8 +704,8 @@ public class TextViewBindingAdapters {
             String result = "";
             SpecimenCondition condition = sample.getSpecimenCondition();
             //TODO: Orson - Replace
-            //SampleTest mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(sample);
-            SampleTest mostRecentTest = null;
+            //PathogenTest mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(sample);
+            PathogenTest mostRecentTest = null;
 
             if (condition == null) {
                 textField.setText(defaultValue);
@@ -801,8 +801,8 @@ public class TextViewBindingAdapters {
     public static void setHasValue(TextView textView, ObservableList list) {
         Resources resources = textView.getContext().getResources();
 
-        String yes = resources.getString(R.string.s_yes);
-        String no = resources.getString(R.string.s_no);
+        String yes = resources.getString(R.string.yes);
+        String no = resources.getString(R.string.no);
 
         if (list != null && list.size() > 0) {
             textView.setText(yes);
@@ -812,11 +812,11 @@ public class TextViewBindingAdapters {
     }
 
     @BindingAdapter("resultType")
-    public static void setResultType(TextView textView, SampleTestResultType resultType) {
+    public static void setResultType(TextView textView, PathogenTestResultType resultType) {
         if (resultType != null) {
             Context context = textView.getContext();
-            SampleTestResultTypeElaborator elaborator =
-                    (SampleTestResultTypeElaborator) StatusElaboratorFactory.getElaborator(resultType);
+            PathogenTestResultTypeElaborator elaborator =
+                    (PathogenTestResultTypeElaborator) StatusElaboratorFactory.getElaborator(resultType);
             textView.setText(resultType.name());
             textView.setTextColor(context.getResources().getColor(elaborator.getColorIndicatorResource()));
         }

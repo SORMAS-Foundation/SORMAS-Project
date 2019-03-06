@@ -22,12 +22,14 @@ import android.view.View;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
-import de.symeda.sormas.api.sample.SampleTestType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -35,7 +37,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.backend.sample.SampleTest;
+import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
@@ -49,14 +51,14 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 
     private Sample record;
     private Sample referredSample;
-    private SampleTest mostRecentTest;
+    private PathogenTest mostRecentTest;
 
     // Enum lists
 
     private List<Item> sampleMaterialList;
-    private List<Item> sampleTestTypeList;
     private List<Item> sampleSourceList;
     private List<Facility> labList;
+    private List<String> requestedPathogenTests;
 
     public static SampleEditFragment newInstance(Sample activityRootData) {
         return newInstance(SampleEditFragment.class, null, activityRootData);
@@ -114,9 +116,13 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         }
 
         sampleMaterialList = DataUtils.getEnumItems(SampleMaterial.class, true);
-        sampleTestTypeList = DataUtils.getEnumItems(SampleTestType.class, true);
         sampleSourceList = DataUtils.getEnumItems(SampleSource.class, true);
         labList = DatabaseHelper.getFacilityDao().getLaboratories(true);
+
+        requestedPathogenTests = new ArrayList<>();
+        for (PathogenTestType pathogenTest : record.getRequestedPathogenTests()) {
+            requestedPathogenTests.add(pathogenTest.toString());
+        }
     }
 
     @Override
@@ -124,10 +130,12 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         setUpControlListeners(contentBinding);
 
         contentBinding.setData(record);
-        contentBinding.setSampleTest(mostRecentTest);
+        contentBinding.setPathogenTest(mostRecentTest);
         contentBinding.setReferredSample(referredSample);
 
         SampleValidator.initializeSampleValidation(contentBinding);
+
+        contentBinding.setPathogenTestTypeClass(PathogenTestType.class);
     }
 
     @Override
@@ -136,7 +144,6 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 
         // Initialize ControlSpinnerFields
         contentBinding.sampleSampleMaterial.initializeSpinner(sampleMaterialList);
-        contentBinding.sampleSuggestedTypeOfTest.initializeSpinner(sampleTestTypeList);
         contentBinding.sampleSampleSource.initializeSpinner(sampleSourceList);
         contentBinding.sampleLab.initializeSpinner(DataUtils.toItems(labList), new ValueChangeListener() {
             @Override
@@ -162,12 +169,22 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
             contentBinding.sampleSampleMaterial.setEnabled(false);
             contentBinding.sampleSampleMaterialText.setEnabled(false);
             contentBinding.sampleSampleSource.setEnabled(false);
-            contentBinding.sampleSuggestedTypeOfTest.setEnabled(false);
             contentBinding.sampleLab.setEnabled(false);
             contentBinding.sampleLabDetails.setEnabled(false);
             contentBinding.sampleShipped.setEnabled(false);
             contentBinding.sampleShipmentDate.setEnabled(false);
             contentBinding.sampleShipmentDetails.setEnabled(false);
+            contentBinding.samplePathogenTestingRequested.setVisibility(GONE);
+            contentBinding.sampleRequestedPathogenTests.setVisibility(GONE);
+
+            if (!requestedPathogenTests.isEmpty()) {
+                contentBinding.sampleRequestedPathogenTestsTags.setTags(requestedPathogenTests);
+            } else {
+                contentBinding.sampleRequestedPathogenTestsTags.setVisibility(GONE);
+                contentBinding.pathogenTestingDivider.setVisibility(GONE);
+            }
+        } else {
+            contentBinding.sampleRequestedPathogenTestsTags.setVisibility(GONE);
         }
     }
 

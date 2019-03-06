@@ -71,6 +71,7 @@
     <attr name="iconOnly" format="boolean" />
     <attr name="includeUnknown" format="reference|boolean" />
     <attr name="useAbbreviations" format="boolean" />
+    <attr name="useBoolean" format="boolean" />
 
     <attr name="value" format="string" />
     <attr name="valueFormat" format="reference" />
@@ -172,6 +173,7 @@
 
     <declare-styleable name="ControlSwitchField">
         <attr name="useAbbreviations" />
+        <attr name="useBoolean" />
     </declare-styleable>
 
 

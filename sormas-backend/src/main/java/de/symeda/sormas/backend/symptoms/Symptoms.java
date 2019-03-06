@@ -61,6 +61,11 @@ public class Symptoms extends AbstractDomainObject {
 	private Integer bloodPressureSystolic;
 	private Integer bloodPressureDiastolic;
 	private Integer heartRate;
+	private Integer respiratoryRate;
+	private Integer weight;
+	private Integer height;
+	private Integer midUpperArmCircumference;
+	private Integer glasgowComaScale;
 	
 	private SymptomState fever;
 	private SymptomState vomiting;
@@ -84,7 +89,6 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState bloodUrine;
 	private SymptomState otherHemorrhagicSymptoms;
 	private String otherHemorrhagicSymptomsText;
-	private SymptomState meningealSigns;
 	private SymptomState skinRash;
 	private SymptomState neckStiffness;
 	private SymptomState soreThroat;
@@ -92,9 +96,6 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState runnyNose;
 	private SymptomState difficultyBreathing;
 	private SymptomState chestPain;
-	private SymptomState confusedDisoriented;
-	private SymptomState seizures;
-	private SymptomState alteredConsciousness;
 	private SymptomState conjunctivitis;
 	private SymptomState eyePainLightSensitive;
 	private SymptomState kopliksSpots;
@@ -105,7 +106,6 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState anorexiaAppetiteLoss;
 	private SymptomState refusalFeedorDrink;
 	private SymptomState jointPain;
-	private SymptomState shock;
 	private SymptomState hiccups;
 	private SymptomState otherNonHemorrhagicSymptoms;
 	private SymptomState backache;
@@ -157,8 +157,22 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState tremor;
 	private String otherNonHemorrhagicSymptomsText;
 	private String symptomsComments;
+	
+	// complications
+	private SymptomState alteredConsciousness;
+	private SymptomState confusedDisoriented;
+	private SymptomState hemorrhagicSyndrome;
+	private SymptomState hyperglycemia;
+	private SymptomState hypoglycemia;
+	private SymptomState meningealSigns;
+	private SymptomState seizures;
+	private SymptomState sepsis;
+	private SymptomState shock;
+
+	
 	// when adding new fields make sure to extend toHumanString
 
+	
 	@Temporal(TemporalType.DATE)
 	public Date getOnsetDate() {
 		return onsetDate;
@@ -886,6 +900,15 @@ public class Symptoms extends AbstractDomainObject {
 	public void setLymphadenopathyCervical(SymptomState lymphadenopathyCervical) {
 		this.lymphadenopathyCervical = lymphadenopathyCervical;
 	}
+	
+	@Enumerated(EnumType.STRING)
+	public SymptomState getMeningealSigns() {
+		return meningealSigns;
+	}
+
+	public void setMeningealSigns(SymptomState meningealSigns) {
+		this.meningealSigns = meningealSigns;
+	}	
 
 	@Enumerated(EnumType.STRING)
 	public SymptomState getChillsSweats() {
@@ -1067,6 +1090,82 @@ public class Symptoms extends AbstractDomainObject {
 		this.tremor = tremor;
 	}
 
+	public Integer getMidUpperArmCircumference() {
+		return midUpperArmCircumference;
+	}
+
+	public void setMidUpperArmCircumference(Integer midUpperArmCircumference) {
+		this.midUpperArmCircumference = midUpperArmCircumference;
+	}
+
+	public Integer getRespiratoryRate() {
+		return respiratoryRate;
+	}
+
+	public void setRespiratoryRate(Integer respiratoryRate) {
+		this.respiratoryRate = respiratoryRate;
+	}
+
+	public Integer getWeight() {
+		return weight;
+	}
+
+	public void setWeight(Integer weight) {
+		this.weight = weight;
+	}
+
+	public Integer getHeight() {
+		return height;
+	}
+
+	public void setHeight(Integer height) {
+		this.height = height;
+	}
+
+	public Integer getGlasgowComaScale() {
+		return glasgowComaScale;
+	}
+
+	public void setGlasgowComaScale(Integer glasgowComaScale) {
+		this.glasgowComaScale = glasgowComaScale;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getHemorrhagicSyndrome() {
+		return hemorrhagicSyndrome;
+	}
+
+	public void setHemorrhagicSyndrome(SymptomState hemorrhagicSyndrome) {
+		this.hemorrhagicSyndrome = hemorrhagicSyndrome;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getHyperglycemia() {
+		return hyperglycemia;
+	}
+
+	public void setHyperglycemia(SymptomState hyperglycemia) {
+		this.hyperglycemia = hyperglycemia;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getHypoglycemia() {
+		return hypoglycemia;
+	}
+
+	public void setHypoglycemia(SymptomState hypoglycemia) {
+		this.hypoglycemia = hypoglycemia;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getSepsis() {
+		return sepsis;
+	}
+
+	public void setSepsis(SymptomState sepsis) {
+		this.sepsis = sepsis;
+	}
+
 	@Column(length = 255)
 	public String getSymptomsComments() {
 		return symptomsComments;
@@ -1084,6 +1183,25 @@ public class Symptoms extends AbstractDomainObject {
 		// patientIllLocation;
 		appendNotNullValue(string, temperature, SymptomsDto.TEMPERATURE);
 		appendNotNullValue(string, temperatureSource, SymptomsDto.TEMPERATURE_SOURCE);
+		appendNotNullValue(string, bloodPressureSystolic, SymptomsDto.BLOOD_PRESSURE_SYSTOLIC);
+		appendNotNullValue(string, bloodPressureDiastolic, SymptomsDto.BLOOD_PRESSURE_DIASTOLIC);
+		appendNotNullValue(string, heartRate, SymptomsDto.HEART_RATE);
+		appendNotNullValue(string, midUpperArmCircumference, SymptomsDto.MID_UPPER_ARM_CIRCUMFERENCE);
+		appendNotNullValue(string, respiratoryRate, SymptomsDto.RESPIRATORY_RATE);
+		appendNotNullValue(string, weight, SymptomsDto.WEIGHT);
+		appendNotNullValue(string, height, SymptomsDto.HEIGHT);
+		appendNotNullValue(string, glasgowComaScale, SymptomsDto.GLASGOW_COMA_SCALE);
+		
+		appendYesSymptom(string, alteredConsciousness, SymptomsDto.ALTERED_CONSCIOUSNESS);
+		appendYesSymptom(string, confusedDisoriented, SymptomsDto.CONFUSED_DISORIENTED);
+		appendYesSymptom(string, hemorrhagicSyndrome, SymptomsDto.HEMORRHAGIC_SYNDROME);
+		appendYesSymptom(string, hyperglycemia, SymptomsDto.HYPERGLYCEMIA);
+		appendYesSymptom(string, hypoglycemia, SymptomsDto.HYPOGLYCEMIA);
+		appendYesSymptom(string, meningealSigns, SymptomsDto.MENINGEAL_SIGNS);
+		appendYesSymptom(string, seizures, SymptomsDto.SEIZURES);
+		appendYesSymptom(string, sepsis, SymptomsDto.SEPSIS);
+		appendYesSymptom(string, shock, SymptomsDto.SHOCK);
+
 		appendYesSymptom(string, fever, SymptomsDto.FEVER);
 		appendYesSymptom(string, vomiting, SymptomsDto.VOMITING);
 		appendYesSymptom(string, diarrhea, SymptomsDto.DIARRHEA);
@@ -1113,9 +1231,6 @@ public class Symptoms extends AbstractDomainObject {
 		appendYesSymptom(string, runnyNose, SymptomsDto.RUNNY_NOSE);
 		appendYesSymptom(string, difficultyBreathing, SymptomsDto.DIFFICULTY_BREATHING);
 		appendYesSymptom(string, chestPain, SymptomsDto.CHEST_PAIN);
-		appendYesSymptom(string, confusedDisoriented, SymptomsDto.CONFUSED_DISORIENTED);
-		appendYesSymptom(string, seizures, SymptomsDto.SEIZURES);
-		appendYesSymptom(string, alteredConsciousness, SymptomsDto.ALTERED_CONSCIOUSNESS);
 		appendYesSymptom(string, conjunctivitis, SymptomsDto.CONJUNCTIVITIS);
 		appendYesSymptom(string, eyePainLightSensitive, SymptomsDto.EYE_PAIN_LIGHT_SENSITIVE);
 		appendYesSymptom(string, kopliksSpots, SymptomsDto.KOPLIKS_SPOTS);
@@ -1126,7 +1241,6 @@ public class Symptoms extends AbstractDomainObject {
 		appendYesSymptom(string, anorexiaAppetiteLoss, SymptomsDto.ANOREXIA_APPETITE_LOSS);
 		appendYesSymptom(string, refusalFeedorDrink, SymptomsDto.REFUSAL_FEEDOR_DRINK);
 		appendYesSymptom(string, jointPain, SymptomsDto.JOINT_PAIN);
-		appendYesSymptom(string, shock, SymptomsDto.SHOCK);
 		appendYesSymptom(string, hiccups, SymptomsDto.HICCUPS);
 		// otherNonHemorrhagicSymptoms
 		appendNotNullValue(string, otherNonHemorrhagicSymptomsText, SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT);
@@ -1218,14 +1332,5 @@ public class Symptoms extends AbstractDomainObject {
 			}
 			stringBuilder.append(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, dtoPropertyId, null));
 		}
-	}
-
-	@Enumerated(EnumType.STRING)
-	public SymptomState getMeningealSigns() {
-		return meningealSigns;
-	}
-
-	public void setMeningealSigns(SymptomState meningealSigns) {
-		this.meningealSigns = meningealSigns;
 	}
 }

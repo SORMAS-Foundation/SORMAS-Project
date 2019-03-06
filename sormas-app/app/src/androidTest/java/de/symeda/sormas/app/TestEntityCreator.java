@@ -25,9 +25,9 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.sample.SampleTestResultType;
-import de.symeda.sormas.api.sample.SampleTestType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -47,23 +47,18 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
-import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.report.WeeklyReport;
+import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.visit.Visit;
-
-/**
- * Created by Mate Strysewske on 14.06.2017.
- */
 
 public class TestEntityCreator {
 
@@ -260,25 +255,25 @@ public class TestEntityCreator {
         return DatabaseHelper.getEventParticipantDao().queryForIdWithEmbedded(eventParticipant.getId());
     }
 
-    public static SampleTest createSampleTest(Sample sample) {
-        SampleTestType sampleTestType = SampleTestType.RAPID_TEST;
-        SampleTestResultType sampleTestResultType = SampleTestResultType.NEGATIVE;
+    public static PathogenTest createSampleTest(Sample sample) {
+        PathogenTestType pathogenTestType = PathogenTestType.RAPID_TEST;
+        PathogenTestResultType pathogenTestResultType = PathogenTestResultType.NEGATIVE;
         Date sampleTestDateTime = new Date();
 
-        SampleTest sampleTest = DatabaseHelper.getSampleTestDao().build();
-        sampleTest.setSample(sample);
-        sampleTest.setTestType(sampleTestType);
-        sampleTest.setTestResult(sampleTestResultType);
-        sampleTest.setTestDateTime(sampleTestDateTime);
+        PathogenTest pathogenTest = DatabaseHelper.getSampleTestDao().build();
+        pathogenTest.setSample(sample);
+        pathogenTest.setTestType(pathogenTestType);
+        pathogenTest.setTestResult(pathogenTestResultType);
+        pathogenTest.setTestDateTime(sampleTestDateTime);
 
         try {
-            DatabaseHelper.getSampleTestDao().saveAndSnapshot(sampleTest);
-            DatabaseHelper.getSampleTestDao().accept(sampleTest);
+            DatabaseHelper.getSampleTestDao().saveAndSnapshot(pathogenTest);
+            DatabaseHelper.getSampleTestDao().accept(pathogenTest);
         } catch (DaoException e) {
             throw new RuntimeException(e);
         }
 
-        return DatabaseHelper.getSampleTestDao().queryForIdWithEmbedded(sampleTest.getId());
+        return DatabaseHelper.getSampleTestDao().queryForIdWithEmbedded(pathogenTest.getId());
     }
 
     public static Task createCaseTask(Case caze, TaskStatus taskStatus, User user) {

@@ -2896,3 +2896,87 @@ ALTER TABLE symptoms_history ADD COLUMN fluidinlungcavity varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN tremor varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (131, 'Additional signs and symptoms #938');
+
+-- 2019-02-18 Laboratory changes for case management #937
+
+ALTER TABLE sampletest RENAME TO pathogentest;
+ALTER TABLE sampletest_history RENAME TO pathogentest_history;
+
+CREATE TABLE additionaltest(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	sample_id bigint not null,
+	testdatetime timestamp not null,
+	haemoglobinuria varchar(255),
+	proteinuria varchar(255),
+	hematuria varchar(255),
+	arterialvenousgasph integer,
+	arterialvenousgaspco2 integer,
+	arterialvenousgaspao2 integer,
+	arterialvenousgashco3 integer,
+	gasoxygentherapy integer,
+	altsgpt integer,
+	astsgot integer,
+	creatinine integer,
+	potassium integer,
+	urea integer,
+	haemoglobin integer,
+	totalbilirubin integer,
+	conjbilirubin integer,
+	wbccount integer,
+	platelets integer,
+	prothrombintime integer,	
+	othertestresults varchar(512), 
+	sys_period tstzrange not null,
+	primary key(id));
+	
+ALTER TABLE additionaltest OWNER TO sormas_user;
+ALTER TABLE additionaltest ADD CONSTRAINT fk_additionaltest_sample_id FOREIGN KEY (sample_id) REFERENCES samples (id);
+
+CREATE TABLE additionaltest_history (LIKE additionaltest);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON additionaltest
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'additionaltest_history', true);
+ALTER TABLE additionaltest_history OWNER TO sormas_user;
+
+ALTER TABLE samples ADD COLUMN pathogentestingrequested boolean;
+ALTER TABLE samples_history ADD COLUMN pathogentestingrequested boolean;
+ALTER TABLE samples ADD COLUMN additionaltestingrequested boolean;
+ALTER TABLE samples_history ADD COLUMN additionaltestingrequested boolean;
+ALTER TABLE samples ADD COLUMN requestedpathogentestsstring varchar(512);
+ALTER TABLE samples_history ADD COLUMN requestedpathogentestsstring varchar(512);
+ALTER TABLE samples ADD COLUMN requestedadditionaltestsstring varchar(512);
+ALTER TABLE samples_history ADD COLUMN requestedadditionaltestsstring varchar(512);
+
+UPDATE samples SET pathogentestingrequested = TRUE;
+UPDATE samples SET additionaltestingrequested = FALSE;
+UPDATE samples SET requestedpathogentestsstring = samples.suggestedtypeoftest;
+ALTER TABLE samples DROP COLUMN suggestedtypeoftest;
+
+INSERT INTO schema_version (version_number, comment) VALUES (132, 'Laboratory changes for case management #937');
+
+-- 2019-03-06 Additions for Clinical Management #989
+
+ALTER TABLE symptoms ADD COLUMN hemorrhagicsyndrome varchar(255);
+ALTER TABLE symptoms ADD COLUMN hyperglycemia varchar(255);
+ALTER TABLE symptoms ADD COLUMN hypoglycemia varchar(255);
+ALTER TABLE symptoms ADD COLUMN sepsis varchar(255);
+ALTER TABLE symptoms ADD COLUMN midupperarmcircumference integer;
+ALTER TABLE symptoms ADD COLUMN respiratoryrate integer;
+ALTER TABLE symptoms ADD COLUMN weight integer;
+ALTER TABLE symptoms ADD COLUMN height integer;
+ALTER TABLE symptoms ADD COLUMN glasgowcomascale integer;
+
+ALTER TABLE symptoms_history ADD COLUMN hemorrhagicsyndrome varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN hyperglycemia varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN hypoglycemia varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN sepsis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN midupperarmcircumference integer;
+ALTER TABLE symptoms_history ADD COLUMN respiratoryrate integer;
+ALTER TABLE symptoms_history ADD COLUMN weight integer;
+ALTER TABLE symptoms_history ADD COLUMN height integer;
+ALTER TABLE symptoms_history ADD COLUMN glasgowcomascale integer;
+
+INSERT INTO schema_version (version_number, comment) VALUES (133, 'Additions for Clinical Management #989');

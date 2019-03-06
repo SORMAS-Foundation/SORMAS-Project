@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,6 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
@@ -128,8 +128,7 @@ public class DashboardMapComponent extends VerticalLayout {
 	private BigDecimal districtValuesLowerQuartile;
 	private BigDecimal districtValuesMedian;
 	private BigDecimal districtValuesUpperQuartile;
-	private ClickListener externalExpandButtonListener;
-	private ClickListener externalCollapseButtonListener;
+	private Consumer<Boolean> externalExpandListener;
 	private boolean emptyPopulationDistrictPresent;
 
 	public DashboardMapComponent(DashboardDataProvider dashboardDataProvider) {
@@ -232,12 +231,8 @@ public class DashboardMapComponent extends VerticalLayout {
 		return casesForFacility;
 	}
 
-	public void setExpandListener(ClickListener listener) {
-		externalExpandButtonListener = listener;
-	}
-
-	public void setCollapseListener(ClickListener listener) {
-		externalCollapseButtonListener = listener;
+	public void setExpandListener(Consumer<Boolean> listener) {
+		externalExpandListener = listener;
 	}
 
 	private HorizontalLayout createHeader() {
@@ -268,13 +263,13 @@ public class DashboardMapComponent extends VerticalLayout {
 		collapseMapButton.addStyleName(CssStyles.VSPACE_NONE);
 
 		expandMapButton.addClickListener(e -> {
-			externalExpandButtonListener.buttonClick(e);
+			externalExpandListener.accept(true);
 			mapHeaderLayout.removeComponent(expandMapButton);
 			mapHeaderLayout.addComponent(collapseMapButton);
 			mapHeaderLayout.setComponentAlignment(collapseMapButton, Alignment.MIDDLE_RIGHT);
 		});
 		collapseMapButton.addClickListener(e -> {
-			externalCollapseButtonListener.buttonClick(e);
+			externalExpandListener.accept(false);
 			mapHeaderLayout.removeComponent(collapseMapButton);
 			mapHeaderLayout.addComponent(expandMapButton);
 			mapHeaderLayout.setComponentAlignment(expandMapButton, Alignment.MIDDLE_RIGHT);

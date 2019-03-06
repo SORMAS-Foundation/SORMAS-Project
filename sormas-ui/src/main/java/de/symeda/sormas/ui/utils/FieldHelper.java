@@ -19,11 +19,17 @@ package de.symeda.sormas.ui.utils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.HasComponents;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -31,16 +37,16 @@ import de.symeda.sormas.api.utils.Diseases;
 
 public final class FieldHelper {
 
-	public static void setReadOnlyWhen(FieldGroup fieldGroup, Object targetPropertyId, 
-			Object sourcePropertyId, List<Object> sourceValues, boolean clearOnReadOnly) {
+	public static void setReadOnlyWhen(FieldGroup fieldGroup, Object targetPropertyId, Object sourcePropertyId,
+			List<Object> sourceValues, boolean clearOnReadOnly) {
 		setReadOnlyWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, clearOnReadOnly);
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static void setReadOnlyWhen(final FieldGroup fieldGroup, List<Object> targetPropertyIds, 
+	public static void setReadOnlyWhen(final FieldGroup fieldGroup, List<Object> targetPropertyIds,
 			Object sourcePropertyId, final List<Object> sourceValues, final boolean clearOnReadOnly) {
 
-		Field sourceField = fieldGroup.getField(sourcePropertyId); 
+		Field sourceField = fieldGroup.getField(sourcePropertyId);
 		if (sourceField instanceof AbstractField<?>) {
 			((AbstractField) sourceField).setImmediate(true);
 		}
@@ -81,37 +87,42 @@ public final class FieldHelper {
 		});
 	}
 
-	public static void setVisibleWhen(FieldGroup fieldGroup, String targetPropertyId, 
-			Object sourcePropertyId, List<Object> sourceValues, boolean clearOnHidden) {
-		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, false, clearOnHidden, null, null);
+	public static void setVisibleWhen(FieldGroup fieldGroup, String targetPropertyId, Object sourcePropertyId,
+			List<Object> sourceValues, boolean clearOnHidden) {
+		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, false,
+				clearOnHidden, null, null);
 	}
 
-	public static void setVisibleWhenNotNull(FieldGroup fieldGroup, String targetPropertyId, 
-			Object sourcePropertyId, boolean clearOnHidden) {
-		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, Arrays.asList((Object)null), true, clearOnHidden, null, null);
+	public static void setVisibleWhenNotNull(FieldGroup fieldGroup, String targetPropertyId, Object sourcePropertyId,
+			boolean clearOnHidden) {
+		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, Arrays.asList((Object) null),
+				true, clearOnHidden, null, null);
 	}
 
-	public static void setVisibleWhen(FieldGroup fieldGroup, List<String> targetPropertyIds, 
-			Object sourcePropertyId, List<Object> sourceValues, boolean clearOnHidden) {
+	public static void setVisibleWhen(FieldGroup fieldGroup, List<String> targetPropertyIds, Object sourcePropertyId,
+			List<Object> sourceValues, boolean clearOnHidden) {
 		setVisibleWhen(fieldGroup, targetPropertyIds, sourcePropertyId, sourceValues, false, clearOnHidden, null, null);
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static void setVisibleWhen(FieldGroup fieldGroup, String targetPropertyId, 
-			Object sourcePropertyId, List<Object> sourceValues, boolean clearOnHidden, Class fieldClass, Disease disease) {
-		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, false, clearOnHidden, fieldClass, disease);
+	public static void setVisibleWhen(FieldGroup fieldGroup, String targetPropertyId, Object sourcePropertyId,
+			List<Object> sourceValues, boolean clearOnHidden, Class fieldClass, Disease disease) {
+		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, false,
+				clearOnHidden, fieldClass, disease);
 	}
 
+	@SuppressWarnings("rawtypes")
+	public static void setVisibleWhen(final FieldGroup fieldGroup, List<String> targetPropertyIds,
+			Object sourcePropertyId, final List<Object> sourceValues, final boolean clearOnHidden, Class fieldClass,
+			Disease disease) {
+		setVisibleWhen(fieldGroup, targetPropertyIds, sourcePropertyId, sourceValues, false, clearOnHidden, fieldClass,
+				disease);
+	}
 
 	@SuppressWarnings("rawtypes")
-	public static void setVisibleWhen(final FieldGroup fieldGroup, List<String> targetPropertyIds, 
-			Object sourcePropertyId, final List<Object> sourceValues, final boolean clearOnHidden, Class fieldClass, Disease disease) {
-		setVisibleWhen(fieldGroup, targetPropertyIds, sourcePropertyId, sourceValues, false, clearOnHidden, fieldClass, disease);
-	}
-	
-	@SuppressWarnings("rawtypes")
-	public static void setVisibleWhen(final FieldGroup fieldGroup, List<String> targetPropertyIds, 
-			Object sourcePropertyId, final List<Object> sourceValues, boolean visibleWhenNot, final boolean clearOnHidden, Class fieldClass, Disease disease) {
+	public static void setVisibleWhen(final FieldGroup fieldGroup, List<String> targetPropertyIds,
+			Object sourcePropertyId, final List<Object> sourceValues, boolean visibleWhenNot,
+			final boolean clearOnHidden, Class fieldClass, Disease disease) {
 
 		Field sourceField = fieldGroup.getField(sourcePropertyId);
 		if (sourceField instanceof AbstractField<?>) {
@@ -125,10 +136,10 @@ public final class FieldHelper {
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 //				if(fieldClass == null || disease == null || Diseases.DiseasesConfiguration.isDefined(fieldClass, (String) targetPropertyId, disease)) {
-					targetField.setVisible(visible);
-					if (!visible && clearOnHidden && targetField.getValue() != null) {
-						targetField.clear();
-					}
+				targetField.setVisible(visible);
+				if (!visible && clearOnHidden && targetField.getValue() != null) {
+					targetField.clear();
+				}
 //				}
 			}
 		}
@@ -139,48 +150,49 @@ public final class FieldHelper {
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 //				if(fieldClass == null || disease == null || Diseases.DiseasesConfiguration.isDefined(fieldClass, (String) targetPropertyId, disease)) {
-					targetField.setVisible(visible);
-					if (!visible && clearOnHidden && targetField.getValue() != null) {
-						targetField.clear();
-					}
+				targetField.setVisible(visible);
+				if (!visible && clearOnHidden && targetField.getValue() != null) {
+					targetField.clear();
+				}
 //				}
 			}
 		});
 	}
 
-	public static void setRequiredWhen(FieldGroup fieldGroup, Object sourcePropertyId,
-			List<String> targetPropertyIds, final List<Object> sourceValues) {
+	public static void setRequiredWhen(FieldGroup fieldGroup, Object sourcePropertyId, List<String> targetPropertyIds,
+			final List<Object> sourceValues) {
 
 		setRequiredWhen(fieldGroup, fieldGroup.getField(sourcePropertyId), targetPropertyIds, sourceValues);
 	}
-	
-	public static void setRequiredWhenNotNull(FieldGroup fieldGroup, Object sourcePropertyId, 
-			String targetPropertyId) {
-		setRequiredWhen(fieldGroup, fieldGroup.getField(sourcePropertyId), Arrays.asList(targetPropertyId), Arrays.asList((Object)null), true, null);
+
+	public static void setRequiredWhenNotNull(FieldGroup fieldGroup, Object sourcePropertyId, String targetPropertyId) {
+		setRequiredWhen(fieldGroup, fieldGroup.getField(sourcePropertyId), Arrays.asList(targetPropertyId),
+				Arrays.asList((Object) null), true, null);
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static void setRequiredWhen(FieldGroup fieldGroup, Field sourceField,
-			List<String> targetPropertyIds, final List<Object> sourceValues) {
-		setRequiredWhen(fieldGroup, sourceField, targetPropertyIds, sourceValues, false, null);	
-		}
+	public static void setRequiredWhen(FieldGroup fieldGroup, Field sourceField, List<String> targetPropertyIds,
+			final List<Object> sourceValues) {
+		setRequiredWhen(fieldGroup, sourceField, targetPropertyIds, sourceValues, false, null);
+	}
 
 	@SuppressWarnings("rawtypes")
-	public static void setRequiredWhen(FieldGroup fieldGroup, Field sourceField, 
-			List<String> targetPropertyIds, final List<Object> sourceValues, Disease disease) {
+	public static void setRequiredWhen(FieldGroup fieldGroup, Field sourceField, List<String> targetPropertyIds,
+			final List<Object> sourceValues, Disease disease) {
 		setRequiredWhen(fieldGroup, sourceField, targetPropertyIds, sourceValues, false, disease);
 	}
-	
+
 	/**
-	 * Sets the target fields to required when the sourceField has a value that's contained
-	 * in the sourceValues list; the disease is needed to make sure that no fields are set
-	 * to required that are not visible and therefore cannot be edited by the user.
+	 * Sets the target fields to required when the sourceField has a value that's
+	 * contained in the sourceValues list; the disease is needed to make sure that
+	 * no fields are set to required that are not visible and therefore cannot be
+	 * edited by the user.
 	 */
 	@SuppressWarnings("rawtypes")
-	public static void setRequiredWhen(FieldGroup fieldGroup, Field sourceField, 
-			List<String> targetPropertyIds, final List<Object> sourceValues, boolean requiredWhenNot, Disease disease) {
+	public static void setRequiredWhen(FieldGroup fieldGroup, Field sourceField, List<String> targetPropertyIds,
+			final List<Object> sourceValues, boolean requiredWhenNot, Disease disease) {
 
-		if(sourceField instanceof AbstractField<?>) {
+		if (sourceField instanceof AbstractField<?>) {
 			((AbstractField) sourceField).setImmediate(true);
 		}
 
@@ -188,15 +200,15 @@ public final class FieldHelper {
 		{
 			boolean required = sourceValues.contains(sourceField.getValue());
 			required = required != requiredWhenNot;
-			for(Object targetPropertyId : targetPropertyIds) {
+			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				if (!targetField.isVisible()) {
 					targetField.setRequired(false);
 					continue;
 				}
-				
-				if (disease == null 
-						|| Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
+
+				if (disease == null || Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class,
+						(String) targetPropertyId, disease)) {
 					targetField.setRequired(required);
 				}
 			}
@@ -205,15 +217,15 @@ public final class FieldHelper {
 		sourceField.addValueChangeListener(event -> {
 			boolean required = sourceValues.contains(event.getProperty().getValue());
 			required = required != requiredWhenNot;
-			for(Object targetPropertyId : targetPropertyIds) {
+			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				if (!targetField.isVisible()) {
 					targetField.setRequired(false);
 					continue;
 				}
-				
-				if (disease == null
-						|| Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
+
+				if (disease == null || Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class,
+						(String) targetPropertyId, disease)) {
 					targetField.setRequired(required);
 				}
 			}
@@ -221,8 +233,8 @@ public final class FieldHelper {
 	}
 
 	/**
-	 * Sets the target fields to enabled when the source field has a value that's contained
-	 * in the sourceValues list.
+	 * Sets the target fields to enabled when the source field has a value that's
+	 * contained in the sourceValues list.
 	 */
 	@SuppressWarnings("rawtypes")
 	public static void setEnabledWhen(FieldGroup fieldGroup, Field sourceField, final List<Object> sourceValues,
@@ -256,7 +268,7 @@ public final class FieldHelper {
 		});
 	}
 
-	public static void setFirstVisibleClearOthers(Field<?> first, Field<?> ...others) {
+	public static void setFirstVisibleClearOthers(Field<?> first, Field<?>... others) {
 		if (first != null) {
 			first.setVisible(true);
 		}
@@ -266,7 +278,7 @@ public final class FieldHelper {
 		}
 	}
 
-	public static void setFirstRequired(Field<?> first, Field<?> ...others) {
+	public static void setFirstRequired(Field<?> first, Field<?>... others) {
 		if (first != null) {
 			first.setRequired(true);
 		}
@@ -294,7 +306,7 @@ public final class FieldHelper {
 		select.setReadOnly(readOnly);
 	}
 
-	public static void addSoftRequiredStyle(Field<?> ...fields) {
+	public static void addSoftRequiredStyle(Field<?>... fields) {
 		for (Field<?> field : fields) {
 			if (!field.getStyleName().contains(CssStyles.SOFT_REQUIRED)) {
 				CssStyles.style(field, CssStyles.SOFT_REQUIRED);
@@ -302,22 +314,23 @@ public final class FieldHelper {
 		}
 	}
 
-	public static void removeSoftRequiredStyle(Field<?> ...fields) {
+	public static void removeSoftRequiredStyle(Field<?>... fields) {
 		for (Field<?> field : fields) {
 			CssStyles.removeStyles(field, CssStyles.SOFT_REQUIRED);
 		}
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static void addSoftRequiredStyleWhen(Field<?> sourceField, List<Field<?>> targetFields, final List<Object> sourceValues) {	
-		if(sourceField instanceof AbstractField<?>) {
+	public static void addSoftRequiredStyleWhen(Field<?> sourceField, List<Field<?>> targetFields,
+			final List<Object> sourceValues) {
+		if (sourceField instanceof AbstractField<?>) {
 			((AbstractField) sourceField).setImmediate(true);
 		}
 
 		// initialize
 		{
 			boolean softRequired = sourceValues.contains(sourceField.getValue());
-			for(Field<?> targetField : targetFields) {
+			for (Field<?> targetField : targetFields) {
 				if (softRequired) {
 					addSoftRequiredStyle(targetField);
 				} else {
@@ -328,7 +341,7 @@ public final class FieldHelper {
 
 		sourceField.addValueChangeListener(event -> {
 			boolean softRequired = sourceValues.contains(event.getProperty().getValue());
-			for(Field<?> targetField : targetFields) {
+			for (Field<?> targetField : targetFields) {
 				if (softRequired) {
 					addSoftRequiredStyle(targetField);
 				} else {
@@ -339,19 +352,20 @@ public final class FieldHelper {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static void addSoftRequiredStyleWhen(FieldGroup fieldGroup, Field sourceField, 
+	public static void addSoftRequiredStyleWhen(FieldGroup fieldGroup, Field sourceField,
 			List<String> targetPropertyIds, final List<Object> sourceValues, Disease disease) {
 
-		if(sourceField instanceof AbstractField<?>) {
+		if (sourceField instanceof AbstractField<?>) {
 			((AbstractField) sourceField).setImmediate(true);
 		}
 
 		// initialize
 		{
 			boolean required = sourceValues.contains(sourceField.getValue());
-			for(Object targetPropertyId : targetPropertyIds) {
+			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
-				if(disease == null || Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
+				if (disease == null || Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class,
+						(String) targetPropertyId, disease)) {
 					if (required) {
 						addSoftRequiredStyle(targetField);
 					} else {
@@ -363,9 +377,10 @@ public final class FieldHelper {
 
 		sourceField.addValueChangeListener(event -> {
 			boolean required = sourceValues.contains(event.getProperty().getValue());
-			for(Object targetPropertyId : targetPropertyIds) {
+			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
-				if(disease == null || Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
+				if (disease == null || Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class,
+						(String) targetPropertyId, disease)) {
 					if (required) {
 						addSoftRequiredStyle(targetField);
 					} else {
@@ -376,4 +391,21 @@ public final class FieldHelper {
 		});
 	}
 
+	public static Stream<Component> stream(Component parent) {
+		if (parent instanceof HasComponents) {
+			return StreamSupport
+					.stream(Spliterators.spliteratorUnknownSize(((HasComponents) parent).iterator(),
+							Spliterator.ORDERED), false)
+					.map(child -> stream(child)).reduce(Stream.of(parent), (s1, s2) -> Stream.concat(s1, s2));
+		} else {
+			return Stream.of(parent);
+		}
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public static Stream<Field> streamFields(Component parent) {
+		return FieldHelper.stream(parent)
+	    .filter(c -> c instanceof Field)
+	    .map(c -> (Field)c);
+	}
 }

@@ -24,7 +24,7 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
-import de.symeda.sormas.api.sample.SampleTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.sample.ShipmentStatus;
@@ -57,8 +57,8 @@ public class StatusElaboratorFactory {
             result = new CaseClassificationElaborator((CaseClassification) e);
         } else if (e instanceof ContactClassification) {
             result = new ContactClassificationElaborator((ContactClassification) e);
-        } else if (e instanceof SampleTestResultType) {
-            result = new SampleTestResultTypeElaborator((SampleTestResultType) e);
+        } else if (e instanceof PathogenTestResultType) {
+            result = new PathogenTestResultTypeElaborator((PathogenTestResultType) e);
         } else {
             throw new IllegalArgumentException(e.getDeclaringClass().getName());
         }

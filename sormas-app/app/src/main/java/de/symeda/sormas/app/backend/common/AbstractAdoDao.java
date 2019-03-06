@@ -619,11 +619,11 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
                             conflictStringBuilder.append(I18nProperties.getCaption(source.getI18nPrefix() + "." + property.getName()));
                             conflictStringBuilder.append("<br/><i>");
-                            conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.s_synclog_yours));
+                            conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_yours));
                             conflictStringBuilder.append("</i>");
                             conflictStringBuilder.append(DataHelper.toStringNullable(currentFieldValue));
                             conflictStringBuilder.append("<br/><i>");
-                            conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.s_synclog_server));
+                            conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_server));
                             conflictStringBuilder.append("</i>");
                             conflictStringBuilder.append(DataHelper.toStringNullable(sourceFieldValue));
                             conflictStringBuilder.append("<br/>");
@@ -644,6 +644,11 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                         collectionProperties = new ArrayList<>();
                     }
                     collectionProperties.add(property);
+
+
+                    // TODO: DA WEITER OBEN MUSS SCHON GECHECKT WERDEN, OB ES EINE COLLECTION VON ENUMS IST, WENN JA DANN MACH DAS ANDERE -> ELEMENT TYPE RAUSFINDEN
+
+
                 } else {
                     // Other objects are not supported
                     throw new UnsupportedOperationException(property.getPropertyType().getName() + " is not supported as a property type.");
@@ -713,7 +718,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                         // entry exists and is modified -> inform the user that the changes are deleted
                         conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.error_modified_list_entry_deleted));
                         conflictStringBuilder.append("<br/><i>");
-                        conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.s_synclog_yours));
+                        conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_yours));
                         conflictStringBuilder.append("</i>");
                         conflictStringBuilder.append(DataHelper.toStringNullable(existingEntry));
                     }
@@ -793,6 +798,10 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             Iterator<PropertyDescriptor> propertyIterator = AdoPropertyHelper.getCollectionProperties(ado.getClass());
             while (propertyIterator.hasNext()) {
                 PropertyDescriptor property = propertyIterator.next();
+
+                if (!AdoPropertyHelper.isModifiableProperty(property)) {
+                    continue;
+                }
 
                 // accept all collection elements
                 Collection<AbstractDomainObject> sourceCollection = (Collection<AbstractDomainObject>) property.getReadMethod().invoke(ado);

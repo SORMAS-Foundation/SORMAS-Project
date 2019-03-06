@@ -20,19 +20,18 @@ package de.symeda.sormas.app.component.controls;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import androidx.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
-import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.app.R;
-
+import androidx.core.content.ContextCompat;
+import androidx.databinding.BindingAdapter;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.sample.Sample;
 
 public class ControlTextImageField extends ControlTextReadField {
@@ -179,7 +178,7 @@ public class ControlTextImageField extends ControlTextReadField {
     @BindingAdapter(value = {"taskPriorityValue", "defaultValue"}, requireAll = false)
     public static void setTaskPriorityValue(ControlTextImageField textImageField, TaskPriority priority, String defaultValue) {
         if (priority == null) {
-            textImageField.setFieldValue(getDefaultValue(defaultValue));
+            textImageField.setFieldValue(textImageField.getDefaultValue(defaultValue));
             textImageField.applyDefaultValueStyle();
         } else {
             // TODO reset default style?
@@ -200,7 +199,7 @@ public class ControlTextImageField extends ControlTextReadField {
     @BindingAdapter(value = {"taskStatusValue", "defaultValue"}, requireAll = false)
     public static void setTaskStatusValue(ControlTextImageField textImageField, TaskStatus status, String defaultValue) {
         if (status == null) {
-            textImageField.setFieldValue(getDefaultValue(defaultValue));
+            textImageField.setFieldValue(textImageField.getDefaultValue(defaultValue));
             textImageField.applyDefaultValueStyle();
         } else {
             // TODO reset default style?
@@ -222,7 +221,7 @@ public class ControlTextImageField extends ControlTextReadField {
     @BindingAdapter(value = {"shipmentStatus", "defaultValue"}, requireAll = false)
     public static void setShipmentStatus(ControlTextImageField textImageField, Sample sample, String defaultValue) {
         if (sample == null) {
-            textImageField.setValue(getDefaultValue(defaultValue), false);
+            textImageField.setValue(textImageField.getDefaultValue(defaultValue), false);
             textImageField.applyDefaultValueStyle();
         } else {
             // TODO reset default style?
@@ -231,7 +230,7 @@ public class ControlTextImageField extends ControlTextReadField {
                 textImageField.setValue(DateHelper.formatLocalShortDate(sample.getShipmentDate()), true);
                 textImageField.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.green);
             } else {
-                textImageField.setValue(textImageField.getResources().getString(R.string.s_no), false);
+                textImageField.setValue(textImageField.getResources().getString(R.string.no), false);
                 textImageField.setImageBackground(R.drawable.ic_cancel_24dp, R.color.red);
             }
         }
@@ -240,7 +239,7 @@ public class ControlTextImageField extends ControlTextReadField {
     @BindingAdapter(value = {"receivedStatus", "defaultValue"}, requireAll = false)
     public static void setReceivedStatus(ControlTextImageField textImageField, Sample sample, String defaultValue) {
         if (sample == null) {
-            textImageField.setValue(getDefaultValue(defaultValue), false);
+            textImageField.setValue(textImageField.getDefaultValue(defaultValue), false);
             textImageField.applyDefaultValueStyle();
         } else {
             // TODO reset default style?
@@ -249,7 +248,7 @@ public class ControlTextImageField extends ControlTextReadField {
                 textImageField.setValue(DateHelper.formatLocalShortDate(sample.getReceivedDate()), true);
                 textImageField.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.green);
             } else {
-                textImageField.setValue(textImageField.getResources().getString(R.string.s_no), false);
+                textImageField.setValue(textImageField.getResources().getString(R.string.no), false);
                 textImageField.setImageBackground(R.drawable.ic_cancel_24dp, R.color.red);
             }
         }

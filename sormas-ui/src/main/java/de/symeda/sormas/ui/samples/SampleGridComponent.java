@@ -47,8 +47,8 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
-import de.symeda.sormas.api.sample.SampleTestDto;
-import de.symeda.sormas.api.sample.SampleTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -126,10 +126,10 @@ public class SampleGridComponent extends VerticalLayout {
 
 		testResultFilter = new ComboBox();
 		testResultFilter.setWidth(140, Unit.PIXELS);
-		testResultFilter.setInputPrompt(I18nProperties.getPrefixCaption(SampleTestDto.I18N_PREFIX, SampleTestDto.TEST_RESULT));
-		testResultFilter.addItems((Object[])SampleTestResultType.values());
+		testResultFilter.setInputPrompt(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT));
+		testResultFilter.addItems((Object[])PathogenTestResultType.values());
 		testResultFilter.addValueChangeListener(e -> {
-			criteria.testResult(((SampleTestResultType)e.getProperty().getValue()));
+			criteria.testResult(((PathogenTestResultType)e.getProperty().getValue()));
 			samplesView.navigateTo(criteria);
 		});
 		filterLayout.addComponent(testResultFilter);        
