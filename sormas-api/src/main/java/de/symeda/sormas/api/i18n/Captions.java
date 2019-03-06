@@ -685,6 +685,8 @@ public interface Captions {
 	public static String Symptoms_height = "Symptoms.height";
 	public static String Symptoms_hemorrhagicSyndrome = "Symptoms.hemorrhagicSyndrome";
 	public static String Symptoms_hiccups = "Symptoms.hiccups";
+	public static String Symptoms_hyperglycemia = "Symptoms.hyperglycemia";
+	public static String Symptoms_hypoglycemia = "Symptoms.hypoglycemia";
 	public static String Symptoms_injectionSiteBleeding = "Symptoms.injectionSiteBleeding";
 	public static String Symptoms_jaundice = "Symptoms.jaundice";
 	public static String Symptoms_jointPain = "Symptoms.jointPain";
@@ -761,12 +763,10 @@ public interface Captions {
 	public static String Symptoms_tremor = "Symptoms.tremor";
 	public static String Symptoms_unexplainedBleeding = "Symptoms.unexplainedBleeding";
 	public static String Symptoms_vomiting = "Symptoms.vomiting";
+	public static String Symptoms_weight = "Symptoms.weight";
 	public static String symptomsLesionsLocations = "symptomsLesionsLocations";
 	public static String symptomsMaxTemperature = "symptomsMaxTemperature";
 	public static String symptomsSetClearedToNo = "symptomsSetClearedToNo";
-	public static String Symtpoms_hyperglycemia = "Symtpoms.hyperglycemia";
-	public static String Symtpoms_hypoglycemia = "Symtpoms.hypoglycemia";
-	public static String Sypmtoms_weight = "Sypmtoms.weight";
 	public static String system = "system";
 	public static String Task = "Task";
 	public static String Task_assigneeReply = "Task.assigneeReply";
