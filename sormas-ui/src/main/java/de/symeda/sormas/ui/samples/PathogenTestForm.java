@@ -86,7 +86,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		fourFoldIncrease.setEnabled(false);
 		addField(PathogenTestDto.TEST_RESULT_TEXT, TextArea.class).setRows(3);
 
-		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.TEST_TYPE_TEXT, PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.OTHER), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.TEST_TYPE_TEXT, PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.PCR_RT_PCR, PathogenTestType.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestDto.TEST_TYPE_TEXT), Arrays.asList(PathogenTestType.OTHER));
 		
 		testTypeField.addValueChangeListener(e -> {
