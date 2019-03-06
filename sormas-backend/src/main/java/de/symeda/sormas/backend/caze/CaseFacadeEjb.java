@@ -297,6 +297,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}
+		cq.orderBy(cb.desc(caze.get(Case.CHANGE_DATE)));
 
 		List<CaseIndexDto> resultList = em.createQuery(cq).getResultList();
 		return resultList;

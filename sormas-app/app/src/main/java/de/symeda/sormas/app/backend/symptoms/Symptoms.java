@@ -75,6 +75,16 @@ public class Symptoms extends AbstractDomainObject {
     private Integer bloodPressureDiastolic;
     @Column
     private Integer heartRate;
+    @Column
+    private Integer respiratoryRate;
+    @Column
+    private Integer weight;
+    @Column
+    private Integer height;
+    @Column
+    private Integer midUpperArmCircumference;
+    @Column
+    private Integer glasgowComaScale;
 
     @Enumerated(EnumType.STRING)
     private SymptomState fever;
@@ -131,12 +141,6 @@ public class Symptoms extends AbstractDomainObject {
     @Enumerated(EnumType.STRING)
     private SymptomState chestPain;
     @Enumerated(EnumType.STRING)
-    private SymptomState confusedDisoriented;
-    @Enumerated(EnumType.STRING)
-    private SymptomState seizures;
-    @Enumerated(EnumType.STRING)
-    private SymptomState alteredConsciousness;
-    @Enumerated(EnumType.STRING)
     private SymptomState conjunctivitis;
     @Enumerated(EnumType.STRING)
     private SymptomState eyePainLightSensitive;
@@ -156,8 +160,6 @@ public class Symptoms extends AbstractDomainObject {
     private SymptomState refusalFeedorDrink;
     @Enumerated(EnumType.STRING)
     private SymptomState jointPain;
-    @Enumerated(EnumType.STRING)
-    private SymptomState shock;
     @Enumerated(EnumType.STRING)
     private SymptomState hiccups;
     @Enumerated(EnumType.STRING)
@@ -234,8 +236,6 @@ public class Symptoms extends AbstractDomainObject {
     @Enumerated(EnumType.STRING)
     private SymptomState bulgingFontanelle;
     @Enumerated(EnumType.STRING)
-    private SymptomState meningealSigns;
-    @Enumerated(EnumType.STRING)
     private SymptomState pharyngealErythema;
     @Enumerated(EnumType.STRING)
     private SymptomState pharyngealExudate;
@@ -267,6 +267,31 @@ public class Symptoms extends AbstractDomainObject {
     private SymptomState otherNonHemorrhagicSymptoms;
     @Column(length = 255)
     private String otherNonHemorrhagicSymptomsText;
+
+    // complications
+    @Enumerated(EnumType.STRING)
+    private SymptomState alteredConsciousness;
+    @Enumerated(EnumType.STRING)
+    private SymptomState confusedDisoriented;
+    @Enumerated(EnumType.STRING)
+    private SymptomState hemorrhagicSyndrome;
+    @Enumerated(EnumType.STRING)
+    private SymptomState hyperglycemia;
+    @Enumerated(EnumType.STRING)
+    private SymptomState hypoglycemia;
+    @Enumerated(EnumType.STRING)
+    private SymptomState meningealSigns;
+    @Enumerated(EnumType.STRING)
+    private SymptomState seizures;
+    @Enumerated(EnumType.STRING)
+    private SymptomState sepsis;
+    @Enumerated(EnumType.STRING)
+    private SymptomState shock;
+
+    @Override
+    public String getI18nPrefix() {
+        return I18N_PREFIX;
+    }
 
     public Date getOnsetDate() {
         return onsetDate;
@@ -1092,11 +1117,6 @@ public class Symptoms extends AbstractDomainObject {
         this.patientIllLocation = patientIllLocation;
     }
 
-    @Override
-    public String getI18nPrefix() {
-        return I18N_PREFIX;
-    }
-
     public SymptomState getMeningealSigns() {
         return meningealSigns;
     }
@@ -1105,4 +1125,75 @@ public class Symptoms extends AbstractDomainObject {
         this.meningealSigns = meningealSigns;
     }
 
+    public Integer getRespiratoryRate() {
+        return respiratoryRate;
+    }
+
+    public void setRespiratoryRate(Integer respiratoryRate) {
+        this.respiratoryRate = respiratoryRate;
+    }
+
+    public Integer getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Integer weight) {
+        this.weight = weight;
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+
+    public void setHeight(Integer height) {
+        this.height = height;
+    }
+
+    public Integer getMidUpperArmCircumference() {
+        return midUpperArmCircumference;
+    }
+
+    public void setMidUpperArmCircumference(Integer midUpperArmCircumference) {
+        this.midUpperArmCircumference = midUpperArmCircumference;
+    }
+
+    public Integer getGlasgowComaScale() {
+        return glasgowComaScale;
+    }
+
+    public void setGlasgowComaScale(Integer glasgowComaScale) {
+        this.glasgowComaScale = glasgowComaScale;
+    }
+
+    public SymptomState getHemorrhagicSyndrome() {
+        return hemorrhagicSyndrome;
+    }
+
+    public void setHemorrhagicSyndrome(SymptomState hemorrhagicSyndrome) {
+        this.hemorrhagicSyndrome = hemorrhagicSyndrome;
+    }
+
+    public SymptomState getHyperglycemia() {
+        return hyperglycemia;
+    }
+
+    public void setHyperglycemia(SymptomState hyperglycemia) {
+        this.hyperglycemia = hyperglycemia;
+    }
+
+    public SymptomState getHypoglycemia() {
+        return hypoglycemia;
+    }
+
+    public void setHypoglycemia(SymptomState hypoglycemia) {
+        this.hypoglycemia = hypoglycemia;
+    }
+
+    public SymptomState getSepsis() {
+        return sepsis;
+    }
+
+    public void setSepsis(SymptomState sepsis) {
+        this.sepsis = sepsis;
+    }
 }

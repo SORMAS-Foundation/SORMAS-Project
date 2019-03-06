@@ -100,7 +100,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 141;
+	public static final int DATABASE_VERSION = 142;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -687,6 +687,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Sample.class).executeRaw("UPDATE samples SET pathogenTestingRequested = 1;");
 					getDao(Sample.class).executeRaw("UPDATE samples SET additionalTestingRequested = 0;");
 					getDao(Sample.class).executeRaw("DROP TABLE tmp_samples;");
+				case 141:
+					currentVersion = 141;
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN respiratoryRate integer;");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN weight integer;");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN height integer;");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN midUpperArmCircumference integer;");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN glasgowComaScale integer;");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN hemorrhagicSyndrome varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN hyperglycemia varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN hypoglycemia varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN sepsis varchar(255);");
 
 					// ATTENTION: break should only be done after last version
 					break;

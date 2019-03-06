@@ -2956,3 +2956,27 @@ UPDATE samples SET requestedpathogentestsstring = samples.suggestedtypeoftest;
 ALTER TABLE samples DROP COLUMN suggestedtypeoftest;
 
 INSERT INTO schema_version (version_number, comment) VALUES (132, 'Laboratory changes for case management #937');
+
+-- 2019-03-06 Additions for Clinical Management #989
+
+ALTER TABLE symptoms ADD COLUMN hemorrhagicsyndrome varchar(255);
+ALTER TABLE symptoms ADD COLUMN hyperglycemia varchar(255);
+ALTER TABLE symptoms ADD COLUMN hypoglycemia varchar(255);
+ALTER TABLE symptoms ADD COLUMN sepsis varchar(255);
+ALTER TABLE symptoms ADD COLUMN midupperarmcircumference integer;
+ALTER TABLE symptoms ADD COLUMN respiratoryrate integer;
+ALTER TABLE symptoms ADD COLUMN weight integer;
+ALTER TABLE symptoms ADD COLUMN height integer;
+ALTER TABLE symptoms ADD COLUMN glasgowcomascale integer;
+
+ALTER TABLE symptoms_history ADD COLUMN hemorrhagicsyndrome varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN hyperglycemia varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN hypoglycemia varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN sepsis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN midupperarmcircumference integer;
+ALTER TABLE symptoms_history ADD COLUMN respiratoryrate integer;
+ALTER TABLE symptoms_history ADD COLUMN weight integer;
+ALTER TABLE symptoms_history ADD COLUMN height integer;
+ALTER TABLE symptoms_history ADD COLUMN glasgowcomascale integer;
+
+INSERT INTO schema_version (version_number, comment) VALUES (133, 'Additions for Clinical Management #989');

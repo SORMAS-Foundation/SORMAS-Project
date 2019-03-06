@@ -155,6 +155,15 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setSidePain(source.getSidePain());
 		target.setFluidInLungCavity(source.getFluidInLungCavity());
 		target.setTremor(source.getTremor());
+		target.setHemorrhagicSyndrome(source.getHemorrhagicSyndrome());
+		target.setHyperglycemia(source.getHyperglycemia());
+		target.setHypoglycemia(source.getHypoglycemia());
+		target.setSepsis(source.getSepsis());
+		target.setMidUpperArmCircumference(source.getMidUpperArmCircumference());
+		target.setRespiratoryRate(source.getRespiratoryRate());
+		target.setWeight(source.getWeight());
+		target.setHeight(source.getHeight());
+		target.setGlasgowComaScale(source.getGlasgowComaScale());
 		
 		return symptoms;
 	}
@@ -276,7 +285,16 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setSidePain(source.getSidePain());
 		target.setFluidInLungCavity(source.getFluidInLungCavity());
 		target.setTremor(source.getTremor());
-		
+		target.setHemorrhagicSyndrome(source.getHemorrhagicSyndrome());
+		target.setHyperglycemia(source.getHyperglycemia());
+		target.setHypoglycemia(source.getHypoglycemia());
+		target.setSepsis(source.getSepsis());
+		target.setMidUpperArmCircumference(source.getMidUpperArmCircumference());
+		target.setRespiratoryRate(source.getRespiratoryRate());
+		target.setWeight(source.getWeight());
+		target.setHeight(source.getHeight());
+		target.setGlasgowComaScale(source.getGlasgowComaScale());
+
 		return target;
 	}
 	

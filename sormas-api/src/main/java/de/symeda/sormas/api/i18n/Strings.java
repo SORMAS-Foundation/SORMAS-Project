@@ -101,7 +101,9 @@ public interface Strings {
 	public static String headingCasesDeleted = "headingCasesDeleted";
 	public static String headingCaseStatusMap = "headingCaseStatusMap";
 	public static String headingChangeCaseDisease = "headingChangeCaseDisease";
+	public static String headingClinicalMeasurements = "headingClinicalMeasurements";
 	public static String headingClinicalVisitsDeleted = "headingClinicalVisitsDeleted";
+	public static String headingComplications = "headingComplications";
 	public static String headingConfirmArchiving = "headingConfirmArchiving";
 	public static String headingConfirmDearchiving = "headingConfirmDearchiving";
 	public static String headingConfirmDeletion = "headingConfirmDeletion";

@@ -39,6 +39,7 @@ public final class SymptomsHelper {
 	private static List<String> specialSymptomPropertyIds;
 	private static List<String> lesionsLocationsPropertyIds;
 
+	
 	public static List<Float> getTemperatureValues() {
 		List<Float> x = new ArrayList<Float>();
 		for (int i = 350; i <= 440; i++) {
@@ -47,20 +48,40 @@ public final class SymptomsHelper {
 		return x;
 	}
 
-	public static List<Integer> getBloodPressureValues() {
+	private static List<Integer> getIntegerValues(int min, int max) {
 		List<Integer> x = new ArrayList<>();
-		for (int i = 0; i <= 300; i++) {
+		for (int i = min; i <= max; i++) {
 			x.add(i);
 		}
 		return x;
 	}
+	
+	public static List<Integer> getBloodPressureValues() {
+		return getIntegerValues(0, 300);
+	}
 
 	public static List<Integer> getHeartRateValues() {
-		List<Integer> x = new ArrayList<>();
-		for (int i = 0; i <= 300; i++) {
-			x.add(i);
-		}
-		return x;
+		return getIntegerValues(0, 300);
+	}
+
+	public static List<Integer> getRespiratoryRateValues() {
+		return getIntegerValues(0, 120);
+	}
+
+	public static List<Integer> getGlasgowComaScaleValues() {
+		return getIntegerValues(1, 6);
+	}
+
+	public static List<Integer> getWeightValues() {
+		return getIntegerValues(0, 300);
+	}
+
+	public static List<Integer> getHeightValues() {
+		return getIntegerValues(1, 300);
+	}
+
+	public static List<Integer> getMidUpperArmCircumferenceValues() {
+		return getIntegerValues(1, 100);
 	}
 
 	public static String getTemperatureString(float value) {

@@ -6,7 +6,6 @@ public interface Captions {
 	public static String aboutDataDictionary = "aboutDataDictionary";
 	public static String aboutSormasVersion = "aboutSormasVersion";
 	public static String aboutTechnicalManual = "aboutTechnicalManual";
-	public static String additionalTestNewTest = "additionalTestNewTest";
 	public static String actionApplyDateFilter = "actionApplyDateFilter";
 	public static String actionArchive = "actionArchive";
 	public static String actionCancel = "actionCancel";
@@ -30,6 +29,29 @@ public interface Captions {
 	public static String actionShowLessFilters = "actionShowLessFilters";
 	public static String actionShowMoreFilters = "actionShowMoreFilters";
 	public static String actionSkip = "actionSkip";
+	public static String AdditionalTest_altSgpt = "AdditionalTest.altSgpt";
+	public static String AdditionalTest_arterialVenousBloodGas = "AdditionalTest.arterialVenousBloodGas";
+	public static String AdditionalTest_arterialVenousGasHco3 = "AdditionalTest.arterialVenousGasHco3";
+	public static String AdditionalTest_arterialVenousGasPao2 = "AdditionalTest.arterialVenousGasPao2";
+	public static String AdditionalTest_arterialVenousGasPco2 = "AdditionalTest.arterialVenousGasPco2";
+	public static String AdditionalTest_arterialVenousGasPH = "AdditionalTest.arterialVenousGasPH";
+	public static String AdditionalTest_astSgot = "AdditionalTest.astSgot";
+	public static String AdditionalTest_conjBilirubin = "AdditionalTest.conjBilirubin";
+	public static String AdditionalTest_creatinine = "AdditionalTest.creatinine";
+	public static String AdditionalTest_gasOxygenTherapy = "AdditionalTest.gasOxygenTherapy";
+	public static String AdditionalTest_haemoglobin = "AdditionalTest.haemoglobin";
+	public static String AdditionalTest_haemoglobinuria = "AdditionalTest.haemoglobinuria";
+	public static String AdditionalTest_hematuria = "AdditionalTest.hematuria";
+	public static String AdditionalTest_otherTestResults = "AdditionalTest.otherTestResults";
+	public static String AdditionalTest_platelets = "AdditionalTest.platelets";
+	public static String AdditionalTest_potassium = "AdditionalTest.potassium";
+	public static String AdditionalTest_proteinuria = "AdditionalTest.proteinuria";
+	public static String AdditionalTest_prothrombinTime = "AdditionalTest.prothrombinTime";
+	public static String AdditionalTest_testDateTime = "AdditionalTest.testDateTime";
+	public static String AdditionalTest_totalBilirubin = "AdditionalTest.totalBilirubin";
+	public static String AdditionalTest_urea = "AdditionalTest.urea";
+	public static String AdditionalTest_wbcCount = "AdditionalTest.wbcCount";
+	public static String additionalTestNewTest = "additionalTestNewTest";
 	public static String all = "all";
 	public static String bulkActions = "bulkActions";
 	public static String bulkCancelFollowUp = "bulkCancelFollowUp";
@@ -89,11 +111,14 @@ public interface Captions {
 	public static String CaseData_vaccinationDoses = "CaseData.vaccinationDoses";
 	public static String CaseData_vaccinationInfoSource = "CaseData.vaccinationInfoSource";
 	public static String CaseExport_address = "CaseExport.address";
+	public static String CaseExport_admittedToHealthFacility = "CaseExport.admittedToHealthFacility";
 	public static String CaseExport_ageGroup = "CaseExport.ageGroup";
-	public static String CaseExport_contactWithConfirmedCase = "CaseExport.contactWithConfirmedCase";
+	public static String CaseExport_burialInfo = "CaseExport.burialInfo";
 	public static String CaseExport_contactWithRodent = "CaseExport.contactWithRodent";
+	public static String CaseExport_id = "CaseExport.id";
 	public static String CaseExport_initialDetectionPlace = "CaseExport.initialDetectionPlace";
 	public static String CaseExport_labResults = "CaseExport.labResults";
+	public static String CaseExport_maxSourceCaseClassifcation = "CaseExport.maxSourceCaseClassifcation";
 	public static String CaseExport_sampleDates = "CaseExport.sampleDates";
 	public static String CaseExport_sampleTaken = "CaseExport.sampleTaken";
 	public static String CaseExport_travelHistory = "CaseExport.travelHistory";
@@ -132,6 +157,7 @@ public interface Captions {
 	public static String ClinicalVisit_visitingPerson = "ClinicalVisit.visitingPerson";
 	public static String ClinicalVisit_visitRemarks = "ClinicalVisit.visitRemarks";
 	public static String clinicalVisitNewClinicalVisit = "clinicalVisitNewClinicalVisit";
+	public static String columnAdditionalTests = "columnAdditionalTests";
 	public static String columnDiseaseShort = "columnDiseaseShort";
 	public static String columnNumberOfPendingTasks = "columnNumberOfPendingTasks";
 	public static String community = "community";
@@ -546,6 +572,7 @@ public interface Captions {
 	public static String Region_population = "Region.population";
 	public static String regionName = "regionName";
 	public static String Sample = "Sample";
+	public static String Sample_additionalTestingRequested = "Sample.additionalTestingRequested";
 	public static String Sample_associatedCase = "Sample.associatedCase";
 	public static String Sample_caseClassification = "Sample.caseClassification";
 	public static String Sample_caseDistrict = "Sample.caseDistrict";
@@ -559,12 +586,15 @@ public interface Captions {
 	public static String Sample_labUser = "Sample.labUser";
 	public static String Sample_noTestPossibleReason = "Sample.noTestPossibleReason";
 	public static String Sample_otherLab = "Sample.otherLab";
+	public static String Sample_pathogenTestingRequested = "Sample.pathogenTestingRequested";
 	public static String Sample_received = "Sample.received";
 	public static String Sample_receivedDate = "Sample.receivedDate";
 	public static String Sample_referredToUuid = "Sample.referredToUuid";
 	public static String Sample_reportDateTime = "Sample.reportDateTime";
 	public static String Sample_reportInfo = "Sample.reportInfo";
 	public static String Sample_reportingUser = "Sample.reportingUser";
+	public static String Sample_requestedPathogenTests = "Sample.requestedPathogenTests";
+	public static String Sample_requestedPathogenTestsTags = "Sample.requestedPathogenTestsTags";
 	public static String Sample_sampleCode = "Sample.sampleCode";
 	public static String Sample_sampleDateTime = "Sample.sampleDateTime";
 	public static String Sample_sampleMaterial = "Sample.sampleMaterial";
@@ -647,10 +677,13 @@ public interface Captions {
 	public static String Symptoms_fever = "Symptoms.fever";
 	public static String Symptoms_firstSymptom = "Symptoms.firstSymptom";
 	public static String Symptoms_fluidInLungCavity = "Symptoms.fluidInLungCavity";
+	public static String Symptoms_glasgowComaScale = "Symptoms.glasgowComaScale";
 	public static String Symptoms_gumsBleeding = "Symptoms.gumsBleeding";
 	public static String Symptoms_headache = "Symptoms.headache";
 	public static String Symptoms_hearingloss = "Symptoms.hearingloss";
 	public static String Symptoms_heartRate = "Symptoms.heartRate";
+	public static String Symptoms_height = "Symptoms.height";
+	public static String Symptoms_hemorrhagicSyndrome = "Symptoms.hemorrhagicSyndrome";
 	public static String Symptoms_hiccups = "Symptoms.hiccups";
 	public static String Symptoms_injectionSiteBleeding = "Symptoms.injectionSiteBleeding";
 	public static String Symptoms_jaundice = "Symptoms.jaundice";
@@ -681,6 +714,7 @@ public interface Captions {
 	public static String Symptoms_lymphadenopathyInguinal = "Symptoms.lymphadenopathyInguinal";
 	public static String Symptoms_malaise = "Symptoms.malaise";
 	public static String Symptoms_meningealSigns = "Symptoms.meningealSigns";
+	public static String Symptoms_midUpperArmCircumference = "Symptoms.midUpperArmCircumference";
 	public static String Symptoms_musclePain = "Symptoms.musclePain";
 	public static String Symptoms_nausea = "Symptoms.nausea";
 	public static String Symptoms_neckStiffness = "Symptoms.neckStiffness";
@@ -703,8 +737,10 @@ public interface Captions {
 	public static String Symptoms_rapidBreathing = "Symptoms.rapidBreathing";
 	public static String Symptoms_redBloodVomit = "Symptoms.redBloodVomit";
 	public static String Symptoms_refusalFeedorDrink = "Symptoms.refusalFeedorDrink";
+	public static String Symptoms_respiratoryRate = "Symptoms.respiratoryRate";
 	public static String Symptoms_runnyNose = "Symptoms.runnyNose";
 	public static String Symptoms_seizures = "Symptoms.seizures";
+	public static String Symptoms_sepsis = "Symptoms.sepsis";
 	public static String Symptoms_shock = "Symptoms.shock";
 	public static String Symptoms_sidePain = "Symptoms.sidePain";
 	public static String Symptoms_skinBruising = "Symptoms.skinBruising";
@@ -728,6 +764,9 @@ public interface Captions {
 	public static String symptomsLesionsLocations = "symptomsLesionsLocations";
 	public static String symptomsMaxTemperature = "symptomsMaxTemperature";
 	public static String symptomsSetClearedToNo = "symptomsSetClearedToNo";
+	public static String Symtpoms_hyperglycemia = "Symtpoms.hyperglycemia";
+	public static String Symtpoms_hypoglycemia = "Symtpoms.hypoglycemia";
+	public static String Sypmtoms_weight = "Sypmtoms.weight";
 	public static String system = "system";
 	public static String Task = "Task";
 	public static String Task_assigneeReply = "Task.assigneeReply";
@@ -865,6 +904,4 @@ public interface Captions {
 	public static String WeeklyReportRegionSummary_officers = "WeeklyReportRegionSummary.officers";
 	public static String WeeklyReportRegionSummary_officerZeroReports = "WeeklyReportRegionSummary.officerZeroReports";
 	public static String weeklyReportsInDistrict = "weeklyReportsInDistrict";
-	public static String columnAdditionalTests = "columnAdditionalTests";
-	
  }
