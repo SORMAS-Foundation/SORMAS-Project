@@ -189,6 +189,19 @@ public class ContactService extends AbstractAdoService<Contact> {
 		return count > 0;
 	}
 
+
+	public List<CaseClassification> getSourceCaseClassifications(long resultCaseId) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CaseClassification> cq = cb.createQuery(CaseClassification.class);
+		Root<Contact> from = cq.from(getElementClass());
+		Join<Contact, Case> cazeJoin = from.join(Contact.CAZE);
+		Join<Contact, Case> resultingCazeJoin = from.join(Contact.RESULTING_CASE);
+		cq.select(cazeJoin.get(Case.CASE_CLASSIFICATION));
+		cq.where(cb.equal(resultingCazeJoin.get(Case.ID), resultCaseId));
+		return em.createQuery(cq).getResultList();
+	}
+	
 	/**
 	 * 
 	 * @param fromDate inclusive

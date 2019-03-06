@@ -114,11 +114,11 @@ public class PersonDto extends EntityDto {
 	private DeathPlaceType deathPlaceType;
 	@Diseases({ Disease.EVD, Disease.OTHER })
 	private String deathPlaceDescription;
-	@Diseases({ Disease.EVD, Disease.OTHER })
+	@Diseases({ Disease.EVD, Disease.LASSA, Disease.OTHER })
 	private Date burialDate;
-	@Diseases({ Disease.EVD, Disease.OTHER })
+	@Diseases({ Disease.EVD, Disease.LASSA, Disease.OTHER })
 	private String burialPlaceDescription;
-	@Diseases({ Disease.EVD, Disease.OTHER })
+	@Diseases({ Disease.EVD, Disease.LASSA, Disease.OTHER })
 	private BurialConductor burialConductor;
 	private String phone;
 	private String phoneOwner;

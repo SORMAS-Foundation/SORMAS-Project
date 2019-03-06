@@ -53,6 +53,7 @@ import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -206,7 +207,8 @@ public class CasesView extends AbstractView {
 								I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
 										I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, propertyId,
 												I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId,
-														I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId)))));
+														I18nProperties.getPrefixCaption(EpiDataDto.I18N_PREFIX, propertyId,
+																I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId))))));
 					},
 					"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
