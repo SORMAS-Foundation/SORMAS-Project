@@ -120,6 +120,10 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
             contentBinding.sampleRequestedPathogenTestsTags.setVisibility(GONE);
             contentBinding.pathogenTestingDivider.setVisibility(GONE);
         }
+
+        if (!Boolean.TRUE.equals(record.getPathogenTestingRequested())) {
+            contentBinding.samplePathogenTestResult.setVisibility(GONE);
+        }
     }
 
     @Override

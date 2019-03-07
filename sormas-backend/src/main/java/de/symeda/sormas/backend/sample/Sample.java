@@ -40,6 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.sample.AdditionalTestType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
@@ -80,7 +81,7 @@ public class Sample extends AbstractDomainObject {
 	public static final String SPECIMEN_CONDITION = "specimenCondition";
 	public static final String ADDITIONAL_TESTING_REQUESTED = "additionalTestingRequested";
 	public static final String ADDITIONAL_TESTS = "additionalTests";
-	public static final String MAIN_SAMPLE_TEST = "mainSampleTest";
+	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
 
 	private Case associatedCase;
 	private String sampleCode;
@@ -107,6 +108,7 @@ public class Sample extends AbstractDomainObject {
 	private Sample referredTo;
 	private boolean shipped;
 	private boolean received;
+	private PathogenTestResultType pathogenTestResult;
 
 	private Boolean pathogenTestingRequested;
 	private Boolean additionalTestingRequested;
@@ -117,7 +119,6 @@ public class Sample extends AbstractDomainObject {
 
 	private List<PathogenTest> pathogenTests;
 	private List<AdditionalTest> additionalTests;
-	private PathogenTest mainSampleTest; 
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -302,6 +303,14 @@ public class Sample extends AbstractDomainObject {
 		this.received = received;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public PathogenTestResultType getPathogenTestResult() {
+		return pathogenTestResult;
+	}
+	public void setPathogenTestResult(PathogenTestResultType pathogenTestResult) {
+		this.pathogenTestResult = pathogenTestResult;
+	}
+
 	@Column
 	public Boolean getPathogenTestingRequested() {
 		return pathogenTestingRequested;
@@ -424,21 +433,6 @@ public class Sample extends AbstractDomainObject {
 	}
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
-	}
-
-	/**
-	 * The representative test.
-	 * Be default this should be set to the last done test.
-	 * @see SampleService#updateMainSampleTest
-	 */
-	@OneToOne(cascade = {})
-	@JoinColumn(nullable = true)
-	public PathogenTest getMainSampleTest() {
-		return mainSampleTest;
-	}
-
-	public void setMainSampleTest(PathogenTest mainSampleTest) {
-		this.mainSampleTest = mainSampleTest;
 	}
 
 }

@@ -57,6 +57,7 @@ public class SampleDto extends EntityDto {
 	public static final String ADDITIONAL_TESTING_REQUESTED = "additionalTestingRequested";
 	public static final String REQUESTED_PATHOGEN_TESTS = "requestedPathogenTests";
 	public static final String REQUESTED_ADDITIONAL_TESTS = "requestedAdditionalTests";
+	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
 	
 	@Required
 	private CaseReferenceDto associatedCase;
@@ -89,6 +90,7 @@ public class SampleDto extends EntityDto {
 	private SampleReferenceDto referredTo;
 	private boolean shipped;
 	private boolean received;
+	private PathogenTestResultType pathogenTestResult;
 
 	private Boolean pathogenTestingRequested;
 	private Boolean additionalTestingRequested;
@@ -253,6 +255,14 @@ public class SampleDto extends EntityDto {
 
 	public void setReceived(boolean received) {
 		this.received = received;
+	}
+
+	public PathogenTestResultType getPathogenTestResult() {
+		return pathogenTestResult;
+	}
+
+	public void setPathogenTestResult(PathogenTestResultType pathogenTestResult) {
+		this.pathogenTestResult = pathogenTestResult;
 	}
 
 	public Boolean getPathogenTestingRequested() {

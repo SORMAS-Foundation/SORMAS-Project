@@ -113,7 +113,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 
 		// List should have no entry
 		SampleCriteria sampleCriteria = new SampleCriteria()
-				.testResult(PathogenTestResultType.POSITIVE);
+				.pathogenTestResult(PathogenTestResultType.POSITIVE);
 		List<SampleIndexDto> sampleIndexDtos = getSampleFacade().getIndexList(user.getUuid(), sampleCriteria);
 		assertEquals(0, sampleIndexDtos.size());
 		
@@ -127,7 +127,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		sampleIndexDtos = getSampleFacade().getIndexList(user.getUuid(), sampleCriteria);
 		assertEquals(0, sampleIndexDtos.size());
 		
-		sampleCriteria.testResult(PathogenTestResultType.NEGATIVE);
+		sampleCriteria.pathogenTestResult(PathogenTestResultType.NEGATIVE);
 		sampleIndexDtos = getSampleFacade().getIndexList(user.getUuid(), sampleCriteria);
 		assertEquals(1, sampleIndexDtos.size());
 		

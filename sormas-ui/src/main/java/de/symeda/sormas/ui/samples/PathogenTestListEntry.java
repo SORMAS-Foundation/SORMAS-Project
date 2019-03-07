@@ -62,7 +62,7 @@ public class PathogenTestListEntry extends HorizontalLayout {
 		Label labelTopLeft = new Label(htmlTop, ContentMode.HTML);
 		topLabelLayout.addComponent(labelTopLeft);
 
-		if (pathogenTest.isTestResultVerified()) {
+		if (pathogenTest.getTestResultVerified()) {
 			Label labelTopRight = new Label(FontAwesome.CHECK_CIRCLE.getHtml(), ContentMode.HTML);
 			labelTopRight.setSizeUndefined();
 			labelTopRight.addStyleName(CssStyles.LABEL_LARGE);

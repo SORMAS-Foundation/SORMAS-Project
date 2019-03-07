@@ -133,6 +133,14 @@
                     app:value="@={data.comment}"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/sample_pathogenTestResult"
+                    app:value="@{data.pathogenTestResult}"
+                    app:dependencyParentField="@{samplePathogenTestingRequested}"
+                    app:dependencyParentValue="@{true}"
+                    app:dependencyParentClearOnHide="@{false}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <ImageView
                     android:id="@+id/pathogenTestingDivider"
                     style="@style/FullHorizontalDividerStyle" />

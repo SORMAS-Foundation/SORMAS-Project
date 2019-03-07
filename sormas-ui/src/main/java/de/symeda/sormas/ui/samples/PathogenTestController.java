@@ -30,14 +30,13 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -56,14 +55,14 @@ public class PathogenTestController {
 	
 	public void create(SampleReferenceDto sampleRef, int caseSampleCount, Runnable callback) {
 		PathogenTestForm createForm = new PathogenTestForm(FacadeProvider.getSampleFacade().getSampleByUuid(sampleRef.getUuid()), true, UserRight.PATHOGEN_TEST_CREATE, caseSampleCount);
-		createForm.setValue(createNewSampleTest(sampleRef));
+		createForm.setValue(PathogenTestDto.build(sampleRef, UserProvider.getCurrent().getUser()));
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView = new CommitDiscardWrapperComponent<PathogenTestForm>(createForm, createForm.getFieldGroup());
 	
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
 				if (!createForm.getFieldGroup().isModified()) {
-					saveSampleTest(createForm.getValue());
+					savePathogenTest(createForm.getValue());
 					callback.run();
 				}
 			}
@@ -86,7 +85,7 @@ public class PathogenTestController {
 			@Override
 			public void onCommit() {
 				if (!form.getFieldGroup().isModified()) {
-					saveSampleTest(form.getValue());
+					savePathogenTest(form.getValue());
 					callback.run();
 				}
 			}
@@ -104,7 +103,7 @@ public class PathogenTestController {
 		}
 	}
 	
-	private void saveSampleTest(PathogenTestDto dto) {
+	private void savePathogenTest(PathogenTestDto dto) {
 		SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid());
 		CaseDataDto existingCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(sample.getAssociatedCase().getUuid());
 		facade.savePathogenTest(dto);
@@ -116,17 +115,8 @@ public class PathogenTestController {
 			notification.setDelayMsec(-1);
 			notification.show(Page.getCurrent());
 		} else {
-			Notification.show(I18nProperties.getString(Strings.messagePathogenTestSavedShort), Type.WARNING_MESSAGE);
+			Notification.show(I18nProperties.getString(Strings.messagePathogenTestSavedShort), Type.TRAY_NOTIFICATION);
 		}
-	}
-	
-	private PathogenTestDto createNewSampleTest(SampleReferenceDto sampleRef) {
-		PathogenTestDto sampleTest = new PathogenTestDto();
-		sampleTest.setUuid(DataHelper.createUuid());
-		sampleTest.setSample(sampleRef);
-		sampleTest.setLab(UserProvider.getCurrent().getUser().getLaboratory());
-		sampleTest.setLabUser(UserProvider.getCurrent().getUserReference());
-		return sampleTest;
 	}
 	
 	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {

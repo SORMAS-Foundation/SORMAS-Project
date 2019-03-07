@@ -128,6 +128,11 @@
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/sample_pathogenTestResult"
+                    app:value="@{data.pathogenTestResult}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/sample_comment"
                     app:value="@{data.comment}"
                     style="@style/ControlSingleColumnStyle" />

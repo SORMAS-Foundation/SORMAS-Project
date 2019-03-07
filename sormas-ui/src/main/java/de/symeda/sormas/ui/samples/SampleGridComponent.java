@@ -129,7 +129,7 @@ public class SampleGridComponent extends VerticalLayout {
 		testResultFilter.setInputPrompt(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT));
 		testResultFilter.addItems((Object[])PathogenTestResultType.values());
 		testResultFilter.addValueChangeListener(e -> {
-			criteria.testResult(((PathogenTestResultType)e.getProperty().getValue()));
+			criteria.pathogenTestResult(((PathogenTestResultType)e.getProperty().getValue()));
 			samplesView.navigateTo(criteria);
 		});
 		filterLayout.addComponent(testResultFilter);        
@@ -335,7 +335,7 @@ public class SampleGridComponent extends VerticalLayout {
 		updateStatusButtons();
 		updateArchivedButton();
 
-		testResultFilter.setValue(criteria.getTestResult());
+		testResultFilter.setValue(criteria.getPathogenTestResult());
 		specimenConditionFilter.setValue(criteria.getSpecimenCondition());
 		classificationFilter.setValue(criteria.getCaseClassification());
 		diseaseFilter.setValue(criteria.getDisease());

@@ -61,7 +61,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 		}
 		else if (Boolean.class.isAssignableFrom(type)) {
 			OptionGroup field = createBooleanField(OptionGroup.class);
-			CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
+			CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL);
 			return (T) field;
 		}
 		else if (AbstractSelect.class.isAssignableFrom(fieldType)) {

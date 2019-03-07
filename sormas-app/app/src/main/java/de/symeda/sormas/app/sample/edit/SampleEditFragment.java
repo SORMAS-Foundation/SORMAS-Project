@@ -183,6 +183,10 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
                 contentBinding.sampleRequestedPathogenTestsTags.setVisibility(GONE);
                 contentBinding.pathogenTestingDivider.setVisibility(GONE);
             }
+
+            if (!Boolean.TRUE.equals(record.getPathogenTestingRequested())) {
+                contentBinding.samplePathogenTestResult.setVisibility(GONE);
+            }
         } else {
             contentBinding.sampleRequestedPathogenTestsTags.setVisibility(GONE);
         }

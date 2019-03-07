@@ -18,7 +18,6 @@
 package de.symeda.sormas.backend.sample;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -38,7 +37,6 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.DashboardSampleDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -65,7 +63,6 @@ public class SampleService extends AbstractAdoService<Sample> {
 
 	@Override
 	public void delete(Sample sample) {
-		sample.setMainSampleTest(null);
 		for (PathogenTest pathogenTest : sample.getSampleTests()) {
 			pathogenTestService.delete(pathogenTest);
 		}
@@ -170,16 +167,6 @@ public class SampleService extends AbstractAdoService<Sample> {
 			return em.createQuery(cq).getSingleResult();
 		} catch (NoResultException e) {
 			return null;
-		}
-	}
-
-	public void updateMainSampleTest(Sample sample) {
-		if (sample.getSampleTests().isEmpty()) {
-			sample.setMainSampleTest(null);
-		} else {
-			sample.setMainSampleTest(sample.getSampleTests().stream()
-					.sorted(Comparator.comparing(PathogenTest::getTestDateTime, Comparator.nullsLast(Comparator.reverseOrder())))
-					.findFirst().get());
 		}
 	}
 
@@ -312,12 +299,8 @@ public class SampleService extends AbstractAdoService<Sample> {
 				filter = and(cb, filter, cb.isNull(from.get(Sample.REFERRED_TO)));
 			}
 		}
-		if (criteria.getTestResult() != null) {
-			Predicate subFilter = cb.equal(from.join(Sample.MAIN_SAMPLE_TEST, JoinType.LEFT).get(PathogenTest.TEST_RESULT), criteria.getTestResult());
-			if (criteria.getTestResult() == PathogenTestResultType.PENDING) {
-				subFilter = or(cb, subFilter, cb.isNull(from.join(Sample.MAIN_SAMPLE_TEST, JoinType.LEFT).get(PathogenTest.TEST_RESULT)));
-			}
-			filter = and(cb, filter, subFilter);
+		if (criteria.getPathogenTestResult() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Sample.PATHOGEN_TEST_RESULT), criteria.getPathogenTestResult()));
 		}
 		if (criteria.getCaseClassification() != null) {
 			filter = and(cb, filter, cb.equal(caze.get(Case.CASE_CLASSIFICATION), criteria.getCaseClassification()));

@@ -35,6 +35,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Transient;
 
 import de.symeda.sormas.api.sample.AdditionalTestType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
@@ -127,6 +128,9 @@ public class Sample extends AbstractDomainObject {
 
     @DatabaseField
     private boolean received;
+
+    @Enumerated(EnumType.STRING)
+    private PathogenTestResultType pathogenTestResult;
 
     @DatabaseField
     private Boolean pathogenTestingRequested;
@@ -304,6 +308,14 @@ public class Sample extends AbstractDomainObject {
 
     public void setReceived(boolean received) {
         this.received = received;
+    }
+
+    public PathogenTestResultType getPathogenTestResult() {
+        return pathogenTestResult;
+    }
+
+    public void setPathogenTestResult(PathogenTestResultType pathogenTestResult) {
+        this.pathogenTestResult = pathogenTestResult;
     }
 
     public Boolean getPathogenTestingRequested() {

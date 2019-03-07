@@ -42,6 +42,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.AdditionalTestType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -93,10 +94,11 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.RECEIVED) +
 			LayoutUtil.fluidRowLocs(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID) +
 			LayoutUtil.fluidRowLocs(SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON) +
-			LayoutUtil.fluidRowLocs(SampleDto.COMMENT)
-			;
+			LayoutUtil.fluidRowLocs(SampleDto.COMMENT, SampleDto.PATHOGEN_TEST_RESULT);
 
 	private boolean requestedTestsInitialized = false;
+	
+	private ComboBox pathogenTestResultField;
 
 	public SampleEditForm(UserRight editOrCreateUserRight) {
 		super(SampleDto.class, SampleDto.I18N_PREFIX, editOrCreateUserRight);
@@ -123,6 +125,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.COMMENT, TextArea.class).setRows(2);
 		CheckBox shipped = addField(SampleDto.SHIPPED, CheckBox.class);
 		CheckBox received = addField(SampleDto.RECEIVED, CheckBox.class);
+		pathogenTestResultField = addField(SampleDto.PATHOGEN_TEST_RESULT, ComboBox.class);
 
 		initializeRequestedTests();
 
@@ -144,7 +147,8 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.NO_TEST_POSSIBLE_REASON, SampleDto.SPECIMEN_CONDITION, Arrays.asList(SpecimenCondition.NOT_ADEQUATE), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SAMPLE_MATERIAL, Arrays.asList(SampleDto.SAMPLE_MATERIAL_TEXT), Arrays.asList(SampleMaterial.OTHER));
 		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SPECIMEN_CONDITION, Arrays.asList(SampleDto.NO_TEST_POSSIBLE_REASON), Arrays.asList(SpecimenCondition.NOT_ADEQUATE));
-
+		setRequired(true, SampleDto.PATHOGEN_TEST_RESULT);
+		
 		addValueChangeListener(e -> {
 			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getAssociatedCase().getUuid());
 
@@ -169,6 +173,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 				getField(SampleDto.SHIPMENT_DATE).setEnabled(false);
 				getField(SampleDto.SHIPMENT_DETAILS).setEnabled(false);
 				getField(SampleDto.SAMPLE_SOURCE).setEnabled(false);
+				getField(SampleDto.PATHOGEN_TEST_RESULT).setEnabled(false);
 			}
 
 			shipped.addValueChangeListener(event -> {
@@ -246,7 +251,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		
 		// The code below relies on getValue() to return the sample of the form and therefore has to be delayed until the sample is set
 		addValueChangeListener(e -> {
-			if (!requestedTestsInitialized) {
+			if (!requestedTestsInitialized) {				
 				if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT_NOT_OWNED) || UserProvider.getCurrent().getUuid().equals(getValue().getReportingUser().getUuid())) {
 					// Information texts for users that can edit the requested tests
 					Label requestedPathogenInfoLabel = new Label(I18nProperties.getString(Strings.infoSamplePathogenTesting));
@@ -257,11 +262,18 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 					// Set initial visibility
 					requestedPathogenTestsField.setVisible(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()));
 					requestedPathogenInfoLabel.setVisible(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()));
+					pathogenTestResultField.setVisible(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()));
+					pathogenTestResultField.setRequired(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()));
 					
 					// CheckBoxes should be hidden when no tests are requested
 					pathogenTestingRequestedField.addValueChangeListener(f -> {
 						requestedPathogenInfoLabel.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
 						requestedPathogenTestsField.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
+						pathogenTestResultField.setVisible(Boolean.TRUE.equals(f.getProperty().getValue()));
+						pathogenTestResultField.setRequired(Boolean.TRUE.equals(f.getProperty().getValue()));
+						if (f.getProperty().getValue().equals(Boolean.TRUE) && pathogenTestResultField.getValue() == null) {
+							pathogenTestResultField.setValue(PathogenTestResultType.PENDING);
+						}
 					});
 
 					if (!UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {

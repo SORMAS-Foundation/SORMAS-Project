@@ -587,6 +587,7 @@ public interface Captions {
 	public static String Sample_noTestPossibleReason = "Sample.noTestPossibleReason";
 	public static String Sample_otherLab = "Sample.otherLab";
 	public static String Sample_pathogenTestingRequested = "Sample.pathogenTestingRequested";
+	public static String Sample_pathogenTestResult = "Sample.pathogenTestResult";
 	public static String Sample_received = "Sample.received";
 	public static String Sample_receivedDate = "Sample.receivedDate";
 	public static String Sample_referredToUuid = "Sample.referredToUuid";
@@ -606,7 +607,6 @@ public interface Captions {
 	public static String Sample_specimenCondition = "Sample.specimenCondition";
 	public static String Sample_suggestedTypeOfTest = "Sample.suggestedTypeOfTest";
 	public static String Sample_testResult = "Sample.testResult";
-	public static String Sample_testResultAndSpecimen = "Sample.testResultAndSpecimen";
 	public static String Sample_testStatusGen = "Sample.testStatusGen";
 	public static String Sample_testType = "Sample.testType";
 	public static String Sample_typeOfTest = "Sample.typeOfTest";
