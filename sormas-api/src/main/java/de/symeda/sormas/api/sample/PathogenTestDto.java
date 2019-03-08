@@ -21,7 +21,9 @@ import java.util.Date;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
 
 public class PathogenTestDto extends EntityDto {
@@ -58,9 +60,18 @@ public class PathogenTestDto extends EntityDto {
 	private PathogenTestResultType testResult;
 	@Required
 	private String testResultText;
-	private boolean testResultVerified;
+	private Boolean testResultVerified;
 	private boolean fourFoldIncreaseAntibodyTiter;
 
+	public static PathogenTestDto build(SampleReferenceDto sample, UserDto currentUser) {
+		PathogenTestDto pathogenTest = new PathogenTestDto();
+		pathogenTest.setUuid(DataHelper.createUuid());
+		pathogenTest.setSample(sample);
+		pathogenTest.setLab(currentUser.getLaboratory());
+		pathogenTest.setLabUser(currentUser.toReference());
+		return pathogenTest;
+	}
+	
 	public SampleReferenceDto getSample() {
 		return sample;
 	}
@@ -133,11 +144,11 @@ public class PathogenTestDto extends EntityDto {
 		this.testResultText = testResultText;
 	}
 
-	public boolean isTestResultVerified() {
+	public Boolean getTestResultVerified() {
 		return testResultVerified;
 	}
 
-	public void setTestResultVerified(boolean testResultVerified) {
+	public void setTestResultVerified(Boolean testResultVerified) {
 		this.testResultVerified = testResultVerified;
 	}
 

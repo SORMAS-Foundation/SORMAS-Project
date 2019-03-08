@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import java.util.function.BiConsumer;
+
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -29,6 +31,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -41,14 +44,14 @@ public class PathogenTestListComponent extends VerticalLayout {
 	private PathogenTestList list;
 	private Button createButton;
 
-	public PathogenTestListComponent(SampleReferenceDto sampleRef) {
+	public PathogenTestListComponent(SampleReferenceDto sampleRef, BiConsumer<PathogenTestResultType, Runnable> testChangedCallback) {
 		setWidth(100, Unit.PERCENTAGE);
 
 		HorizontalLayout componentHeader = new HorizontalLayout();
 		componentHeader.setWidth(100, Unit.PERCENTAGE);
 		addComponent(componentHeader);
 
-		list = new PathogenTestList(sampleRef);
+		list = new PathogenTestList(sampleRef, testChangedCallback);
 		addComponent(list);
 		list.reload();
 
@@ -60,7 +63,7 @@ public class PathogenTestListComponent extends VerticalLayout {
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
 			createButton.addClickListener(
-					e -> ControllerProvider.getPathogenTestController().create(sampleRef, 0, list::reload));
+					e -> ControllerProvider.getPathogenTestController().create(sampleRef, 0, list::reload, testChangedCallback));
 			componentHeader.addComponent(createButton);
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
 		}
@@ -69,4 +72,9 @@ public class PathogenTestListComponent extends VerticalLayout {
 	public void reload() {
 		list.reload();
 	}
+	
+	public PathogenTestList getList() {
+		return list;
+	}
+	
 }

@@ -26,9 +26,11 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 
 /**
@@ -169,6 +171,14 @@ public class SampleDao extends AbstractAdoDao<Sample> {
     @Override
     public String getTableName() {
         return Sample.TABLE_NAME;
+    }
+
+    @Override
+    public Sample saveAndSnapshot(Sample sample) throws DaoException {
+        if (Boolean.TRUE.equals(sample.getPathogenTestingRequested()) && sample.getPathogenTestResult() == null) {
+            sample.setPathogenTestResult(PathogenTestResultType.PENDING);
+        }
+        return super.saveAndSnapshot(sample);
     }
 
 }

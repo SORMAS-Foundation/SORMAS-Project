@@ -107,9 +107,6 @@
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/caseHospitalization_leftAgainstAdvice"
-                        dependencyParentField="@{caseHospitalizationDischargeDate}"
-                        dependencyParentValue="null"
-                        dependencyParentVisibility="false"
                         app:value="@{data.leftAgainstAdvice}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 

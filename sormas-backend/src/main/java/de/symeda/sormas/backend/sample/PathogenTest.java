@@ -64,7 +64,7 @@ public class PathogenTest extends AbstractDomainObject {
 	private User labUser;
 	private PathogenTestResultType testResult;
 	private String testResultText;
-	private boolean testResultVerified;
+	private Boolean testResultVerified;
 	private boolean fourFoldIncreaseAntibodyTiter;
 	
 	@ManyToOne(cascade = {})
@@ -146,10 +146,10 @@ public class PathogenTest extends AbstractDomainObject {
 	}
 	
 	@Column(nullable = false)
-	public boolean isTestResultVerified() {
+	public Boolean getTestResultVerified() {
 		return testResultVerified;
 	}
-	public void setTestResultVerified(boolean testResultVerified) {
+	public void setTestResultVerified(Boolean testResultVerified) {
 		this.testResultVerified = testResultVerified;
 	}
 	

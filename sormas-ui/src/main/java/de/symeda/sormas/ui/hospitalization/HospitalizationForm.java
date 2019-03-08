@@ -92,9 +92,6 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		if (isVisibleAllowed(HospitalizationDto.ISOLATION_DATE)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), HospitalizationDto.ISOLATION_DATE, HospitalizationDto.ISOLATED, Arrays.asList(YesNoUnknown.YES), true);
 		}
-		if (isVisibleAllowed(HospitalizationDto.LEFT_AGAINST_ADVICE)) {
-			FieldHelper.setVisibleWhenNotNull(getFieldGroup(), HospitalizationDto.LEFT_AGAINST_ADVICE, HospitalizationDto.DISCHARGE_DATE, true);
-		}
 		if (isVisibleAllowed(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), HospitalizationDto.PREVIOUS_HOSPITALIZATIONS, HospitalizationDto.HOSPITALIZED_PREVIOUSLY, Arrays.asList(YesNoUnknown.YES), true);
 		}

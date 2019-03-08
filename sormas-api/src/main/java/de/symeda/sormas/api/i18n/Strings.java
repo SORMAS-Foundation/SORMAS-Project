@@ -101,6 +101,7 @@ public interface Strings {
 	public static String headingCasesDeleted = "headingCasesDeleted";
 	public static String headingCaseStatusMap = "headingCaseStatusMap";
 	public static String headingChangeCaseDisease = "headingChangeCaseDisease";
+	public static String headingChangePathogenTestResult = "headingChangePathogenTestResult";
 	public static String headingClinicalMeasurements = "headingClinicalMeasurements";
 	public static String headingClinicalVisitsDeleted = "headingClinicalVisitsDeleted";
 	public static String headingComplications = "headingComplications";
@@ -270,6 +271,7 @@ public interface Strings {
 	public static String messageCasesDeleted = "messageCasesDeleted";
 	public static String messageCasesEdited = "messageCasesEdited";
 	public static String messageCaseTransfered = "messageCaseTransfered";
+	public static String messageChangePathogenTestResult = "messageChangePathogenTestResult";
 	public static String messageCheckInputData = "messageCheckInputData";
 	public static String messageClinicalCourseSaved = "messageClinicalCourseSaved";
 	public static String messageClinicalVisitCreated = "messageClinicalVisitCreated";

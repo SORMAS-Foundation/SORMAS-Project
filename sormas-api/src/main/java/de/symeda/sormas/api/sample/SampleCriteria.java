@@ -38,7 +38,7 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	private Boolean shipped;
 	private Boolean received;
 	private Boolean referred;
-	private PathogenTestResultType testResult;
+	private PathogenTestResultType pathogenTestResult;
 	private CaseClassification caseClassification;
 	private Disease disease;
 	private SpecimenCondition specimenCondition;
@@ -100,12 +100,12 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
-	public PathogenTestResultType getTestResult() {
-		return testResult;
+	public PathogenTestResultType getPathogenTestResult() {
+		return pathogenTestResult;
 	}
 
-	public SampleCriteria testResult(PathogenTestResultType testResult) {
-		this.testResult = testResult;
+	public SampleCriteria pathogenTestResult(PathogenTestResultType pathogenTestResult) {
+		this.pathogenTestResult = pathogenTestResult;
 		return this;
 	}
 

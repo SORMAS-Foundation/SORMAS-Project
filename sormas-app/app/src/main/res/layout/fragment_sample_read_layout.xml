@@ -128,6 +128,11 @@
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/sample_pathogenTestResult"
+                    app:value="@{data.pathogenTestResult}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/sample_comment"
                     app:value="@{data.comment}"
                     style="@style/ControlSingleColumnStyle" />
@@ -138,6 +143,11 @@
 
                 <de.symeda.sormas.app.component.controls.ControlTagViewField
                     android:id="@+id/sample_requestedPathogenTestsTags"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/sample_requestedOtherPathogenTests"
+                    app:value="@{data.requestedOtherPathogenTests}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <ImageView style="@style/FullHorizontalDividerStyle"/>

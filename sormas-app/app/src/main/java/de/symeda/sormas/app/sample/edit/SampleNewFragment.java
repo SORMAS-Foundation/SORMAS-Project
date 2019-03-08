@@ -101,6 +101,8 @@ SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutBinding, Sampl
             }
         });
 
+        contentBinding.sampleRequestedPathogenTests.removeItem(PathogenTestType.OTHER);
+
         // Initialize ControlDateFields and ControlDateTimeFields
         contentBinding.sampleSampleDateTime.initializeDateTimeField(getFragmentManager());
         contentBinding.sampleShipmentDate.initializeDateField(getFragmentManager());

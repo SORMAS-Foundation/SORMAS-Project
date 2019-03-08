@@ -42,7 +42,7 @@ public class Symptoms extends AbstractDomainObject {
 	private static final long serialVersionUID = 1467852910743225822L;
 
 	public static final String TABLE_NAME = "symptoms";
-	
+
 	public static final String ONSET_DATE = "onsetDate";
 	public static final String SYMPTOMATIC = "symptomatic";
 	public static final String TEMPERATURE = "temperature";
@@ -66,7 +66,7 @@ public class Symptoms extends AbstractDomainObject {
 	private Integer height;
 	private Integer midUpperArmCircumference;
 	private Integer glasgowComaScale;
-	
+
 	private SymptomState fever;
 	private SymptomState vomiting;
 	private SymptomState diarrhea;
@@ -157,7 +157,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState tremor;
 	private String otherNonHemorrhagicSymptomsText;
 	private String symptomsComments;
-	
+
 	// complications
 	private SymptomState alteredConsciousness;
 	private SymptomState confusedDisoriented;
@@ -169,10 +169,10 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState sepsis;
 	private SymptomState shock;
 
-	
+
 	// when adding new fields make sure to extend toHumanString
 
-	
+
 	@Temporal(TemporalType.DATE)
 	public Date getOnsetDate() {
 		return onsetDate;
@@ -900,7 +900,7 @@ public class Symptoms extends AbstractDomainObject {
 	public void setLymphadenopathyCervical(SymptomState lymphadenopathyCervical) {
 		this.lymphadenopathyCervical = lymphadenopathyCervical;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public SymptomState getMeningealSigns() {
 		return meningealSigns;
@@ -1191,7 +1191,7 @@ public class Symptoms extends AbstractDomainObject {
 		appendNotNullValue(string, weight, SymptomsDto.WEIGHT);
 		appendNotNullValue(string, height, SymptomsDto.HEIGHT);
 		appendNotNullValue(string, glasgowComaScale, SymptomsDto.GLASGOW_COMA_SCALE);
-		
+
 		appendYesSymptom(string, alteredConsciousness, SymptomsDto.ALTERED_CONSCIOUSNESS);
 		appendYesSymptom(string, confusedDisoriented, SymptomsDto.CONFUSED_DISORIENTED);
 		appendYesSymptom(string, hemorrhagicSyndrome, SymptomsDto.HEMORRHAGIC_SYNDROME);
@@ -1265,10 +1265,10 @@ public class Symptoms extends AbstractDomainObject {
 		appendTrue(string, lesionsGenitals, SymptomsDto.LESIONS_GENITALS);
 		appendTrue(string, lesionsAllOverBody, SymptomsDto.LESIONS_ALL_OVER_BODY);
 		// TODO images should have more specific caption to be included here
-//		appendYesSymptom(string, lesionsResembleImg1, SymptomsDto.LESIONS_RESEMBLE_IMG1);
-//		appendYesSymptom(string, lesionsResembleImg2, SymptomsDto.LESIONS_RESEMBLE_IMG2);
-//		appendYesSymptom(string, lesionsResembleImg3, SymptomsDto.LESIONS_RESEMBLE_IMG3);
-//		appendYesSymptom(string, lesionsResembleImg4, SymptomsDto.LESIONS_RESEMBLE_IMG4);
+		//		appendYesSymptom(string, lesionsResembleImg1, SymptomsDto.LESIONS_RESEMBLE_IMG1);
+		//		appendYesSymptom(string, lesionsResembleImg2, SymptomsDto.LESIONS_RESEMBLE_IMG2);
+		//		appendYesSymptom(string, lesionsResembleImg3, SymptomsDto.LESIONS_RESEMBLE_IMG3);
+		//		appendYesSymptom(string, lesionsResembleImg4, SymptomsDto.LESIONS_RESEMBLE_IMG4);
 		appendNotNullValue(string, lesionsOnsetDate, SymptomsDto.LESIONS_ONSET_DATE);
 		appendYesSymptom(string, lymphadenopathyInguinal, SymptomsDto.LYMPHADENOPATHY_INGUINAL);
 		appendYesSymptom(string, lymphadenopathyAxillary, SymptomsDto.LYMPHADENOPATHY_AXILLARY);
@@ -1294,10 +1294,10 @@ public class Symptoms extends AbstractDomainObject {
 		appendYesSymptom(string, fluidInLungCavity, SymptomsDto.FLUID_IN_LUNG_CAVITY);
 		appendYesSymptom(string, tremor, SymptomsDto.TREMOR);
 		// symptomsComments;
-		
+
 		return string.toString();
 	}
-	
+
 	private static void appendNotNullValue(StringBuilder stringBuilder, Object value, String dtoPropertyId) {
 		if (value != null) {
 			if (value instanceof String && ((String)value).isEmpty()) {
@@ -1307,7 +1307,7 @@ public class Symptoms extends AbstractDomainObject {
 				stringBuilder.append(", ");
 			}
 			stringBuilder.append(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, dtoPropertyId, null))
-				.append(": ");
+			.append(": ");
 			if (value instanceof Date) {
 				stringBuilder.append(DateHelper.formatLocalShortDate((Date)value));
 			} else {
@@ -1315,7 +1315,7 @@ public class Symptoms extends AbstractDomainObject {
 			}
 		}
 	}
-	
+
 	private static void appendYesSymptom(StringBuilder stringBuilder, SymptomState symptom, String dtoPropertyId) {
 		if (symptom == SymptomState.YES) {
 			if (stringBuilder.length() > 0) {

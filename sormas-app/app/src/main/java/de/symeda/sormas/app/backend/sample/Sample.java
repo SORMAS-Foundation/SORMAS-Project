@@ -35,6 +35,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Transient;
 
 import de.symeda.sormas.api.sample.AdditionalTestType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
@@ -128,6 +129,9 @@ public class Sample extends AbstractDomainObject {
     @DatabaseField
     private boolean received;
 
+    @Enumerated(EnumType.STRING)
+    private PathogenTestResultType pathogenTestResult;
+
     @DatabaseField
     private Boolean pathogenTestingRequested;
 
@@ -145,6 +149,12 @@ public class Sample extends AbstractDomainObject {
 
     @Transient
     private Set<AdditionalTestType> requestedAdditionalTests;
+
+    @Column(length = 512)
+    private String requestedOtherPathogenTests;
+
+    @Column(length = 512)
+    private String requestedOtherAdditionalTests;
 
     public Case getAssociatedCase() {
         return associatedCase;
@@ -306,6 +316,14 @@ public class Sample extends AbstractDomainObject {
         this.received = received;
     }
 
+    public PathogenTestResultType getPathogenTestResult() {
+        return pathogenTestResult;
+    }
+
+    public void setPathogenTestResult(PathogenTestResultType pathogenTestResult) {
+        this.pathogenTestResult = pathogenTestResult;
+    }
+
     public Boolean getPathogenTestingRequested() {
         return pathogenTestingRequested;
     }
@@ -402,6 +420,22 @@ public class Sample extends AbstractDomainObject {
             sb.substring(0, sb.lastIndexOf(","));
         }
         requestedAdditionalTestsString = sb.toString();
+    }
+
+    public String getRequestedOtherPathogenTests() {
+        return requestedOtherPathogenTests;
+    }
+
+    public void setRequestedOtherPathogenTests(String requestedOtherPathogenTests) {
+        this.requestedOtherPathogenTests = requestedOtherPathogenTests;
+    }
+
+    public String getRequestedOtherAdditionalTests() {
+        return requestedOtherAdditionalTests;
+    }
+
+    public void setRequestedOtherAdditionalTests(String requestedOtherAdditionalTests) {
+        this.requestedOtherAdditionalTests = requestedOtherAdditionalTests;
     }
 
     @Override

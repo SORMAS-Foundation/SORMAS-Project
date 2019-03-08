@@ -36,16 +36,15 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-@Path("/sampletests")
+@Path("/pathogentests")
 @Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
 @Consumes({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
 @RolesAllowed("USER")
-public class SampleTestResource extends EntityDtoResource {
+public class PathogenTestResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<PathogenTestDto> getAllSampleTests(@Context SecurityContext sc, @PathParam("since") long since) {
-
+	public List<PathogenTestDto> getAllPathogenTests(@Context SecurityContext sc, @PathParam("since") long since) {
 		UserReferenceDto userDto = FacadeProvider.getUserFacade()
 				.getByUserNameAsReference(sc.getUserPrincipal().getName());
 		List<PathogenTestDto> sampleTests = FacadeProvider.getPathogenTestFacade()
@@ -56,15 +55,13 @@ public class SampleTestResource extends EntityDtoResource {
 	@POST
 	@Path("/query")
 	public List<PathogenTestDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
-
 		List<PathogenTestDto> result = FacadeProvider.getPathogenTestFacade().getByUuids(uuids);
 		return result;
 	}
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postSampleTests(List<PathogenTestDto> dtos) {
-
+	public List<PushResult> postPathogenTests(List<PathogenTestDto> dtos) {
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getPathogenTestFacade()::savePathogenTest);
 		return result;
 	}
@@ -72,7 +69,6 @@ public class SampleTestResource extends EntityDtoResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
-
 		UserReferenceDto userDto = FacadeProvider.getUserFacade()
 				.getByUserNameAsReference(sc.getUserPrincipal().getName());
 		List<String> uuids = FacadeProvider.getPathogenTestFacade().getAllActiveUuids(userDto.getUuid());

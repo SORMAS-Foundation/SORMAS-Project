@@ -73,7 +73,7 @@ import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
-import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.SampleTestFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
@@ -143,7 +143,7 @@ public class AbstractBeanTest extends BaseBeanTest {
 	}
 
 	public PathogenTestFacade getSampleTestFacade() {
-		return getBean(SampleTestFacadeEjbLocal.class);
+		return getBean(PathogenTestFacadeEjbLocal.class);
 	}
 	
 	public AdditionalTestFacade getAdditionalTestFacade() {

@@ -44,7 +44,7 @@ import de.symeda.sormas.backend.region.GeoShapeProviderEjb.GeoShapeProviderEjbLo
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
-import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.SampleTestFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
@@ -73,7 +73,7 @@ public final class FacadeProviderMock extends FacadeProvider {
 		} else if (SampleFacade.class == clazz) {
 			return (P) bm.getBean(SampleFacadeEjbLocal.class);
 		} else if (PathogenTestFacade.class == clazz) {
-			return (P) bm.getBean(SampleTestFacadeEjbLocal.class);
+			return (P) bm.getBean(PathogenTestFacadeEjbLocal.class);
 		} else if (SymptomsFacade.class == clazz) {
 			return (P) bm.getBean(SymptomsFacadeEjbLocal.class);
 		} else if (FacilityFacade.class == clazz) {
