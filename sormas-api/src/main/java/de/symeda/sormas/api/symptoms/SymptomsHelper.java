@@ -23,6 +23,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,8 +50,12 @@ public final class SymptomsHelper {
 	}
 
 	private static List<Integer> getIntegerValues(int min, int max) {
+		return getIntegerValues(min, max, 1);
+	}
+	
+	private static List<Integer> getIntegerValues(int min, int max, int step) {
 		List<Integer> x = new ArrayList<>();
-		for (int i = min; i <= max; i++) {
+		for (int i = min; i <= max; i += step) {
 			x.add(i);
 		}
 		return x;
@@ -65,27 +70,32 @@ public final class SymptomsHelper {
 	}
 
 	public static List<Integer> getRespiratoryRateValues() {
-		return getIntegerValues(0, 120);
+		return getIntegerValues(0, 80);
 	}
 
 	public static List<Integer> getGlasgowComaScaleValues() {
-		return getIntegerValues(1, 6);
+		return getIntegerValues(3, 15);
 	}
 
 	public static List<Integer> getWeightValues() {
-		return getIntegerValues(0, 300);
+		return getIntegerValues(0, 50000, 10);
 	}
 
 	public static List<Integer> getHeightValues() {
-		return getIntegerValues(1, 300);
+		return getIntegerValues(0, 250);
 	}
 
 	public static List<Integer> getMidUpperArmCircumferenceValues() {
-		return getIntegerValues(1, 100);
+		return getIntegerValues(100, 10000, 10);
 	}
 
 	public static String getTemperatureString(float value) {
 		return String.format("%.1f °C", value);
+	}
+	
+	public static String getDecimalString(int value) {
+		BigDecimal d = new BigDecimal(value).divide(new BigDecimal(100));
+		return d.toString();
 	}
 
 	public static String getBloodPressureString(Integer systolic, Integer diastolic) {

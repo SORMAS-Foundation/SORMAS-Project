@@ -58,6 +58,8 @@ public class SampleDto extends EntityDto {
 	public static final String REQUESTED_PATHOGEN_TESTS = "requestedPathogenTests";
 	public static final String REQUESTED_ADDITIONAL_TESTS = "requestedAdditionalTests";
 	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
+	public static final String REQUESTED_OTHER_PATHOGEN_TESTS = "requestedOtherPathogenTests";
+	public static final String REQUESTED_OTHER_ADDITIONAL_TESTS = "requestedOtherAdditionalTests";
 	
 	@Required
 	private CaseReferenceDto associatedCase;
@@ -96,6 +98,8 @@ public class SampleDto extends EntityDto {
 	private Boolean additionalTestingRequested;
 	private Set<PathogenTestType> requestedPathogenTests;
 	private Set<AdditionalTestType> requestedAdditionalTests;
+	private String requestedOtherPathogenTests;
+	private String requestedOtherAdditionalTests;
 
 	public CaseReferenceDto getAssociatedCase() {
 		return associatedCase;
@@ -295,6 +299,22 @@ public class SampleDto extends EntityDto {
 
 	public void setRequestedAdditionalTests(Set<AdditionalTestType> requestedAdditionalTests) {
 		this.requestedAdditionalTests = requestedAdditionalTests;
+	}
+
+	public String getRequestedOtherPathogenTests() {
+		return requestedOtherPathogenTests;
+	}
+
+	public void setRequestedOtherPathogenTests(String requestedOtherPathogenTests) {
+		this.requestedOtherPathogenTests = requestedOtherPathogenTests;
+	}
+
+	public String getRequestedOtherAdditionalTests() {
+		return requestedOtherAdditionalTests;
+	}
+
+	public void setRequestedOtherAdditionalTests(String requestedOtherAdditionalTests) {
+		this.requestedOtherAdditionalTests = requestedOtherAdditionalTests;
 	}
 
 	public static SampleDto buildSample(UserReferenceDto userRef, CaseReferenceDto caseRef) {

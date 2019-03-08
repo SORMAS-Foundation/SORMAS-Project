@@ -524,4 +524,5 @@ public class Case extends AbstractDomainObject {
     public void setSequelaeDetails(String sequelaeDetails) {
         this.sequelaeDetails = sequelaeDetails;
     }
+
 }

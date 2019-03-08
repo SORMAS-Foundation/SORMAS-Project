@@ -145,6 +145,11 @@
                     android:id="@+id/sample_requestedPathogenTestsTags"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/sample_requestedOtherPathogenTests"
+                    app:value="@{data.requestedOtherPathogenTests}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <ImageView style="@style/FullHorizontalDividerStyle"/>
 
                 <LinearLayout

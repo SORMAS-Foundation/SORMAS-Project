@@ -113,6 +113,11 @@ public class ControlCheckBoxGroupField extends ControlPropertyEditField<Object> 
         checkBoxesFrame.removeAllViews();
     }
 
+    public void removeItem(Object itemId) {
+        checkBoxesFrame.removeView(checkBoxes.get(itemId));
+        checkBoxes.remove(itemId);
+    }
+
     @Override
     protected void initialize(Context context, AttributeSet attrs, int defStyle) {
         // Nothing to initialize

@@ -114,6 +114,8 @@ public class Sample extends AbstractDomainObject {
 	private Boolean additionalTestingRequested;
 	private Set<PathogenTestType> requestedPathogenTests;
 	private Set<AdditionalTestType> requestedAdditionalTests;
+	private String requestedOtherPathogenTests;
+	private String requestedOtherAdditionalTests;
 	private String requestedPathogenTestsString;
 	private String requestedAdditionalTestsString;
 
@@ -405,6 +407,22 @@ public class Sample extends AbstractDomainObject {
 		requestedAdditionalTests = null;
 	}
 
+	@Column(length=512)
+	public String getRequestedOtherPathogenTests() {
+		return requestedOtherPathogenTests;
+	}
+	public void setRequestedOtherPathogenTests(String requestedOtherPathogenTests) {
+		this.requestedOtherPathogenTests = requestedOtherPathogenTests;
+	}
+
+	@Column(length=512)
+	public String getRequestedOtherAdditionalTests() {
+		return requestedOtherAdditionalTests;
+	}
+	public void setRequestedOtherAdditionalTests(String requestedOtherAdditionalTests) {
+		this.requestedOtherAdditionalTests = requestedOtherAdditionalTests;
+	}
+	
 	@Override
 	public String toString() {
 		return SampleReferenceDto.buildCaption(getSampleMaterial(), 

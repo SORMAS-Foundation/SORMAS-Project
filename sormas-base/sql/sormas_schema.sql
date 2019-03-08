@@ -2997,3 +2997,15 @@ BEFORE INSERT OR UPDATE OR DELETE ON pathogentest
 FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'pathogentest_history', true);
 
 INSERT INTO schema_version (version_number, comment) VALUES (134, 'Add pathogen test result to sample #919');
+
+-- 2019-03-08 Further additions for clinical management #993
+
+UPDATE symptoms SET weight = weight * 100 WHERE weight IS NOT NULL;
+UPDATE symptoms SET midupperarmcircumference = midupperarmcircumference * 100 WHERE midupperarmcircumference IS NOT NULL;
+UPDATE symptoms SET changedate = now() WHERE weight IS NOT NULL OR midupperarmcircumference IS NOT NULL;
+ALTER TABLE samples ADD COLUMN requestedotherpathogentests varchar(512);
+ALTER TABLE samples_history ADD COLUMN requestedotherpathogentests varchar(512);
+ALTER TABLE samples ADD COLUMN requestedotheradditionaltests varchar(512);
+ALTER TABLE samples_history ADD COLUMN requestedotheradditionaltests varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (135, 'Further additions for clinical management #993');

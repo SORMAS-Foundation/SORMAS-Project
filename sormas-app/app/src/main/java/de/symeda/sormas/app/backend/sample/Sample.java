@@ -150,6 +150,12 @@ public class Sample extends AbstractDomainObject {
     @Transient
     private Set<AdditionalTestType> requestedAdditionalTests;
 
+    @Column(length = 512)
+    private String requestedOtherPathogenTests;
+
+    @Column(length = 512)
+    private String requestedOtherAdditionalTests;
+
     public Case getAssociatedCase() {
         return associatedCase;
     }
@@ -414,6 +420,22 @@ public class Sample extends AbstractDomainObject {
             sb.substring(0, sb.lastIndexOf(","));
         }
         requestedAdditionalTestsString = sb.toString();
+    }
+
+    public String getRequestedOtherPathogenTests() {
+        return requestedOtherPathogenTests;
+    }
+
+    public void setRequestedOtherPathogenTests(String requestedOtherPathogenTests) {
+        this.requestedOtherPathogenTests = requestedOtherPathogenTests;
+    }
+
+    public String getRequestedOtherAdditionalTests() {
+        return requestedOtherAdditionalTests;
+    }
+
+    public void setRequestedOtherAdditionalTests(String requestedOtherAdditionalTests) {
+        this.requestedOtherAdditionalTests = requestedOtherAdditionalTests;
     }
 
     @Override

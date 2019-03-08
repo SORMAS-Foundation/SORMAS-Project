@@ -143,6 +143,14 @@
                 app:dependencyParentClearOnHide="@{false}"
                 style="@style/ControlSingleColumnStyle" />
 
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/sample_requestedOtherPathogenTests"
+                app:value="@={data.requestedOtherPathogenTests}"
+                app:dependencyParentField="@{samplePathogenTestingRequested}"
+                app:dependencyParentValue="@{true}"
+                app:dependencyParentClearOnHide="@{false}"
+                style="@style/ControlSingleColumnStyle" />
+
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <LinearLayout

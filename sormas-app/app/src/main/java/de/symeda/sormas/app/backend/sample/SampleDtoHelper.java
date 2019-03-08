@@ -96,6 +96,8 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         target.setAdditionalTestingRequested(source.getAdditionalTestingRequested());
         target.setRequestedPathogenTests(source.getRequestedPathogenTests());
         target.setRequestedAdditionalTests(source.getRequestedAdditionalTests());
+        target.setRequestedOtherPathogenTests(source.getRequestedOtherPathogenTests());
+        target.setRequestedOtherAdditionalTests(source.getRequestedOtherAdditionalTests());
 
         target.setReportLat(source.getReportLat());
         target.setReportLon(source.getReportLon());
@@ -152,6 +154,8 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         target.setAdditionalTestingRequested(source.getAdditionalTestingRequested());
         target.setRequestedPathogenTests(source.getRequestedPathogenTests());
         target.setRequestedAdditionalTests(source.getRequestedAdditionalTests());
+        target.setRequestedOtherPathogenTests(source.getRequestedOtherPathogenTests());
+        target.setRequestedOtherAdditionalTests(source.getRequestedOtherAdditionalTests());
 
         target.setReportLat(source.getReportLat());
         target.setReportLon(source.getReportLon());

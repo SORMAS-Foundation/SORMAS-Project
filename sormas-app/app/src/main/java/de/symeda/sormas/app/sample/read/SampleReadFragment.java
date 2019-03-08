@@ -97,7 +97,9 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
 
         requestedPathogenTests = new ArrayList<>();
         for (PathogenTestType pathogenTest : record.getRequestedPathogenTests()) {
-            requestedPathogenTests.add(pathogenTest.toString());
+            if (pathogenTest != PathogenTestType.OTHER) {
+                requestedPathogenTests.add(pathogenTest.toString());
+            }
         }
     }
 
@@ -116,9 +118,13 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
 
         if (!requestedPathogenTests.isEmpty()) {
             contentBinding.sampleRequestedPathogenTestsTags.setTags(requestedPathogenTests);
+            if (StringUtils.isEmpty(record.getRequestedOtherPathogenTests())) {
+                contentBinding.sampleRequestedOtherPathogenTests.setVisibility(GONE);
+            }
         } else {
             contentBinding.sampleRequestedPathogenTestsTags.setVisibility(GONE);
             contentBinding.pathogenTestingDivider.setVisibility(GONE);
+            contentBinding.sampleRequestedOtherPathogenTests.setVisibility(GONE);
         }
 
         if (!Boolean.TRUE.equals(record.getPathogenTestingRequested())) {

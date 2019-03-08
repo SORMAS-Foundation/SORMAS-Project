@@ -83,11 +83,13 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			LayoutUtil.loc(PATHOGEN_TESTING_READ_HEADLINE_LOC) +
 			LayoutUtil.loc(PATHOGEN_TESTING_INFO_LOC) +
 			LayoutUtil.loc(SampleDto.REQUESTED_PATHOGEN_TESTS) +
+			LayoutUtil.loc(SampleDto.REQUESTED_OTHER_PATHOGEN_TESTS) +
 			LayoutUtil.loc(REQUESTED_PATHOGEN_TESTS_READ_LOC) +
 			LayoutUtil.loc(SampleDto.ADDITIONAL_TESTING_REQUESTED) +
 			LayoutUtil.loc(ADDITIONAL_TESTING_READ_HEADLINE_LOC) +
 			LayoutUtil.loc(ADDITIONAL_TESTING_INFO_LOC) +
 			LayoutUtil.loc(SampleDto.REQUESTED_ADDITIONAL_TESTS) +
+			LayoutUtil.loc(SampleDto.REQUESTED_OTHER_ADDITIONAL_TESTS) +
 			LayoutUtil.loc(REQUESTED_ADDITIONAL_TESTS_READ_LOC) +
 			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.SHIPPED) +
 			LayoutUtil.fluidRowLocs(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS) +
@@ -241,12 +243,17 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		CssStyles.style(requestedPathogenTestsField, CssStyles.OPTIONGROUP_CHECKBOXES_HORIZONTAL);
 		requestedPathogenTestsField.setMultiSelect(true);
 		requestedPathogenTestsField.addItems((Object[]) PathogenTestType.values());
+		requestedPathogenTestsField.removeItem(PathogenTestType.OTHER);
 		requestedPathogenTestsField.setCaption(null);
 		OptionGroup requestedAdditionalTestsField = addField(SampleDto.REQUESTED_ADDITIONAL_TESTS, OptionGroup.class);
 		CssStyles.style(requestedAdditionalTestsField, CssStyles.OPTIONGROUP_CHECKBOXES_HORIZONTAL);
 		requestedAdditionalTestsField.setMultiSelect(true);
 		requestedAdditionalTestsField.addItems((Object[]) AdditionalTestType.values());
 		requestedAdditionalTestsField.setCaption(null);
+		
+		// Text fields to type in other tests
+		TextField requestedOtherPathogenTests = addField(SampleDto.REQUESTED_OTHER_PATHOGEN_TESTS, TextField.class);
+		TextField requestedOtherAdditionalTests = addField(SampleDto.REQUESTED_OTHER_ADDITIONAL_TESTS, TextField.class);
 		
 		// The code below relies on getValue() to return the sample of the form and therefore has to be delayed until the sample is set
 		addValueChangeListener(e -> {
@@ -261,6 +268,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 					// Set initial visibility
 					requestedPathogenTestsField.setVisible(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()));
 					requestedPathogenInfoLabel.setVisible(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()));
+					requestedOtherPathogenTests.setVisible(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()));
 					pathogenTestResultField.setVisible(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()));
 					pathogenTestResultField.setRequired(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()));
 					
@@ -268,6 +276,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 					pathogenTestingRequestedField.addValueChangeListener(f -> {
 						requestedPathogenInfoLabel.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
 						requestedPathogenTestsField.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
+						requestedOtherPathogenTests.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
 						pathogenTestResultField.setVisible(Boolean.TRUE.equals(f.getProperty().getValue()));
 						pathogenTestResultField.setRequired(Boolean.TRUE.equals(f.getProperty().getValue()));
 						if (f.getProperty().getValue().equals(Boolean.TRUE) && pathogenTestResultField.getValue() == null) {
@@ -280,14 +289,17 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 						additionalTestingRequestedField.setVisible(false);
 						requestedAdditionalTestsField.setVisible(false);
 						requestedAdditionalInfoLabel.setVisible(false);
+						requestedOtherAdditionalTests.setVisible(false);
 					} else {
 						requestedAdditionalTestsField.setVisible(Boolean.TRUE.equals(getValue().getAdditionalTestingRequested()));
 						requestedAdditionalInfoLabel.setVisible(Boolean.TRUE.equals(getValue().getAdditionalTestingRequested()));
-						additionalTestingRequestedField.setRequired(true);
+						requestedOtherAdditionalTests.setVisible(Boolean.TRUE.equals(getValue().getAdditionalTestingRequested()));
+						additionalTestingRequestedField.setRequired(true);	
 						
 						additionalTestingRequestedField.addValueChangeListener(f -> {
 							requestedAdditionalInfoLabel.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
 							requestedAdditionalTestsField.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
+							requestedOtherAdditionalTests.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
 						});
 					}
 				} else {
