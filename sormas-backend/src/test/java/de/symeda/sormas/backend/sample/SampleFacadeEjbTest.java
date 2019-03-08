@@ -34,13 +34,12 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.AdditionalTestingStatus;
 import de.symeda.sormas.api.sample.DashboardSampleDto;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
-import de.symeda.sormas.api.sample.SampleCriteria;
-import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleIndexDto;
-import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleIndexDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -100,41 +99,6 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		
 		// First sample should have an additional test
 		assertEquals(AdditionalTestingStatus.PERFORMED, sampleIndexDtos.get(1).getAdditionalTestingStatus());
-	}
-
-	@Test
-	public void testMainSampleTestLogic() {
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
-				InvestigationStatus.PENDING, new Date(), rdcf);
-		SampleDto sample = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
-
-		// List should have no entry
-		SampleCriteria sampleCriteria = new SampleCriteria()
-				.pathogenTestResult(PathogenTestResultType.POSITIVE);
-		List<SampleIndexDto> sampleIndexDtos = getSampleFacade().getIndexList(user.getUuid(), sampleCriteria);
-		assertEquals(0, sampleIndexDtos.size());
-		
-		creator.createPathogenTest(sample.toReference(), PathogenTestType.PCR_RT_PCR, new Date(), rdcf.facility, user.toReference(), PathogenTestResultType.POSITIVE, "", false);
-		// now we should have one entry
-		sampleIndexDtos = getSampleFacade().getIndexList(user.getUuid(), sampleCriteria);
-		assertEquals(1, sampleIndexDtos.size());
-
-		creator.createPathogenTest(sample.toReference(), PathogenTestType.PCR_RT_PCR, new Date(), rdcf.facility, user.toReference(), PathogenTestResultType.NEGATIVE, "", false);
-		// now 0, because the negative test is the new (latest) main test
-		sampleIndexDtos = getSampleFacade().getIndexList(user.getUuid(), sampleCriteria);
-		assertEquals(0, sampleIndexDtos.size());
-		
-		sampleCriteria.pathogenTestResult(PathogenTestResultType.NEGATIVE);
-		sampleIndexDtos = getSampleFacade().getIndexList(user.getUuid(), sampleCriteria);
-		assertEquals(1, sampleIndexDtos.size());
-		
-		creator.createPathogenTest(sample.toReference(), PathogenTestType.PCR_RT_PCR, DateHelper.addDays(new Date(), -1), rdcf.facility, user.toReference(), PathogenTestResultType.POSITIVE, "", false);
-		// should still be negative
-		sampleIndexDtos = getSampleFacade().getIndexList(user.getUuid(), sampleCriteria);
-		assertEquals(PathogenTestResultType.NEGATIVE, sampleIndexDtos.get(0).getPathogenTestResult());
 	}
 
 	@Test
