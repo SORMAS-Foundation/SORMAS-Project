@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
@@ -33,6 +34,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -53,7 +55,7 @@ public class PathogenTestController {
 		return facade.getAllBySample(sampleRef);
 	}
 	
-	public void create(SampleReferenceDto sampleRef, int caseSampleCount, Runnable callback) {
+	public void create(SampleReferenceDto sampleRef, int caseSampleCount, Runnable callback, BiConsumer<PathogenTestResultType, Runnable> testChangedCallback) {
 		PathogenTestForm createForm = new PathogenTestForm(FacadeProvider.getSampleFacade().getSampleByUuid(sampleRef.getUuid()), true, UserRight.PATHOGEN_TEST_CREATE, caseSampleCount);
 		createForm.setValue(PathogenTestDto.build(sampleRef, UserProvider.getCurrent().getUser()));
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView = new CommitDiscardWrapperComponent<PathogenTestForm>(createForm, createForm.getFieldGroup());
@@ -62,7 +64,7 @@ public class PathogenTestController {
 			@Override
 			public void onCommit() {
 				if (!createForm.getFieldGroup().isModified()) {
-					savePathogenTest(createForm.getValue());
+					savePathogenTest(createForm.getValue(), testChangedCallback);
 					callback.run();
 				}
 			}
@@ -71,7 +73,7 @@ public class PathogenTestController {
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreatePathogenTestResult)); 
 	}
 	
-	public void edit(PathogenTestDto dto, int caseSampleCount, Runnable callback) {
+	public void edit(PathogenTestDto dto, int caseSampleCount, Runnable callback, BiConsumer<PathogenTestResultType, Runnable> testChangedCallback) {
 		// get fresh data
 		PathogenTestDto newDto = facade.getByUuid(dto.getUuid());
 		
@@ -85,7 +87,7 @@ public class PathogenTestController {
 			@Override
 			public void onCommit() {
 				if (!form.getFieldGroup().isModified()) {
-					savePathogenTest(form.getValue());
+					savePathogenTest(form.getValue(), testChangedCallback);
 					callback.run();
 				}
 			}
@@ -103,12 +105,24 @@ public class PathogenTestController {
 		}
 	}
 	
-	private void savePathogenTest(PathogenTestDto dto) {
+	private void savePathogenTest(PathogenTestDto dto, BiConsumer<PathogenTestResultType, Runnable> testChangedCallback) {
 		SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid());
 		CaseDataDto existingCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(sample.getAssociatedCase().getUuid());
 		facade.savePathogenTest(dto);
 		CaseDataDto newCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(sample.getAssociatedCase().getUuid());
+			
+		if (testChangedCallback != null && Boolean.TRUE.equals(dto.getTestResultVerified())) {
+			testChangedCallback.accept(dto.getTestResult(), new Runnable() {
+				public void run() {
+					showSaveNotification(existingCaseDto, newCaseDto);
+				}
+			});
+		} else {
+			showSaveNotification(existingCaseDto, newCaseDto);
+		}
+	}
 	
+	private void showSaveNotification(CaseDataDto existingCaseDto, CaseDataDto newCaseDto) {
 		if (existingCaseDto.getCaseClassification() != newCaseDto.getCaseClassification() &&
 				newCaseDto.getClassificationUser() == null) {
 			Notification notification = new Notification(String.format(I18nProperties.getString(Strings.messagePathogenTestSaved), newCaseDto.getCaseClassification().toString()), Type.WARNING_MESSAGE);

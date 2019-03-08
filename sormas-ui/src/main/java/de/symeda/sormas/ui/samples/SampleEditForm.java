@@ -173,7 +173,6 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 				getField(SampleDto.SHIPMENT_DATE).setEnabled(false);
 				getField(SampleDto.SHIPMENT_DETAILS).setEnabled(false);
 				getField(SampleDto.SAMPLE_SOURCE).setEnabled(false);
-				getField(SampleDto.PATHOGEN_TEST_RESULT).setEnabled(false);
 			}
 
 			shipped.addValueChangeListener(event -> {

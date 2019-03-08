@@ -42,6 +42,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
@@ -143,7 +144,7 @@ public class SampleController {
 							UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
 						requestSampleCollectionTaskCreation(dto, form);
 					} else {
-						Notification.show(I18nProperties.getString(Strings.messageSampleSaved), Type.WARNING_MESSAGE);
+						Notification.show(I18nProperties.getString(Strings.messageSampleSaved), Type.TRAY_NOTIFICATION);
 					}
 				}
 			}
@@ -205,7 +206,7 @@ public class SampleController {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
 
-		ConfirmationComponent requestTaskComponent = buildRequestTaskComponent();
+		ConfirmationComponent requestTaskComponent = VaadinUiUtil.buildYesNoConfirmationComponent();
 
 		Label description = new Label(I18nProperties.getString(Strings.messageCreateCollectionTask));
 		description.setContentMode(ContentMode.HTML);
@@ -235,20 +236,45 @@ public class SampleController {
 			}
 		});
 	}
-
-	private ConfirmationComponent buildRequestTaskComponent() {
-		ConfirmationComponent requestTaskComponent = new ConfirmationComponent(false) {
+	
+	public void showChangePathogenTestResultWindow(CommitDiscardWrapperComponent<SampleEditForm> editComponent, String sampleUuid, PathogenTestResultType newResult, Runnable saveCallback) {
+		VerticalLayout layout = new VerticalLayout();
+		layout.setMargin(true);
+		
+		ConfirmationComponent confirmationComponent = VaadinUiUtil.buildYesNoConfirmationComponent();
+		
+		Label description = new Label(String.format(I18nProperties.getString(Strings.messageChangePathogenTestResult), newResult.toString()));
+		description.setWidth(100, Unit.PERCENTAGE);
+		layout.addComponent(description);
+		layout.addComponent(confirmationComponent);
+		layout.setComponentAlignment(confirmationComponent, Alignment.BOTTOM_RIGHT);
+		layout.setSizeUndefined();
+		layout.setSpacing(true);
+		
+		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
+		popupWindow.setSizeUndefined();
+		popupWindow.setCaption(I18nProperties.getString(Strings.headingChangePathogenTestResult));
+		confirmationComponent.getConfirmButton().addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
 			@Override
-			protected void onConfirm() {
+			public void buttonClick(ClickEvent event) {
+				editComponent.commit();
+				SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(sampleUuid);
+				sample.setPathogenTestResult(newResult);
+				FacadeProvider.getSampleFacade().saveSample(sample);
+				popupWindow.close();
+				SormasUI.refreshView();
+				saveCallback.run();
 			}
+		});
+		confirmationComponent.getCancelButton().addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
 			@Override
-			protected void onCancel() {
+			public void buttonClick(ClickEvent event) {
+				popupWindow.close();
+				saveCallback.run();
 			}
-		};
-		requestTaskComponent.getConfirmButton().setCaption(I18nProperties.getString(Strings.yes));
-		requestTaskComponent.getCancelButton().setCaption(I18nProperties.getString(Strings.no));
-		return requestTaskComponent;
+		});
 	}
 
 	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
