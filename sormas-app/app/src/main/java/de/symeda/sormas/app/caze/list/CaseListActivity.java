@@ -104,6 +104,7 @@ public class CaseListActivity extends PagedBaseListActivity {
     @Override
     public void goToNewView() {
         CaseNewActivity.startActivity(getContext());
+        finish();
     }
 
     @Override
