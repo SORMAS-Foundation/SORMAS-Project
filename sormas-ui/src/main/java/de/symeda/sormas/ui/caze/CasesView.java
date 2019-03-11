@@ -121,7 +121,7 @@ public class CasesView extends AbstractView {
 	private ComboBox officerFilter;
 	private ComboBox reportedByFilter;
 	private CheckBox casesWithoutGeoCoordsFilter;
-	private EpiWeekAndDateFilterComponent weekAndDateFilter;
+	private EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter;
 
 	// Bulk operations
 	private MenuItem archiveItem;
@@ -130,10 +130,8 @@ public class CasesView extends AbstractView {
 	private Button switchArchivedActiveButton;
 
 	private Button resetButton;
-
 	private Button expandFiltersButton;
-
-	private Button collapsFiltersButton;
+	private Button collapseFiltersButton;
 
 	public CasesView() {
 		super(VIEW_NAME);
@@ -414,7 +412,7 @@ public class CasesView extends AbstractView {
 		{
 			Button applyButton = new Button(I18nProperties.getCaption(Captions.actionApplyDateFilter));
 
-			weekAndDateFilter = new EpiWeekAndDateFilterComponent(applyButton, false, false, true);
+			weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(applyButton, false, false, NewCaseDateType.class, I18nProperties.getString(Strings.promptNewCaseDateType), NewCaseDateType.MOST_RELEVANT);
 			weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesEpiWeekFrom));
 			weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesEpiWeekTo));
 			weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesDateFrom));
@@ -426,15 +424,15 @@ public class CasesView extends AbstractView {
 				DateFilterOption dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
 				Date fromDate, toDate;
 				if (dateFilterOption == DateFilterOption.DATE) {
-					fromDate = weekAndDateFilter.getDateFromFilter().getValue();
-					toDate = weekAndDateFilter.getDateToFilter().getValue();
+					fromDate = DateHelper.getStartOfDay(weekAndDateFilter.getDateFromFilter().getValue());
+					toDate = DateHelper.getEndOfDay(weekAndDateFilter.getDateToFilter().getValue());
 				} else {
 					fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue());
 					toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekAndDateFilter.getWeekToFilter().getValue());
 				}
 				if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
 					applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
-					NewCaseDateType newCaseDateType = (NewCaseDateType) weekAndDateFilter.getNewCaseDateTypeSelector().getValue();
+					NewCaseDateType newCaseDateType = (NewCaseDateType) weekAndDateFilter.getDateTypeSelector().getValue();
 					criteria.newCaseDateBetween(fromDate, toDate, newCaseDateType != null ? newCaseDateType : NewCaseDateType.MOST_RELEVANT);
 					navigateTo(criteria);
 				} else {
@@ -553,27 +551,27 @@ public class CasesView extends AbstractView {
 	private void addShowMoreOrLessFiltersButtons(HorizontalLayout parentLayout) {
 		expandFiltersButton = new Button(I18nProperties.getCaption(Captions.actionShowMoreFilters), FontAwesome.CHEVRON_DOWN);
 		CssStyles.style(expandFiltersButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		collapsFiltersButton = new Button(I18nProperties.getCaption(Captions.actionShowLessFilters), FontAwesome.CHEVRON_UP);
-		CssStyles.style(collapsFiltersButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
+		collapseFiltersButton = new Button(I18nProperties.getCaption(Captions.actionShowLessFilters), FontAwesome.CHEVRON_UP);
+		CssStyles.style(collapseFiltersButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 
 		expandFiltersButton.addClickListener(e -> {
 			setFiltersExpanded(true);
 		});
 
-		collapsFiltersButton.addClickListener(e -> {
+		collapseFiltersButton.addClickListener(e -> {
 			setFiltersExpanded(false);
 		});
 
 		parentLayout.addComponent(expandFiltersButton);
-		parentLayout.addComponent(collapsFiltersButton);
+		parentLayout.addComponent(collapseFiltersButton);
 		parentLayout.setComponentAlignment(expandFiltersButton, Alignment.TOP_LEFT);
-		parentLayout.setComponentAlignment(collapsFiltersButton, Alignment.TOP_LEFT);
-		collapsFiltersButton.setVisible(false);
+		parentLayout.setComponentAlignment(collapseFiltersButton, Alignment.TOP_LEFT);
+		collapseFiltersButton.setVisible(false);
 	}
 	
 	public void setFiltersExpanded(boolean expanded) {
 		expandFiltersButton.setVisible(!expanded);
-		collapsFiltersButton.setVisible(expanded);
+		collapseFiltersButton.setVisible(expanded);
 		secondFilterRowLayout.setVisible(expanded);
 		dateFilterRowLayout.setVisible(expanded);
 	}
@@ -609,7 +607,7 @@ public class CasesView extends AbstractView {
 		officerFilter.setValue(criteria.getSurveillanceOfficer());
 		reportedByFilter.setValue(criteria.getReportingUserRole());
 		casesWithoutGeoCoordsFilter.setValue(criteria.isMustHaveNoGeoCoordinates());
-		weekAndDateFilter.getNewCaseDateTypeSelector().setValue(criteria.getNewCaseDateType());
+		weekAndDateFilter.getDateTypeSelector().setValue(criteria.getNewCaseDateType());
 		weekAndDateFilter.getDateFromFilter().setValue(criteria.getNewCaseDateFrom());
 		weekAndDateFilter.getDateToFilter().setValue(criteria.getNewCaseDateTo());
 		weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.DATE);

@@ -30,7 +30,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -38,25 +37,30 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.dashboard.DateFilterOption;
 
-public class EpiWeekAndDateFilterComponent extends HorizontalLayout {
+public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends HorizontalLayout {
 
 	private static final long serialVersionUID = 8752630393182185034L;
 
 	private ComboBox dateFilterOptionFilter;
-	private ComboBox newCaseDateTypeSelector;
+	private ComboBox dateTypeSelector;
 	private ComboBox weekFromFilter;
 	private ComboBox weekToFilter;
 	private PopupDateField dateFromFilter;
 	private PopupDateField dateToFilter;
 
-	public EpiWeekAndDateFilterComponent(Button applyButton, boolean fillAutomatically, boolean showCaption, boolean showNewCaseDateTypeSelector) {
+	public EpiWeekAndDateFilterComponent(Button applyButton, boolean fillAutomatically, boolean showCaption) {
+		this(applyButton, fillAutomatically, showCaption, null, null, null);
+	}
+
+	public EpiWeekAndDateFilterComponent(Button applyButton, boolean fillAutomatically, boolean showCaption,
+			Class<E> dateType, String dateTypePrompt, Enum<E> defaultDateType) {
 		setSpacing(true);
 
 		Calendar c = Calendar.getInstance();
 		c.setTime(new Date());
 
 		dateFilterOptionFilter = new ComboBox();
-		newCaseDateTypeSelector = new ComboBox();
+		dateTypeSelector = new ComboBox();
 		weekFromFilter = new ComboBox();
 		weekToFilter = new ComboBox();
 		dateFromFilter = new PopupDateField();
@@ -103,16 +107,20 @@ public class EpiWeekAndDateFilterComponent extends HorizontalLayout {
 		addComponent(dateFilterOptionFilter);
 
 		// New case date type selector
-		if (showNewCaseDateTypeSelector) {
-			newCaseDateTypeSelector.setWidth(200, Unit.PIXELS);
-			newCaseDateTypeSelector.addItems((Object[]) NewCaseDateType.values());
-			newCaseDateTypeSelector.setInputPrompt(I18nProperties.getString(Strings.promptNewCaseDateType));
-			newCaseDateTypeSelector.select(NewCaseDateType.MOST_RELEVANT);
-			if (showCaption) {
-				CssStyles.style(newCaseDateTypeSelector, CssStyles.FORCE_CAPTION);
+		if (dateType != null) {
+			dateTypeSelector.setWidth(200, Unit.PIXELS);
+			dateTypeSelector.addItems((Object[]) dateType.getEnumConstants());
+			if (dateTypePrompt != null) {
+				dateTypeSelector.setInputPrompt(dateTypePrompt);
 			}
-			addComponent(newCaseDateTypeSelector);
-			
+			if (defaultDateType != null) {
+				dateTypeSelector.select(defaultDateType);
+			}
+			if (showCaption) {
+				CssStyles.style(dateTypeSelector, CssStyles.FORCE_CAPTION);
+			}
+			addComponent(dateTypeSelector);
+
 			Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 			infoLabel.setSizeUndefined();
 			infoLabel.setDescription(I18nProperties.getString(Strings.infoCaseDate));
@@ -185,10 +193,10 @@ public class EpiWeekAndDateFilterComponent extends HorizontalLayout {
 		return dateFilterOptionFilter;
 	}
 
-	public ComboBox getNewCaseDateTypeSelector() {
-		return newCaseDateTypeSelector;
+	public ComboBox getDateTypeSelector() {
+		return dateTypeSelector;
 	}
-	
+
 	public ComboBox getWeekFromFilter() {
 		return weekFromFilter;
 	}
