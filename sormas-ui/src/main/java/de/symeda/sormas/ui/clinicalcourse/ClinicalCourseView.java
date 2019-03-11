@@ -91,13 +91,6 @@ public class ClinicalCourseView extends AbstractCaseView {
 	private void update() {
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 
-		// TODO: Remove this once a proper ViewModel system has been introduced
-		if (caze.getClinicalCourse() == null) {
-			ClinicalCourseDto clinicalCourse = ClinicalCourseDto.build();
-			caze.setClinicalCourse(clinicalCourse);
-			caze = FacadeProvider.getCaseFacade().saveCase(caze);
-		}
-
 		clinicalVisitCriteria.clinicalCourse(caze.getClinicalCourse().toReference());
 	}
 
@@ -114,6 +107,14 @@ public class ClinicalCourseView extends AbstractCaseView {
 			ControllerProvider.getCaseController().navigateToCase(getCaseRef().getUuid());
 			return;
 		}
+		
+		// TODO: Remove this once a proper ViewModel system has been introduced
+		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
+		if (caze.getClinicalCourse() == null) {
+			ClinicalCourseDto clinicalCourse = ClinicalCourseDto.build();
+			caze.setClinicalCourse(clinicalCourse);
+			caze = FacadeProvider.getCaseFacade().saveCase(caze);
+		}
 
 		VerticalLayout container = new VerticalLayout();
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -126,7 +127,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 		clinicalVisitGrid.setHeightMode(HeightMode.ROW);
 		CssStyles.style(clinicalVisitGrid, CssStyles.VSPACE_3);
 		container.addComponent(clinicalVisitGrid);
-
+		
 		CommitDiscardWrapperComponent<ClinicalCourseForm> clinicalCourseComponent = ControllerProvider.getCaseController().getClinicalCourseComponent(getCaseRef().getUuid(), getViewMode());
 		clinicalCourseComponent.setMargin(false);
 		container.addComponent(clinicalCourseComponent);

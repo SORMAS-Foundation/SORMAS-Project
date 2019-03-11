@@ -2991,7 +2991,7 @@ UPDATE samples SET changedate = now() WHERE pathogentestresult IS NOT NULL;
 ALTER TABLE samples DROP COLUMN mainsampletest_id;
 ALTER TABLE samples_history DROP COLUMN mainsampletest_id;
 
-DROP TRIGGER versioning_trigger FROM pathogentest;
+DROP TRIGGER versioning_trigger ON pathogentest;
 CREATE TRIGGER versioning_trigger
 BEFORE INSERT OR UPDATE OR DELETE ON pathogentest
 FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'pathogentest_history', true);
