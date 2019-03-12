@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.therapy;
 
+import java.util.List;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -22,6 +24,22 @@ public class PrescriptionService extends AbstractAdoService<Prescription> {
 
 	public PrescriptionService() {
 		super(Prescription.class);
+	}
+	
+	public List<Prescription> findBy(PrescriptionCriteria prescriptionCriteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Prescription> cq = cb.createQuery(getElementClass());
+		Root<Prescription> from = cq.from(getElementClass());
+		
+		Predicate filter = buildCriteriaFilter(prescriptionCriteria, cb, from);
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.orderBy(cb.asc(from.get(Prescription.CREATION_DATE)));
+		
+		List<Prescription> resultList = em.createQuery(cq).getResultList();
+		return resultList;
 	}
 	
 	public Predicate buildCriteriaFilter(PrescriptionCriteria criteria, CriteriaBuilder cb, Root<Prescription> prescription) {

@@ -55,6 +55,13 @@ public class InfoProvider {
 	public String getVersion() {
 		return version;
 	}
+	
+	/**
+	 * Reads the version from the version.txt where it is written by maven and replaces the last version number with a 0.
+	 */
+	public String getBaseVersion() {
+		return version.substring(0, version.lastIndexOf(".")) + ".0";
+	}
 
 	/**
 	 * Checks if the app version is compatible with the api version. This is true when the version is at least as high as the

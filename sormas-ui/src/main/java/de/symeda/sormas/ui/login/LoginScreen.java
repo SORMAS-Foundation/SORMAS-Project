@@ -102,7 +102,7 @@ public class LoginScreen extends CssLayout {
 		innerLayout.addComponent(loginInfoText);
 		innerLayout.setExpandRatio(loginInfoText, 1);
 
-		Label loginInfoCopyright = new Label("© 2018 SORMAS. All Rights Reserved.");
+		Label loginInfoCopyright = new Label("© 2019 SORMAS. All Rights Reserved.");
 		innerLayout.addComponent(loginInfoCopyright);
 		innerLayout.setExpandRatio(loginInfoCopyright, 0);
 		innerLayout.setComponentAlignment(loginInfoCopyright, Alignment.BOTTOM_LEFT);

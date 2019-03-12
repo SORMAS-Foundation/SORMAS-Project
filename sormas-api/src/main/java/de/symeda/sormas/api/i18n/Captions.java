@@ -3,9 +3,12 @@ package de.symeda.sormas.api.i18n;
 public interface Captions {
 
 	public static String aboutCaseClassificationRules = "aboutCaseClassificationRules";
+	public static String aboutChangelog = "aboutChangelog";
 	public static String aboutDataDictionary = "aboutDataDictionary";
 	public static String aboutSormasVersion = "aboutSormasVersion";
+	public static String aboutSormasWebsite = "aboutSormasWebsite";
 	public static String aboutTechnicalManual = "aboutTechnicalManual";
+	public static String aboutWhatsNew = "aboutWhatsNew";
 	public static String actionApplyDateFilter = "actionApplyDateFilter";
 	public static String actionArchive = "actionArchive";
 	public static String actionCancel = "actionCancel";
