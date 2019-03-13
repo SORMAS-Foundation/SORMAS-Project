@@ -127,55 +127,60 @@ public class CaseCountDifferenceComponent extends VerticalLayout {
 		//~express prev...
 		
 		this.subtitleLabel.setValue(String.format(I18nProperties.getString(Strings.comparedTo), previousPeriodExpression));
-				
+						
 		StringBuilder hcjs = new StringBuilder();
-		hcjs.append("var options = {" + "chart:{ " + " type: 'bar', " + " backgroundColor: 'transparent' " + "},"
-				+ "credits:{ enabled: false }," + "exporting:{ " + " enabled: false,"
-				+ " buttons:{ contextButton:{ theme:{ fill: 'transparent' } } }" + "}," + "title:{ text: '' },");
-
-		hcjs.append("xAxis: { categories: [");
-		int max = 10;
-		for (DiseaseBurdenDto s : data) {
-			max = Math.max(max, Math.abs(s.getCaseCount().intValue()));
-			hcjs.append("'" + s.getDisease().toString() + "', ");
-		}
-		hcjs.append("]},");
-
-		hcjs.append("yAxis: { title: { text: '" + I18nProperties.getCaption(Captions.dashboardDiseaseDifferenceYAxisLabel) + "' }, "
-					+ "min: " + -max + ", max: " + max + ","
-					+ "allowDecimals: false, " + "stackLabels: { enabled: true, "
-						+ "style: {fontWeight: 'normal', textOutline: '0', gridLineColor: '#000000', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } } },"
-				+ "legend: { enabled: false }, "
-//				+ "legend: { verticalAlign: 'middle', backgroundColor: 'transparent', align: 'right', layout: 'vertical', "
-//				+ "borderWidth: 0, shadow: false, margin: 30, padding: 0 },"
-				+ "tooltip: { headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'},"
-				+ "plotOptions: { column: { borderWidth: 0, stacking: 'normal', groupPadding: 0, pointPadding: 0, dataLabels: {"
-				+ "enabled: true, formatter: function() { if (this.y > 0) return this.y; },"
-				+ "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } }, series: { pointWidth: 20 } },");
-
-		//use two series for this chart
-		List<Long> positive_series = data.stream().map((d) -> d.getCasesDifference() < 0 ? 0 : d.getCasesDifference()).collect(Collectors.toList());
-		List<Long> negative_series = data.stream().map((d) -> d.getCasesDifference() > 0 ? 0 : d.getCasesDifference()).collect(Collectors.toList());
 		
-//		Map<String, String> diseaseToColorMap = new Map
-//		StringBuilder colors = new StringBuilder();
-//		for (DiseaseBurdenDto s : data) {
-//			colors.append("" + s.getDisease().toString() + "', ");
-//		}
-
-		hcjs.append("series: [");
-
-		hcjs.append("{ color: '#FF4500', data: [");
-		hcjs.append(positive_series.stream().map((d) -> d.toString()).reduce((fullText, nextText) -> fullText + ", " + nextText).orElse(""));
-		hcjs.append("]},");
-
-		hcjs.append("{ color: '#32CD32', data: [");
-		hcjs.append(negative_series.stream().map((d) -> d.toString()).reduce((fullText, nextText) -> fullText + ", " + nextText).orElse(""));
-		hcjs.append("]},");
-
-		hcjs.append("],"); // series: []
-
-		hcjs.append("}"); // options: {}
+		hcjs.append(
+			"var options = {" + 
+				"plotOptions: {" + 
+					"bar: {" + 
+						"colorByPoint: true" + 
+					"}" + 
+				"}," + 
+				 
+				"/*colors: ['#9BD1BE', '#ff0000', '#E52731'],*/" + 
+				
+				"chart: {" + 
+					"type: 'bar'," + 
+					"styledMode: true," + 
+				"}," + 
+					
+				"series: [" +
+					"{" +
+						"name: ''," + 
+						"data: [" +
+							data.stream().map((d) -> 
+							"{" +
+								"y: " + d.getCasesDifference() + "," +
+								"className: '" + CssStyles.getDiseaseColor(d.getDisease().toShortString()) + " " + CssStyles.BACKGROUND_DARKEN + "'," +
+							"},")
+							.reduce((fullText, nextText) -> fullText + nextText).orElse("") + 
+						"]," +
+					"}" +
+				"]," +
+					
+				"xAxis: {" +
+					"categories: [" + 
+						data.stream().map((d) -> "'" + d.getDisease().toString() + "'").reduce((fullText, nextText) -> fullText + ", " + nextText).orElse("") + 
+					"]" +
+				"}," + 
+					
+				"yAxis: {" + 
+					"title: { text: '" + I18nProperties.getCaption(Captions.dashboardDiseaseDifferenceYAxisLabel) + "' }," + 
+				"}," + 
+					
+				"tooltip: { " + 
+					"headerFormat: '<b>{point.x}: </b>{point.y}<br/>'," + 
+					"pointFormat: ' '" + 
+				"}," + 
+				
+				"title: { text: '' }, " + 
+				"legend: { enabled: false }," + 
+				"credits: { enabled: false }," + 
+				"exporting: { enabled: false }," + 
+				"" + 
+			"}"
+		);
 
 		chart.setHcjs(hcjs.toString());
 	}

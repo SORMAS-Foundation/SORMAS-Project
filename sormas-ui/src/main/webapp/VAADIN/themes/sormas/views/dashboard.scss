@@ -48,9 +48,11 @@
   }
   .background-color-disease-cholera {
   	background-color: #FEBA01;
+  	fill: #FEBA01;
   	
   	&.background-darken {
   		background-color: #E5A701;
+  		fill: #E5A701;
   	}
   }
   .background-color-disease-csm {
@@ -62,9 +64,11 @@
   }
   .background-color-disease-dengue {
   	background-color: #44BEC7;
+  	fill: #44BEC7;
   	
   	&.background-darken {
   		background-color: #3DABB3;
+  		fill: #3DABB3;
   	}
   }
   .background-color-disease-evd {
