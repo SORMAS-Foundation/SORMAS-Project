@@ -127,7 +127,11 @@ public class CaseCountDifferenceComponent extends VerticalLayout {
 		//~express prev...
 		
 		this.subtitleLabel.setValue(String.format(I18nProperties.getString(Strings.comparedTo), previousPeriodExpression));
-						
+		
+		int maxCasesDifference = data.stream().map(d -> d.getCasesDifference()).max(Long::compare).orElse(10L).intValue();
+		if (maxCasesDifference < 5)
+			maxCasesDifference = 5;
+		
 		StringBuilder hcjs = new StringBuilder();
 		
 		hcjs.append(
@@ -167,6 +171,9 @@ public class CaseCountDifferenceComponent extends VerticalLayout {
 					
 				"yAxis: {" + 
 					"title: { text: '" + I18nProperties.getCaption(Captions.dashboardDiseaseDifferenceYAxisLabel) + "' }," + 
+					"allowDecimals: false," + 
+					"max: " + maxCasesDifference + "," + 
+					"min: " + -maxCasesDifference + "," + 
 				"}," + 
 					
 				"tooltip: { " + 

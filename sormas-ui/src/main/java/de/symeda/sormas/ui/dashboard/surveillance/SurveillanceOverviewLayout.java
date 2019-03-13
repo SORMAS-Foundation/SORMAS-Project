@@ -35,6 +35,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class SurveillanceOverviewLayout extends CustomLayout {
 
+	protected HorizontalLayout diseaseBurdenView;
 	protected DiseaseBurdenComponent diseaseBurdenComponent;
 	protected DiseaseTileViewLayout diseaseTileViewLayout;
 	protected CaseCountDifferenceComponent diseaseDifferenceComponent;
@@ -104,7 +105,8 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 		layout.addComponent(showTableViewButton);
 		layout.setComponentAlignment(showTableViewButton, Alignment.TOP_RIGHT);
 
-		addComponent(layout, BURDEN_LOC);
+		diseaseBurdenView = layout;
+		addComponent(diseaseBurdenView, BURDEN_LOC);
 	}
 	
 	private void addShowMoreAndLessButtons() {
@@ -139,12 +141,12 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 		
 		hideOverview.addValueChangeListener(e -> {
 			if (hideOverview.getValue()) {
-				diseaseBurdenComponent.setVisible(false);
+				diseaseBurdenView.setVisible(false);
 				diseaseDifferenceComponent.setVisible(false);
 				showLessButton.setVisible(false);
 				showMoreButton.setVisible(false);
 			} else {
-				diseaseBurdenComponent.setVisible(true);
+				diseaseBurdenView.setVisible(true);
 				diseaseDifferenceComponent.setVisible(true);
 				showLessButton.setVisible(isShowingAllDiseases);
 				showMoreButton.setVisible(!isShowingAllDiseases);
