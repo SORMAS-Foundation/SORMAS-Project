@@ -53,7 +53,7 @@ public class DiseaseTileComponent extends VerticalLayout {
 	void addTopLayout (String diseaseName, Long casesCount) {
 		HorizontalLayout layout = new HorizontalLayout();
 		CssStyles.style(layout, CssStyles.getDiseaseColor(diseaseName));
-		layout.setHeight(80, Unit.PIXELS);
+		layout.setHeight(75, Unit.PIXELS);
 		layout.setWidth(100, Unit.PERCENTAGE);
 		
 		HorizontalLayout nameLayout = new HorizontalLayout();
