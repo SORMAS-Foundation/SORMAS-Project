@@ -49,7 +49,9 @@ public class FacilityHelper {
 		}
 
 		StringBuilder caption = new StringBuilder();
-		caption.append(facilityName);
+		if (!DataHelper.isNullOrEmpty(facilityName)) {
+			caption.append(facilityName);
+		}
 
 		return caption.toString();
 	}

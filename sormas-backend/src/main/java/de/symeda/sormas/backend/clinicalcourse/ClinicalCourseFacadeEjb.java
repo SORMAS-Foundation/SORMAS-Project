@@ -44,15 +44,6 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 	@EJB
 	HealthConditionsService healthConditionsService;
 	
-	@Override
-	public ClinicalCourseDto saveClinicalCourse(ClinicalCourseDto clinicalCourse) {
-		ClinicalCourse entity = fromDto(clinicalCourse);
-		
-		service.ensurePersisted(entity);
-		
-		return toDto(entity);
-	}
-	
 	public static ClinicalCourseReferenceDto toReferenceDto(ClinicalCourse entity) {
 		if (entity == null) {
 			return null;

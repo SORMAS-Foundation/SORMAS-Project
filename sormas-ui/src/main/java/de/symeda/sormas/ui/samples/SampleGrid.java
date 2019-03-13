@@ -56,7 +56,7 @@ public class SampleGrid extends Grid implements AbstractGrid<SampleCriteria> {
 
 	public static final String EDIT_BTN_ID = "edit";
 	
-	private static final String TEST_RESULT_AND_SPECIMEN = Captions.Sample_testResultAndSpecimen;
+	private static final String PATHOGEN_TEST_RESULT = Captions.Sample_pathogenTestResult;
 	private static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 	
 	private SampleCriteria sampleCriteria = new SampleCriteria();
@@ -77,17 +77,17 @@ public class SampleGrid extends Grid implements AbstractGrid<SampleCriteria> {
         VaadinUiUtil.addIconColumn(generatedContainer, EDIT_BTN_ID, FontAwesome.PENCIL_SQUARE);
 		setContainerDataSource(generatedContainer);
 		
-		generatedContainer.addGeneratedProperty(TEST_RESULT_AND_SPECIMEN, new PropertyValueGenerator<String>() {
+		generatedContainer.addGeneratedProperty(PATHOGEN_TEST_RESULT, new PropertyValueGenerator<String>() {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				SampleIndexDto sampleIndexDto = (SampleIndexDto) itemId;
 				
-				if (sampleIndexDto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
-					return I18nProperties.getCaption(Captions.sampleSpecimenNotAdequate);
-				} else if (sampleIndexDto.getPathogenTestResult() != null) {
+				if (sampleIndexDto.getPathogenTestResult() != null) {
 					return sampleIndexDto.getPathogenTestResult().toString();
+				} else if (sampleIndexDto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
+					return I18nProperties.getCaption(Captions.sampleSpecimenNotAdequate);
 				} else {
-					return I18nProperties.getCaption(Captions.samplePending);
+					return "";
 				}
 			}
 			@Override
@@ -112,7 +112,7 @@ public class SampleGrid extends Grid implements AbstractGrid<SampleCriteria> {
 		
 		setColumns(EDIT_BTN_ID, SampleIndexDto.SAMPLE_CODE, SampleIndexDto.LAB_SAMPLE_ID, SampleIndexDto.ASSOCIATED_CASE, DISEASE_SHORT,
 				SampleIndexDto.CASE_DISTRICT, SampleIndexDto.SHIPPED, SampleIndexDto.RECEIVED, SampleIndexDto.SHIPMENT_DATE, SampleIndexDto.RECEIVED_DATE, SampleIndexDto.LAB,
-				SampleIndexDto.SAMPLE_MATERIAL, SampleIndexDto.PATHOGEN_TEST_LAB_USER_NAME, TEST_RESULT_AND_SPECIMEN, SampleIndexDto.ADDITIONAL_TESTING_STATUS);
+				SampleIndexDto.SAMPLE_MATERIAL, PATHOGEN_TEST_RESULT, SampleIndexDto.ADDITIONAL_TESTING_STATUS);
 		
 		getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
         getColumn(EDIT_BTN_ID).setWidth(60);
@@ -164,7 +164,7 @@ public class SampleGrid extends Grid implements AbstractGrid<SampleCriteria> {
 	}	
 	
 	public void setTestResultFilter(PathogenTestResultType testResult) {
-		sampleCriteria.testResult(testResult);
+		sampleCriteria.pathogenTestResult(testResult);
 		reload();
 	}
 	

@@ -162,9 +162,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		PathogenTest pathogenTest = fromDto(dto);
 		pathogenTestService.ensurePersisted(pathogenTest);
 		
-		sampleService.updateMainSampleTest(pathogenTest.getSample());
-
-		onSampleTestChanged(existingSampleTest, pathogenTest);
+		onPathogenTestChanged(existingSampleTest, pathogenTest);
 		
 		// Update case classification if necessary
 		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(pathogenTest.getSample().getAssociatedCase()), pathogenTest.getSample().getAssociatedCase());
@@ -206,7 +204,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setLabUser(userService.getByReferenceDto(source.getLabUser()));
 		target.setTestResult(source.getTestResult());
 		target.setTestResultText(source.getTestResultText());
-		target.setTestResultVerified(source.isTestResultVerified());
+		target.setTestResultVerified(source.getTestResultVerified());
 		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
 
 		return target;
@@ -228,17 +226,16 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setLabUser(UserFacadeEjb.toReferenceDto(source.getLabUser()));
 		target.setTestResult(source.getTestResult());
 		target.setTestResultText(source.getTestResultText());
-		target.setTestResultVerified(source.isTestResultVerified());
+		target.setTestResultVerified(source.getTestResultVerified());
 		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
 
 		return target;
 	}
 
-	private void onSampleTestChanged(PathogenTestDto existingSampleTest, PathogenTest newSampleTest) {
-		
+	private void onPathogenTestChanged(PathogenTestDto existingPathogenTest, PathogenTest newPathogenTest) {
 		// Send an email to all responsible supervisors when a new non-pending sample test is created or the status of a formerly pending test result has changed
-		if (existingSampleTest == null && newSampleTest.getTestResult() != PathogenTestResultType.PENDING) {
-			Case existingSampleCase = sampleService.getByUuid(newSampleTest.getSample().getUuid()).getAssociatedCase();
+		if (existingPathogenTest == null && newPathogenTest.getTestResult() != PathogenTestResultType.PENDING) {
+			Case existingSampleCase = sampleService.getByUuid(newPathogenTest.getSample().getUuid()).getAssociatedCase();
 			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(existingSampleCase.getRegion(), 
 					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
 
@@ -246,16 +243,16 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 				try {
 					messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_LAB_RESULT_ARRIVED), 
 							String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_RESULT_ARRIVED), 
-									newSampleTest.getTestResult().toString(), DataHelper.getShortUuid(newSampleTest.getUuid())), 
+									newPathogenTest.getTestResult().toString(), DataHelper.getShortUuid(newPathogenTest.getUuid())), 
 							MessageType.EMAIL, MessageType.SMS);
 				} catch (NotificationDeliveryFailedException e) {
 					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the arrival of a lab result. "
 							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
 				}
 			}
-		} else if (existingSampleTest != null && existingSampleTest.getTestResult() == PathogenTestResultType.PENDING && 
-				newSampleTest.getTestResult() != PathogenTestResultType.PENDING) {
-			Case existingSampleCase = sampleService.getByUuid(newSampleTest.getSample().getUuid()).getAssociatedCase();
+		} else if (existingPathogenTest != null && existingPathogenTest.getTestResult() == PathogenTestResultType.PENDING && 
+				newPathogenTest.getTestResult() != PathogenTestResultType.PENDING) {
+			Case existingSampleCase = sampleService.getByUuid(newPathogenTest.getSample().getUuid()).getAssociatedCase();
 			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(existingSampleCase.getRegion(), 
 					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
 
@@ -263,18 +260,18 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 				try {
 					messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_LAB_RESULT_SPECIFIED), 
 							String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_RESULT_SPECIFIED), 
-									DataHelper.getShortUuid(newSampleTest.getUuid()), newSampleTest.getTestResult().toString()), 
+									DataHelper.getShortUuid(newPathogenTest.getUuid()), newPathogenTest.getTestResult().toString()), 
 							MessageType.EMAIL, MessageType.SMS);
 				} catch (NotificationDeliveryFailedException e) {
 					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the specification of a lab result. "
 							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
 				}
 			}
-		}	
+		}
 	}
 
 	@LocalBean
 	@Stateless
-	public static class SampleTestFacadeEjbLocal extends PathogenTestFacadeEjb {
+	public static class PathogenTestFacadeEjbLocal extends PathogenTestFacadeEjb {
 	}
 }

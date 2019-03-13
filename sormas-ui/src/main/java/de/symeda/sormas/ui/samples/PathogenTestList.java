@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.samples;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -25,8 +26,9 @@ import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -37,11 +39,13 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 
 	private SampleReferenceDto sampleRef;
 	private int caseSampleCount;
+	private BiConsumer<PathogenTestResultType, Runnable> testChangedCallback;
 
-	public PathogenTestList(SampleReferenceDto sampleRef) {
+	public PathogenTestList(SampleReferenceDto sampleRef, BiConsumer<PathogenTestResultType, Runnable> testChangedCallback) {
 		super(5);
 
 		this.sampleRef = sampleRef;
+		this.testChangedCallback = testChangedCallback;
 	}
 
 	@Override
@@ -69,7 +73,7 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 					@Override
 					public void buttonClick(ClickEvent event) {
 						ControllerProvider.getPathogenTestController().edit(pathogenTest, caseSampleCount,
-								PathogenTestList.this::reload);
+								PathogenTestList.this::reload, testChangedCallback);
 					}
 				});
 			}

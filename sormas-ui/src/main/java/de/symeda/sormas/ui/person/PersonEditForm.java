@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.person;
 
 import java.time.Month;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -43,6 +44,7 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
+import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -222,6 +224,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				PersonDto.CAUSE_OF_DEATH_DETAILS,
 				PersonDto.CAUSE_OF_DEATH_DISEASE);
 
+		FieldHelper.setVisibleWhen(getFieldGroup(), PersonDto.EDUCATION_DETAILS, PersonDto.EDUCATION_TYPE, Arrays.asList(EducationType.OTHER), true);
+		
 		FieldHelper.addSoftRequiredStyle(presentCondition, sex, deathDate, deathPlaceDesc, deathPlaceType, 
 				causeOfDeathField, causeOfDeathDiseaseField, causeOfDeathDetailsField, 
 				burialDate, burialPlaceDesc, burialConductor);

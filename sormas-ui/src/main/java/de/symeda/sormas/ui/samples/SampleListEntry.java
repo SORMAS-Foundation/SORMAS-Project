@@ -66,42 +66,42 @@ public class SampleListEntry extends HorizontalLayout {
 		String htmlLeft = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE,
 				DataHelper.toStringNullable(sample.getSampleMaterial()))
 				+ LayoutUtil.div(I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME)
-						+ ": " + DateHelper.formatLocalShortDate(sample.getSampleDateTime()));
+						+ ": " + DateHelper.formatLocalShortDate(sample.getSampleDateTime()))
+				+ LayoutUtil.div(DataHelper.toStringNullable(sample.getLab()));
 		Label labelLeft = new Label(htmlLeft, ContentMode.HTML);
 		topLabelLayout.addComponent(labelLeft);
 
-		String htmlRight;
-		if (sample.getPathogenTestResult() != null && sample.getPathogenTestResult() != PathogenTestResultType.PENDING) {
+		String htmlRight = "";
+		if (sample.getPathogenTestResult() != null) {
 			htmlRight = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE + " "
-					+ (sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE ? CssStyles.LABEL_WARNING
+					+ (sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE ? CssStyles.LABEL_CRITICAL
 							: (sample.getPathogenTestResult() == PathogenTestResultType.INDETERMINATE
-									? CssStyles.LABEL_IMPORTANT
+									? CssStyles.LABEL_WARNING
 									: "")),
 					DataHelper.toStringNullable(sample.getPathogenTestResult()));
 		} else if (sample.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
 			htmlRight = LayoutUtil.divCss(
 					CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE + " " + CssStyles.LABEL_WARNING,
 					sample.getSpecimenCondition().toString());
-		} else if (sample.isReferred()) {
-			htmlRight = LayoutUtil.divCss(
+		} 
+		
+		
+		if (sample.isReferred()) {
+			htmlRight += LayoutUtil.divCss(
 					CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE + " " + CssStyles.LABEL_NOT, I18nProperties.getCaption(Captions.sampleReferredShort));
 		} else if (sample.isReceived()) {
-			htmlRight = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE, I18nProperties.getCaption(Captions.sampleReceived))
+			htmlRight += LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE, I18nProperties.getCaption(Captions.sampleReceived))
 					+ LayoutUtil.div(DateHelper.formatLocalShortDate(sample.getReceivedDate()));
 		} else if (sample.isShipped()) {
-			htmlRight = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE, I18nProperties.getCaption(Captions.sampleShipped))
+			htmlRight += LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE, I18nProperties.getCaption(Captions.sampleShipped))
 					+ LayoutUtil.div(DateHelper.formatLocalShortDate(sample.getShipmentDate()));
 		} else {
-			htmlRight = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE, I18nProperties.getCaption(Captions.sampleNotShippedLong));
+			htmlRight += LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE, I18nProperties.getCaption(Captions.sampleNotShippedLong));
 		}
 		Label labelRight = new Label(htmlRight, ContentMode.HTML);
 		labelRight.addStyleName(CssStyles.ALIGN_RIGHT);
 		topLabelLayout.addComponent(labelRight);
 		topLabelLayout.setComponentAlignment(labelRight, Alignment.TOP_RIGHT);
-
-		String htmlLab = LayoutUtil.div(DataHelper.toStringNullable(sample.getLab()));
-		Label labelLab = new Label(htmlLab, ContentMode.HTML);
-		labelLayout.addComponent(labelLab);
 		
 		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
 			Label labelAdditionalTests = new Label(I18nProperties.getString(Strings.entityAdditionalTests) + " " + sample.getAdditionalTestingStatus().toString().toLowerCase());

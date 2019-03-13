@@ -2956,3 +2956,56 @@ UPDATE samples SET requestedpathogentestsstring = samples.suggestedtypeoftest;
 ALTER TABLE samples DROP COLUMN suggestedtypeoftest;
 
 INSERT INTO schema_version (version_number, comment) VALUES (132, 'Laboratory changes for case management #937');
+
+-- 2019-03-06 Additions for Clinical Management #989
+
+ALTER TABLE symptoms ADD COLUMN hemorrhagicsyndrome varchar(255);
+ALTER TABLE symptoms ADD COLUMN hyperglycemia varchar(255);
+ALTER TABLE symptoms ADD COLUMN hypoglycemia varchar(255);
+ALTER TABLE symptoms ADD COLUMN sepsis varchar(255);
+ALTER TABLE symptoms ADD COLUMN midupperarmcircumference integer;
+ALTER TABLE symptoms ADD COLUMN respiratoryrate integer;
+ALTER TABLE symptoms ADD COLUMN weight integer;
+ALTER TABLE symptoms ADD COLUMN height integer;
+ALTER TABLE symptoms ADD COLUMN glasgowcomascale integer;
+
+ALTER TABLE symptoms_history ADD COLUMN hemorrhagicsyndrome varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN hyperglycemia varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN hypoglycemia varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN sepsis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN midupperarmcircumference integer;
+ALTER TABLE symptoms_history ADD COLUMN respiratoryrate integer;
+ALTER TABLE symptoms_history ADD COLUMN weight integer;
+ALTER TABLE symptoms_history ADD COLUMN height integer;
+ALTER TABLE symptoms_history ADD COLUMN glasgowcomascale integer;
+
+INSERT INTO schema_version (version_number, comment) VALUES (133, 'Additions for Clinical Management #989');
+
+-- 2019-03-01 Add pathogen test result to sample #919
+
+ALTER TABLE samples ADD COLUMN pathogentestresult varchar(255);
+ALTER TABLE samples_history ADD COLUMN pathogentestresult varchar(255);
+UPDATE samples SET pathogentestresult = testresult FROM pathogentest WHERE pathogentest.id = samples.mainsampletest_id;
+UPDATE samples SET pathogentestresult = 'PENDING' WHERE pathogentestresult IS NULL AND pathogentestingrequested = TRUE;
+UPDATE samples SET changedate = now() WHERE pathogentestresult IS NOT NULL;
+ALTER TABLE samples DROP COLUMN mainsampletest_id;
+ALTER TABLE samples_history DROP COLUMN mainsampletest_id;
+
+DROP TRIGGER versioning_trigger ON pathogentest;
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON pathogentest
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'pathogentest_history', true);
+
+INSERT INTO schema_version (version_number, comment) VALUES (134, 'Add pathogen test result to sample #919');
+
+-- 2019-03-08 Further additions for clinical management #993
+
+UPDATE symptoms SET weight = weight * 100 WHERE weight IS NOT NULL;
+UPDATE symptoms SET midupperarmcircumference = midupperarmcircumference * 100 WHERE midupperarmcircumference IS NOT NULL;
+UPDATE symptoms SET changedate = now() WHERE weight IS NOT NULL OR midupperarmcircumference IS NOT NULL;
+ALTER TABLE samples ADD COLUMN requestedotherpathogentests varchar(512);
+ALTER TABLE samples_history ADD COLUMN requestedotherpathogentests varchar(512);
+ALTER TABLE samples ADD COLUMN requestedotheradditionaltests varchar(512);
+ALTER TABLE samples_history ADD COLUMN requestedotheradditionaltests varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (135, 'Further additions for clinical management #993');

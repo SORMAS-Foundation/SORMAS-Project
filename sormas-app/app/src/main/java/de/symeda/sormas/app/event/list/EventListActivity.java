@@ -106,6 +106,7 @@ public class EventListActivity extends BaseListActivity {
     @Override
     public void goToNewView() {
         EventNewActivity.startActivity(this);
+        finish();
     }
 
 }

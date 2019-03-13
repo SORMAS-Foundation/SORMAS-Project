@@ -48,6 +48,8 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Date reportDateTo;
 	private Date followUpUntilFrom;
 	private Date followUpUntilTo;
+	private Date lastContactDateFrom;
+	private Date lastContactDateTo;
 	private Boolean archived;
 	private String nameUuidCaseLike;
 	
@@ -163,6 +165,30 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public Date getReportDateTo() {
 		return reportDateTo;
+	}
+	
+	public ContactCriteria lastContactDateBetween(Date lastContactDateFrom, Date lastContactDateTo) {
+		this.lastContactDateFrom = lastContactDateFrom;
+		this.lastContactDateTo = lastContactDateTo;
+		return this;
+	}
+
+	public ContactCriteria lastContactDateFrom(Date lastContactDateFrom) {
+		this.lastContactDateFrom = lastContactDateFrom;
+		return this;
+	}
+
+	public Date getLastContactDateFrom() {
+		return lastContactDateFrom;
+	}
+
+	public ContactCriteria lastContactDateTo(Date lastContactDateTo) {
+		this.lastContactDateTo = lastContactDateTo;
+		return this;
+	}
+
+	public Date getLastContactDateTo() {
+		return lastContactDateTo;
 	}
 	
 	public ContactCriteria followUpUntilBetween(Date followUpUntilFrom, Date followUpUntilTo) {

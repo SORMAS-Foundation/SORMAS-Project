@@ -25,7 +25,6 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 
 public class SampleIndexDto implements Serializable {
 
@@ -71,7 +70,6 @@ public class SampleIndexDto implements Serializable {
 	private SampleMaterial sampleMaterial;
 	private SpecimenCondition specimenCondition;
 	private PathogenTestResultType pathogenTestResult;
-	private String pathogenTestLabUserName;
 	private AdditionalTestingStatus additionalTestingStatus;
 
 	public SampleIndexDto(String uuid, String sampleCode, String labSampleId, Date sampleDateTime,
@@ -81,7 +79,6 @@ public class SampleIndexDto implements Serializable {
 			String associatedCaseUuid, String associatedCaseFirstName, String associatedCaseLastName,
 			Disease disease, String diseaseDetails, String caseRegionUuid, 
 			String caseDistrictUuid, String caseDistrictName, PathogenTestResultType pathogenTestResult,
-			String pathogenTestLabUserFirstName, String pathogenTestLabUserLastName,
 			Boolean additionalTestingRequested, Boolean additionalTestPerformed) {
 		this.uuid = uuid;
 		this.associatedCase = new CaseReferenceDto(associatedCaseUuid, associatedCaseFirstName, associatedCaseLastName);
@@ -101,7 +98,6 @@ public class SampleIndexDto implements Serializable {
 		this.sampleMaterial = sampleMaterial;
 		this.specimenCondition = specimenCondition;
 		this.pathogenTestResult = pathogenTestResult;
-		this.pathogenTestLabUserName = UserReferenceDto.buildCaption(pathogenTestLabUserFirstName, pathogenTestLabUserLastName, null);
 		this.additionalTestingStatus =  Boolean.TRUE.equals(additionalTestPerformed) ? AdditionalTestingStatus.PERFORMED : 
 			(Boolean.TRUE.equals(additionalTestingRequested) ? AdditionalTestingStatus.REQUESTED : AdditionalTestingStatus.NOT_REQUESTED);
 	}
@@ -210,12 +206,6 @@ public class SampleIndexDto implements Serializable {
 	}
 	public void setPathogenTestResult(PathogenTestResultType pathogenTestResult) {
 		this.pathogenTestResult = pathogenTestResult;
-	}
-	public String getPathogenTestLabUserName() {
-		return pathogenTestLabUserName;
-	}
-	public void setPathogenTestLabUserName(String pathogenTestLabUserName) {
-		this.pathogenTestLabUserName = pathogenTestLabUserName;
 	}
 	public Date getSampleDateTime() {
 		return sampleDateTime;

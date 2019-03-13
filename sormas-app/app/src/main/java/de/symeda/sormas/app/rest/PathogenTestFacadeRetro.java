@@ -27,19 +27,15 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-/**
- * Created by Mate Strysewske on 09.02.2017.
- */
-
 public interface PathogenTestFacadeRetro {
 
-    @GET("sampletests/all/{since}")
+    @GET("pathogentests/all/{since}")
     Call<List<PathogenTestDto>> pullAllSince(@Path("since") long since);
 
-    @POST("sampletests/query")
+    @POST("pathogentests/query")
     Call<List<PathogenTestDto>> pullByUuids(@Body List<String> uuids);
 
-    @GET("sampletests/uuids")
+    @GET("pathogentests/uuids")
     Call<List<String>> pullUuids();
 
 }

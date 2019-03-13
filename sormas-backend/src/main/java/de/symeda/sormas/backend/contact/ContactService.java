@@ -189,6 +189,19 @@ public class ContactService extends AbstractAdoService<Contact> {
 		return count > 0;
 	}
 
+
+	public List<CaseClassification> getSourceCaseClassifications(long resultCaseId) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CaseClassification> cq = cb.createQuery(CaseClassification.class);
+		Root<Contact> from = cq.from(getElementClass());
+		Join<Contact, Case> cazeJoin = from.join(Contact.CAZE);
+		Join<Contact, Case> resultingCazeJoin = from.join(Contact.RESULTING_CASE);
+		cq.select(cazeJoin.get(Case.CASE_CLASSIFICATION));
+		cq.where(cb.equal(resultingCazeJoin.get(Case.ID), resultCaseId));
+		return em.createQuery(cq).getResultList();
+	}
+	
 	/**
 	 * 
 	 * @param fromDate inclusive
@@ -726,6 +739,9 @@ public class ContactService extends AbstractAdoService<Contact> {
 		}
 		if (contactCriteria.getReportDateFrom() != null && contactCriteria.getReportDateTo() != null) {
 			filter = and(cb, filter, cb.between(from.get(Contact.REPORT_DATE_TIME), contactCriteria.getReportDateFrom(), contactCriteria.getReportDateTo()));
+		}
+		if (contactCriteria.getLastContactDateFrom() != null && contactCriteria.getLastContactDateTo() != null) {
+			filter = and(cb, filter, cb.between(from.get(Contact.LAST_CONTACT_DATE), contactCriteria.getLastContactDateFrom(), contactCriteria.getLastContactDateTo()));
 		}
 		if (contactCriteria.getFollowUpUntilFrom() != null && contactCriteria.getFollowUpUntilTo() != null) {
 			filter = and(cb, filter, cb.between(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilFrom(), contactCriteria.getFollowUpUntilTo()));

@@ -55,16 +55,6 @@ public class PathogenTestService extends AbstractAdoService<PathogenTest> {
 		super(PathogenTest.class);
 	}
 
-	@Override
-	public void delete(PathogenTest pathogenTest) {
-		Sample sample = pathogenTest.getSample();
-		if (pathogenTest.equals(sample.getMainSampleTest())) {
-			pathogenTest.getSample().setMainSampleTest(null);
-		}
-
-		super.delete(pathogenTest);
-	}
-
 	public List<PathogenTest> getAllActivePathogenTestsAfter(Date date, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PathogenTest> cq = cb.createQuery(getElementClass());

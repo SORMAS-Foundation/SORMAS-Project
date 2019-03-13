@@ -116,7 +116,7 @@ public class TherapyView extends AbstractCaseView {
 				Command deleteCommand = selectedItem -> {
 					ControllerProvider.getTherapyController().deleteAllSelectedPrescriptions(prescriptionGrid.getSelectedRows(), new Runnable() {
 						public void run() {
-							prescriptionGrid.reload();
+							reloadPrescriptionGrid();
 						}
 					});
 				};
@@ -156,7 +156,7 @@ public class TherapyView extends AbstractCaseView {
 			prescriptionTextFilter.setInputPrompt(I18nProperties.getString(Strings.promptPrescriptionTextFilter));
 			prescriptionTextFilter.addTextChangeListener(e -> {
 				prescriptionCriteria.textFilter(e.getText());
-				navigateTo(prescriptionCriteria);
+				reloadPrescriptionGrid();
 			});
 			filterRow.addComponent(prescriptionTextFilter);
 		}
@@ -186,7 +186,7 @@ public class TherapyView extends AbstractCaseView {
 				Command deleteCommand = selectedItem -> {
 					ControllerProvider.getTherapyController().deleteAllSelectedTreatments(treatmentGrid.getSelectedRows(), new Runnable() {
 						public void run() {
-							treatmentGrid.reload();
+							reloadTreatmentGrid();
 						}
 					});
 				};
@@ -225,7 +225,7 @@ public class TherapyView extends AbstractCaseView {
 			treatmentTextFilter.setInputPrompt(I18nProperties.getString(Strings.promptTreatmentTextFilter));
 			treatmentTextFilter.addTextChangeListener(e -> {
 				treatmentCriteria.textFilter(e.getText());
-				navigateTo(treatmentCriteria);
+				reloadTreatmentGrid();
 			});
 			filterRow.addComponent(treatmentTextFilter);
 		}

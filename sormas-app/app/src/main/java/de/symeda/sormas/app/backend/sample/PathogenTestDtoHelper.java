@@ -27,10 +27,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
-/**
- * Created by Mate Strysewske on 09.02.2017.
- */
-
 public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTestDto> {
 
     @Override

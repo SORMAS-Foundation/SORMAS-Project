@@ -13,7 +13,7 @@ public class ClinicalVisitIndexDto implements Serializable {
 	public static final String I18N_PREFIX = "ClinicalVisit";
 	
 	public static final String VISIT_DATE_TIME = "visitDateTime";
-	public static final String VISITING_CLINICIAN = "visitingClinician";
+	public static final String VISITING_PERSON = "visitingPerson";
 	public static final String VISIT_REMARKS = "visitRemarks";
 	public static final String TEMPERATURE = "temperature";
 	public static final String BLOOD_PRESSURE = "bloodPressure";
@@ -22,7 +22,7 @@ public class ClinicalVisitIndexDto implements Serializable {
 	
 	private String uuid;
 	private Date visitDateTime;
-	private String visitingClinician;
+	private String visitingPerson;
 	private String visitRemarks;
 	private String temperature;
 	private String bloodPressure;
@@ -30,12 +30,12 @@ public class ClinicalVisitIndexDto implements Serializable {
 	private Integer signsAndSymptomsCount;
 	private Long symptomsId;
 	
-	public ClinicalVisitIndexDto(String uuid, Date visitDateTime, String visitingClinician, String visitRemarks,
+	public ClinicalVisitIndexDto(String uuid, Date visitDateTime, String visitingPerson, String visitRemarks,
 			Float temperature, TemperatureSource temperatureSource, Integer bloodPressureSystolic,
 			Integer bloodPressureDiastolic, Integer heartRate, Long symptomsId) {
 		this.uuid = uuid;
 		this.visitDateTime = visitDateTime;
-		this.visitingClinician = visitingClinician;
+		this.visitingPerson = visitingPerson;
 		this.visitRemarks = visitRemarks;
 		this.temperature = TemperatureSource.formatTemperatureSource(temperature, temperatureSource);
 		this.bloodPressure = SymptomsHelper.getBloodPressureString(bloodPressureSystolic, bloodPressureDiastolic);
@@ -55,11 +55,11 @@ public class ClinicalVisitIndexDto implements Serializable {
 	public void setVisitDateTime(Date visitDateTime) {
 		this.visitDateTime = visitDateTime;
 	}
-	public String getVisitingClinician() {
-		return visitingClinician;
+	public String getVisitingPerson() {
+		return visitingPerson;
 	}
-	public void setVisitingClinician(String visitingClinician) {
-		this.visitingClinician = visitingClinician;
+	public void setVisitingPerson(String visitingPerson) {
+		this.visitingPerson = visitingPerson;
 	}
 	public String getVisitRemarks() {
 		return visitRemarks;

@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.person;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -73,5 +74,17 @@ public class PersonHelperTest {
 		secondName = "Don Van";
 
 		assertFalse(PersonHelper.areNamesSimilar(firstName, secondName));
-	}	
+	}
+
+	@Test
+		public void testFormatBirthdate() throws Exception {
+			assertEquals("//", PersonHelper.formatBirthdate(null, null, null));
+			assertEquals("//1990", PersonHelper.formatBirthdate(null, null, 1990));
+			assertEquals("/7/1990", PersonHelper.formatBirthdate(null, 7, 1990));
+			assertEquals("/7/", PersonHelper.formatBirthdate(null, 7, null));
+			assertEquals("5/7/", PersonHelper.formatBirthdate(5, 7, null));
+			assertEquals("5//", PersonHelper.formatBirthdate(5, null, null));
+			assertEquals("5//1990", PersonHelper.formatBirthdate(5, null, 1990));
+			assertEquals("5/7/1990", PersonHelper.formatBirthdate(5, 7, 1990));
+		}	
 }

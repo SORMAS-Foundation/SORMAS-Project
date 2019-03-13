@@ -45,7 +45,7 @@ public class InfoProvider {
 
 	
 	public String getMinimumRequiredVersion() {
-		return "1.14.0";
+		return "1.15.0";
 	}
 	
 	/**
@@ -54,6 +54,13 @@ public class InfoProvider {
 	 */
 	public String getVersion() {
 		return version;
+	}
+	
+	/**
+	 * Reads the version from the version.txt where it is written by maven and replaces the last version number with a 0.
+	 */
+	public String getBaseVersion() {
+		return version.substring(0, version.lastIndexOf(".")) + ".0";
 	}
 
 	/**

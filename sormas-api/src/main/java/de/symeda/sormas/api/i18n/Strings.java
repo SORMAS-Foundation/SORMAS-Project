@@ -101,7 +101,10 @@ public interface Strings {
 	public static String headingCasesDeleted = "headingCasesDeleted";
 	public static String headingCaseStatusMap = "headingCaseStatusMap";
 	public static String headingChangeCaseDisease = "headingChangeCaseDisease";
+	public static String headingChangePathogenTestResult = "headingChangePathogenTestResult";
+	public static String headingClinicalMeasurements = "headingClinicalMeasurements";
 	public static String headingClinicalVisitsDeleted = "headingClinicalVisitsDeleted";
+	public static String headingComplications = "headingComplications";
 	public static String headingConfirmArchiving = "headingConfirmArchiving";
 	public static String headingConfirmDearchiving = "headingConfirmDearchiving";
 	public static String headingConfirmDeletion = "headingConfirmDeletion";
@@ -268,6 +271,7 @@ public interface Strings {
 	public static String messageCasesDeleted = "messageCasesDeleted";
 	public static String messageCasesEdited = "messageCasesEdited";
 	public static String messageCaseTransfered = "messageCaseTransfered";
+	public static String messageChangePathogenTestResult = "messageChangePathogenTestResult";
 	public static String messageCheckInputData = "messageCheckInputData";
 	public static String messageClinicalCourseSaved = "messageClinicalCourseSaved";
 	public static String messageClinicalVisitCreated = "messageClinicalVisitCreated";
@@ -391,6 +395,11 @@ public interface Strings {
 	public static String promptCasesEpiWeekFrom = "promptCasesEpiWeekFrom";
 	public static String promptCasesEpiWeekTo = "promptCasesEpiWeekTo";
 	public static String promptCasesSearchField = "promptCasesSearchField";
+	public static String promptContactDateFrom = "promptContactDateFrom";
+	public static String promptContactDateType = "promptContactDateType";
+	public static String promptContactDateTo = "promptContactDateTo";
+	public static String promptContactEpiWeekFrom = "promptContactEpiWeekFrom";
+	public static String promptContactEpiWeekTo = "promptContactEpiWeekTo";
 	public static String promptContactsSearchField = "promptContactsSearchField";
 	public static String promptDisease = "promptDisease";
 	public static String promptDistrict = "promptDistrict";

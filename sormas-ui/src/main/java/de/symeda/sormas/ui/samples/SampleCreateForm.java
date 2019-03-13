@@ -65,9 +65,11 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 			LayoutUtil.loc(SampleDto.PATHOGEN_TESTING_REQUESTED) +
 			LayoutUtil.loc(PATHOGEN_TESTING_INFO_LOC) +
 			LayoutUtil.loc(SampleDto.REQUESTED_PATHOGEN_TESTS) +
+			LayoutUtil.loc(SampleDto.REQUESTED_OTHER_PATHOGEN_TESTS) +
 			LayoutUtil.loc(SampleDto.ADDITIONAL_TESTING_REQUESTED) +
 			LayoutUtil.loc(ADDITIONAL_TESTING_INFO_LOC) +
 			LayoutUtil.loc(SampleDto.REQUESTED_ADDITIONAL_TESTS) +
+			LayoutUtil.loc(SampleDto.REQUESTED_OTHER_ADDITIONAL_TESTS) +
 			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.SHIPPED),
 			LayoutUtil.divs(LayoutUtil.fluidRowLocs(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS)),
 			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.RECEIVED),
@@ -192,12 +194,17 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 		CssStyles.style(requestedPathogenTestsField, CssStyles.OPTIONGROUP_CHECKBOXES_HORIZONTAL);
 		requestedPathogenTestsField.setMultiSelect(true);
 		requestedPathogenTestsField.addItems((Object[]) PathogenTestType.values());
+		requestedPathogenTestsField.removeItem(PathogenTestType.OTHER);
 		requestedPathogenTestsField.setCaption(null);
 		OptionGroup requestedAdditionalTestsField = addField(SampleDto.REQUESTED_ADDITIONAL_TESTS, OptionGroup.class);
 		CssStyles.style(requestedAdditionalTestsField, CssStyles.OPTIONGROUP_CHECKBOXES_HORIZONTAL);
 		requestedAdditionalTestsField.setMultiSelect(true);
 		requestedAdditionalTestsField.addItems((Object[]) AdditionalTestType.values());
 		requestedAdditionalTestsField.setCaption(null);
+		
+		// Text fields to type in other tests
+		TextField requestedOtherPathogenTests = addField(SampleDto.REQUESTED_OTHER_PATHOGEN_TESTS, TextField.class);
+		TextField requestedOtherAdditionalTests = addField(SampleDto.REQUESTED_OTHER_ADDITIONAL_TESTS, TextField.class);
 		
 		// Information texts
 		Label requestedPathogenInfoLabel = new Label(I18nProperties.getString(Strings.infoSamplePathogenTesting));
@@ -210,11 +217,14 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 		requestedPathogenInfoLabel.setVisible(false);
 		requestedAdditionalTestsField.setVisible(false);
 		requestedAdditionalInfoLabel.setVisible(false);
+		requestedOtherPathogenTests.setVisible(false);
+		requestedOtherAdditionalTests.setVisible(false);
 
 		// CheckBoxes should be hidden when no tests are requested
 		pathogenTestingRequestedField.addValueChangeListener(f -> {
 			requestedPathogenInfoLabel.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
 			requestedPathogenTestsField.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
+			requestedOtherPathogenTests.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
 		});
 		
 		if (!UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
@@ -226,6 +236,7 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 			additionalTestingRequestedField.addValueChangeListener(f -> {
 				requestedAdditionalInfoLabel.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
 				requestedAdditionalTestsField.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
+				requestedOtherAdditionalTests.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
 			});
 		}
 	}

@@ -226,6 +226,7 @@
     <string name="heading_case_summary">Case Summary</string>
     <string name="heading_cases_list">Case Listing</string>
     <string name="heading_classification_for">Classification for</string>
+    <string name="heading_complications">Complications</string>
     <string name="heading_confirm_pin">Confirm PIN</string>
     <string name="heading_confirmation_dialog">Confirmation</string>
     <string name="heading_contact_edit">Edit Contact</string>
@@ -279,7 +280,7 @@
     <string name="heading_source_case">Source Case</string>
     <string name="heading_source_of_information">Source of Information</string>
     <string name="heading_surveillance_outbreak">Surveillance Outbreak</string>
-    <string name="heading_symptoms">Symptoms</string>
+    <string name="heading_symptoms">Signs &amp; Symptoms</string>
     <string name="heading_sync_conflicts">Synchronization Conflicts</string>
     <string name="heading_synchronization">Synchronization</string>
     <string name="heading_task_edit">Task</string>

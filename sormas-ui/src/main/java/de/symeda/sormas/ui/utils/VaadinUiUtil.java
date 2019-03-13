@@ -209,5 +209,20 @@ public class VaadinUiUtil {
 		
 		return popupWindow;
 	}
+	
+	public static ConfirmationComponent buildYesNoConfirmationComponent() {
+		ConfirmationComponent requestTaskComponent = new ConfirmationComponent(false) {
+			private static final long serialVersionUID = 1L;
+			@Override
+			protected void onConfirm() {
+			}
+			@Override
+			protected void onCancel() {
+			}
+		};
+		requestTaskComponent.getConfirmButton().setCaption(I18nProperties.getString(Strings.yes));
+		requestTaskComponent.getCancelButton().setCaption(I18nProperties.getString(Strings.no));
+		return requestTaskComponent;
+	}
 
 }
