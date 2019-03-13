@@ -115,6 +115,8 @@ public final class CssStyles {
 	public static final String BACKGROUND_PROBABLE_CRITERIA = "background-probable-criteria";
 	public static final String BACKGROUND_CONFIRMED_CRITERIA = "background-confirmed-criteria";
 	public static final String NO_BORDER = "no-border";
+	public static final String BACKGROUND_COLOR_HIGHLIGHT = "background-color-highlight";
+	public static final String BACKGROUND_DARKEN = "background-darken";
 	
 	// Button styles
 	public static final String VAADIN_BUTTON = "v-button";
@@ -272,5 +274,9 @@ public final class CssStyles {
 
 		activeButton.setEnabled(false);
 		activeButton.addStyleName(CssStyles.LINK_ACTIVE);
+	}
+	
+	public static String getDiseaseColor(String diseaseName) {
+		return "background-color-disease background-color-disease-" + diseaseName.toLowerCase().replace(' ', '-');
 	}
 }

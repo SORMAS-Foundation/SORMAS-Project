@@ -135,7 +135,7 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 		return filter;
 	}
 	
-	public Map<Disease, Long> getOutbreakCountByDisease (Region region, District district, Date from, Date to, User user) {
+	public Map<Disease, Long> getOutbreakDistrictCountByDisease (Region region, District district, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Outbreak> outbreak = cq.from(Outbreak.class);

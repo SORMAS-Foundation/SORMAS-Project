@@ -99,6 +99,9 @@ public class DashboardDataProvider {
 		setDiseasesBurden(FacadeProvider.getDiseaseFacade().getDiseaseBurdenForDashboard(region, district, fromDate,
 				toDate, previousFromDate, previousToDate, userUuid));
 		
+		// Diseases tile view
+//		setDiseasesForTileView(FacadeProvider.getDiseaseFacade().getDiseasesForTileView(region, district, fromDate, toDate, userUuid));
+		
 		this.refreshDataForSelectedDisease();
 	}
 

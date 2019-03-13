@@ -42,4 +42,85 @@
   	margin-top: 0px;
   	margin-bottom: 0px;
   }
+  
+  .background-color-highlight {
+  	background-color: #EDF2FD;
+  }
+  .background-color-disease-cholera {
+  	background-color: #FEBA01;
+  	
+  	&.background-darken {
+  		background-color: #E5A701;
+  	}
+  }
+  .background-color-disease-csm {
+  	background-color: #59BDEF;
+  	
+  	&.background-darken {
+  		background-color: #50AAD7;
+  	}
+  }
+  .background-color-disease-dengue {
+  	background-color: #44BEC7;
+  	
+  	&.background-darken {
+  		background-color: #3DABB3;
+  	}
+  }
+  .background-color-disease-evd {
+  	background-color: #8C45AD;
+  	
+  	&.background-darken {
+  		background-color: #7E3E9C;
+  	}
+  }
+  .background-color-disease-lassa {
+  	background-color: #EA579B;
+  	
+  	&.background-darken {
+  		background-color: #D34E8B;
+  	}
+  }
+  .background-color-disease-measles {
+  	background-color: #66AD45;
+  	
+  	&.background-darken {
+  		background-color: #5C9C3E;
+  	}
+  }
+  .background-color-disease-monkeypox {
+  	background-color: #FF9299;
+  	
+  	&.background-darken {
+  		background-color: #E5838A;
+  	}
+  }
+  .background-color-disease-new-flu {
+  	background-color: #4550AC;
+  	
+  	&.background-darken {
+  		background-color: #3E489B;
+  	}
+  }
+  .background-color-disease-plague {
+  	background-color: #8270CC;
+  	
+  	&.background-darken {
+  		background-color: #7565B8;
+  	}
+  }
+  .background-color-disease-yellow-fever {
+  	background-color: rgb(255, 0, 0);
+  	
+  	&.background-darken {
+  		background-color: rgb(229, 0, 0);
+  	}
+  }
+  .background-color-disease-other {
+  	background-color: rgb(255, 0, 0);
+  	
+  	&.background-darken {
+  		background-color: rgb(229, 0, 0);
+  	}
+  }
 }

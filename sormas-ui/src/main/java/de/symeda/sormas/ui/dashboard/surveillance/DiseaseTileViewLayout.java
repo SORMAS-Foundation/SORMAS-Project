@@ -24,6 +24,8 @@ import java.util.stream.Stream;
 
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -36,7 +38,7 @@ import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DiseaseBurdenGrid;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class DiseaseTileViewLayout extends HorizontalLayout {
+public class DiseaseTileViewLayout extends CssLayout {
 
 	private static final long serialVersionUID = 6582975657305031105L;
 
@@ -44,20 +46,15 @@ public class DiseaseTileViewLayout extends HorizontalLayout {
 
 	public DiseaseTileViewLayout(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
-
-		// layout
-		setWidth(100, Unit.PERCENTAGE);
-
-//		addComponent(grid);
-		setMargin(new MarginInfo(true, true, false, true));
-		setSpacing(false);
-//		setExpandRatio(grid, 1);
 	}
+	
+	@Override
+    protected String getCss(Component c) {
+		return "margin-left: 18px; margin-bottom: 18px;";
+    }
 
 	public void refresh(int limitDiseasesCount) {
 		List<DiseaseBurdenDto> diseasesBurden = dashboardDataProvider.getDiseasesBurden();
-		// data mockup: manipulate the data
-//		diseasesBurden = mockDataUp(diseasesBurden);
 		
 		// sort, limit and filter
 		Stream<DiseaseBurdenDto> diseasesBurdenStream = diseasesBurden.stream()
@@ -65,36 +62,14 @@ public class DiseaseTileViewLayout extends HorizontalLayout {
 		if (limitDiseasesCount > 0) {
 			diseasesBurdenStream = diseasesBurdenStream.limit(limitDiseasesCount);
 		}
-		diseasesBurden = diseasesBurdenStream.collect(Collectors.toList()).subList(0, 3);
+		diseasesBurden = diseasesBurdenStream.collect(Collectors.toList());
 		
-		for (DiseaseBurdenDto disease : diseasesBurden) {
-			DiseaseTileComponent tile = new DiseaseTileComponent(disease);
+		this.removeAllComponents();
+		
+		for (DiseaseBurdenDto diseaseBurden : diseasesBurden) {
+			DiseaseTileComponent tile = new DiseaseTileComponent(diseaseBurden);
+			tile.setWidth(230, Unit.PIXELS);
 			addComponent(tile);
-			this.setExpandRatio(tile, .33f);
 		}
-	}
-	
-	@SuppressWarnings("unused")
-	private List<DiseaseBurdenDto> mockDataUp(List<DiseaseBurdenDto> data) {
-		List<DiseaseBurdenDto> newData = new ArrayList<DiseaseBurdenDto>();
-
-		Long diff = 6L;
-		for (DiseaseBurdenDto diseaseBurden : data) {
-			Long caseCount = 0L;
-			Long previousCaseCount = 0L;
-
-			if (diff >= 0)
-				caseCount = diff;
-			else
-				previousCaseCount = Math.abs(diff);
-
-			newData.add(new DiseaseBurdenDto(diseaseBurden.getDisease(), caseCount, previousCaseCount,
-					diseaseBurden.getEventCount(), diseaseBurden.getOutbreakDistrictCount(),
-					diseaseBurden.getCaseDeathCount()));
-
-			diff -= 2;
-		}
-
-		return newData;
 	}
 }

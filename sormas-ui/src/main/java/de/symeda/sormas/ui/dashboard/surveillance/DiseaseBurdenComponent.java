@@ -64,8 +64,6 @@ public class DiseaseBurdenComponent extends VerticalLayout {
 
 	public void refresh(int limitDiseasesCount) {
 		List<DiseaseBurdenDto> diseasesBurden = dashboardDataProvider.getDiseasesBurden();
-		// data mockup: manipulate the data
-//		diseasesBurden = mockDataUp(diseasesBurden);
 		
 		// sort, limit and filter
 		Stream<DiseaseBurdenDto> diseasesBurdenStream = diseasesBurden.stream()
@@ -77,29 +75,5 @@ public class DiseaseBurdenComponent extends VerticalLayout {
 
 		grid.reload(diseasesBurden);
 		grid.setHeightByRows(diseasesBurden.size());
-	}
-	
-	@SuppressWarnings("unused")
-	private List<DiseaseBurdenDto> mockDataUp(List<DiseaseBurdenDto> data) {
-		List<DiseaseBurdenDto> newData = new ArrayList<DiseaseBurdenDto>();
-
-		Long diff = 6L;
-		for (DiseaseBurdenDto diseaseBurden : data) {
-			Long caseCount = 0L;
-			Long previousCaseCount = 0L;
-
-			if (diff >= 0)
-				caseCount = diff;
-			else
-				previousCaseCount = Math.abs(diff);
-
-			newData.add(new DiseaseBurdenDto(diseaseBurden.getDisease(), caseCount, previousCaseCount,
-					diseaseBurden.getEventCount(), diseaseBurden.getOutbreakDistrictCount(),
-					diseaseBurden.getCaseDeathCount()));
-
-			diff -= 2;
-		}
-
-		return newData;
 	}
 }

@@ -58,14 +58,55 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 		diseaseBurdenComponent = new DiseaseBurdenComponent(dashboardDataProvider);
 		diseaseTileViewLayout = new DiseaseTileViewLayout(dashboardDataProvider);
 		diseaseDifferenceComponent = new CaseCountDifferenceComponent(dashboardDataProvider);
+		
+		addDiseaseBurdenView();
 
-//		addComponent(diseaseBurdenComponent, BURDEN_LOC);
-		addComponent(diseaseTileViewLayout, BURDEN_LOC);
 		addComponent(diseaseDifferenceComponent, DIFFERENCE_LOC);
 
 		addShowMoreAndLessButtons();
 	}
 
+	private void addDiseaseBurdenView () {
+		HorizontalLayout layout = new HorizontalLayout();
+		layout.setWidth(100, Unit.PERCENTAGE);
+		
+		layout.addComponent(diseaseTileViewLayout);
+		layout.setExpandRatio(diseaseTileViewLayout, 1);
+		
+		// "Expand" and "Collapse" buttons
+		Button showTableViewButton = new Button("", FontAwesome.TABLE);
+		CssStyles.style(showTableViewButton, CssStyles.BUTTON_SUBTLE);
+		showTableViewButton.addStyleName(CssStyles.VSPACE_NONE);
+		
+		Button showTileViewButton = new Button("", FontAwesome.CREDIT_CARD);
+		CssStyles.style(showTileViewButton, CssStyles.BUTTON_SUBTLE);
+		showTileViewButton.addStyleName(CssStyles.VSPACE_NONE);
+
+		showTableViewButton.addClickListener(e -> {
+			layout.removeComponent(diseaseTileViewLayout);
+			layout.addComponent(diseaseBurdenComponent);
+			layout.setExpandRatio(diseaseBurdenComponent, 1);
+
+			layout.removeComponent(showTableViewButton);
+			layout.addComponent(showTileViewButton);
+			layout.setComponentAlignment(showTileViewButton, Alignment.TOP_RIGHT);
+		});
+		showTileViewButton.addClickListener(e -> {
+			layout.removeComponent(diseaseBurdenComponent);
+			layout.addComponent(diseaseTileViewLayout);
+			layout.setExpandRatio(diseaseTileViewLayout, 1);
+			
+			layout.removeComponent(showTileViewButton);
+			layout.addComponent(showTableViewButton);
+			layout.setComponentAlignment(showTableViewButton, Alignment.TOP_RIGHT);
+		});
+		
+		layout.addComponent(showTableViewButton);
+		layout.setComponentAlignment(showTableViewButton, Alignment.TOP_RIGHT);
+
+		addComponent(layout, BURDEN_LOC);
+	}
+	
 	private void addShowMoreAndLessButtons() {
 		
 		HorizontalLayout buttonsLayout = new HorizontalLayout();

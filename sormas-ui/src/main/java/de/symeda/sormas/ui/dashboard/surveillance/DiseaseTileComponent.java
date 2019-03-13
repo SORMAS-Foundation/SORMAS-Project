@@ -24,7 +24,9 @@ import java.util.stream.Stream;
 
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
@@ -33,6 +35,7 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
 //import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DiseaseBurdenGrid;
@@ -42,22 +45,28 @@ public class DiseaseTileComponent extends VerticalLayout {
 
 	private static final long serialVersionUID = 6582975657305031105L;
 
-	public DiseaseTileComponent(DiseaseBurdenDto disease) {		
-		addTopLayout(disease.getDisease().toShortString(), disease.getCaseCount());	
-		addStatsLayout(disease.getCaseDeathCount(), disease.getEventCount(), "Adabraka");
+	public DiseaseTileComponent(DiseaseBurdenDto diseaseBurden) {		
+		addTopLayout(diseaseBurden.getDisease().toShortString(), diseaseBurden.getCaseCount());	
+		addStatsLayout(diseaseBurden.getCaseDeathCount(), diseaseBurden.getEventCount(), diseaseBurden.getLastReportedCommunityName());
 	}
 	
 	void addTopLayout (String diseaseName, Long casesCount) {
 		HorizontalLayout layout = new HorizontalLayout();
-		layout.setWidth(230, Unit.PIXELS);
+		CssStyles.style(layout, CssStyles.getDiseaseColor(diseaseName));
+		layout.setHeight(80, Unit.PIXELS);
+		layout.setWidth(100, Unit.PERCENTAGE);
 		
 		HorizontalLayout nameLayout = new HorizontalLayout();
-		CssStyles.style(nameLayout, CssStyles.BACKGROUND_CONFIRMED_CRITERIA);
-		nameLayout.setHeight(80, Unit.PIXELS);
+		nameLayout.setHeight(100, Unit.PERCENTAGE);
 		nameLayout.setWidth(100, Unit.PERCENTAGE);
 		
-		Label nameLabel = new Label(diseaseName);
-		CssStyles.style(nameLabel, CssStyles.ERROR_COLOR_PRIMARY, CssStyles.ALIGN_CENTER);
+		Label nameLabel = new Label(
+				"<div style=\"font-size: " + (diseaseName.length() > 10 ? 18 : 20) + "px; "
+				+ "color: white; text-align: center; text-transform: uppercase;\">" 
+				+ diseaseName 
+				+ "</div>"
+				, ContentMode.HTML);
+		CssStyles.style(nameLabel, CssStyles.ALIGN_CENTER);
 		nameLayout.addComponent(nameLabel);
 		nameLayout.setComponentAlignment(nameLabel, Alignment.MIDDLE_CENTER);
 		
@@ -65,12 +74,15 @@ public class DiseaseTileComponent extends VerticalLayout {
 		layout.setExpandRatio(nameLayout, 1);
 		
 		HorizontalLayout countLayout = new HorizontalLayout();
-		CssStyles.style(countLayout, CssStyles.BACKGROUND_SUSPECT_CRITERIA);
-		countLayout.setHeight(80, Unit.PIXELS);
+		CssStyles.style(countLayout, CssStyles.getDiseaseColor(diseaseName), CssStyles.BACKGROUND_DARKEN);
+		countLayout.setHeight(100, Unit.PERCENTAGE);
 		countLayout.setWidth(100, Unit.PERCENTAGE);
 		
-		Label countLabel = new Label(casesCount.toString());
-		CssStyles.style(countLabel, CssStyles.ERROR_COLOR_PRIMARY, CssStyles.ALIGN_CENTER);
+		Label countLabel = new Label(
+				"<div style=\"font-size: 40px; color: white; text-align: center; font-weight: bold;\">" 
+				+ casesCount.toString() 
+				+ "</div>"
+				, ContentMode.HTML);
 		countLayout.addComponent(countLabel);
 		countLayout.setComponentAlignment(countLabel, Alignment.MIDDLE_CENTER);
 		
@@ -81,15 +93,20 @@ public class DiseaseTileComponent extends VerticalLayout {
 	}
 	
 	void addStatsLayout (Long fatalities, Long events, String district) {
+		HorizontalLayout container = new HorizontalLayout();
+		container.setWidth(100, Unit.PERCENTAGE);
+		CssStyles.style(container, CssStyles.BACKGROUND_COLOR_HIGHLIGHT);
+		
 		VerticalLayout layout = new VerticalLayout();
-		CssStyles.style(layout, CssStyles.BACKGROUND_SUB_CRITERIA);
-		layout.setWidth(230, Unit.PIXELS);
+		CssStyles.style(layout, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
 		
 		layout.addComponent(createStatsItem("Last report", district, false));
-		layout.addComponent(createStatsItem("Fatalities", fatalities.toString(), true));
+		layout.addComponent(createStatsItem("Fatalities", fatalities.toString(), fatalities > 0));
 		layout.addComponent(createStatsItem("Number of events", events.toString(), false));
 		
-		addComponent(layout);
+		container.addComponent(layout);
+		container.setExpandRatio(layout, 1);
+		addComponent(container);
 	}
 	
 	HorizontalLayout createStatsItem (String label, String value, boolean isCritical) {
@@ -97,12 +114,12 @@ public class DiseaseTileComponent extends VerticalLayout {
 		layout.setWidth(100, Unit.PERCENTAGE);
 		
 		Label nameLabel = new Label(label);
-		CssStyles.style(nameLabel, isCritical ? CssStyles.LABEL_CRITICAL : "");
+		CssStyles.style(nameLabel, isCritical ? CssStyles.LABEL_CRITICAL : "", CssStyles.HSPACE_LEFT_3, CssStyles.LABEL_PRIMARY);
 		layout.addComponent(nameLabel);
 		layout.setExpandRatio(nameLabel, 1);
 		
 		Label valueLabel = new Label(value);
-		CssStyles.style(valueLabel, CssStyles.ALIGN_CENTER, isCritical ? CssStyles.LABEL_CRITICAL : "");
+		CssStyles.style(valueLabel, CssStyles.ALIGN_CENTER, isCritical ? CssStyles.LABEL_CRITICAL : "", CssStyles.LABEL_PRIMARY);
 		layout.addComponent(valueLabel);
 		layout.setExpandRatio(valueLabel, 0.65f);
 		

@@ -58,7 +58,7 @@ public interface OutbreakFacade {
 	 */
 	OutbreakDto endOutbreak(DistrictReferenceDto district, Disease disease);
 	
-	Map<Disease, Long> getOutbreakCountByDisease (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Date from, Date to, String userUuid);
+	Map<Disease, Long> getOutbreakDistrictCountByDisease (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Date from, Date to, String userUuid);
 	
 	Long getOutbreakDistrictCount (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 }

@@ -69,8 +69,6 @@ public class CaseCountDifferenceComponent extends VerticalLayout {
 
 	public void refresh(int limitDiseasesCount) {
 		List<DiseaseBurdenDto> diseasesBurden = dashboardDataProvider.getDiseasesBurden();
-		//data mockup: manipulate the data
-//		diseasesBurden = mockDataUp(diseasesBurden);
 		
 		Stream<DiseaseBurdenDto> diseasesBurdenStream = diseasesBurden.stream()
 									   .sorted((dto1, dto2) -> {
@@ -80,7 +78,7 @@ public class CaseCountDifferenceComponent extends VerticalLayout {
 										   if (caseDifference2 == 0) caseDifference2 = Long.MIN_VALUE;
 										   return Long.compare(caseDifference2, caseDifference1);
 									   });
-									   //.sorted(Comparator.comparing(DiseaseBurdenDto::getCasesDifference, (d) -> d == 0? -100 : d))
+									   
 		if (limitDiseasesCount > 0) {
 			diseasesBurdenStream = diseasesBurdenStream.limit(limitDiseasesCount);
 		}
@@ -92,30 +90,6 @@ public class CaseCountDifferenceComponent extends VerticalLayout {
 		} else {
 			chart.setHeight(diseasesBurden.size() * 40 + 70, Unit.PIXELS);
 		}
-	}
-
-	@SuppressWarnings("unused")
-	private List<DiseaseBurdenDto> mockDataUp(List<DiseaseBurdenDto> data) {
-		List<DiseaseBurdenDto> newData = new ArrayList<DiseaseBurdenDto>();
-
-		Long diff = 6L;
-		for (DiseaseBurdenDto diseaseBurden : data) {
-			Long caseCount = 0L;
-			Long previousCaseCount = 0L;
-
-			if (diff >= 0)
-				caseCount = diff;
-			else
-				previousCaseCount = Math.abs(diff);
-
-			newData.add(new DiseaseBurdenDto(diseaseBurden.getDisease(), caseCount, previousCaseCount,
-					diseaseBurden.getEventCount(), diseaseBurden.getOutbreakDistrictCount(),
-					diseaseBurden.getCaseDeathCount()));
-
-			diff -= 2;
-		}
-
-		return newData;
 	}
 
 	private void refreshChart(List<DiseaseBurdenDto> data) {
@@ -182,6 +156,12 @@ public class CaseCountDifferenceComponent extends VerticalLayout {
 		//use two series for this chart
 		List<Long> positive_series = data.stream().map((d) -> d.getCasesDifference() < 0 ? 0 : d.getCasesDifference()).collect(Collectors.toList());
 		List<Long> negative_series = data.stream().map((d) -> d.getCasesDifference() > 0 ? 0 : d.getCasesDifference()).collect(Collectors.toList());
+		
+//		Map<String, String> diseaseToColorMap = new Map
+//		StringBuilder colors = new StringBuilder();
+//		for (DiseaseBurdenDto s : data) {
+//			colors.append("" + s.getDisease().toString() + "', ");
+//		}
 
 		hcjs.append("series: [");
 

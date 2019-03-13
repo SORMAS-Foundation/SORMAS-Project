@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -589,7 +590,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public Map<Disease, Long> getCaseCountPerDisease(CaseCriteria caseCriteria, String userUuid) {
+	public Map<Disease, Long> getCaseCountByDisease(CaseCriteria caseCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -614,6 +615,41 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		Map<Disease, Long> resultMap = results.stream().collect(
 				Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
+		
+		return resultMap;
+	}
+
+	public Map<Disease, Community> getLastReportedCommunityByDisease(CaseCriteria caseCriteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Case> caze = cq.from(Case.class);
+		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
+
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
+		Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
+		if (filter != null) {
+			filter = cb.and(filter, criteriaFilter);
+		} else {
+			filter = criteriaFilter;
+		}
+
+		if (filter != null) {
+//			cq.where(filter);
+		}
+
+		cq.multiselect(caze.get(Case.DISEASE), facility.get(Facility.COMMUNITY));
+		cq.orderBy(cb.desc(caze.get(Case.REPORT_DATE)));
+		cq.distinct(true);
+		
+		List<Object[]> results = em.createQuery(cq).getResultList();
+
+		Map<Disease, Community> resultMap = new HashMap<Disease, Community>();
+		for (Object[] e : results) {
+			if (!resultMap.containsKey(e[0]))
+				resultMap.put((Disease) e[0], (Community) e[1]);
+		}		
 		
 		return resultMap;
 	}
