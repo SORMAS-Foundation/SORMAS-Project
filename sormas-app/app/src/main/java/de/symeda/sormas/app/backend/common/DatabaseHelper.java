@@ -100,7 +100,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 144;
+	public static final int DATABASE_VERSION = 145;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -705,6 +705,29 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					currentVersion = 143;
 					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN requestedOtherPathogenTests varchar(512);");
 					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN requestedOtherAdditionalTests varchar(512);");
+				case 144:
+					currentVersion = 144;
+					getDao(WeeklyReportEntry.class).executeRaw("ALTER TABLE weeklyreportentry RENAME TO tmp_weeklyreportentry;");
+					getDao(WeeklyReportEntry.class).executeRaw("CREATE TABLE weeklyreportentry(" +
+							"id integer primary key autoincrement," +
+							"uuid varchar(36) not null unique," +
+							"changeDate timestamp not null," +
+							"creationDate timestamp not null," +
+							"lastOpenedDate timestamp," +
+							"localChangeDate timestamp not null," +
+							"modified integer," +
+							"snapshot integer," +
+							"weeklyReport_id bigint," +
+							"disease character varying(255)," +
+							"numberOfCases integer," +
+							"CONSTRAINT fk_weeklyreportentry_weeklyreport_id FOREIGN KEY (weeklyReport_id) REFERENCES weeklyreport (id) ON DELETE CASCADE" +
+							");");
+					getDao(WeeklyReportEntry.class).executeRaw("INSERT INTO weeklyreportentry(id, uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, snapshot, weeklyReport_id, " +
+							"disease, numberOfCases) " +
+							"SELECT id, uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, snapshot, weeklyReport_id, disease, numberOfCases " +
+							"FROM tmp_weeklyreportentry;");
+					getDao(WeeklyReportEntry.class).executeRaw("DROP TABLE tmp_weeklyreportentry;");
+					getDao(WeeklyReport.class).executeRaw("DELETE FROM weeklyreport WHERE rowid NOT IN (SELECT min(rowid) FROM weeklyreport GROUP BY epiWeek, year, reportingUser_id);");
 
 					// ATTENTION: break should only be done after last version
 					break;

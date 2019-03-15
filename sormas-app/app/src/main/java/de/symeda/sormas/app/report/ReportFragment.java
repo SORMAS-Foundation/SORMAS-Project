@@ -18,6 +18,7 @@
 
 package de.symeda.sormas.app.report;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -106,7 +108,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
     @Override
     protected void onLayoutBinding(final FragmentReportWeeklyLayoutBinding contentBinding) {
         this.contentBinding = contentBinding;
-        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
 
         contentBinding.setReportFilterOptionClass(EpiWeekFilterOption.class);
         setupControls();
@@ -385,6 +387,8 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                     protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
                         super.onPostExecute(taskResult);
                         getBaseActivity().hidePreloader();
+                        Intent intent = new Intent(getContext(), ReportActivity.class);
+                        getContext().startActivity(intent);
 
                         if (!taskResult.getResultStatus().isSuccess()) {
                             NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, taskResult.getResultStatus().getMessage());
@@ -392,7 +396,6 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                         }
 
                         NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.message_weekly_report_submitted);
-                        ((ReportActivity)getActivity()).onResume(); // reload data
                     }
                 }.executeOnThreadPool();
             }
