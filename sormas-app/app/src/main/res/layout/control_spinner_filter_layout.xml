@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/label_frame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/label"
+                style="@style/ControlLabelStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="60dp"
+                android:textColor="@color/whiteOpaque"
+                android:background="@color/colorPrimaryDark"
+                android:labelFor="@+id/input"/>
+            <!-- 60dp margin makes sure indicators are always visible -->
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="-60dp">
+
+                <TextView
+                    android:id="@+id/required_indicator"
+                    style="@style/RequiredIndicatorStyle"/>
+
+                <TextView
+                    android:id="@+id/soft_required_indicator"
+                    style="@style/SoftRequiredIndicatorStyle"/>
+
+                <TextView
+                    android:id="@+id/error_indicator"
+                    style="@style/ErrorIndicatorStyle"/>
+
+                <TextView
+                    android:id="@+id/warning_indicator"
+                    style="@style/WarningIndicatorStyle"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <Spinner
+            android:id="@+id/input"
+            style="@style/ControlSpinnerFilterStyle" />
+
+    </LinearLayout>
+
+</merge>

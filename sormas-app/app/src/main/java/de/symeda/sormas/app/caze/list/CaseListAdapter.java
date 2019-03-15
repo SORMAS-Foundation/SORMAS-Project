@@ -45,7 +45,6 @@ public class CaseListAdapter extends BindingPagedListAdapter<Case, RowCaseListIt
         super.onBindViewHolder(holder, position);
 
         if (getItemViewType(position) == TYPE_ITEM) {
-
             BindingViewHolder<Case, RowCaseListItemLayoutBinding> pagedHolder = (BindingViewHolder)holder;
             Case item = getItem(position);
 

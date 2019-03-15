@@ -25,7 +25,9 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.List;
 
@@ -57,14 +59,21 @@ public class ContactEditTaskListFragment extends BaseEditFragment<FragmentFormLi
         super.onCreate(savedInstanceState);
 
         ((ContactEditActivity) getActivity()).showPreloader();
-        adapter = new TaskListAdapter(R.layout.row_task_list_item_layout, this);
+        adapter = new TaskListAdapter();
         model = ViewModelProviders.of(this).get(TaskListViewModel.class);
-        model.getTasks(getActivityRootData()).observe(this, tasks -> {
-            adapter.replaceAll(tasks);
-            adapter.notifyDataSetChanged();
-            updateEmptyListHint(tasks);
+        model.initializeViewModel(getActivityRootData());
+        model.getTasks().observe(this, tasks -> {
             ((ContactEditActivity) getActivity()).hidePreloader();
+            adapter.submitList(tasks);
+            updateEmptyListHint(tasks);
         });
+    }
+
+    @Override
+    public final View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
+        adapter.setOnListItemClickListener(this);
+
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override

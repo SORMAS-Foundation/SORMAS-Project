@@ -19,6 +19,8 @@
 package de.symeda.sormas.app;
 
 import android.os.Bundle;
+
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -49,6 +51,15 @@ public abstract class BaseListActivity extends BaseActivity implements IUpdateSu
     }
 
     @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (pageMenu != null) {
+            addFiltersToPageMenu();
+        }
+    }
+
+    @Override
     protected boolean isSubActivity() {
         return false;
     }
@@ -60,7 +71,6 @@ public abstract class BaseListActivity extends BaseActivity implements IUpdateSu
 
     protected void onCreateInner(Bundle savedInstanceState) {
         subHeadingListActivityTitle = (TextView) findViewById(R.id.subHeadingActivityTitle);
-
     }
 
     @Override
@@ -145,6 +155,8 @@ public abstract class BaseListActivity extends BaseActivity implements IUpdateSu
     }
 
     public abstract int onNotificationCountChangingAsync(AdapterView<?> parent, PageMenuItem menuItem, int position);
+
+    public abstract void addFiltersToPageMenu();
 
     @Override
     protected boolean openPage(PageMenuItem menuItem) {

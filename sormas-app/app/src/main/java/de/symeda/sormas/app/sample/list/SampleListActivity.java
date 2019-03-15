@@ -96,4 +96,9 @@ public class SampleListActivity extends BaseListActivity {
         return R.string.heading_samples_list;
     }
 
+    @Override
+    public void addFiltersToPageMenu() {
+        // Not supported yet
+    }
+
 }

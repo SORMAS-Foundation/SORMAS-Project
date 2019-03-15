@@ -98,7 +98,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     private View statusFrame = null;
 
     // footer menu
-    private PageMenuControl pageMenu = null;
+    protected PageMenuControl pageMenu = null;
     private List<PageMenuItem> pageItems = new ArrayList();
     private PageMenuItem activePageItem = null;
     private int activePageKey = 0;
@@ -190,6 +190,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                     return initPageMenuAndGetInitialSelection(menuList);
                 }
             });
+
         }
 
         Drawable drawable = ContextCompat.getDrawable(this,

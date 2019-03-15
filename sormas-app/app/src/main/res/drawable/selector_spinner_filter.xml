@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="false">
+        <layer-list>
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/defaultControlBackground"/>
+                    <stroke android:width="1dp"
+                            android:color="@color/controlTextViewDisabledStroke"/>
+                </shape>
+            </item>
+            <item android:right="@dimen/contentHorizontalSpacing">
+                <bitmap android:width="@dimen/spinnerIconWidth"
+                        android:height="@dimen/spinnerIconHeight"
+                        android:gravity="right|center_vertical"
+                        android:src="@drawable/ic_spinner_arrow_down_disabled"/>
+            </item>
+        </layer-list>
+    </item>
+    <item android:state_activated="true">
+        <layer-list>
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/defaultControlBackground"/>
+                    <stroke android:width="1dp"
+                            android:color="@color/controlStrokeActivated"/>
+                </shape>
+
+            </item>
+            <item android:right="@dimen/contentHorizontalSpacing">
+                <bitmap android:width="@dimen/spinnerIconWidth"
+                        android:height="@dimen/spinnerIconHeight"
+                        android:gravity="right|center_vertical"
+                        android:src="@drawable/ic_spinner_arrow_down_activated"/>
+            </item>
+        </layer-list>
+    </item>
+    <item android:state_selected="true">
+        <layer-list>
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/defaultControlBackground"/>
+                    <stroke android:width="1dp"
+                            android:color="@color/controlStrokeActivated"/>
+                </shape>
+
+            </item>
+            <item android:right="@dimen/contentHorizontalSpacing">
+                <bitmap android:width="@dimen/spinnerIconWidth"
+                        android:height="@dimen/spinnerIconHeight"
+                        android:gravity="right|center_vertical"
+                        android:src="@drawable/ic_spinner_arrow_down_activated"/>
+            </item>
+        </layer-list>
+    </item>
+    <item android:state_pressed="true">
+        <layer-list>
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/defaultControlBackground"/>
+                    <stroke android:width="1dp"
+                            android:color="@color/controlStrokeActivated"/>
+                </shape>
+            </item>
+            <item android:right="@dimen/contentHorizontalSpacing">
+                <bitmap android:width="@dimen/spinnerIconWidth"
+                        android:height="@dimen/spinnerIconHeight"
+                        android:gravity="right|center_vertical"
+                        android:src="@drawable/ic_spinner_arrow_down_activated"/>
+            </item>
+        </layer-list>
+    </item>
+    <item android:state_focused="true">
+        <layer-list>
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/defaultControlBackground"/>
+                    <stroke android:width="1dp"
+                            android:color="@color/controlStrokeActivated"/>
+                </shape>
+
+            </item>
+            <item android:right="@dimen/contentHorizontalSpacing">
+                <bitmap android:width="@dimen/spinnerIconWidth"
+                        android:height="@dimen/spinnerIconHeight"
+                        android:gravity="right|center_vertical"
+                        android:src="@drawable/ic_spinner_arrow_down_activated"/>
+            </item>
+        </layer-list>
+    </item>
+    <item>
+        <layer-list>
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/defaultControlBackground"/>
+                    <stroke android:width="1dp"
+                            android:color="@color/controlStrokeNormal"/>
+                </shape>
+
+            </item>
+            <item android:right="@dimen/contentHorizontalSpacing">
+                <bitmap android:width="@dimen/spinnerIconWidth"
+                        android:height="@dimen/spinnerIconHeight"
+                        android:gravity="right|center_vertical"
+                        android:src="@drawable/ic_spinner_arrow_down_normal"/>
+            </item>
+        </layer-list>
+    </item>
+</selector>

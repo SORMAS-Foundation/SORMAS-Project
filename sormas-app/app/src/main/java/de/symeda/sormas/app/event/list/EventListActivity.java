@@ -109,4 +109,9 @@ public class EventListActivity extends BaseListActivity {
         finish();
     }
 
+    @Override
+    public void addFiltersToPageMenu() {
+        // Not supported yet
+    }
+
 }
