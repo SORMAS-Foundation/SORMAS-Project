@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import de.symeda.sormas.app.BaseListFragment;
+import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
@@ -35,7 +36,7 @@ import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 import de.symeda.sormas.app.sample.read.SampleReadActivity;
 
-public class SampleListFragment extends BaseListFragment<SampleListAdapter> implements OnListItemClickListener {
+public class SampleListFragment extends PagedBaseListFragment<SampleListAdapter> implements OnListItemClickListener {
 
     private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerViewForList;

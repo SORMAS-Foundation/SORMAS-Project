@@ -24,56 +24,48 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
+import de.symeda.sormas.app.core.adapter.databinding.BindingPagedListAdapter;
+import de.symeda.sormas.app.core.adapter.databinding.BindingViewHolder;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.RowSampleListItemLayoutBinding;
 
-public class SampleListAdapter extends DataBoundAdapter<RowSampleListItemLayoutBinding> implements OnListItemClickListener.HasOnListItemClickListener {
+public class SampleListAdapter extends BindingPagedListAdapter<Sample, RowSampleListItemLayoutBinding> {
 
-    private List<Sample> data;
-    private OnListItemClickListener mOnListItemClickListener;
-
-    SampleListAdapter(int rowLayout) {
-        this(rowLayout, null);
-    }
-
-    public SampleListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener) {
-        super(rowLayout);
-        this.mOnListItemClickListener = onListItemClickListener;
-        this.data = new ArrayList<>();
+    public SampleListAdapter() {
+        super(R.layout.row_sample_list_item_layout);
     }
 
     @Override
-    protected void bindItem(DataBoundViewHolder<RowSampleListItemLayoutBinding> holder,
-                            int position, List<Object> payloads) {
-        Sample record = data.get(position);
-        holder.setData(record);
-        holder.binding.setTestResultMessage(getSampleTestResultMessage(holder.context, record));
-        holder.setOnListItemClickListener(this.mOnListItemClickListener);
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
 
-        //indicateShipmentStatus(holder.binding.imgShipmentStatusIcon, record);
+        if (getItemViewType(position) == TYPE_ITEM) {
+            BindingViewHolder<Sample, RowSampleListItemLayoutBinding> pagedHolder = (BindingViewHolder) holder;
+            Sample item = getItem(position);
 
-        //Sync Icon
-        if (record.isModifiedOrChildModified()) {
-            holder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
-            holder.binding.imgSyncIcon.setImageResource(R.drawable.ic_sync_blue_24dp);
-        } else {
-            holder.binding.imgSyncIcon.setVisibility(View.GONE);
+            pagedHolder.setOnListItemClickListener(this.mOnListItemClickListener);
+
+            pagedHolder.binding.setTestResultMessage(getSampleTestResultMessage(pagedHolder.context, item));
+
+            if (item.isModifiedOrChildModified()) {
+                pagedHolder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
+                pagedHolder.binding.imgSyncIcon.setImageResource(R.drawable.ic_sync_blue_24dp);
+            } else {
+                pagedHolder.binding.imgSyncIcon.setVisibility(View.GONE);
+            }
         }
 
         // TODO #704
 //        updateUnreadIndicator(holder, record);
-    }
-
-    @Override
-    public int getItemCount() {
-        return data.size();
     }
 
 //    public void updateUnreadIndicator(DataBoundViewHolder<RowSampleListItemLayoutBinding> holder, Sample item) {
@@ -99,30 +91,4 @@ public class SampleListAdapter extends DataBoundAdapter<RowSampleListItemLayoutB
         }
     }
 
-    public void addAll(List<Sample> data) {
-        if (data == null)
-            return;
-
-        this.data.addAll(data);
-    }
-
-    public void replaceAll(List<Sample> data) {
-        if (data == null)
-            return;
-
-        this.data.clear();
-        this.data.addAll(data);
-    }
-
-    public void clear() {
-        if (this.data == null)
-            return;
-
-        this.data.clear();
-    }
-
-    @Override
-    public void setOnListItemClickListener(OnListItemClickListener onListItemClickListener) {
-        this.mOnListItemClickListener = onListItemClickListener;
-    }
 }

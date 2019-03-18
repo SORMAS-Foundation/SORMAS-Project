@@ -31,11 +31,13 @@ import java.util.Random;
 import androidx.lifecycle.ViewModelProviders;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListFragment;
+import de.symeda.sormas.app.PagedBaseListActivity;
+import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 
-public class SampleListActivity extends BaseListActivity {
+public class SampleListActivity extends PagedBaseListActivity {
 
     private ShipmentStatus statusFilters[] = new ShipmentStatus[]{
             ShipmentStatus.NOT_SHIPPED, ShipmentStatus.SHIPPED,
@@ -52,15 +54,17 @@ public class SampleListActivity extends BaseListActivity {
         super.onCreate(savedInstanceState);
 
         showPreloader();
-        adapter = new SampleListAdapter(R.layout.row_sample_list_item_layout);
+        adapter = new SampleListAdapter();
         model = ViewModelProviders.of(this).get(SampleListViewModel.class);
+        model.initializeViewModel();
         model.getSamples().observe(this, samples -> {
-            ((SampleListAdapter) adapter).replaceAll(samples);
+            adapter.submitList(samples);
             hidePreloader();
         });
         setOpenPageCallback(p -> {
             showPreloader();
-            model.setShipmentStatusAndReload(statusFilters[p.getKey()]);
+            model.getSampleCriteria().shipmentStatus(statusFilters[((PageMenuItem) p).getKey()]);
+            model.notifyCriteriaUpdated();
         });
     }
 
@@ -76,7 +80,7 @@ public class SampleListActivity extends BaseListActivity {
     }
 
     @Override
-    protected BaseListFragment buildListFragment(PageMenuItem menuItem) {
+    protected PagedBaseListFragment buildListFragment(PageMenuItem menuItem) {
         if (menuItem != null) {
             ShipmentStatus listFilter = statusFilters[menuItem.getKey()];
             return SampleListFragment.newInstance(listFilter);

@@ -315,7 +315,7 @@ public class TaskDao extends AbstractAdoDao<Task> {
         }
     }
 
-    public QueryBuilder<Task, Long> buildQueryBuilder(TaskCriteria criteria) throws SQLException {
+    private QueryBuilder<Task, Long> buildQueryBuilder(TaskCriteria criteria) throws SQLException {
         QueryBuilder<Task, Long> queryBuilder = queryBuilder();
         Where<Task, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
 

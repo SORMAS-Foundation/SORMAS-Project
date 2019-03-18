@@ -32,10 +32,12 @@ import androidx.lifecycle.ViewModelProviders;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListFragment;
+import de.symeda.sormas.app.PagedBaseListActivity;
+import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 
-public class ContactListActivity extends BaseListActivity {
+public class ContactListActivity extends PagedBaseListActivity {
 
     private FollowUpStatus statusFilters[] = new FollowUpStatus[]{FollowUpStatus.FOLLOW_UP, FollowUpStatus.COMPLETED,
             FollowUpStatus.CANCELED, FollowUpStatus.LOST, FollowUpStatus.NO_FOLLOW_UP};
@@ -50,15 +52,18 @@ public class ContactListActivity extends BaseListActivity {
         super.onCreate(savedInstanceState);
 
         showPreloader();
-        adapter = new ContactListAdapter(R.layout.row_read_contact_list_item_layout, FollowUpStatus.FOLLOW_UP);
+        adapter = new ContactListAdapter(FollowUpStatus.FOLLOW_UP);
         model = ViewModelProviders.of(this).get(ContactListViewModel.class);
+        model.initializeViewModel();
         model.getContacts().observe(this, contacts -> {
-            ((ContactListAdapter) adapter).replaceAll(contacts);
+            adapter.submitList(contacts);
             hidePreloader();
         });
         setOpenPageCallback(p -> {
             showPreloader();
-            model.setFollowUpStatusAndReload(statusFilters[p.getKey()]);
+            ((ContactListAdapter) adapter).setCurrentListFilter(statusFilters[((PageMenuItem) p).getKey()]);
+            model.getContactCriteria().followUpStatus(statusFilters[((PageMenuItem) p).getKey()]);
+            model.notifyCriteriaUpdated();
         });
     }
 
@@ -74,7 +79,7 @@ public class ContactListActivity extends BaseListActivity {
     }
 
     @Override
-    protected BaseListFragment buildListFragment(PageMenuItem menuItem) {
+    protected PagedBaseListFragment buildListFragment(PageMenuItem menuItem) {
         if (menuItem != null) {
             FollowUpStatus listFilter = statusFilters[menuItem.getKey()];
             return ContactListFragment.newInstance(listFilter);

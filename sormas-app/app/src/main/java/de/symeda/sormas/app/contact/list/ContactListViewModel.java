@@ -22,67 +22,119 @@ import android.os.AsyncTask;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.paging.DataSource;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
+import androidx.paging.PositionalDataSource;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.contact.ContactCriteria;
 
 public class ContactListViewModel extends ViewModel {
 
-    private MutableLiveData<List<Contact>> contacts;
-    private FollowUpStatus followUpStatus = FollowUpStatus.FOLLOW_UP;
-    private Case caze;
+    private LiveData<PagedList<Contact>> contacts;
+    private ContactDataFactory contactDataFactory;
 
-    public LiveData<List<Contact>> getContacts() {
-        if (contacts == null) {
-            contacts = new MutableLiveData<>();
-            loadContacts();
-        }
+    public void initializeViewModel(Case caze) {
+        contactDataFactory = new ContactDataFactory();
+        ContactCriteria contactCriteria = new ContactCriteria();
+        contactCriteria.caze(caze);
+        contactDataFactory.setContactCriteria(contactCriteria);
+        initializeList();
+    }
 
+    public void initializeViewModel() {
+        contactDataFactory = new ContactDataFactory();
+        ContactCriteria contactCriteria = new ContactCriteria();
+        contactCriteria.followUpStatus(FollowUpStatus.FOLLOW_UP);
+        contactDataFactory.setContactCriteria(contactCriteria);
+        initializeList();
+    }
+
+    public LiveData<PagedList<Contact>> getContacts() {
         return contacts;
     }
 
-    public LiveData<List<Contact>> getContacts(Case caze) {
-        this.caze = caze;
-        return getContacts();
-    }
-
-    void setFollowUpStatusAndReload(FollowUpStatus followUpStatus) {
-        if (this.followUpStatus == followUpStatus) {
-            return;
+    void notifyCriteriaUpdated() {
+        if (contacts.getValue() != null && contacts.getValue().getDataSource() != null) {
+            contacts.getValue().getDataSource().invalidate();
         }
-
-        this.followUpStatus = followUpStatus;
-        loadContacts();
     }
 
-    private void loadContacts() {
-        new LoadContactsTask(this).execute();
+    public ContactCriteria getContactCriteria() {
+        return contactDataFactory.getContactCriteria();
     }
 
-    private static class LoadContactsTask extends AsyncTask<Void, Void, List<Contact>> {
-        private ContactListViewModel model;
+    public static class ContactDataSource extends PositionalDataSource<Contact> {
 
-        LoadContactsTask(ContactListViewModel model) {
-            this.model = model;
+        private ContactCriteria contactCriteria;
+
+        ContactDataSource(ContactCriteria contactCriteria) {
+            this.contactCriteria = contactCriteria;
         }
 
         @Override
-        protected List<Contact> doInBackground(Void... args) {
-            if (model.caze == null) {
-                return DatabaseHelper.getContactDao().queryForEq(Contact.FOLLOW_UP_STATUS, model.followUpStatus, Contact.REPORT_DATE_TIME, false);
-            } else {
-                return DatabaseHelper.getContactDao().getByCase(model.caze);
+        public void loadInitial(@NonNull LoadInitialParams params, @NonNull LoadInitialCallback<Contact> callback) {
+            long totalCount = DatabaseHelper.getContactDao().countByCriteria(contactCriteria);
+            int offset = params.requestedStartPosition;
+            int count = params.requestedLoadSize;
+            if (offset + count > totalCount) {
+                offset = (int) Math.max(0, totalCount - count);
             }
+            List<Contact> contacts = DatabaseHelper.getContactDao().queryByCriteria(contactCriteria, offset, count);
+            callback.onResult(contacts, offset, (int) totalCount);
         }
 
         @Override
-        protected void onPostExecute(List<Contact> data) {
-            model.contacts.setValue(data);
+        public void loadRange(@NonNull LoadRangeParams params, @NonNull LoadRangeCallback<Contact> callback) {
+            List<Contact> contacts = DatabaseHelper.getContactDao().queryByCriteria(contactCriteria, params.startPosition, params.loadSize);
+            callback.onResult(contacts);
         }
+
+    }
+
+    public static class ContactDataFactory extends DataSource.Factory {
+
+        private MutableLiveData<ContactDataSource> mutableDataSource;
+        private ContactDataSource contactDataSource;
+        private ContactCriteria contactCriteria;
+
+        ContactDataFactory() {
+            this.mutableDataSource = new MutableLiveData<>();
+        }
+
+        @NonNull
+        @Override
+        public DataSource create() {
+            contactDataSource = new ContactDataSource(contactCriteria);
+            mutableDataSource.postValue(contactDataSource);
+            return contactDataSource;
+        }
+
+        void setContactCriteria(ContactCriteria contactCriteria) {
+            this.contactCriteria = contactCriteria;
+        }
+
+        ContactCriteria getContactCriteria() {
+            return contactCriteria;
+        }
+
+    }
+
+    private void initializeList() {
+        PagedList.Config config = new PagedList.Config.Builder()
+                .setEnablePlaceholders(true)
+                .setInitialLoadSizeHint(16)
+                .setPageSize(8).build();
+
+        LivePagedListBuilder contactListBuilder = new LivePagedListBuilder(contactDataFactory, config);
+        contacts = contactListBuilder.build();
     }
 
 }
