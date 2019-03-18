@@ -94,4 +94,9 @@ public class ContactListActivity extends BaseListActivity {
         return R.string.heading_contacts_list;
     }
 
+    @Override
+    public void addFiltersToPageMenu() {
+        // Not supported yet
+    }
+
 }

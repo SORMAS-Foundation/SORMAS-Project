@@ -60,6 +60,9 @@ public abstract class PagedBaseListActivity<T extends AbstractDomainObject> exte
     protected void onCreateInner(Bundle savedInstanceState) {
         subHeadingListActivityTitle = (TextView) findViewById(R.id.subHeadingActivityTitle);
 
+        if (pageMenu != null) {
+            addFiltersToPageMenu();
+        }
     }
 
     @Override
@@ -144,6 +147,8 @@ public abstract class PagedBaseListActivity<T extends AbstractDomainObject> exte
     }
 
     public abstract int onNotificationCountChangingAsync(AdapterView<?> parent, PageMenuItem menuItem, int position);
+
+    public abstract void addFiltersToPageMenu();
 
     @Override
     protected boolean openPage(PageMenuItem menuItem) {

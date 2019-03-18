@@ -59,4 +59,13 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/filters_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/whiteOpaque"
+        android:orientation="vertical">
+
+    </LinearLayout>
+
 </LinearLayout>

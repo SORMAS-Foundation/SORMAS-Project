@@ -23,7 +23,7 @@ public enum TaskStatus {
 	PENDING,
 	DONE,
 	REMOVED,
-	NOT_EXECUTABLE,
+	NOT_EXECUTABLE
 	;
 	
 	public String toString() {

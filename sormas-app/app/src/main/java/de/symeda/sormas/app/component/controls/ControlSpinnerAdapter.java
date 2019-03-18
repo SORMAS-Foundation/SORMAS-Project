@@ -40,6 +40,7 @@ public class ControlSpinnerAdapter extends ArrayAdapter<Item> {
 
     private ControlSpinnerField spinner;
     private List<Item> spinnerData;
+    private boolean excludeEmptyItem;
 
     // Resources
 
@@ -51,7 +52,7 @@ public class ControlSpinnerAdapter extends ArrayAdapter<Item> {
     // Constructor
 
     ControlSpinnerAdapter(@NonNull Context context, ControlSpinnerField spinner, @NonNull List<Item> objects,
-                          int layoutResourceId, int dropdownResourceId, int textViewResourceId) {
+                          int layoutResourceId, int dropdownResourceId, int textViewResourceId, boolean excludeEmptyItem) {
         super(context, layoutResourceId, textViewResourceId, objects);
 
         this.spinner = spinner;
@@ -60,6 +61,7 @@ public class ControlSpinnerAdapter extends ArrayAdapter<Item> {
         this.dropdownResourceId = dropdownResourceId;
         this.textViewResourceId = textViewResourceId;
         this.inflater = LayoutInflater.from(context);
+        this.excludeEmptyItem = excludeEmptyItem;
     }
 
     // Overrides
@@ -132,7 +134,7 @@ public class ControlSpinnerAdapter extends ArrayAdapter<Item> {
                 textView.setText(getContext().getResources().getString(R.string.hint_clear));
             }
 
-            if (position == 0) {
+            if (position == 0 && !excludeEmptyItem) {
                 textView.setTypeface(null, Typeface.BOLD_ITALIC);
             } else {
                 textView.setTypeface(null, Typeface.NORMAL);

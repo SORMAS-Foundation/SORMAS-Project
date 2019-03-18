@@ -65,7 +65,7 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
     }
 
     @Override
-    public final View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
 
         if (getActivity() instanceof BaseReadActivity) {
             this.baseReadActivity = (BaseReadActivity) this.getActivity();

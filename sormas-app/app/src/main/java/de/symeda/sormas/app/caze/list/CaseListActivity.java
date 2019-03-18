@@ -111,4 +111,10 @@ public class CaseListActivity extends PagedBaseListActivity {
     public boolean isEntryCreateAllowed() {
         return ConfigProvider.hasUserRight(UserRight.CASE_CREATE);
     }
+
+    @Override
+    public void addFiltersToPageMenu() {
+        // Not supported yet
+    }
+
 }

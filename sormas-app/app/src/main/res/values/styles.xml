@@ -285,6 +285,11 @@
         <item name="android:paddingEnd">@dimen/spinnerIconWidth</item>
     </style>
 
+    <style name="ControlSpinnerFilterStyle" parent="ControlSpinnerStyle">
+        <item name="android:background">@drawable/selector_spinner_filter</item>
+        <item name="android:layout_marginBottom">0dp</item>
+    </style>
+
     <style name="ControlSpinnerSlimStyle" parent="ControlSpinnerStyle">
         <item name="android:layout_height">@dimen/dropdownListSlimItemHeight</item>
         <item name="android:minHeight">@dimen/dropdownListSlimItemHeight</item>

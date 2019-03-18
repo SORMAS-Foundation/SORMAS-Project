@@ -38,7 +38,6 @@ public class CaseListViewModel extends ViewModel {
     private CaseDataFactory caseDataFactory;
 
     public CaseListViewModel() {
-
         caseDataFactory = new CaseDataFactory();
         caseDataFactory.setInvestigationStatus(InvestigationStatus.PENDING);
         PagedList.Config config = new PagedList.Config.Builder()
@@ -70,7 +69,7 @@ public class CaseListViewModel extends ViewModel {
 
         private InvestigationStatus investigationStatus;
 
-        public CaseDataSource(InvestigationStatus investigationStatus) {
+        CaseDataSource(InvestigationStatus investigationStatus) {
             this.investigationStatus = investigationStatus;
         }
 
@@ -99,10 +98,11 @@ public class CaseListViewModel extends ViewModel {
         private CaseDataSource caseDataSource;
         private InvestigationStatus investigationStatus;
 
-        public CaseDataFactory() {
+        CaseDataFactory() {
             this.mutableDataSource = new MutableLiveData<>();
         }
 
+        @NonNull
         @Override
         public DataSource create() {
             caseDataSource = new CaseDataSource(investigationStatus);
@@ -110,11 +110,11 @@ public class CaseListViewModel extends ViewModel {
             return caseDataSource;
         }
 
-        public void setInvestigationStatus(InvestigationStatus investigationStatus) {
+        void setInvestigationStatus(InvestigationStatus investigationStatus) {
             this.investigationStatus = investigationStatus;
         }
 
-        public InvestigationStatus getInvestigationStatus() {
+        InvestigationStatus getInvestigationStatus() {
             return investigationStatus;
         }
     }
