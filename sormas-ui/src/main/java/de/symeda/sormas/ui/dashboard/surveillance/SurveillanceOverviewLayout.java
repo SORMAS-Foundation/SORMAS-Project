@@ -28,6 +28,8 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -107,6 +109,9 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 
 		diseaseBurdenView = layout;
 		addComponent(diseaseBurdenView, BURDEN_LOC);
+		
+		if (UserRole.isSupervisor(UserProvider.getCurrent().getUser().getUserRoles()))
+			showTableViewButton.click();
 	}
 	
 	private void addShowMoreAndLessButtons() {

@@ -92,7 +92,7 @@ public class DiseaseTileComponent extends VerticalLayout {
 		addComponent(layout);
 	}
 	
-	void addStatsLayout (Long fatalities, Long events, String district) {
+	void addStatsLayout (Long fatalities, Long events, String community) {
 		HorizontalLayout container = new HorizontalLayout();
 		container.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(container, CssStyles.BACKGROUND_COLOR_HIGHLIGHT);
@@ -100,7 +100,7 @@ public class DiseaseTileComponent extends VerticalLayout {
 		VerticalLayout layout = new VerticalLayout();
 		CssStyles.style(layout, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
 		
-		layout.addComponent(createStatsItem("Last report", district, false));
+		layout.addComponent(createStatsItem("Last report", community.length() == 0 ? "None" : community, false));
 		layout.addComponent(createStatsItem("Fatalities", fatalities.toString(), fatalities > 0));
 		layout.addComponent(createStatsItem("Number of events", events.toString(), false));
 		

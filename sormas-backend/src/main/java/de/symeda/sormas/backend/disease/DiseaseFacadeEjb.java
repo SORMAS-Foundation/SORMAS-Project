@@ -84,12 +84,12 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		Map<Disease, Long> previousCases = caseFacade.getCaseCountByDisease(caseCriteria, userUuid);
 		
 		//events
-		Map<Disease, Long> events = eventFacade.getEventCountByDisease(regionRef, districtRef, from, to);
+		Map<Disease, Long> events = eventFacade.getEventCountByDisease(regionRef, districtRef, from, to, userUuid);
 					
 		//outbreaks
 		Map<Disease, Long> outbreakDistrictsCount = outbreakFacade.getOutbreakDistrictCountByDisease(regionRef, districtRef, from, to, userUuid);
 				
-		//last report sub-district
+		//last report community
 		Map<Disease, Community> lastReportedCommunities = caseFacade.getLastReportedCommunityByDisease(caseCriteria, userUuid);
 		
 		//case fatalities

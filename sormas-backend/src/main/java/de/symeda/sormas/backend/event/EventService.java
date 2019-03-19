@@ -38,6 +38,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -205,6 +207,37 @@ public class EventService extends AbstractAdoService<Event> {
 		return result;
 	}
 
+	public Map<Disease, Long> getEventCountByDisease (Region region, District district, Date from, Date to, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Event> event = cq.from(Event.class);
+		Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
+		
+		cq.multiselect(event.get(Event.DISEASE), cb.count(event));
+		cq.groupBy(event.get(Event.DISEASE));
+		
+		Predicate filter = createUserFilter(cb, cq, event, user);
+		
+		if (from != null || to != null)
+			filter = and(cb, filter, cb.between(event.get(Event.REPORT_DATE_TIME), from, to));
+		
+		if (region != null)
+			filter = and(cb, filter, cb.equal(eventLocation.get(Location.REGION), region));
+
+		if (district != null)
+			filter = and(cb, filter, cb.equal(eventLocation.get(Location.DISTRICT), district));
+		
+		if (filter != null)
+			cq.where(filter);
+		
+		List<Object[]> results = em.createQuery(cq).getResultList();
+		
+		Map<Disease, Long> events = results.stream().collect(
+				Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));	
+		
+		return events;
+	}
+	
 	public Map<EventStatus, Long> getEventCountByStatus(Region region, District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
@@ -215,39 +248,21 @@ public class EventService extends AbstractAdoService<Event> {
 		cq.groupBy(event.get(Event.EVENT_STATUS));
 		
 		Predicate filter = createUserFilter(cb, cq, event, user);
-		Predicate dateFilter = cb.between(event.get(Event.EVENT_DATE), from, to);
-		if (filter != null) {
-			filter = cb.and(filter, dateFilter);
-		} else {
-			filter = dateFilter;
-		}
+		
+		if (from != null || to != null)
+			filter = and(cb, filter, cb.between(event.get(Event.REPORT_DATE_TIME), from, to));
+		
+		if (region != null)
+			filter = and(cb, filter, cb.equal(eventLocation.get(Location.REGION), region));
 
-		if (region != null) {
-			Predicate regionFilter = cb.equal(eventLocation.get(Location.REGION), region);
-			if (filter != null) {
-				filter = cb.and(filter, regionFilter);
-			} else {
-				filter = regionFilter;
-			}
-		}
+		if (district != null)
+			filter = and(cb, filter, cb.equal(eventLocation.get(Location.DISTRICT), district));
 
-		if (district != null) {
-			Predicate districtFilter = cb.equal(eventLocation.get(Location.DISTRICT), district);
-			if (filter != null) {
-				filter = cb.and(filter, districtFilter);
-			} else {
-				filter = districtFilter;
-			}
-		}
-
-		if (disease != null) {
-			Predicate diseaseFilter = cb.equal(event.get(Event.DISEASE), disease);
-			if (filter != null) {
-				filter = cb.and(filter, diseaseFilter);
-			} else {
-				filter = diseaseFilter;
-			}
-		}
+		if (disease != null)
+			filter = and(cb, filter, cb.equal(event.get(Event.DISEASE), disease));
+		
+		if (filter != null)
+			cq.where(filter);
 		
 		List<Object[]> results = em.createQuery(cq).getResultList();
 		

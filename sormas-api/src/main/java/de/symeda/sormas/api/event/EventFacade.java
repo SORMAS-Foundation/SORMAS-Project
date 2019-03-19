@@ -37,7 +37,7 @@ public interface EventFacade {
 	
 	List<DashboardEventDto> getNewEventsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 	
-	Map<Disease, Long> getEventCountByDisease (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Date from, Date to);
+	Map<Disease, Long> getEventCountByDisease (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Date from, Date to, String userUuid);
 	
 	Map<EventStatus, Long> getEventCountByStatus (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 	

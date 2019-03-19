@@ -171,18 +171,18 @@ public class PersonFacadeEjb implements PersonFacade {
 		cq.groupBy(deceasedPerson.get(Person.CAUSE_OF_DEATH_DISEASE));
 
 		Predicate filter = cb.isNotNull(deceasedPerson.get(Person.CAUSE_OF_DEATH_DISEASE));
-		if (from != null || to != null) {
+		
+		if (from != null || to != null)
 			filter = AbstractAdoService.and(cb, filter, cb.between(deceasedPerson.get(Person.DEATH_DATE), from, to));
-		}
-		if (districtRef != null) {
+		
+		if (districtRef != null)
 			filter = AbstractAdoService.and(cb, filter, cb.equal(deceasedPerson.join(Person.ADDRESS, JoinType.LEFT).join(Location.DISTRICT, JoinType.LEFT).get(District.UUID), districtRef.getUuid()));
-		}
-		else if (regionRef != null) {
+		
+		else if (regionRef != null)
 			filter = AbstractAdoService.and(cb, filter, cb.equal(deceasedPerson.join(Person.ADDRESS, JoinType.LEFT).join(Location.DISTRICT, JoinType.LEFT).join(District.REGION, JoinType.LEFT).get(Region.UUID), regionRef.getUuid()));
-		}
-		if (filter != null) {
+		
+		if (filter != null)
 			cq.where(filter);
-		}
 		
 		List<Object[]> results = em.createQuery(cq).getResultList();
 		

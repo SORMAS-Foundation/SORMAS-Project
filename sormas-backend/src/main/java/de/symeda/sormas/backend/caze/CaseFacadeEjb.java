@@ -633,16 +633,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> caze = cq.from(Case.class);
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
-		Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
-		if (filter != null) {
-			filter = cb.and(filter, criteriaFilter);
-		} else {
-			filter = criteriaFilter;
-		}
+		
+		filter = AbstractAdoService.and(cb, filter, caseService.buildCriteriaFilter(caseCriteria, cb, caze));
 
-		if (filter != null) {
+		if (filter != null)
 			cq.where(filter);
-		}
 
 		cq.groupBy(caze.get(Case.DISEASE));
 		cq.multiselect(caze.get(Case.DISEASE), cb.count(caze));
@@ -663,16 +658,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
-		Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
-		if (filter != null) {
-			filter = cb.and(filter, criteriaFilter);
-		} else {
-			filter = criteriaFilter;
-		}
+		
+		filter = AbstractAdoService.and(cb, filter, caseService.buildCriteriaFilter(caseCriteria, cb, caze));
 
-		if (filter != null) {
-//			cq.where(filter);
-		}
+		if (filter != null)
+			cq.where(filter);
 
 		cq.multiselect(caze.get(Case.DISEASE), facility.get(Facility.COMMUNITY));
 		cq.orderBy(cb.desc(caze.get(Case.REPORT_DATE)));
@@ -688,7 +678,30 @@ public class CaseFacadeEjb implements CaseFacade {
 		
 		return resultMap;
 	}
+	
+	public String getLastReportedCommunityName (CaseCriteria caseCriteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
 
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Case> caze = cq.from(Case.class);
+		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
+		Join<Facility, Community> community = facility.join(Facility.COMMUNITY, JoinType.LEFT);
+
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
+		
+		filter = AbstractAdoService.and(cb, filter, caseService.buildCriteriaFilter(caseCriteria, cb, caze));
+		
+		if (filter != null)
+			cq.where(filter);
+		
+		cq.select(community.get(Community.NAME));
+		cq.orderBy(cb.desc(caze.get(Case.REPORT_DATE)));
+		cq.distinct(true);
+		
+		return em.createQuery(cq).getResultList().stream().findFirst().orElse("");
+	}
+	
 	@Override
 	public CaseDataDto getCaseDataByUuid(String uuid) {
 		return toDto(caseService.getByUuid(uuid));

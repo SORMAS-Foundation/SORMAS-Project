@@ -61,6 +61,7 @@ public class DashboardDataProvider {
 	private List<DashboardCaseDto> cases = new ArrayList<>();
 	private List<DashboardCaseDto> previousCases = new ArrayList<>();
 	private Long outbreakDistrictCount = 0L;
+	private String lastReportedCommunity = "";
 	private List<DashboardEventDto> events = new ArrayList<>();
 	private List<DashboardEventDto> previousEvents = new ArrayList<>();
 	private Map<PathogenTestResultType, Long> testResultCountByResultType;
@@ -139,6 +140,9 @@ public class DashboardDataProvider {
 		
 		// Outbreaks
 		setOutbreakDistrictCount(FacadeProvider.getOutbreakFacade().getOutbreakDistrictCount(region, district, disease, fromDate, toDate, userUuid));
+		
+		// lastReportedCommunity
+		setLastReportedCommunity(FacadeProvider.getCaseFacade().getLastReportedCommunityName(caseCriteria, userUuid));
 	}
 	
 	public List<DashboardCaseDto> getCases() {
@@ -205,30 +209,6 @@ public class DashboardDataProvider {
 		this.previousTestResults = testResults;
 	}
 
-//	public List<DashboardSampleDto> getSamples() {
-//		return samples;
-//	}
-//
-//	public void setSamples(List<DashboardSampleDto> samples) {
-//		this.samples = samples;
-//	}
-//
-//	public List<DashboardTaskDto> getTasks() {
-//		return tasks;
-//	}
-//
-//	public void setTasks(List<DashboardTaskDto> tasks) {
-//		this.tasks = tasks;
-//	}
-//
-//	public List<DashboardTaskDto> getPendingTasks() {
-//		return pendingTasks;
-//	}
-//
-//	public void setPendingTasks(List<DashboardTaskDto> pendingTasks) {
-//		this.pendingTasks = pendingTasks;
-//	}
-
 	public List<DashboardContactDto> getContacts() {
 		return contacts;
 	}
@@ -259,6 +239,14 @@ public class DashboardDataProvider {
 
 	public void setOutbreakDistrictCount (Long districtCount) {
 		this.outbreakDistrictCount = districtCount;
+	}	
+
+	public String getLastReportedCommunity () {
+		return this.lastReportedCommunity;
+	}
+
+	public void setLastReportedCommunity (String community) {
+		this.lastReportedCommunity = community;
 	}	
 
 	public RegionReferenceDto getRegion() {

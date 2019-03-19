@@ -197,39 +197,21 @@ public class PathogenTestService extends AbstractAdoService<PathogenTest> {
 		cq.groupBy(sampleTest.get(PathogenTest.TEST_RESULT));
 		
 		Predicate filter = createUserFilter(cb, cq, sampleTest, user);
-		Predicate dateFilter = cb.between(sampleTest.get(PathogenTest.TEST_DATE_TIME), from, to);
-		if (filter != null) {
-			filter = cb.and(filter, dateFilter);
-		} else {
-			filter = dateFilter;
-		}
+		
+		if (from != null || to != null)
+			filter = and(cb, filter, cb.between(sampleTest.get(PathogenTest.TEST_DATE_TIME), from, to));
+		
+		if (region != null)
+			filter = and(cb, filter, cb.equal(caze.get(Case.REGION), region));
 
-		if (region != null) {
-			Predicate regionFilter = cb.equal(caze.get(Case.REGION), region);
-			if (filter != null) {
-				filter = cb.and(filter, regionFilter);
-			} else {
-				filter = regionFilter;
-			}
-		}
+		if (district != null)
+			filter = and(cb, filter, cb.equal(caze.get(Case.DISTRICT), district));
 
-		if (district != null) {
-			Predicate districtFilter = cb.equal(caze.get(Case.DISTRICT), district);
-			if (filter != null) {
-				filter = cb.and(filter, districtFilter);
-			} else {
-				filter = districtFilter;
-			}
-		}
-
-		if (disease != null) {
-			Predicate diseaseFilter = cb.equal(caze.get(Case.DISEASE), disease);
-			if (filter != null) {
-				filter = cb.and(filter, diseaseFilter);
-			} else {
-				filter = diseaseFilter;
-			}
-		}
+		if (disease != null)
+			filter = and(cb, filter, cb.equal(caze.get(Case.DISEASE), disease));
+		
+		if (filter != null)
+			cq.where(filter);
 		
 		List<Object[]> results = em.createQuery(cq).getResultList();
 		
@@ -240,7 +222,6 @@ public class PathogenTestService extends AbstractAdoService<PathogenTest> {
 	}
 
 	public List<PathogenTestResultType> getPathogenTestResultsForCase(long caseId) {
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PathogenTestResultType> cq = cb.createQuery(PathogenTestResultType.class);
 		Root<PathogenTest> root = cq.from(getElementClass());

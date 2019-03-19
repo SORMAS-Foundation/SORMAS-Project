@@ -143,18 +143,18 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 		cq.groupBy(outbreak.get(Outbreak.DISEASE));
 		
 		Predicate filter = this.createUserFilter(cb, cq, outbreak, user);
-		if (from != null || to != null) {
+		
+		if (from != null || to != null)
 			filter = and(cb, filter, cb.between(outbreak.get(Outbreak.REPORT_DATE), from, to));
-		}
-		if (district != null) {
+		
+		if (district != null)
 			filter = and(cb, filter, cb.equal(outbreak.join(Outbreak.DISTRICT, JoinType.LEFT), district));
-		}
-		else if (region != null) {
+		
+		else if (region != null)
 			filter = and(cb, filter, cb.equal(outbreak.join(Outbreak.DISTRICT, JoinType.LEFT).join(District.REGION, JoinType.LEFT), region));
-		}
-		if (filter != null) {
+		
+		if (filter != null)
 			cq.where(filter);
-		}
 		
 		List<Object[]> results = em.createQuery(cq).getResultList();
 		
@@ -171,21 +171,21 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 		cq.groupBy(outbreak.get(Outbreak.DISTRICT));
 		
 		Predicate filter = this.createUserFilter(cb, cq, outbreak, user);
-		if (from != null || to != null) {
+		
+		if (from != null || to != null)
 			filter = and(cb, filter, cb.between(outbreak.get(Outbreak.REPORT_DATE), from, to));
-		}
-		if (district != null) {
+		
+		if (district != null)
 			filter = and(cb, filter, cb.equal(outbreak.join(Outbreak.DISTRICT, JoinType.LEFT), district));
-		}
-		else if (region != null) {
+		
+		else if (region != null)
 			filter = and(cb, filter, cb.equal(outbreak.join(Outbreak.DISTRICT, JoinType.LEFT).join(District.REGION, JoinType.LEFT), region));
-		}
-		if (disease != null) {
+		
+		if (disease != null)
 			filter = and(cb, filter, cb.equal(outbreak.get(Outbreak.DISEASE), disease));
-		}
-		if (filter != null) {
+		
+		if (filter != null)
 			cq.where(filter);
-		}		
 		
 		cq.select(cb.count(outbreak));
 		
