@@ -131,21 +131,21 @@
   	}
   }
   .background-disease-yellow-fever {
-  	background-color: rgb(255, 0, 0);
-  	fill: rgb(255, 0, 0);
+  	background-color: #E2D320;
+  	fill: #E2D320;
   	
   	&.background-darker {
-  		background-color: rgb(229, 0, 0);
-  		fill: rgb(229, 0, 0);
+  		background-color: #CBBE1D;
+  		fill: #CBBE1D;
   	}
   }
   .background-disease-other {
-  	background-color: rgb(255, 0, 0);
-  	fill: rgb(255, 0, 0);
+  	background-color: #888;
+  	fill: #888;
   	
   	&.background-darker {
-  		background-color: rgb(229, 0, 0);
-  		fill: rgb(229, 0, 0);
+  		background-color: #6D6D6D;
+  		fill: #6D6D6D;
   	}
   }
 }
