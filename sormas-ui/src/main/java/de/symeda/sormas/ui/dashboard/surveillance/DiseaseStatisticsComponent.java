@@ -211,7 +211,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		component.addComponent(lastReportedCommunityLabel);
 		
 		// title
-		Label titleLabel = new Label(I18nProperties.getCaption("Last Reported " + Captions.community));
+		Label titleLabel = new Label(I18nProperties.getCaption("Last Reported " + I18nProperties.getCaption(Captions.community)));
 		CssStyles.style(titleLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4);
 		component.addComponent(titleLabel);
 		

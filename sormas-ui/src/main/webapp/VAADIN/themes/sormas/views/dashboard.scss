@@ -43,88 +43,109 @@
   	margin-bottom: 0px;
   }
   
-  .background-color-highlight {
+  .background-highlight {
   	background-color: #EDF2FD;
   }
-  .background-color-disease-cholera {
+  .background-critical {
+  	background-color: #DE5555;
+  }
+  .background-disease-cholera {
   	background-color: #FEBA01;
   	fill: #FEBA01;
   	
-  	&.background-darken {
+  	&.background-darker {
   		background-color: #E5A701;
   		fill: #E5A701;
   	}
   }
-  .background-color-disease-csm {
+  .background-disease-csm {
   	background-color: #59BDEF;
+  	fill: #59BDEF;
   	
-  	&.background-darken {
+  	&.background-darker {
   		background-color: #50AAD7;
+  		fill: #50AAD7;
   	}
   }
-  .background-color-disease-dengue {
+  .background-disease-dengue {
   	background-color: #44BEC7;
   	fill: #44BEC7;
   	
-  	&.background-darken {
+  	&.background-darker {
   		background-color: #3DABB3;
   		fill: #3DABB3;
   	}
   }
-  .background-color-disease-evd {
+  .background-disease-evd {
   	background-color: #8C45AD;
+  	fill: #8C45AD;
   	
-  	&.background-darken {
+  	&.background-darker {
   		background-color: #7E3E9C;
+  		fill: #7E3E9C;
   	}
   }
-  .background-color-disease-lassa {
+  .background-disease-lassa {
   	background-color: #EA579B;
+  	fill: #EA579B;
   	
-  	&.background-darken {
+  	&.background-darker {
   		background-color: #D34E8B;
+  		fill: #D34E8B;
   	}
   }
-  .background-color-disease-measles {
+  .background-disease-measles {
   	background-color: #66AD45;
+  	fill: #66AD45;
   	
-  	&.background-darken {
+  	&.background-darker {
   		background-color: #5C9C3E;
+  		fill: #5C9C3E;
   	}
   }
-  .background-color-disease-monkeypox {
+  .background-disease-monkeypox {
   	background-color: #FF9299;
+  	fill: #FF9299;
   	
-  	&.background-darken {
+  	&.background-darker {
   		background-color: #E5838A;
+  		fill: #E5838A;
   	}
   }
-  .background-color-disease-new-flu {
+  .background-disease-new-flu {
   	background-color: #4550AC;
+  	fill: #4550AC;
   	
-  	&.background-darken {
+  	&.background-darker {
   		background-color: #3E489B;
+  		fill: #3E489B;
   	}
   }
-  .background-color-disease-plague {
+  .background-disease-plague {
   	background-color: #8270CC;
+  	fill: #8270CC;
   	
-  	&.background-darken {
+  	&.background-darker {
   		background-color: #7565B8;
+  		fill: #7565B8;
   	}
   }
-  .background-color-disease-yellow-fever {
+  .background-disease-yellow-fever {
   	background-color: rgb(255, 0, 0);
+  	fill: rgb(255, 0, 0);
   	
-  	&.background-darken {
+  	&.background-darker {
   		background-color: rgb(229, 0, 0);
+  		fill: rgb(229, 0, 0);
   	}
   }
-  .background-color-disease-other {
+  .background-disease-other {
   	background-color: rgb(255, 0, 0);
+  	fill: rgb(255, 0, 0);
   	
-  	&.background-darken {
+  	&.background-darker {
   		background-color: rgb(229, 0, 0);
+  		fill: rgb(229, 0, 0);
   	}
   }
 }

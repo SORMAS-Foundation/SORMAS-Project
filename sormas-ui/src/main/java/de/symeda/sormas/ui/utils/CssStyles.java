@@ -86,6 +86,7 @@ public final class CssStyles {
 	public static final String LABEL_DISCARDED = "discarded";
 	public static final String LABEL_DONE = "done";
 	public static final String LABEL_NOT = "not";
+	public static final String LABEL_WHITE = "white";
 	
 	// Font sizes
 	public static final String LABEL_SMALL = "small";
@@ -115,8 +116,9 @@ public final class CssStyles {
 	public static final String BACKGROUND_PROBABLE_CRITERIA = "background-probable-criteria";
 	public static final String BACKGROUND_CONFIRMED_CRITERIA = "background-confirmed-criteria";
 	public static final String NO_BORDER = "no-border";
-	public static final String BACKGROUND_COLOR_HIGHLIGHT = "background-color-highlight";
-	public static final String BACKGROUND_DARKEN = "background-darken";
+	public static final String BACKGROUND_HIGHLIGHT = "background-highlight";
+	public static final String BACKGROUND_CRITICAL = "background-critical";
+	public static final String BACKGROUND_DARKER = "background-darker";
 	
 	// Button styles
 	public static final String VAADIN_BUTTON = "v-button";
@@ -277,6 +279,6 @@ public final class CssStyles {
 	}
 	
 	public static String getDiseaseColor(String diseaseName) {
-		return "background-color-disease background-color-disease-" + diseaseName.toLowerCase().replace(' ', '-');
+		return "background-disease background-disease-" + diseaseName.toLowerCase().replace(' ', '-');
 	}
 }
