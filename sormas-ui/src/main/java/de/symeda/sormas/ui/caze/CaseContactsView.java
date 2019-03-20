@@ -83,7 +83,7 @@ public class CaseContactsView extends AbstractCaseView {
 		
 		criteria = ViewModelProviders.of(CaseContactsView.class).get(ContactCriteria.class);
 		
-		grid = new ContactGrid(true);
+		grid = new ContactGrid();
 		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());

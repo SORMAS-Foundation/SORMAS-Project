@@ -61,7 +61,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
 public class SampleGridComponent extends VerticalLayout {
-	
+
 	private static final String NOT_SHIPPED = "notShipped";
 	private static final String SHIPPED = "shipped";
 	private static final String RECEIVED = "received";
@@ -100,6 +100,9 @@ public class SampleGridComponent extends VerticalLayout {
 		originalViewTitle = viewTitleLabel.getValue();
 
 		criteria = ViewModelProviders.of(SamplesView.class).get(SampleCriteria.class);
+		if (criteria.getArchived() == null) {
+			criteria.archived(false);
+		}
 
 		grid = new SampleGrid();
 		grid.setCriteria(criteria);
@@ -325,13 +328,13 @@ public class SampleGridComponent extends VerticalLayout {
 	public SampleGrid getGrid() {
 		return grid;
 	}
-	
+
 	public void updateFilterComponents() {
 		// TODO replace with Vaadin 8 databinding
 		samplesView.setApplyingCriteria(true);
 
 		resetButton.setVisible(criteria.hasAnyFilterActive());
-		
+
 		updateStatusButtons();
 		updateArchivedButton();
 
@@ -402,7 +405,7 @@ public class SampleGridComponent extends VerticalLayout {
 		if (switchArchivedActiveButton == null) {
 			return;
 		}
-		
+
 		if (Boolean.TRUE.equals(criteria.getArchived())) {
 			viewTitleLabel.setValue(I18nProperties.getPrefixCaption("View", SamplesView.VIEW_NAME.replaceAll("/", ".") + ".archive"));
 			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(Captions.sampleShowActive));

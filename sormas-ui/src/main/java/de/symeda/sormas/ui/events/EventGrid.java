@@ -55,8 +55,6 @@ public class EventGrid extends Grid implements AbstractGrid<EventCriteria> {
 	
 	public EventGrid() {
 		setSizeFull();
-        
-		eventCriteria.archived(false);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
         	setSelectionMode(SelectionMode.MULTI);

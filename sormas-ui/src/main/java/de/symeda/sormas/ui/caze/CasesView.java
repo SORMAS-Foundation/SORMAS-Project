@@ -139,6 +139,9 @@ public class CasesView extends AbstractView {
 		originalViewTitle = getViewTitleLabel().getValue();
 		
 		criteria = ViewModelProviders.of(CasesView.class).get(CaseCriteria.class);
+		if (criteria.getArchived() == null) {
+			criteria.archived(false);
+		}
 		
 		grid = new CaseGrid();
 		grid.setCriteria(criteria);
