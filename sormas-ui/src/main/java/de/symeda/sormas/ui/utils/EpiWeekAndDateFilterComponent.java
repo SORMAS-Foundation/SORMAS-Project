@@ -21,6 +21,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
@@ -32,7 +34,6 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.dashboard.DateFilterOption;
@@ -48,12 +49,12 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 	private PopupDateField dateFromFilter;
 	private PopupDateField dateToFilter;
 
-	public EpiWeekAndDateFilterComponent(Button applyButton, boolean fillAutomatically, boolean showCaption) {
-		this(applyButton, fillAutomatically, showCaption, null, null, null);
+	public EpiWeekAndDateFilterComponent(Button applyButton, boolean fillAutomatically, boolean showCaption, String infoText) {
+		this(applyButton, fillAutomatically, showCaption, infoText, null, null, null);
 	}
 
 	public EpiWeekAndDateFilterComponent(Button applyButton, boolean fillAutomatically, boolean showCaption,
-			Class<E> dateType, String dateTypePrompt, Enum<E> defaultDateType) {
+			String infoText, Class<E> dateType, String dateTypePrompt, Enum<E> defaultDateType) {
 		setSpacing(true);
 
 		Calendar c = Calendar.getInstance();
@@ -121,11 +122,13 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 			}
 			addComponent(dateTypeSelector);
 
-			Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
-			infoLabel.setSizeUndefined();
-			infoLabel.setDescription(I18nProperties.getString(Strings.infoCaseDate));
-			CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
-			addComponent(infoLabel);
+			if (!StringUtils.isEmpty(infoText)) {
+				Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+				infoLabel.setSizeUndefined();
+				infoLabel.setDescription(infoText);
+				CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
+				addComponent(infoLabel);
+			}
 		}
 
 		// Epi week filter
