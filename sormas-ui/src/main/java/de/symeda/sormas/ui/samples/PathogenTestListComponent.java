@@ -73,8 +73,4 @@ public class PathogenTestListComponent extends VerticalLayout {
 		list.reload();
 	}
 	
-	public PathogenTestList getList() {
-		return list;
-	}
-	
 }

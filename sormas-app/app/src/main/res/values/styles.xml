@@ -129,6 +129,12 @@
         <item name="android:focusableInTouchMode">false</item>
     </style>
 
+    <style name="ControlLabelFilterStyle" parent="ControlLabelStyle">
+        <item name="android:textColor">@color/whiteOpaque</item>
+        <item name="android:clickable">false</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
     <style name="ControlLabelRowStyle" parent="ControlLabelStyle">
         <item name="android:textAllCaps">false</item>
         <item name="android:textSize">@dimen/row_entry_secondary_text_size</item>
