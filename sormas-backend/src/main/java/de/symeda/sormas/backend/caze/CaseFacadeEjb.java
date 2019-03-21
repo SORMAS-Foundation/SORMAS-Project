@@ -69,6 +69,8 @@ import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
+import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -96,6 +98,9 @@ import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.therapy.PrescriptionCriteria;
+import de.symeda.sormas.api.therapy.TherapyReferenceDto;
+import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -107,6 +112,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
@@ -151,18 +157,20 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestService;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
+import de.symeda.sormas.backend.therapy.PrescriptionService;
 import de.symeda.sormas.backend.therapy.TherapyFacadeEjb;
 import de.symeda.sormas.backend.therapy.TherapyFacadeEjb.TherapyFacadeEjbLocal;
+import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
@@ -246,7 +254,13 @@ public class CaseFacadeEjb implements CaseFacade {
 	private TherapyFacadeEjbLocal therapyFacade;
 	@EJB
 	private ClinicalCourseFacadeEjbLocal clinicalCourseFacade;
-	
+	@EJB
+	private PrescriptionService prescriptionService;
+	@EJB
+	private TreatmentService treatmentService;
+	@EJB
+	private ClinicalVisitService clinicalVisitService;
+
 	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
 
 	@Override
@@ -602,8 +616,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		cq.groupBy(person.get(Person.PRESENT_CONDITION));
 		cq.multiselect(person.get(Person.PRESENT_CONDITION), cb.count(caze));
 		List<Object[]> results = em.createQuery(cq).getResultList();
-																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																	
-		
+
+
 		Map<PresentCondition, Long> resultMap = results.stream().collect(
 				Collectors.toMap(e -> (PresentCondition) e[0], e -> (Long) e[1]));
 		return resultMap;
@@ -635,7 +649,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		Map<Disease, Long> resultMap = results.stream().collect(
 				Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
-		
+
 		return resultMap;
 	}
 
@@ -918,6 +932,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		Case caze = caseService.getByReferenceDto(caseRef);
+
+		// Delete all contacts associated with this case
 		List<Contact> contacts = contactService.getAllByCase(caze);
 		for (Contact contact : contacts) {
 			contactService.delete(contact);
@@ -926,14 +942,31 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (Contact contact : contacts) {
 			contact.setResultingCase(null);
 		}
+
+		// Delete all samples associated with this case
 		List<Sample> samples = sampleService.getAllByCase(caze);
 		for (Sample sample : samples) {
 			sampleService.delete(sample);
 		}
+
+		// Delete all tasks associated with this case
 		List<Task> tasks = taskService.findBy(new TaskCriteria().caze(caseRef));
 		for (Task task : tasks) {
 			taskService.delete(task);
 		}
+
+		// Delete all prescriptions/treatments/clinical visits
+		if (caze.getTherapy() != null) {
+			TherapyReferenceDto therapy = new TherapyReferenceDto(caze.getTherapy().getUuid());
+			treatmentService.findBy(new TreatmentCriteria().therapy(therapy)).stream().forEach(t -> treatmentService.delete(t));
+			prescriptionService.findBy(new PrescriptionCriteria().therapy(therapy)).stream().forEach(p -> prescriptionService.delete(p));
+		}
+		if (caze.getClinicalCourse() != null) {
+			ClinicalCourseReferenceDto clinicalCourse = new ClinicalCourseReferenceDto(caze.getClinicalCourse().getUuid());
+			clinicalVisitService.findBy(new ClinicalVisitCriteria().clinicalCourse(clinicalCourse)).stream().forEach(c -> clinicalVisitService.delete(c));
+		}
+
+		// Delete the case
 		caseService.delete(caze);
 	}
 

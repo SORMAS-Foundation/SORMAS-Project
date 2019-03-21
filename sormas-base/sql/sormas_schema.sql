@@ -2991,7 +2991,7 @@ UPDATE samples SET changedate = now() WHERE pathogentestresult IS NOT NULL;
 ALTER TABLE samples DROP COLUMN mainsampletest_id;
 ALTER TABLE samples_history DROP COLUMN mainsampletest_id;
 
-DROP TRIGGER versioning_trigger FROM pathogentest;
+DROP TRIGGER versioning_trigger ON pathogentest;
 CREATE TRIGGER versioning_trigger
 BEFORE INSERT OR UPDATE OR DELETE ON pathogentest
 FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'pathogentest_history', true);
@@ -3009,3 +3009,11 @@ ALTER TABLE samples ADD COLUMN requestedotheradditionaltests varchar(512);
 ALTER TABLE samples_history ADD COLUMN requestedotheradditionaltests varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (135, 'Further additions for clinical management #993');
+
+-- 2019-03-15 Delete duplicate weekly reports #994
+
+ALTER TABLE weeklyreportentry DROP CONSTRAINT fk_weeklyreportentry_weeklyreport_id;
+ALTER TABLE weeklyreportentry ADD CONSTRAINT fk_weeklyreportentry_weeklyreport_id FOREIGN KEY (weeklyreport_id) REFERENCES public.weeklyreport (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE;
+DELETE FROM weeklyreport a USING weeklyreport b WHERE a.id < b.id AND a.year = b.year AND a.epiweek = b.epiweek AND a.reportinguser_id = b.reportinguser_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (136, 'Delete duplicate weekly reports #994');

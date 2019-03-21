@@ -18,7 +18,7 @@
 package de.symeda.sormas.ui.samples;
 
 import java.util.List;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -39,9 +39,9 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 
 	private SampleReferenceDto sampleRef;
 	private int caseSampleCount;
-	private BiConsumer<PathogenTestResultType, Runnable> testChangedCallback;
+	private Consumer<PathogenTestResultType> testChangedCallback;
 
-	public PathogenTestList(SampleReferenceDto sampleRef, BiConsumer<PathogenTestResultType, Runnable> testChangedCallback) {
+	public PathogenTestList(SampleReferenceDto sampleRef, Consumer<PathogenTestResultType> testChangedCallback) {
 		super(5);
 
 		this.sampleRef = sampleRef;

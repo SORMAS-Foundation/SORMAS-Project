@@ -20,7 +20,9 @@ package de.symeda.sormas.app.caze.read;
 
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.List;
 
@@ -33,6 +35,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.task.edit.TaskEditActivity;
@@ -42,8 +45,6 @@ import de.symeda.sormas.app.task.list.TaskListViewModel;
 public class CaseReadTaskListFragment extends BaseReadFragment<FragmentFormListLayoutBinding, List<Task>, Case> implements OnListItemClickListener {
 
     private TaskListAdapter adapter;
-    private TaskListViewModel model;
-    private LinearLayoutManager linearLayoutManager;
 
     public static CaseReadTaskListFragment newInstance(Case activityRootData) {
         return newInstance(CaseReadTaskListFragment.class, null, activityRootData);
@@ -54,14 +55,21 @@ public class CaseReadTaskListFragment extends BaseReadFragment<FragmentFormListL
         super.onCreate(savedInstanceState);
 
         ((CaseReadActivity) getActivity()).showPreloader();
-        adapter = new TaskListAdapter(R.layout.row_task_list_item_layout, this);
-        model = ViewModelProviders.of(this).get(TaskListViewModel.class);
-        model.getTasks(getActivityRootData()).observe(this, tasks -> {
-            adapter.replaceAll(tasks);
-            adapter.notifyDataSetChanged();
-            updateEmptyListHint(tasks);
+        adapter = new TaskListAdapter();
+        TaskListViewModel model = ViewModelProviders.of(this).get(TaskListViewModel.class);
+        model.initializeViewModel(getActivityRootData());
+        model.getTasks().observe(this, tasks -> {
             ((CaseReadActivity) getActivity()).hidePreloader();
+            adapter.submitList(tasks);
+            updateEmptyListHint(tasks);
         });
+    }
+
+    @Override
+    public final View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
+        adapter.setOnListItemClickListener(this);
+
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
@@ -71,7 +79,7 @@ public class CaseReadTaskListFragment extends BaseReadFragment<FragmentFormListL
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         getContentBinding().recyclerViewForList.setLayoutManager(linearLayoutManager);
         getContentBinding().recyclerViewForList.setAdapter(adapter);
     }

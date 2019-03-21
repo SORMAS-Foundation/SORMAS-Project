@@ -25,7 +25,9 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.List;
 
@@ -44,8 +46,6 @@ import de.symeda.sormas.app.sample.list.SampleListViewModel;
 public class CaseEditSampleListFragment extends BaseEditFragment<FragmentFormListLayoutBinding, List<Sample>, Case> implements OnListItemClickListener {
 
     private SampleListAdapter adapter;
-    private SampleListViewModel model;
-    private LinearLayoutManager linearLayoutManager;
 
     public static CaseEditSampleListFragment newInstance(Case activityRootData) {
         return newInstance(CaseEditSampleListFragment.class, null, activityRootData);
@@ -56,14 +56,21 @@ public class CaseEditSampleListFragment extends BaseEditFragment<FragmentFormLis
         super.onCreate(savedInstanceState);
 
         ((CaseEditActivity) getActivity()).showPreloader();
-        adapter = new SampleListAdapter(R.layout.row_sample_list_item_layout, this);
-        model = ViewModelProviders.of(this).get(SampleListViewModel.class);
-        model.getSamples(getActivityRootData()).observe(this, samples -> {
-            adapter.replaceAll(samples);
-            adapter.notifyDataSetChanged();
-            updateEmptyListHint(samples);
+        adapter = new SampleListAdapter();
+        SampleListViewModel model = ViewModelProviders.of(this).get(SampleListViewModel.class);
+        model.initializeViewModel(getActivityRootData());
+        model.getSamples().observe(this, samples -> {
             ((CaseEditActivity) getActivity()).hidePreloader();
+            adapter.submitList(samples);
+            updateEmptyListHint(samples);
         });
+    }
+
+    @Override
+    public final View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
+        adapter.setOnListItemClickListener(this);
+
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
@@ -84,7 +91,7 @@ public class CaseEditSampleListFragment extends BaseEditFragment<FragmentFormLis
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);
     }

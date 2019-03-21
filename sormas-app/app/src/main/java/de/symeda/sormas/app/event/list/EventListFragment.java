@@ -29,13 +29,14 @@ import java.util.List;
 
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.app.BaseListFragment;
+import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.event.read.EventReadActivity;
 
-public class EventListFragment extends BaseListFragment<EventListAdapter> implements OnListItemClickListener {
+public class EventListFragment extends PagedBaseListFragment<EventListAdapter> implements OnListItemClickListener {
 
     private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerViewForList;

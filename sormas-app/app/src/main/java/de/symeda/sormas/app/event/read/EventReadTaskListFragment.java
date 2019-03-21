@@ -19,7 +19,9 @@
 package de.symeda.sormas.app.event.read;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.List;
 
@@ -52,14 +54,21 @@ public class EventReadTaskListFragment extends BaseReadFragment<FragmentFormList
         super.onCreate(savedInstanceState);
 
         ((EventReadActivity) getActivity()).showPreloader();
-        adapter = new TaskListAdapter(R.layout.row_task_list_item_layout, this);
+        adapter = new TaskListAdapter();
         model = ViewModelProviders.of(this).get(TaskListViewModel.class);
-        model.getTasks(getActivityRootData()).observe(this, tasks -> {
-            adapter.replaceAll(tasks);
-            adapter.notifyDataSetChanged();
-            updateEmptyListHint(tasks);
+        model.initializeViewModel(getActivityRootData());
+        model.getTasks().observe(this, tasks -> {
             ((EventReadActivity) getActivity()).hidePreloader();
+            adapter.submitList(tasks);
+            updateEmptyListHint(tasks);
         });
+    }
+
+    @Override
+    public final View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
+        adapter.setOnListItemClickListener(this);
+
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override

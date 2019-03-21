@@ -22,6 +22,8 @@ import android.content.Context;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
+
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -50,12 +52,13 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
     // Listeners
 
     protected InverseBindingListener inverseBindingListener;
-    private ControlSpinnerFieldListeners spinnerFieldListeners;
+    protected ControlSpinnerFieldListeners spinnerFieldListeners;
 
     // Other fields
 
-    private Object valueOnBind;
-    private int indexOnOpen;
+    protected Object valueOnBind;
+    protected int indexOnOpen;
+    protected boolean excludeEmptyItem;
 
     // Constructors
 
@@ -102,10 +105,11 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
         input.setAdapter(new ControlSpinnerAdapter(
                 getContext(),
                 this,
-                items != null ? items : DataUtils.addEmptyItem(new ArrayList<Item>()),
+                items != null ? items : DataUtils.addEmptyItem(new ArrayList<>()),
                 R.layout.control_spinner_item_layout,
                 R.layout.control_spinner_dropdown_item_layout,
-                R.id.text));
+                R.id.text,
+                excludeEmptyItem));
         setFieldValue(selectedValue);
     }
 
@@ -117,7 +121,7 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
         setSpinnerData(items, valueOnBind);
     }
 
-    private void removeSelection() {
+    protected void removeSelection() {
         SpinnerAdapter adapter = input.getAdapter();
         input.setAdapter(null);
         input.setSelection(Spinner.INVALID_POSITION);
@@ -186,6 +190,19 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
     @Override
     protected void initialize(Context context, AttributeSet attrs, int defStyle) {
         spinnerFieldListeners = new ControlSpinnerFieldListeners();
+
+        if (attrs != null) {
+            TypedArray a = context.getTheme().obtainStyledAttributes(
+                    attrs,
+                    R.styleable.ControlSpinnerField,
+                    0, 0);
+
+            try {
+                excludeEmptyItem = a.getBoolean(R.styleable.ControlSpinnerField_excludeEmptyItem, false);
+            } finally {
+                a.recycle();
+            }
+        }
     }
 
     @Override

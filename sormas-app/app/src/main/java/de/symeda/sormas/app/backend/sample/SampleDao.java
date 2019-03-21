@@ -18,6 +18,8 @@
 
 package de.symeda.sormas.app.backend.sample;
 
+import android.util.Log;
+
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
@@ -32,6 +34,7 @@ import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.sample.ShipmentStatus;
 
 /**
  * Created by Mate Strysewske on 06.02.2017.
@@ -78,96 +81,6 @@ public class SampleDao extends AbstractAdoDao<Sample> {
         }
     }
 
-    /**
-     * Gets all not shipped samples (ignore received and referred)
-     * Ordered by sampling date
-     *
-     * @return
-     */
-    public List<Sample> queryNotShipped() {
-        try {
-            QueryBuilder builder = queryBuilder();
-            Where where = builder.where();
-            where.and(
-                    where.eq(AbstractDomainObject.SNAPSHOT, false),
-                    where.eq(Sample.SHIPPED, false),
-                    where.eq(Sample.RECEIVED, false),
-                    where.or(
-                            where.eq(Sample.REFERRED_TO_UUID, ""),
-                            where.isNull(Sample.REFERRED_TO_UUID)
-                    )
-            );
-
-            return builder
-                    .orderBy(Sample.SAMPLE_DATE_TIME, true)
-                    .query();
-        } catch (SQLException e) {
-            android.util.Log.e(getTableName(), "Could not perform queryNotShipped on Sample");
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Gets all shipped samples (ignore received and referred)
-     * Ordered by sampling date
-     *
-     * @return
-     */
-    public List<Sample> queryShipped() {
-        try {
-            QueryBuilder builder = queryBuilder();
-            Where where = builder.where();
-            where.and(
-                    where.eq(AbstractDomainObject.SNAPSHOT, false),
-                    where.eq(Sample.SHIPPED, true),
-                    where.eq(Sample.RECEIVED, false),
-                    where.or(
-                            where.eq(Sample.REFERRED_TO_UUID, ""),
-                            where.isNull(Sample.REFERRED_TO_UUID)
-                    )
-            );
-
-            return builder
-                    .orderBy(Sample.SAMPLE_DATE_TIME, true)
-                    .query();
-        } catch (SQLException e) {
-            android.util.Log.e(getTableName(), "Could not perform queryShipped on Sample");
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Gets all received samples (ignore referred)
-     * Ordered by sampling date
-     *
-     * @return
-     */
-    public List<Sample> queryReceived() {
-        try {
-            QueryBuilder builder = queryBuilder();
-            Where where = builder.where();
-            where.and(
-                    where.eq(AbstractDomainObject.SNAPSHOT, false),
-                    where.eq(Sample.RECEIVED, true),
-                    where.or(
-                            where.eq(Sample.REFERRED_TO_UUID, ""),
-                            where.isNull(Sample.REFERRED_TO_UUID)
-                    )
-            );
-
-            return builder
-                    .orderBy(Sample.SAMPLE_DATE_TIME, true)
-                    .query();
-        } catch (SQLException e) {
-            android.util.Log.e(getTableName(), "Could not perform queryReceived on Sample");
-            throw new RuntimeException(e);
-        }
-    }
-
-    public List<Sample> queryReferred() {
-        return queryForNotNull(Sample.REFERRED_TO_UUID);
-    }
-
     @Override
     public String getTableName() {
         return Sample.TABLE_NAME;
@@ -179,6 +92,79 @@ public class SampleDao extends AbstractAdoDao<Sample> {
             sample.setPathogenTestResult(PathogenTestResultType.PENDING);
         }
         return super.saveAndSnapshot(sample);
+    }
+
+    public long countByCriteria(SampleCriteria criteria) {
+        try {
+            return buildQueryBuilder(criteria).countOf();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform countByCriteria on Sample");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Sample> queryByCriteria(SampleCriteria criteria, long offset, long limit) {
+        try {
+            return buildQueryBuilder(criteria).orderBy(Sample.SAMPLE_DATE_TIME, true)
+                    .offset(offset).limit(limit).query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform queryByCriteria on Sample");
+            throw new RuntimeException(e);
+        }
+    }
+
+    private QueryBuilder<Sample, Long> buildQueryBuilder(SampleCriteria criteria) throws SQLException {
+        QueryBuilder<Sample, Long> queryBuilder = queryBuilder();
+        Where<Sample, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
+
+        if (criteria.getCaze() != null) {
+            where.and().eq(Sample.ASSOCIATED_CASE + "_id", criteria.getCaze());
+        } else {
+            if (criteria.getShipmentStatus() != null) {
+                switch (criteria.getShipmentStatus()) {
+                    case NOT_SHIPPED:
+                        where.and().and(
+                                where.eq(Sample.SHIPPED, false),
+                                where.eq(Sample.RECEIVED, false),
+                                where.or(
+                                        where.eq(Sample.REFERRED_TO_UUID, ""),
+                                        where.isNull(Sample.REFERRED_TO_UUID)
+                                )
+                        );
+                        break;
+                    case SHIPPED:
+                        where.and().and(
+                                where.eq(Sample.SHIPPED, true),
+                                where.eq(Sample.RECEIVED, false),
+                                where.or(
+                                        where.eq(Sample.REFERRED_TO_UUID, ""),
+                                        where.isNull(Sample.REFERRED_TO_UUID)
+                                )
+                        );
+                        break;
+                    case RECEIVED:
+                        where.and().and(
+                                where.eq(Sample.RECEIVED, true),
+                                where.or(
+                                        where.eq(Sample.REFERRED_TO_UUID, ""),
+                                        where.isNull(Sample.REFERRED_TO_UUID)
+                                )
+                        );
+                        break;
+                    case REFERRED_OTHER_LAB:
+                        where.and().and(
+                                where.isNotNull(Sample.REFERRED_TO_UUID),
+                                where.ne(Sample.REFERRED_TO_UUID, "")
+                        );
+                        break;
+                    default:
+                        throw new IllegalArgumentException(criteria.getShipmentStatus().toString());
+                }
+            }
+        }
+
+        queryBuilder.setWhere(where);
+        return queryBuilder;
     }
 
 }

@@ -64,8 +64,6 @@ public class SampleGrid extends Grid implements AbstractGrid<SampleCriteria> {
 	public SampleGrid() {
 		setSizeFull();
 		
-		sampleCriteria.archived(false);
-		
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
         	setSelectionMode(SelectionMode.MULTI);
         } else {

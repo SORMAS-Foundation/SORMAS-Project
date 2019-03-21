@@ -33,12 +33,14 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListFragment;
+import de.symeda.sormas.app.PagedBaseListActivity;
+import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.event.edit.EventNewActivity;
 
-public class EventListActivity extends BaseListActivity {
+public class EventListActivity extends PagedBaseListActivity {
 
     private EventStatus statusFilters[] = new EventStatus[]{EventStatus.POSSIBLE, EventStatus.CONFIRMED, EventStatus.NO_EVENT};
     private EventListViewModel model;
@@ -52,17 +54,16 @@ public class EventListActivity extends BaseListActivity {
         super.onCreate(savedInstanceState);
 
         showPreloader();
-        adapter = new EventListAdapter(R.layout.row_event_list_item_layout);
+        adapter = new EventListAdapter();
         model = ViewModelProviders.of(this).get(EventListViewModel.class);
-        model.getEvents().observe(this, event -> {
-            ((EventListAdapter) adapter).replaceAll(event);
-            adapter.notifyDataSetChanged();
+        model.getEvents().observe(this, events -> {
+            adapter.submitList(events);
             hidePreloader();
         });
         setOpenPageCallback(p -> {
             showPreloader();
-            model.setEventStatusAndReload(statusFilters[p.getKey()]);
-            adapter.notifyDataSetChanged();
+            model.getEventCriteria().eventStatus(statusFilters[((PageMenuItem) p).getKey()]);
+            model.notifyCriteriaUpdated();
         });
     }
 
@@ -78,7 +79,7 @@ public class EventListActivity extends BaseListActivity {
     }
 
     @Override
-    protected BaseListFragment buildListFragment(PageMenuItem menuItem) {
+    protected PagedBaseListFragment buildListFragment(PageMenuItem menuItem) {
         if (menuItem != null) {
             EventStatus listFilter = statusFilters[menuItem.getKey()];
             return EventListFragment.newInstance(listFilter);
@@ -106,6 +107,12 @@ public class EventListActivity extends BaseListActivity {
     @Override
     public void goToNewView() {
         EventNewActivity.startActivity(this);
+        finish();
+    }
+
+    @Override
+    public void addFiltersToPageMenu() {
+        // Not supported yet
     }
 
 }

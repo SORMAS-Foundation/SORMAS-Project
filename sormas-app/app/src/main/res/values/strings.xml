@@ -165,6 +165,7 @@
     <string name="caption_smallpox_vaccination_scar_img">Smallpox Vaccination Scar</string>
     <string name="caption_suspected_case">Suspected Case</string>
     <string name="caption_symptoms">Symptom Information</string>
+    <string name="caption_task_filters">Filter Task Assignees</string>
     <string name="caption_task_information">Task Information</string>
     <string name="caption_tasks_done">Tasks Done</string>
     <string name="caption_tasks_not_executable">Tasks Not Executable</string>

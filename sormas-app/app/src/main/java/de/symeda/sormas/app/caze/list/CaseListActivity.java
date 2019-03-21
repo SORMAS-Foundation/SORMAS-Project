@@ -104,10 +104,17 @@ public class CaseListActivity extends PagedBaseListActivity {
     @Override
     public void goToNewView() {
         CaseNewActivity.startActivity(getContext());
+        finish();
     }
 
     @Override
     public boolean isEntryCreateAllowed() {
         return ConfigProvider.hasUserRight(UserRight.CASE_CREATE);
     }
+
+    @Override
+    public void addFiltersToPageMenu() {
+        // Not supported yet
+    }
+
 }

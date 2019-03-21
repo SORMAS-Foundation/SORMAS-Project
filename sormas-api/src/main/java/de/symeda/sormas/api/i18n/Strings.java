@@ -395,6 +395,11 @@ public interface Strings {
 	public static String promptCasesEpiWeekFrom = "promptCasesEpiWeekFrom";
 	public static String promptCasesEpiWeekTo = "promptCasesEpiWeekTo";
 	public static String promptCasesSearchField = "promptCasesSearchField";
+	public static String promptContactDateFrom = "promptContactDateFrom";
+	public static String promptContactDateTo = "promptContactDateTo";
+	public static String promptContactDateType = "promptContactDateType";
+	public static String promptContactEpiWeekFrom = "promptContactEpiWeekFrom";
+	public static String promptContactEpiWeekTo = "promptContactEpiWeekTo";
 	public static String promptContactsSearchField = "promptContactsSearchField";
 	public static String promptDisease = "promptDisease";
 	public static String promptDistrict = "promptDistrict";

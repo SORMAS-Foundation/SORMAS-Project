@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
+import java.util.List;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -20,6 +22,22 @@ public class ClinicalVisitService extends AbstractAdoService<ClinicalVisit> {
 
 	public ClinicalVisitService() {
 		super(ClinicalVisit.class);
+	}
+	
+	public List<ClinicalVisit> findBy(ClinicalVisitCriteria criteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ClinicalVisit> cq = cb.createQuery(getElementClass());
+		Root<ClinicalVisit> from = cq.from(getElementClass());
+		
+		Predicate filter = buildCriteriaFilter(criteria, cb, from);
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.orderBy(cb.asc(from.get(ClinicalVisit.CREATION_DATE)));
+		
+		List<ClinicalVisit> resultList = em.createQuery(cq).getResultList();
+		return resultList;
 	}
 	
 	public Predicate buildCriteriaFilter(ClinicalVisitCriteria criteria, CriteriaBuilder cb, Root<ClinicalVisit> visit) {

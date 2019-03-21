@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.CustomLayout;
@@ -81,14 +81,12 @@ public class SampleDataView extends AbstractSampleView {
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, EDIT_LOC);
 
-		BiConsumer<PathogenTestResultType, Runnable> pathogenTestChangedCallback = new BiConsumer<PathogenTestResultType, Runnable>() {
+		Consumer<PathogenTestResultType> pathogenTestChangedCallback = new Consumer<PathogenTestResultType>() {
 			@Override
-			public void accept(PathogenTestResultType pathogenTestResult, Runnable saveCallback) {
+			public void accept(PathogenTestResultType pathogenTestResult) {
 				SampleDto componentSample = editComponent.getWrappedComponent().getValue();
 				if (pathogenTestResult != componentSample.getPathogenTestResult()) {
-					ControllerProvider.getSampleController().showChangePathogenTestResultWindow(editComponent, componentSample.getUuid(), pathogenTestResult, saveCallback);
-				} else {
-					saveCallback.run();
+					ControllerProvider.getSampleController().showChangePathogenTestResultWindow(editComponent, componentSample.getUuid(), pathogenTestResult);
 				}
 			}
 		};

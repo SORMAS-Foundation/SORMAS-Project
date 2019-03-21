@@ -84,6 +84,9 @@ public class SampleController {
 			public void onCommit() {
 				if( !createForm.getFieldGroup().isModified()) {
 					SampleDto dto = createForm.getValue();
+					if (dto.getPathogenTestingRequested()) {
+						dto.setPathogenTestResult(PathogenTestResultType.PENDING);
+					}
 					FacadeProvider.getSampleFacade().saveSample(dto);
 					callback.run();
 				}
@@ -237,7 +240,7 @@ public class SampleController {
 		});
 	}
 	
-	public void showChangePathogenTestResultWindow(CommitDiscardWrapperComponent<SampleEditForm> editComponent, String sampleUuid, PathogenTestResultType newResult, Runnable saveCallback) {
+	public void showChangePathogenTestResultWindow(CommitDiscardWrapperComponent<SampleEditForm> editComponent, String sampleUuid, PathogenTestResultType newResult) {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
 		
@@ -264,7 +267,6 @@ public class SampleController {
 				FacadeProvider.getSampleFacade().saveSample(sample);
 				popupWindow.close();
 				SormasUI.refreshView();
-				saveCallback.run();
 			}
 		});
 		confirmationComponent.getCancelButton().addClickListener(new ClickListener() {
@@ -272,7 +274,6 @@ public class SampleController {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				popupWindow.close();
-				saveCallback.run();
 			}
 		});
 	}

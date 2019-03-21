@@ -144,7 +144,6 @@ public class ContactVisitsView extends AbstractContactView {
 		return topLayout;
 	}
 
-
 	private void updateActiveStatusButtonCaption() {
 		if (activeStatusButton != null) {
 			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getContainer().size())));

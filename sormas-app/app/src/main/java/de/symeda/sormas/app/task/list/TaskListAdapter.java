@@ -27,59 +27,51 @@ import android.widget.ImageView;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.core.adapter.databinding.BindingPagedListAdapter;
+import de.symeda.sormas.app.core.adapter.databinding.BindingViewHolder;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.RowTaskListItemLayoutBinding;
 
-public class TaskListAdapter extends DataBoundAdapter<RowTaskListItemLayoutBinding> implements OnListItemClickListener.HasOnListItemClickListener {
+public class TaskListAdapter extends BindingPagedListAdapter<Task, RowTaskListItemLayoutBinding> {
 
-    private List<Task> data;
-    private OnListItemClickListener mOnListItemClickListener;
-
-    public TaskListAdapter(int rowLayout) {
-        this(rowLayout, null);
-    }
-
-    public TaskListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener) {
-        super(rowLayout);
-        this.mOnListItemClickListener = onListItemClickListener;
-        this.data = new ArrayList<>();
+    public TaskListAdapter() {
+        super(R.layout.row_task_list_item_layout);
     }
 
     @Override
-    protected void bindItem(DataBoundViewHolder<RowTaskListItemLayoutBinding> holder,
-                            int position, List<Object> payloads) {
-        Task record = data.get(position);
-        holder.setData(record);
-        holder.setOnListItemClickListener(this.mOnListItemClickListener);
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
 
-        indicatePriority(holder.binding.imgPriorityStatusIcon, record);
-        indicateStatus(holder.binding.imgTaskStatusIcon, record);
+        if (getItemViewType(position) == TYPE_ITEM) {
+            BindingViewHolder<Task, RowTaskListItemLayoutBinding> pagedHolder = (BindingViewHolder) holder;
+            Task item = getItem(position);
 
+            pagedHolder.setOnListItemClickListener(this.mOnListItemClickListener);
 
-        //Sync Icon
-        if (record.isModifiedOrChildModified()) {
-            holder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
-            holder.binding.imgSyncIcon.setImageResource(R.drawable.ic_sync_blue_24dp);
-        } else {
-            holder.binding.imgSyncIcon.setVisibility(View.GONE);
+            indicatePriority(pagedHolder.binding.imgPriorityStatusIcon, item);
+            indicateStatus(pagedHolder.binding.imgTaskStatusIcon, item);
+
+            if (item.isModifiedOrChildModified()) {
+                pagedHolder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
+                pagedHolder.binding.imgSyncIcon.setImageResource(R.drawable.ic_sync_blue_24dp);
+            } else {
+                pagedHolder.binding.imgSyncIcon.setVisibility(View.GONE);
+            }
+
+            // TODO #704
+            //updateUnreadIndicator(holder, record);
         }
-
-        // TODO #704
-//        updateUnreadIndicator(holder, record);
     }
 
-    @Override
-    public int getItemCount() {
-        return data.size();
-    }
-//
 //    public void updateUnreadIndicator(DataBoundViewHolder<RowTaskListItemLayoutBinding> holder, Task item) {
 //        backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
 //        unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
@@ -123,40 +115,4 @@ public class TaskListAdapter extends DataBoundAdapter<RowTaskListItemLayoutBindi
         imgTaskStatusIcon.setBackground(drw);
     }
 
-    public Task getTask(int position) {
-        if (position < 0)
-            return null;
-
-        if (position >= this.data.size())
-            return null;
-
-        return (Task) this.data.get(position);
-    }
-
-    public void addAll(List<Task> data) {
-        if (data == null)
-            return;
-
-        this.data.addAll(data);
-    }
-
-    public void replaceAll(List<Task> data) {
-        if (data == null)
-            return;
-
-        this.data.clear();
-        this.data.addAll(data);
-    }
-
-    public void clear() {
-        if (this.data == null)
-            return;
-
-        this.data.clear();
-    }
-
-    @Override
-    public void setOnListItemClickListener(OnListItemClickListener onListItemClickListener) {
-        this.mOnListItemClickListener = onListItemClickListener;
-    }
 }

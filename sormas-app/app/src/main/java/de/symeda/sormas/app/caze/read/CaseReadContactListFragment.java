@@ -24,7 +24,10 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.List;
 
@@ -45,8 +48,6 @@ public class CaseReadContactListFragment extends BaseReadFragment<FragmentFormLi
     public static final String TAG = CaseReadContactListFragment.class.getSimpleName();
 
     private ContactListAdapter adapter;
-    private ContactListViewModel model;
-    private LinearLayoutManager linearLayoutManager;
 
     public static CaseReadContactListFragment newInstance(Case activityRootData) {
         return newInstance(CaseReadContactListFragment.class, null, activityRootData);
@@ -57,14 +58,21 @@ public class CaseReadContactListFragment extends BaseReadFragment<FragmentFormLi
         super.onCreate(savedInstanceState);
 
         ((CaseReadActivity) getActivity()).showPreloader();
-        adapter = new ContactListAdapter(R.layout.row_read_contact_list_item_layout, this);
-        model = ViewModelProviders.of(this).get(ContactListViewModel.class);
-        model.getContacts(getActivityRootData()).observe(this, contacts -> {
-            adapter.replaceAll(contacts);
-            adapter.notifyDataSetChanged();
-            updateEmptyListHint(contacts);
+        adapter = new ContactListAdapter();
+        ContactListViewModel model = ViewModelProviders.of(this).get(ContactListViewModel.class);
+        model.initializeViewModel(getActivityRootData());
+        model.getContacts().observe(this, contacts -> {
             ((CaseReadActivity) getActivity()).hidePreloader();
+            adapter.submitList(contacts);
+            updateEmptyListHint(contacts);
         });
+    }
+
+    @Override
+    public final View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
+        adapter.setOnListItemClickListener(this);
+
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
@@ -74,7 +82,7 @@ public class CaseReadContactListFragment extends BaseReadFragment<FragmentFormLi
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);
     }

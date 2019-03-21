@@ -19,6 +19,7 @@
 package de.symeda.sormas.app.backend.task;
 
 import android.location.Location;
+import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -27,10 +28,13 @@ import com.j256.ormlite.stmt.Where;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
+import de.symeda.sormas.api.task.TaskAssignee;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskHelper;
@@ -106,7 +110,7 @@ public class TaskDao extends AbstractAdoDao<Task> {
     public Task saveAndSnapshot(Task task) throws DaoException {
 
         if ((task.getTaskStatus() == TaskStatus.NOT_EXECUTABLE || task.getTaskStatus() == TaskStatus.DONE)
-            && task.getClosedLat() == null) {
+                && task.getClosedLat() == null) {
             Location location = LocationService.instance().getLocation();
             if (location != null) {
                 task.setClosedLat(location.getLatitude());
@@ -290,6 +294,57 @@ public class TaskDao extends AbstractAdoDao<Task> {
             android.util.Log.e(getTableName(), "Could not perform queryByEvent on Task");
             throw new RuntimeException(e);
         }
+    }
+
+    public long countByCriteria(TaskCriteria criteria) {
+        try {
+            return buildQueryBuilder(criteria).countOf();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform countByCriteria on Task");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Task> queryByCriteria(TaskCriteria criteria, long offset, long limit) {
+        try {
+            return buildQueryBuilder(criteria).orderBy(Task.PRIORITY, true).orderBy(Task.DUE_DATE, true)
+                    .offset(offset).limit(limit).query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform queryByCriteria on Task");
+            throw new RuntimeException(e);
+        }
+    }
+
+    private QueryBuilder<Task, Long> buildQueryBuilder(TaskCriteria criteria) throws SQLException {
+        QueryBuilder<Task, Long> queryBuilder = queryBuilder();
+        Where<Task, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
+
+        if (criteria.getAssociatedCase() != null) {
+            where.and().eq(Task.CAZE + "_id", criteria.getAssociatedCase());
+        } else if (criteria.getAssociatedContact() != null) {
+            where.and().eq(Task.CONTACT + "_id", criteria.getAssociatedContact());
+        } else if (criteria.getAssociatedEvent() != null) {
+            where.and().eq(Task.EVENT + "_id", criteria.getAssociatedEvent());
+        } else {
+            if (criteria.getTaskStatus() != null) {
+                where.and().eq(Task.TASK_STATUS, criteria.getTaskStatus());
+            }
+            if (criteria.getTaskAssignee() != null) {
+                switch (criteria.getTaskAssignee()) {
+                    case CURRENT_USER:
+                        where.and().eq(Task.ASSIGNEE_USER + "_id", ConfigProvider.getUser());
+                        break;
+                    case OTHER_USERS:
+                        where.and().eq(Task.CREATOR_USER + "_id", ConfigProvider.getUser());
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        queryBuilder.setWhere(where);
+        return queryBuilder;
     }
 
 }

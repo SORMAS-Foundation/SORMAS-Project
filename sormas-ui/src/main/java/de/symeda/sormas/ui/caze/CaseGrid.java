@@ -51,8 +51,6 @@ public class CaseGrid extends Grid implements AbstractGrid<CaseCriteria> {
 	public CaseGrid() {
 		setSizeFull();
 
-		caseCriteria.archived(false);
-
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setSelectionMode(SelectionMode.MULTI);
 		} else {

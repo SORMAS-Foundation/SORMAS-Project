@@ -19,22 +19,20 @@
 package de.symeda.sormas.app.caze.edit;
 
 import android.content.res.Resources;
-
-import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.contact.ContactSection;
 import de.symeda.sormas.app.contact.edit.ContactEditActivity;
@@ -48,8 +46,6 @@ public class CaseEditContactListFragment extends BaseEditFragment<FragmentFormLi
     public static final String TAG = CaseEditContactListFragment.class.getSimpleName();
 
     private ContactListAdapter adapter;
-    private ContactListViewModel model;
-    private LinearLayoutManager linearLayoutManager;
 
     public static CaseEditContactListFragment newInstance(Case activityRootData) {
         return newInstance(CaseEditContactListFragment.class, null, activityRootData);
@@ -60,14 +56,21 @@ public class CaseEditContactListFragment extends BaseEditFragment<FragmentFormLi
         super.onCreate(savedInstanceState);
 
         ((CaseEditActivity) getActivity()).showPreloader();
-        adapter = new ContactListAdapter(R.layout.row_read_contact_list_item_layout, this);
-        model = ViewModelProviders.of(this).get(ContactListViewModel.class);
-        model.getContacts(getActivityRootData()).observe(this, contacts -> {
-            adapter.replaceAll(contacts);
-            adapter.notifyDataSetChanged();
-            updateEmptyListHint(contacts);
+        adapter = new ContactListAdapter();
+        ContactListViewModel model = ViewModelProviders.of(this).get(ContactListViewModel.class);
+        model.initializeViewModel(getActivityRootData());
+        model.getContacts().observe(this, contacts -> {
             ((CaseEditActivity) getActivity()).hidePreloader();
+            adapter.submitList(contacts);
+            updateEmptyListHint(contacts);
         });
+    }
+
+    @Override
+    public final View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
+        adapter.setOnListItemClickListener(this);
+
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
@@ -88,7 +91,7 @@ public class CaseEditContactListFragment extends BaseEditFragment<FragmentFormLi
 
     @Override
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-        linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);
     }

@@ -32,6 +32,9 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.report.WeeklyReportCriteria;
 import de.symeda.sormas.api.report.WeeklyReportDto;
@@ -92,6 +95,8 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	@EJB
 	private UserFacadeEjbLocal userFacade;
 
+	private static final Logger logger = LoggerFactory.getLogger(WeeklyReportFacadeEjb.class);
+	
 	@Override
 	public List<WeeklyReportDto> getAllWeeklyReportsAfter(Date date, String userUuid) {
 
@@ -116,6 +121,13 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 	@Override
 	public WeeklyReportDto saveWeeklyReport(WeeklyReportDto dto) {
+		// Don't create a new report if there already is one in the database for the user/epi week combination
+		WeeklyReportDto existingReport = getByEpiWeekAndUser(new EpiWeek(dto.getYear(), dto.getEpiWeek()), dto.getReportingUser());
+		if (existingReport != null && !dto.getUuid().equals(existingReport.getUuid())) {
+			logger.warn("Tried to create a new report for an already existing user/epi week combination (existing UUID: " + existingReport.getUuid() + "); report was not created");
+			return null;
+		}
+		
 		WeeklyReport report = fromDto(dto);
 		weeklyReportService.ensurePersisted(report);
 		return toDto(report);

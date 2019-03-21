@@ -69,6 +69,7 @@ public class PageMenuControl extends LinearLayout {
     private FrameLayout fabFrame;
     private FloatingActionButton fab;
     private LinearLayout subMenuFrame;
+    private LinearLayout filtersFrame;
     private GridView taskLandingMenuGridView;
 
     private boolean mVisible;
@@ -202,6 +203,10 @@ public class PageMenuControl extends LinearLayout {
         return pageMenuInitialSelectionProvider;
     }
 
+    public void addFilter(View filterView) {
+        filtersFrame.addView(filterView);
+    }
+
     public boolean selectInitialActiveMenuItem() {
         boolean returnVal = false;
         PageMenuItem result = null;
@@ -248,6 +253,7 @@ public class PageMenuControl extends LinearLayout {
         super.onFinishInflate();
 
         subMenuFrame = findViewById(R.id.sub_menu_frame);
+        filtersFrame = findViewById(R.id.filters_frame);
         taskLandingMenuGridView = findViewById(R.id.sub_menu_grid);
         fabFrame = findViewById(R.id.button_frame);
         fab = findViewById(R.id.sub_menu_button);
@@ -296,6 +302,9 @@ public class PageMenuControl extends LinearLayout {
         }
         if (subMenuFrame != null) {
             this.mCapturedLayoutHeight = subMenuFrame.getHeight() + this.mFabHeight;
+        }
+        if (filtersFrame != null) {
+            this.mCapturedLayoutHeight = this.mCapturedLayoutHeight + filtersFrame.getHeight();
         }
 
         this.mOpenPositionY = this.mParentHeight - this.mCapturedLayoutHeight;
@@ -357,6 +366,7 @@ public class PageMenuControl extends LinearLayout {
 
         setVisibility(View.VISIBLE);
         subMenuFrame.setVisibility(View.VISIBLE);
+        filtersFrame.setVisibility(View.VISIBLE);
 
         if (mLastAnimation == null) {
             setY(this.mOpenPositionY);
@@ -412,6 +422,7 @@ public class PageMenuControl extends LinearLayout {
             setY(this.mClosePositionY);
             mLastAnimation = ActionType.HIDE;
             subMenuFrame.setVisibility(View.GONE);
+            filtersFrame.setVisibility(View.GONE);
         } else if (mLastAnimation != null && mLastAnimation == ActionType.SHOW) {
             this.animate().y(this.mClosePositionY).setInterpolator(new AccelerateInterpolator()).setListener(new Animator.AnimatorListener() {
                 @Override
@@ -424,6 +435,7 @@ public class PageMenuControl extends LinearLayout {
                     setY(PageMenuControl.this.mClosePositionY);
                     mLastAnimation = ActionType.HIDE;
                     subMenuFrame.setVisibility(View.GONE);
+                    filtersFrame.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -566,4 +578,5 @@ public class PageMenuControl extends LinearLayout {
     public interface NotificationCountChangingListener {
         int onNotificationCountChangingAsync(AdapterView<?> parent, PageMenuItem menuItem, int position);
     }
+
 }

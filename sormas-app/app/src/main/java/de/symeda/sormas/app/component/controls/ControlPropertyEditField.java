@@ -311,38 +311,44 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
         labelRequired = this.findViewById(R.id.required_indicator);
         labelSoftRequired = this.findViewById(R.id.soft_required_indicator);
         labelError = this.findViewById(R.id.error_indicator);
-        labelError.setVisibility(GONE);
         labelWarning = this.findViewById(R.id.warning_indicator);
         setRequired(required);
         setSoftRequired(softRequired);
         setWarning(hasWarning);
 
-        labelRequired.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (notificationContext != null && errorMessage != null) {
-                    showErrorNotification();
+        if (labelRequired != null) {
+            labelRequired.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (notificationContext != null && errorMessage != null) {
+                        showErrorNotification();
+                    }
                 }
-            }
-        });
+            });
+        }
 
-        labelError.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (notificationContext != null && errorMessage != null) {
-                    showErrorNotification();
+        if (labelError != null) {
+            labelError.setVisibility(GONE);
+            labelError.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (notificationContext != null && errorMessage != null) {
+                        showErrorNotification();
+                    }
                 }
-            }
-        });
+            });
+        }
 
-        labelWarning.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (notificationContext != null && warningMessage != null) {
-                    showWarningNotification();
+        if (labelWarning != null) {
+            labelWarning.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (notificationContext != null && warningMessage != null) {
+                        showWarningNotification();
+                    }
                 }
-            }
-        });
+            });
+        }
 
         // Validation
         addValueChangedListener(new ValueChangeListener() {

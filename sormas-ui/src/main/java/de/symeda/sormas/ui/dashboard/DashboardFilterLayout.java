@@ -37,6 +37,7 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -177,7 +178,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		CssStyles.style(applyButton, CssStyles.FORCE_CAPTION, ValoTheme.BUTTON_PRIMARY);
 
 		// Date & Epi Week filter
-		EpiWeekAndDateFilterComponent weekAndDateFilter = new EpiWeekAndDateFilterComponent(applyButton, true, true, false);
+		EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(applyButton, true, true, I18nProperties.getString(Strings.infoCaseDate));
 		customDateFilterLayout.addComponent(weekAndDateFilter);
 		dashboardDataProvider.setDateFilterOption((DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue());
 		dashboardDataProvider.setFromDate(DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue()));

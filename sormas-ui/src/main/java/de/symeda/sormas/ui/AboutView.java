@@ -23,6 +23,7 @@ import java.net.URL;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ClassResource;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.StreamResource;
@@ -33,6 +34,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -53,13 +55,32 @@ public class AboutView extends VerticalLayout implements View {
 		aboutContent.setStyleName("about-content");
 
 		// Info section
-		aboutContent.addComponent(
-				new Label(FontAwesome.INFO_CIRCLE.getHtml()
+		VerticalLayout infoLayout = new VerticalLayout();
+		aboutContent.addComponent(infoLayout, "info");
+		
+		Label versionLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml()
 						+ " "
 						+ I18nProperties.getCaption(Captions.aboutSormasVersion)
 						+ ": "
-						+ InfoProvider.get().getVersion(), ContentMode.HTML), "info");
+						+ InfoProvider.get().getVersion(), ContentMode.HTML);
+		infoLayout.addComponent(versionLabel);
+		
+		Link whatsNewLink = new Link(I18nProperties.getCaption(Captions.aboutWhatsNew), new ExternalResource("https://github.com/hzi-braunschweig/SORMAS-Project/releases/tag/releases%2Fversion-" + InfoProvider.get().getBaseVersion()));
+		whatsNewLink.setTargetName("_blank");
+		infoLayout.addComponent(whatsNewLink);
 
+		Link sormasWebsiteLink = new Link(I18nProperties.getCaption(Captions.aboutSormasWebsite), new ExternalResource("https://sormasorg.helmholtz-hzi.de/"));
+		sormasWebsiteLink.setTargetName("_blank");
+		infoLayout.addComponent(sormasWebsiteLink);
+
+		Link sormasGithubLink = new Link("SORMAS Github", new ExternalResource("https://github.com/hzi-braunschweig/SORMAS-Project"));
+		sormasGithubLink.setTargetName("_blank");
+		infoLayout.addComponent(sormasGithubLink);
+
+		Link changelogLink = new Link(I18nProperties.getCaption(Captions.aboutChangelog), new ExternalResource("https://github.com/hzi-braunschweig/SORMAS-Project/releases"));
+		changelogLink.setTargetName("_blank");
+		infoLayout.addComponent(changelogLink);
+			
 		// Documents section
 		VerticalLayout documentsLayout = new VerticalLayout();
 		aboutContent.addComponent(documentsLayout, "documents");
@@ -82,13 +103,10 @@ public class AboutView extends VerticalLayout implements View {
 		documentsLayout.addComponent(dataDictionaryButton);
 		FileDownloader dataDictionaryDownloader = new FileDownloader(new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
 		dataDictionaryDownloader.extend(dataDictionaryButton);
-		
-		Button technicalManualButton = new Button(I18nProperties.getCaption(Captions.aboutTechnicalManual));
-		CssStyles.style(technicalManualButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
-		documentsLayout.addComponent(technicalManualButton);
-		technicalManualButton.addClickListener(e -> {
-			getUI().getPage().open("https://github.com/hzi-braunschweig/SORMAS-Project/files/2585973/SORMAS_Technical_Manual_Webversion_20180911.pdf", "_self");
-		});
+
+		Link technicalManualLink = new Link(I18nProperties.getCaption(Captions.aboutTechnicalManual), new ExternalResource("https://github.com/hzi-braunschweig/SORMAS-Project/files/2585973/SORMAS_Technical_Manual_Webversion_20180911.pdf"));
+		technicalManualLink.setTargetName("_blank");
+		documentsLayout.addComponent(technicalManualLink);
 
 		setSizeFull();
 		setStyleName("about-view");

@@ -29,13 +29,14 @@ import java.util.List;
 
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.BaseListFragment;
+import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.task.edit.TaskEditActivity;
 
-public class TaskListFragment extends BaseListFragment<TaskListAdapter> implements OnListItemClickListener {
+public class TaskListFragment extends PagedBaseListFragment<TaskListAdapter> implements OnListItemClickListener {
 
     private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerViewForList;
@@ -65,10 +66,21 @@ public class TaskListFragment extends BaseListFragment<TaskListAdapter> implemen
     }
 
     @Override
+    protected boolean canAddToList() {
+        return true;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getSubHeadingHandler().updateSubHeadingTitle();
+//        getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), SearchBy.BY_FILTER_STATUS, getListFilter(), "Case"));
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        recyclerViewForList.setLayoutManager(linearLayoutManager);
         recyclerViewForList.setAdapter(getListAdapter());
+        recyclerViewForList.setLayoutManager(linearLayoutManager);
     }
 }

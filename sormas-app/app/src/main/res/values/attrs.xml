@@ -227,6 +227,9 @@
         <attr name="slim" />
     </declare-styleable>
 
+    <declare-styleable name="ControlSpinnerField">
+        <attr name="excludeEmptyItem" />
+    </declare-styleable>
 
     <declare-styleable name="ControlPasswordField">
         <attr name="labelCaption" />

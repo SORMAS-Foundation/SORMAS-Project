@@ -23,6 +23,7 @@ public enum VisualStateControlType {
     TEXT_FIELD,
     CHECKBOX,
     SPINNER,
+    SPINNER_FILTER,
     SWITCH;
 
 }

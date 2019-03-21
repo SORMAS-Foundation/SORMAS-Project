@@ -22,95 +22,139 @@ import android.os.AsyncTask;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.paging.DataSource;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
+import androidx.paging.PositionalDataSource;
+import de.symeda.sormas.api.task.TaskAssignee;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.backend.task.TaskCriteria;
 
 public class TaskListViewModel extends ViewModel {
 
-    private MutableLiveData<List<Task>> tasks;
-    private TaskStatus taskStatus = TaskStatus.PENDING;
-    private Case caze;
-    private Contact contact;
-    private Event event;
+    private LiveData<PagedList<Task>> tasks;
+    private TaskDataFactory taskDataFactory;
 
-    public LiveData<List<Task>> getTasks() {
-        if (tasks == null) {
-            tasks = new MutableLiveData<>();
-            loadTasks();
-        }
+    public void initializeViewModel(Case caze) {
+        taskDataFactory = new TaskDataFactory();
+        TaskCriteria taskCriteria = new TaskCriteria();
+        taskCriteria.associatedCase(caze);
+        taskDataFactory.setTaskCriteria(taskCriteria);
+        initializeList();
+    }
 
+    public void initializeViewModel(Contact contact) {
+        taskDataFactory = new TaskDataFactory();
+        TaskCriteria taskCriteria = new TaskCriteria();
+        taskCriteria.associatedContact(contact);
+        taskDataFactory.setTaskCriteria(taskCriteria);
+        initializeList();
+    }
+
+    public void initializeViewModel(Event event) {
+        taskDataFactory = new TaskDataFactory();
+        TaskCriteria taskCriteria = new TaskCriteria();
+        taskCriteria.associatedEvent(event);
+        taskDataFactory.setTaskCriteria(taskCriteria);
+        initializeList();
+    }
+
+    public void initializeViewModel() {
+        taskDataFactory = new TaskDataFactory();
+        TaskCriteria taskCriteria = new TaskCriteria();
+        taskCriteria.taskStatus(TaskStatus.PENDING);
+        taskCriteria.taskAssignee(TaskAssignee.CURRENT_USER);
+        taskDataFactory.setTaskCriteria(taskCriteria);
+        initializeList();
+    }
+
+    public LiveData<PagedList<Task>> getTasks() {
         return tasks;
     }
 
-    public LiveData<List<Task>> getTasks(Case caze) {
-        this.caze = caze;
-        return getTasks();
-    }
-
-    public LiveData<List<Task>> getTasks(Contact contact) {
-        this.contact = contact;
-        return getTasks();
-    }
-
-    public LiveData<List<Task>> getTasks(Event event) {
-        this.event = event;
-        return getTasks();
-    }
-
-    void setTaskStatusAndReload(TaskStatus taskStatus) {
-        if (this.taskStatus == taskStatus) {
-            return;
+    void notifyCriteriaUpdated() {
+        if (tasks.getValue() != null && tasks.getValue().getDataSource() != null) {
+            tasks.getValue().getDataSource().invalidate();
         }
-
-        this.taskStatus = taskStatus;
-        loadTasks();
     }
 
-    private void loadTasks() {
-        new LoadTasksTask(this).execute();
+    public TaskCriteria getTaskCriteria() {
+        return taskDataFactory.getTaskCriteria();
     }
 
-    private static class LoadTasksTask extends AsyncTask<Void, Void, List<Task>> {
-        private TaskListViewModel model;
+    public static class TaskDataSource extends PositionalDataSource<Task> {
 
-        LoadTasksTask(TaskListViewModel model) {
-            this.model = model;
+        private TaskCriteria taskCriteria;
+
+        TaskDataSource(TaskCriteria taskCriteria) {
+            this.taskCriteria = taskCriteria;
         }
 
         @Override
-        protected List<Task> doInBackground(Void... args) {
-            if (model.caze != null) {
-                return DatabaseHelper.getTaskDao().queryByCase(model.caze);
-            } else if (model.contact != null) {
-                return DatabaseHelper.getTaskDao().queryByContact(model.contact);
-            } else if (model.event != null) {
-                return DatabaseHelper.getTaskDao().queryByEvent(model.event);
-            } else {
-                switch (model.taskStatus) {
-                    case PENDING:
-                        return DatabaseHelper.getTaskDao().queryAllPending();
-                    case DONE:
-                    case REMOVED:
-                        return DatabaseHelper.getTaskDao().queryAllDoneOrRemoved();
-                    case NOT_EXECUTABLE:
-                        return DatabaseHelper.getTaskDao().queryAllNotExecutable();
-                    default:
-                        throw new IllegalArgumentException(model.taskStatus.toString());
-                }
+        public void loadInitial(@NonNull LoadInitialParams params, @NonNull LoadInitialCallback<Task> callback) {
+            long totalCount = DatabaseHelper.getTaskDao().countByCriteria(taskCriteria);
+            int offset = params.requestedStartPosition;
+            int count = params.requestedLoadSize;
+            if (offset + count > totalCount) {
+                offset = (int) Math.max(0, totalCount - count);
             }
+            List<Task> tasks = DatabaseHelper.getTaskDao().queryByCriteria(taskCriteria, offset, count);
+            callback.onResult(tasks, offset, (int) totalCount);
         }
 
         @Override
-        protected void onPostExecute(List<Task> data) {
-            model.tasks.setValue(data);
+        public void loadRange(@NonNull LoadRangeParams params, @NonNull LoadRangeCallback<Task> callback) {
+            List<Task> tasks = DatabaseHelper.getTaskDao().queryByCriteria(taskCriteria, params.startPosition, params.loadSize);
+            callback.onResult(tasks);
         }
+
+    }
+
+    public static class TaskDataFactory extends DataSource.Factory {
+
+        private MutableLiveData<TaskDataSource> mutableDataSource;
+        private TaskDataSource taskDataSource;
+        private TaskCriteria taskCriteria;
+
+        TaskDataFactory() {
+            this.mutableDataSource = new MutableLiveData<>();
+        }
+
+        @NonNull
+        @Override
+        public DataSource create() {
+            taskDataSource = new TaskDataSource(taskCriteria);
+            mutableDataSource.postValue(taskDataSource);
+            return taskDataSource;
+        }
+
+        void setTaskCriteria(TaskCriteria taskCriteria) {
+            this.taskCriteria = taskCriteria;
+        }
+
+        public TaskCriteria getTaskCriteria() {
+            return taskCriteria;
+        }
+
+    }
+
+    private void initializeList() {
+        PagedList.Config config = new PagedList.Config.Builder()
+                .setEnablePlaceholders(true)
+                .setInitialLoadSizeHint(16)
+                .setPageSize(8).build();
+
+        LivePagedListBuilder taskListBuilder = new LivePagedListBuilder(taskDataFactory, config);
+        tasks = taskListBuilder.build();
     }
 
 }
