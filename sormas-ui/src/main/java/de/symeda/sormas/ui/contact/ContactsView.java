@@ -128,8 +128,11 @@ public class ContactsView extends AbstractView {
 		originalViewTitle = getViewTitleLabel().getValue();
 
 		criteria = ViewModelProviders.of(ContactsView.class).get(ContactCriteria.class);
+		if (criteria.getArchived() == null) {
+			criteria.archived(false);
+		}
 
-		grid = new ContactGrid(false);  
+		grid = new ContactGrid();  
 		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -361,7 +364,7 @@ public class ContactsView extends AbstractView {
 		{
 			Button applyButton = new Button(I18nProperties.getCaption(Captions.actionApplyDateFilter));
 			
-			weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(applyButton, false, false, ContactDateType.class, I18nProperties.getString(Strings.promptContactDateType), ContactDateType.REPORT_DATE);
+			weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(applyButton, false, false, null, ContactDateType.class, I18nProperties.getString(Strings.promptContactDateType), ContactDateType.REPORT_DATE);
 			weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactEpiWeekFrom));
 			weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactEpiWeekTo));
 			weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactDateFrom));

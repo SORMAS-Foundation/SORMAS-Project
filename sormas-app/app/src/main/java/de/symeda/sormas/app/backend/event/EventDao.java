@@ -18,7 +18,11 @@
 
 package de.symeda.sormas.app.backend.event;
 
+import android.util.Log;
+
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -26,6 +30,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -115,4 +120,36 @@ public class EventDao extends AbstractAdoDao<Event> {
         // Delete event
         deleteCascade(event);
     }
+
+    public long countByCriteria(EventCriteria criteria) {
+        try {
+            return buildQueryBuilder(criteria).countOf();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform countByCriteria on Event");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Event> queryByCriteria(EventCriteria criteria, long offset, long limit) {
+        try {
+            return buildQueryBuilder(criteria).orderBy(Event.EVENT_DATE, true)
+                    .offset(offset).limit(limit).query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform queryByCriteria on Event");
+            throw new RuntimeException(e);
+        }
+    }
+
+    private QueryBuilder<Event, Long> buildQueryBuilder(EventCriteria criteria) throws SQLException {
+        QueryBuilder<Event, Long> queryBuilder = queryBuilder();
+        Where<Event, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
+
+        if (criteria.getEventStatus() != null) {
+            where.and().eq(Event.EVENT_STATUS, criteria.getEventStatus());
+        }
+
+        queryBuilder.setWhere(where);
+        return queryBuilder;
+    }
+
 }

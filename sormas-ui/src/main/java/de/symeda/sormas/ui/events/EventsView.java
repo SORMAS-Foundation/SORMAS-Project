@@ -87,6 +87,9 @@ public class EventsView extends AbstractView {
 		originalViewTitle = getViewTitleLabel().getValue();
 
 		criteria = ViewModelProviders.of(EventsView.class).get(EventCriteria.class);
+		if (criteria.getArchived() == null) {
+			criteria.archived(false);
+		}
 
 		grid = new EventGrid();
 		grid.setCriteria(criteria);

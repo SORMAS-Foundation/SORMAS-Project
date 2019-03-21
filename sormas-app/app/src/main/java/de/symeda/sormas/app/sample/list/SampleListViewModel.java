@@ -22,78 +22,119 @@ import android.os.AsyncTask;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.paging.DataSource;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
+import androidx.paging.PositionalDataSource;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.backend.sample.SampleCriteria;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 
 public class SampleListViewModel extends ViewModel {
 
-    private MutableLiveData<List<Sample>> samples;
-    private ShipmentStatus shipmentStatus = ShipmentStatus.NOT_SHIPPED;
-    private Case caze;
+    private LiveData<PagedList<Sample>> samples;
+    private SampleDataFactory sampleDataFactory;
 
-    public LiveData<List<Sample>> getSamples() {
-        if (samples == null) {
-            samples = new MutableLiveData<>();
-            loadSamples();
-        }
+    public void initializeViewModel(Case caze) {
+        sampleDataFactory = new SampleDataFactory();
+        SampleCriteria sampleCriteria = new SampleCriteria();
+        sampleCriteria.caze(caze);
+        sampleDataFactory.setSampleCriteria(sampleCriteria);
+        initializeList();
+    }
 
+    public void initializeViewModel() {
+        sampleDataFactory = new SampleDataFactory();
+        SampleCriteria sampleCriteria = new SampleCriteria();
+        sampleCriteria.shipmentStatus(ShipmentStatus.NOT_SHIPPED);
+        sampleDataFactory.setSampleCriteria(sampleCriteria);
+        initializeList();
+    }
+
+    public LiveData<PagedList<Sample>> getSamples() {
         return samples;
     }
 
-    public LiveData<List<Sample>> getSamples(Case caze) {
-        this.caze = caze;
-        return getSamples();
-    }
-
-    void setShipmentStatusAndReload(ShipmentStatus shipmentStatus) {
-        if (this.shipmentStatus == shipmentStatus) {
-            return;
+    void notifyCriteriaUpdated() {
+        if (samples.getValue() != null && samples.getValue().getDataSource() != null) {
+            samples.getValue().getDataSource().invalidate();
         }
-
-        this.shipmentStatus = shipmentStatus;
-        loadSamples();
     }
 
-    private void loadSamples() {
-        new LoadSamplesTask(this).execute();
+    public SampleCriteria getSampleCriteria() {
+        return sampleDataFactory.getSampleCriteria();
     }
 
-    private static class LoadSamplesTask extends AsyncTask<Void, Void, List<Sample>> {
-        private SampleListViewModel model;
+    public static class SampleDataSource extends PositionalDataSource<Sample> {
 
-        LoadSamplesTask(SampleListViewModel model) {
-            this.model = model;
+        private SampleCriteria sampleCriteria;
+
+        SampleDataSource(SampleCriteria sampleCriteria) {
+            this.sampleCriteria = sampleCriteria;
         }
 
         @Override
-        protected List<Sample> doInBackground(Void... args) {
-            if (model.caze != null) {
-                return DatabaseHelper.getSampleDao().queryByCase(model.caze);
-            } else {
-                switch (model.shipmentStatus) {
-                    case NOT_SHIPPED:
-                        return DatabaseHelper.getSampleDao().queryNotShipped();
-                    case SHIPPED:
-                        return DatabaseHelper.getSampleDao().queryShipped();
-                    case RECEIVED:
-                        return DatabaseHelper.getSampleDao().queryReceived();
-                    case REFERRED_OTHER_LAB:
-                        return DatabaseHelper.getSampleDao().queryReferred();
-                    default:
-                        throw new IllegalArgumentException(model.shipmentStatus.toString());
-                }
+        public void loadInitial(@NonNull LoadInitialParams params, @NonNull LoadInitialCallback<Sample> callback) {
+            long totalCount = DatabaseHelper.getSampleDao().countByCriteria(sampleCriteria);
+            int offset = params.requestedStartPosition;
+            int count = params.requestedLoadSize;
+            if (offset + count > totalCount) {
+                offset = (int) Math.max(0, totalCount - count);
             }
+            List<Sample> samples = DatabaseHelper.getSampleDao().queryByCriteria(sampleCriteria, offset, count);
+            callback.onResult(samples, offset, (int) totalCount);
         }
 
         @Override
-        protected void onPostExecute(List<Sample> data) {
-            model.samples.setValue(data);
+        public void loadRange(@NonNull LoadRangeParams params, @NonNull LoadRangeCallback<Sample> callback) {
+            List<Sample> samples = DatabaseHelper.getSampleDao().queryByCriteria(sampleCriteria, params.startPosition, params.loadSize);
+            callback.onResult(samples);
         }
+
+    }
+
+    public static class SampleDataFactory extends DataSource.Factory {
+
+        private MutableLiveData<SampleDataSource> mutableDataSource;
+        private SampleDataSource sampleDataSource;
+        private SampleCriteria sampleCriteria;
+
+        SampleDataFactory() {
+            this.mutableDataSource = new MutableLiveData<>();
+        }
+
+        @NonNull
+        @Override
+        public DataSource create() {
+            sampleDataSource = new SampleDataSource(sampleCriteria);
+            mutableDataSource.postValue(sampleDataSource);
+            return sampleDataSource;
+        }
+
+        void setSampleCriteria(SampleCriteria sampleCriteria) {
+            this.sampleCriteria = sampleCriteria;
+        }
+
+        SampleCriteria getSampleCriteria() {
+            return sampleCriteria;
+        }
+
+    }
+
+    private void initializeList() {
+        PagedList.Config config = new PagedList.Config.Builder()
+                .setEnablePlaceholders(true)
+                .setInitialLoadSizeHint(16)
+                .setPageSize(8).build();
+
+        LivePagedListBuilder sampleListBuilder = new LivePagedListBuilder(sampleDataFactory, config);
+        samples = sampleListBuilder.build();
     }
 
 }

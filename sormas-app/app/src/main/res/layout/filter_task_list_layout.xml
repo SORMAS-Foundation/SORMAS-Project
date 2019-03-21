@@ -36,7 +36,7 @@
         <de.symeda.sormas.app.component.controls.ControlSpinnerFilterField
             android:id="@+id/taskAssignee"
             app:value="@{TaskAssignee.CURRENT_USER}"
-            app:showCaption="false"
+            app:caption="@string/caption_task_filters"
             app:excludeEmptyItem="true"
             style="@style/ControlSingleColumnStyle" />
 

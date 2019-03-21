@@ -59,12 +59,8 @@ public class ContactGrid extends Grid implements AbstractGrid<ContactCriteria> {
 
 	private ContactCriteria contactCriteria = new ContactCriteria();
 
-	public ContactGrid(boolean isSubList) {
+	public ContactGrid() {
 		setSizeFull();
-
-		if (!isSubList) {
-			contactCriteria.archived(false);
-		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setSelectionMode(SelectionMode.MULTI);

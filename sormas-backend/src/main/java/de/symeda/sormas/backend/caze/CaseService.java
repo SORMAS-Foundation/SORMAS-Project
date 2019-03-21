@@ -40,7 +40,6 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
-import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -610,10 +609,8 @@ public class CaseService extends AbstractAdoService<Case> {
 							)
 					);
 		}
-		if (Boolean.TRUE.equals(caseCriteria.getArchived())) {
-			filter = and(cb, filter, cb.equal(from.get(Case.ARCHIVED), true));
-		} else {
-			filter = and(cb, filter, cb.or(cb.equal(from.get(Case.ARCHIVED), false), cb.isNull(from.get(Case.ARCHIVED))));
+		if (caseCriteria.getArchived() != null) {
+			filter = and (cb, filter, cb.equal(from.get(Case.ARCHIVED), caseCriteria.getArchived()));
 		}
 
 		if (caseCriteria.getNameUuidEpidNumberLike() != null) {

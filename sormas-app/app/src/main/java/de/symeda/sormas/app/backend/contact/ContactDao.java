@@ -129,4 +129,40 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 
         return super.saveAndSnapshot(contact);
     }
+
+    public long countByCriteria(ContactCriteria criteria) {
+        try {
+            return buildQueryBuilder(criteria).countOf();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform countByCriteria on Contact");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Contact> queryByCriteria(ContactCriteria criteria, long offset, long limit) {
+        try {
+            return buildQueryBuilder(criteria).orderBy(Contact.REPORT_DATE_TIME, true)
+                    .offset(offset).limit(limit).query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform queryByCriteria on Contact");
+            throw new RuntimeException(e);
+        }
+    }
+
+    private QueryBuilder<Contact, Long> buildQueryBuilder(ContactCriteria criteria) throws SQLException {
+        QueryBuilder<Contact, Long> queryBuilder = queryBuilder();
+        Where<Contact, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
+
+        if (criteria.getCaze() != null) {
+            where.and().eq(Contact.CASE_UUID, criteria.getCaze().getUuid());
+        } else {
+            if (criteria.getFollowUpStatus() != null) {
+                where.and().eq(Contact.FOLLOW_UP_STATUS, criteria.getFollowUpStatus());
+            }
+        }
+
+        queryBuilder.setWhere(where);
+        return queryBuilder;
+    }
+
 }

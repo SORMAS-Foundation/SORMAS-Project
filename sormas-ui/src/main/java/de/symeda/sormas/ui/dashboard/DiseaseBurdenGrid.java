@@ -28,7 +28,6 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.PercentageRenderer;

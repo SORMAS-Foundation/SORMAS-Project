@@ -19,7 +19,7 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
@@ -55,7 +55,7 @@ public class PathogenTestController {
 		return facade.getAllBySample(sampleRef);
 	}
 	
-	public void create(SampleReferenceDto sampleRef, int caseSampleCount, Runnable callback, BiConsumer<PathogenTestResultType, Runnable> testChangedCallback) {
+	public void create(SampleReferenceDto sampleRef, int caseSampleCount, Runnable callback, Consumer<PathogenTestResultType> testChangedCallback) {
 		PathogenTestForm createForm = new PathogenTestForm(FacadeProvider.getSampleFacade().getSampleByUuid(sampleRef.getUuid()), true, UserRight.PATHOGEN_TEST_CREATE, caseSampleCount);
 		createForm.setValue(PathogenTestDto.build(sampleRef, UserProvider.getCurrent().getUser()));
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView = new CommitDiscardWrapperComponent<PathogenTestForm>(createForm, createForm.getFieldGroup());
@@ -73,7 +73,7 @@ public class PathogenTestController {
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreatePathogenTestResult)); 
 	}
 	
-	public void edit(PathogenTestDto dto, int caseSampleCount, Runnable callback, BiConsumer<PathogenTestResultType, Runnable> testChangedCallback) {
+	public void edit(PathogenTestDto dto, int caseSampleCount, Runnable callback, Consumer<PathogenTestResultType> testChangedCallback) {
 		// get fresh data
 		PathogenTestDto newDto = facade.getByUuid(dto.getUuid());
 		
@@ -105,20 +105,15 @@ public class PathogenTestController {
 		}
 	}
 	
-	private void savePathogenTest(PathogenTestDto dto, BiConsumer<PathogenTestResultType, Runnable> testChangedCallback) {
+	private void savePathogenTest(PathogenTestDto dto, Consumer<PathogenTestResultType> testChangedCallback) {
 		SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid());
 		CaseDataDto existingCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(sample.getAssociatedCase().getUuid());
 		facade.savePathogenTest(dto);
 		CaseDataDto newCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(sample.getAssociatedCase().getUuid());
+		showSaveNotification(existingCaseDto, newCaseDto);
 			
 		if (testChangedCallback != null && Boolean.TRUE.equals(dto.getTestResultVerified())) {
-			testChangedCallback.accept(dto.getTestResult(), new Runnable() {
-				public void run() {
-					showSaveNotification(existingCaseDto, newCaseDto);
-				}
-			});
-		} else {
-			showSaveNotification(existingCaseDto, newCaseDto);
+			testChangedCallback.accept(dto.getTestResult());
 		}
 	}
 	

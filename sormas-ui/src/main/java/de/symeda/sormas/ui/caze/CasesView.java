@@ -139,6 +139,9 @@ public class CasesView extends AbstractView {
 		originalViewTitle = getViewTitleLabel().getValue();
 		
 		criteria = ViewModelProviders.of(CasesView.class).get(CaseCriteria.class);
+		if (criteria.getArchived() == null) {
+			criteria.archived(false);
+		}
 		
 		grid = new CaseGrid();
 		grid.setCriteria(criteria);
@@ -412,7 +415,7 @@ public class CasesView extends AbstractView {
 		{
 			Button applyButton = new Button(I18nProperties.getCaption(Captions.actionApplyDateFilter));
 
-			weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(applyButton, false, false, NewCaseDateType.class, I18nProperties.getString(Strings.promptNewCaseDateType), NewCaseDateType.MOST_RELEVANT);
+			weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(applyButton, false, false, I18nProperties.getString(Strings.infoCaseDate), NewCaseDateType.class, I18nProperties.getString(Strings.promptNewCaseDateType), NewCaseDateType.MOST_RELEVANT);
 			weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesEpiWeekFrom));
 			weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesEpiWeekTo));
 			weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesDateFrom));

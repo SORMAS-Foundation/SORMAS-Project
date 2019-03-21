@@ -29,19 +29,20 @@ import java.util.List;
 
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.app.BaseListFragment;
+import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.contact.read.ContactReadActivity;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 
-public class ContactListFragment extends BaseListFragment<ContactListAdapter> implements OnListItemClickListener {
+public class ContactListFragment extends PagedBaseListFragment<ContactListAdapter> implements OnListItemClickListener {
 
     private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerViewForList;
 
     public static ContactListFragment newInstance(FollowUpStatus listFilter) {
-        return BaseListFragment.newInstance(ContactListFragment.class, null, listFilter);
+        return newInstance(ContactListFragment.class, null, listFilter);
     }
 
     @Override

@@ -31,6 +31,8 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,7 +108,6 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
     // Instance methods
 
     private void initializePropertyField(Context context, AttributeSet attrs) {
-        caption = I18nProperties.getPrefixCaption(getPropertyIdPrefix(), getSubPropertyId());
         description = I18nProperties.getPrefixDescription(getPropertyIdPrefix(), getSubPropertyId());
 
         if (attrs != null) {
@@ -116,6 +117,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
                     0, 0);
 
             try {
+                caption = a.getString(R.styleable.ControlPropertyField_caption);
                 showCaption = a.getBoolean(R.styleable.ControlPropertyField_showCaption, true);
                 textAlignment = a.getInt(R.styleable.ControlPropertyField_textAlignment, View.TEXT_ALIGNMENT_VIEW_START);
                 gravity = a.getInt(R.styleable.ControlPropertyField_gravity, Gravity.START | Gravity.CENTER_VERTICAL);
@@ -134,6 +136,10 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
             } finally {
                 a.recycle();
             }
+        }
+
+        if (StringUtils.isEmpty(caption)) {
+            caption = I18nProperties.getPrefixCaption(getPropertyIdPrefix(), getSubPropertyId());
         }
     }
 

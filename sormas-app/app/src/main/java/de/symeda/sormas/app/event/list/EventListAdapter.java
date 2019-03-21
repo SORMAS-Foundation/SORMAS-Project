@@ -27,49 +27,47 @@ import android.widget.ImageView;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.core.adapter.databinding.BindingPagedListAdapter;
+import de.symeda.sormas.app.core.adapter.databinding.BindingViewHolder;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.RowEventListItemLayoutBinding;
 
-public class EventListAdapter extends DataBoundAdapter<RowEventListItemLayoutBinding> implements OnListItemClickListener.HasOnListItemClickListener {
+public class EventListAdapter extends BindingPagedListAdapter<Event, RowEventListItemLayoutBinding> {
 
-    private List<Event> data;
-    private OnListItemClickListener mOnListItemClickListener;
-
-    public EventListAdapter(int rowLayout) {
-        super(rowLayout);
-        this.data = new ArrayList<>();
+    public EventListAdapter() {
+        super(R.layout.row_event_list_item_layout);
     }
 
     @Override
-    protected void bindItem(DataBoundViewHolder<RowEventListItemLayoutBinding> holder,
-                            int position, List<Object> payloads) {
-        Event record = data.get(position);
-        holder.setData(record);
-        holder.setOnListItemClickListener(this.mOnListItemClickListener);
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
 
-        indicateEventType(holder.binding.imgEventTypeIcon, record);
+        if (getItemViewType(position) == TYPE_ITEM) {
+            BindingViewHolder<Event, RowEventListItemLayoutBinding> pagedHolder = (BindingViewHolder) holder;
+            Event item = getItem(position);
 
-        //Sync Icon
-        if (record.isModifiedOrChildModified()) {
-            holder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
-            holder.binding.imgSyncIcon.setImageResource(R.drawable.ic_sync_blue_24dp);
-        } else {
-            holder.binding.imgSyncIcon.setVisibility(View.GONE);
+            pagedHolder.setOnListItemClickListener(this.mOnListItemClickListener);
+
+            indicateEventType(pagedHolder.binding.imgEventTypeIcon, item);
+
+            if (item.isModifiedOrChildModified()) {
+                pagedHolder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
+                pagedHolder.binding.imgSyncIcon.setImageResource(R.drawable.ic_sync_blue_24dp);
+            } else {
+                pagedHolder.binding.imgSyncIcon.setVisibility(View.GONE);
+            }
         }
 
         // TODO #704
 //        updateUnreadIndicator(holder, record);
-    }
-
-    @Override
-    public int getItemCount() {
-        return data.size();
     }
 
 //    public void updateUnreadIndicator(DataBoundViewHolder<RowEventListItemLayoutBinding> holder, Event item) {
@@ -97,40 +95,4 @@ public class EventListAdapter extends DataBoundAdapter<RowEventListItemLayoutBin
         imgEventTypeIcon.setBackground(drw);
     }
 
-    public Event getEvent(int position) {
-        if (position < 0)
-            return null;
-
-        if (position >= this.data.size())
-            return null;
-
-        return (Event) this.data.get(position);
-    }
-
-    public void addAll(List<Event> data) {
-        if (data == null)
-            return;
-
-        this.data.addAll(data);
-    }
-
-    public void replaceAll(List<Event> data) {
-        if (data == null)
-            return;
-
-        this.data.clear();
-        this.data.addAll(data);
-    }
-
-    public void clear() {
-        if (this.data == null)
-            return;
-
-        this.data.clear();
-    }
-
-    @Override
-    public void setOnListItemClickListener(OnListItemClickListener onListItemClickListener) {
-        this.mOnListItemClickListener = onListItemClickListener;
-    }
 }

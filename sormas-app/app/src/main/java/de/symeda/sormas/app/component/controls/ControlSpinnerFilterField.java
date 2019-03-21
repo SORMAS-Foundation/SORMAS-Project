@@ -72,6 +72,12 @@ public class ControlSpinnerFilterField extends ControlSpinnerField {
     }
 
     @Override
+    protected void onFinishInflate() {
+        setLiveValidationDisabled(true);
+        super.onFinishInflate();
+    }
+
+    @Override
     protected void changeVisualState(VisualState state) {
         if (getUserEditRight() != null && !ConfigProvider.hasUserRight(getUserEditRight())) {
             state = VisualState.DISABLED;

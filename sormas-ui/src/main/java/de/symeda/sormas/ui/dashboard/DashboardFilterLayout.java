@@ -178,7 +178,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		CssStyles.style(applyButton, CssStyles.FORCE_CAPTION, ValoTheme.BUTTON_PRIMARY);
 
 		// Date & Epi Week filter
-		EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(applyButton, true, true);
+		EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(applyButton, true, true, I18nProperties.getString(Strings.infoCaseDate));
 		customDateFilterLayout.addComponent(weekAndDateFilter);
 		dashboardDataProvider.setDateFilterOption((DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue());
 		dashboardDataProvider.setFromDate(DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue()));
