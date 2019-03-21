@@ -34,7 +34,9 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
@@ -661,8 +663,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		
 		filter = AbstractAdoService.and(cb, filter, caseService.buildCriteriaFilter(caseCriteria, cb, caze));
 
-		if (filter != null)
+		if (filter != null) {
 			cq.where(filter);
+		}
 
 		cq.multiselect(caze.get(Case.DISEASE), facility.get(Facility.COMMUNITY));
 		cq.orderBy(cb.desc(caze.get(Case.REPORT_DATE)));
@@ -672,8 +675,9 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		Map<Disease, Community> resultMap = new HashMap<Disease, Community>();
 		for (Object[] e : results) {
-			if (!resultMap.containsKey(e[0]))
+			if (!resultMap.containsKey(e[0])) {
 				resultMap.put((Disease) e[0], (Community) e[1]);
+			}
 		}		
 		
 		return resultMap;
@@ -699,7 +703,14 @@ public class CaseFacadeEjb implements CaseFacade {
 		cq.orderBy(cb.desc(caze.get(Case.REPORT_DATE)));
 		cq.distinct(true);
 		
-		return em.createQuery(cq).getResultList().stream().findFirst().orElse("");
+		TypedQuery<String> query = em.createQuery(cq);
+		query.setFirstResult(0);
+		query.setMaxResults(1);
+		try {
+			return query.getSingleResult();
+		} catch (NoResultException e) {
+			return "";
+		}
 	}
 	
 	@Override

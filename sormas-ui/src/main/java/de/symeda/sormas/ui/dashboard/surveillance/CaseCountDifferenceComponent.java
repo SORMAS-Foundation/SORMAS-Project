@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.surveillance;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -128,9 +127,8 @@ public class CaseCountDifferenceComponent extends VerticalLayout {
 		
 		this.subtitleLabel.setValue(String.format(I18nProperties.getString(Strings.comparedTo), previousPeriodExpression));
 		
-		int maxCasesDifference = data.stream().map(d -> d.getCasesDifference()).max(Long::compare).orElse(10L).intValue();
-		if (maxCasesDifference < 5)
-			maxCasesDifference = 5;
+		int maxCasesDifference = data.stream().map(d -> Math.abs(d.getCasesDifference())).max(Long::compare).orElse(5L).intValue();
+		maxCasesDifference = Math.max(5, maxCasesDifference);
 		
 		StringBuilder hcjs = new StringBuilder();
 		
@@ -138,12 +136,11 @@ public class CaseCountDifferenceComponent extends VerticalLayout {
 			"var options = {" + 
 				"plotOptions: {" + 
 					"bar: {" + 
-						"colorByPoint: true" + 
+						"colorByPoint: true," +
+						"groupPadding: 0.05" + 
 					"}" + 
 				"}," + 
 				 
-				"/*colors: ['#9BD1BE', '#ff0000', '#E52731'],*/" + 
-				
 				"chart: {" + 
 					"type: 'bar'," + 
 					"styledMode: true," + 
