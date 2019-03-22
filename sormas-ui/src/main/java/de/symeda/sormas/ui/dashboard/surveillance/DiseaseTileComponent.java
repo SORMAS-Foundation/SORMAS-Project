@@ -22,6 +22,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -32,13 +33,13 @@ public class DiseaseTileComponent extends VerticalLayout {
 	private static final long serialVersionUID = 6582975657305031105L;
 
 	public DiseaseTileComponent(DiseaseBurdenDto diseaseBurden) {		
-		addTopLayout(diseaseBurden.getDisease().toShortString(), diseaseBurden.getCaseCount(), diseaseBurden.getOutbreakDistrictCount() > 0);	
+		addTopLayout(diseaseBurden.getDisease(), diseaseBurden.getCaseCount(), diseaseBurden.getOutbreakDistrictCount() > 0);	
 		addStatsLayout(diseaseBurden.getCaseDeathCount(), diseaseBurden.getEventCount(), diseaseBurden.getLastReportedCommunityName());
 	}
 	
-	void addTopLayout (String diseaseName, Long casesCount, boolean isOutbreak) {
+	void addTopLayout (Disease disease, Long casesCount, boolean isOutbreak) {
 		HorizontalLayout layout = new HorizontalLayout();
-		CssStyles.style(layout, CssStyles.getDiseaseColor(diseaseName));
+		CssStyles.style(layout, CssStyles.getDiseaseColor(disease));
 		layout.setHeight(75, Unit.PIXELS);
 		layout.setWidth(100, Unit.PERCENTAGE);
 		
@@ -49,10 +50,10 @@ public class DiseaseTileComponent extends VerticalLayout {
 		HorizontalLayout nameLayout = new HorizontalLayout();
 		nameLayout.setWidth(100, Unit.PERCENTAGE);
 		nameLayout.setHeight(100, Unit.PERCENTAGE);
-		Label nameLabel = new Label(diseaseName);
+		Label nameLabel = new Label(disease.toShortString());
 		CssStyles.style(nameLabel, 
 			CssStyles.LABEL_WHITE,
-			diseaseName.length() > 12 ? CssStyles.LABEL_LARGE : CssStyles.LABEL_XLARGE,
+			nameLabel.getValue().length() > 12 ? CssStyles.LABEL_LARGE : CssStyles.LABEL_XLARGE,
 			CssStyles.LABEL_BOLD,
 			CssStyles.ALIGN_CENTER, 
 			CssStyles.LABEL_UPPERCASE
@@ -82,7 +83,7 @@ public class DiseaseTileComponent extends VerticalLayout {
 		layout.setExpandRatio(nameAndOutbreakLayout, 1);
 		
 		HorizontalLayout countLayout = new HorizontalLayout();
-		CssStyles.style(countLayout, CssStyles.getDiseaseColor(diseaseName), CssStyles.BACKGROUND_DARKER);
+		CssStyles.style(countLayout, CssStyles.getDiseaseColor(disease), CssStyles.BACKGROUND_DARKER);
 		countLayout.setHeight(100, Unit.PERCENTAGE);
 		countLayout.setWidth(100, Unit.PERCENTAGE);
 		

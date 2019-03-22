@@ -153,7 +153,7 @@ public class CaseCountDifferenceComponent extends VerticalLayout {
 							data.stream().map((d) -> 
 							"{" +
 								"y: " + d.getCasesDifference() + "," +
-								"className: '" + CssStyles.getDiseaseColor(d.getDisease().toShortString()) + " " + CssStyles.BACKGROUND_DARKER + "'," +
+								"className: '" + CssStyles.getDiseaseColor(d.getDisease()) + " " + CssStyles.BACKGROUND_DARKER + "'," +
 							"},")
 							.reduce((fullText, nextText) -> fullText + nextText).orElse("") + 
 						"]," +

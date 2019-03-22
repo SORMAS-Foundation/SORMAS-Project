@@ -23,6 +23,8 @@ import java.util.Collections;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 
+import de.symeda.sormas.api.Disease;
+
 public final class CssStyles {
 
 	// Headlines
@@ -278,7 +280,35 @@ public final class CssStyles {
 		activeButton.addStyleName(CssStyles.LINK_ACTIVE);
 	}
 	
-	public static String getDiseaseColor(String diseaseName) {
-		return "background-disease background-disease-" + diseaseName.toLowerCase().replace(' ', '-');
+	/**
+	 * Returns CSS style name defined in VAADIN/themes/sormas/views/disease.scss 
+	 */
+	public static String getDiseaseColor(Disease disease) {
+		switch (disease) {
+		case CHOLERA:
+			return "background-disease-cholera";
+		case CSM:
+			return "background-disease-csm";
+		case DENGUE:
+			return "background-disease-dengue";
+		case EVD:
+			return "background-disease-evd";
+		case LASSA:
+			return "background-disease-lassa";
+		case MEASLES:
+			return "background-disease-measles";
+		case MONKEYPOX:
+			return "background-disease-monkeypox";
+		case NEW_INFLUENCA:
+			return "background-disease-new-flu";
+		case OTHER:
+			return "background-disease-other";
+		case PLAGUE:
+			return "background-disease-plague";
+		case YELLOW_FEVER:
+			return "background-disease-yellow-fever";
+		default:
+			throw new IllegalArgumentException(disease.toString());
+		}
 	}
 }
