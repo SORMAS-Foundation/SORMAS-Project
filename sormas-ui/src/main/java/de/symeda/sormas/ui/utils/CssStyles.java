@@ -23,6 +23,8 @@ import java.util.Collections;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 
+import de.symeda.sormas.api.Disease;
+
 public final class CssStyles {
 
 	// Headlines
@@ -86,6 +88,7 @@ public final class CssStyles {
 	public static final String LABEL_DISCARDED = "discarded";
 	public static final String LABEL_DONE = "done";
 	public static final String LABEL_NOT = "not";
+	public static final String LABEL_WHITE = "white";
 	
 	// Font sizes
 	public static final String LABEL_SMALL = "small";
@@ -115,6 +118,9 @@ public final class CssStyles {
 	public static final String BACKGROUND_PROBABLE_CRITERIA = "background-probable-criteria";
 	public static final String BACKGROUND_CONFIRMED_CRITERIA = "background-confirmed-criteria";
 	public static final String NO_BORDER = "no-border";
+	public static final String BACKGROUND_HIGHLIGHT = "background-highlight";
+	public static final String BACKGROUND_CRITICAL = "background-critical";
+	public static final String BACKGROUND_DARKER = "background-darker";
 	
 	// Button styles
 	public static final String VAADIN_BUTTON = "v-button";
@@ -272,5 +278,37 @@ public final class CssStyles {
 
 		activeButton.setEnabled(false);
 		activeButton.addStyleName(CssStyles.LINK_ACTIVE);
+	}
+	
+	/**
+	 * Returns CSS style name defined in VAADIN/themes/sormas/views/disease.scss 
+	 */
+	public static String getDiseaseColor(Disease disease) {
+		switch (disease) {
+		case CHOLERA:
+			return "background-disease-cholera";
+		case CSM:
+			return "background-disease-csm";
+		case DENGUE:
+			return "background-disease-dengue";
+		case EVD:
+			return "background-disease-evd";
+		case LASSA:
+			return "background-disease-lassa";
+		case MEASLES:
+			return "background-disease-measles";
+		case MONKEYPOX:
+			return "background-disease-monkeypox";
+		case NEW_INFLUENCA:
+			return "background-disease-new-flu";
+		case OTHER:
+			return "background-disease-other";
+		case PLAGUE:
+			return "background-disease-plague";
+		case YELLOW_FEVER:
+			return "background-disease-yellow-fever";
+		default:
+			throw new IllegalArgumentException(disease.toString());
+		}
 	}
 }

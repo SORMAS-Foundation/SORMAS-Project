@@ -18,6 +18,8 @@
 package de.symeda.sormas.ui.dashboard.surveillance;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -26,19 +28,15 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Layout;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
-import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.outbreak.DashboardOutbreakDto;
-import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
-//import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.statistics.CountElementStyle;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsCountElement;
@@ -63,6 +61,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 	// "Outbreak Districts" elements
 	private Label outbreakDistrictCountLabel;
+	private Label lastReportedCommunityLabel;
 	
 	// "Case Fatality" elements
 	private Label caseFatalityRateValue;
@@ -119,9 +118,6 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		Label caseComponentTitle = new Label(I18nProperties.getCaption(Captions.dashboardNewCases));
 		CssStyles.style(caseComponentTitle, CssStyles.H2, CssStyles.HSPACE_LEFT_4);
 		headerLayout.addComponent(caseComponentTitle);
-//		caseDiseaseLabel = new Label();
-//		CssStyles.style(caseDiseaseLabel, CssStyles.H2, CssStyles.HSPACE_LEFT_4);
-//		headerLayout.addComponent(caseDiseaseLabel);
 
 		caseComponent.addComponent(headerLayout);
 
@@ -147,6 +143,8 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		
 		layout.addComponent(createCaseFatalityComponent());
 		
+		layout.addComponent(this.createLastReportedCommunityComponent());
+		
 		layout.addComponent(createOutbreakDistrictComponent());
 		
 		layout.addStyleName(CssStyles.VSPACE_TOP_4);
@@ -154,77 +152,85 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		return layout;
 	}
 
-	private VerticalLayout createOutbreakDistrictComponent() {
-		VerticalLayout outbreakDistrictComponent = new VerticalLayout();
-		outbreakDistrictComponent.setMargin(false);
-
-		// Header
-		HorizontalLayout headerLayout = new HorizontalLayout();
-		// count
-		outbreakDistrictCountLabel = new Label();
-		CssStyles.style(outbreakDistrictCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_XXXLARGE,
-				CssStyles.LABEL_BOLD, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
-		headerLayout.addComponent(outbreakDistrictCountLabel);
-		// title
-		Label titleLabel = new Label(I18nProperties.getCaption(Captions.dashboardOutbreakDistricts));
-		CssStyles.style(titleLabel, CssStyles.H2, CssStyles.HSPACE_LEFT_4);
-		headerLayout.addComponent(titleLabel);
-
-		outbreakDistrictComponent.addComponent(headerLayout);	
-		
-		return outbreakDistrictComponent;
-	}
-
-	private HorizontalLayout createCaseFatalityComponent() {
-		HorizontalLayout layout = new HorizontalLayout();
+	private Layout createCaseFatalityComponent() {
+		HorizontalLayout component = new HorizontalLayout();
+		component.setWidth(100, Unit.PERCENTAGE);
 		
 		// rate
-		VerticalLayout cfrRateLayout = new VerticalLayout();
-		// value
-		HorizontalLayout cfrShortLabelAndValueLayout = new HorizontalLayout();
-		Label cfrShortLabel = new Label(I18nProperties.getCaption(Captions.dashboardCaseFatalityRateShort));
-		CssStyles.style(cfrShortLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE, CssStyles.HSPACE_RIGHT_4);
-		cfrShortLabelAndValueLayout.addComponent(cfrShortLabel);
-		caseFatalityRateValue = new Label("00.0%");
-		CssStyles.style(caseFatalityRateValue, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE);
-		cfrShortLabelAndValueLayout.addComponent(caseFatalityRateValue);
-		cfrRateLayout.addComponent(cfrShortLabelAndValueLayout);
-		// caption
-		Label caseFatalityRateCaption = new Label(I18nProperties.getCaption(Captions.dashboardCaseFatalityRate));
-		cfrRateLayout.addComponent(caseFatalityRateCaption);
-		CssStyles.style(caseFatalityRateCaption, CssStyles.LABEL_CRITICAL);
-
-		layout.addComponent(cfrRateLayout);
-		// ~rate
-
-		// count
-		VerticalLayout cfrCountLayout = new VerticalLayout();
-		// value
-		HorizontalLayout cfrCountValuesLayout = new HorizontalLayout();
-		// current
-		caseFatalityCountValue = new Label("0");
-		CssStyles.style(caseFatalityCountValue, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE);
-		cfrCountValuesLayout.addComponent(caseFatalityCountValue);
-		// growth
-		caseFatalityCountGrowth = new Label("", ContentMode.HTML);
-		cfrCountValuesLayout.addComponent(caseFatalityCountGrowth);
-
-		cfrCountLayout.addComponent(cfrCountValuesLayout);
-		cfrCountLayout.setComponentAlignment(cfrCountValuesLayout, Alignment.MIDDLE_RIGHT);
-		cfrCountValuesLayout.setWidthUndefined();
-		// caption
-		Label caseFatalityCountCaption = new Label(I18nProperties.getCaption(Captions.dashboardFatalities));
-		cfrCountLayout.addComponent(caseFatalityCountCaption);
-		cfrCountLayout.setComponentAlignment(caseFatalityCountCaption, Alignment.MIDDLE_RIGHT);
-		caseFatalityCountCaption.setWidthUndefined();
-		CssStyles.style(caseFatalityCountCaption, CssStyles.LABEL_CRITICAL);
-
-		layout.addComponent(cfrCountLayout);
-		// ~count
-
-		layout.setWidth(100, Unit.PERCENTAGE);
+		{
+			HorizontalLayout rateLayout = new HorizontalLayout();
+			
+			// value
+			caseFatalityRateValue = new Label("00.0%");
+			CssStyles.style(caseFatalityRateValue, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE, CssStyles.HSPACE_RIGHT_3, CssStyles.VSPACE_TOP_5);
+			rateLayout.addComponent(caseFatalityRateValue);
+			
+			// title
+			Label titleLabel = new Label(I18nProperties.getCaption(Captions.dashboardCaseFatalityRate));
+			CssStyles.style(titleLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4);
+			rateLayout.addComponent(titleLabel);
+			
+			component.addComponent(rateLayout);
+			component.setExpandRatio(rateLayout, 1);
+		}
 		
-		return layout;
+		// count		
+		{
+			HorizontalLayout countLayout = new HorizontalLayout();
+			
+			// title
+			Label titleLabel = new Label(I18nProperties.getCaption(Captions.dashboardFatalities));
+			CssStyles.style(titleLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4, CssStyles.HSPACE_RIGHT_3);
+			countLayout.addComponent(titleLabel);
+			
+			// value
+			caseFatalityCountValue = new Label("0");
+			CssStyles.style(caseFatalityCountValue, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE, CssStyles.HSPACE_RIGHT_5, CssStyles.VSPACE_TOP_5);
+			countLayout.addComponent(caseFatalityCountValue);
+		
+			// growth
+			caseFatalityCountGrowth = new Label("", ContentMode.HTML);
+			CssStyles.style(caseFatalityCountGrowth, CssStyles.VSPACE_TOP_5);
+			countLayout.addComponent(caseFatalityCountGrowth);
+			
+			component.addComponent(countLayout);
+			component.setExpandRatio(countLayout, 0);
+			component.setComponentAlignment(countLayout, Alignment.MIDDLE_RIGHT);
+		}	
+		
+		return component;
+	}
+	
+	private Layout createLastReportedCommunityComponent() {
+		HorizontalLayout component = new HorizontalLayout();
+		
+		// value
+		lastReportedCommunityLabel = new Label("NONE");
+		CssStyles.style(lastReportedCommunityLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE, CssStyles.HSPACE_RIGHT_3, CssStyles.VSPACE_TOP_5);
+		component.addComponent(lastReportedCommunityLabel);
+		
+		// title
+		Label titleLabel = new Label(I18nProperties.getCaption("Last Reported " + I18nProperties.getCaption(Captions.community)));
+		CssStyles.style(titleLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4);
+		component.addComponent(titleLabel);
+		
+		return component;
+	}
+
+	private Layout createOutbreakDistrictComponent() {
+		HorizontalLayout component = new HorizontalLayout();
+		
+		// count
+		outbreakDistrictCountLabel = new Label();
+		CssStyles.style(outbreakDistrictCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE, CssStyles.HSPACE_RIGHT_3, CssStyles.VSPACE_TOP_5);
+		component.addComponent(outbreakDistrictCountLabel);
+		
+		// title
+		Label titleLabel = new Label(I18nProperties.getCaption(Captions.dashboardOutbreakDistricts));
+		CssStyles.style(titleLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4);
+		component.addComponent(titleLabel);
+		
+		return component;
 	}
 
 	private DashboardStatisticsSubComponent createEventComponent() {
@@ -293,8 +299,9 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		Disease disease = this.dashboardDataProvider.getDisease();
 		
 		updateCaseComponent(disease);
-		updateOutbreakDistrictComponent(disease);
 		updateCaseFatalityComponent(disease);
+		updateLastReportedCommunityComponent(disease);
+		updateOutbreakDistrictComponent(disease);
 		updateEventComponent(disease);
 		updateTestResultComponent(disease);
 	}
@@ -320,17 +327,6 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		int notYetClassifiedCasesCount = (int) cases.stream()
 				.filter(c -> c.getCaseClassification() == CaseClassification.NOT_CLASSIFIED).count();
 		caseClassificationNotYetClassified.updateCountLabel(notYetClassifiedCasesCount);
-	}
-
-	private void updateOutbreakDistrictComponent(Disease disease) {
-		List<DashboardOutbreakDto> outbreaks = dashboardDataProvider.getOutbreaks();
-		
-		Long districtsCount = outbreaks.stream()
-									   .map(o -> o.getDistrict())
-									   .distinct()
-									   .count();
-
-		outbreakDistrictCountLabel.setValue(districtsCount.toString());
 	}
 
 	private void updateCaseFatalityComponent(Disease disease) {
@@ -371,38 +367,37 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		// rate
 		caseFatalityRateValue.setValue(fatalityRate + "%");
 	}
+
+	private void updateLastReportedCommunityComponent(Disease disease) {
+		String community = dashboardDataProvider.getLastReportedCommunity();
+		
+		lastReportedCommunityLabel.setValue(community.length() == 0 ? "NONE" : community);
+	}
+
+	private void updateOutbreakDistrictComponent(Disease disease) {
+		Long districtCount = dashboardDataProvider.getOutbreakDistrictCount();
+		
+		outbreakDistrictCountLabel.setValue(districtCount.toString());
+	}
 	
 	private void updateEventComponent(Disease disease) {
-		List<DashboardEventDto> events = dashboardDataProvider.getEvents();
+		Map<EventStatus, Long> events = dashboardDataProvider.getEventCountByStatus();
 
-		eventCountLabel.setValue(Integer.toString(events.size()).toString());
+		eventCountLabel.setValue(events.values().stream().collect(Collectors.summingLong(Long::longValue)).toString());
 
-		int confirmedEventsCount = (int) events.stream().filter(e -> e.getEventStatus() == EventStatus.CONFIRMED)
-				.count();
-		eventStatusConfirmed.updateCountLabel(confirmedEventsCount);
-		int possibleEventsCount = (int) events.stream().filter(e -> e.getEventStatus() == EventStatus.POSSIBLE).count();
-		eventStatusPossible.updateCountLabel(possibleEventsCount);
-		int notAnEventEventsCount = (int) events.stream().filter(e -> e.getEventStatus() == EventStatus.NO_EVENT)
-				.count();
-		eventStatusNotAnEvent.updateCountLabel(notAnEventEventsCount);
+		eventStatusConfirmed.updateCountLabel(events.getOrDefault(EventStatus.CONFIRMED, 0L).toString());
+		eventStatusPossible.updateCountLabel(events.getOrDefault(EventStatus.POSSIBLE, 0L).toString());
+		eventStatusNotAnEvent.updateCountLabel(events.getOrDefault(EventStatus.NO_EVENT, 0L).toString());
 	}
 
 	private void updateTestResultComponent(Disease disease) {
-		List<DashboardTestResultDto> testResults = dashboardDataProvider.getTestResults();
+		Map<PathogenTestResultType, Long> testResults = dashboardDataProvider.getTestResultCountByResultType();
 
-		testResultCountLabel.setValue(Integer.toString(testResults.size()).toString());
+		testResultCountLabel.setValue(testResults.values().stream().collect(Collectors.summingLong(Long::longValue)).toString());
 
-		int positiveTestResultsCount = (int) testResults.stream()
-				.filter(r -> r.getTestResult() == PathogenTestResultType.POSITIVE).count();
-		testResultPositive.updateCountLabel(positiveTestResultsCount);
-		int negativeTestResultsCount = (int) testResults.stream()
-				.filter(r -> r.getTestResult() == PathogenTestResultType.NEGATIVE).count();
-		testResultNegative.updateCountLabel(negativeTestResultsCount);
-		int pendingTestResultsCount = (int) testResults.stream()
-				.filter(r -> r.getTestResult() == PathogenTestResultType.PENDING).count();
-		testResultPending.updateCountLabel(pendingTestResultsCount);
-		int indeterminateTestResultsCount = (int) testResults.stream()
-				.filter(r -> r.getTestResult() == PathogenTestResultType.INDETERMINATE).count();
-		testResultIndeterminate.updateCountLabel(indeterminateTestResultsCount);
+		testResultPositive.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.POSITIVE, 0L).toString());
+		testResultNegative.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.NEGATIVE, 0L).toString());
+		testResultPending.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.PENDING, 0L).toString());
+		testResultIndeterminate.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.INDETERMINATE, 0L).toString());
 	}
 }

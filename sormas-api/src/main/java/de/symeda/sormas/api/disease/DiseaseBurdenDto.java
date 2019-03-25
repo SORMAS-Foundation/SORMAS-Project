@@ -20,6 +20,7 @@ package de.symeda.sormas.api.disease;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.region.CommunityDto;
 
 public class DiseaseBurdenDto  implements Serializable {
 	
@@ -35,6 +36,7 @@ public class DiseaseBurdenDto  implements Serializable {
 	public static final String OUTBREAK_DISTRICT_COUNT = "outbreakDistrictCount";
 	public static final String CASE_DEATH_COUNT = "caseDeathCount";
 	public static final String CASE_FATALITY_RATE = "caseFatalityRate";
+	public static final String LAST_REPORTED_COMMUNITY_NAME = "lastReportedCommunityName";
 	
 	private Disease disease;
 	private Long caseCount;
@@ -42,14 +44,16 @@ public class DiseaseBurdenDto  implements Serializable {
 	private Long eventCount;
 	private Long outbreakDistrictCount;
 	private Long caseDeathCount;
+	private String lastReportedCommunityName;
 	
-	public DiseaseBurdenDto(Disease disease, Long caseCount, Long previousCaseCount, Long eventCount, Long outbreakDistrictCount, Long caseDeathCount) {
+	public DiseaseBurdenDto(Disease disease, Long caseCount, Long previousCaseCount, Long eventCount, Long outbreakDistrictCount, Long caseDeathCount, String lastReportedCommunityName) {
 		this.disease = disease;
 		this.caseCount = caseCount;
 		this.previousCaseCount = previousCaseCount;
 		this.eventCount = eventCount;
 		this.outbreakDistrictCount = outbreakDistrictCount;
 		this.caseDeathCount = caseDeathCount;
+		this.lastReportedCommunityName = lastReportedCommunityName;
 	}
 	
 	public Disease getDisease() {
@@ -102,6 +106,13 @@ public class DiseaseBurdenDto  implements Serializable {
 		float cfrPercentage = 100f * ((float)getCaseDeathCount() / (float)(getCaseCount() == 0 ? 1 : getCaseCount()));
 		cfrPercentage = Math.round(cfrPercentage * 100) / 100f;
 		return cfrPercentage;
+	}
+	
+	public String getLastReportedCommunityName() {
+		return lastReportedCommunityName;
+	}
+	public void setLastReportedCommunityName(String name) {
+		this.lastReportedCommunityName = name;
 	}
 	
 	public Boolean hasCount () {

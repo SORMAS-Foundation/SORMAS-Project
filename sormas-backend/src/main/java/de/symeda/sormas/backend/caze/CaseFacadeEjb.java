@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,7 +34,9 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
@@ -624,7 +627,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public Map<Disease, Long> getCaseCountPerDisease(CaseCriteria caseCriteria, String userUuid) {
+	public Map<Disease, Long> getCaseCountByDisease(CaseCriteria caseCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -632,16 +635,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> caze = cq.from(Case.class);
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
-		Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
-		if (filter != null) {
-			filter = cb.and(filter, criteriaFilter);
-		} else {
-			filter = criteriaFilter;
-		}
+		
+		filter = AbstractAdoService.and(cb, filter, caseService.buildCriteriaFilter(caseCriteria, cb, caze));
 
-		if (filter != null) {
+		if (filter != null)
 			cq.where(filter);
-		}
 
 		cq.groupBy(caze.get(Case.DISEASE));
 		cq.multiselect(caze.get(Case.DISEASE), cb.count(caze));
@@ -653,6 +651,68 @@ public class CaseFacadeEjb implements CaseFacade {
 		return resultMap;
 	}
 
+	public Map<Disease, Community> getLastReportedCommunityByDisease(CaseCriteria caseCriteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Case> caze = cq.from(Case.class);
+		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
+
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
+		
+		filter = AbstractAdoService.and(cb, filter, caseService.buildCriteriaFilter(caseCriteria, cb, caze));
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.multiselect(caze.get(Case.DISEASE), facility.get(Facility.COMMUNITY));
+		cq.orderBy(cb.desc(caze.get(Case.REPORT_DATE)));
+		cq.distinct(true);
+		
+		List<Object[]> results = em.createQuery(cq).getResultList();
+
+		Map<Disease, Community> resultMap = new HashMap<Disease, Community>();
+		for (Object[] e : results) {
+			if (!resultMap.containsKey(e[0])) {
+				resultMap.put((Disease) e[0], (Community) e[1]);
+			}
+		}		
+		
+		return resultMap;
+	}
+	
+	public String getLastReportedCommunityName (CaseCriteria caseCriteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Case> caze = cq.from(Case.class);
+		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
+		Join<Facility, Community> community = facility.join(Facility.COMMUNITY, JoinType.LEFT);
+
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
+		
+		filter = AbstractAdoService.and(cb, filter, caseService.buildCriteriaFilter(caseCriteria, cb, caze));
+		
+		if (filter != null)
+			cq.where(filter);
+		
+		cq.select(community.get(Community.NAME));
+		cq.orderBy(cb.desc(caze.get(Case.REPORT_DATE)));
+		cq.distinct(true);
+		
+		TypedQuery<String> query = em.createQuery(cq);
+		query.setFirstResult(0);
+		query.setMaxResults(1);
+		try {
+			return query.getSingleResult();
+		} catch (NoResultException e) {
+			return "";
+		}
+	}
+	
 	@Override
 	public CaseDataDto getCaseDataByUuid(String uuid) {
 		return toDto(caseService.getByUuid(uuid));

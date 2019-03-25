@@ -21,45 +21,27 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.shared.ui.grid.HeightMode;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 //import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
-import de.symeda.sormas.ui.dashboard.DiseaseBurdenGrid;
-import de.symeda.sormas.ui.utils.CssStyles;
 
-public class DiseaseBurdenComponent extends VerticalLayout {
+public class DiseaseTileViewLayout extends CssLayout {
 
 	private static final long serialVersionUID = 6582975657305031105L;
 
 	private DashboardDataProvider dashboardDataProvider;
-	private DiseaseBurdenGrid grid;
 
-	public DiseaseBurdenComponent(DashboardDataProvider dashboardDataProvider) {
+	public DiseaseTileViewLayout(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
-
-		Label title = new Label(I18nProperties.getCaption(Captions.dashboardDiseaseBurdenInfo));
-		CssStyles.style(title, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
-
-		grid = new DiseaseBurdenGrid();
-		grid.setHeightMode(HeightMode.ROW);
-		grid.setWidth(100, Unit.PERCENTAGE);
-
-		// layout
-		setWidth(100, Unit.PERCENTAGE);
-
-		addComponent(title);
-		addComponent(grid);
-		setMargin(new MarginInfo(true, true, false, true));
-		setSpacing(false);
-		setExpandRatio(grid, 1);
 	}
+	
+	@Override
+    protected String getCss(Component c) {
+		return "margin-left: 18px; margin-bottom: 18px;";
+    }
 
 	public void refresh(int limitDiseasesCount) {
 		List<DiseaseBurdenDto> diseasesBurden = dashboardDataProvider.getDiseasesBurden();
@@ -71,8 +53,13 @@ public class DiseaseBurdenComponent extends VerticalLayout {
 			diseasesBurdenStream = diseasesBurdenStream.limit(limitDiseasesCount);
 		}
 		diseasesBurden = diseasesBurdenStream.collect(Collectors.toList());
-
-		grid.reload(diseasesBurden);
-		grid.setHeightByRows(diseasesBurden.size());
+		
+		this.removeAllComponents();
+		
+		for (DiseaseBurdenDto diseaseBurden : diseasesBurden) {
+			DiseaseTileComponent tile = new DiseaseTileComponent(diseaseBurden);
+			tile.setWidth(230, Unit.PIXELS);
+			addComponent(tile);
+		}
 	}
 }

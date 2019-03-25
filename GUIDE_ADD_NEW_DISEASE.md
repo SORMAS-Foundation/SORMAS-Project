@@ -21,9 +21,10 @@ The best way to do this is to follow these steps:
    To avoid this the following has to be done:
    * Open the InfoProvider.getMinimumRequiredVersion method.
    * Set the version to the current development version (without the -SNAPSHOT). You can find the current version in the maven pom.xml configuration file.
-4. SORMAS supports a simplified data entry mode that can be used during outbreaks.
-Its purpose is to reduce the number of fields that have to be entered by users to a minimum to reduce workload.
-If you want the disease to support this mode you need to include the disease in the Disease.isSupportingOutbreakMode method.
+4. Add a color for the disease to the disease.scss styling file and the CssStyles.getDisease color method in sormas-ui
+5. SORMAS supports a simplified data entry mode that can be used during outbreaks.
+   Its purpose is to reduce the number of fields that have to be entered by users to a minimum to reduce workload.
+   If you want the disease to support this mode you need to include the disease in the Disease.isSupportingOutbreakMode method.
 
 ## II. Configuring the fields for the new disease
 
