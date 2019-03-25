@@ -30,6 +30,7 @@ import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.contact.DashboardContactDto;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.DashboardEventDto;
+import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -121,15 +122,20 @@ public class DashboardDataProvider {
 		CaseCriteria caseCriteria = new CaseCriteria();
 		caseCriteria.region(region).district(district).disease(disease).newCaseDateBetween(fromDate, toDate, NewCaseDateType.MOST_RELEVANT);
 		setCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria, userUuid));
+		
 		caseCriteria.newCaseDateBetween(previousFromDate, previousToDate, NewCaseDateType.MOST_RELEVANT);
 		setPreviousCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria, userUuid));
 		
 		// Events
-		setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(region, district, disease, fromDate, toDate,
-				userUuid));
-		setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(region, district, disease,
-				previousFromDate, previousToDate, userUuid));		
-		setEventCountByStatus(FacadeProvider.getEventFacade().getEventCountByStatus(region, district, disease, fromDate, toDate, userUuid));
+		EventCriteria eventCriteria = new EventCriteria();
+		eventCriteria.region(region).district(district).disease(disease).newEventDateBetween(fromDate, toDate);	
+		setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(eventCriteria, userUuid));
+		
+		eventCriteria.newEventDateBetween(previousFromDate, previousToDate);
+		setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(eventCriteria, userUuid));		
+		
+		eventCriteria.newEventDateBetween(fromDate, toDate);
+		setEventCountByStatus(FacadeProvider.getEventFacade().getEventCountByStatus(eventCriteria, userUuid));
 		
 		// Test results
 		setTestResults(FacadeProvider.getPathogenTestFacade().getNewTestResultsForDashboard(region, district, disease,

@@ -35,11 +35,11 @@ public interface EventFacade {
 	
 	List<EventDto> getAllEventsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid);
 	
-	List<DashboardEventDto> getNewEventsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
+	List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria, String userUuid);
 	
-	Map<Disease, Long> getEventCountByDisease (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Date from, Date to, String userUuid);
+	Map<Disease, Long> getEventCountByDisease (EventCriteria eventCriteria, String userUuid);
 	
-	Map<EventStatus, Long> getEventCountByStatus (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
+	Map<EventStatus, Long> getEventCountByStatus (EventCriteria eventCriteria, String userUuid);
 	
 	EventDto getEventByUuid(String uuid);
 	

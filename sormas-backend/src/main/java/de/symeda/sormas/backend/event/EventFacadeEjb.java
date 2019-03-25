@@ -139,28 +139,22 @@ public class EventFacadeEjb implements EventFacade {
 	}
 	
 	@Override
-	public List<DashboardEventDto> getNewEventsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+	public List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		Region region = regionService.getByReferenceDto(regionRef);
-		District district = districtService.getByReferenceDto(districtRef);
 		
-		return eventService.getNewEventsForDashboard(region, district, disease, from, to, user);
+		return eventService.getNewEventsForDashboard(eventCriteria, user);
 	}
 	
-	public Map<Disease, Long> getEventCountByDisease (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Date from, Date to, String userUuid) {
+	public Map<Disease, Long> getEventCountByDisease (EventCriteria eventCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		Region region = regionService.getByReferenceDto(regionRef);
-		District district = districtService.getByReferenceDto(districtRef);
-
-		return eventService.getEventCountByDisease(region, district, from, to, user);
+		
+		return eventService.getEventCountByDisease(eventCriteria, user);
 	}
 	
-	public Map<EventStatus, Long> getEventCountByStatus (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+	public Map<EventStatus, Long> getEventCountByStatus (EventCriteria eventCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		Region region = regionService.getByReferenceDto(regionRef);
-		District district = districtService.getByReferenceDto(districtRef);
 
-		return eventService.getEventCountByStatus(region, district, disease, from, to, user);
+		return eventService.getEventCountByStatus(eventCriteria, user);
 	}
 	
 	@Override

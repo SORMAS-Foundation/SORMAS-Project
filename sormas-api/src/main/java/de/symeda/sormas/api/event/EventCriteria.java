@@ -18,9 +18,14 @@
 package de.symeda.sormas.api.event;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 
 public class EventCriteria extends BaseCriteria implements Serializable {
@@ -32,6 +37,10 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private Disease disease;
 	private UserRole reportingUserRole;
 	private Boolean archived;
+	private RegionReferenceDto region;
+	private DistrictReferenceDto district;
+	private Date newEventDateFrom;
+	private Date newEventDateTo;
 	
 	public EventStatus getEventStatus() {
 		return eventStatus;
@@ -68,5 +77,32 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		this.archived = archived;
 		return this;
 	}
-	
+	public EventCriteria region(RegionReferenceDto region) {
+		this.region = region;
+		return this;
+	}
+	public RegionReferenceDto getRegion() {
+		return this.region;
+	}
+	public EventCriteria district(DistrictReferenceDto district) {
+		this.district = district;
+		return this;
+	}
+	public DistrictReferenceDto getDistrict() {
+		return this.district;
+	}
+	/**
+	 * @param newEventDateTo will automatically be set to the end of the day
+	 */
+	public EventCriteria newEventDateBetween(Date newEventDateFrom, Date newEventDateTo) {
+		this.newEventDateFrom = newEventDateFrom;
+		this.newEventDateTo = newEventDateTo;
+		return this;
+	}
+	public Date getNewEventDateFrom() {
+		return newEventDateFrom;
+	}
+	public Date getNewEventDateTo() {
+		return newEventDateTo;
+	}
 }
