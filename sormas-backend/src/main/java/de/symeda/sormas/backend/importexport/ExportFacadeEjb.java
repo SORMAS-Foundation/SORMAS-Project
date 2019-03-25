@@ -34,8 +34,10 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.StoredProcedureQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -243,7 +245,12 @@ public class ExportFacadeEjb implements ExportFacade {
 		Path path = new File(FacadeProvider.getConfigFacade().getTempFilesPath()).toPath();
 		String name = ImportExportUtils.TEMP_FILE_PREFIX + "_export_" + fileName + "_" + date + "_" + randomNumber + ".csv";
 		Path filePath = path.resolve(name);
-		return em.createNativeQuery("SELECT export_database('" + tableName + "', '" + filePath + "');");
+		StoredProcedureQuery query = em.createStoredProcedureQuery("export_database");
+		query.registerStoredProcedureParameter("table_name", String.class, ParameterMode.IN);
+		query.registerStoredProcedureParameter("file_path", String.class, ParameterMode.IN);
+		query.setParameter("table_name", tableName);
+		query.setParameter("file_path", filePath.toString());
+		return query;
 	}
 
 	/**
@@ -254,8 +261,18 @@ public class ExportFacadeEjb implements ExportFacade {
 		Path path = new File(FacadeProvider.getConfigFacade().getTempFilesPath()).toPath();
 		String name = ImportExportUtils.TEMP_FILE_PREFIX + "_export_" + fileName + "_" + date + "_" + randomNumber + ".csv";
 		Path filePath = path.resolve(name);
-		return em.createNativeQuery("SELECT export_database_join('" + tableName + "', '" + joinTableName + "', '" + tableName + "." + columnName + "', '" + joinTableName + "." + joinColumnName + "', '" + 
-				filePath + "');");
+		StoredProcedureQuery query = em.createStoredProcedureQuery("export_database_join");
+		query.registerStoredProcedureParameter("table_name", String.class, ParameterMode.IN);
+		query.registerStoredProcedureParameter("join_table_name", String.class, ParameterMode.IN);
+		query.registerStoredProcedureParameter("column_name", String.class, ParameterMode.IN);
+		query.registerStoredProcedureParameter("join_column_name", String.class, ParameterMode.IN);
+		query.registerStoredProcedureParameter("file_path", String.class, ParameterMode.IN);
+		query.setParameter("table_name", tableName);
+		query.setParameter("join_table_name", joinTableName);
+		query.setParameter("column_name", tableName + "." + columnName);
+		query.setParameter("join_column_name", joinTableName + "." + joinColumnName);		
+		query.setParameter("file_path", filePath.toString());
+		return query;
 	}
 
 	@LocalBean
