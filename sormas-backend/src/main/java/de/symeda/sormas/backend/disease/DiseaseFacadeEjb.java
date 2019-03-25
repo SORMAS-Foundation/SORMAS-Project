@@ -32,6 +32,7 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.disease.DiseaseFacade;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -85,10 +86,10 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		Map<Disease, Long> previousCases = caseFacade.getCaseCountByDisease(caseCriteria, userUuid);
 		
 		//events
-		Map<Disease, Long> events = eventFacade.getEventCountByDisease(new EventCriteria().region(regionRef).district(districtRef).newEventDateBetween(from, to), userUuid);
+		Map<Disease, Long> events = eventFacade.getEventCountByDisease(new EventCriteria().region(regionRef).district(districtRef).reportedBetween(from, to), userUuid);
 					
 		//outbreaks
-		Map<Disease, Long> outbreakDistrictsCount = outbreakFacade.getOutbreakDistrictCountByDisease(regionRef, districtRef, from, to, userUuid);
+		Map<Disease, Long> outbreakDistrictsCount = outbreakFacade.getOutbreakDistrictCountByDisease(new OutbreakCriteria().region(regionRef).district(districtRef).reportedBetween(from, to), userUuid);
 				
 		//last report community
 		Map<Disease, Community> lastReportedCommunities = caseFacade.getLastReportedCommunityByDisease(caseCriteria, userUuid);

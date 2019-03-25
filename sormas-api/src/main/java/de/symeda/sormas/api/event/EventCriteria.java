@@ -39,8 +39,8 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private Boolean archived;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
-	private Date newEventDateFrom;
-	private Date newEventDateTo;
+	private Date reportedDateFrom;
+	private Date reportedDateTo;
 	
 	public EventStatus getEventStatus() {
 		return eventStatus;
@@ -92,17 +92,17 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		return this.district;
 	}
 	/**
-	 * @param newEventDateTo will automatically be set to the end of the day
+	 * @param reportedDateTo will automatically be set to the end of the day
 	 */
-	public EventCriteria newEventDateBetween(Date newEventDateFrom, Date newEventDateTo) {
-		this.newEventDateFrom = newEventDateFrom;
-		this.newEventDateTo = newEventDateTo;
+	public EventCriteria reportedBetween (Date reportedDateFrom, Date reportedDateTo) {
+		this.reportedDateFrom = reportedDateFrom;
+		this.reportedDateTo = reportedDateTo;
 		return this;
 	}
-	public Date getNewEventDateFrom() {
-		return newEventDateFrom;
+	public Date getReportedDateFrom() {
+		return reportedDateFrom;
 	}
-	public Date getNewEventDateTo() {
-		return newEventDateTo;
+	public Date getReportedDateTo() {
+		return reportedDateTo;
 	}
 }

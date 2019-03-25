@@ -54,7 +54,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		eventLocation.setDistrict(getDistrictFacade().getDistrictReferenceByUuid(rdcf.district.getUuid()));
 		EventDto event = creator.createEvent(EventType.OUTBREAK, EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE, DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, eventLocation);
 
-		List<DashboardEventDto> dashboardEventDtos = getEventFacade().getNewEventsForDashboard(new EventCriteria().region(eventLocation.getRegion()).district(eventLocation.getDistrict()).disease(event.getDisease()).newEventDateBetween(DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1)), user.getUuid());
+		List<DashboardEventDto> dashboardEventDtos = getEventFacade().getNewEventsForDashboard(new EventCriteria().region(eventLocation.getRegion()).district(eventLocation.getDistrict()).disease(event.getDisease()).reportedBetween(DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1)), user.getUuid());
 
 		// List should have one entry
 		assertEquals(1, dashboardEventDtos.size());

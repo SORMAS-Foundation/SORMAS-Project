@@ -34,6 +34,7 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
@@ -132,26 +133,22 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 			}
 			filter = and(cb, filter, activeFilter);
 		}
+		if (criteria.getReportedDateFrom() != null || criteria.getReportedDateTo() != null) {
+			filter = and(cb, filter, cb.between(from.get(Outbreak.REPORT_DATE), criteria.getReportedDateFrom(), criteria.getReportedDateTo()));
+		}
+		
 		return filter;
 	}
 	
-	public Map<Disease, Long> getOutbreakDistrictCountByDisease (Region region, District district, Date from, Date to, User user) {
+	public Map<Disease, Long> getOutbreakDistrictCountByDisease (OutbreakCriteria criteria, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Outbreak> outbreak = cq.from(Outbreak.class);
 		cq.multiselect(outbreak.get(Outbreak.DISEASE), cb.countDistinct(outbreak.get(Outbreak.DISTRICT)));
 		cq.groupBy(outbreak.get(Outbreak.DISEASE));
 		
-		Predicate filter = this.createUserFilter(cb, cq, outbreak, user);
-		
-		if (from != null || to != null)
-			filter = and(cb, filter, cb.between(outbreak.get(Outbreak.REPORT_DATE), from, to));
-		
-		if (district != null)
-			filter = and(cb, filter, cb.equal(outbreak.join(Outbreak.DISTRICT, JoinType.LEFT), district));
-		
-		else if (region != null)
-			filter = and(cb, filter, cb.equal(outbreak.join(Outbreak.DISTRICT, JoinType.LEFT).join(District.REGION, JoinType.LEFT), region));
+		Predicate filter = this.buildCriteriaFilter(criteria, cb, outbreak);
+		filter = and(cb, filter, createUserFilter(cb, cq, outbreak, user));
 		
 		if (filter != null)
 			cq.where(filter);
@@ -164,25 +161,14 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 		return outbreaks;
 	}
 	
-	public Long getOutbreakDistrictCount (Region region, District district, Disease disease, Date from, Date to, User user) {
+	public Long getOutbreakDistrictCount (OutbreakCriteria criteria, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Outbreak> outbreak = cq.from(getElementClass());
 		cq.groupBy(outbreak.get(Outbreak.DISTRICT));
 		
-		Predicate filter = this.createUserFilter(cb, cq, outbreak, user);
-		
-		if (from != null || to != null)
-			filter = and(cb, filter, cb.between(outbreak.get(Outbreak.REPORT_DATE), from, to));
-		
-		if (district != null)
-			filter = and(cb, filter, cb.equal(outbreak.join(Outbreak.DISTRICT, JoinType.LEFT), district));
-		
-		else if (region != null)
-			filter = and(cb, filter, cb.equal(outbreak.join(Outbreak.DISTRICT, JoinType.LEFT).join(District.REGION, JoinType.LEFT), region));
-		
-		if (disease != null)
-			filter = and(cb, filter, cb.equal(outbreak.get(Outbreak.DISEASE), disease));
+		Predicate filter = this.buildCriteriaFilter(criteria, cb, outbreak);
+		filter = and(cb, filter, createUserFilter(cb, cq, outbreak, user));
 		
 		if (filter != null)
 			cq.where(filter);

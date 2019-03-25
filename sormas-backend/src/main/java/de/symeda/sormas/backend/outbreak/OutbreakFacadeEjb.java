@@ -194,21 +194,17 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 		return target;
 	}
 	
-	public Map<Disease, Long> getOutbreakDistrictCountByDisease (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Date from, Date to, String userUuid) {
+	public Map<Disease, Long> getOutbreakDistrictCountByDisease (OutbreakCriteria criteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		Region region = regionService.getByReferenceDto(regionRef);
-		District district = districtService.getByReferenceDto(districtRef);
 
-		return outbreakService.getOutbreakDistrictCountByDisease(region, district, from, to, user);
+		return outbreakService.getOutbreakDistrictCountByDisease(criteria, user);
 	}
 	
 	@Override
-	public Long getOutbreakDistrictCount (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+	public Long getOutbreakDistrictCount (OutbreakCriteria criteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		Region region = regionService.getByReferenceDto(regionRef);
-		District district = districtService.getByReferenceDto(districtRef);
 
-		return outbreakService.getOutbreakDistrictCount(region, district, disease, from, to, user);
+		return outbreakService.getOutbreakDistrictCount(criteria, user);
 	}
 	
 	

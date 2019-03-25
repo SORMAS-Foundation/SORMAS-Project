@@ -32,6 +32,7 @@ import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
@@ -128,13 +129,13 @@ public class DashboardDataProvider {
 		
 		// Events
 		EventCriteria eventCriteria = new EventCriteria();
-		eventCriteria.region(region).district(district).disease(disease).newEventDateBetween(fromDate, toDate);	
+		eventCriteria.region(region).district(district).disease(disease).reportedBetween(fromDate, toDate);	
 		setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(eventCriteria, userUuid));
 		
-		eventCriteria.newEventDateBetween(previousFromDate, previousToDate);
+		eventCriteria.reportedBetween(previousFromDate, previousToDate);
 		setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(eventCriteria, userUuid));		
 		
-		eventCriteria.newEventDateBetween(fromDate, toDate);
+		eventCriteria.reportedBetween(fromDate, toDate);
 		setEventCountByStatus(FacadeProvider.getEventFacade().getEventCountByStatus(eventCriteria, userUuid));
 		
 		// Test results
@@ -145,7 +146,7 @@ public class DashboardDataProvider {
 		setTestResultCountByResultType(FacadeProvider.getPathogenTestFacade().getTestResultCountByResultType(region, district, disease, fromDate, toDate, userUuid));
 		
 		// Outbreaks
-		setOutbreakDistrictCount(FacadeProvider.getOutbreakFacade().getOutbreakDistrictCount(region, district, disease, fromDate, toDate, userUuid));
+		setOutbreakDistrictCount(FacadeProvider.getOutbreakFacade().getOutbreakDistrictCount(new OutbreakCriteria().region(region).district(district).disease(disease).reportedBetween(fromDate, toDate), userUuid));
 		
 		// lastReportedCommunity
 		setLastReportedCommunity(FacadeProvider.getCaseFacade().getLastReportedCommunityName(caseCriteria, userUuid));
