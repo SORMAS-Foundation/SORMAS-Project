@@ -22,8 +22,6 @@ import java.util.Date;
 
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -99,8 +97,16 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		this.reportedDateTo = reportedDateTo;
 		return this;
 	}
+	public EventCriteria reportedDateFrom (Date reportedDateFrom) {
+		this.reportedDateFrom = reportedDateFrom;
+		return this;
+	}
 	public Date getReportedDateFrom() {
 		return reportedDateFrom;
+	}
+	public EventCriteria reportedDateTo (Date reportedDateTo) {
+		this.reportedDateTo = reportedDateTo;
+		return this;
 	}
 	public Date getReportedDateTo() {
 		return reportedDateTo;

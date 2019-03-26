@@ -103,8 +103,16 @@ public class OutbreakCriteria extends BaseCriteria implements Serializable {
 		this.reportedDateTo = reportedDateTo;
 		return this;
 	}
+	public OutbreakCriteria reportedDateFrom (Date reportedDateFrom) {
+		this.reportedDateFrom = reportedDateFrom;
+		return this;
+	}
 	public Date getReportedDateFrom() {
 		return reportedDateFrom;
+	}
+	public OutbreakCriteria reportedDateTo (Date reportedDateTo) {
+		this.reportedDateTo = reportedDateTo;
+		return this;
 	}
 	public Date getReportedDateTo() {
 		return reportedDateTo;
