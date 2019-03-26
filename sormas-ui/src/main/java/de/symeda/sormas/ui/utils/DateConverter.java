@@ -20,7 +20,7 @@ package de.symeda.sormas.ui.utils;
 import java.util.Date;
 import java.util.Locale;
 
-import com.vaadin.data.util.converter.Converter;
+import com.vaadin.v7.data.util.converter.Converter;
 
 import de.symeda.sormas.api.utils.DateHelper;
 

@@ -19,7 +19,7 @@ package de.symeda.sormas.ui.utils;
 
 import java.util.Locale;
 
-import com.vaadin.data.util.converter.Converter;
+import com.vaadin.v7.data.util.converter.Converter;
 
 @SuppressWarnings("serial")
 public class StringToAnythingConverter<T> implements Converter<String, T> {

@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.statistics;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
@@ -28,6 +28,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 public class DashboardStatisticsDiseaseElement extends HorizontalLayout {
 	
 	public DashboardStatisticsDiseaseElement(String caption, int count, int previousCount) {
+		setMargin(false);
 		setSpacing(true);
 		Label captionLabel = new Label(caption);
 		captionLabel.setWidthUndefined();
@@ -49,13 +50,13 @@ public class DashboardStatisticsDiseaseElement extends HorizontalLayout {
 		
 		CssStyles.removeStyles(growthLabel, CssStyles.LABEL_CRITICAL, CssStyles.LABEL_POSITIVE, CssStyles.LABEL_IMPORTANT);
 		if (count > previousCount) {
-			growthLabel.setValue(FontAwesome.CHEVRON_UP.getHtml());
+			growthLabel.setValue(VaadinIcons.CHEVRON_UP.getHtml());
 			CssStyles.style(growthLabel, CssStyles.LABEL_CRITICAL);
 		} else if (count == previousCount) {
-			growthLabel.setValue(FontAwesome.CHEVRON_RIGHT.getHtml());
+			growthLabel.setValue(VaadinIcons.CHEVRON_RIGHT.getHtml());
 			CssStyles.style(growthLabel, CssStyles.LABEL_IMPORTANT, CssStyles.ALIGN_CENTER);
 		} else {
-			growthLabel.setValue(FontAwesome.CHEVRON_DOWN.getHtml());
+			growthLabel.setValue(VaadinIcons.CHEVRON_DOWN.getHtml());
 			CssStyles.style(growthLabel, CssStyles.LABEL_POSITIVE);
 		}
 		

@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import com.vaadin.data.validator.AbstractValidator;
+import com.vaadin.v7.data.validator.AbstractValidator;
 
 @SuppressWarnings("serial")
 public class PhoneNumberValidator extends AbstractValidator<String> {

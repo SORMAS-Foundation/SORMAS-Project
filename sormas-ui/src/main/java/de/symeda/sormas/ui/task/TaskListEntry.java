@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
@@ -43,6 +43,7 @@ public class TaskListEntry extends HorizontalLayout {
 
 	public TaskListEntry(TaskIndexDto task) {
 
+		setMargin(false);
 		setSpacing(true);
 		setWidth(100, Unit.PERCENTAGE);
 		addStyleName(CssStyles.SORMAS_LIST_ENTRY);
@@ -50,6 +51,8 @@ public class TaskListEntry extends HorizontalLayout {
 		this.task = task;
 
 		HorizontalLayout labelLayout = new HorizontalLayout();
+		labelLayout.setMargin(false);
+		labelLayout.setSpacing(false);
 		labelLayout.setWidth(100, Unit.PERCENTAGE);
 		addComponent(labelLayout);
 		setExpandRatio(labelLayout, 1);
@@ -98,7 +101,7 @@ public class TaskListEntry extends HorizontalLayout {
 
 	public void addEditListener(ClickListener editClickListener) {
 		if (editButton == null) {
-			editButton = new Button(FontAwesome.PENCIL);
+			editButton = new Button(VaadinIcons.PENCIL);
 			CssStyles.style(editButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 			addComponent(editButton);
 			setComponentAlignment(editButton, Alignment.MIDDLE_RIGHT);

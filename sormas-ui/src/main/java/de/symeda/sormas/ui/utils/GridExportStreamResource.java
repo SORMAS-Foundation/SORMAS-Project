@@ -31,11 +31,11 @@ import java.util.Date;
 import java.util.List;
 
 import com.opencsv.CSVWriter;
-import com.vaadin.data.Container.Indexed;
-import com.vaadin.data.Property;
+import com.vaadin.v7.data.Container.Indexed;
+import com.vaadin.v7.data.Property;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
-import com.vaadin.ui.Grid.Column;
+import com.vaadin.v7.ui.Grid.Column;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 

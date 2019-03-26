@@ -11,11 +11,15 @@
     <artifactId>sormas-widgetset</artifactId>
 	<name>${project.artifactId}</name>
 
+	<properties>
+		<vaadin-widgetsets-dir>src/main/webapp/VAADIN/widgetsets</vaadin-widgetsets-dir>
+	</properties>
+	
     <dependencies>
 
 		<dependency>
 			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-client</artifactId>
+			<artifactId>vaadin-compatibility-client</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.vaadin</groupId>
@@ -38,23 +42,31 @@
             <plugin>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
-                <configuration>
-                    <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+                <configuration>		
+                	<extraJvmArgs>-Xmx2048M -Xms1024M -Xss1024k</extraJvmArgs>
                     <webappDirectory>${basedir}/target/classes/VAADIN/widgetsets</webappDirectory>
-                    <draftCompile>true</draftCompile>
-                    <compileReport>false</compileReport>
+                    <noServer>true</noServer>
+					<!-- Remove draftCompile when project is ready -->
+					<draftCompile>false</draftCompile>
+					<optimizationLevel>9</optimizationLevel>
+					<compileReport>false</compileReport>
                     <!-- Change to OBF, PRETTY (or possibly DETAILED) to get
                     unobfuscated client side stack traces. A better approach
                     for debugging is to use Super Dev Mode -->
-                    <style>PRETTY</style> 
-                    <strict>true</strict>
+					<style>OBF</style>
+					<disableClassMetadata>false</disableClassMetadata>
+					<strict>true</strict>
+					<force>false</force>
                 </configuration>
                 <executions>
                     <execution>
-                        <goals>
-                            <goal>update-widgetset</goal>
-                            <goal>compile</goal>
-                        </goals>
+                    	<configuration>
+                    		<!-- if you don't specify any modules, the plugin will find them -->
+                    	</configuration>
+						<goals>
+							<goal>update-widgetset</goal>
+							<goal>compile</goal>
+						</goals>
                     </execution>
                 </executions>
             </plugin>

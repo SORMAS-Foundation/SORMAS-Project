@@ -25,7 +25,7 @@ import java.util.Map;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
-import com.vaadin.ui.OptionGroup;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;

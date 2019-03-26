@@ -19,15 +19,15 @@ package de.symeda.sormas.ui.contact;
 
 import org.joda.time.LocalDate;
 
-import com.vaadin.data.Validator;
-import com.vaadin.data.validator.DateRangeValidator;
-import com.vaadin.shared.ui.datefield.Resolution;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.DateField;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.validator.DateRangeValidator;
+import com.vaadin.v7.shared.ui.datefield.Resolution;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.OptionGroup;
+import com.vaadin.v7.ui.TextArea;
+import com.vaadin.v7.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;

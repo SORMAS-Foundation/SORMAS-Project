@@ -37,12 +37,12 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import com.opencsv.CSVWriter;
-import com.vaadin.data.Container.Indexed;
+import com.vaadin.v7.data.Container.Indexed;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.StreamResource.StreamSource;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Grid.Column;
+import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.Grid.Column;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 

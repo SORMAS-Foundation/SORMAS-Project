@@ -27,14 +27,14 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 import com.vaadin.server.FileDownloader;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -131,7 +131,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		addResultsLayout(statisticsLayout);
 
 		// Disclaimer
-		Label disclaimer = new Label(FontAwesome.INFO_CIRCLE.getHtml() + " " +
+		Label disclaimer = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " +
 				I18nProperties.getString(Strings.infoStatisticsDisclaimer), ContentMode.HTML);
 		statisticsLayout.addComponent(disclaimer);
 
@@ -152,7 +152,8 @@ public class StatisticsView extends AbstractStatisticsView {
 		filtersSectionLayout.addComponent(filtersInfoText);
 
 		filtersLayout = new VerticalLayout();
-		filtersLayout.setSpacing(true);
+		filtersLayout.setSpacing(true);		
+		filtersLayout.setMargin(false);
 		filtersSectionLayout.addComponent(filtersLayout);
 
 		// Filters footer
@@ -160,7 +161,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		{
 			filtersSectionFooter.setSpacing(true);
 
-			Button addFilterButton = new Button(I18nProperties.getCaption(Captions.statisticsAddFilter), FontAwesome.PLUS);
+			Button addFilterButton = new Button(I18nProperties.getCaption(Captions.statisticsAddFilter), VaadinIcons.PLUS);
 			CssStyles.style(addFilterButton, ValoTheme.BUTTON_PRIMARY);
 			addFilterButton.addClickListener(e -> {
 				filtersLayout.addComponent(createFilterComponentLayout());
@@ -186,7 +187,7 @@ public class StatisticsView extends AbstractStatisticsView {
 
 		StatisticsFilterComponent filterComponent = new StatisticsFilterComponent();
 
-		Button removeFilterButton = new Button(FontAwesome.TIMES);
+		Button removeFilterButton = new Button(VaadinIcons.CLOSE);
 		removeFilterButton.setDescription(I18nProperties.getCaption(Captions.statisticsRemoveFilter));
 		CssStyles.style(removeFilterButton, CssStyles.FORCE_CAPTION);
 		removeFilterButton.addClickListener(e -> {
@@ -294,7 +295,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		exportButton = new Button(I18nProperties.getCaption(Captions.export));
 		exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		exportButton.setIcon(FontAwesome.TABLE);
+		exportButton.setIcon(VaadinIcons.TABLE);
 		resultsLayout.addComponent(exportButton);
 		resultsLayout.setComponentAlignment(exportButton, Alignment.TOP_RIGHT);
 

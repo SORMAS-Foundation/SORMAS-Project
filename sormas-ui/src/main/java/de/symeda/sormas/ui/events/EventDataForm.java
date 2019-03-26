@@ -20,13 +20,13 @@ package de.symeda.sormas.ui.events;
 import java.util.Arrays;
 import java.util.List;
 
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.DateField;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.ui.AbstractField;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.OptionGroup;
+import com.vaadin.v7.ui.TextArea;
+import com.vaadin.v7.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;

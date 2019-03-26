@@ -19,7 +19,7 @@ package de.symeda.sormas.ui.user;
 
 import java.util.Collection;
 
-import com.vaadin.data.Validator;
+import com.vaadin.v7.data.Validator;
 
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRole.UserRoleValidationException;

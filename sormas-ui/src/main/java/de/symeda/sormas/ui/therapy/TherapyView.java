@@ -18,17 +18,17 @@
 package de.symeda.sormas.ui.therapy;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -74,6 +74,7 @@ public class TherapyView extends AbstractCaseView {
 		treatmentCriteria = ViewModelProviders.of(TherapyView.class).get(TreatmentCriteria.class);
 
 		VerticalLayout container = new VerticalLayout();
+		container.setSpacing(false);
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 
@@ -97,9 +98,12 @@ public class TherapyView extends AbstractCaseView {
 
 	private VerticalLayout createPrescriptionsHeader() {
 		VerticalLayout prescriptionsHeader = new VerticalLayout();
+		prescriptionsHeader.setMargin(false);
+		prescriptionsHeader.setSpacing(false);
 		prescriptionsHeader.setWidth(100, Unit.PERCENTAGE);
 
 		HorizontalLayout headlineRow = new HorizontalLayout();
+		headlineRow.setMargin(false);
 		headlineRow.setSpacing(true);
 		headlineRow.setWidth(100, Unit.PERCENTAGE);
 		{
@@ -120,7 +124,7 @@ public class TherapyView extends AbstractCaseView {
 						}
 					});
 				};
-				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), FontAwesome.TRASH, deleteCommand);
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
 
 				headlineRow.addComponent(bulkOperationsDropdown);
 				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
@@ -138,6 +142,7 @@ public class TherapyView extends AbstractCaseView {
 		prescriptionsHeader.addComponent(headlineRow);
 
 		HorizontalLayout filterRow = new HorizontalLayout();
+		filterRow.setMargin(false);
 		filterRow.setSpacing(true);
 		{
 			prescriptionTypeFilter = new ComboBox();
@@ -167,9 +172,12 @@ public class TherapyView extends AbstractCaseView {
 
 	private VerticalLayout createTreatmentsHeader() {
 		VerticalLayout treatmentsHeader = new VerticalLayout();
+		treatmentsHeader.setMargin(false);
+		treatmentsHeader.setSpacing(false);
 		treatmentsHeader.setWidth(100, Unit.PERCENTAGE);
 
 		HorizontalLayout headlineRow = new HorizontalLayout();
+		headlineRow.setMargin(false);
 		headlineRow.setSpacing(true);
 		headlineRow.setWidth(100, Unit.PERCENTAGE);
 		{
@@ -190,7 +198,7 @@ public class TherapyView extends AbstractCaseView {
 						}
 					});
 				};
-				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), FontAwesome.TRASH, deleteCommand);
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
 
 				headlineRow.addComponent(bulkOperationsDropdown);
 				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
@@ -207,6 +215,7 @@ public class TherapyView extends AbstractCaseView {
 		treatmentsHeader.addComponent(headlineRow);
 
 		HorizontalLayout filterRow = new HorizontalLayout();
+		filterRow.setMargin(false);
 		filterRow.setSpacing(true);
 		{
 			treatmentTypeFilter = new ComboBox();

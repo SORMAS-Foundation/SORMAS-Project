@@ -23,12 +23,12 @@ import java.util.Map;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -67,7 +67,7 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		headerLayout.addComponent(createSelectionButtonsLayout());
 		databaseExportLayout.addComponent(headerLayout);
 		databaseExportLayout.addComponent(createDatabaseTablesLayout());
-		Button exportButton = new Button(I18nProperties.getCaption(Captions.export), FontAwesome.DOWNLOAD);
+		Button exportButton = new Button(I18nProperties.getCaption(Captions.export), VaadinIcons.DOWNLOAD);
 		CssStyles.style(exportButton, ValoTheme.BUTTON_PRIMARY);
 		StreamResource streamResource = DownloadUtil.createDatabaseExportStreamResource(this, "sormas_export_" + DateHelper.formatDateForExport(new Date()) + ".zip", "application/zip");
 		FileDownloader fileDownloader = new FileDownloader(streamResource);

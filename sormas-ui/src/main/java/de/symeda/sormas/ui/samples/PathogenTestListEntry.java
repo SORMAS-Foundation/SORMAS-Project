@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
@@ -63,7 +63,7 @@ public class PathogenTestListEntry extends HorizontalLayout {
 		topLabelLayout.addComponent(labelTopLeft);
 
 		if (pathogenTest.getTestResultVerified()) {
-			Label labelTopRight = new Label(FontAwesome.CHECK_CIRCLE.getHtml(), ContentMode.HTML);
+			Label labelTopRight = new Label(VaadinIcons.CHECK_CIRCLE.getHtml(), ContentMode.HTML);
 			labelTopRight.setSizeUndefined();
 			labelTopRight.addStyleName(CssStyles.LABEL_LARGE);
 			labelTopRight.setDescription(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX,
@@ -91,7 +91,7 @@ public class PathogenTestListEntry extends HorizontalLayout {
 
 	public void addEditListener(ClickListener editClickListener) {
 		if (editButton == null) {
-			editButton = new Button(FontAwesome.PENCIL);
+			editButton = new Button(VaadinIcons.PENCIL);
 			CssStyles.style(editButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 			addComponent(editButton);
 			setComponentAlignment(editButton, Alignment.MIDDLE_RIGHT);

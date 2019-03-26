@@ -23,13 +23,13 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.PopupDateField;
+import com.vaadin.v7.ui.PopupDateField;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
@@ -123,7 +123,7 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 			addComponent(dateTypeSelector);
 
 			if (!StringUtils.isEmpty(infoText)) {
-				Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+				Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 				infoLabel.setSizeUndefined();
 				infoLabel.setDescription(infoText);
 				CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);

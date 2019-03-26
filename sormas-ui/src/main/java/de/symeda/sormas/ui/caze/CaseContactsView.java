@@ -22,11 +22,11 @@ import java.util.HashMap;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
@@ -185,7 +185,7 @@ public class CaseContactsView extends AbstractCaseView {
 			Command changeCommand = selectedItem -> {
 				ControllerProvider.getContactController().showBulkContactDataEditComponent(grid.getSelectedRows(), getCaseRef().getUuid());
 			};
-			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkEdit), FontAwesome.ELLIPSIS_H, changeCommand);
+			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, changeCommand);
 
 			Command cancelFollowUpCommand = selectedItem -> {
 				ControllerProvider.getContactController().cancelFollowUpOfAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -195,7 +195,7 @@ public class CaseContactsView extends AbstractCaseView {
 					}
 				});
 			};
-			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkCancelFollowUp), FontAwesome.TIMES, cancelFollowUpCommand);
+			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkCancelFollowUp), VaadinIcons.CLOSE, cancelFollowUpCommand);
 
 			Command lostToFollowUpCommand = selectedItem -> {
 				ControllerProvider.getContactController().setAllSelectedItemsToLostToFollowUp(grid.getSelectedRows(), new Runnable() {
@@ -205,7 +205,7 @@ public class CaseContactsView extends AbstractCaseView {
 					}
 				});
 			};
-			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkLostToFollowUp), FontAwesome.UNLINK, lostToFollowUpCommand);
+			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkLostToFollowUp), VaadinIcons.UNLINK, lostToFollowUpCommand);
 
 			Command deleteCommand = selectedItem -> {
 				ControllerProvider.getContactController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -215,7 +215,7 @@ public class CaseContactsView extends AbstractCaseView {
 					}
 				});
 			};
-			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), FontAwesome.TRASH, deleteCommand);
+			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
 
 			statusFilterLayout.addComponent(bulkOperationsDropdown);
 			statusFilterLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
@@ -225,7 +225,7 @@ public class CaseContactsView extends AbstractCaseView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
 			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
 			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			exportButton.setIcon(FontAwesome.DOWNLOAD);
+			exportButton.setIcon(VaadinIcons.DOWNLOAD);
 
 			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), grid.getColumns(), "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
@@ -241,7 +241,7 @@ public class CaseContactsView extends AbstractCaseView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
 			newButton = new Button(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, Captions.contactNewContact));
 			newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			newButton.setIcon(FontAwesome.PLUS_CIRCLE);
+			newButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			newButton.addClickListener(e -> ControllerProvider.getContactController().create(this.getCaseRef()));
 			statusFilterLayout.addComponent(newButton);
 			statusFilterLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);

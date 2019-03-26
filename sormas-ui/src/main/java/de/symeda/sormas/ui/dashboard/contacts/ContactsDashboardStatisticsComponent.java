@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 
@@ -276,7 +276,7 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 		neverVisitedContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNeverVisited), CountElementStyle.MINOR);
 		thirdComponent.addComponentToCountLayout(visitStatusCountLayout, neverVisitedContacts);
 
-		Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 		infoLabel.setSizeUndefined();
 		infoLabel.setDescription(I18nProperties.getDescription(Descriptions.descDashboardFollowUpInfo));
 		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_SECONDARY, "follow-up-status-info-button");

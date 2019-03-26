@@ -19,8 +19,8 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.function.Consumer;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -61,7 +61,7 @@ public class PathogenTestListComponent extends VerticalLayout {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
 			createButton = new Button(I18nProperties.getCaption(Captions.pathogenTestNewTest));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(
 					e -> ControllerProvider.getPathogenTestController().create(sampleRef, 0, list::reload, testChangedCallback));
 			componentHeader.addComponent(createButton);

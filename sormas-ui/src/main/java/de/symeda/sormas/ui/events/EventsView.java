@@ -22,11 +22,11 @@ import java.util.HashMap;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
@@ -111,7 +111,7 @@ public class EventsView extends AbstractView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EXPORT)) {
 			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
 			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			exportButton.setIcon(FontAwesome.DOWNLOAD);
+			exportButton.setIcon(VaadinIcons.DOWNLOAD);
 
 			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), grid.getColumns(), "sormas_events", "sormas_events_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
@@ -123,7 +123,7 @@ public class EventsView extends AbstractView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE)) {
 			createButton = new Button(I18nProperties.getCaption(Captions.eventNewEvent));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(e -> ControllerProvider.getEventController().create());
 			addHeaderComponent(createButton);
 		}
@@ -132,6 +132,7 @@ public class EventsView extends AbstractView {
 	public HorizontalLayout createFilterBar() {
 		HorizontalLayout filterLayout = new HorizontalLayout();
 		filterLayout.setSpacing(true);
+		filterLayout.setMargin(false);
 		filterLayout.setSizeUndefined();
 
 		typeFilter = new ComboBox();
@@ -178,6 +179,7 @@ public class EventsView extends AbstractView {
 	public HorizontalLayout createStatusFilterBar() {
 		HorizontalLayout statusFilterLayout = new HorizontalLayout();
 		statusFilterLayout.setSpacing(true);
+		statusFilterLayout.setMargin(false);
 		statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 		statusFilterLayout.addStyleName(CssStyles.VSPACE_3);
 
@@ -227,7 +229,7 @@ public class EventsView extends AbstractView {
 				Command changeCommand = selectedItem -> {
 					ControllerProvider.getEventController().showBulkEventDataEditComponent(grid.getSelectedRows());
 				};
-				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkEdit), FontAwesome.ELLIPSIS_H, changeCommand);
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, changeCommand);
 
 				Command deleteCommand = selectedItem -> {
 					ControllerProvider.getEventController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -236,7 +238,7 @@ public class EventsView extends AbstractView {
 						}
 					});
 				};
-				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), FontAwesome.TRASH, deleteCommand);
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
 
 				Command archiveCommand = selectedItem -> {
 					ControllerProvider.getEventController().archiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -245,7 +247,7 @@ public class EventsView extends AbstractView {
 						}
 					});
 				};
-				archiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(I18nProperties.getCaption(Captions.actionArchive)), FontAwesome.ARCHIVE, archiveCommand);
+				archiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(I18nProperties.getCaption(Captions.actionArchive)), VaadinIcons.ARCHIVE, archiveCommand);
 
 				Command dearchiveCommand = selectedItem -> {
 					ControllerProvider.getEventController().dearchiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -254,7 +256,7 @@ public class EventsView extends AbstractView {
 						}
 					});
 				};
-				dearchiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(I18nProperties.getCaption(Captions.actionDearchive)), FontAwesome.ARCHIVE, dearchiveCommand);
+				dearchiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(I18nProperties.getCaption(Captions.actionDearchive)), VaadinIcons.ARCHIVE, dearchiveCommand);
 				dearchiveItem.setVisible(false);
 
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);

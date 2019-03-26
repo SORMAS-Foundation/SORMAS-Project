@@ -21,19 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
-import com.vaadin.data.Buffered;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.event.Action.Notifier;
-import com.vaadin.event.FieldEvents;
-import com.vaadin.event.FieldEvents.FocusListener;
-import com.vaadin.event.FieldEvents.FocusNotifier;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
@@ -41,15 +31,20 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.RichTextArea;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Buffered;
+import com.vaadin.v7.data.Validator.InvalidValueException;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitException;
+import com.vaadin.v7.ui.AbstractLegacyComponent;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.v7.ui.RichTextArea;
+import com.vaadin.v7.ui.TextArea;
+import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -100,28 +95,6 @@ VerticalLayout implements Buffered {
 	private boolean shortcutsEnabled = false;
 	protected transient List<ClickShortcut> actions;
 
-	private boolean autoFocusing = false;
-
-	private boolean autoDisablingButtons = false;
-
-	private final ValueChangeListener autoHideValueChangeListener = new ValueChangeListener() {
-		private static final long serialVersionUID = 1L;
-		@Override
-		public void valueChange(Property.ValueChangeEvent event) {
-			boolean modified = isModified();
-			getCommitButton().setEnabled(modified);
-			getDiscardButton().setEnabled(modified);
-		}
-	};
-	private final FocusListener autoHideFocusListener = new FocusListener() {
-		private static final long serialVersionUID = 1L;
-		@Override
-		public void focus(FieldEvents.FocusEvent event) {
-			getCommitButton().setEnabled(true);
-			getDiscardButton().setEnabled(true);
-		}
-	};
-
 	protected CommitDiscardWrapperComponent() {
 
 	}
@@ -137,8 +110,6 @@ VerticalLayout implements Buffered {
 
 		if (contentPanel != null) {
 			contentPanel.setContent(wrappedComponent);
-			applyAutoFocusing();
-			applyAutoDisabling();
 			return;
 		}
 
@@ -172,8 +143,6 @@ VerticalLayout implements Buffered {
 
 		setShortcutsEnabled(shortcutsEnabled);
 
-		applyAutoDisabling();
-
 		if (fieldGroups != null && fieldGroups.length > 0) {
 			// convention: set wrapper to read-only when all wrapped field groups are read-only
 			boolean allReadOnly = true;
@@ -187,7 +156,8 @@ VerticalLayout implements Buffered {
 				setReadOnly(true);
 			}
 		} else if (wrappedComponent != null) {
-			if (wrappedComponent.isReadOnly()) {
+			if (wrappedComponent instanceof AbstractLegacyComponent 
+					&& ((AbstractLegacyComponent)wrappedComponent).isReadOnly()) {
 				setReadOnly(true);
 			}
 		}
@@ -202,70 +172,6 @@ VerticalLayout implements Buffered {
 		} else {
 			return Stream.empty();
 		}
-	}
-
-	public void setAutoFocusing(boolean autoFocusing) {
-		this.autoFocusing = autoFocusing;
-		applyAutoFocusing();
-	}
-
-	public boolean isAutoFocusing() {
-		return autoFocusing;
-	}
-
-	protected void applyAutoFocusing() {
-		if (!autoFocusing)
-			return;
-
-		Optional<Field<?>> firstField = getFieldsStream()
-			.filter(field -> field.isEnabled() && field.isVisible() && field.getTabIndex() >= 0)
-			.findFirst();
-		
-		if (firstField.isPresent()) {
-
-			FocusNotifier fn;
-			if (autoDisablingButtons && firstField.get() instanceof FocusNotifier) {
-				fn = (FocusNotifier) firstField.get();
-				fn.removeFocusListener(autoHideFocusListener);
-			} else {
-				fn = null;
-			}
-			firstField.get().focus();
-			if (fn != null) {
-				fn.addFocusListener(autoHideFocusListener);
-			}
-		}
-	}
-
-	public void setAutoDisablingButtons(boolean autoDisablingButtons) {
-		if (this.autoDisablingButtons == autoDisablingButtons)
-			return;
-		this.autoDisablingButtons = autoDisablingButtons;
-		applyAutoDisabling();
-	}
-
-	public boolean isAutoDisablingButtons() {
-		return autoDisablingButtons;
-	}
-	
-	protected void applyAutoDisabling() {
-
-		boolean modified = isModified();
-		getCommitButton().setEnabled(!autoDisablingButtons || modified);
-		getDiscardButton().setEnabled(!autoDisablingButtons || modified);
-
-		getFieldsStream().forEach((field) -> {
-
-			field.removeValueChangeListener(autoHideValueChangeListener);
-			if (autoDisablingButtons)
-				field.addValueChangeListener(autoHideValueChangeListener);
-
-			if (field instanceof FocusNotifier) {
-				((FocusNotifier) field).removeFocusListener(autoHideFocusListener);
-				if (autoDisablingButtons)
-					((FocusNotifier) field).addFocusListener(autoHideFocusListener);
-			}
-		});
 	}
 
 	/**
@@ -437,8 +343,6 @@ VerticalLayout implements Buffered {
 		commited = true;
 
 		onDone();
-
-		applyAutoDisabling();
 	}
 
 	private String findHtmlMessage(InvalidValueException exception)
@@ -513,8 +417,6 @@ VerticalLayout implements Buffered {
 		}
 		onDiscard();
 		onDone();
-
-		applyAutoDisabling();
 	}
 
 	@Override
@@ -625,21 +527,21 @@ VerticalLayout implements Buffered {
 	@Override
 	public void setReadOnly(boolean readOnly) {
 		super.setReadOnly(readOnly);
-
-		getWrappedComponent().setReadOnly(readOnly);
-		if (fieldGroups != null) {
-			for (FieldGroup fieldGroup : fieldGroups) {
-				fieldGroup.setReadOnly(readOnly);
-			}
-		}
-
-		buttonsPanel.setVisible(!readOnly);
+//
+//		getWrappedComponent().setReadOnly(readOnly);
+//		if (fieldGroups != null) {
+//			for (FieldGroup fieldGroup : fieldGroups) {
+//				fieldGroup.setReadOnly(readOnly);
+//			}
+//		}
+//
+//		buttonsPanel.setVisible(!readOnly);
 	}
 
-	@Override
-	public boolean isReadOnly() {
-		return getWrappedComponent().isReadOnly();
-	}
+//	@Override
+//	public boolean isReadOnly() {
+//		return getWrappedComponent().isReadOnly();
+//	}
 
 	protected static class ClickShortcut extends Button.ClickShortcut {
 		private static final long serialVersionUID = 1L;

@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomLayout;
@@ -109,6 +109,8 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 		// Header
 		HorizontalLayout headerLayout = new HorizontalLayout();
+		headerLayout.setMargin(false);
+		headerLayout.setSpacing(false);
 		// count
 		caseCountLabel = new Label();
 		CssStyles.style(caseCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_XXXLARGE, CssStyles.LABEL_BOLD,
@@ -154,12 +156,16 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 	private Layout createCaseFatalityComponent() {
 		HorizontalLayout component = new HorizontalLayout();
+		component.setMargin(false);
+		component.setSpacing(false);
 		component.setWidth(100, Unit.PERCENTAGE);
 		
 		// rate
 		{
 			HorizontalLayout rateLayout = new HorizontalLayout();
-			
+			rateLayout.setMargin(false);
+			rateLayout.setSpacing(false);
+
 			// value
 			caseFatalityRateValue = new Label("00.0%");
 			CssStyles.style(caseFatalityRateValue, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE, CssStyles.HSPACE_RIGHT_3, CssStyles.VSPACE_TOP_5);
@@ -177,6 +183,8 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		// count		
 		{
 			HorizontalLayout countLayout = new HorizontalLayout();
+			countLayout.setMargin(false);
+			countLayout.setSpacing(false);
 			
 			// title
 			Label titleLabel = new Label(I18nProperties.getCaption(Captions.dashboardFatalities));
@@ -203,7 +211,9 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	
 	private Layout createLastReportedCommunityComponent() {
 		HorizontalLayout component = new HorizontalLayout();
-		
+		component.setMargin(false);
+		component.setSpacing(false);
+
 		// value
 		lastReportedCommunityLabel = new Label("NONE");
 		CssStyles.style(lastReportedCommunityLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE, CssStyles.HSPACE_RIGHT_3, CssStyles.VSPACE_TOP_5);
@@ -219,7 +229,9 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 	private Layout createOutbreakDistrictComponent() {
 		HorizontalLayout component = new HorizontalLayout();
-		
+		component.setMargin(false);
+		component.setSpacing(false);
+
 		// count
 		outbreakDistrictCountLabel = new Label();
 		CssStyles.style(outbreakDistrictCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE, CssStyles.HSPACE_RIGHT_3, CssStyles.VSPACE_TOP_5);
@@ -238,6 +250,9 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 		// Header
 		HorizontalLayout headerLayout = new HorizontalLayout();
+		headerLayout.setMargin(false);
+		headerLayout.setSpacing(false);
+
 		// count
 		eventCountLabel = new Label();
 		CssStyles.style(eventCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_XXXLARGE, CssStyles.LABEL_BOLD,
@@ -268,6 +283,8 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 		// Header
 		HorizontalLayout headerLayout = new HorizontalLayout();
+		headerLayout.setMargin(false);
+		headerLayout.setSpacing(false);
 		// count
 		testResultCountLabel = new Label();
 		CssStyles.style(testResultCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_XXXLARGE, CssStyles.LABEL_BOLD,
@@ -348,20 +365,20 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		String criticalLevel = "";
 
 		if (fatalCasesGrowth > 0) {
-			chevronType = FontAwesome.CHEVRON_UP.getHtml();
+			chevronType = VaadinIcons.CHEVRON_UP.getHtml();
 			criticalLevel = CssStyles.LABEL_CRITICAL;
 		} else if (fatalCasesGrowth < 0) {
-			chevronType = FontAwesome.CHEVRON_DOWN.getHtml();
+			chevronType = VaadinIcons.CHEVRON_DOWN.getHtml();
 			criticalLevel = CssStyles.LABEL_POSITIVE;
 		} else {
-			chevronType = FontAwesome.CHEVRON_RIGHT.getHtml();
+			chevronType = VaadinIcons.CHEVRON_RIGHT.getHtml();
 			criticalLevel = CssStyles.LABEL_IMPORTANT;
 		}
 
 		caseFatalityCountGrowth.setValue("<div class=\"v-label v-widget " + criticalLevel + " v-label-" + criticalLevel
 				+ " align-center v-label-align-center bold v-label-bold v-has-width\" "
 				+ "	  style=\"margin-top: 4px;margin-left: 5px;\">"
-				+ "		<span class=\"v-icon\" style=\"font-family: FontAwesome;\">" + chevronType + "		</span>"
+				+ "		<span class=\"v-icon\" style=\"font-family: VaadinIcons;\">" + chevronType + "		</span>"
 				+ "</div>");
 
 		// rate

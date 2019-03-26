@@ -20,7 +20,7 @@ package de.symeda.sormas.ui.statistics;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.ui.DateField;
+import com.vaadin.v7.ui.DateField;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;

@@ -22,8 +22,8 @@ import java.util.TreeMap;
 
 import org.apache.commons.collections.CollectionUtils;
 
-import com.vaadin.shared.ui.grid.HeightMode;
-import com.vaadin.ui.Grid;
+import com.vaadin.v7.shared.ui.grid.HeightMode;
+import com.vaadin.v7.ui.Grid;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;

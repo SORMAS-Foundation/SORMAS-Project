@@ -19,15 +19,15 @@ package de.symeda.sormas.ui.statistics;
 
 import java.util.Arrays;
 
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.v7.data.Property.ValueChangeEvent;
+import com.vaadin.v7.data.Property.ValueChangeListener;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
@@ -110,7 +110,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 
 		switchRowsAndColumnsButton = new Button();
 		CssStyles.style(switchRowsAndColumnsButton, CssStyles.FORCE_CAPTION);
-		switchRowsAndColumnsButton.setIcon(FontAwesome.EXCHANGE);
+		switchRowsAndColumnsButton.setIcon(VaadinIcons.EXCHANGE);
 		switchRowsAndColumnsButton.setDescription(I18nProperties.getCaption(Captions.statisticsExchange));
 		switchRowsAndColumnsButton.addClickListener(new ClickListener() {
 			@Override

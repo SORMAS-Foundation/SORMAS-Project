@@ -19,17 +19,17 @@ package de.symeda.sormas.ui.user;
 
 import java.util.Collection;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.data.util.converter.StringToCollectionConverter;
-import com.vaadin.data.util.filter.Compare.Equal;
-import com.vaadin.data.util.filter.Or;
-import com.vaadin.data.util.filter.SimpleStringFilter;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.renderers.HtmlRenderer;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.data.util.GeneratedPropertyContainer;
+import com.vaadin.v7.data.util.PropertyValueGenerator;
+import com.vaadin.v7.data.util.converter.StringToCollectionConverter;
+import com.vaadin.v7.data.util.filter.Compare.Equal;
+import com.vaadin.v7.data.util.filter.Or;
+import com.vaadin.v7.data.util.filter.SimpleStringFilter;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.v7.ui.Grid;
+import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserDto;
@@ -56,7 +56,7 @@ public class UserGrid extends Grid {
         editContainer.addGeneratedProperty(EDIT_BTN_ID, new PropertyValueGenerator<String>() {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
-				return FontAwesome.PENCIL_SQUARE.getHtml();
+				return VaadinIcons.EDIT.getHtml();
 			}
 			@Override
 			public Class<String> getType() {
@@ -134,9 +134,9 @@ public class UserGrid extends Grid {
    	 
         @Override
         public JsonValue encode(String value) {
-        	String iconValue = FontAwesome.CHECK_SQUARE_O.getHtml();
+        	String iconValue = VaadinIcons.CHECK_SQUARE_O.getHtml();
         	if(!Boolean.parseBoolean(value)) {
-        		iconValue = FontAwesome.SQUARE_O.getHtml();
+        		iconValue = VaadinIcons.THIN_SQUARE.getHtml();
         	}
             return super.encode(iconValue);
         }

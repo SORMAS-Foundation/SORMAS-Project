@@ -18,7 +18,7 @@
 package de.symeda.sormas.ui.events;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -93,7 +93,7 @@ public class EventParticipantsView extends AbstractEventView {
 					}
 				});
 			};
-			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), FontAwesome.TRASH, deleteCommand);
+			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
 
 			topLayout.addComponent(bulkOperationsDropdown);
 			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
@@ -103,7 +103,7 @@ public class EventParticipantsView extends AbstractEventView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
 			addButton = new Button(I18nProperties.getCaption(Captions.eventParticipantAddPerson));
 			addButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			addButton.setIcon(FontAwesome.PLUS_CIRCLE);
+			addButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			addButton.addClickListener(e -> {
 				ControllerProvider.getEventParticipantController().createEventParticipant(this.getEventRef(),
 						r -> grid.reload(getEventRef()));

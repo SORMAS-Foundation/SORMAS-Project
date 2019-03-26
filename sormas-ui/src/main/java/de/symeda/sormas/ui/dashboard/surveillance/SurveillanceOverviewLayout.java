@@ -17,11 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.surveillance;
 
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -72,16 +72,17 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 	private void addDiseaseBurdenView () {
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.setWidth(100, Unit.PERCENTAGE);
+		layout.setMargin(false);
 		
 		layout.addComponent(diseaseTileViewLayout);
 		layout.setExpandRatio(diseaseTileViewLayout, 1);
 		
 		// "Expand" and "Collapse" buttons
-		Button showTableViewButton = new Button("", FontAwesome.TABLE);
+		Button showTableViewButton = new Button("", VaadinIcons.TABLE);
 		CssStyles.style(showTableViewButton, CssStyles.BUTTON_SUBTLE);
 		showTableViewButton.addStyleName(CssStyles.VSPACE_NONE);
 		
-		Button showTileViewButton = new Button("", FontAwesome.CREDIT_CARD);
+		Button showTileViewButton = new Button("", VaadinIcons.CREDIT_CARD);
 		CssStyles.style(showTileViewButton, CssStyles.BUTTON_SUBTLE);
 		showTileViewButton.addStyleName(CssStyles.VSPACE_NONE);
 
@@ -121,9 +122,9 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 		buttonsLayout.setWidth(100, Unit.PERCENTAGE);
 		buttonsLayout.setMargin(new MarginInfo(false, true));
 		
-		showMoreButton = new Button(I18nProperties.getCaption(Captions.dashboardShowAllDiseases), FontAwesome.CHEVRON_DOWN);
+		showMoreButton = new Button(I18nProperties.getCaption(Captions.dashboardShowAllDiseases), VaadinIcons.CHEVRON_DOWN);
 		CssStyles.style(showMoreButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_4);
-		showLessButton = new Button(I18nProperties.getCaption(Captions.dashboardShowFirstDiseases), FontAwesome.CHEVRON_UP);
+		showLessButton = new Button(I18nProperties.getCaption(Captions.dashboardShowFirstDiseases), VaadinIcons.CHEVRON_UP);
 		CssStyles.style(showLessButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_4);
 		hideOverview = new CheckBox(I18nProperties.getCaption(Captions.dashboardHideOverview));
 		CssStyles.style(hideOverview, CssStyles.VSPACE_3);

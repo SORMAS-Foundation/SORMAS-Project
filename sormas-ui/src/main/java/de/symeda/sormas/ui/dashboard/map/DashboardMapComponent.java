@@ -32,18 +32,18 @@ import org.slf4j.LoggerFactory;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.server.ExternalResource;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.grid.HeightMode;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.v7.shared.ui.grid.HeightMode;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -134,7 +134,10 @@ public class DashboardMapComponent extends VerticalLayout {
 	public DashboardMapComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
 
+		setMargin(false);
+		setSpacing(false);
 		setSizeFull();
+
 		map = new LeafletMap();
 		map.setSizeFull();
 		map.addMarkerClickListener(new MarkerClickListener() {
@@ -255,10 +258,10 @@ public class DashboardMapComponent extends VerticalLayout {
 		mapHeaderLayout.setExpandRatio(mapLabel, 1);
 
 		// "Expand" and "Collapse" buttons
-		Button expandMapButton = new Button("", FontAwesome.EXPAND);
+		Button expandMapButton = new Button("", VaadinIcons.EXPAND);
 		CssStyles.style(expandMapButton, CssStyles.BUTTON_SUBTLE);
 		expandMapButton.addStyleName(CssStyles.VSPACE_NONE);
-		Button collapseMapButton = new Button("", FontAwesome.COMPRESS);
+		Button collapseMapButton = new Button("", VaadinIcons.COMPRESS);
 		CssStyles.style(collapseMapButton, CssStyles.BUTTON_SUBTLE);
 		collapseMapButton.addStyleName(CssStyles.VSPACE_NONE);
 
@@ -329,7 +332,7 @@ public class DashboardMapComponent extends VerticalLayout {
 					});
 					showCasesLayout.addComponent(showCasesCheckBox);
 
-					Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+					Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 					infoLabel.setDescription(I18nProperties.getString(Strings.infoCaseMap));
 					CssStyles.style(infoLabel, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_SECONDARY,
 							CssStyles.HSPACE_LEFT_3);
@@ -415,7 +418,7 @@ public class DashboardMapComponent extends VerticalLayout {
 						});
 						showRegionsLayout.addComponent(showRegionsCheckBox);
 
-						Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+						Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 						infoLabel.setDescription(I18nProperties.getString(Strings.infoCaseIncidence));
 						CssStyles.style(infoLabel, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_SECONDARY,
 								CssStyles.HSPACE_LEFT_3);

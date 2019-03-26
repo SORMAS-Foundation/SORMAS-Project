@@ -41,6 +41,8 @@ public class StatisticsFilterComponent extends VerticalLayout {
 
 	public StatisticsFilterComponent() {
 		setSpacing(true);
+		setMargin(false);
+
 		addStyleName(CssStyles.LAYOUT_MINIMAL);
 		setWidth(100, Unit.PERCENTAGE);
 

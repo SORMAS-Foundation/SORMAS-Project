@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.ui.Field;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.EntityDto;
 

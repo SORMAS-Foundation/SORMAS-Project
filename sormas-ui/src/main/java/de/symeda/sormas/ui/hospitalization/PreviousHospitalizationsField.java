@@ -19,7 +19,7 @@ package de.symeda.sormas.ui.hospitalization;
 
 import java.util.function.Consumer;
 
-import com.vaadin.ui.Table;
+import com.vaadin.v7.ui.Table;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.i18n.Captions;

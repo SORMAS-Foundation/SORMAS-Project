@@ -35,6 +35,9 @@ public class DashboardStatisticsComparisonElement extends VerticalLayout {
 	private String rightCaption;
 
 	public DashboardStatisticsComparisonElement(String leftCaption, String rightCaption) {
+		this.setMargin(false);
+		this.setSpacing(false);
+
 		this.leftCaption = leftCaption;
 		this.rightCaption = rightCaption;
 

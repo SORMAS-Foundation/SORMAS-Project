@@ -22,13 +22,12 @@ import java.util.Map;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.event.MouseEvents;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
@@ -74,9 +73,9 @@ public class Menu extends CssLayout {
         title.setSizeUndefined();
         Image image = new Image(null, new ThemeResource("img/sormas-logo.png"));
         CssStyles.style(image, ValoTheme.MENU_LOGO, ValoTheme.BUTTON_LINK);
-        image.addClickListener(new com.vaadin.event.MouseEvents.ClickListener() {
+        image.addClickListener(new MouseEvents.ClickListener() {
 			@Override
-			public void click(com.vaadin.event.MouseEvents.ClickEvent event) {
+			public void click(MouseEvents.ClickEvent event) {
 	        	SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME);
 			}
         });
@@ -86,21 +85,21 @@ public class Menu extends CssLayout {
 
         // logout menu item
         MenuBar logoutMenu = new MenuBar();
-        logoutMenu.addItem(I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName() + ")", FontAwesome.SIGN_OUT, new Command() {
-
+        logoutMenu.addItem(I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName()+")", VaadinIcons.SIGN_OUT, new Command() {
             @Override
             public void menuSelected(MenuItem selectedItem) {
             	LoginHelper.logout();
             }
         });
 
+
         logoutMenu.addStyleName("user-menu");
         menuPart.addComponent(logoutMenu);
 
         // button for toggling the visibility of the menu when on a small screen
-        final Button showMenu = new Button(I18nProperties.getCaption(Captions.menu), new ClickListener() {
+        final Button showMenu = new Button(I18nProperties.getCaption(Captions.menu), new Button.ClickListener() {
             @Override
-            public void buttonClick(final ClickEvent event) {
+            public void buttonClick(final Button.ClickEvent event) {
                 if (menuPart.getStyleName().contains(VALO_MENU_VISIBLE)) {
                     menuPart.removeStyleName(VALO_MENU_VISIBLE);
                 } else {
@@ -110,7 +109,7 @@ public class Menu extends CssLayout {
         });
         showMenu.addStyleName(ValoTheme.BUTTON_PRIMARY);
         showMenu.addStyleName(VALO_MENU_TOGGLE);
-        showMenu.setIcon(FontAwesome.NAVICON);
+        showMenu.setIcon(VaadinIcons.MENU);
         menuPart.addComponent(showMenu);
 
         // container for the navigation buttons, which are added by addView()
@@ -165,10 +164,10 @@ public class Menu extends CssLayout {
 
     private void createViewButton(final String name, String caption,
             Resource icon) {
-        Button button = new Button(caption, new ClickListener() {
+        Button button = new Button(caption, new Button.ClickListener() {
 
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(Button.ClickEvent event) {
                 navigator.navigateTo(name);
 
             }

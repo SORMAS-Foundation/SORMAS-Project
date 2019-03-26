@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -43,8 +43,12 @@ public class SampleListComponent extends VerticalLayout {
 
 	public SampleListComponent(CaseReferenceDto caseRef) {
 		setWidth(100, Unit.PERCENTAGE);
+		setMargin(false);
+		setSpacing(false);
 
 		HorizontalLayout componentHeader = new HorizontalLayout();
+		componentHeader.setMargin(false);
+		componentHeader.setSpacing(false);
 		componentHeader.setWidth(100, Unit.PERCENTAGE);
 		addComponent(componentHeader);
 
@@ -58,7 +62,7 @@ public class SampleListComponent extends VerticalLayout {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
 			createButton = new Button(I18nProperties.getCaption(Captions.sampleNewSample));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(e -> ControllerProvider.getSampleController().create(caseRef, this::reload));
 			componentHeader.addComponent(createButton);
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);

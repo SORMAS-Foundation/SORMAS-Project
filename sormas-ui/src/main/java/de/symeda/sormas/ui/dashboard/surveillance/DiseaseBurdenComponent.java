@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 

@@ -22,8 +22,8 @@ import java.util.function.Supplier;
 
 import org.joda.time.DateTimeComparator;
 
-import com.vaadin.data.validator.AbstractValidator;
-import com.vaadin.ui.Field;
+import com.vaadin.v7.data.validator.AbstractValidator;
+import com.vaadin.v7.ui.Field;
 
 /**
  * Compares the value of a date field to a supplied reference date.

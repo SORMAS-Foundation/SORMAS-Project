@@ -21,12 +21,12 @@ import java.util.Date;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -84,7 +84,7 @@ public class DistrictsView extends AbstractConfigurationView {
 		Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
 		exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		exportButton.setIcon(FontAwesome.TABLE);
+		exportButton.setIcon(VaadinIcons.TABLE);
 		addHeaderComponent(exportButton);
 
 		StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), grid.getColumns(), "sormas_districts", "sormas_districts_" + DateHelper.formatDateForExport(new Date()) + ".csv", DistrictsGrid.EDIT_BTN_ID);
@@ -94,7 +94,7 @@ public class DistrictsView extends AbstractConfigurationView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = new Button(I18nProperties.getCaption(Captions.actionNewEntry));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(
 					e -> ControllerProvider.getInfrastructureController().createDistrict());
 			addHeaderComponent(createButton);
@@ -105,6 +105,7 @@ public class DistrictsView extends AbstractConfigurationView {
 
 	private HorizontalLayout createFilterBar() {
 		filterLayout = new HorizontalLayout();
+		filterLayout.setMargin(false);
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
 

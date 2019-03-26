@@ -21,7 +21,7 @@ import java.util.Date;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.ValoTheme;
@@ -51,7 +51,7 @@ public class SamplesView extends AbstractView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EXPORT)) {
 			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
 			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			exportButton.setIcon(FontAwesome.DOWNLOAD);
+			exportButton.setIcon(VaadinIcons.DOWNLOAD);
 			
 			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(sampleListComponent.getGrid().getContainerDataSource(), sampleListComponent.getGrid().getColumns(), "sormas_samples", "sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv", SampleGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);

@@ -24,11 +24,11 @@ import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.AbstractSelect;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.ui.AbstractField;
+import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Field;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.ui.HasComponents;
 
 import de.symeda.sormas.api.Disease;

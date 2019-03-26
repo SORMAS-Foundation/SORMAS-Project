@@ -24,13 +24,13 @@ import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
@@ -38,7 +38,7 @@ import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -150,7 +150,7 @@ public class ContactsView extends AbstractView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
 
 			PopupButton exportButton = new PopupButton(I18nProperties.getCaption(Captions.export)); 
-			exportButton.setIcon(FontAwesome.DOWNLOAD);
+			exportButton.setIcon(VaadinIcons.DOWNLOAD);
 			VerticalLayout exportLayout = new VerticalLayout();
 			exportLayout.setSpacing(true); 
 			exportLayout.setMargin(true);
@@ -162,7 +162,7 @@ public class ContactsView extends AbstractView {
 			Button basicExportButton = new Button(I18nProperties.getCaption(Captions.exportBasic));
 			basicExportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			basicExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			basicExportButton.setIcon(FontAwesome.TABLE);
+			basicExportButton.setIcon(VaadinIcons.TABLE);
 			basicExportButton.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(basicExportButton);
 
@@ -173,7 +173,7 @@ public class ContactsView extends AbstractView {
 			Button extendedExportButton = new Button(I18nProperties.getCaption(Captions.exportDetailed));
 			extendedExportButton.setDescription(I18nProperties.getDescription(Descriptions.descDetailedExportButton));
 			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			extendedExportButton.setIcon(FontAwesome.FILE_TEXT);
+			extendedExportButton.setIcon(VaadinIcons.FILE_TEXT);
 			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(extendedExportButton);
 
@@ -205,9 +205,12 @@ public class ContactsView extends AbstractView {
 
 	public VerticalLayout createFilterBar() {
 		VerticalLayout filterLayout = new VerticalLayout();
+		filterLayout.setSpacing(false);
+		filterLayout.setMargin(false);
 		filterLayout.setWidth(100, Unit.PERCENTAGE);
 
 		firstFilterRowLayout = new HorizontalLayout();
+		firstFilterRowLayout.setMargin(false);
 		firstFilterRowLayout.setSpacing(true);
 		firstFilterRowLayout.setSizeUndefined();
 		{
@@ -264,6 +267,7 @@ public class ContactsView extends AbstractView {
 		filterLayout.addComponent(firstFilterRowLayout);
 
 		secondFilterRowLayout = new HorizontalLayout();
+		secondFilterRowLayout.setMargin(false);
 		secondFilterRowLayout.setSpacing(true);
 		secondFilterRowLayout.setSizeUndefined();
 		{
@@ -416,6 +420,7 @@ public class ContactsView extends AbstractView {
 
 	public HorizontalLayout createStatusFilterBar() {
 		HorizontalLayout statusFilterLayout = new HorizontalLayout();
+		statusFilterLayout.setMargin(false);
 		statusFilterLayout.setSpacing(true);
 		statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 		statusFilterLayout.addStyleName(CssStyles.VSPACE_3);
@@ -468,7 +473,7 @@ public class ContactsView extends AbstractView {
 				Command changeCommand = selectedItem -> {
 					ControllerProvider.getContactController().showBulkContactDataEditComponent(grid.getSelectedRows(), null);
 				};
-				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkEdit), FontAwesome.ELLIPSIS_H, changeCommand);
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, changeCommand);
 
 				Command cancelFollowUpCommand = selectedItem -> {
 					ControllerProvider.getContactController().cancelFollowUpOfAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -477,7 +482,7 @@ public class ContactsView extends AbstractView {
 						}
 					});
 				};
-				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkCancelFollowUp), FontAwesome.TIMES, cancelFollowUpCommand);
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkCancelFollowUp), VaadinIcons.CLOSE, cancelFollowUpCommand);
 
 				Command lostToFollowUpCommand = selectedItem -> {
 					ControllerProvider.getContactController().setAllSelectedItemsToLostToFollowUp(grid.getSelectedRows(), new Runnable() {
@@ -486,7 +491,7 @@ public class ContactsView extends AbstractView {
 						}
 					});
 				};
-				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkLostToFollowUp), FontAwesome.UNLINK, lostToFollowUpCommand);
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkLostToFollowUp), VaadinIcons.UNLINK, lostToFollowUpCommand);
 
 				Command deleteCommand = selectedItem -> {
 					ControllerProvider.getContactController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
@@ -495,7 +500,7 @@ public class ContactsView extends AbstractView {
 						}
 					});
 				};
-				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), FontAwesome.TRASH, deleteCommand);
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
 
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
 			}
@@ -508,9 +513,9 @@ public class ContactsView extends AbstractView {
 	}
 	
 	private void addShowMoreOrLessFiltersButtons(HorizontalLayout parentLayout) {
-		expandFiltersButton = new Button(I18nProperties.getCaption(Captions.actionShowMoreFilters), FontAwesome.CHEVRON_DOWN);
+		expandFiltersButton = new Button(I18nProperties.getCaption(Captions.actionShowMoreFilters), VaadinIcons.CHEVRON_DOWN);
 		CssStyles.style(expandFiltersButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		collapseFiltersButton = new Button(I18nProperties.getCaption(Captions.actionShowLessFilters), FontAwesome.CHEVRON_UP);
+		collapseFiltersButton = new Button(I18nProperties.getCaption(Captions.actionShowLessFilters), VaadinIcons.CHEVRON_UP);
 		CssStyles.style(collapseFiltersButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 
 		expandFiltersButton.addClickListener(e -> {

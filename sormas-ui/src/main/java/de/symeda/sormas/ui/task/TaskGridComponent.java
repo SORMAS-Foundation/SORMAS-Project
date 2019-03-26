@@ -20,10 +20,10 @@ package de.symeda.sormas.ui.task;
 import java.util.HashMap;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
@@ -72,7 +72,8 @@ public class TaskGridComponent extends VerticalLayout {
 
 	public TaskGridComponent(Label viewTitleLabel, AbstractView tasksView) {
 		setSizeFull();
-		
+		setMargin(false);
+
 		this.viewTitleLabel = viewTitleLabel;
 		this.tasksView = tasksView;
 		originalViewTitle = viewTitleLabel.getValue();
@@ -97,6 +98,7 @@ public class TaskGridComponent extends VerticalLayout {
 
 	public HorizontalLayout createFilterBar() {
 		HorizontalLayout filterLayout = new HorizontalLayout();
+		filterLayout.setMargin(false);
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
 
@@ -123,6 +125,7 @@ public class TaskGridComponent extends VerticalLayout {
 
 	public HorizontalLayout createAssigneeFilterBar() {
 		HorizontalLayout assigneeFilterLayout = new HorizontalLayout();
+		assigneeFilterLayout.setMargin(false);
 		assigneeFilterLayout.setSpacing(true);
 		assigneeFilterLayout.setWidth(100, Unit.PERCENTAGE);
 		assigneeFilterLayout.addStyleName(CssStyles.VSPACE_3);
@@ -179,7 +182,7 @@ public class TaskGridComponent extends VerticalLayout {
 						}
 					});
 				};
-				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), FontAwesome.TRASH, deleteCommand);
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
 				
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
 			}

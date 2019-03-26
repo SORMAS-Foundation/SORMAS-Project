@@ -21,7 +21,7 @@ import java.io.Serializable;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -99,10 +99,12 @@ public class LoginScreen extends CssLayout {
 				+ "<h2 style='color:white'>Surveillance, Outbreak Response Management and Analysis System</h2>"
 				+ "<h3 style='color:white; text-transform:uppercase'>&#9679; Disease Prevention<br>&#9679; Disease Detection<br>&#9679; Outbreak Response</h3>",
 				ContentMode.HTML);
+		loginInfoText.setWidth(100, Unit.PERCENTAGE);
 		innerLayout.addComponent(loginInfoText);
 		innerLayout.setExpandRatio(loginInfoText, 1);
 
 		Label loginInfoCopyright = new Label("© 2019 SORMAS. All Rights Reserved.");
+		loginInfoCopyright.setWidth(100, Unit.PERCENTAGE);
 		innerLayout.addComponent(loginInfoCopyright);
 		innerLayout.setExpandRatio(loginInfoCopyright, 0);
 		innerLayout.setComponentAlignment(loginInfoCopyright, Alignment.BOTTOM_LEFT);

@@ -23,20 +23,20 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.Buffered;
-import com.vaadin.data.Validator;
 import com.vaadin.server.AbstractErrorMessage.ContentMode;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.ErrorEvent;
 import com.vaadin.server.ErrorHandler;
 import com.vaadin.server.ErrorMessage;
-import com.vaadin.server.ErrorMessage.ErrorLevel;
 import com.vaadin.server.Page;
 import com.vaadin.server.SystemError;
 import com.vaadin.server.UserError;
+import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Notification;
+import com.vaadin.v7.data.Buffered;
+import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.ui.AbstractField;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -158,6 +158,7 @@ public class SormasErrorHandler implements ErrorHandler {
     
     private static final class LocalUserError extends UserError {
 		private static final long serialVersionUID = 1L;
+		
 		public LocalUserError(String textErrorMessage) {
             super(textErrorMessage);
         }
@@ -166,12 +167,14 @@ public class SormasErrorHandler implements ErrorHandler {
                 ErrorLevel errorLevel) {
             super(message, contentMode, errorLevel);
         }
-    	@Override
-    	protected void addCause(ErrorMessage cause) {
+    	
+        @Override
+		public void addCause(ErrorMessage cause) {
     		super.addCause(cause);
     	}
+    	
     	@Override
-    	protected void setErrorLevel(ErrorLevel level) {
+		public void setErrorLevel(ErrorLevel level) {
     		super.setErrorLevel(level);
     	}
     }

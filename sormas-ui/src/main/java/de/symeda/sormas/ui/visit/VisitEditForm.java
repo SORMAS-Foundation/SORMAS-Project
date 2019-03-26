@@ -19,9 +19,9 @@ package de.symeda.sormas.ui.visit;
 
 import java.util.Date;
 
-import com.vaadin.data.Validator;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.ui.OptionGroup;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactDto;

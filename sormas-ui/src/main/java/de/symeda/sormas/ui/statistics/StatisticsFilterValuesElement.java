@@ -25,9 +25,9 @@ import org.apache.commons.collections.CollectionUtils;
 
 import com.explicatis.ext_token_field.ExtTokenField;
 import com.explicatis.ext_token_field.Tokenizable;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.combobox.FilteringMode;
+import com.vaadin.data.HasValue.ValueChangeListener;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -55,9 +55,9 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 	private final StatisticsCaseAttribute attribute;
 	private final StatisticsCaseSubAttribute subAttribute;
 
-	private ValueChangeListener valueChangeListener;
+	private Registration valueChangeListenerRegistration;
 	private ExtTokenField tokenField;
-	private ComboBox addDropdown;
+	private ComboBox<TokenizableValue> addDropdown;
 
 	/**
 	 * Only needed when this element is part of a Region/District element.
@@ -87,8 +87,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 	}
 
 	public void updateDropdownContent() {
-		addDropdown.removeAllItems();
-		addDropdown.addItems(getFilterValues());
+		addDropdown.setItems(getFilterValues());
 	}
 
 	private ExtTokenField createTokenField(String caption) {
@@ -97,13 +96,12 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		tokenField.setWidth(100, Unit.PERCENTAGE);
 		tokenField.setEnableDefaultDeleteTokenAction(true);
 
-		addDropdown = new ComboBox("", getFilterValues());
+		addDropdown = new ComboBox<TokenizableValue>("", getFilterValues());
 		addDropdown.addStyleName(CssStyles.VSPACE_NONE);
-		addDropdown.setFilteringMode(FilteringMode.CONTAINS);
-		addDropdown.setInputPrompt(I18nProperties.getString(Strings.promptTypeToAdd));
+		addDropdown.setPlaceholder(I18nProperties.getString(Strings.promptTypeToAdd));
 		tokenField.setInputField(addDropdown);
 		addDropdown.addValueChangeListener(e -> {
-			TokenizableValue token = (TokenizableValue) e.getProperty().getValue();
+			TokenizableValue token = e.getValue();
 			if (token != null) {
 				tokenField.addTokenizable(token);
 				addDropdown.setValue(null);
@@ -117,7 +115,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		VerticalLayout utilityButtonsLayout = new VerticalLayout();
 		utilityButtonsLayout.setSizeUndefined();
 
-		Button addAllButton = new Button(I18nProperties.getCaption(Captions.all), FontAwesome.PLUS_CIRCLE);
+		Button addAllButton = new Button(I18nProperties.getCaption(Captions.all), VaadinIcons.PLUS_CIRCLE);
 		CssStyles.style(addAllButton, ValoTheme.BUTTON_LINK);
 		addAllButton.addClickListener(e -> {
 			for (TokenizableValue tokenizable : getFilterValues()) {
@@ -125,7 +123,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 			}
 		});
 
-		Button removeAllButton = new Button(I18nProperties.getCaption(Captions.actionClear), FontAwesome.TIMES_CIRCLE);
+		Button removeAllButton = new Button(I18nProperties.getCaption(Captions.actionClear), VaadinIcons.CLOSE_CIRCLE);
 		CssStyles.style(removeAllButton, ValoTheme.BUTTON_LINK);
 		removeAllButton.addClickListener(e -> {
 			for (Tokenizable tokenizable : tokenField.getValue()) {
@@ -199,22 +197,21 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		}
 	}
 
-	public void setValueChangeListener(ValueChangeListener valueChangeListener) {
-		if (this.valueChangeListener != null) {
-			tokenField.removeValueChangeListener(this.valueChangeListener);
-			this.valueChangeListener = null;
+	public void setValueChangeListener(ValueChangeListener<List<Tokenizable>> valueChangeListener) {
+		if (valueChangeListenerRegistration != null) {
+			valueChangeListenerRegistration.remove();
+			valueChangeListenerRegistration = null;
 		}
 
 		if (valueChangeListener != null) {
-			this.valueChangeListener = valueChangeListener;
-			tokenField.addValueChangeListener(valueChangeListener);
+			valueChangeListenerRegistration = tokenField.addValueChangeListener(valueChangeListener);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<TokenizableValue> getSelectedValues() {
-		return (List<TokenizableValue>) tokenField.getValue();
+		return (List<TokenizableValue>)(List<? extends Tokenizable>)tokenField.getValue();
 	}
 
 	public ExtTokenField getTokenField() {

@@ -23,7 +23,7 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewProvider;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 
@@ -56,8 +56,6 @@ import de.symeda.sormas.ui.user.UsersView;
 
 /**
  * Content of the UI when the user is logged in.
- * 
- * 
  */
 @SuppressWarnings("serial")
 public class MainScreen extends HorizontalLayout {
@@ -105,48 +103,48 @@ public class MainScreen extends HorizontalLayout {
 			ControllerProvider.getDashboardController().registerViews(navigator);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
-			menu.addView(SurveillanceDashboardView.class, AbstractDashboardView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuDashboard), FontAwesome.DASHBOARD);
+			menu.addView(SurveillanceDashboardView.class, AbstractDashboardView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuDashboard), VaadinIcons.DASHBOARD);
 		} else if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_CONTACT_ACCESS)) {
-			menu.addView(ContactsDashboardView.class, AbstractDashboardView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuDashboard), FontAwesome.DASHBOARD);
+			menu.addView(ContactsDashboardView.class, AbstractDashboardView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuDashboard), VaadinIcons.DASHBOARD);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
-			menu.addView(TasksView.class, TasksView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuTasks), FontAwesome.TASKS);
+			menu.addView(TasksView.class, TasksView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuTasks), VaadinIcons.TASKS);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 			ControllerProvider.getCaseController().registerViews(navigator);
-			menu.addView(CasesView.class, CasesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuCases), FontAwesome.EDIT);
+			menu.addView(CasesView.class, CasesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuCases), VaadinIcons.EDIT);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 			ControllerProvider.getContactController().registerViews(navigator);
-			menu.addView(ContactsView.class, ContactsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuContacts), FontAwesome.HAND_PAPER_O);
+			menu.addView(ContactsView.class, ContactsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuContacts), VaadinIcons.HAND);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
 			ControllerProvider.getEventController().registerViews(navigator);
-			menu.addView(EventsView.class, EventsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuEvents), FontAwesome.PHONE);
+			menu.addView(EventsView.class, EventsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuEvents), VaadinIcons.PHONE);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
 			ControllerProvider.getSampleController().registerViews(navigator);
-			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSamples), FontAwesome.DATABASE);
+			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSamples), VaadinIcons.DATABASE);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.WEEKLYREPORT_VIEW)) {
-			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuReports), FontAwesome.FILE_TEXT);
+			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuReports), VaadinIcons.FILE_TEXT);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.STATISTICS_ACCESS)) {
 			ControllerProvider.getStatisticsController().registerViews(navigator);
-			menu.addView(StatisticsView.class, AbstractStatisticsView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuStatistics), FontAwesome.BAR_CHART);
+			menu.addView(StatisticsView.class, AbstractStatisticsView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuStatistics), VaadinIcons.BAR_CHART);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.USER_VIEW)) {
-			menu.addView(UsersView.class, UsersView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers), FontAwesome.USERS);
+			menu.addView(UsersView.class, UsersView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers), VaadinIcons.USERS);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONFIGURATION_ACCESS)) {
 			AbstractConfigurationView.registerViews(navigator);
 			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
-				menu.addView(RegionsView.class, AbstractConfigurationView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuConfiguration), FontAwesome.COGS);
+				menu.addView(RegionsView.class, AbstractConfigurationView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuConfiguration), VaadinIcons.COGS);
 			} else {
-				menu.addView(OutbreaksView.class, AbstractConfigurationView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuConfiguration), FontAwesome.COGS);
+				menu.addView(OutbreaksView.class, AbstractConfigurationView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuConfiguration), VaadinIcons.COGS);
 			}
 		}
-		menu.addView(AboutView.class, AboutView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAbout), FontAwesome.INFO_CIRCLE);
+		menu.addView(AboutView.class, AboutView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAbout), VaadinIcons.INFO_CIRCLE);
 
 		navigator.addViewChangeListener(viewChangeListener);
 				
@@ -155,6 +153,8 @@ public class MainScreen extends HorizontalLayout {
 		addComponent(menu);
 		addComponent(viewContainer);
 		setExpandRatio(viewContainer, 1);
+		setSpacing(false);
+		setMargin(false);
 		setSizeFull();
 	}
 

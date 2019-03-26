@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.statistics;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -43,6 +43,9 @@ public class DashboardStatisticsGrowthElement extends VerticalLayout {
 	}
 
 	public DashboardStatisticsGrowthElement(String caption, String captionClass, Alignment alignment) {
+		this.setMargin(false);
+		this.setSpacing(false);
+
 		this.caption = caption;
 		this.captionClass = captionClass;
 
@@ -97,13 +100,13 @@ public class DashboardStatisticsGrowthElement extends VerticalLayout {
 		percentageLabel.setValue(percentage != Integer.MIN_VALUE ? (percentage + " %") : "");
 		CssStyles.removeStyles(growthLabel, CssStyles.LABEL_CRITICAL, CssStyles.LABEL_POSITIVE, CssStyles.LABEL_IMPORTANT);
 		if (percentage > 0) {
-			growthLabel.setValue(FontAwesome.CHEVRON_UP.getHtml());
+			growthLabel.setValue(VaadinIcons.CHEVRON_UP.getHtml());
 			CssStyles.style(growthLabel, increaseIsPositive ? CssStyles.LABEL_POSITIVE : CssStyles.LABEL_CRITICAL);
 		} else if (percentage < 0) {
-			growthLabel.setValue(FontAwesome.CHEVRON_DOWN.getHtml());
+			growthLabel.setValue(VaadinIcons.CHEVRON_DOWN.getHtml());
 			CssStyles.style(growthLabel, increaseIsPositive ? CssStyles.LABEL_CRITICAL : CssStyles.LABEL_POSITIVE);
 		} else {
-			growthLabel.setValue(FontAwesome.CHEVRON_RIGHT.getHtml());
+			growthLabel.setValue(VaadinIcons.CHEVRON_RIGHT.getHtml());
 			CssStyles.style(growthLabel, CssStyles.LABEL_IMPORTANT);
 		}
 	}

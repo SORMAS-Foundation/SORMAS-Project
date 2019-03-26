@@ -65,6 +65,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		layout.addStyleName(DashboardCssStyles.CURVE_AND_MAP_LAYOUT);
 		layout.setWidth(100, Unit.PERCENTAGE);
 		layout.setMargin(false);
+		layout.setSpacing(false);
 
 		// Epi curve layout
 		epiCurveLayout = createEpiCurveLayout();
@@ -84,6 +85,8 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		}
 
 		VerticalLayout layout = new VerticalLayout();
+		layout.setMargin(false);
+		layout.setSpacing(false);
 		layout.setWidth(100, Unit.PERCENTAGE);
 		layout.setHeight(400, Unit.PIXELS);
 
@@ -117,6 +120,8 @@ public class ContactsDashboardView extends AbstractDashboardView {
 					"MapComponent needs to be initialized before calling createMapLayout");
 		}
 		VerticalLayout layout = new VerticalLayout();
+		layout.setMargin(false);
+		layout.setSpacing(false);
 		layout.setWidth(100, Unit.PERCENTAGE);
 		layout.setHeight(555, Unit.PIXELS);
 

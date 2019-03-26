@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -44,8 +44,12 @@ public class TaskListComponent extends VerticalLayout {
 
 	public TaskListComponent(TaskContext context, ReferenceDto entityRef) {
 		setWidth(100, Unit.PERCENTAGE);
+		setMargin(false);
+		setSpacing(false);
 
 		HorizontalLayout componentHeader = new HorizontalLayout();
+		componentHeader.setMargin(false);
+		componentHeader.setSpacing(false);
 		componentHeader.setWidth(100, Unit.PERCENTAGE);
 		addComponent(componentHeader);
 
@@ -59,7 +63,7 @@ public class TaskListComponent extends VerticalLayout {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
 			createButton = new Button(I18nProperties.getCaption(Captions.taskNewTask));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(
 					e -> ControllerProvider.getTaskController().create(context, entityRef, this::reload));
 			componentHeader.addComponent(createButton);

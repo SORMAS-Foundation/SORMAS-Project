@@ -18,7 +18,7 @@
 package de.symeda.sormas.ui.dashboard;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.OptionGroup;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -81,6 +81,7 @@ public abstract class AbstractDashboardView extends AbstractView {
 
 		// Dashboard layout
 		dashboardLayout = new VerticalLayout();
+		dashboardLayout.setMargin(false);
 		dashboardLayout.setSpacing(false);
 		dashboardLayout.setSizeFull();
 		dashboardLayout.setStyleName("crud-main-layout");

@@ -15,7 +15,7 @@
 		<slf4j.version>1.7.21</slf4j.version>
 		<logback.version>1.1.7</logback.version>
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
-		<vaadin.version>7.7.13</vaadin.version>
+		<vaadin.version>8.7.1</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<jersey.version>2.22.1</jersey.version>
 		<jetty.plugin.version>9.2.3.v20140905</jetty.plugin.version>
@@ -232,7 +232,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.vaadin</groupId>
-				<artifactId>vaadin-client</artifactId>
+				<artifactId>vaadin-compatibility-client</artifactId>
 				<version>${vaadin.version}</version>
 				<scope>provided</scope>
 			</dependency>
@@ -244,7 +244,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.vaadin</groupId>
-				<artifactId>vaadin-server</artifactId>
+				<artifactId>vaadin-compatibility-server</artifactId>
 				<version>${vaadin.version}</version>
 			</dependency>
 			<dependency>
@@ -257,13 +257,13 @@
 			<dependency>
 				<groupId>org.vaadin.addons</groupId>
 				<artifactId>popupbutton</artifactId>
-				<version>2.6.0</version>
+				<version>3.0.0</version>
 			</dependency>
 
 			<dependency>
 			   <groupId>org.vaadin.addons</groupId>
 			   <artifactId>extended-token-field</artifactId>
-			   <version>0.2.3</version>
+			   <version>0.3.0</version>
 			</dependency>
 
 			<dependency>
