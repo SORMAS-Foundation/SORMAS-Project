@@ -130,7 +130,7 @@ public class DownloadUtil {
 	}
 
 	@SuppressWarnings("serial")
-	public static <T> StreamResource createCsvExportStreamResource(Class<T> exportRowClass, BiFunction<Integer, Integer, List<T>> exportRowsSupplier, Function<String,String> propertyIdCaptionFunction, String exportFileName) {
+	public static <T> StreamResource createCsvExportStreamResource(Class<T> exportRowClass, BiFunction<Integer, Integer, List<T>> exportRowsSupplier, BiFunction<String,Class<?>,String> propertyIdCaptionFunction, String exportFileName) {
 		StreamResource extendedStreamResource = new StreamResource(new StreamSource() {
 			@Override
 			public InputStream getStream() {
@@ -154,7 +154,7 @@ public class DownloadUtil {
 										: method.getName().substring(2); 
 								propertyId = Character.toLowerCase(propertyId.charAt(0)) + propertyId.substring(1);
 								// field caption - export, case, person, symptoms, hospitalization
-								fieldValues[i] = propertyIdCaptionFunction.apply(propertyId);
+								fieldValues[i] = propertyIdCaptionFunction.apply(propertyId, method.getReturnType());
 					}
 					writer.writeNext(fieldValues);
 
