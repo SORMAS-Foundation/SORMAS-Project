@@ -103,6 +103,8 @@ public class DatabaseExportView extends AbstractStatisticsView {
 			for (CheckBox checkBox : databaseTableToggles.keySet()) {
 				if (databaseTableToggles.get(checkBox).getDatabaseTableType() == DatabaseTableType.SORMAS) {
 					checkBox.setValue(true);
+				} else {
+					checkBox.setValue(false);
 				}
 			}
 		});
