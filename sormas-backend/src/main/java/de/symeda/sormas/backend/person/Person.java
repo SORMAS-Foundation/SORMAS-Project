@@ -194,7 +194,8 @@ public class Person extends AbstractDomainObject {
 	public void setApproximateAge(Integer approximateAge) {
 		this.approximateAge = approximateAge;
 	}
-	
+
+	@Enumerated(EnumType.STRING)
 	public ApproximateAgeType getApproximateAgeType() {
 		return approximateAgeType;
 	}
