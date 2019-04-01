@@ -52,6 +52,7 @@ public abstract class BaseLandingActivity extends BaseActivity {
     protected void onResumeFragments() {
         super.onResumeFragments();
         replaceFragment(buildLandingFragment());
+        updatePageMenu();
     }
 
     public abstract BaseLandingFragment buildLandingFragment();

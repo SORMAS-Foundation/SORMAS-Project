@@ -42,6 +42,8 @@ import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDtoHelper;
+import de.symeda.sormas.app.backend.therapy.Therapy;
+import de.symeda.sormas.app.backend.therapy.TherapyDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.rest.RetroProvider;
@@ -55,6 +57,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
     private SymptomsDtoHelper  symptomsDtoHelper = new SymptomsDtoHelper();
     private HospitalizationDtoHelper hospitalizationDtoHelper = new HospitalizationDtoHelper();
     private EpiDataDtoHelper epiDataDtoHelper = new EpiDataDtoHelper();
+    private TherapyDtoHelper therapyDtoHelper = new TherapyDtoHelper();
 
 
     @Override
@@ -112,6 +115,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
         target.setHospitalization(hospitalizationDtoHelper.fillOrCreateFromDto(target.getHospitalization(), source.getHospitalization()));
         target.setEpiData(epiDataDtoHelper.fillOrCreateFromDto(target.getEpiData(), source.getEpiData()));
+        target.setTherapy(therapyDtoHelper.fillOrCreateFromDto(target.getTherapy(), source.getTherapy()));
 
         target.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getSurveillanceOfficer()));
         target.setPregnant(source.getPregnant());
@@ -224,6 +228,13 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
             target.setEpiData(epiDataDtoHelper.adoToDto(epiData));
         } else {
             target.setEpiData(null);
+        }
+
+        if (source.getTherapy() != null) {
+            Therapy therapy = DatabaseHelper.getTherapyDao().queryForId(source.getTherapy().getId());
+            target.setTherapy(therapyDtoHelper.adoToDto(therapy));
+        } else {
+            target.setTherapy(null);
         }
 
         target.setPregnant(source.getPregnant());

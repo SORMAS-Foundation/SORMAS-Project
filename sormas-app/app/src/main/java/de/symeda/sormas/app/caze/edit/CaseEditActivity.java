@@ -22,11 +22,12 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.view.Menu;
 
-import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.user.UserHelper;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
@@ -89,6 +90,11 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     public List<PageMenuItem> getPageMenuData() {
         List<PageMenuItem> menuItems = PageMenuItem.fromEnum(CaseSection.values(), getContext());
         Case caze = getStoredRootEntity();
+        // Sections must be removed in reverse order
+        if (!ConfigProvider.hasUserRight(UserRight.THERAPY_VIEW)) {
+            menuItems.remove(CaseSection.TREATMENTS.ordinal());
+            menuItems.remove(CaseSection.PRESCRIPTIONS.ordinal());
+        }
         if (caze != null && !DiseaseHelper.hasContactFollowUp(caze.getDisease(), caze.getPlagueType())) {
             menuItems.remove(CaseSection.CONTACTS.ordinal());
         }
@@ -121,6 +127,12 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                 break;
             case SAMPLES:
                 fragment = CaseEditSampleListFragment.newInstance(activityRootData);
+                break;
+            case PRESCRIPTIONS:
+                fragment = CaseEditPrescriptionListFragment.newInstance(activityRootData);
+                break;
+            case TREATMENTS:
+                fragment = CaseEditTreatmentListFragment.newInstance(activityRootData);
                 break;
             case TASKS:
                 fragment = CaseEditTaskListFragment.newInstance(activityRootData);

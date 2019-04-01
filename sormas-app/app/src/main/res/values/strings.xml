@@ -39,6 +39,7 @@
     <string name="action_create">Create</string>
     <string name="action_create_case_from_contact">Create a case for this contact person</string>
     <string name="action_create_case_from_event_person">Create a case for this event person</string>
+    <string name="action_create_treatment">Create treatment</string>
     <string name="action_delete">Delete</string>
     <string name="action_dismiss">Dismiss</string>
     <string name="action_done">Done</string>
@@ -69,6 +70,7 @@
     <string name="action_not_executable">Not Executable</string>
     <string name="action_ok">OK</string>
     <string name="action_open_event_person_case">Open Case of Event Person</string>
+    <string name="action_open_prescription">Open Prescription</string>
     <string name="action_open_resulting_case">Open Resulting Case</string>
     <string name="action_open_source_case">Open Source Case</string>
     <string name="action_open_syncLog">Synchronization conflicts</string>
@@ -83,8 +85,10 @@
     <string name="action_save_contact">Save Contact</string>
     <string name="action_save_event">Save Event</string>
     <string name="action_save_event_participant">Save Event Participant</string>
+    <string name="action_save_prescription">Save Prescription</string>
     <string name="action_save_sample">Save Sample</string>
     <string name="action_save_task">Save Task</string>
+    <string name="action_save_treatment">Save Treatment</string>
     <string name="action_save_visit">Save Follow-up Visit</string>
     <string name="action_select">Select</string>
     <string name="action_send">Send</string>
@@ -104,8 +108,10 @@
     <string name="caption_case_fatality_rate">Case Fatality Rate</string>
     <string name="caption_case_hospitalization">Hospitalization Info</string>
     <string name="caption_case_information">Case Information</string>
+    <string name="caption_case_prescriptions">Prescriptions</string>
     <string name="caption_case_samples">Case Samples</string>
     <string name="caption_case_tasks">Case Tasks</string>
+    <string name="caption_case_treatments">Treatments</string>
     <string name="caption_changed_data_lost">Changed data lost during re-sync.</string>
     <string name="caption_confirmation_date">Confirmation Date: %1$s</string>
     <string name="caption_confirmed">Confirmed</string>
@@ -124,12 +130,14 @@
     <string name="caption_event_information">Event Information</string>
     <string name="caption_event_participants">Persons Involved</string>
     <string name="caption_event_tasks">Event Tasks</string>
+    <string name="caption_executed_by">Executed by</string>
     <string name="caption_fatalities">Fatalities</string>
     <string name="caption_first_name">First Name</string>
     <string name="caption_gender">Gender</string>
     <string name="caption_inadequate_specimen">Inadequate Specimen</string>
     <string name="caption_indeterminate">Indeterminate</string>
     <string name="caption_informant_reports">Informant Reports</string>
+    <string name="caption_issued_on">Issued on </string>
     <string name="caption_last_name">Last Name</string>
     <string name="caption_lesions_locations">Localisation of the lesions</string>
     <string name="caption_message">Message</string>
@@ -152,6 +160,7 @@
     <string name="caption_person_involved">Person Involved</string>
     <string name="caption_positive">Positive</string>
     <string name="caption_possible_events">Possible Events</string>
+    <string name="caption_prescribed_by">Prescribed by</string>
     <string name="caption_present_condition">Present Condition</string>
     <string name="caption_probable_case">Probable Case</string>
     <string name="caption_report_date">Report Date: %1$s</string>
@@ -267,6 +276,8 @@
     <string name="heading_person_involved">Person Involved</string>
     <string name="heading_person_involved_new">New Person Involved</string>
     <string name="heading_pick_or_create_person">Pick or create person</string>
+    <string name="heading_prescription">Prescription</string>
+    <string name="heading_prescription_edit">Edit Prescription</string>
     <string name="heading_previous_hospitalization">Previous Hospitalization</string>
     <string name="heading_previous_hospitalizations">Previous Hospitalizations</string>
     <string name="heading_reset_PIN">Reset PIN</string>
@@ -292,6 +303,8 @@
     <string name="heading_transfer_case">Transfer Case</string>
     <string name="heading_travel">Travel</string>
     <string name="heading_travels">Travels</string>
+    <string name="heading_treatment">Treatment</string>
+    <string name="heading_treatment_edit">Edit Treatment</string>
     <string name="heading_unsynchronized_changes">Unsynchronized Changes</string>
     <string name="heading_user_report">Report a problem</string>
 
@@ -452,7 +465,9 @@
     <string name="value_date_unknown">Date N/A</string>
     <string name="value_description_unknown">Description N/A</string>
     <string name="value_disease_unknown">Disease N/A</string>
+    <string name="value_executing_clinician_unknown">Executing Clinician N/A</string>
     <string name="value_facility_unknown">Health Facility N/A</string>
+    <string name="value_frequency_unknown">Frequency N/A</string>
     <string name="value_gender_unknown">Gender N/A</string>
     <string name="value_inadequate_specimen_condition">Specimen condition not adequate</string>
     <string name="value_lab_unknown">Lab N/A</string>
@@ -462,6 +477,9 @@
     <string name="value_no_username">No Username</string>
     <string name="value_not_available">N/A</string>
     <string name="value_person_unknown">Person N/A</string>
+    <string name="value_prescribing_clinician_unknown">Prescribing Clinician N/A</string>
+    <string name="value_prescription_date_unknown">Date Prescription Issued N/A</string>
+    <string name="value_prescription_period_unknown">Prescription Period N/A</string>
     <string name="value_report_date_unknown">Report Date N/A</string>
     <string name="value_role_unassigned">Role Unassigned</string>
     <string name="value_sample_date_unknown">Sampling Date N/A</string>
@@ -471,6 +489,7 @@
     <string name="value_task_date_unknown">Task Date N/A</string>
     <string name="value_task_priority_unknown">Priority N/A</string>
     <string name="value_task_type_unknown">Type N/A</string>
+    <string name="value_treatment_date_time_unknown">Treatment Date N/A</string>
     <string name="value_type_unknown">Type N/A</string>
     <string name="value_uuid_unknown">ID N/A</string>
     <string name="value_visit_date_unknown">Visit Date N/A</string>

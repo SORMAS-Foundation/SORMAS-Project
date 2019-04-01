@@ -65,6 +65,10 @@ import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.backend.therapy.Prescription;
+import de.symeda.sormas.app.backend.therapy.PrescriptionCriteria;
+import de.symeda.sormas.app.backend.therapy.Treatment;
+import de.symeda.sormas.app.backend.therapy.TreatmentCriteria;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
@@ -115,9 +119,15 @@ public class CaseDao extends AbstractAdoDao<Case> {
         if (hospitalizationDate != null && hospitalizationDate.after(date)) {
             date = hospitalizationDate;
         }
+
         Date epiDataDate = DatabaseHelper.getEpiDataDao().getLatestChangeDate();
         if (epiDataDate != null && epiDataDate.after(date)) {
             date = epiDataDate;
+        }
+
+        Date therapyDate = DatabaseHelper.getTherapyDao().getLatestChangeDate();
+        if (therapyDate != null && therapyDate.after(date)) {
+            date = therapyDate;
         }
 
         return date;
@@ -171,6 +181,9 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
         // Epi Data
         caze.setEpiData(DatabaseHelper.getEpiDataDao().build());
+
+        // Therapy
+        caze.setTherapy(DatabaseHelper.getTherapyDao().build());
 
         // Location
         User currentUser = ConfigProvider.getUser();
@@ -438,6 +451,16 @@ public class CaseDao extends AbstractAdoDao<Case> {
         List<Task> tasks = DatabaseHelper.getTaskDao().queryByCase(caze);
         for (Task task : tasks) {
             DatabaseHelper.getTaskDao().deleteCascade(task);
+        }
+
+        // Delete treatments and prescriptions
+        if (caze.getTherapy() != null) {
+            for (Treatment treatment : DatabaseHelper.getTreatmentDao().findBy(new TreatmentCriteria().therapy(caze.getTherapy()))) {
+                DatabaseHelper.getTreatmentDao().delete(treatment);
+            }
+            for (Prescription prescription : DatabaseHelper.getPrescriptionDao().findBy(new PrescriptionCriteria().therapy(caze.getTherapy()))) {
+                DatabaseHelper.getPrescriptionDao().delete(prescription);
+            }
         }
 
         // Delete case

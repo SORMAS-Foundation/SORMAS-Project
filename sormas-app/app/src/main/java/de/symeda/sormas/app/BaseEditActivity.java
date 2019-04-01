@@ -106,6 +106,8 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
                 replaceFragment(buildEditFragment(getActivePage(), result), false);
             }
         });
+
+        updatePageMenu();
     }
 
     @Override

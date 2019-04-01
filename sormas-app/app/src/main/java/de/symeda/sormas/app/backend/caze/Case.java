@@ -50,6 +50,7 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.backend.therapy.Therapy;
 import de.symeda.sormas.app.backend.user.User;
 
 @Entity(name = Case.TABLE_NAME)
@@ -71,8 +72,6 @@ public class Case extends AbstractDomainObject {
     public static final String REPORTING_USER = "reportingUser_id";
     public static final String HEALTH_FACILITY = "healthFacility_id";
     public static final String OUTCOME = "outcome";
-    public static final String SEQUELAE = "sequelae";
-    public static final String SEQUELAE_DETAILS = "sequelaeDetails";
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
     private Person person;
@@ -170,6 +169,9 @@ public class Case extends AbstractDomainObject {
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private EpiData epiData;
+
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private Therapy therapy;
 
     @Deprecated
     @Column
@@ -413,6 +415,14 @@ public class Case extends AbstractDomainObject {
 
     public void setEpiData(EpiData epiData) {
         this.epiData = epiData;
+    }
+
+    public Therapy getTherapy() {
+        return therapy;
+    }
+
+    public void setTherapy(Therapy therapy) {
+        this.therapy = therapy;
     }
 
     public Double getReportLat() {

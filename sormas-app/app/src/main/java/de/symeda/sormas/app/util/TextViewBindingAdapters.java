@@ -36,6 +36,9 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.therapy.TreatmentRoute;
+import de.symeda.sormas.api.therapy.TreatmentType;
+import de.symeda.sormas.api.therapy.TypeOfDrug;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -84,21 +87,12 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"value", "prependValue", "valueFormat", "defaultValue"}, requireAll=true)
+    @BindingAdapter(value={"value", "prependValue", "valueFormat", "defaultValue"})
     public static void setValueWithPrepend(TextView textField, String stringValue, String prependValue, String valueFormat, String defaultValue) {
-        String val = defaultValue;
-
-        if (stringValue == null) {
-            textField.setText(prependValue + ": " + val);
+        if (StringUtils.isEmpty(stringValue)) {
+            textField.setText(defaultValue);
         } else {
-            val = stringValue;
-            //textField.setText(val);
-
-            if (valueFormat != null && valueFormat.trim() != "") {
-                textField.setText(String.format(valueFormat, prependValue, stringValue));
-            } else {
-                textField.setText(val);
-            }
+            textField.setText(String.format(valueFormat, prependValue, stringValue));
         }
     }
 
@@ -376,6 +370,47 @@ public class TextViewBindingAdapters {
         }
     }
 
+    @BindingAdapter(value={"treatmentType", "valueDetails", "typeOfDrug"})
+    public static void setTreatmentTypeValue(TextView textField, TreatmentType value, String valueDetails, TypeOfDrug typeOfDrug) {
+        if (value == TreatmentType.DRUG_INTAKE) {
+            StringBuilder sb = new StringBuilder();
+            if (!StringUtils.isEmpty(valueDetails)) {
+                sb.append(value.toString()).append(" (").append(valueDetails);
+            }
+            if (typeOfDrug != null) {
+                if (!StringUtils.isEmpty(valueDetails)) {
+                    sb.append(" - ").append(typeOfDrug.toString());
+                } else {
+                    sb.append(" (").append(typeOfDrug.toString());
+                }
+            }
+            sb.append(")");
+            textField.setText(sb.toString());
+        } else if (value == TreatmentType.OTHER) {
+            textField.setText(valueDetails);
+        } else {
+            textField.setText(value.toString());
+        }
+    }
+
+    @BindingAdapter(value={"doseValue", "routeValue", "routeDetailsValue"})
+    public static void setDoseAndRoute(TextView textField, String dose, TreatmentRoute route, String routeDetails) {
+        StringBuilder sb = new StringBuilder();
+        if (!StringUtils.isEmpty(dose)) {
+            sb.append(dose);
+        }
+        if (route != null) {
+            if (sb.length() > 0) {
+                sb.append(" | ");
+            }
+            if (route == TreatmentRoute.OTHER && !StringUtils.isEmpty(routeDetails)) {
+                sb.append(routeDetails);
+            } else {
+                sb.append(route.toString());
+            }
+        }
+        textField.setText(sb.toString());
+    }
 
     @BindingAdapter(value={"yesNoUnknown"}, requireAll=false)
     public static void setYesNoUnknown(TextView textField, YesNoUnknown yesNoUnknown) {
@@ -624,20 +659,18 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"dateValue", "valueFormat", "defaultValue"}, requireAll=false)
-    public static void setDateValue(TextView textField, Date dateValue, String valueFormat, String defaultValue) {
-        String val = defaultValue;
-
+    @BindingAdapter(value={"dateValue", "prependValue", "valueFormat", "defaultValue"}, requireAll=false)
+    public static void setDateValue(TextView textField, Date dateValue, String prependValue, String valueFormat, String defaultValue) {
         if (dateValue == null) {
-            textField.setText(val);
+            textField.setText(defaultValue);
         } else {
-            val = DateHelper.formatLocalShortDate(dateValue);
+            String val = DateHelper.formatLocalShortDate(dateValue);
 
-            if (valueFormat != null && valueFormat.trim() != "") {
-                textField.setText(String.format(valueFormat, val));
-            } else {
-                textField.setText(val);
+            if (valueFormat != null && !valueFormat.trim().equals("")) {
+                val = String.format(valueFormat, val);
             }
+
+            textField.setText(prependValue != null ? prependValue + " " + val : val);
         }
     }
 
@@ -655,6 +688,15 @@ public class TextViewBindingAdapters {
             } else {
                 textField.setText(val);
             }
+        }
+    }
+
+    @BindingAdapter(value={"dateTimeValue", "defaultValue"})
+    public static void setDateTimeValue(TextView textField, Date dateValue, String defaultValue) {
+        if (dateValue == null) {
+            textField.setText(defaultValue);
+        } else {
+            textField.setText(DateHelper.formatLocalShortDateTime(dateValue));
         }
     }
 

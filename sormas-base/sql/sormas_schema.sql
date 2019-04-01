@@ -3036,3 +3036,7 @@ ALTER TABLE person_history DROP COLUMN approximateagetype_temp;
 ALTER TABLE person ENABLE TRIGGER versioning_trigger;
 
 INSERT INTO schema_version (version_number, comment) VALUES (137, 'Change serialization of approximate age type to string (instead of number) #1015');
+
+-- 2019-03-28 Add therapies to all cases
+
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (138, 'Add therapies to all cases', true);

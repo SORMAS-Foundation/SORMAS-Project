@@ -77,6 +77,7 @@ public abstract class BaseListActivity extends BaseActivity implements IUpdateSu
     protected void onResumeFragments() {
         super.onResumeFragments();
         replaceFragment(buildListFragment(getActivePage()));
+        updatePageMenu();
     }
 
     public BaseListFragment getActiveFragment() {

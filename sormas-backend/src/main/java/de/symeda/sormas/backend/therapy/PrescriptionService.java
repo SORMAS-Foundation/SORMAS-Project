@@ -1,7 +1,9 @@
 package de.symeda.sormas.backend.therapy;
 
+import java.util.Date;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -15,6 +17,8 @@ import javax.persistence.criteria.Root;
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.user.User;
 
@@ -22,6 +26,9 @@ import de.symeda.sormas.backend.user.User;
 @LocalBean
 public class PrescriptionService extends AbstractAdoService<Prescription> {
 
+	@EJB
+	CaseService caseService;
+	
 	public PrescriptionService() {
 		super(Prescription.class);
 	}
@@ -40,6 +47,56 @@ public class PrescriptionService extends AbstractAdoService<Prescription> {
 		
 		List<Prescription> resultList = em.createQuery(cq).getResultList();
 		return resultList;
+	}
+	
+	public List<Prescription> getAllActivePrescriptionsAfter(Date date, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Prescription> cq = cb.createQuery(getElementClass());
+		Root<Prescription> from = cq.from(getElementClass());
+		Join<Prescription, Therapy> therapy = from.join(Prescription.THERAPY, JoinType.LEFT);
+		Join<Therapy, Case> caze = therapy.join(Therapy.CASE, JoinType.LEFT);
+	
+		Predicate filter = cb.or(
+				cb.equal(caze.get(Case.ARCHIVED), false),
+				cb.isNull(caze.get(Case.ARCHIVED)));
+		
+		if (user != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			filter = cb.and(filter, userFilter);
+		}
+		
+		if (date != null) {
+			Predicate dateFilter = createChangeDateFilter(cb, from, date);
+			filter = cb.and(filter, dateFilter);
+		}
+		
+		cq.where(filter);
+		cq.orderBy(cb.desc(from.get(Prescription.CHANGE_DATE)));
+		cq.distinct(true);
+		
+		return em.createQuery(cq).getResultList();
+	}
+	
+	public List<String> getAllActiveUuids(User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Prescription> from = cq.from(getElementClass());
+		Join<Prescription, Therapy> therapy = from.join(Prescription.THERAPY, JoinType.LEFT);
+		Join<Therapy, Case> caze = therapy.join(Therapy.CASE, JoinType.LEFT);
+		
+		Predicate filter = cb.or(
+				cb.equal(caze.get(Case.ARCHIVED), false),
+				cb.isNull(caze.get(Case.ARCHIVED)));
+		
+		if (user != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			filter = cb.and(filter, userFilter);
+		}
+		
+		cq.where(filter);
+		cq.select(from.get(Prescription.UUID));
+		
+		return em.createQuery(cq).getResultList();
 	}
 	
 	public Predicate buildCriteriaFilter(PrescriptionCriteria criteria, CriteriaBuilder cb, Root<Prescription> prescription) {
@@ -73,8 +130,8 @@ public class PrescriptionService extends AbstractAdoService<Prescription> {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Prescription, Prescription> from, User user) {
-		// A user should not directly query for this
-		throw new UnsupportedOperationException();
+		Join<Prescription, Therapy> therapy = from.join(Prescription.THERAPY, JoinType.LEFT);
+		return caseService.createUserFilter(cb, cq, therapy.join(Therapy.CASE, JoinType.LEFT), user);
 	}
 	
 }

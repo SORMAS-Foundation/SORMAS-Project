@@ -32,6 +32,8 @@ public enum CaseSection implements StatusElaborator {
     EPIDEMIOLOGICAL_DATA(R.string.caption_case_epidemiological_data, R.drawable.ic_pets_black_24dp),
     CONTACTS(R.string.caption_case_contacts, R.drawable.ic_drawer_contact_blue_24dp),
     SAMPLES(R.string.caption_case_samples, R.drawable.ic_drawer_sample_blue_24dp),
+    PRESCRIPTIONS(R.string.caption_case_prescriptions, R.drawable.ic_receipt_black_24dp),
+    TREATMENTS(R.string.caption_case_treatments, R.drawable.ic_pan_tool_black_24dp),
     TASKS(R.string.caption_case_tasks, R.drawable.ic_drawer_user_task_blue_24dp);
 
     private int friendlyNameResourceId;

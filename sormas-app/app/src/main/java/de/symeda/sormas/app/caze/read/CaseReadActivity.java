@@ -25,6 +25,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseReadActivity;
@@ -32,6 +33,8 @@ import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.caze.edit.CaseEditPrescriptionListFragment;
 import de.symeda.sormas.app.caze.CaseSection;
 import de.symeda.sormas.app.caze.edit.CaseEditActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
@@ -65,6 +68,11 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
     public List<PageMenuItem> getPageMenuData() {
         List<PageMenuItem> menuItems = PageMenuItem.fromEnum(CaseSection.values(), getContext());
         Case caze = getStoredRootEntity();
+        // Sections must be removed in reverse order
+        if (!ConfigProvider.hasUserRight(UserRight.THERAPY_VIEW)) {
+            menuItems.remove(CaseSection.TREATMENTS.ordinal());
+            menuItems.remove(CaseSection.PRESCRIPTIONS.ordinal());
+        }
         if (caze != null && !DiseaseHelper.hasContactFollowUp(caze.getDisease(), caze.getPlagueType())) {
             menuItems.remove(CaseSection.CONTACTS.ordinal());
         }
@@ -76,7 +84,6 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
         CaseSection section = CaseSection.fromOrdinal(menuItem.getKey());
         BaseReadFragment fragment;
         switch (section) {
-
             case CASE_INFO:
                 fragment = CaseReadFragment.newInstance(activityRootData);
                 break;
@@ -97,6 +104,12 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
                 break;
             case SAMPLES:
                 fragment = CaseReadSampleListFragment.newInstance(activityRootData);
+                break;
+            case PRESCRIPTIONS:
+                fragment = CaseReadPrescriptionListFragment.newInstance(activityRootData);
+                break;
+            case TREATMENTS:
+                fragment = CaseReadTreatmentListFragment.newInstance(activityRootData);
                 break;
             case TASKS:
                 fragment = CaseReadTaskListFragment.newInstance(activityRootData);

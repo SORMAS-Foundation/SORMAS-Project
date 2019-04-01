@@ -234,6 +234,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
             applicationTitleBar.setVisibility(View.VISIBLE);
             updateStatusFrame();
         }
+
         updatePageMenu();
     }
 

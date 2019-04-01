@@ -107,6 +107,8 @@ public final class RetroProvider {
     private OutbreakFacadeRetro outbreakFacadeRetro;
     private ClassificationFacadeRetro classificationFacadeRetro;
     private UserRoleConfigFacadeRetro userRoleConfigFacadeRetro;
+    private PrescriptionFacadeRetro prescriptionFacadeRetro;
+    private TreatmentFacadeRetro treatmentFacadeRetro;
 
     private RetroProvider(Context context, Interceptor... additionalInterceptors) throws ServerConnectionException, ServerCommunicationException, ApiVersionException {
 
@@ -626,6 +628,28 @@ public final class RetroProvider {
             }
         }
         return instance.userRoleConfigFacadeRetro;
+    }
+
+    public static PrescriptionFacadeRetro getPrescriptionFacade() {
+        if (instance.prescriptionFacadeRetro == null) {
+            synchronized ((RetroProvider.class)) {
+                if (instance.prescriptionFacadeRetro == null) {
+                    instance.prescriptionFacadeRetro = instance.retrofit.create(PrescriptionFacadeRetro.class);
+                }
+            }
+        }
+        return instance.prescriptionFacadeRetro;
+    }
+
+    public static TreatmentFacadeRetro getTreatmentFacade() {
+        if (instance.treatmentFacadeRetro == null) {
+            synchronized ((RetroProvider.class)) {
+                if (instance.treatmentFacadeRetro == null) {
+                    instance.treatmentFacadeRetro = instance.retrofit.create(TreatmentFacadeRetro.class);
+                }
+            }
+        }
+        return instance.treatmentFacadeRetro;
     }
 
     public static void throwException(Response<?> response) throws ServerConnectionException, ServerCommunicationException {

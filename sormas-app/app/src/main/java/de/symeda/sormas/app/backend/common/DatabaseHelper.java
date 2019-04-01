@@ -83,6 +83,12 @@ import de.symeda.sormas.app.backend.synclog.SyncLog;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
+import de.symeda.sormas.app.backend.therapy.Prescription;
+import de.symeda.sormas.app.backend.therapy.PrescriptionDao;
+import de.symeda.sormas.app.backend.therapy.Therapy;
+import de.symeda.sormas.app.backend.therapy.TherapyDao;
+import de.symeda.sormas.app.backend.therapy.Treatment;
+import de.symeda.sormas.app.backend.therapy.TreatmentDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDao;
 import de.symeda.sormas.app.backend.user.UserRoleConfig;
@@ -100,7 +106,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 145;
+	public static final int DATABASE_VERSION = 147;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -135,6 +141,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		try {
 			ConnectionSource connectionSource = getCaseDao().getConnectionSource();
 			TableUtils.clearTable(connectionSource, Case.class);
+			TableUtils.clearTable(connectionSource, Treatment.class);
+			TableUtils.clearTable(connectionSource, Prescription.class);
+			TableUtils.clearTable(connectionSource, Therapy.class);
 			TableUtils.clearTable(connectionSource, Person.class);
 			TableUtils.clearTable(connectionSource, Symptoms.class);
 			TableUtils.clearTable(connectionSource, Task.class);
@@ -197,6 +206,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Person.class);
 			TableUtils.createTable(connectionSource, Case.class);
 			TableUtils.createTable(connectionSource, Symptoms.class);
+			TableUtils.createTable(connectionSource, Therapy.class);
+			TableUtils.createTable(connectionSource, Prescription.class);
+			TableUtils.createTable(connectionSource, Treatment.class);
 			TableUtils.createTable(connectionSource, Contact.class);
 			TableUtils.createTable(connectionSource, Visit.class);
 			TableUtils.createTable(connectionSource, Task.class);
@@ -561,9 +573,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				case 130:
 					currentVersion = 130;
 					getDao(DiseaseClassificationCriteria.class).executeRaw("CREATE TABLE diseaseClassificationCriteria (disease VARCHAR, suspectCriteria TEXT, " +
-									"probableCriteria TEXT, confirmedCriteria TEXT, changeDate BIGINT NOT NULL, creationDate BIGINT NOT NULL, " +
-									"id INTEGER PRIMARY KEY AUTOINCREMENT, localChangeDate BIGINT NOT NULL, modified SMALLINT, snapshot SMALLINT, uuid VARCHAR NOT NULL, " +
-									"UNIQUE(snapshot, uuid));");
+							"probableCriteria TEXT, confirmedCriteria TEXT, changeDate BIGINT NOT NULL, creationDate BIGINT NOT NULL, " +
+							"id INTEGER PRIMARY KEY AUTOINCREMENT, localChangeDate BIGINT NOT NULL, modified SMALLINT, snapshot SMALLINT, uuid VARCHAR NOT NULL, " +
+							"UNIQUE(snapshot, uuid));");
 				case 131:
 					currentVersion = 131;
 					getDao(User.class).executeRaw("ALTER TABLE users ADD COLUMN community_id bigint REFERENCES community(id);");
@@ -683,7 +695,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							"SELECT associatedCase_id, comment, lab_id, labDetails, labSampleID, noTestPossibleReason, received, receivedDate, referredToUuid, " +
 							"reportDateTime, reportLat, reportLatLonAccuracy, reportLon, reportingUser_id, sampleCode, sampleDateTime, sampleMaterial, " +
 							"sampleMaterialText, sampleSource, shipmentDate, shipmentDetails, shipped, specimenCondition, suggestedTypeOfTest, changeDate, creationDate, " +
-                            "id, lastOpenedDate, localChangeDate, modified, snapshot, uuid FROM tmp_samples;");
+							"id, lastOpenedDate, localChangeDate, modified, snapshot, uuid FROM tmp_samples;");
 					getDao(Sample.class).executeRaw("UPDATE samples SET pathogenTestingRequested = 1;");
 					getDao(Sample.class).executeRaw("UPDATE samples SET additionalTestingRequested = 0;");
 					getDao(Sample.class).executeRaw("DROP TABLE tmp_samples;");
@@ -728,6 +740,74 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							"FROM tmp_weeklyreportentry;");
 					getDao(WeeklyReportEntry.class).executeRaw("DROP TABLE tmp_weeklyreportentry;");
 					getDao(WeeklyReport.class).executeRaw("DELETE FROM weeklyreport WHERE rowid NOT IN (SELECT min(rowid) FROM weeklyreport GROUP BY epiWeek, year, reportingUser_id);");
+				case 145:
+					currentVersion = 145;
+					getDao(Therapy.class).executeRaw("CREATE TABLE therapy(" +
+							"id integer primary key autoincrement," +
+							"uuid varchar(36) not null," +
+							"changeDate timestamp not null," +
+							"creationDate timestamp not null," +
+							"lastOpenedDate timestamp," +
+							"localChangeDate timestamp not null," +
+							"modified integer," +
+							"snapshot integer," +
+							"UNIQUE (snapshot, uuid));");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN therapy_id bigint REFERENCES therapy(id)");
+					getDao(Prescription.class).executeRaw("CREATE TABLE prescription(" +
+							"id integer primary key autoincrement," +
+							"uuid varchar(36) not null," +
+							"changeDate timestamp not null," +
+							"creationDate timestamp not null," +
+							"lastOpenedDate timestamp," +
+							"localChangeDate timestamp not null," +
+							"modified integer," +
+							"snapshot integer," +
+							"therapy_id bigint REFERENCES therapy(id)," +
+							"prescriptionDate timestamp," +
+							"prescriptionStart timestamp," +
+							"prescriptionEnd timestamp," +
+							"prescribingClinician varchar(512)," +
+							"prescriptionType varchar(255)," +
+							"prescriptionDetails varchar(512)," +
+							"frequency varchar(512)," +
+							"dose varchar(512)," +
+							"route varchar(255)," +
+							"routeDetails varchar(512)," +
+							"additionalNotes varchar(512)," +
+							"typeOfDrug varchar(255)," +
+							"UNIQUE(snapshot, uuid));");
+					getDao(Treatment.class).executeRaw("CREATE TABLE treatment(" +
+							"id integer primary key autoincrement," +
+							"uuid varchar(36) not null," +
+							"changeDate timestamp not null," +
+							"creationDate timestamp not null," +
+							"lastOpenedDate timestamp," +
+							"localChangeDate timestamp not null," +
+							"modified integer," +
+							"snapshot integer," +
+							"therapy_id bigint REFERENCES therapy(id)," +
+							"treatmentDateTime timestamp," +
+							"executingClinician varchar(512)," +
+							"treatmentType varchar(255)," +
+							"treatmentDetails varchar(512)," +
+							"dose varchar(512)," +
+							"route varchar(255)," +
+							"routeDetails varchar(512)," +
+							"additionalNotes varchar(512)," +
+							"typeOfDrug varchar(255)," +
+							"prescription_id bigint REFERENCES prescription(id)," +
+							"UNIQUE(snapshot, uuid));");
+				case 146:
+					currentVersion = 146;
+					getDao(Case.class).executeRaw("UPDATE cases SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(Symptoms.class).executeRaw("UPDATE symptoms SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(Hospitalization.class).executeRaw("UPDATE hospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(PreviousHospitalization.class).executeRaw("UPDATE previoushospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(EpiData.class).executeRaw("UPDATE epidata SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(EpiDataBurial.class).executeRaw("UPDATE epidataburial SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 
 					// ATTENTION: break should only be done after last version
 					break;
@@ -744,6 +824,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		try {
 			Log.i(DatabaseHelper.class.getName(), "onUpgrade");
 			TableUtils.dropTable(connectionSource, Case.class, true);
+			TableUtils.dropTable(connectionSource, Prescription.class, true);
+			TableUtils.dropTable(connectionSource, Treatment.class, true);
+			TableUtils.dropTable(connectionSource, Therapy.class, true);
 			TableUtils.dropTable(connectionSource, Person.class, true);
 			TableUtils.dropTable(connectionSource, Location.class, true);
 			TableUtils.dropTable(connectionSource, Region.class, true);
@@ -795,6 +878,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 				if (type.equals(Case.class)) {
 					dao = (AbstractAdoDao<ADO>) new CaseDao((Dao<Case, Long>) innerDao);
+				} else if (type.equals(Therapy.class)) {
+					dao = (AbstractAdoDao<ADO>) new TherapyDao((Dao<Therapy, Long>) innerDao);
+				} else if (type.equals(Prescription.class)) {
+					dao = (AbstractAdoDao<ADO>) new PrescriptionDao((Dao<Prescription, Long>) innerDao);
+				} else if (type.equals(Treatment.class)) {
+					dao = (AbstractAdoDao<ADO>) new TreatmentDao((Dao<Treatment, Long>) innerDao);
 				} else if (type.equals(Person.class)) {
 					dao = (AbstractAdoDao<ADO>) new PersonDao((Dao<Person, Long>) innerDao);
 				} else if (type.equals(Location.class)) {
@@ -906,6 +995,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	public static CaseDao getCaseDao() {
 		return (CaseDao) getAdoDao(Case.class);
+	}
+
+	public static TherapyDao getTherapyDao() {
+		return (TherapyDao) getAdoDao(Therapy.class);
+	}
+
+	public static PrescriptionDao getPrescriptionDao() {
+		return (PrescriptionDao) getAdoDao(Prescription.class);
+	}
+
+	public static TreatmentDao getTreatmentDao() {
+		return (TreatmentDao) getAdoDao(Treatment.class);
 	}
 
 	public static PersonDao getPersonDao() {

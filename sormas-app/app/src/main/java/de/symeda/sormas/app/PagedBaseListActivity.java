@@ -69,6 +69,7 @@ public abstract class PagedBaseListActivity<T extends AbstractDomainObject> exte
     protected void onResumeFragments() {
         super.onResumeFragments();
         replaceFragment(buildListFragment(getActivePage()));
+        updatePageMenu();
     }
 
     public PagedBaseListFragment getActiveFragment() {

@@ -105,6 +105,7 @@ public class Case extends AbstractDomainObject {
 	public static final String SEQUELAE_DETAILS = "sequelaeDetails";
 	public static final String CASE_AGE = "caseAge";
 	public static final String ARCHIVED = "archived";
+	public static final String THERAPY = "therapy";
 
 	private Person person;
 	private String description;
