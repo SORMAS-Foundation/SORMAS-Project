@@ -105,11 +105,15 @@ public class PersonHelper {
 	}
 	
 	public static String formatBirthdate(Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY) {
-		String birthDate = DateHelper.getLocalDateFormat().toPattern();
-		birthDate = birthDate.replaceAll("d+", birthdateDD != null ? birthdateDD.toString() : "");
-		birthDate = birthDate.replaceAll("M+", birthdateMM != null ? birthdateMM.toString() : "");
-		birthDate = birthDate.replaceAll("y+", birthdateYYYY != null ? birthdateYYYY.toString() : "");
-		return birthDate;
+		if (birthdateDD == null && birthdateMM == null && birthdateYYYY == null) {
+			return "";
+		} else {
+			String birthDate = DateHelper.getLocalDateFormat().toPattern();
+			birthDate = birthDate.replaceAll("d+", birthdateDD != null ? birthdateDD.toString() : "");
+			birthDate = birthDate.replaceAll("M+", birthdateMM != null ? birthdateMM.toString() : "");
+			birthDate = birthDate.replaceAll("y+", birthdateYYYY != null ? birthdateYYYY.toString() : "");
+			return birthDate;
+		}
 	}
 
 	private static double getSimilarity(String str1, String str2) {
