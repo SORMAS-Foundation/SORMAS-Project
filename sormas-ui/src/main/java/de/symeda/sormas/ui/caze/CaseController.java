@@ -17,11 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ExternalResource;
@@ -377,20 +375,20 @@ public class CaseController {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void showBulkCaseDataEditComponent(Collection<Object> selectedRows) {
-		if (selectedRows.size() == 0) {
+	public void showBulkCaseDataEditComponent(Collection<CaseIndexDto> selectedCases) {
+		if (selectedCases.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoCasesSelected), 
 					I18nProperties.getString(Strings.messageNoCasesSelected), 
 					Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 			return;
 		} 
 
-		List<CaseIndexDto> selectedCases = new ArrayList(selectedRows);
-
 		// Check if cases with multiple districts have been selected
-		String districtUuid = selectedCases.get(0).getDistrictUuid();
+		String districtUuid = null;
 		for (CaseIndexDto selectedCase : selectedCases) {
-			if (!districtUuid.equals(selectedCase.getDistrictUuid())) {
+			if (districtUuid == null) {
+				districtUuid = selectedCase.getDistrictUuid();
+			} else if (!districtUuid.equals(selectedCase.getDistrictUuid())) {
 				districtUuid = null;
 				break;
 			}
@@ -659,15 +657,15 @@ public class CaseController {
 		popupWindow.setCaption(I18nProperties.getString(Strings.classificationRulesFor) + " " + caze.getDisease().toString());
 	}
 
-	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(Collection<CaseIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoCasesSelected), 
 					I18nProperties.getString(Strings.messageNoCasesSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
 			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteCases), selectedRows.size()), new Runnable() {
 				public void run() {
-					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getCaseFacade().deleteCase(new CaseReferenceDto(((CaseIndexDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
+					for (CaseIndexDto selectedRow : selectedRows) {
+						FacadeProvider.getCaseFacade().deleteCase(new CaseReferenceDto(selectedRow.getUuid()), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification(I18nProperties.getString(Strings.headingCasesDeleted), 
@@ -677,7 +675,7 @@ public class CaseController {
 		}
 	}
 
-	public void archiveAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+	public void archiveAllSelectedItems(Collection<CaseIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoCasesSelected), 
 					I18nProperties.getString(Strings.messageNoCasesSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
@@ -686,8 +684,8 @@ public class CaseController {
 					new Label(String.format(I18nProperties.getString(Strings.confirmationArchiveCases), selectedRows.size())), 
 					I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), null, e -> {
 						if (e.booleanValue() == true) {
-							for (Object selectedRow : selectedRows) {
-								FacadeProvider.getCaseFacade().archiveOrDearchiveCase(((CaseIndexDto) selectedRow).getUuid(), true);
+							for (CaseIndexDto selectedRow : selectedRows) {
+								FacadeProvider.getCaseFacade().archiveOrDearchiveCase(selectedRow.getUuid(), true);
 							}
 							callback.run();
 							new Notification(I18nProperties.getString(Strings.headingCasesArchived),
@@ -697,7 +695,7 @@ public class CaseController {
 		}
 	}
 
-	public void dearchiveAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+	public void dearchiveAllSelectedItems(Collection<CaseIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoCasesSelected), 
 					I18nProperties.getString(Strings.messageNoCasesSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
@@ -706,8 +704,8 @@ public class CaseController {
 					new Label(String.format(I18nProperties.getString(Strings.confirmationDearchiveCases), selectedRows.size())), 
 							I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), null, e -> {
 				if (e.booleanValue() == true) {
-					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getCaseFacade().archiveOrDearchiveCase(((CaseIndexDto) selectedRow).getUuid(), false);
+					for (CaseIndexDto selectedRow : selectedRows) {
+						FacadeProvider.getCaseFacade().archiveOrDearchiveCase(selectedRow.getUuid(), false);
 					}
 					callback.run();
 					new Notification(I18nProperties.getString(Strings.headingCasesDearchived), 

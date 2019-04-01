@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -67,6 +68,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.util.DateHelper8;
@@ -197,7 +199,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 
-		List<CaseIndexDto> results = getCaseFacade().getIndexList(user.getUuid(), null);
+		
+		List<CaseIndexDto> results = getCaseFacade().getIndexList(user.getUuid(), null, 0, 100, Arrays.asList(
+				new SortProperty(CaseIndexDto.DISEASE), new SortProperty(CaseIndexDto.PERSON_FIRST_NAME), new SortProperty(CaseIndexDto.DISTRICT_NAME),
+				new SortProperty(CaseIndexDto.HEALTH_FACILITY_NAME), new SortProperty(CaseIndexDto.SURVEILLANCE_OFFICER_UUID)));
 
 		// List should have one entry
 		assertEquals(1, results.size());

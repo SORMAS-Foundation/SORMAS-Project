@@ -48,7 +48,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractGrid;
-import de.symeda.sormas.ui.utils.UuidRenderer;
+import de.symeda.sormas.ui.utils.V7UuidRenderer;
 
 @SuppressWarnings("serial")
 public class ContactGrid extends Grid implements AbstractGrid<ContactCriteria> {
@@ -128,7 +128,7 @@ public class ContactGrid extends Grid implements AbstractGrid<ContactCriteria> {
 				ContactIndexDto.PERSON, ContactIndexDto.CONTACT_PROXIMITY,
 				ContactIndexDto.FOLLOW_UP_STATUS, NUMBER_OF_VISITS, NUMBER_OF_PENDING_TASKS);
 		getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);
-		getColumn(ContactIndexDto.UUID).setRenderer(new UuidRenderer());
+		getColumn(ContactIndexDto.UUID).setRenderer(new V7UuidRenderer());
 
 		for (Column column : getColumns()) {
 			column.setHeaderCaption(I18nProperties.getPrefixCaption(

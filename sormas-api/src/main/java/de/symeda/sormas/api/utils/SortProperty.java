@@ -15,23 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.utils;
+package de.symeda.sormas.api.utils;
 
-import com.vaadin.ui.renderers.HtmlRenderer;
+import java.io.Serializable;
 
-import de.symeda.sormas.api.utils.DataHelper;
-import elemental.json.JsonValue;
+public class SortProperty implements Serializable {
 
-@SuppressWarnings("serial")
-public class UuidRenderer extends HtmlRenderer {
+	private static final long serialVersionUID = 2972594862424083789L;
 	
-    @Override
-    public JsonValue encode(String value) {
-    	if(value != null && !value.isEmpty()) {
-	    	value = "<a title='" + value + "'>" + DataHelper.getShortUuid(value) + "</a>";
-	        return super.encode(value);
-    	} else {
-    		return null;
-    	}
-    }
+	public final String propertyName;
+	public final boolean ascending;
+	
+	public SortProperty(String propertyName) {
+		this(propertyName, true);
+	}
+	
+	public SortProperty(String propertyName, boolean ascending) {
+		this.propertyName = propertyName;
+		this.ascending = ascending;
+	}
 }

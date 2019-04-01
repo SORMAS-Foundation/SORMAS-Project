@@ -154,9 +154,10 @@ public class CasesView extends AbstractView {
 		gridLayout.setSizeFull();
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
-		grid.getContainer().addItemSetChangeListener(e -> {
-			updateStatusButtons();
-		});
+		// TODO #1012
+//		grid.getContainer().addItemSetChangeListener(e -> {
+//			updateStatusButtons();
+//		});
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
 			Button importButton = new Button(I18nProperties.getCaption(Captions.actionImport));
@@ -190,9 +191,11 @@ public class CasesView extends AbstractView {
 			basicExportButton.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(basicExportButton);
 
-			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), grid.getColumns(), "sormas_cases", "sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
-			FileDownloader fileDownloader = new FileDownloader(streamResource);
-			fileDownloader.extend(basicExportButton);
+			// TODO #1012
+//			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(
+//					grid.getDataProvider().fetch(query)grid.getContainerDataSource(), grid.getColumns(), "sormas_cases", "sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+//			FileDownloader fileDownloader = new FileDownloader(streamResource);
+//			fileDownloader.extend(basicExportButton);
 
 			Button extendedExportButton = new Button(I18nProperties.getCaption(Captions.exportDetailed));
 			extendedExportButton.setDescription(I18nProperties.getString(Strings.infoDetailedExport));
@@ -518,12 +521,12 @@ public class CasesView extends AbstractView {
 				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 				Command changeCommand = selectedItem -> {
-					ControllerProvider.getCaseController().showBulkCaseDataEditComponent(grid.getSelectedRows());
+					ControllerProvider.getCaseController().showBulkCaseDataEditComponent(grid.asMultiSelect().getSelectedItems());
 				};
 				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, changeCommand);
 
 				Command deleteCommand = selectedItem -> {
-					ControllerProvider.getCaseController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+					ControllerProvider.getCaseController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 						public void run() {
 							grid.reload();
 						}
@@ -532,7 +535,7 @@ public class CasesView extends AbstractView {
 				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
 
 				Command archiveCommand = selectedItem -> {
-					ControllerProvider.getCaseController().archiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+					ControllerProvider.getCaseController().archiveAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 						public void run() {
 							grid.reload();
 						}
@@ -541,7 +544,7 @@ public class CasesView extends AbstractView {
 				archiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, archiveCommand);
 
 				Command dearchiveCommand = selectedItem -> {
-					ControllerProvider.getCaseController().dearchiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+					ControllerProvider.getCaseController().dearchiveAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 						public void run() {
 							grid.reload();
 						}
@@ -637,7 +640,7 @@ public class CasesView extends AbstractView {
 	}
 
 	public void clearSelection() {
-		grid.getSelectionModel().reset();
+		grid.asMultiSelect().clear();
 	}
 
 	private void updateStatusButtons() {
@@ -649,9 +652,11 @@ public class CasesView extends AbstractView {
 			}
 		});
 		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
-		if (activeStatusButton != null) {
-			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getContainer().size())));
-		}
+		// TODO #1012
+//		if (activeStatusButton != null) {
+//			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) 
+//					+ LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataProvider().)));
+//		}
 	}
 
 	private void updateArchivedButton() {

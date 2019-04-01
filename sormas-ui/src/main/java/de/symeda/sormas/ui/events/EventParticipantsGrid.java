@@ -39,7 +39,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CaseUuidRenderer;
-import de.symeda.sormas.ui.utils.UuidRenderer;
+import de.symeda.sormas.ui.utils.V7UuidRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
@@ -138,7 +138,7 @@ public class EventParticipantsGrid extends Grid {
         getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
         getColumn(EDIT_BTN_ID).setWidth(60);
         getColumn(EDIT_BTN_ID).setHeaderCaption("");
-		getColumn(PERSON_UUID).setRenderer(new UuidRenderer());
+		getColumn(PERSON_UUID).setRenderer(new V7UuidRenderer());
 		getColumn(CASE_ID).setRenderer(new CaseUuidRenderer(true));
 		
 		for(Column column : getColumns()) {

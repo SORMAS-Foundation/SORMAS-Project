@@ -37,6 +37,7 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.statistics.CountElementStyle;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsCountElement;
@@ -387,8 +388,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 	private void updateLastReportedCommunityComponent(Disease disease) {
 		String community = dashboardDataProvider.getLastReportedCommunity();
-		
-		lastReportedCommunityLabel.setValue(community.length() == 0 ? "NONE" : community);
+		lastReportedCommunityLabel.setValue(DataHelper.isNullOrEmpty(community) ? "NONE" : community);
 	}
 
 	private void updateOutbreakDistrictComponent(Disease disease) {

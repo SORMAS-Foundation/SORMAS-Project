@@ -39,8 +39,10 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -110,6 +112,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
@@ -283,9 +286,27 @@ public class CaseFacadeEjb implements CaseFacade {
 	public List<CaseDataDto> getByUuids(List<String> uuids) {
 		return caseService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
-
+	
 	@Override
-	public List<CaseIndexDto> getIndexList(String userUuid, CaseCriteria caseCriteria) {
+	public long count(String userUuid, CaseCriteria caseCriteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Case> caze = cq.from(Case.class);
+		User user = userService.getByUuid(userUuid);
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
+		if (caseCriteria != null) {
+			Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.select(cb.count(caze));
+		return em.createQuery(cq).getSingleResult();
+	}
+	
+	@Override
+	public List<CaseIndexDto> getIndexList(String userUuid, CaseCriteria caseCriteria, int first, int max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CaseIndexDto> cq = cb.createQuery(CaseIndexDto.class);
 		Root<Case> caze = cq.from(Case.class);
@@ -314,9 +335,60 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}
-		cq.orderBy(cb.desc(caze.get(Case.CHANGE_DATE)));
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case CaseIndexDto.UUID:
+				case CaseIndexDto.EPID_NUMBER:
+				case CaseIndexDto.DISEASE:
+				case CaseIndexDto.DISEASE_DETAILS:
+				case CaseIndexDto.CASE_CLASSIFICATION:
+				case CaseIndexDto.INVESTIGATION_STATUS:
+				case CaseIndexDto.REPORT_DATE:
+				case CaseIndexDto.CREATION_DATE:
+				case CaseIndexDto.OUTCOME:
+					expression = caze.get(sortProperty.propertyName);
+					break;
+				case CaseIndexDto.PERSON_FIRST_NAME:
+					expression = person.get(Person.FIRST_NAME);
+					break;
+				case CaseIndexDto.PERSON_LAST_NAME:
+					expression = person.get(Person.LAST_NAME);
+					break;
+				case CaseIndexDto.PRESENT_CONDITION:
+					expression = person.get(sortProperty.propertyName);
+					break;
+				case CaseIndexDto.REGION_UUID:
+					expression = region.get(Region.UUID);
+					break;
+				case CaseIndexDto.DISTRICT_UUID:
+					expression = district.get(District.UUID);
+					break;
+				case CaseIndexDto.DISTRICT_NAME:
+					expression = district.get(District.NAME);
+					break;
+				case CaseIndexDto.HEALTH_FACILITY_UUID:
+					expression = facility.get(Facility.UUID);
+					break;
+				case CaseIndexDto.HEALTH_FACILITY_NAME:
+					expression = facility.get(Facility.NAME);
+					break;
+				case CaseIndexDto.SURVEILLANCE_OFFICER_UUID:
+					expression = surveillanceOfficer.get(User.UUID);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(caze.get(Case.CHANGE_DATE)));
+		}
 
-		List<CaseIndexDto> resultList = em.createQuery(cq).getResultList();
+		List<CaseIndexDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 		return resultList;
 	}
 

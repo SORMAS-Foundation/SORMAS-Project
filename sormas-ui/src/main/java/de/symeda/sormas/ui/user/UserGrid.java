@@ -35,7 +35,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.utils.RoleFilter;
-import de.symeda.sormas.ui.utils.UuidRenderer;
+import de.symeda.sormas.ui.utils.V7UuidRenderer;
 import elemental.json.JsonValue;
 
 public class UserGrid extends Grid {
@@ -72,7 +72,7 @@ public class UserGrid extends Grid {
         getColumn(EDIT_BTN_ID).setWidth(60);
         getColumn(EDIT_BTN_ID).setHeaderCaption("");
         
-        getColumn(UserDto.UUID).setRenderer(new UuidRenderer());
+        getColumn(UserDto.UUID).setRenderer(new V7UuidRenderer());
 
         getColumn(UserDto.ACTIVE).setRenderer(new ActiveRenderer());
         getColumn(UserDto.ACTIVE).setWidth(80);

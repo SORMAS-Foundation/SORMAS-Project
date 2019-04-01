@@ -37,6 +37,7 @@ import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
@@ -44,7 +45,8 @@ public interface CaseFacade {
 
 	List<CaseDataDto> getAllActiveCasesAfter(Date date, String userUuid);
 
-	List<CaseIndexDto> getIndexList(String userUuid, CaseCriteria caseCriteria);
+	long count(String userUuid, CaseCriteria caseCriteria);
+	List<CaseIndexDto> getIndexList(String userUuid, CaseCriteria caseCriteria, int first, int max, List<SortProperty> sortProperties);
 	
 	List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria, int first, int max);
 	
@@ -116,5 +118,6 @@ public interface CaseFacade {
 	void archiveOrDearchiveCase(String caseUuid, boolean archive);
 	
 	List<String> getArchivedUuidsSince(String userUuid, Date since);
+
 	
 }
