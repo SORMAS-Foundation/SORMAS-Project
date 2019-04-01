@@ -78,12 +78,6 @@ public class DashboardDataProvider {
 		int period = DateHelper.getDaysBetween(fromDate, toDate);
 		previousFromDate = DateHelper.getStartOfDay(DateHelper.subtractDays(fromDate, period));
 		previousToDate = DateHelper.getEndOfDay(DateHelper.subtractDays(toDate, period));
-
-		// Contacts
-		setContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, fromDate,
-				toDate, userUuid));
-		setPreviousContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease,
-				previousFromDate, previousToDate, userUuid));
 		
 		// Disease burden
 		setDiseasesBurden(FacadeProvider.getDiseaseFacade().getDiseaseBurdenForDashboard(region, district, fromDate,
@@ -93,11 +87,20 @@ public class DashboardDataProvider {
 	}
 
 	private void refreshDataForSelectedDisease () {
-		if (this.disease == null)
-			return;
 
 		// Update the entities lists according to the filters
 		String userUuid = UserProvider.getCurrent().getUuid();
+		
+		if (getDashboardType() == DashboardType.CONTACTS) {
+			// Contacts
+			setContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, fromDate,
+					toDate, userUuid));
+			setPreviousContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease,
+					previousFromDate, previousToDate, userUuid));
+		}
+
+		if (this.disease == null)
+			return;
 
 		int period = DateHelper.getDaysBetween(fromDate, toDate);
 		previousFromDate = DateHelper.getStartOfDay(DateHelper.subtractDays(fromDate, period));
