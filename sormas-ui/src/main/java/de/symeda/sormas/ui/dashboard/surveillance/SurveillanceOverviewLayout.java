@@ -82,7 +82,7 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 		CssStyles.style(showTableViewButton, CssStyles.BUTTON_SUBTLE);
 		showTableViewButton.addStyleName(CssStyles.VSPACE_NONE);
 		
-		Button showTileViewButton = new Button("", VaadinIcons.CREDIT_CARD);
+		Button showTileViewButton = new Button("", VaadinIcons.SQUARE_SHADOW);
 		CssStyles.style(showTileViewButton, CssStyles.BUTTON_SUBTLE);
 		showTileViewButton.addStyleName(CssStyles.VSPACE_NONE);
 

@@ -25,7 +25,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
-//import de.symeda.sormas.ui.CurrentUser;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 
 public class DiseaseTileViewLayout extends CssLayout {
