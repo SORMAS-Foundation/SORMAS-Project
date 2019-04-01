@@ -70,9 +70,6 @@ public class DashboardDataProvider {
 	private Map<EventStatus, Long> eventCountByStatus;
 	private List<DashboardTestResultDto> testResults = new ArrayList<>();
 	private List<DashboardTestResultDto> previousTestResults = new ArrayList<>();
-//	private List<DashboardSampleDto> samples = new ArrayList<>();
-//	private List<DashboardTaskDto> tasks = new ArrayList<>();
-//	private List<DashboardTaskDto> pendingTasks = new ArrayList<>();
 
 	public void refreshData() {
 		// Update the entities lists according to the filters
@@ -82,16 +79,6 @@ public class DashboardDataProvider {
 		previousFromDate = DateHelper.getStartOfDay(DateHelper.subtractDays(fromDate, period));
 		previousToDate = DateHelper.getEndOfDay(DateHelper.subtractDays(toDate, period));
 
-//		// Samples
-//		setSamples(FacadeProvider.getSampleFacade().getNewSamplesForDashboard(region, district, disease, fromDate,
-//				toDate, userUuid));
-//		// Tasks
-//		setTasks(FacadeProvider.getTaskFacade().getAllByUserForDashboard(null,
-//				DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(new Date())),
-//				DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(new Date())), userUuid));
-//		setPendingTasks(
-//				FacadeProvider.getTaskFacade().getAllByUserForDashboard(TaskStatus.PENDING, null, null, userUuid));
-		
 		// Contacts
 		setContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, fromDate,
 				toDate, userUuid));
@@ -101,10 +88,7 @@ public class DashboardDataProvider {
 		// Disease burden
 		setDiseasesBurden(FacadeProvider.getDiseaseFacade().getDiseaseBurdenForDashboard(region, district, fromDate,
 				toDate, previousFromDate, previousToDate, userUuid));
-		
-		// Diseases tile view
-//		setDiseasesForTileView(FacadeProvider.getDiseaseFacade().getDiseasesForTileView(region, district, fromDate, toDate, userUuid));
-		
+
 		this.refreshDataForSelectedDisease();
 	}
 

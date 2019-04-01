@@ -36,6 +36,8 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.i18n.Captions;
@@ -60,6 +62,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 	// Filters
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
+	private ComboBox diseaseFilter;
 	private PopupButton customButton;
 	private Set<Button> dateFilterButtons;
 
@@ -68,6 +71,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		this.dashboardDataProvider = dashboardDataProvider;
 		this.regionFilter = new ComboBox();
 		this.districtFilter = new ComboBox();
+		this.diseaseFilter = new ComboBox();
 		dateFilterButtons = new HashSet<>();
 
 		setSpacing(true);
@@ -76,6 +80,9 @@ public class DashboardFilterLayout extends HorizontalLayout {
 
 		createRegionAndDistrictFilter();
 		createDateFilters();
+		if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
+			createDiseaseFilter();
+		}
 	}
 
 	private void createRegionAndDistrictFilter() {
@@ -108,6 +115,21 @@ public class DashboardFilterLayout extends HorizontalLayout {
 			addComponent(districtFilter);
 			dashboardDataProvider.setDistrict((DistrictReferenceDto) districtFilter.getValue());
 		}
+	}
+	
+	private void createDiseaseFilter() {
+		diseaseFilter.setWidth(200, Unit.PIXELS);
+		diseaseFilter.setInputPrompt(I18nProperties.getString(Strings.promptDisease));
+		if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
+			diseaseFilter.addItems(DiseaseHelper.getAllDiseasesWithFollowUp());
+		} else {
+			diseaseFilter.addItems((Object[]) Disease.values());
+		}
+		diseaseFilter.addValueChangeListener(e -> {
+			dashboardDataProvider.setDisease((Disease) diseaseFilter.getValue());
+			dashboardView.refreshDashboard();
+		});
+		addComponent(diseaseFilter);
 	}
 
 	private void createDateFilters() {
