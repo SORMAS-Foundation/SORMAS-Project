@@ -113,6 +113,8 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 
 	private VerticalLayout createUtilityButtonsLayout() {
 		VerticalLayout utilityButtonsLayout = new VerticalLayout();
+		utilityButtonsLayout.setMargin(false);
+		utilityButtonsLayout.setSpacing(false);
 		utilityButtonsLayout.setSizeUndefined();
 
 		Button addAllButton = new Button(I18nProperties.getCaption(Captions.all), VaadinIcons.PLUS_CIRCLE);

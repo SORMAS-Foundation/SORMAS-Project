@@ -75,7 +75,7 @@ public class StatisticsFilterComponent extends VerticalLayout {
 					
 					// Add style to keep chosen item selected and remove it from all other items
 					for (MenuItem menuItem : filterAttributeItem.getChildren()) {
-						menuItem.setStyleName("");
+						menuItem.setStyleName(null);
 					}
 					selectedItem.setStyleName("selected-filter");
 					
@@ -92,7 +92,7 @@ public class StatisticsFilterComponent extends VerticalLayout {
 									
 									// Add style to keep chosen item selected and remove it from all other items
 									for (MenuItem menuItem : filterSubAttributeItem.getChildren()) {
-										menuItem.setStyleName("");
+										menuItem.setStyleName(null);
 									}
 									selectedSubItem.setStyleName("selected-filter");
 									

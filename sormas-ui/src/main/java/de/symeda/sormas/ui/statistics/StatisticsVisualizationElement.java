@@ -116,7 +116,7 @@ public class StatisticsVisualizationElement extends HorizontalLayout {
 	
 	private void removeSelections(MenuItem parentItem) {
 		for (MenuItem childItem : parentItem.getChildren()) {
-			childItem.setStyleName("");
+			childItem.setStyleName(null);
 		}
 	}
 	
