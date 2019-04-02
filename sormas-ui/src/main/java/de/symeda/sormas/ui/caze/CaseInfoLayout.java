@@ -41,8 +41,9 @@ public class CaseInfoLayout extends HorizontalLayout {
 
 	public CaseInfoLayout(CaseDataDto caseDto) {
 		this.caseDto = caseDto;
-		this.setSpacing(true);
-		this.setWidth(100, Unit.PERCENTAGE);
+		setSpacing(true);
+		setMargin(false);
+		setWidth(100, Unit.PERCENTAGE);
 		updateCaseInfo();
 	}
 
@@ -52,6 +53,7 @@ public class CaseInfoLayout extends HorizontalLayout {
 		PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(caseDto.getPerson().getUuid());
 
 		VerticalLayout leftColumnLayout = new VerticalLayout();
+		leftColumnLayout.setMargin(false);
 		leftColumnLayout.setSpacing(true);
 		{
 			addDescLabel(leftColumnLayout, DataHelper.getShortUuid(caseDto.getUuid()),
@@ -63,6 +65,7 @@ public class CaseInfoLayout extends HorizontalLayout {
 						I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON));
 
 				HorizontalLayout ageSexLayout = new HorizontalLayout();
+				ageSexLayout.setMargin(false);
 				ageSexLayout.setSpacing(true);
 				addDescLabel(ageSexLayout, ApproximateAgeHelper.formatApproximateAge(
 						personDto.getApproximateAge(),personDto.getApproximateAgeType()),
@@ -75,6 +78,7 @@ public class CaseInfoLayout extends HorizontalLayout {
 		this.addComponent(leftColumnLayout);
 
 		VerticalLayout rightColumnLayout = new VerticalLayout();
+		rightColumnLayout.setMargin(false);
 		rightColumnLayout.setSpacing(true);
 		{
 			addDescLabel(rightColumnLayout, 

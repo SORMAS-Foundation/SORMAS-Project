@@ -43,17 +43,22 @@ public class PathogenTestListEntry extends HorizontalLayout {
 
 	public PathogenTestListEntry(PathogenTestDto pathogenTest) {
 		setSpacing(true);
+		setMargin(false);
 		setWidth(100, Unit.PERCENTAGE);
 		addStyleName(CssStyles.SORMAS_LIST_ENTRY);
 		this.pathogenTest = pathogenTest;
 
 		VerticalLayout labelLayout = new VerticalLayout();
+		labelLayout.setSpacing(false);
+		labelLayout.setMargin(false);
 		labelLayout.setWidth(100, Unit.PERCENTAGE);
 		addComponent(labelLayout);
 		setExpandRatio(labelLayout, 1);
 
 		// very hacky: clean up when needed elsewhere!
 		HorizontalLayout topLabelLayout = new HorizontalLayout();
+		topLabelLayout.setSpacing(false);
+		topLabelLayout.setMargin(false);
 		topLabelLayout.setWidth(100, Unit.PERCENTAGE);
 		labelLayout.addComponent(topLabelLayout);
 		String htmlTop = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE,
@@ -73,6 +78,8 @@ public class PathogenTestListEntry extends HorizontalLayout {
 		}
 
 		HorizontalLayout bottomLabelLayout = new HorizontalLayout();
+		bottomLabelLayout.setSpacing(false);
+		bottomLabelLayout.setMargin(false);
 		bottomLabelLayout.setWidth(100, Unit.PERCENTAGE);
 		labelLayout.addComponent(bottomLabelLayout);
 		String htmlLeft = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE

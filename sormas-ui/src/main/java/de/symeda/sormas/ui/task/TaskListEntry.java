@@ -65,6 +65,7 @@ public class TaskListEntry extends HorizontalLayout {
 				+ LayoutUtil.div(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.DUE_DATE) + ": "
 						+ DateHelper.formatLocalShortDate(task.getDueDate()));
 		Label labelLeft = new Label(htmlLeft, ContentMode.HTML);
+		labelLeft.setWidth(100, Unit.PERCENTAGE);
 		labelLayout.addComponent(labelLeft);
 
 		String htmlRight = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE,
@@ -78,6 +79,7 @@ public class TaskListEntry extends HorizontalLayout {
 						+ task.getAssigneeUser().getCaption());
 		Label labelRight = new Label(htmlRight, ContentMode.HTML);
 		labelRight.addStyleName(CssStyles.ALIGN_RIGHT);
+		labelRight.setWidth(100, Unit.PERCENTAGE);
 		labelLayout.addComponent(labelRight);
 		labelLayout.setComponentAlignment(labelRight, Alignment.MIDDLE_RIGHT);
 

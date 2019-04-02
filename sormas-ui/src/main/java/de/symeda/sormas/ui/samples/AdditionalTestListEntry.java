@@ -25,11 +25,14 @@ public class AdditionalTestListEntry extends HorizontalLayout {
 
 	public AdditionalTestListEntry(AdditionalTestDto additionalTest) {
 		setSpacing(true);
+		setMargin(false);
 		setWidth(100, Unit.PERCENTAGE);
 		addStyleName(CssStyles.SORMAS_LIST_ENTRY);
 		this.additionalTest = additionalTest;
 
 		VerticalLayout labelLayout = new VerticalLayout();
+		labelLayout.setSpacing(false);
+		labelLayout.setMargin(false);
 		labelLayout.setWidth(100, Unit.PERCENTAGE);
 		addComponent(labelLayout);
 		setExpandRatio(labelLayout, 1);
