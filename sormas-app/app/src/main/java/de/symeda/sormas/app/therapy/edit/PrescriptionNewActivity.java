@@ -20,12 +20,14 @@ package de.symeda.sormas.app.therapy.edit;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.view.Menu;
 
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.therapy.Prescription;
@@ -35,30 +37,50 @@ import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.util.Bundler;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
-public class PrescriptionEditActivity extends BaseEditActivity<Prescription> {
+public class PrescriptionNewActivity extends BaseEditActivity<Prescription> {
 
     private AsyncTask saveTask;
+    private String caseUuid = null;
 
-    public static void startActivity(Context context, String rootUuid) {
-        BaseEditActivity.startActivity(context, PrescriptionEditActivity.class, buildBundle(rootUuid));
+    public static void startActivity(Context context, String caseUuid) {
+        BaseEditActivity.startActivity(context, PrescriptionNewActivity.class, buildBundle(caseUuid));
     }
 
-    public static void startActivity(Context context, String rootUuid, boolean finishInsteadOfUpNav) {
-        BaseEditActivity.startActivity(context, PrescriptionEditActivity.class, buildBundle(rootUuid, finishInsteadOfUpNav));
+    public static Bundler buildBundle(String caseUuid) {
+        return buildBundle(null, 0).setCaseUuid(caseUuid);
+    }
+
+    @Override
+    protected void onCreateInner(Bundle savedInstanceState) {
+        super.onCreateInner(savedInstanceState);
+        caseUuid = new Bundler(savedInstanceState).getCaseUuid();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        new Bundler(outState).setCaseUuid(caseUuid);
     }
 
     @Override
     protected Prescription queryRootEntity(String recordUuid) {
-        return DatabaseHelper.getPrescriptionDao().queryUuid(recordUuid);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     protected Prescription buildRootEntity() {
-        throw new UnsupportedOperationException();
+        Case caze = DatabaseHelper.getCaseDao().queryUuidBasic(caseUuid);
+        return DatabaseHelper.getPrescriptionDao().build(caze);
+    }
+
+    @Override
+    public Enum getPageStatus() {
+        return null;
     }
 
     @Override
@@ -70,12 +92,14 @@ public class PrescriptionEditActivity extends BaseEditActivity<Prescription> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Prescription activityRootData) {
-        return PrescriptionEditFragment.newInstance(activityRootData);
+        BaseEditFragment fragment = PrescriptionEditFragment.newInstance(activityRootData);
+        fragment.setLiveValidationDisabled(true);
+        return fragment;
     }
 
     @Override
     protected int getActivityTitle() {
-        return R.string.heading_prescription_edit;
+        return R.string.heading_prescription_new;
     }
 
     @Override
@@ -85,8 +109,10 @@ public class PrescriptionEditActivity extends BaseEditActivity<Prescription> {
             return;
         }
 
-        final Prescription prescription = (Prescription) getActiveFragment().getPrimaryData();
+        final Prescription prescription = getStoredRootEntity();
         PrescriptionEditFragment fragment = (PrescriptionEditFragment) getActiveFragment();
+
+        fragment.setLiveValidationDisabled(false);
 
         try {
             FragmentValidator.validate(getContext(), fragment.getContentBinding());
@@ -114,9 +140,8 @@ public class PrescriptionEditActivity extends BaseEditActivity<Prescription> {
 
                 if (taskResult.getResultStatus().isSuccess()) {
                     finish();
-                } else {
-                    onResume(); // reload data
                 }
+
                 saveTask = null;
             }
         }.executeOnThreadPool();
@@ -128,11 +153,6 @@ public class PrescriptionEditActivity extends BaseEditActivity<Prescription> {
 
         if (saveTask != null && !saveTask.isCancelled())
             saveTask.cancel(true);
-    }
-
-    @Override
-    public Enum getPageStatus() {
-        return null;
     }
 
 }

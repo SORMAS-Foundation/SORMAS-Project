@@ -25,8 +25,10 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
@@ -34,6 +36,13 @@ public class PrescriptionDao extends AbstractAdoDao<Prescription> {
 
     public PrescriptionDao(Dao<Prescription, Long> innerDao) {
         super(innerDao);
+    }
+
+    public Prescription build(Case caze) {
+        Prescription prescription = super.build();
+        prescription.setTherapy(caze.getTherapy());
+        prescription.setPrescriptionDate(new Date());
+        return prescription;
     }
 
     @Override

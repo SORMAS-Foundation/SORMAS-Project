@@ -69,7 +69,7 @@ public class TreatmentDtoHelper extends AdoDtoHelper<Treatment, TreatmentDto> {
         target.setRoute(source.getRoute());
         target.setRouteDetails(source.getRouteDetails());
         target.setAdditionalNotes(source.getAdditionalNotes());
-        target.setPrescription(DatabaseHelper.getPrescriptionDao().getByReferenceDto(source.getTherapy()));
+        target.setPrescription(DatabaseHelper.getPrescriptionDao().getByReferenceDto(source.getPrescription()));
     }
 
     @Override

@@ -34,6 +34,10 @@ public class PrescriptionReadActivity extends BaseReadActivity<Prescription> {
         BaseReadActivity.startActivity(context, PrescriptionReadActivity.class, buildBundle(rootUuid));
     }
 
+    public static void startActivity(Context context, String rootUuid, boolean finishInsteadOfUpNav) {
+        BaseReadActivity.startActivity(context, PrescriptionReadActivity.class, buildBundle(rootUuid, finishInsteadOfUpNav));
+    }
+
     @Override
     protected Prescription queryRootEntity(String recordUuid) {
         return DatabaseHelper.getPrescriptionDao().queryUuid(recordUuid);

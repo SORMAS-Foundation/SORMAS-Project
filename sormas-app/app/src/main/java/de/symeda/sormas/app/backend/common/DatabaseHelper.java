@@ -73,6 +73,8 @@ import de.symeda.sormas.app.backend.report.WeeklyReport;
 import de.symeda.sormas.app.backend.report.WeeklyReportDao;
 import de.symeda.sormas.app.backend.report.WeeklyReportEntry;
 import de.symeda.sormas.app.backend.report.WeeklyReportEntryDao;
+import de.symeda.sormas.app.backend.sample.AdditionalTest;
+import de.symeda.sormas.app.backend.sample.AdditionalTestDao;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleDao;
@@ -106,7 +108,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 147;
+	public static final int DATABASE_VERSION = 148;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -152,6 +154,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, Event.class);
 			TableUtils.clearTable(connectionSource, Sample.class);
 			TableUtils.clearTable(connectionSource, PathogenTest.class);
+			TableUtils.clearTable(connectionSource, AdditionalTest.class);
 			TableUtils.clearTable(connectionSource, EventParticipant.class);
 			TableUtils.clearTable(connectionSource, Hospitalization.class);
 			TableUtils.clearTable(connectionSource, PreviousHospitalization.class);
@@ -215,6 +218,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Event.class);
 			TableUtils.createTable(connectionSource, Sample.class);
 			TableUtils.createTable(connectionSource, PathogenTest.class);
+			TableUtils.createTable(connectionSource, AdditionalTest.class);
 			TableUtils.createTable(connectionSource, EventParticipant.class);
 			TableUtils.createTable(connectionSource, Hospitalization.class);
 			TableUtils.createTable(connectionSource, PreviousHospitalization.class);
@@ -808,6 +812,40 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 					getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 					getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				case 147:
+					currentVersion = 147;
+					getDao(AdditionalTest.class).executeRaw("CREATE TABLE additionaltest(" +
+							"id integer primary key autoincrement," +
+							"uuid varchar(36) not null," +
+							"changeDate timestamp not null," +
+							"creationDate timestamp not null," +
+							"lastOpenedDate timestamp," +
+							"localChangeDate timestamp not null," +
+							"modified integer," +
+							"snapshot integer," +
+							"sample_id bigint REFERENCES samples(id)," +
+							"testDateTime timestamp," +
+							"haemoglobinuria varchar(255)," +
+							"proteinuria varchar(255)," +
+							"hematuria varchar(255)," +
+							"arterialVenousGasPh integer," +
+							"arterialVenousGasPco2 integer," +
+							"arterialVenousGasPao2 integer," +
+							"arterialVenousGasHco3 integer," +
+							"gasOxygenTherapy integer," +
+							"altSgpt integer," +
+							"astSgot integer," +
+							"creatinine integer," +
+							"potassium integer," +
+							"urea integer," +
+							"haemoglobin integer," +
+							"totalBilirubin integer," +
+							"conjBilirubin integer," +
+							"wbcCount integer," +
+							"platelets integer," +
+							"prothrombinTime integer," +
+							"otherTestResults varchar(512)," +
+							"UNIQUE(snapshot, uuid));");
 
 					// ATTENTION: break should only be done after last version
 					break;
@@ -841,6 +879,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Event.class, true);
 			TableUtils.dropTable(connectionSource, Sample.class, true);
 			TableUtils.dropTable(connectionSource, PathogenTest.class, true);
+			TableUtils.dropTable(connectionSource, AdditionalTest.class, true);
 			TableUtils.dropTable(connectionSource, EventParticipant.class, true);
 			TableUtils.dropTable(connectionSource, Hospitalization.class, true);
 			TableUtils.dropTable(connectionSource, PreviousHospitalization.class, true);
@@ -916,6 +955,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new SampleDao((Dao<Sample, Long>) innerDao);
 				} else if (type.equals(PathogenTest.class)) {
 					dao = (AbstractAdoDao<ADO>) new PathogenTestDao((Dao<PathogenTest, Long>) innerDao);
+				} else if (type.equals(AdditionalTest.class)) {
+					dao = (AbstractAdoDao<ADO>) new AdditionalTestDao((Dao<AdditionalTest, Long>) innerDao);
 				} else if (type.equals(Hospitalization.class)) {
 					dao = (AbstractAdoDao<ADO>) new HospitalizationDao((Dao<Hospitalization, Long>) innerDao);
 				} else if (type.equals(PreviousHospitalization.class)) {
@@ -1071,6 +1112,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	public static PathogenTestDao getSampleTestDao() {
 		return (PathogenTestDao) getAdoDao(PathogenTest.class);
+	}
+
+	public static AdditionalTestDao getAdditionalTestDao() {
+		return (AdditionalTestDao) getAdoDao(AdditionalTest.class);
 	}
 
 	public static HospitalizationDao getHospitalizationDao() {

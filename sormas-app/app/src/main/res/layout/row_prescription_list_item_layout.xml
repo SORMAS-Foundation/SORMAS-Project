@@ -65,7 +65,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="end"
-                    android:layout_marginEnd="@dimen/listItemConentIndentRight">
+                    android:layout_marginEnd="@dimen/listItemConentIndentRight"
+                    android:layout_marginStart="24dp">
 
                     <TextView
                         android:id="@+id/frequency"
@@ -73,6 +74,8 @@
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:textSize="@dimen/row_entry_status_text_size"
+                        android:maxLines="1"
+                        android:ellipsize="end"
                         android:textColor="@color/row_entry_status_text"
                         android:fontFamily="sans-serif-medium"
                         app:value="@{data.frequency}"
@@ -115,23 +118,14 @@
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:textSize="@dimen/row_entry_status_text_size"
+                        android:maxLines="1"
+                        android:ellipsize="end"
                         android:textColor="@color/row_entry_status_text"
                         android:fontFamily="sans-serif-medium"
                         android:layout_marginBottom="@dimen/listActivityRowSecondaryTextVerticalMargin"
                         app:doseValue="@{data.dose}"
                         app:routeValue="@{data.route}"
                         app:routeDetailsValue="@{data.routeDetails}" />
-
-                    <TextView
-                        android:id="@+id/prescription_date"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="@dimen/listActivityRowTertiaryTextSize"
-                        android:textColor="@color/listActivityRowLeastText"
-                        android:fontFamily="sans-serif-medium"
-                        app:dateValue="@{data.prescriptionDate}"
-                        app:prependValue='@{@string/caption_issued_on}'
-                        app:defaultValue='@{@string/value_prescription_date_unknown}' />
 
                 </LinearLayout>
 
@@ -152,24 +146,6 @@
                         android:layout_alignParentStart="true"
                         android:layout_alignParentEnd="true" />
 
-                    <TextView
-                        android:id="@+id/prescribing_clinician"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:textSize="@dimen/row_entry_date_text_size"
-                        android:textColor="@color/listActivityRowDateText"
-                        android:fontFamily="sans-serif"
-                        android:textAlignment="viewEnd"
-                        android:layout_alignParentTop="false"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentEnd="true"
-                        app:value="@{data.prescribingClinician}"
-                        app:prependValue="@{@string/caption_prescribed_by}"
-                        app:defaultValue='@{@string/value_prescribing_clinician_unknown}'
-                        app:valueFormat='@{@string/two_strings_format}' />
-
                 </RelativeLayout>
 
                 <ImageView
@@ -179,6 +155,49 @@
                     android:layout_gravity="center_vertical"
                     android:scaleType="fitEnd"
                     android:src="@drawable/ic_go_to_read_view_24dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/prescription_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:fontFamily="sans-serif-medium"
+                    app:dateValue="@{data.prescriptionDate}"
+                    app:prependValue='@{@string/caption_issued_on}'
+                    app:defaultValue='@{@string/value_prescription_date_unknown}' />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="end"
+                    android:layout_marginEnd="@dimen/listItemConentIndentRight"
+                    android:layout_marginStart="24dp">
+
+                    <TextView
+                        android:id="@+id/prescribing_clinician"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:textSize="@dimen/row_entry_date_text_size"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:textColor="@color/listActivityRowDateText"
+                        android:fontFamily="sans-serif"
+                        app:value="@{data.prescribingClinician}"
+                        app:prependValue="@{@string/caption_prescribed_by}"
+                        app:defaultValue='@{@string/value_prescribing_clinician_unknown}'
+                        app:valueFormat='@{@string/two_strings_format}' />
+
+                </LinearLayout>
 
             </LinearLayout>
 

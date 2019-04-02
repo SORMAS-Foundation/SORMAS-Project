@@ -38,144 +38,113 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="@dimen/fragment_padding"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:id="@+id/main_content">
+
+            <requestFocus/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/fragment_padding"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:id="@+id/main_content">
-
-                <requestFocus/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/prescription_prescriptionType"
-                        app:value="@{data.prescriptionType}"
-                        style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/prescription_prescriptionDetails"
-                        app:value="@{data.prescriptionDetails}"
-                        app:goneIfEmpty="@{data.prescriptionDetails}"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
-
-                </LinearLayout>
+                android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/prescription_typeOfDrug"
-                    app:value="@{data.typeOfDrug}"
-                    app:goneIfEmpty="@{data.typeOfDrug}"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/prescription_prescriptionDate"
-                        app:value="@{data.prescriptionDate}"
-                        style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/prescription_prescribingClinician"
-                        app:value="@{data.prescribingClinician}"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/prescription_prescriptionStart"
-                        app:value="@{data.prescriptionStart}"
-                        style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/prescription_prescriptionEnd"
-                        app:value="@{data.prescriptionEnd}"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/prescription_frequency"
-                        app:value="@{data.frequency}"
-                        style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/prescription_dose"
-                        app:value="@{data.dose}"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/prescription_route"
-                        app:value="@{data.route}"
-                        style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/prescription_routeDetails"
-                        app:value="@{data.routeDetails}"
-                        app:dependencyParentField="@{prescriptionRoute}"
-                        app:dependencyParentValue="@{TreatmentRoute.OTHER}"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
-
-                </LinearLayout>
+                    android:id="@+id/prescription_prescriptionType"
+                    app:value="@{data.prescriptionType}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/prescription_additionalNotes"
-                    app:value="@{data.additionalNotes}"
-                    app:maxLines="5"
-                    style="@style/ControlSingleColumnStyle" />
+                    android:id="@+id/prescription_prescriptionDetails"
+                    app:value="@{data.prescriptionDetails}"
+                    app:goneIfEmpty="@{data.prescriptionDetails}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/prescription_typeOfDrug"
+                app:value="@{data.typeOfDrug}"
+                app:goneIfEmpty="@{data.typeOfDrug}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/prescription_prescriptionDate"
+                    app:value="@{data.prescriptionDate}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/prescription_prescribingClinician"
+                    app:value="@{data.prescribingClinician}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/prescription_buttons_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/background_full_width_border"
-                android:paddingLeft="@dimen/buttonPanelHorizontalMargin"
-                android:paddingRight="@dimen/buttonPanelHorizontalMargin"
-                android:paddingTop="@dimen/buttonPanelVerticalMargin"
-                android:paddingBottom="@dimen/buttonPanelVerticalMargin"
-                android:elevation="16dp">
+                android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlButton
-                    android:id="@+id/create_treatment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlHalfMarginBottom"
-                    android:text="@string/action_create_treatment"
-                    app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
-                    app:rounded="true"
-                    app:iconStart="@drawable/ic_pan_tool_black_24dp" />
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/prescription_prescriptionStart"
+                    app:value="@{data.prescriptionStart}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/prescription_prescriptionEnd"
+                    app:value="@{data.prescriptionEnd}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/prescription_frequency"
+                    app:value="@{data.frequency}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/prescription_dose"
+                    app:value="@{data.dose}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/prescription_route"
+                    app:value="@{data.route}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/prescription_routeDetails"
+                    app:value="@{data.routeDetails}"
+                    app:dependencyParentField="@{prescriptionRoute}"
+                    app:dependencyParentValue="@{TreatmentRoute.OTHER}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/prescription_additionalNotes"
+                app:value="@{data.additionalNotes}"
+                app:maxLines="5"
+                style="@style/ControlSingleColumnStyle" />
 
         </LinearLayout>
 

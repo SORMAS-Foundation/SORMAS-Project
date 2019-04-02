@@ -29,6 +29,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.therapy.Prescription;
 import de.symeda.sormas.app.databinding.FragmentPrescriptionReadLayoutBinding;
+import de.symeda.sormas.app.therapy.edit.TreatmentNewActivity;
 
 import static android.view.View.GONE;
 
@@ -44,16 +45,7 @@ public class PrescriptionReadFragment extends BaseReadFragment<FragmentPrescript
 
     // Instance methods
 
-    private void setUpFieldVisibilities(FragmentPrescriptionReadLayoutBinding contentBinding) {
-        if (!ConfigProvider.hasUserRight(UserRight.TREATMENT_CREATE)) {
-            contentBinding.prescriptionButtonsPanel.setVisibility(GONE);
-        }
-    }
-
     private void setUpControlListeners(FragmentPrescriptionReadLayoutBinding contentBinding) {
-        contentBinding.createTreatment.setOnClickListener(e -> {
-            // TODO: Add logic
-        });
         contentBinding.prescriptionPrescriptionType.addValueChangedListener(e -> {
             if (e.getValue() == TreatmentType.DRUG_INTAKE) {
                 contentBinding.prescriptionPrescriptionDetails.setCaption(I18nProperties.getPrefixCaption(PrescriptionDto.I18N_PREFIX, PrescriptionDto.DRUG_INTAKE_DETAILS));
@@ -75,11 +67,6 @@ public class PrescriptionReadFragment extends BaseReadFragment<FragmentPrescript
         setUpControlListeners(contentBinding);
 
         contentBinding.setData(record);
-    }
-
-    @Override
-    public void onAfterLayoutBinding(FragmentPrescriptionReadLayoutBinding contentBinding) {
-        setUpFieldVisibilities(contentBinding);
     }
 
     @Override

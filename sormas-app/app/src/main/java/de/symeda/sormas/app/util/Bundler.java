@@ -34,6 +34,7 @@ public class Bundler {
     private static final String EVENT_PARTICIPANT_UUID = "eventParticipantUuid";
     private static final String EPI_WEEK = "epiWeek";
     private static final String EMPTY_REPORT_DATE = "emptyReportDate";
+    private static final String PRESCRIPTION_UUID = "prescriptionUuid";
 
     private final Bundle bundle;
 
@@ -125,6 +126,18 @@ public class Bundler {
     public String getContactUuid() {
         if (bundle.containsKey(CONTACT_UUID)) {
             return bundle.getString(CONTACT_UUID);
+        }
+        return null;
+    }
+
+    public Bundler setPrescriptionUuid(String prescriptionUuid) {
+        bundle.putString(PRESCRIPTION_UUID, prescriptionUuid);
+        return this;
+    }
+
+    public String getPrescriptionUuid() {
+        if (bundle.containsKey(PRESCRIPTION_UUID)) {
+            return bundle.getString(PRESCRIPTION_UUID);
         }
         return null;
     }

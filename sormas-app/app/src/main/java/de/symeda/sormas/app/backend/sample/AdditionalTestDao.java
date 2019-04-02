@@ -26,18 +26,18 @@ import java.util.List;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
-public class PathogenTestDao extends AbstractAdoDao<PathogenTest> {
+public class AdditionalTestDao extends AbstractAdoDao<AdditionalTest> {
 
-    public PathogenTestDao(Dao<PathogenTest, Long> innerDao) {
+    public AdditionalTestDao(Dao<AdditionalTest, Long> innerDao) {
         super(innerDao);
     }
 
     @Override
-    protected Class<PathogenTest> getAdoClass() {
-        return PathogenTest.class;
+    protected Class<AdditionalTest> getAdoClass() {
+        return AdditionalTest.class;
     }
 
-    public PathogenTest queryMostRecentBySample(Sample sample) {
+    public AdditionalTest queryMostRecentBySample(Sample sample) {
         if (sample == null) {
             return null;
         }
@@ -47,42 +47,37 @@ public class PathogenTestDao extends AbstractAdoDao<PathogenTest> {
         }
 
         try {
-            List<PathogenTest> tests = queryBuilder()
-                    .orderBy(PathogenTest.TEST_DATE_TIME, false)
-                    .where().eq(PathogenTest.SAMPLE + "_id", sample)
+            return queryBuilder()
+                    .orderBy(AdditionalTest.TEST_DATE_TIME, false)
+                    .where().eq(AdditionalTest.SAMPLE + "_id", sample)
                     .and().eq(AbstractDomainObject.SNAPSHOT, false)
-                    .query();
-            if (!tests.isEmpty()) {
-                return tests.get(0);
-            } else {
-                return null;
-            }
+                    .queryForFirst();
         } catch (SQLException e) {
-            android.util.Log.e(getTableName(), "Could not perform queryMostRecentBySample on PathogenTest");
+            android.util.Log.e(getTableName(), "Could not perform queryMostRecentBySample on AdditionalTest");
             throw new RuntimeException(e);
         }
     }
 
-    public List<PathogenTest> queryBySample(Sample sample) {
+    public List<AdditionalTest> queryBySample(Sample sample) {
         if (sample.isSnapshot()) {
             throw new IllegalArgumentException("Does not support snapshot entities");
         }
 
         try {
             return queryBuilder()
-                    .orderBy(PathogenTest.TEST_DATE_TIME, true)
-                    .where().eq(PathogenTest.SAMPLE + "_id", sample)
+                    .orderBy(AdditionalTest.TEST_DATE_TIME, true)
+                    .where().eq(AdditionalTest.SAMPLE + "_id", sample)
                     .and().eq(AbstractDomainObject.SNAPSHOT, false)
                     .query();
         } catch (SQLException e) {
-            android.util.Log.e(getTableName(), "Could not perform queryBySample on PathogenTest");
+            android.util.Log.e(getTableName(), "Could not perform queryBySample on AdditionalTest");
             throw new RuntimeException(e);
         }
     }
 
     @Override
     public String getTableName() {
-        return PathogenTest.TABLE_NAME;
+        return AdditionalTest.TABLE_NAME;
     }
 
 }

@@ -50,6 +50,9 @@ import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.sample.edit.SampleNewActivity;
 import de.symeda.sormas.app.symptoms.SymptomsEditFragment;
 import de.symeda.sormas.app.task.edit.TaskNewActivity;
+import de.symeda.sormas.app.therapy.edit.PrescriptionEditActivity;
+import de.symeda.sormas.app.therapy.edit.PrescriptionNewActivity;
+import de.symeda.sormas.app.therapy.edit.TreatmentNewActivity;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
 
@@ -221,6 +224,10 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
             SampleNewActivity.startActivity(getContext(), getRootUuid());
         } else if (activeSection == CaseSection.TASKS) {
             TaskNewActivity.startActivityFromCase(getContext(), getRootUuid());
+        } else if (activeSection == CaseSection.PRESCRIPTIONS) {
+            PrescriptionNewActivity.startActivity(getContext(), getRootUuid());
+        } else if (activeSection == CaseSection.TREATMENTS) {
+            TreatmentNewActivity.startActivity(getContext(), getRootUuid());
         }
     }
 

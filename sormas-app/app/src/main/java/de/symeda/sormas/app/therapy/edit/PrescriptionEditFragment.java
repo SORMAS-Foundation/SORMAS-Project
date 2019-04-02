@@ -56,20 +56,20 @@ public class PrescriptionEditFragment extends BaseEditFragment<FragmentPrescript
     // Instance methods
 
     private void setUpFieldVisibilities(FragmentPrescriptionEditLayoutBinding contentBinding) {
-        if (!ConfigProvider.hasUserRight(UserRight.TREATMENT_CREATE)) {
+        if (record.getId() == null || !ConfigProvider.hasUserRight(UserRight.TREATMENT_CREATE)) {
             contentBinding.prescriptionButtonsPanel.setVisibility(GONE);
         }
 
         contentBinding.prescriptionPrescriptionType.addValueChangedListener(e -> {
-                contentBinding.prescriptionPrescriptionDetails.setRequired(
-                        e.getValue() == TreatmentType.DRUG_INTAKE
-                                || e.getValue() == TreatmentType.OTHER);
+            contentBinding.prescriptionPrescriptionDetails.setRequired(
+                    e.getValue() == TreatmentType.DRUG_INTAKE
+                            || e.getValue() == TreatmentType.OTHER);
         });
     }
 
     private void setUpControlListeners(FragmentPrescriptionEditLayoutBinding contentBinding) {
         contentBinding.createTreatment.setOnClickListener(e -> {
-            // TODO: Add logic
+            TreatmentNewActivity.startActivityFromPrescription(getContext(), getActivityRootData().getUuid());
         });
         contentBinding.prescriptionPrescriptionType.addValueChangedListener(e -> {
             if (e.getValue() == TreatmentType.DRUG_INTAKE) {
@@ -124,7 +124,9 @@ public class PrescriptionEditFragment extends BaseEditFragment<FragmentPrescript
 
     @Override
     protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.heading_prescription_edit);
+        return record.getId() != null ?
+                getResources().getString(R.string.heading_prescription_edit)
+                : getResources().getString(R.string.heading_prescription_new);
     }
 
 }

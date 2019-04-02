@@ -65,6 +65,10 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         return buildBundle(rootUuid, 0);
     }
 
+    protected static Bundler buildBundle(String rootUuid, boolean finishInsteadOfUpNav) {
+        return buildBundle(rootUuid, 0).setFinishInsteadOfUpNav(finishInsteadOfUpNav);
+    }
+
     protected static Bundler buildBundle(String rootUuid, int activePageKey) {
         return buildBundle(activePageKey).setRootUuid(rootUuid);
     }

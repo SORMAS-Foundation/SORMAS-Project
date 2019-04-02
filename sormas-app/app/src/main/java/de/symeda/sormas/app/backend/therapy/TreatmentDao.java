@@ -25,8 +25,10 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
@@ -44,6 +46,27 @@ public class TreatmentDao extends AbstractAdoDao<Treatment> {
     @Override
     public String getTableName() {
         return Treatment.TABLE_NAME;
+    }
+
+    public Treatment build(Case caze) {
+        Treatment treatment = super.build();
+        treatment.setTherapy(caze.getTherapy());
+        treatment.setTreatmentDateTime(new Date());
+        return treatment;
+    }
+
+    public Treatment build(Prescription prescription) {
+        Treatment treatment = super.build();
+        treatment.setTherapy(prescription.getTherapy());
+        treatment.setTreatmentDateTime(new Date());
+        treatment.setTreatmentType(prescription.getPrescriptionType());
+        treatment.setTreatmentDetails(prescription.getPrescriptionDetails());
+        treatment.setTypeOfDrug(prescription.getTypeOfDrug());
+        treatment.setDose(prescription.getDose());
+        treatment.setRoute(prescription.getRoute());
+        treatment.setRouteDetails(prescription.getRouteDetails());
+        treatment.setPrescription(prescription);
+        return treatment;
     }
 
     public List<Treatment> findBy(TreatmentCriteria criteria) {

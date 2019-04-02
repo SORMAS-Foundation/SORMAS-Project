@@ -278,6 +278,7 @@
     <string name="heading_pick_or_create_person">Pick or create person</string>
     <string name="heading_prescription">Prescription</string>
     <string name="heading_prescription_edit">Edit Prescription</string>
+    <string name="heading_prescription_new">New Prescription</string>
     <string name="heading_previous_hospitalization">Previous Hospitalization</string>
     <string name="heading_previous_hospitalizations">Previous Hospitalizations</string>
     <string name="heading_reset_PIN">Reset PIN</string>
@@ -305,6 +306,7 @@
     <string name="heading_travels">Travels</string>
     <string name="heading_treatment">Treatment</string>
     <string name="heading_treatment_edit">Edit Treatment</string>
+    <string name="heading_treatment_new">New Treatment</string>
     <string name="heading_unsynchronized_changes">Unsynchronized Changes</string>
     <string name="heading_user_report">Report a problem</string>
 

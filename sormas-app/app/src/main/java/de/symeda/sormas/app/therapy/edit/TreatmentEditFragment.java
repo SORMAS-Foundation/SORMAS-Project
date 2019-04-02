@@ -53,7 +53,7 @@ public class TreatmentEditFragment extends BaseEditFragment<FragmentTreatmentEdi
     // Instance methods
 
     private void setUpFieldVisibilities(FragmentTreatmentEditLayoutBinding contentBinding) {
-        if (record.getPrescription() == null) {
+        if (record.getId() == null || record.getPrescription() == null) {
             contentBinding.treatmentButtonsPanel.setVisibility(GONE);
         }
 
@@ -66,7 +66,9 @@ public class TreatmentEditFragment extends BaseEditFragment<FragmentTreatmentEdi
 
     private void setUpControlListeners(FragmentTreatmentEditLayoutBinding contentBinding) {
         contentBinding.openPrescription.setOnClickListener(e -> {
-            // TODO: Add logic
+            if (getActivityRootData().getPrescription() != null) {
+                PrescriptionEditActivity.startActivity(getContext(), getActivityRootData().getPrescription().getUuid(), true);
+            }
         });
         contentBinding.treatmentTreatmentType.addValueChangedListener(e -> {
             if (e.getValue() == TreatmentType.DRUG_INTAKE) {

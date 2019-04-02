@@ -50,7 +50,9 @@ public class TreatmentReadFragment extends BaseReadFragment<FragmentTreatmentRea
 
     private void setUpControlListeners(FragmentTreatmentReadLayoutBinding contentBinding) {
         contentBinding.openPrescription.setOnClickListener(e -> {
-            // TODO: Add logic
+            if (getActivityRootData().getPrescription() != null) {
+                PrescriptionReadActivity.startActivity(getContext(), getActivityRootData().getPrescription().getUuid(), true);
+            }
         });
         contentBinding.treatmentTreatmentType.addValueChangedListener(e -> {
             if (e.getValue() == TreatmentType.DRUG_INTAKE) {

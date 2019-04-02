@@ -109,6 +109,7 @@ public final class RetroProvider {
     private UserRoleConfigFacadeRetro userRoleConfigFacadeRetro;
     private PrescriptionFacadeRetro prescriptionFacadeRetro;
     private TreatmentFacadeRetro treatmentFacadeRetro;
+    private AdditionalTestFacadeRetro additionalTestFacadeRetro;
 
     private RetroProvider(Context context, Interceptor... additionalInterceptors) throws ServerConnectionException, ServerCommunicationException, ApiVersionException {
 
@@ -650,6 +651,17 @@ public final class RetroProvider {
             }
         }
         return instance.treatmentFacadeRetro;
+    }
+
+    public static AdditionalTestFacadeRetro getAdditionalTestFacade() {
+        if (instance.additionalTestFacadeRetro == null) {
+            synchronized ((RetroProvider.class)) {
+                if (instance.additionalTestFacadeRetro == null) {
+                    instance.additionalTestFacadeRetro = instance.retrofit.create(AdditionalTestFacadeRetro.class);
+                }
+            }
+        }
+        return instance.additionalTestFacadeRetro;
     }
 
     public static void throwException(Response<?> response) throws ServerConnectionException, ServerCommunicationException {

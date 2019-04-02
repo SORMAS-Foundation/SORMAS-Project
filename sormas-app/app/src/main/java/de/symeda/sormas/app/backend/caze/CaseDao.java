@@ -61,6 +61,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.sample.AdditionalTest;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
@@ -436,12 +437,16 @@ public class CaseDao extends AbstractAdoDao<Case> {
             DatabaseHelper.getContactDao().deleteCascade(contact);
         }
 
-        // Delete samples and sample tests
+        // Delete samples, pathogen tests and additional tests
         List<Sample> samples = DatabaseHelper.getSampleDao().queryByCase(caze);
         for (Sample sample : samples) {
             List<PathogenTest> pathogenTests = DatabaseHelper.getSampleTestDao().queryBySample(sample);
             for (PathogenTest pathogenTest : pathogenTests) {
                 DatabaseHelper.getSampleTestDao().deleteCascade(pathogenTest);
+            }
+            List<AdditionalTest> additionalTests = DatabaseHelper.getAdditionalTestDao().queryBySample(sample);
+            for (AdditionalTest additionalTest : additionalTests) {
+                DatabaseHelper.getAdditionalTestDao().deleteCascade(additionalTest);
             }
 
             DatabaseHelper.getSampleDao().deleteCascade(sample);
