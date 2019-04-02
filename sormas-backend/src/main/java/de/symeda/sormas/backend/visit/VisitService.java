@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.visit;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -27,6 +26,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -169,10 +169,19 @@ public class VisitService extends AbstractAdoService<Visit> {
 		return em.createQuery(cq).getSingleResult().intValue();
 	}
 
-	public int getVisitCountByContactId(long contactId, long contactPersonId, Date lastContactDate, Date contactReportDate, Date followUpUntil, Disease disease) {
-		return ((Long) em.createNativeQuery("SELECT COUNT(*) FROM " + Visit.TABLE_NAME + " WHERE " 
-				+ buildVisitFilterQuery(contactId, contactPersonId, lastContactDate, contactReportDate, followUpUntil, disease, null)
-				+ ";").getSingleResult()).intValue();
+	public int getVisitCountByContactId(long contactPersonId, Date lastContactDate, Date contactReportDate, Date followUpUntil, Disease disease) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Visit> from = cq.from(Visit.class);
+
+		Predicate filter = buildVisitFilter(contactPersonId, disease, null, lastContactDate, contactReportDate, followUpUntil, cb, cq, from);
+
+		cq.where(filter);
+
+		cq.select(cb.count(from));
+		
+		return em.createQuery(cq).getSingleResult().intValue();
 	}
 
 	public int getSymptomaticCountByContact(Contact contact) {
@@ -200,15 +209,32 @@ public class VisitService extends AbstractAdoService<Visit> {
 		cq.where(filter);
 		cq.orderBy(cb.desc(from.get(Visit.VISIT_DATE_TIME)));
 
-		List<Visit> result = em.createQuery(cq).getResultList();
-		return result.size() > 0 ? result.get(0) : null;
+		TypedQuery<Visit> query = em.createQuery(cq);
+		query.setFirstResult(0);
+		query.setMaxResults(1);
+		try {
+			return query.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
-	public Visit getLastVisitByContactId(long contactId, long contactPersonId, Date lastContactDate, Date contactReportDate, Date followUpUntil, Disease disease, VisitStatus visitStatus) {
+	public Visit getLastVisitByContactId(long contactPersonId, Date lastContactDate, Date contactReportDate, Date followUpUntil, Disease disease, VisitStatus visitStatus) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Visit> cq = cb.createQuery(getElementClass());
+		Root<Visit> from = cq.from(getElementClass());
+
+		Predicate filter = buildVisitFilter(contactPersonId, disease, visitStatus, lastContactDate, contactReportDate, followUpUntil, cb, cq, from);
+
+		cq.where(filter);
+		cq.orderBy(cb.desc(from.get(Visit.VISIT_DATE_TIME)));
+
+		TypedQuery<Visit> query = em.createQuery(cq);
+		query.setFirstResult(0);
+		query.setMaxResults(1);
 		try {
-			return (Visit) em.createNativeQuery("SELECT * FROM " + Visit.TABLE_NAME + " WHERE " 
-					+ buildVisitFilterQuery(contactId, contactPersonId, lastContactDate, contactReportDate, followUpUntil, disease, visitStatus)
-					+ " ORDER BY " + Visit.VISIT_DATE_TIME + " DESC LIMIT 1;", Visit.class).getSingleResult();
+			return query.getSingleResult();
 		} catch (NoResultException e) {
 			return null;
 		}
@@ -262,11 +288,18 @@ public class VisitService extends AbstractAdoService<Visit> {
 	 * The logic to calculate the listed visits needs to match the ContactService.getAllByVisit method.
 	 */
 	private Predicate buildVisitFilter(Contact contact, VisitStatus visitStatus, CriteriaBuilder cb, CriteriaQuery<?> cq, Root<?> from) {
+		return buildVisitFilter(contact.getPerson().getId(), contact.getCaze().getDisease(), visitStatus, contact.getLastContactDate(), contact.getReportDateTime(), contact.getFollowUpUntil(), cb, cq, from);
+	}
+	
+	/**
+	 * The logic to calculate the listed visits needs to match the ContactService.getAllByVisit method.
+	 */
+	private Predicate buildVisitFilter(Long personId, Disease cazeDisease, VisitStatus visitStatus, Date lastContactDate, Date contactReportDate, Date followUpUntil, CriteriaBuilder cb, CriteriaQuery<?> cq, Root<?> from) {
 		// all of the person
-		Predicate filter = cb.equal(from.get(Visit.PERSON), contact.getPerson());
+		Predicate filter = cb.equal(from.get(Visit.PERSON).get(Person.ID), personId);
 
 		// only disease relevant
-		filter = cb.and(filter, cb.equal(from.get(Visit.DISEASE), contact.getCaze().getDisease()));
+		filter = cb.and(filter, cb.equal(from.get(Visit.DISEASE), cazeDisease));
 
 		// only visits with the given visit status, if present
 		if (visitStatus != null) {
@@ -276,38 +309,38 @@ public class VisitService extends AbstractAdoService<Visit> {
 		// list all visits between contact date ...
 		// IMPORTANT: This is different than the calculation of "follow-up until", where the date of report is used as reference
 		// We also want to have visits that took place before.
-		Date contactReferenceDate = contact.getLastContactDate() != null ? contact.getLastContactDate() : contact.getReportDateTime();
+		Date contactReferenceDate = lastContactDate != null ? lastContactDate : contactReportDate;
 		Predicate dateStartFilter = cb.greaterThan(from.get(Visit.VISIT_DATE_TIME), DateHelper.subtractDays(contactReferenceDate, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
 		filter = cb.and(filter, dateStartFilter);
 
 		// .. and follow-up until
-		if (contact.getFollowUpUntil() != null) {
-			Predicate dateFilter = cb.lessThan(from.get(Visit.VISIT_DATE_TIME), DateHelper.addDays(contact.getFollowUpUntil(), VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
+		if (followUpUntil != null) {
+			Predicate dateFilter = cb.lessThan(from.get(Visit.VISIT_DATE_TIME), DateHelper.addDays(followUpUntil, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
 			filter = cb.and(filter, dateFilter);
 		}
 
 		return filter;
 	}
 
-	/**
-	 * The logic to calculate the visits needs to match the buildVisitFilter method; this method returns part of a native
-	 * query for usage in performance-critical situations.
-	 */
-	private String buildVisitFilterQuery(long contactId, long contactPersonId, Date lastContactDate, Date contactReportDate, Date followUpUntil, Disease disease, VisitStatus visitStatus) {
-		StringBuilder builder = new StringBuilder();
-		builder.append(Visit.PERSON + "_id = " + contactPersonId).append(" AND " + Visit.DISEASE + " = '" + disease.getName() + "'");
-		if (visitStatus != null) {
-			builder.append(" AND " + Visit.VISIT_STATUS + " = '" + visitStatus.getName() + "'");
-		}
-		Date contactReferenceDate = lastContactDate != null ? lastContactDate : contactReportDate;
-		Date earliestDate = DateHelper.subtractDays(contactReferenceDate, VisitDto.ALLOWED_CONTACT_DATE_OFFSET);
-		Date latestDate = DateHelper.addDays(followUpUntil, VisitDto.ALLOWED_CONTACT_DATE_OFFSET);
-		builder.append(" AND " + Visit.VISIT_DATE_TIME + " > '" + new Timestamp(earliestDate.getTime()) + "'");
-		if (followUpUntil != null) {
-			builder.append(" AND " + Visit.VISIT_DATE_TIME + " < '" + new Timestamp(latestDate.getTime()) + "'");
-		}
-		return builder.toString();
-	}
+//	/**
+//	 * The logic to calculate the visits needs to match the buildVisitFilter method; this method returns part of a native
+//	 * query for usage in performance-critical situations.
+//	 */
+//	private String buildVisitFilterQuery(long contactId, long contactPersonId, Date lastContactDate, Date contactReportDate, Date followUpUntil, Disease disease, VisitStatus visitStatus) {
+//		StringBuilder builder = new StringBuilder();
+//		builder.append(Visit.PERSON + "_id = " + contactPersonId).append(" AND " + Visit.DISEASE + " = '" + disease.getName() + "'");
+//		if (visitStatus != null) {
+//			builder.append(" AND " + Visit.VISIT_STATUS + " = '" + visitStatus.getName() + "'");
+//		}
+//		Date contactReferenceDate = lastContactDate != null ? lastContactDate : contactReportDate;
+//		Date earliestDate = DateHelper.subtractDays(contactReferenceDate, VisitDto.ALLOWED_CONTACT_DATE_OFFSET);
+//		Date latestDate = DateHelper.addDays(followUpUntil, VisitDto.ALLOWED_CONTACT_DATE_OFFSET);
+//		builder.append(" AND " + Visit.VISIT_DATE_TIME + " > '" + new Timestamp(earliestDate.getTime()) + "'");
+//		if (followUpUntil != null) {
+//			builder.append(" AND " + Visit.VISIT_DATE_TIME + " < '" + new Timestamp(latestDate.getTime()) + "'");
+//		}
+//		return builder.toString();
+//	}
 
 	@SuppressWarnings("rawtypes")
 	@Override

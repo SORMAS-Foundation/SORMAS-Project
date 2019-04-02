@@ -306,9 +306,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		for (ContactExportDto exportDto : resultList) {
 			// TODO: Speed up this code, e.g. by persisting address as a String in the database
 			exportDto.setAddress(personService.getAddressByPersonId(exportDto.getPersonId()).toString());
-			exportDto.setNumberOfVisits(visitService.getVisitCountByContactId(exportDto.getId(), exportDto.getPersonId(), 
+			exportDto.setNumberOfVisits(visitService.getVisitCountByContactId(exportDto.getPersonId(), 
 					exportDto.getLastContactDate(), exportDto.getReportDate(), exportDto.getFollowUpUntil(), exportDto.getInternalDisease()));
-			Visit lastCooperativeVisit = visitService.getLastVisitByContactId(exportDto.getId(), exportDto.getPersonId(), 
+			Visit lastCooperativeVisit = visitService.getLastVisitByContactId(exportDto.getPersonId(), 
 					exportDto.getLastContactDate(), exportDto.getReportDate(), exportDto.getFollowUpUntil(), exportDto.getInternalDisease(), VisitStatus.COOPERATIVE);
 			if (lastCooperativeVisit != null) {
 				exportDto.setLastCooperativeVisitSymptomatic(lastCooperativeVisit.getSymptoms().getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
