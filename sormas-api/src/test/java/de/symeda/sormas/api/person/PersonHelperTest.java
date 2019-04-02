@@ -78,7 +78,7 @@ public class PersonHelperTest {
 
 	@Test
 		public void testFormatBirthdate() throws Exception {
-			assertEquals("//", PersonHelper.formatBirthdate(null, null, null));
+			assertEquals("", PersonHelper.formatBirthdate(null, null, null));
 			assertEquals("//1990", PersonHelper.formatBirthdate(null, null, 1990));
 			assertEquals("/7/1990", PersonHelper.formatBirthdate(null, 7, 1990));
 			assertEquals("/7/", PersonHelper.formatBirthdate(null, 7, null));
