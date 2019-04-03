@@ -384,15 +384,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
     @Override
     public Case saveAndSnapshot(final Case caze) throws DaoException {
-
         final Case existingCase = queryUuidBasic(caze.getUuid());
-
-        // Set report date to current time when the case is newly created; this is necessary
-        // because the reportDate field does not store a time value
-        if (existingCase == null && caze.getReportDate().equals(DateHelper.getStartOfDay(new Date()))) {
-            caze.setReportDate(new Date());
-        }
-
         onCaseChanged(existingCase, caze);
         return super.saveAndSnapshot(caze);
     }
