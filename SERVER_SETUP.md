@@ -74,7 +74,7 @@ The `/opt/payara-172/` as payara-directory can, in some linux distros, only be m
 * Set up a payara domain called "sormas" by executing it: ``./server-setup.sh`` Press enter whenever asked for it.
 * **IMPORTANT**: Make sure the script executed successfully. If anything goes you need to fix the problem (or ask for help), then delete the created domain directory and re-execute the script.
 * Adjust the logging configuration in opt/domains/sormas/config/logback.xml based on your needs (e.g. configure and activate email appender)
-* Make sure the domain folder is owned by the glassfish user: ``chown -R glassfish:glassfish opt/domains/sormas/``  
+* Make sure the domain folder is owned by the payara user: ``chown -R payara:payara opt/domains/sormas/``  
 This is not necessary when you setup a development environment and use another folder as domain directory. 
 * **Only** necessary if you are setting up a **productive environment**
 	* Copy the startup script to init.d: ``cp payara-sormas /etc/init.d``

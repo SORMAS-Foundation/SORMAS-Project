@@ -15,13 +15,13 @@ DOMAINS_DIR=${DOMAINS_DIR:-"/opt/domains"}
 
 case "$1" in
 start)
-    su - glassfish -c "$GLASSFISH_HOME/bin/asadmin start-domain --domaindir $DOMAINS_DIR sormas"
+    su - payara -c "$GLASSFISH_HOME/bin/asadmin start-domain --domaindir $DOMAINS_DIR sormas"
     ;;
 stop)
-    su - glassfish -c "$GLASSFISH_HOME/bin/asadmin stop-domain --domaindir $DOMAINS_DIR sormas"
+    su - payara -c "$GLASSFISH_HOME/bin/asadmin stop-domain --domaindir $DOMAINS_DIR sormas"
     ;;
 restart)
-    su - glassfish -c "$GLASSFISH_HOME/bin/asadmin restart-domain --domaindir $DOMAINS_DIR sormas"
+    su - payara -c "$GLASSFISH_HOME/bin/asadmin restart-domain --domaindir $DOMAINS_DIR sormas"
     ;;
 *)
     echo "usage: $0 (start|stop|restart|help)"
