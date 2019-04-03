@@ -131,10 +131,10 @@ public class ImportFacadeEjb implements ImportFacade {
 		List<String> columnNames = new ArrayList<>();
 		buildListOfFields(columnNames, CaseDataDto.class, "");
 		Path filePath = Paths.get(getCaseImportTemplateFilePath());
-		CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator());
-		writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
-		writer.flush();
-		writer.close();
+		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
+			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
+			writer.flush();
+		}
 	}
 
 	@Override

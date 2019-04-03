@@ -72,11 +72,13 @@ public class SormasErrorHandler implements ErrorHandler {
 
         ErrorMessage errorMessage = getErrorMessageForException(t);
 
-        // log the error or warning
-        if (errorMessage instanceof SystemError) {
-        	logger.error(t.getMessage(), t);
-        } else {
-        	logger.warn(t.getMessage(), t);
+        if (t != null) {
+            // log the error or warning
+	        if (errorMessage instanceof SystemError) {
+	        	logger.error(t.getMessage(), t);
+	        } else {
+	        	logger.warn(t.getMessage(), t);
+	        }
         }
 				
 	    // finds the original source of the error/exception

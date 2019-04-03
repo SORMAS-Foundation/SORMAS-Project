@@ -211,15 +211,11 @@ public class ExportFacadeEjb implements ExportFacade {
 	 * and its file path is returned.
 	 */
 	private String createZipFromCsvFiles(List<DatabaseTable> databaseTables, String date, int randomNumber) throws ExportErrorException {
-		try {
-			Path path = new File(configFacade.getTempFilesPath()).toPath();
-			String name = ImportExportUtils.TEMP_FILE_PREFIX + "_export_" + date + "_" + randomNumber + ".zip";
-			Path filePath = path.resolve(name);
-			String zipPath = filePath.toString();
-			FileOutputStream fos = new FileOutputStream(zipPath);
-			BufferedOutputStream bos = new BufferedOutputStream(fos);
-			ZipOutputStream zos = new ZipOutputStream(bos);
-
+		Path path = new File(configFacade.getTempFilesPath()).toPath();
+		String name = ImportExportUtils.TEMP_FILE_PREFIX + "_export_" + date + "_" + randomNumber + ".zip";
+		Path filePath = path.resolve(name);
+		String zipPath = filePath.toString();
+		try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream( new FileOutputStream(zipPath)))) {
 			for (DatabaseTable databaseTable : databaseTables) {
 				name = ImportExportUtils.TEMP_FILE_PREFIX + "_export_" + databaseTable.getFileName() + "_" + date + "_" + randomNumber + ".csv";
 				filePath = path.resolve(name);

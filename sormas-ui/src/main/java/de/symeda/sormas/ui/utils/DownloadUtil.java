@@ -34,17 +34,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import com.opencsv.CSVWriter;
-import com.vaadin.v7.data.Container.Indexed;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.StreamResource.StreamSource;
-import com.vaadin.v7.ui.CheckBox;
-import com.vaadin.v7.ui.Grid.Column;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.v7.data.Container.Indexed;
+import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.Grid.Column;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -134,59 +133,57 @@ public class DownloadUtil {
 		StreamResource extendedStreamResource = new StreamResource(new StreamSource() {
 			@Override
 			public InputStream getStream() {
-				try {
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					OutputStreamWriter osw = new OutputStreamWriter(baos, StandardCharsets.UTF_8.name());
-					CSVWriter writer = CSVUtils.createCSVWriter(osw, FacadeProvider.getConfigFacade().getCsvSeparator());
-
-					// fields in order of declaration - not using Introspector here, because it gives properties in alphabetical order
-					Method[] readMethods = Arrays.stream(exportRowClass.getDeclaredMethods())
-							.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) && m.isAnnotationPresent(Order.class))
-							.sorted((a,b) -> Integer.compare(a.getAnnotationsByType(Order.class)[0].value(), 
-									b.getAnnotationsByType(Order.class)[0].value()))
-							.toArray(Method[]::new);
-
-					String[] fieldValues = new String[readMethods.length];
-					for (int i = 0; i < readMethods.length; i++) {
-						Method method = readMethods[i];
-						String propertyId = method.getName().startsWith("get") 
-								? method.getName().substring(3)
-										: method.getName().substring(2); 
-								propertyId = Character.toLowerCase(propertyId.charAt(0)) + propertyId.substring(1);
-								// field caption - export, case, person, symptoms, hospitalization
-								fieldValues[i] = propertyIdCaptionFunction.apply(propertyId, method.getReturnType());
-					}
-					writer.writeNext(fieldValues);
-
-					int startIndex = 0;
-					List<T> exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
-					while (!exportRows.isEmpty()) {						
-						try {
-							for (T exportRow : exportRows) {
-								for (int i=0; i<readMethods.length; i++) {
-									Method method = readMethods[i];
-									Object value = method.invoke(exportRow);
-									if (value == null) {
-										fieldValues[i] = "";
-									} else if (value instanceof Date) {
-										fieldValues[i] = DateHelper.formatLocalShortDate((Date)value);
-									} else {
-										fieldValues[i] = value.toString();
-									}
-								}
-								writer.writeNext(fieldValues);
-							};
-						} catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
-							throw new RuntimeException(e);
+				try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
+					try (CSVWriter writer = CSVUtils.createCSVWriter(
+							new OutputStreamWriter(byteStream, StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
+	
+						// fields in order of declaration - not using Introspector here, because it gives properties in alphabetical order
+						Method[] readMethods = Arrays.stream(exportRowClass.getDeclaredMethods())
+								.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) && m.isAnnotationPresent(Order.class))
+								.sorted((a,b) -> Integer.compare(a.getAnnotationsByType(Order.class)[0].value(), 
+										b.getAnnotationsByType(Order.class)[0].value()))
+								.toArray(Method[]::new);
+	
+						String[] fieldValues = new String[readMethods.length];
+						for (int i = 0; i < readMethods.length; i++) {
+							Method method = readMethods[i];
+							String propertyId = method.getName().startsWith("get") 
+									? method.getName().substring(3)
+											: method.getName().substring(2); 
+									propertyId = Character.toLowerCase(propertyId.charAt(0)) + propertyId.substring(1);
+									// field caption - export, case, person, symptoms, hospitalization
+									fieldValues[i] = propertyIdCaptionFunction.apply(propertyId, method.getReturnType());
 						}
-
-						osw.flush();
-						baos.flush();
-						startIndex += DETAILED_EXPORT_STEP_SIZE;
-						exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
+						writer.writeNext(fieldValues);
+	
+						int startIndex = 0;
+						List<T> exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
+						while (!exportRows.isEmpty()) {						
+							try {
+								for (T exportRow : exportRows) {
+									for (int i=0; i<readMethods.length; i++) {
+										Method method = readMethods[i];
+										Object value = method.invoke(exportRow);
+										if (value == null) {
+											fieldValues[i] = "";
+										} else if (value instanceof Date) {
+											fieldValues[i] = DateHelper.formatLocalShortDate((Date)value);
+										} else {
+											fieldValues[i] = value.toString();
+										}
+									}
+									writer.writeNext(fieldValues);
+								};
+							} catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
+								throw new RuntimeException(e);
+							}
+	
+							writer.flush();
+							startIndex += DETAILED_EXPORT_STEP_SIZE;
+							exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
+						}
 					}
-
-					return new BufferedInputStream(new ByteArrayInputStream(baos.toByteArray()));
+					return new BufferedInputStream(new ByteArrayInputStream(byteStream.toByteArray()));
 				} catch (IOException e) {
 					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
 					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)

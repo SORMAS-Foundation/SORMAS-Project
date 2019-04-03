@@ -47,8 +47,11 @@ public final class DataHelper {
 	public static boolean isSame(HasUuid left, HasUuid right) {
 		if (left == null && right == null) {
 			return true;
+		} else if (left != null && right != null) {
+			return DataHelper.equal(left.getUuid(), right.getUuid());
+		} else {
+			return false;
 		}
-		return DataHelper.equal(left.getUuid(), right.getUuid());
 	}
 
 	/**

@@ -108,16 +108,13 @@ public class CaseImporter {
 			return numberOfCases;
 		}
 
-		CSVReader caseCountReader = CSVUtils.createCSVReader(csvInputReader, FacadeProvider.getConfigFacade().getCsvSeparator());
-
-		// Initialize with -1 because first line is not a case
-		numberOfCases = -1;
-		while (caseCountReader.readNext() != null) {
-			numberOfCases++;
+		try (CSVReader caseCountReader = CSVUtils.createCSVReader(csvInputReader, FacadeProvider.getConfigFacade().getCsvSeparator())) {
+			// Initialize with -1 because first line is not a case
+			numberOfCases = -1;
+			while (caseCountReader.readNext() != null) {
+				numberOfCases++;
+			}
 		}
-
-		// Re-create the CSV reader
-		caseCountReader.close();
 
 		return numberOfCases;
 	}

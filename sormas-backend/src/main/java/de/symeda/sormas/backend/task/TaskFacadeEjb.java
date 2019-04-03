@@ -481,13 +481,14 @@ public class TaskFacadeEjb implements TaskFacade {
 			AbstractDomainObject associatedEntity = context == TaskContext.CASE ? task.getCaze() : 
 					context == TaskContext.CONTACT ? task.getContact() : 
 					context == TaskContext.EVENT ? task.getEvent() : null;
-			if (task.getAssigneeUser() != null && task.getAssigneeUser().isSupervisor() || task.getAssigneeUser().getUserRoles().contains(UserRole.NATIONAL_USER)) {
+			if (task.getAssigneeUser() != null && (task.getAssigneeUser().isSupervisor() 
+					|| task.getAssigneeUser().getUserRoles().contains(UserRole.NATIONAL_USER))) {
 				try {
 					String subject = I18nProperties.getString(MessagingService.SUBJECT_TASK_DUE);
 					String content = context == TaskContext.GENERAL ? 
 								String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_GENERAL), task.getTaskType().toString()) :
 								String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_SPECIFIC), task.getTaskType().toString(), 
-								context.toString() + " " + DataHelper.getShortUuid(associatedEntity.getUuid()));
+								context.toString() + (associatedEntity != null ? (" " + DataHelper.getShortUuid(associatedEntity.getUuid())) : ""));
 
 					messagingService.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), subject, content, MessageType.EMAIL, MessageType.SMS);
 				} catch (NotificationDeliveryFailedException e) {

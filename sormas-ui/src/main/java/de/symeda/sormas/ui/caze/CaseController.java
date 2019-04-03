@@ -220,8 +220,9 @@ public class CaseController {
 			});
 		} else {
 			// Notify user about an automatic case classification change
-			if (existingDto.getCaseClassification() != resultDto.getCaseClassification() &&
-					resultDto.getClassificationUser() == null) {
+			if (existingDto != null 
+					&& existingDto.getCaseClassification() != resultDto.getCaseClassification() 
+					&& resultDto.getClassificationUser() == null) {
 				Notification notification = new Notification(String.format(I18nProperties.getString(Strings.messageCaseSavedClassificationChanged), resultDto.getCaseClassification().toString()), Type.WARNING_MESSAGE);
 				notification.setDelayMsec(-1);
 				notification.show(Page.getCurrent());
@@ -269,8 +270,8 @@ public class CaseController {
 					String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
 					RegionDto region = FacadeProvider.getRegionFacade().getRegionByUuid(dto.getRegion().getUuid());
 					DistrictDto district = FacadeProvider.getDistrictFacade().getDistrictByUuid(dto.getDistrict().getUuid());
-					dto.setEpidNumber(region.getEpidCode() != null ? region.getEpidCode() : "" 
-							+ "-" + district.getEpidCode() != null ? district.getEpidCode() : "" 
+					dto.setEpidNumber((region.getEpidCode() != null ? region.getEpidCode() : "") 
+							+ "-" + (district.getEpidCode() != null ? district.getEpidCode() : "") 
 									+ "-" + year + "-");
 
 					if (contact != null) {
