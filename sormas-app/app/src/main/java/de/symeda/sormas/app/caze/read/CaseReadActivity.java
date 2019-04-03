@@ -73,7 +73,7 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
             menuItems.remove(CaseSection.TREATMENTS.ordinal());
             menuItems.remove(CaseSection.PRESCRIPTIONS.ordinal());
         }
-        if (caze != null && !DiseaseHelper.hasContactFollowUp(caze.getDisease(), caze.getPlagueType())) {
+        if (!ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW) || (caze != null && !DiseaseHelper.hasContactFollowUp(caze.getDisease(), caze.getPlagueType()))) {
             menuItems.remove(CaseSection.CONTACTS.ordinal());
         }
         return menuItems;

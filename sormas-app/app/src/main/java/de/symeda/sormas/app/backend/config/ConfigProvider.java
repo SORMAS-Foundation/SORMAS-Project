@@ -240,8 +240,12 @@ public final class ConfigProvider {
             instance.username = null;
             instance.password = null;
             instance.user = null;
+            instance.userRights = null;
+            instance.accessGranted = null;
+            instance.lastNotificationDate = null;
+            instance.lastArchivedSyncDate = null;
 
-            // old credentials are no longer valid...
+            // old credentials are no longer valid
             RetroProvider.disconnect();
         }
     }

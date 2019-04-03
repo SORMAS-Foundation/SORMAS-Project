@@ -330,8 +330,8 @@ public final class RetroProvider {
                         } else if (taskResult.getError() instanceof ServerConnectionException) {
                             ServerConnectionException exception = (ServerConnectionException)taskResult.getError();
 
-                            if (exception.getCustomHtmlErrorCode() == 401) {
-                                // could not authenticate
+                            if (exception.getCustomHtmlErrorCode() == 401 || exception.getCustomHtmlErrorCode() == 403) {
+                                // could not authenticate or user does not have access to the app
                                 ConfigProvider.clearUsernameAndPassword();
                             }
 
