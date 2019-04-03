@@ -59,8 +59,11 @@ public class DatabaseExportView extends AbstractStatisticsView {
 
 		databaseTableToggles = new HashMap<>();
 		databaseExportLayout = new VerticalLayout();
+		databaseExportLayout.setSpacing(false);
+		databaseExportLayout.setMargin(false);
 		HorizontalLayout headerLayout = new HorizontalLayout();
 		headerLayout.setSpacing(true);
+		headerLayout.setMargin(false);
 		Label infoLabel = new Label(I18nProperties.getString(Strings.infoDatabaseExportTables));
 		headerLayout.addComponent(infoLabel);
 		headerLayout.setComponentAlignment(infoLabel, Alignment.MIDDLE_LEFT);
@@ -86,6 +89,7 @@ public class DatabaseExportView extends AbstractStatisticsView {
 	
 	private HorizontalLayout createSelectionButtonsLayout() {
 		HorizontalLayout selectionButtonsLayout = new HorizontalLayout();
+		selectionButtonsLayout.setMargin(false);
 		selectionButtonsLayout.setSpacing(true);
 		
 		Button selectAll = new Button(I18nProperties.getCaption(Captions.actionSelectAll));
@@ -124,14 +128,19 @@ public class DatabaseExportView extends AbstractStatisticsView {
 
 	private HorizontalLayout createDatabaseTablesLayout() {
 		HorizontalLayout databaseTablesLayout = new HorizontalLayout();
+		databaseTablesLayout.setMargin(false);
 		databaseTablesLayout.setSpacing(true);
 		
 		VerticalLayout sormasDataLayout = new VerticalLayout();
+		sormasDataLayout.setMargin(false);
+		sormasDataLayout.setSpacing(false);
 		Label sormasDataHeadline = new Label(I18nProperties.getCaption(Captions.exportSormasData));
 		CssStyles.style(sormasDataHeadline, CssStyles.H4);
 		sormasDataLayout.addComponent(sormasDataHeadline);
 		
 		VerticalLayout infrastructureDataLayout = new VerticalLayout();
+		infrastructureDataLayout.setMargin(false);
+		infrastructureDataLayout.setSpacing(false);
 		Label infrastructureDataHeadline = new Label(I18nProperties.getCaption(Captions.exportInfrastructureData));
 		CssStyles.style(infrastructureDataHeadline, CssStyles.H4);
 		infrastructureDataLayout.addComponent(infrastructureDataHeadline);
