@@ -62,7 +62,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
     private List<Item> sampleSourceList;
     private List<Facility> labList;
     private List<String> requestedPathogenTests;
-    private List<String> requestedAdditionalTests;
+    private List<String> requestedAdditionalTests = new ArrayList<>();
 
     public static SampleEditFragment newInstance(Sample activityRootData) {
         return newInstance(SampleEditFragment.class, null, activityRootData);
@@ -97,13 +97,17 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         }
 
         // Most recent additional tests layout
-        if (!record.isReceived() || record.getSpecimenCondition() != SpecimenCondition.ADEQUATE
-                || !record.getAdditionalTestingRequested() || mostRecentAdditionalTests == null) {
-            contentBinding.mostRecentAdditionalTestsLayout.setVisibility(GONE);
-        } else {
-            if (!mostRecentAdditionalTests.hasArterialVenousGasValue()) {
-                contentBinding.mostRecentAdditionalTests.arterialVenousGasLayout.setVisibility(GONE);
+        if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+            if (!record.isReceived() || record.getSpecimenCondition() != SpecimenCondition.ADEQUATE
+                    || !record.getAdditionalTestingRequested() || mostRecentAdditionalTests == null) {
+                contentBinding.mostRecentAdditionalTestsLayout.setVisibility(GONE);
+            } else {
+                if (!mostRecentAdditionalTests.hasArterialVenousGasValue()) {
+                    contentBinding.mostRecentAdditionalTests.arterialVenousGasLayout.setVisibility(GONE);
+                }
             }
+        } else {
+            contentBinding.mostRecentAdditionalTestsLayout.setVisibility(GONE);
         }
     }
 
@@ -123,7 +127,9 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
     protected void prepareFragmentData() {
         record = getActivityRootData();
         mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(record);
-        mostRecentAdditionalTests = DatabaseHelper.getAdditionalTestDao().queryMostRecentBySample(record);
+        if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+            mostRecentAdditionalTests = DatabaseHelper.getAdditionalTestDao().queryMostRecentBySample(record);
+        }
         if (!StringUtils.isEmpty(record.getReferredToUuid())) {
             referredSample = DatabaseHelper.getSampleDao().queryUuid(record.getReferredToUuid());
         } else {
@@ -140,9 +146,10 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
                 requestedPathogenTests.add(pathogenTest.toString());
             }
         }
-        requestedAdditionalTests = new ArrayList<>();
-        for (AdditionalTestType additionalTest : record.getRequestedAdditionalTests()) {
-            requestedAdditionalTests.add(additionalTest.toString());
+        if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+            for (AdditionalTestType additionalTest : record.getRequestedAdditionalTests()) {
+                requestedAdditionalTests.add(additionalTest.toString());
+            }
         }
     }
 
@@ -212,14 +219,16 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
                 contentBinding.sampleRequestedOtherPathogenTests.setVisibility(GONE);
             }
 
-            if (!requestedAdditionalTests.isEmpty()) {
-                contentBinding.sampleRequestedAdditionalTestsTags.setTags(requestedAdditionalTests);
-                if (StringUtils.isEmpty(record.getRequestedOtherAdditionalTests())) {
+            if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+                if (!requestedAdditionalTests.isEmpty()) {
+                    contentBinding.sampleRequestedAdditionalTestsTags.setTags(requestedAdditionalTests);
+                    if (StringUtils.isEmpty(record.getRequestedOtherAdditionalTests())) {
+                        contentBinding.sampleRequestedOtherAdditionalTests.setVisibility(GONE);
+                    }
+                } else {
+                    contentBinding.sampleRequestedAdditionalTestsTags.setVisibility(GONE);
                     contentBinding.sampleRequestedOtherAdditionalTests.setVisibility(GONE);
                 }
-            } else {
-                contentBinding.sampleRequestedAdditionalTestsTags.setVisibility(GONE);
-                contentBinding.sampleRequestedOtherAdditionalTests.setVisibility(GONE);
             }
 
             if (requestedPathogenTests.isEmpty() && requestedAdditionalTests.isEmpty()) {

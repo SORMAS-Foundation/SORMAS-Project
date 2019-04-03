@@ -151,14 +151,22 @@
                     app:value="@{data.requestedOtherPathogenTests}"
                     style="@style/ControlSingleColumnStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlTagViewField
-                    android:id="@+id/sample_requestedAdditionalTestsTags"
-                    style="@style/ControlSingleColumnStyle" />
+                <LinearLayout
+                    android:id="@+id/additional_testing_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/sample_requestedOtherAdditionalTests"
-                    app:value="@{data.requestedOtherAdditionalTests}"
-                    style="@style/ControlSingleColumnStyle" />
+                    <de.symeda.sormas.app.component.controls.ControlTagViewField
+                        android:id="@+id/sample_requestedAdditionalTestsTags"
+                        style="@style/ControlSingleColumnStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/sample_requestedOtherAdditionalTests"
+                        app:value="@{data.requestedOtherAdditionalTests}"
+                        style="@style/ControlSingleColumnStyle" />
+
+                </LinearLayout>
 
                 <ImageView style="@style/FullHorizontalDividerStyle"/>
 
