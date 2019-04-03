@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription">
+
+    <data>
+        <import type="android.view.View" />
+        <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+        <import type="de.symeda.sormas.api.sample.AdditionalTestDto" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.sample.AdditionalTest" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/row_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/rowListItemPadding"
+        android:orientation="vertical"
+        android:background="@drawable/selector_list_section_row_background"
+        android:visibility="@{data != null ? View.VISIBLE : View.GONE}">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:goneIfEmpty="@{data.haemoglobinuria}"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/AdditionalTestCaptionStyle"
+                app:value="@{I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.HAEMOGLOBINURIA)}"/>
+
+            <TextView
+                android:id="@+id/haemoglobinuria"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:gravity="end"
+                app:value="@{data.haemoglobinuria.toString()}" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:goneIfEmpty="@{data.proteinuria}"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/AdditionalTestCaptionStyle"
+                app:value="@{I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.PROTEINURIA)}"/>
+
+            <TextView
+                android:id="@+id/proteinuria"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:gravity="end"
+                app:value="@{data.proteinuria.toString()}" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:goneIfEmpty="@{data.hematuria}"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/AdditionalTestCaptionStyle"
+                app:value="@{I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.HEMATURIA)}"/>
+
+            <TextView
+                android:id="@+id/hematuria"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:gravity="end"
+                app:value="@{data.hematuria.toString()}" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/arterial_venous_gas_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/AdditionalTestCaptionStyle"
+                app:value="@{I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.ARTERIAL_VENOUS_BLOOD_GAS)}"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:goneIfEmpty="@{data.arterialVenousGasPh}"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/AdditionalTestCaptionStyle"
+                    app:value="@{I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.ARTERIAL_VENOUS_GAS_PH)}"/>
+
+                <TextView
+                    android:id="@+id/arterial_venous_gas_ph"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:gravity="end"
+                    app:value="@{data.arterialVenousGasPh.toString()}" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:goneIfEmpty="@{data.arterialVenousGasPco2}"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/AdditionalTestCaptionStyle"
+                    app:value="@{I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.ARTERIAL_VENOUS_GAS_PCO2)}"/>
+
+                <TextView
+                    android:id="@+id/arterial_venous_gas_pco2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:gravity="end"
+                    app:value="@{data.arterialVenousGasPco2.toString()}" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:goneIfEmpty="@{data.arterialVenousGasPao2}"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/AdditionalTestCaptionStyle"
+                    app:value="@{I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.ARTERIAL_VENOUS_GAS_PAO2)}"/>
+
+                <TextView
+                    android:id="@+id/arterial_venous_gas_pao2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:gravity="end"
+                    app:value="@{data.arterialVenousGasPao2.toString()}" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:goneIfEmpty="@{data.arterialVenousGasHco3}"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/AdditionalTestCaptionStyle"
+                    app:value="@{I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.ARTERIAL_VENOUS_GAS_HCO3)}"/>
+
+                <TextView
+                    android:id="@+id/arterial_venous_gas_hco3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:gravity="end"
+                    app:value="@{data.arterialVenousGasHco3.toString()}" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:goneIfEmpty="@{data.gasOxygenTherapy}"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/AdditionalTestCaptionStyle"
+                    app:value="@{I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.GAS_OXYGEN_THERAPY)}"/>
+
+                <TextView
+                    android:id="@+id/gas_oxyghen_therapy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:gravity="end"
+                    app:value="@{data.gasOxygenTherapy.toString()}" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:goneIfEmpty="@{data.altSgpt}"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/AdditionalTestCaptionStyle"
+                app:value="@{I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.ALT_SGPT)}"/>
+
+            <TextView
+                android:id="@+id/alt_sgpt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:gravity="end"
+                app:value="@{data.altSgpt.toString()}" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:goneIfEmpty="@{data.astSgot}"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/AdditionalTestCaptionStyle"
+                app:value="@{I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.AST_SGOT)}"/>
+
+            <TextView
+                android:id="@+id/ast_sgot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:gravity="end"
+                app:value="@{data.astSgot.toString()}" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:goneIfEmpty="@{data.creatinine}"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/AdditionalTestCaptionStyle"
+                app:value="@{I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.CREATININE)}"/>
+
+            <TextView
+                android:id="@+id/creatinine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:gravity="end"
+                app:value="@{data.creatinine.toString()}" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:goneIfEmpty="@{data.potassium}"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/AdditionalTestCaptionStyle"
+                app:value="@{I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.POTASSIUM)}"/>
+
+            <TextView
+                android:id="@+id/potassium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:gravity="end"
+                app:value="@{data.potassium.toString()}" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:goneIfEmpty="@{data.urea}"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/AdditionalTestCaptionStyle"
+                app:value="@{I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.UREA)}"/>
+
+            <TextView
+                android:id="@+id/urea"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:gravity="end"
+                app:value="@{data.urea.toString()}" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:goneIfEmpty="@{data.haemoglobin}"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/AdditionalTestCaptionStyle"
+                app:value="@{I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.HAEMOGLOBIN)}"/>
+
+            <TextView
+                android:id="@+id/haemoglobin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:gravity="end"
+                app:value="@{data.haemoglobin.toString()}" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:goneIfEmpty="@{data.totalBilirubin}"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/AdditionalTestCaptionStyle"
+                app:value="@{I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.TOTAL_BILIRUBIN)}"/>
+
+            <TextView
+                android:id="@+id/total_bilirubin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:gravity="end"
+                app:value="@{data.totalBilirubin.toString()}" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:goneIfEmpty="@{data.conjBilirubin}"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/AdditionalTestCaptionStyle"
+                app:value="@{I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.CONJ_BILIRUBIN)}"/>
+
+            <TextView
+                android:id="@+id/conj_bilirubin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:gravity="end"
+                app:value="@{data.conjBilirubin.toString()}" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:goneIfEmpty="@{data.wbcCount}"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/AdditionalTestCaptionStyle"
+                app:value="@{I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.WBC_COUNT)}"/>
+
+            <TextView
+                android:id="@+id/wbc_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:gravity="end"
+                app:value="@{data.wbcCount.toString()}" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:goneIfEmpty="@{data.platelets}"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/AdditionalTestCaptionStyle"
+                app:value="@{I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.PLATELETS)}"/>
+
+            <TextView
+                android:id="@+id/platelets"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:gravity="end"
+                app:value="@{data.platelets.toString()}" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:goneIfEmpty="@{data.prothrombinTime}"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/AdditionalTestCaptionStyle"
+                app:value="@{I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.PROTHROMBIN_TIME)}"/>
+
+            <TextView
+                android:id="@+id/prothrombin_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:gravity="end"
+                app:value="@{data.prothrombinTime.toString()}" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/AdditionalTestCaptionStyle"
+            android:layout_marginTop="20dp"
+            app:goneIfEmpty="@{data.otherTestResults}"
+            app:value="@{I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.OTHER_TEST_RESULTS)}"/>
+
+        <TextView
+            android:id="@+id/other_test_results"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:goneIfEmpty="@{data.otherTestResults}"
+            app:value="@{data.otherTestResults.toString()}" />
+
+    </LinearLayout>
+
+</layout>
+
+
+
+

@@ -60,7 +60,7 @@ public class AdditionalTest extends AbstractDomainObject {
     private SimpleTestResultType hematuria;
 
     @Column
-    private Integer arterialVenousGasPH;
+    private Integer arterialVenousGasPh;
 
     @Column
     private Integer arterialVenousGasPco2;
@@ -110,6 +110,11 @@ public class AdditionalTest extends AbstractDomainObject {
     @Column(length = 512)
     private String otherTestResults;
 
+    public boolean hasArterialVenousGasValue() {
+        return arterialVenousGasPh != null || arterialVenousGasPco2 != null
+                || arterialVenousGasPao2 != null || arterialVenousGasHco3 != null;
+    }
+
     public Sample getSample() {
         return sample;
     }
@@ -150,12 +155,12 @@ public class AdditionalTest extends AbstractDomainObject {
         this.hematuria = hematuria;
     }
 
-    public Integer getArterialVenousGasPH() {
-        return arterialVenousGasPH;
+    public Integer getArterialVenousGasPh() {
+        return arterialVenousGasPh;
     }
 
-    public void setArterialVenousGasPH(Integer arterialVenousGasPH) {
-        this.arterialVenousGasPH = arterialVenousGasPH;
+    public void setArterialVenousGasPh(Integer arterialVenousGasPh) {
+        this.arterialVenousGasPh = arterialVenousGasPh;
     }
 
     public Integer getArterialVenousGasPco2() {

@@ -634,4 +634,10 @@
         <item name="android:textAllCaps">true</item>
     </style>
 
+    <style name="AdditionalTestCaptionStyle">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
 </resources>

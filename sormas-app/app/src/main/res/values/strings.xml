@@ -269,8 +269,9 @@
     <string name="heading_install_app_failed">App installation failed</string>
     <string name="heading_location">Location</string>
     <string name="heading_missing_weekly_report">Missing Weekly Report</string>
+    <string name="heading_most_recent_additional_tests">Most Recent Additional Tests</string>
     <string name="heading_most_recent_hospitalization">Most Recent Hospitalization</string>
-    <string name="heading_most_recent_test">Most Recent Test</string>
+    <string name="heading_most_recent_test">Most Recent Pathogen Test</string>
     <string name="heading_new_sormas_version">New SORMAS version</string>
     <string name="heading_outbreak_response">Outbreak Response</string>
     <string name="heading_person_involved">Person Involved</string>
@@ -351,6 +352,7 @@
     <string name="info_create_person">If the person you have created is <b>not</b> among the suggested list of existing persons, click the \"Create\" button.</string>
     <string name="info_epidemiological_info">Please indicate if any of the following is relevant for the patient during the incubation period or illness.</string>
     <string name="info_initial_synchronization">Initial synchronizing with SORMAS server.\nPulling infrastructure data will take a few minutes.</string>
+    <string name="info_no_additional_test">No additional tests performed on this sample yet</string>
     <string name="info_no_sample_test">Sample has not been tested yet</string>
     <string name="info_pick_person">If applicable, select a matching person by tapping on them and then clicking the \"Select\" button below. <b>Do this only if you are absolutely sure that the person you have specified is the same as one of the persons in this list.</b></string>
     <string name="info_reset_pin">To reset your PIN you will <b>need your SORMAS user password.</b></string>

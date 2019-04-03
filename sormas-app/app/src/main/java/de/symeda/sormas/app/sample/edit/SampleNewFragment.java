@@ -23,12 +23,15 @@ import android.view.View;
 import java.util.List;
 
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.Item;
@@ -36,6 +39,8 @@ import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.databinding.FragmentSampleNewLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+
+import static android.view.View.GONE;
 
 public class
 SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutBinding, Sample, Sample> {
@@ -82,6 +87,7 @@ SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutBinding, Sampl
         SampleValidator.initializeSampleValidation(contentBinding);
 
         contentBinding.setPathogenTestTypeClass(PathogenTestType.class);
+        contentBinding.setAdditionalTestTypeClass(AdditionalTestType.class);
     }
 
     @Override
@@ -102,6 +108,10 @@ SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutBinding, Sampl
         });
 
         contentBinding.sampleRequestedPathogenTests.removeItem(PathogenTestType.OTHER);
+
+        if (!ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+            contentBinding.additionalTestingLayout.setVisibility(GONE);
+        }
 
         // Initialize ControlDateFields and ControlDateTimeFields
         contentBinding.sampleSampleDateTime.initializeDateTimeField(getFragmentManager());

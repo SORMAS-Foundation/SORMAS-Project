@@ -62,7 +62,7 @@ public class AdditionalTestDtoHelper extends AdoDtoHelper<AdditionalTest, Additi
         target.setHaemoglobinuria(source.getHaemoglobinuria());
         target.setProteinuria(source.getProteinuria());
         target.setHematuria(source.getHematuria());
-        target.setArterialVenousGasPH(source.getArterialVenousGasPH());
+        target.setArterialVenousGasPh(source.getArterialVenousGasPH());
         target.setArterialVenousGasPco2(source.getArterialVenousGasPco2());
         target.setArterialVenousGasPao2(source.getArterialVenousGasPao2());
         target.setArterialVenousGasHco3(source.getArterialVenousGasHco3());
@@ -94,7 +94,7 @@ public class AdditionalTestDtoHelper extends AdoDtoHelper<AdditionalTest, Additi
         target.setHaemoglobinuria(source.getHaemoglobinuria());
         target.setProteinuria(source.getProteinuria());
         target.setHematuria(source.getHematuria());
-        target.setArterialVenousGasPH(source.getArterialVenousGasPH());
+        target.setArterialVenousGasPH(source.getArterialVenousGasPh());
         target.setArterialVenousGasPco2(source.getArterialVenousGasPco2());
         target.setArterialVenousGasPao2(source.getArterialVenousGasPao2());
         target.setArterialVenousGasHco3(source.getArterialVenousGasHco3());

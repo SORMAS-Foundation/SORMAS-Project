@@ -31,6 +31,7 @@
         <variable name="data" type="de.symeda.sormas.app.backend.sample.Sample"/>
         <variable name="referredSample" type="de.symeda.sormas.app.backend.sample.Sample"/>
         <variable name="pathogenTest" type="de.symeda.sormas.app.backend.sample.PathogenTest" />
+        <variable name="additionalTest" type="de.symeda.sormas.app.backend.sample.AdditionalTest" />
     </data>
 
     <ScrollView
@@ -150,6 +151,15 @@
                     app:value="@{data.requestedOtherPathogenTests}"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlTagViewField
+                    android:id="@+id/sample_requestedAdditionalTestsTags"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/sample_requestedOtherAdditionalTests"
+                    app:value="@{data.requestedOtherAdditionalTests}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <ImageView style="@style/FullHorizontalDividerStyle"/>
 
                 <LinearLayout
@@ -246,6 +256,28 @@
                     android:text="@string/info_no_sample_test"
                     android:textColor="@android:color/tab_indicator_text"
                     android:textSize="@dimen/empty_list_hint_size" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/most_recent_additional_tests_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/formListSectionBackground"
+                android:padding="@dimen/fragment_padding">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/heading_most_recent_additional_tests"
+                    style="@style/SubHeadingStyle" />
+
+                <include
+                    android:id="@+id/most_recent_additional_tests"
+                    layout="@layout/row_additional_test_layout"
+                    app:data="@{additionalTest}"
+                    android:padding="@dimen/rowListItemParentPadding" />
 
             </LinearLayout>
 
