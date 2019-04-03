@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -36,6 +37,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -56,11 +58,6 @@ import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.IntegerRange;
-import de.symeda.sormas.api.Month;
-import de.symeda.sormas.api.MonthOfYear;
-import de.symeda.sormas.api.Quarter;
-import de.symeda.sormas.api.QuarterOfYear;
-import de.symeda.sormas.api.Year;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -85,7 +82,6 @@ import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
@@ -111,7 +107,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -1013,23 +1008,26 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	private void updateCaseAge(CaseDataDto existingCase, Case newCase) {
-		if (existingCase != null && newCase.getPerson().getApproximateAge() != null
-				&& CaseLogic.getStartDate(existingCase.getSymptoms().getOnsetDate(), existingCase.getReceptionDate(),
-						existingCase.getReportDate()) != CaseLogic.getStartDate(newCase.getSymptoms().getOnsetDate(),
-								newCase.getReceptionDate(), newCase.getReportDate())) {
-			if (newCase.getPerson().getApproximateAgeType() == ApproximateAgeType.MONTHS) {
-				newCase.setCaseAge(0);
-			} else {
-				Date personChangeDate = newCase.getPerson().getChangeDate();
-				Date referenceDate = CaseLogic.getStartDate(newCase.getSymptoms().getOnsetDate(),
-						newCase.getReceptionDate(), newCase.getReportDate());
-				newCase.setCaseAge(newCase.getPerson().getApproximateAge()
-						- DateHelper.getYearsBetween(referenceDate, personChangeDate));
-				if (newCase.getCaseAge() < 0) {
+		if (newCase.getPerson().getApproximateAge() != null) {
+			if (existingCase == null
+					|| CaseLogic.getStartDate(existingCase.getSymptoms().getOnsetDate(), existingCase.getReceptionDate(),
+							existingCase.getReportDate()) 
+					!= CaseLogic.getStartDate(newCase.getSymptoms().getOnsetDate(),
+									newCase.getReceptionDate(), newCase.getReportDate())) {
+				if (newCase.getPerson().getApproximateAgeType() == ApproximateAgeType.MONTHS) {
 					newCase.setCaseAge(0);
+				} else {
+					Date personChangeDate = newCase.getPerson().getChangeDate();
+					Date referenceDate = CaseLogic.getStartDate(newCase.getSymptoms().getOnsetDate(),
+							newCase.getReceptionDate(), newCase.getReportDate());
+					newCase.setCaseAge(newCase.getPerson().getApproximateAge()
+							- DateHelper.getYearsBetween(referenceDate, personChangeDate));
+					if (newCase.getCaseAge() < 0) {
+						newCase.setCaseAge(0);
+					}
 				}
-			}
 
+			}
 		}
 	}
 
@@ -1545,193 +1543,125 @@ public class CaseFacadeEjb implements CaseFacade {
 		// 2. Build filter based on caseCriteria
 
 		StringBuilder filterBuilder = new StringBuilder();
+		List<Object> filterBuilderParameters = new ArrayList<Object>();
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getOnsetYears())) {
-			extendFilterBuilderWithDateElement(filterBuilder, "YEAR", Symptoms.TABLE_NAME, Symptoms.ONSET_DATE);
-			for (Year onsetYear : caseCriteria.getOnsetYears()) {
-				filterBuilder.append(onsetYear.getValue()).append(",");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithDateElement(filterBuilder, filterBuilderParameters, "YEAR", Symptoms.TABLE_NAME, Symptoms.ONSET_DATE,
+					caseCriteria.getOnsetYears(), dateValue -> (dateValue.getValue()));
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getOnsetQuarters())) {
-			extendFilterBuilderWithDateElement(filterBuilder, "QUARTER", Symptoms.TABLE_NAME, Symptoms.ONSET_DATE);
-			for (Quarter onsetQuarter : caseCriteria.getOnsetQuarters()) {
-				filterBuilder.append(onsetQuarter.getValue()).append(",");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithDateElement(filterBuilder, filterBuilderParameters, "QUARTER", Symptoms.TABLE_NAME, Symptoms.ONSET_DATE,
+					caseCriteria.getOnsetQuarters(), dateValue -> (dateValue.getValue()));
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getOnsetMonths())) {
-			extendFilterBuilderWithDateElement(filterBuilder, "MONTH", Symptoms.TABLE_NAME, Symptoms.ONSET_DATE);
-			for (Month onsetMonth : caseCriteria.getOnsetMonths()) {
-				filterBuilder.append(onsetMonth.ordinal() + 1).append(",");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithDateElement(filterBuilder, filterBuilderParameters, "MONTH", Symptoms.TABLE_NAME, Symptoms.ONSET_DATE,
+					caseCriteria.getOnsetMonths(), dateValue -> (dateValue.ordinal() + 1));
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getOnsetEpiWeeks())) {
-			extendFilterBuilderWithEpiWeek(filterBuilder, Symptoms.TABLE_NAME, Symptoms.ONSET_DATE);
-			for (EpiWeek epiWeek : caseCriteria.getOnsetEpiWeeks()) {
-				filterBuilder.append(epiWeek.getWeek()).append(",");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithEpiWeek(filterBuilder, filterBuilderParameters, Symptoms.TABLE_NAME, Symptoms.ONSET_DATE,
+					caseCriteria.getOnsetEpiWeeks(), value -> value.getWeek());
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getOnsetQuartersOfYear())) {
-			extendFilterBuilderWithQuarterOfYear(filterBuilder, Symptoms.TABLE_NAME, Symptoms.ONSET_DATE);
-			for (QuarterOfYear quarterOfYear : caseCriteria.getOnsetQuartersOfYear()) {
-				filterBuilder.append(quarterOfYear.getYear().getValue() * 10 + quarterOfYear.getQuarter().getValue())
-				.append(",");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithQuarterOfYear(filterBuilder, filterBuilderParameters, Symptoms.TABLE_NAME, Symptoms.ONSET_DATE,
+					caseCriteria.getOnsetQuartersOfYear(), value -> value.getYear().getValue() * 10 + value.getQuarter().getValue());
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getOnsetMonthsOfYear())) {
-			extendFilterBuilderWithMonthOfYear(filterBuilder, Symptoms.TABLE_NAME, Symptoms.ONSET_DATE);
-			for (MonthOfYear monthOfYear : caseCriteria.getOnsetMonthsOfYear()) {
-				filterBuilder.append(monthOfYear.getYear().getValue() * 100 + (monthOfYear.getMonth().ordinal() + 1))
-				.append(",");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithMonthOfYear(filterBuilder, filterBuilderParameters, Symptoms.TABLE_NAME, Symptoms.ONSET_DATE,
+					caseCriteria.getOnsetMonthsOfYear(), value -> value.getYear().getValue() * 100 + (value.getMonth().ordinal() + 1));
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getOnsetEpiWeeksOfYear())) {
-			extendFilterBuilderWithEpiWeekOfYear(filterBuilder, Symptoms.TABLE_NAME, Symptoms.ONSET_DATE);
-			for (EpiWeek epiWeek : caseCriteria.getOnsetEpiWeeksOfYear()) {
-				filterBuilder.append(epiWeek.getYear() * 100 + epiWeek.getWeek()).append(",");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithEpiWeekOfYear(filterBuilder, filterBuilderParameters, Symptoms.TABLE_NAME, Symptoms.ONSET_DATE,
+					caseCriteria.getOnsetEpiWeeksOfYear(), value -> value.getYear() * 100 + value.getWeek());
 		}
 
 		if (caseCriteria.getOnsetDateFrom() != null || caseCriteria.getOnsetDateTo() != null) {
-			extendFilterBuilderWithDate(filterBuilder, caseCriteria.getOnsetDateFrom(), caseCriteria.getOnsetDateTo(),
+			extendFilterBuilderWithDate(filterBuilder, filterBuilderParameters, caseCriteria.getOnsetDateFrom(), caseCriteria.getOnsetDateTo(),
 					Symptoms.TABLE_NAME, Symptoms.ONSET_DATE);
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReceptionYears())) {
-			extendFilterBuilderWithDateElement(filterBuilder, "YEAR", Case.TABLE_NAME, Case.RECEPTION_DATE);
-			for (Year receptionYear : caseCriteria.getReceptionYears()) {
-				filterBuilder.append(receptionYear.getValue()).append(",");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithDateElement(filterBuilder, filterBuilderParameters, "YEAR", Case.TABLE_NAME, Case.RECEPTION_DATE,
+					caseCriteria.getReceptionYears(), dateValue -> (dateValue.getValue()));
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReceptionQuarters())) {
-			extendFilterBuilderWithDateElement(filterBuilder, "QUARTER", Case.TABLE_NAME, Case.RECEPTION_DATE);
-			for (Quarter receptionQuarter : caseCriteria.getReceptionQuarters()) {
-				filterBuilder.append(receptionQuarter.getValue()).append(",");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithDateElement(filterBuilder, filterBuilderParameters, "QUARTER", Case.TABLE_NAME, Case.RECEPTION_DATE,
+					caseCriteria.getReceptionQuarters(), dateValue -> (dateValue.getValue()));
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReceptionMonths())) {
-			extendFilterBuilderWithDateElement(filterBuilder, "MONTH", Case.TABLE_NAME, Case.RECEPTION_DATE);
-			for (Month receptionMonth : caseCriteria.getReceptionMonths()) {
-				filterBuilder.append(receptionMonth.ordinal() + 1).append(",");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithDateElement(filterBuilder, filterBuilderParameters, "MONTH", Case.TABLE_NAME, Case.RECEPTION_DATE,
+					caseCriteria.getReceptionMonths(), dateValue -> (dateValue.ordinal() + 1));
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReceptionEpiWeeks())) {
-			extendFilterBuilderWithEpiWeek(filterBuilder, Case.TABLE_NAME, Case.RECEPTION_DATE);
-			for (EpiWeek epiWeek : caseCriteria.getReceptionEpiWeeks()) {
-				filterBuilder.append(epiWeek.getWeek()).append(",");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithEpiWeek(filterBuilder, filterBuilderParameters, Case.TABLE_NAME, Case.RECEPTION_DATE,
+					caseCriteria.getReceptionEpiWeeks(), value -> value.getWeek());
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReceptionQuartersOfYear())) {
-			extendFilterBuilderWithQuarterOfYear(filterBuilder, Case.TABLE_NAME, Case.RECEPTION_DATE);
-			for (QuarterOfYear quarterOfYear : caseCriteria.getReceptionQuartersOfYear()) {
-				filterBuilder.append(quarterOfYear.getYear().getValue() * 10 + quarterOfYear.getQuarter().getValue())
-				.append(",");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithQuarterOfYear(filterBuilder, filterBuilderParameters, Case.TABLE_NAME, Case.RECEPTION_DATE,
+					caseCriteria.getReceptionQuartersOfYear(), value -> value.getYear().getValue() * 10 + value.getQuarter().getValue());
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReceptionMonthsOfYear())) {
-			extendFilterBuilderWithMonthOfYear(filterBuilder, Case.TABLE_NAME, Case.RECEPTION_DATE);
-			for (MonthOfYear monthOfYear : caseCriteria.getReceptionMonthsOfYear()) {
-				filterBuilder.append(monthOfYear.getYear().getValue() * 100 + (monthOfYear.getMonth().ordinal() + 1))
-				.append(",");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithMonthOfYear(filterBuilder, filterBuilderParameters, Case.TABLE_NAME, Case.RECEPTION_DATE,
+					caseCriteria.getReceptionMonthsOfYear(), value -> value.getYear().getValue() * 100 + (value.getMonth().ordinal() + 1));
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReceptionEpiWeeksOfYear())) {
-			extendFilterBuilderWithEpiWeekOfYear(filterBuilder, Case.TABLE_NAME, Case.RECEPTION_DATE);
-			for (EpiWeek epiWeek : caseCriteria.getReceptionEpiWeeksOfYear()) {
-				filterBuilder.append(epiWeek.getYear() * 100 + epiWeek.getWeek()).append(",");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithEpiWeekOfYear(filterBuilder, filterBuilderParameters, Case.TABLE_NAME, Case.RECEPTION_DATE,
+					caseCriteria.getReceptionEpiWeeksOfYear(), value -> value.getYear() * 100 + value.getWeek());
 		}
 
 		if (caseCriteria.getReceptionDateFrom() != null || caseCriteria.getReceptionDateTo() != null) {
-			extendFilterBuilderWithDate(filterBuilder, caseCriteria.getReceptionDateFrom(),
+			extendFilterBuilderWithDate(filterBuilder, filterBuilderParameters, caseCriteria.getReceptionDateFrom(),
 					caseCriteria.getReceptionDateTo(), Case.TABLE_NAME, Case.RECEPTION_DATE);
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReportYears())) {
-			extendFilterBuilderWithDateElement(filterBuilder, "YEAR", Case.TABLE_NAME, Case.REPORT_DATE);
-			for (Year reportYear : caseCriteria.getReportYears()) {
-				filterBuilder.append(reportYear.getValue()).append(",");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithDateElement(filterBuilder, filterBuilderParameters, "YEAR", Case.TABLE_NAME, Case.REPORT_DATE,
+					caseCriteria.getReportYears(), dateValue -> (dateValue.getValue()));
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReportQuarters())) {
-			extendFilterBuilderWithDateElement(filterBuilder, "QUARTER", Case.TABLE_NAME, Case.REPORT_DATE);
-			for (Quarter reportQuarter : caseCriteria.getReportQuarters()) {
-				filterBuilder.append(reportQuarter.getValue()).append(",");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithDateElement(filterBuilder, filterBuilderParameters, "QUARTER", Case.TABLE_NAME, Case.REPORT_DATE,
+					caseCriteria.getReportQuarters(), dateValue -> (dateValue.getValue()));
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReportMonths())) {
-			extendFilterBuilderWithDateElement(filterBuilder, "MONTH", Case.TABLE_NAME, Case.REPORT_DATE);
-			for (Month reportMonth : caseCriteria.getReportMonths()) {
-				filterBuilder.append(reportMonth.ordinal() + 1).append(",");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithDateElement(filterBuilder, filterBuilderParameters, "MONTH", Case.TABLE_NAME, Case.REPORT_DATE,
+					caseCriteria.getReportMonths(), dateValue -> (dateValue.ordinal() + 1));
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReportEpiWeeks())) {
-			extendFilterBuilderWithEpiWeek(filterBuilder, Case.TABLE_NAME, Case.REPORT_DATE);
-			for (EpiWeek epiWeek : caseCriteria.getReportEpiWeeks()) {
-				filterBuilder.append(epiWeek.getWeek()).append(",");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithEpiWeek(filterBuilder, filterBuilderParameters, Case.TABLE_NAME, Case.REPORT_DATE,
+					caseCriteria.getReportEpiWeeks(), value -> value.getWeek());
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReportQuartersOfYear())) {
-			extendFilterBuilderWithQuarterOfYear(filterBuilder, Case.TABLE_NAME, Case.REPORT_DATE);
-			for (QuarterOfYear quarterOfYear : caseCriteria.getReportQuartersOfYear()) {
-				filterBuilder.append(quarterOfYear.getYear().getValue() * 10 + quarterOfYear.getQuarter().getValue())
-				.append(",");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithQuarterOfYear(filterBuilder, filterBuilderParameters, Case.TABLE_NAME, Case.REPORT_DATE,
+					caseCriteria.getReportQuartersOfYear(), value -> value.getYear().getValue() * 10 + value.getQuarter().getValue());
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReportMonthsOfYear())) {
-			extendFilterBuilderWithMonthOfYear(filterBuilder, Case.TABLE_NAME, Case.REPORT_DATE);
-			for (MonthOfYear monthOfYear : caseCriteria.getReportMonthsOfYear()) {
-				filterBuilder.append(monthOfYear.getYear().getValue() * 100 + (monthOfYear.getMonth().ordinal() + 1))
-				.append(",");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithMonthOfYear(filterBuilder, filterBuilderParameters, Case.TABLE_NAME, Case.REPORT_DATE,
+					caseCriteria.getReportMonthsOfYear(), value -> value.getYear().getValue() * 100 + (value.getMonth().ordinal() + 1));
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReportEpiWeeksOfYear())) {
-			extendFilterBuilderWithEpiWeekOfYear(filterBuilder, Case.TABLE_NAME, Case.REPORT_DATE);
-			for (EpiWeek epiWeek : caseCriteria.getReportEpiWeeksOfYear()) {
-				filterBuilder.append(epiWeek.getYear() * 100 + epiWeek.getWeek()).append(",");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithEpiWeekOfYear(filterBuilder, filterBuilderParameters, Case.TABLE_NAME, Case.REPORT_DATE,
+					caseCriteria.getReportEpiWeeksOfYear(), value -> value.getYear() * 100 + value.getWeek());
 		}
 
 		if (caseCriteria.getReportDateFrom() != null || caseCriteria.getReportDateTo() != null) {
-			extendFilterBuilderWithDate(filterBuilder, caseCriteria.getReportDateFrom(), caseCriteria.getReportDateTo(),
+			extendFilterBuilderWithDate(filterBuilder, filterBuilderParameters, caseCriteria.getReportDateFrom(), caseCriteria.getReportDateTo(),
 					Case.TABLE_NAME, Case.REPORT_DATE);
 		}
 
@@ -1740,37 +1670,36 @@ public class CaseFacadeEjb implements CaseFacade {
 				filterBuilder.append(" AND ");
 			}
 
-			filterBuilder.append("(").append(Person.TABLE_NAME).append(".").append(Person.SEX);
+			filterBuilder.append("(");
+			StringBuilder subFilterBuilder = new StringBuilder();
 
 			if (CollectionUtils.isNotEmpty(caseCriteria.getSexes())) {
-				filterBuilder.append(" IN (");
-				for (Sex sex : caseCriteria.getSexes()) {
-					filterBuilder.append("'" + sex.name() + "',");
-				}
-				finalizeFilterBuilderSegment(filterBuilder);
+				extendFilterBuilderWithSimpleValue(subFilterBuilder, filterBuilderParameters, Person.TABLE_NAME, Person.SEX,
+						caseCriteria.getSexes(), entry -> entry.name());
 			}
 
 			if (caseCriteria.isSexUnknown() != null) {
-				if (CollectionUtils.isNotEmpty(caseCriteria.getSexes())) {
-					filterBuilder.append(" OR ").append(Person.TABLE_NAME).append(".").append(Person.SEX);
+				if (subFilterBuilder.length() > 0) {
+					subFilterBuilder.append(" OR ");
 				}
-				filterBuilder.append(" IS ").append(caseCriteria.isSexUnknown() == true ? " NULL" : " NOT NULL");
+				subFilterBuilder.append(Person.TABLE_NAME).append(".").append(Person.SEX).append(" IS ").append(caseCriteria.isSexUnknown() == true ? "NULL" : "NOT NULL");
 			}
 
+			filterBuilder.append(subFilterBuilder);
 			filterBuilder.append(")");
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getAgeIntervals())) {
-			StringBuilder ageIntervalStringBuilder = new StringBuilder();
-
 			if (filterBuilder.length() > 0) {
-				filterBuilder.append(" AND (");
-			} else {
-				filterBuilder.append(" (");
+				filterBuilder.append(" AND ");
 			}
+			
+			filterBuilder.append("(");
+			StringBuilder subFilterBuilder = new StringBuilder();
 
 			Integer upperRangeBoundary = null;
 			boolean appendUnknown = false;
+			List<Integer> agesList = new ArrayList<Integer>();
 			for (IntegerRange range : caseCriteria.getAgeIntervals()) {
 				if (range.getTo() == null) {
 					if (range.getFrom() == null) {
@@ -1779,78 +1708,58 @@ public class CaseFacadeEjb implements CaseFacade {
 						upperRangeBoundary = range.getFrom();
 					}
 				} else {
-					for (int age : IntStream.rangeClosed(range.getFrom(), range.getTo()).toArray()) {
-						if (ageIntervalStringBuilder.length() == 0) {
-							ageIntervalStringBuilder.append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE)
-							.append(" IN (");
-						}
-						ageIntervalStringBuilder.append(age + ",");
-					}
+					agesList.addAll(IntStream.rangeClosed(range.getFrom(), range.getTo()).boxed().collect(Collectors.toList()));
 				}
 			}
 
-			if (ageIntervalStringBuilder.length() > 0) {
-				finalizeFilterBuilderSegment(ageIntervalStringBuilder);
+			if (agesList.size() > 0) {
+				extendFilterBuilderWithSimpleValue(subFilterBuilder, filterBuilderParameters, Case.TABLE_NAME, Case.CASE_AGE,
+						agesList, value -> value);
 			}
 
 			if (upperRangeBoundary != null) {
-				if (ageIntervalStringBuilder.length() > 0) {
-					ageIntervalStringBuilder.append(" OR ");
+				if (subFilterBuilder.length() > 0) {
+					subFilterBuilder.append(" OR ");
 				}
-				ageIntervalStringBuilder.append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE)
-				.append(" >= " + upperRangeBoundary);
+				subFilterBuilder.append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE)
+					.append(" >= ?").append(filterBuilderParameters.size() + 1);
+				filterBuilderParameters.add(upperRangeBoundary);
 			}
 
 			if (appendUnknown) {
-				if (ageIntervalStringBuilder.length() > 0) {
-					ageIntervalStringBuilder.append(" OR ");
+				if (subFilterBuilder.length() > 0) {
+					subFilterBuilder.append(" OR ");
 				}
-				ageIntervalStringBuilder.append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE).append(" IS NULL");
+				subFilterBuilder.append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE).append(" IS NULL");
 			}
 
-			ageIntervalStringBuilder.append(")");
-
-			filterBuilder.append(ageIntervalStringBuilder);
+			filterBuilder.append(subFilterBuilder);
+			filterBuilder.append(")");
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getDiseases())) {
-			extendFilterBuilderWithSimpleValue(filterBuilder, Case.TABLE_NAME, Case.DISEASE);
-			for (Disease disease : caseCriteria.getDiseases()) {
-				filterBuilder.append("'" + disease.name() + "',");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithSimpleValue(filterBuilder, filterBuilderParameters, Case.TABLE_NAME, Case.DISEASE,
+					caseCriteria.getDiseases(), entry -> entry.name());
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getClassifications())) {
-			extendFilterBuilderWithSimpleValue(filterBuilder, Case.TABLE_NAME, Case.CASE_CLASSIFICATION);
-			for (CaseClassification classification : caseCriteria.getClassifications()) {
-				filterBuilder.append("'" + classification.name() + "',");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithSimpleValue(filterBuilder, filterBuilderParameters, Case.TABLE_NAME, Case.CASE_CLASSIFICATION,
+					caseCriteria.getClassifications(), entry -> entry.name());
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getOutcomes())) {
-			extendFilterBuilderWithSimpleValue(filterBuilder, Case.TABLE_NAME, Case.OUTCOME);
-			for (CaseOutcome outcome : caseCriteria.getOutcomes()) {
-				filterBuilder.append("'" + outcome.name() + "',");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithSimpleValue(filterBuilder, filterBuilderParameters, Case.TABLE_NAME, Case.OUTCOME,
+					caseCriteria.getOutcomes(), entry -> entry.name());
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getRegions())) {
-			extendFilterBuilderWithSimpleValue(filterBuilder, Region.TABLE_NAME, Region.UUID);
-			for (RegionReferenceDto region : caseCriteria.getRegions()) {
-				filterBuilder.append("'" + region.getUuid() + "',");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithSimpleValue(filterBuilder, filterBuilderParameters, Region.TABLE_NAME, Region.UUID,
+					caseCriteria.getRegions(), entry -> entry.getUuid());
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getDistricts())) {
-			extendFilterBuilderWithSimpleValue(filterBuilder, District.TABLE_NAME, District.UUID);
-			for (DistrictReferenceDto district : caseCriteria.getDistricts()) {
-				filterBuilder.append("'" + district.getUuid() + "',");
-			}
-			finalizeFilterBuilderSegment(filterBuilder);
+			extendFilterBuilderWithSimpleValue(filterBuilder, filterBuilderParameters, District.TABLE_NAME, District.UUID,
+					caseCriteria.getDistricts(), entry -> entry.getUuid());
 		}
 
 		if (filterBuilder.length() > 0) {
@@ -1898,11 +1807,14 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 		sqlBuilder.insert(0, "SELECT COUNT(*)");
 
-		// 4. Retrieve the results of the query and prepare the results for usage in the
-		// UI
+		// 4. Retrieve the results of the query and prepare the results for usage in the UI
 
+		Query query = em.createNativeQuery(sqlBuilder.toString());
+		for (int i=0; i<filterBuilderParameters.size(); i++) {
+			query.setParameter(i+1, filterBuilderParameters.get(i));
+		}
 		if (groupingA == null && groupingB == null) {
-			long result = (long) em.createNativeQuery(sqlBuilder.toString()).getSingleResult();
+			long result = (long) query.getSingleResult();
 			if (result == 0) {
 				// Return an empty list if no cases have been found
 				return new ArrayList<>();
@@ -1913,7 +1825,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				return results;
 			}
 		} else {
-			List<Object[]> results = (List<Object[]>) em.createNativeQuery(sqlBuilder.toString()).getResultList();
+			List<Object[]> results = (List<Object[]>) query.getResultList();
 			replaceIdsWithGroupingKeys(results, groupingA, subGroupingA, groupingB, subGroupingB);
 			return results;
 		}
@@ -1946,19 +1858,36 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 	}
+	
+	private <T> StringBuilder appendInFilterValues(StringBuilder filterBuilder, List<Object> filterBuilderParameters, List<T> values, Function<T, ?> valueMapper) {
+		
+		filterBuilder.append("(");
+		boolean first = true;
+		for (T value : values) {
+			if (first) {
+				filterBuilder.append("?");
+				first = false;
+			} else {
+				filterBuilder.append(",?");
+			}
+			filterBuilder.append(filterBuilderParameters.size()+1);
+			filterBuilderParameters.add(valueMapper.apply(value));
+		}
+		filterBuilder.append(")");
+		return filterBuilder;
+	}
 
-	private StringBuilder extendFilterBuilderWithSimpleValue(StringBuilder filterBuilder, String tableName,
-			String fieldName) {
+	private <T> StringBuilder extendFilterBuilderWithSimpleValue(StringBuilder filterBuilder, List<Object> filterBuilderParameters, String tableName,
+			String fieldName, List<T> values, Function<T, ?> valueMapper) {
 		if (filterBuilder.length() > 0) {
 			filterBuilder.append(" AND ");
 		}
 
-		filterBuilder.append(tableName).append(".").append(fieldName).append(" IN (");
-
-		return filterBuilder;
+		filterBuilder.append(tableName).append(".").append(fieldName).append(" IN ");
+		return appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);	
 	}
 
-	private StringBuilder extendFilterBuilderWithDate(StringBuilder filterBuilder, Date from, Date to, String tableName,
+	private StringBuilder extendFilterBuilderWithDate(StringBuilder filterBuilder, List<Object> filterBuilderParameters, Date from, Date to, String tableName,
 			String fieldName) {
 
 		if (from != null || to != null) {
@@ -1967,85 +1896,76 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 
 			if (from != null && to != null) {
-				filterBuilder.append(tableName).append(".").append(fieldName).append(" BETWEEN '").append(from)
-				.append("' AND '").append(to).append("'");
+				filterBuilder.append(tableName).append(".").append(fieldName).append(" BETWEEN ?").append(filterBuilderParameters.size()+1);
+				filterBuilderParameters.add(from);
+				filterBuilder.append(" AND ?").append(filterBuilderParameters.size()+1).append("");
+				filterBuilderParameters.add(to);
 			} else if (from != null) {
-				filterBuilder.append(tableName).append(".").append(fieldName).append(" >= '").append(from).append("'");
+				filterBuilder.append(tableName).append(".").append(fieldName).append(" >= ?").append(filterBuilderParameters.size()+1);
+				filterBuilderParameters.add(from);
 			} else {
-				filterBuilder.append(tableName).append(".").append(fieldName).append(" <= '").append(to).append("'");
+				filterBuilder.append(tableName).append(".").append(fieldName).append(" <= ?").append(filterBuilderParameters.size()+1);
+				filterBuilderParameters.add(to);
 			}
 		}
 
 		return filterBuilder;
 	}
 
-	private StringBuilder extendFilterBuilderWithDateElement(StringBuilder filterBuilder, String dateElementToExtract,
-			String tableName, String fieldName) {
+	private <T> StringBuilder extendFilterBuilderWithDateElement(StringBuilder filterBuilder, List<Object> filterBuilderParameters, String dateElementToExtract,
+			String tableName, String fieldName, List<T> values, Function<T, Integer> valueMapper) {
 		if (filterBuilder.length() > 0) {
 			filterBuilder.append(" AND ");
 		}
 
 		filterBuilder.append("(EXTRACT(" + dateElementToExtract + " FROM ").append(tableName).append(".")
-		.append(fieldName).append(")::integer)").append(" IN (");
-
-		return filterBuilder;
+			.append(fieldName).append(")::integer)").append(" IN ");
+		return appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);	
 	}
 
-	private StringBuilder extendFilterBuilderWithEpiWeek(StringBuilder filterBuilder, String tableName,
-			String fieldName) {
+	private <T> StringBuilder extendFilterBuilderWithEpiWeek(StringBuilder filterBuilder, List<Object> filterBuilderParameters, String tableName,
+			String fieldName, List<T> values, Function<T, Integer> valueMapper) {
 		if (filterBuilder.length() > 0) {
 			filterBuilder.append(" AND ");
 		}
 
-		filterBuilder.append("epi_week(").append(tableName).append(".").append(fieldName).append(")").append(" IN (");
-
-		return filterBuilder;
+		filterBuilder.append("epi_week(").append(tableName).append(".").append(fieldName).append(")").append(" IN ");
+		return appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);	
 	}
 
-	private StringBuilder extendFilterBuilderWithEpiWeekOfYear(StringBuilder filterBuilder, String tableName,
-			String fieldName) {
+	private <T> StringBuilder extendFilterBuilderWithEpiWeekOfYear(StringBuilder filterBuilder, List<Object> filterBuilderParameters, String tableName,
+			String fieldName, List<T> values, Function<T, Integer> valueMapper) {
 		if (filterBuilder.length() > 0) {
 			filterBuilder.append(" AND ");
 		}
 
 		filterBuilder.append("(epi_year(").append(tableName).append(".").append(fieldName).append(")").append(" * 100")
-		.append(" + epi_week(").append(tableName).append(".").append(fieldName).append("))").append(" IN (");
-
-		return filterBuilder;
+			.append(" + epi_week(").append(tableName).append(".").append(fieldName).append("))").append(" IN ");
+		return appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);	
 	}
 
-	// TODO THIS DOESN'T WORK
-	private StringBuilder extendFilterBuilderWithQuarterOfYear(StringBuilder filterBuilder, String tableName,
-			String fieldName) {
+	private <T> StringBuilder extendFilterBuilderWithQuarterOfYear(StringBuilder filterBuilder, List<Object> filterBuilderParameters, String tableName,
+			String fieldName, List<T> values, Function<T, Integer> valueMapper) {
 		if (filterBuilder.length() > 0) {
 			filterBuilder.append(" AND ");
 		}
 
 		filterBuilder.append("((EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName).append(")")
 		.append(" * 10)::integer) + (EXTRACT(QUARTER FROM ").append(tableName).append(".").append(fieldName)
-		.append(")::integer)").append(" IN (");
-
-		return filterBuilder;
+		.append(")::integer)").append(" IN ");
+		return appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);	
 	}
 
-	private StringBuilder extendFilterBuilderWithMonthOfYear(StringBuilder filterBuilder, String tableName,
-			String fieldName) {
+	private <T> StringBuilder extendFilterBuilderWithMonthOfYear(StringBuilder filterBuilder, List<Object> filterBuilderParameters, String tableName,
+			String fieldName, List<T> values, Function<T, Integer> valueMapper) {
 		if (filterBuilder.length() > 0) {
 			filterBuilder.append(" AND ");
 		}
 
 		filterBuilder.append("((EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName).append(")")
 		.append(" * 100)::integer) + (EXTRACT(MONTH FROM ").append(tableName).append(".").append(fieldName)
-		.append(")::integer)").append(" IN (");
-
-		return filterBuilder;
-	}
-
-	private StringBuilder finalizeFilterBuilderSegment(StringBuilder filterBuilder) {
-		filterBuilder.deleteCharAt(filterBuilder.length() - 1);
-		filterBuilder.append(")");
-
-		return filterBuilder;
+		.append(")::integer)").append(" IN ");
+		return appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);	
 	}
 
 	@Override
