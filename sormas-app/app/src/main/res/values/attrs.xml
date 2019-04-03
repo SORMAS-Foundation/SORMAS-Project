@@ -143,12 +143,6 @@
         <enum name="horizontal" value="0" />
         <enum name="vertical" value="1" />
     </attr>
-    <attr name="checkedButton" format="enum">
-        <enum name="buttonOne" value="0" />
-        <enum name="buttonTwo" value="1" />
-        <enum name="buttonThree" value="2" />
-        <enum name="buttonFour" value="3" />
-    </attr>
 
     <attr name="buttonType" format="string" />
     <attr name="userEditRight" format="string" />
