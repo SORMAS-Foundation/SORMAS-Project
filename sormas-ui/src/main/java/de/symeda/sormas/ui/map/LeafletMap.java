@@ -48,7 +48,7 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 
 	private static final long serialVersionUID = 1671451734103288729L;
 
-	public static int currMapId = 0;
+	protected static int currMapId = 0;
 
 	public static int nextMapId() {
 		return ++currMapId;
@@ -62,11 +62,11 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 	@SuppressWarnings("serial")
 	public LeafletMap() {
 		setId(getDomId());
-		getState().zoom = 5;
-		getState().centerLatitude = 51.505;
-		getState().centerLongitude = -0.09;
-		getState().tileLayerVisible = true;
-		getState().tileLayerOpacity = 1;
+		getState().setZoom(5);
+		getState().setCenterLatitude(51.505);
+		getState().setCenterLongitude(-0.09);
+		getState().setTileLayerVisible(true);
+		getState().setTileLayerOpacity(1);
 
 		addFunction("onClick", new JavaScriptFunction() {
 			@Override
@@ -97,24 +97,24 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 	 * Sets the Leaflet JavaScript code describing the map.
 	 */
 	public void setZoom(int zoom) {
-		getState().zoom = zoom;
+		getState().setZoom(zoom);
 	}
 
 	public int getZoom() {
-		return getState().zoom;
+		return getState().getZoom();
 	}
 
 	public void setCenter(double lat, double lon) {
-		getState().centerLatitude = lat;
-		getState().centerLongitude = lon;
+		getState().setCenterLatitude(lat);
+		getState().setCenterLongitude(lon);
 	}
 	
 	public void setTileLayerVisible(boolean tileLayerVisible) {
-		getState().tileLayerVisible = tileLayerVisible;
+		getState().setTileLayerVisible(tileLayerVisible);
 	}
 
 	public void setTileLayerOpacity(float tileLayerOpacity) {
-		getState().tileLayerOpacity = tileLayerOpacity;
+		getState().setTileLayerOpacity(tileLayerOpacity);
 	}
 
 	public void addMarkerGroup(String groupId, List<LeafletMarker> markers) {
