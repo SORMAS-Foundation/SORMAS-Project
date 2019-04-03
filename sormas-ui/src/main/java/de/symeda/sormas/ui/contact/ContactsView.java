@@ -27,6 +27,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -196,6 +197,7 @@ public class ContactsView extends AbstractView {
 
 			// Warning if no filters have been selected
 			Label warningLabel = new Label(I18nProperties.getString(Strings.infoExportNoFilters), ContentMode.HTML);
+			warningLabel.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(warningLabel);
 			warningLabel.setVisible(false);
 

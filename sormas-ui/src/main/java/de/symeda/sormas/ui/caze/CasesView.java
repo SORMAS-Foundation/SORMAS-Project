@@ -223,6 +223,7 @@ public class CasesView extends AbstractView {
 
 			// Warning if no filters have been selected
 			Label warningLabel = new Label(I18nProperties.getString(Strings.infoExportNoFilters), ContentMode.HTML);
+			warningLabel.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(warningLabel);
 			warningLabel.setVisible(false);
 
