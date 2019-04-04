@@ -17,17 +17,19 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.surveillance;
 
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -35,7 +37,9 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class SurveillanceOverviewLayout extends CustomLayout {
 
+	protected HorizontalLayout diseaseBurdenView;
 	protected DiseaseBurdenComponent diseaseBurdenComponent;
+	protected DiseaseTileViewLayout diseaseTileViewLayout;
 	protected CaseCountDifferenceComponent diseaseDifferenceComponent;
 	private Button showMoreButton;
 	private Button showLessButton;
@@ -55,14 +59,62 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 				+ LayoutUtil.loc(EXTEND_BUTTONS_LOC));
 		
 		diseaseBurdenComponent = new DiseaseBurdenComponent(dashboardDataProvider);
+		diseaseTileViewLayout = new DiseaseTileViewLayout(dashboardDataProvider);
 		diseaseDifferenceComponent = new CaseCountDifferenceComponent(dashboardDataProvider);
+		
+		addDiseaseBurdenView();
 
-		addComponent(diseaseBurdenComponent, BURDEN_LOC);
 		addComponent(diseaseDifferenceComponent, DIFFERENCE_LOC);
 
 		addShowMoreAndLessButtons();
 	}
 
+	private void addDiseaseBurdenView () {
+		HorizontalLayout layout = new HorizontalLayout();
+		layout.setWidth(100, Unit.PERCENTAGE);
+		layout.setMargin(false);
+		
+		layout.addComponent(diseaseTileViewLayout);
+		layout.setExpandRatio(diseaseTileViewLayout, 1);
+		
+		// "Expand" and "Collapse" buttons
+		Button showTableViewButton = new Button("", VaadinIcons.TABLE);
+		CssStyles.style(showTableViewButton, CssStyles.BUTTON_SUBTLE);
+		showTableViewButton.addStyleName(CssStyles.VSPACE_NONE);
+		
+		Button showTileViewButton = new Button("", VaadinIcons.SQUARE_SHADOW);
+		CssStyles.style(showTileViewButton, CssStyles.BUTTON_SUBTLE);
+		showTileViewButton.addStyleName(CssStyles.VSPACE_NONE);
+
+		showTableViewButton.addClickListener(e -> {
+			layout.removeComponent(diseaseTileViewLayout);
+			layout.addComponent(diseaseBurdenComponent);
+			layout.setExpandRatio(diseaseBurdenComponent, 1);
+
+			layout.removeComponent(showTableViewButton);
+			layout.addComponent(showTileViewButton);
+			layout.setComponentAlignment(showTileViewButton, Alignment.TOP_RIGHT);
+		});
+		showTileViewButton.addClickListener(e -> {
+			layout.removeComponent(diseaseBurdenComponent);
+			layout.addComponent(diseaseTileViewLayout);
+			layout.setExpandRatio(diseaseTileViewLayout, 1);
+			
+			layout.removeComponent(showTileViewButton);
+			layout.addComponent(showTableViewButton);
+			layout.setComponentAlignment(showTableViewButton, Alignment.TOP_RIGHT);
+		});
+		
+		layout.addComponent(showTableViewButton);
+		layout.setComponentAlignment(showTableViewButton, Alignment.TOP_RIGHT);
+
+		diseaseBurdenView = layout;
+		addComponent(diseaseBurdenView, BURDEN_LOC);
+		
+		if (UserRole.isSupervisor(UserProvider.getCurrent().getUser().getUserRoles()))
+			showTableViewButton.click();
+	}
+	
 	private void addShowMoreAndLessButtons() {
 		
 		HorizontalLayout buttonsLayout = new HorizontalLayout();
@@ -70,9 +122,9 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 		buttonsLayout.setWidth(100, Unit.PERCENTAGE);
 		buttonsLayout.setMargin(new MarginInfo(false, true));
 		
-		showMoreButton = new Button(I18nProperties.getCaption(Captions.dashboardShowAllDiseases), FontAwesome.CHEVRON_DOWN);
+		showMoreButton = new Button(I18nProperties.getCaption(Captions.dashboardShowAllDiseases), VaadinIcons.CHEVRON_DOWN);
 		CssStyles.style(showMoreButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_4);
-		showLessButton = new Button(I18nProperties.getCaption(Captions.dashboardShowFirstDiseases), FontAwesome.CHEVRON_UP);
+		showLessButton = new Button(I18nProperties.getCaption(Captions.dashboardShowFirstDiseases), VaadinIcons.CHEVRON_UP);
 		CssStyles.style(showLessButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_4);
 		hideOverview = new CheckBox(I18nProperties.getCaption(Captions.dashboardHideOverview));
 		CssStyles.style(hideOverview, CssStyles.VSPACE_3);
@@ -95,12 +147,12 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 		
 		hideOverview.addValueChangeListener(e -> {
 			if (hideOverview.getValue()) {
-				diseaseBurdenComponent.setVisible(false);
+				diseaseBurdenView.setVisible(false);
 				diseaseDifferenceComponent.setVisible(false);
 				showLessButton.setVisible(false);
 				showMoreButton.setVisible(false);
 			} else {
-				diseaseBurdenComponent.setVisible(true);
+				diseaseBurdenView.setVisible(true);
 				diseaseDifferenceComponent.setVisible(true);
 				showLessButton.setVisible(isShowingAllDiseases);
 				showMoreButton.setVisible(!isShowingAllDiseases);
@@ -126,6 +178,7 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 
 	public void refresh() {
 		diseaseBurdenComponent.refresh(isShowingAllDiseases ? 0 : 6);
+		diseaseTileViewLayout.refresh(isShowingAllDiseases ? 0 : 6);
 		diseaseDifferenceComponent.refresh(isShowingAllDiseases ? 0 : 10);
 	}
 }

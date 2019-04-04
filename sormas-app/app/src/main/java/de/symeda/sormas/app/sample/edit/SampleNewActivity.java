@@ -62,7 +62,6 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
         return buildBundle(null, 0).setCaseUuid(caseUuid);
     }
 
-
     @Override
     public ShipmentStatus getPageStatus() {
         return null;

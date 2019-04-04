@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>sormas-base</artifactId>
 		<groupId>de.symeda.sormas</groupId>
-		<version>1.16.0</version>
+		<version>1.17.0</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -40,7 +40,7 @@
 		
 		<dependency>
 			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-server</artifactId>
+			<artifactId>vaadin-compatibility-server</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.vaadin</groupId>
@@ -138,6 +138,9 @@
 				</configuration>
 				<executions>
 					<execution>
+                    	<configuration>
+                    		<!-- if you don't specify any modules, the plugin will find them -->
+                    	</configuration>
 						<goals>
 							<goal>update-theme</goal>
 							<!-- Comment out compile-theme goal to use on-the-fly theme compilation -->

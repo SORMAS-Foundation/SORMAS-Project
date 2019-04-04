@@ -21,9 +21,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.vaadin.server.UserError;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
+import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.epidata.EpiDataDto;

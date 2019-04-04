@@ -19,14 +19,14 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 
 import java.util.List;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.Grid.SelectionModel.HasUserSelectionAllowed;
-import com.vaadin.ui.renderers.HtmlRenderer;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.data.util.GeneratedPropertyContainer;
+import com.vaadin.v7.data.util.PropertyValueGenerator;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.v7.ui.Grid;
+import com.vaadin.v7.ui.Grid.SelectionModel.HasUserSelectionAllowed;
+import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityCriteria;
@@ -58,7 +58,7 @@ public class FacilitiesGrid extends Grid implements AbstractGrid<FacilityCriteri
 
 				@Override
 				public String getValue(Item item, Object itemId, Object propertyId) {
-					return FontAwesome.PENCIL_SQUARE.getHtml();
+					return VaadinIcons.EDIT.getHtml();
 				}
 
 				@Override

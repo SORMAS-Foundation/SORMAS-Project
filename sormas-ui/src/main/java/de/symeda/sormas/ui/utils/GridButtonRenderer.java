@@ -19,7 +19,7 @@ package de.symeda.sormas.ui.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.vaadin.ui.renderers.HtmlRenderer;
+import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import elemental.json.JsonValue;
 

@@ -22,7 +22,7 @@ import java.util.Map;
 
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.server.ExternalResource;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Link;
@@ -76,7 +76,7 @@ public class SubMenu extends CssLayout {
     	Link link = new Link(caption, new ExternalResource(target));
     	link.addStyleName("v-caption");
     	if (isBackNavigation)
-    		link.setIcon(FontAwesome.ARROW_CIRCLE_LEFT);
+    		link.setIcon(VaadinIcons.ARROW_CIRCLE_LEFT);
     	tabItem.addComponent(link);
     	
     	menuItemsLayout.addComponent(tabItemCell);

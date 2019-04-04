@@ -1,7 +1,10 @@
 package de.symeda.sormas.backend.therapy;
 
 import java.sql.Timestamp;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -88,6 +91,38 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		
 		Treatment treatment = service.getByUuid(treatmentUuid);
 		service.delete(treatment);
+	}
+
+	@Override
+	public List<TreatmentDto> getAllActiveTreatmentsAfter(Date date, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return service.getAllActiveTreatmentsAfter(date, user).stream()
+				.map(t -> toDto(t))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<TreatmentDto> getByUuids(List<String> uuids) {
+		return service.getByUuids(uuids)
+				.stream()
+				.map(t -> toDto(t))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<String> getAllActiveUuids(String userUuid) {
+		User user = userService.getByUuid(userUuid);
+
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return service.getAllActiveUuids(user);
 	}
 	
 	public static TreatmentDto toDto(Treatment source) {

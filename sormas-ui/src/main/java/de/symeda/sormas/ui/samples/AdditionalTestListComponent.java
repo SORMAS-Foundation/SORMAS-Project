@@ -1,7 +1,7 @@
 package de.symeda.sormas.ui.samples;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -40,7 +40,7 @@ public class AdditionalTestListComponent extends VerticalLayout {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_CREATE)) {
 			createButton = new Button(I18nProperties.getCaption(Captions.additionalTestNewTest));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(e -> {
 				ControllerProvider.getAdditionalTestController().openCreateComponent(sampleUuid, list::reload);
 			});

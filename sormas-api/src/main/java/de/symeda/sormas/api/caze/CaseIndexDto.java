@@ -88,11 +88,7 @@ public class CaseIndexDto implements Serializable {
 		this.districtUuid = districtUuid;
 		this.districtName = districtName;
 		this.healthFacilityUuid = healthFacilityUuid;
-		if (FacilityHelper.isOtherOrNoneHealthFacility(healthFacilityUuid)) {
-			this.healthFacilityName = healthFacilityDetails;
-		} else {
-			this.healthFacilityName = healthFacilityName;
-		}
+		this.healthFacilityName = FacilityHelper.buildFacilityString(healthFacilityUuid, healthFacilityName, healthFacilityDetails);
 		this.surveillanceOfficerUuid = surveillanceOfficerUuid;
 		this.outcome = outcome;
 	}

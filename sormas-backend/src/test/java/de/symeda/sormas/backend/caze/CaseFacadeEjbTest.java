@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +34,8 @@ import org.junit.rules.ExpectedException;
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.IntegerRange;
+import de.symeda.sormas.api.Year;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -48,6 +51,7 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -55,6 +59,8 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
+import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -67,6 +73,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.util.DateHelper8;
@@ -197,7 +204,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 
-		List<CaseIndexDto> results = getCaseFacade().getIndexList(user.getUuid(), null);
+		
+		List<CaseIndexDto> results = getCaseFacade().getIndexList(user.getUuid(), null, 0, 100, Arrays.asList(
+				new SortProperty(CaseIndexDto.DISEASE), new SortProperty(CaseIndexDto.PERSON_FIRST_NAME), new SortProperty(CaseIndexDto.DISTRICT_NAME),
+				new SortProperty(CaseIndexDto.HEALTH_FACILITY_NAME), new SortProperty(CaseIndexDto.SURVEILLANCE_OFFICER_UUID)));
 
 		// List should have one entry
 		assertEquals(1, results.size());
@@ -399,5 +409,30 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// getArchivedUuidsSince should return length 0
 		assertEquals(0, getCaseFacade().getArchivedUuidsSince(user.getUuid(), testStartDate).size());
+	}
+
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testQueryCaseCount() throws Exception {
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
+				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		cazePerson.setApproximateAge(30);
+		cazePerson.setApproximateAgeReferenceDate(new Date());
+		cazePerson.setApproximateAgeType(ApproximateAgeType.YEARS);
+		cazePerson = getPersonFacade().savePerson(cazePerson);
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+
+		StatisticsCaseCriteria criteria = new StatisticsCaseCriteria();
+		criteria.years(Arrays.asList(new Year(caze.getSymptoms().getOnsetDate().getYear() + 1900), new Year(caze.getSymptoms().getOnsetDate().getYear() + 1901)), StatisticsCaseAttribute.ONSET_TIME);
+		criteria.regions(Arrays.asList(new RegionReferenceDto(rdcf.region.getUuid())));
+		criteria.addAgeIntervals(Arrays.asList(new IntegerRange(10, 40)));
+		List<Object[]> results = getCaseFacade().queryCaseCount(criteria, null, null, null, null);
+
+		// List should have one entry
+		assertEquals(1, results.size());
 	}
 }

@@ -131,7 +131,7 @@
                         style="@style/LoginSignInTagLineText" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextEditField
-                        android:id="@+id/username"
+                        android:id="@+id/user_userName"
                         style="@style/ControlSingleColumnStyle"
                         app:hint="@string/hint_login_username"
                         app:labelCaption="@string/caption_username"
@@ -140,7 +140,7 @@
                         app:value="@={data.userName}" />
 
                     <de.symeda.sormas.app.component.controls.ControlPasswordField
-                        android:id="@+id/password"
+                        android:id="@+id/user_password"
                         style="@style/ControlSingleColumnStyle"
                         app:hint="@string/hint_login_password"
                         app:labelCaption="@string/caption_password"

@@ -19,10 +19,10 @@ package de.symeda.sormas.ui.utils;
 
 import java.util.function.Consumer;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.GeneratedPropertyContainer;
+import com.vaadin.v7.data.util.PropertyValueGenerator;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -112,11 +112,11 @@ public class VaadinUiUtil {
 	}
 
 	@SuppressWarnings("serial")
-	public static void addIconColumn(GeneratedPropertyContainer container, String iconPropertyId, FontAwesome fontAwesomeIcon) {
+	public static void addIconColumn(GeneratedPropertyContainer container, String iconPropertyId, VaadinIcons VaadinIconsIcon) {
 		container.addGeneratedProperty(iconPropertyId, new PropertyValueGenerator<String>() {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
-				return fontAwesomeIcon.getHtml();
+				return VaadinIconsIcon.getHtml();
 			}
 			@Override
 			public Class<String> getType() {

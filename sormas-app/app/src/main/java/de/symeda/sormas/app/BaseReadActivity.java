@@ -113,6 +113,8 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
                 replaceFragment(buildReadFragment(getActivePage(), result), false);
             }
         });
+
+        updatePageMenu();
     }
 
     public void setSubHeadingTitle(String title) {

@@ -1,8 +1,8 @@
 package de.symeda.sormas.ui.clinicalcourse;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -45,9 +45,12 @@ public class ClinicalCourseView extends AbstractCaseView {
 
 	private VerticalLayout createClinicalVisitsHeader() {
 		VerticalLayout clinicalVisitsHeader = new VerticalLayout();
+		clinicalVisitsHeader.setMargin(false);
+		clinicalVisitsHeader.setSpacing(false);
 		clinicalVisitsHeader.setWidth(100, Unit.PERCENTAGE);
 
 		HorizontalLayout headlineRow = new HorizontalLayout();
+		headlineRow.setMargin(false);
 		headlineRow.setSpacing(true);
 		headlineRow.setWidth(100, Unit.PERCENTAGE);
 		{
@@ -68,7 +71,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 						}
 					});
 				};
-				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), FontAwesome.TRASH, deleteCommand);
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
 
 				headlineRow.addComponent(bulkOperationsDropdown);
 				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);

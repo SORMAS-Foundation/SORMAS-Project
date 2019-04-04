@@ -3017,3 +3017,26 @@ ALTER TABLE weeklyreportentry ADD CONSTRAINT fk_weeklyreportentry_weeklyreport_i
 DELETE FROM weeklyreport a USING weeklyreport b WHERE a.id < b.id AND a.year = b.year AND a.epiweek = b.epiweek AND a.reportinguser_id = b.reportinguser_id;
 
 INSERT INTO schema_version (version_number, comment) VALUES (136, 'Delete duplicate weekly reports #994');
+
+-- 2019-03-28 Change serialization of approximate age type to string (instead of number) #1015
+
+ALTER TABLE person DISABLE TRIGGER versioning_trigger;
+ALTER TABLE person RENAME approximateagetype TO approximateagetype_temp;
+ALTER TABLE person_history RENAME approximateagetype TO approximateagetype_temp;
+ALTER TABLE person ADD COLUMN approximateagetype character varying(255);
+ALTER TABLE person_history ADD COLUMN approximateagetype character varying(255);
+UPDATE person SET approximateagetype='YEARS' WHERE approximateagetype_temp=0;
+UPDATE person SET approximateagetype='MONTHS' WHERE approximateagetype_temp=1;
+UPDATE person SET approximateagetype='DAYS' WHERE approximateagetype_temp=2;
+UPDATE person_history SET approximateagetype='YEARS' WHERE approximateagetype_temp=0;
+UPDATE person_history SET approximateagetype='MONTHS' WHERE approximateagetype_temp=1;
+UPDATE person_history SET approximateagetype='DAYS' WHERE approximateagetype_temp=2;
+ALTER TABLE person DROP COLUMN approximateagetype_temp;
+ALTER TABLE person_history DROP COLUMN approximateagetype_temp;
+ALTER TABLE person ENABLE TRIGGER versioning_trigger;
+
+INSERT INTO schema_version (version_number, comment) VALUES (137, 'Change serialization of approximate age type to string (instead of number) #1015');
+
+-- 2019-03-28 Add therapies to all cases
+
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (138, 'Add therapies to all cases', true);

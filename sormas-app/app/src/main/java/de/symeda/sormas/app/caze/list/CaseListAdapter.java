@@ -96,4 +96,5 @@ public class CaseListAdapter extends BindingPagedListAdapter<Case, RowCaseListIt
 
         imgCaseClassificationIcon.setBackground(drw);
     }
+
 }

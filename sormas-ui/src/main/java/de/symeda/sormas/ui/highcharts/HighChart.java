@@ -48,12 +48,11 @@ import com.vaadin.ui.AbstractJavaScriptComponent;
 public class HighChart extends AbstractJavaScriptComponent {
 	private static final long serialVersionUID = 7738496276049495017L;
 
-	public static int currChartId = 0;
+	protected static int currChartId = 0;
 
 	public static int nextChartId() {
 		return ++currChartId;
 	}
-
 
 	protected int chartId = nextChartId();
 
@@ -62,8 +61,8 @@ public class HighChart extends AbstractJavaScriptComponent {
 	 */
 	public HighChart() {
 		setId(getDomId());
-		getState().domId = getDomId();
-		getState().hcjs = "";
+		getState().setDomId(getDomId());
+		getState().setHcjs("");
 	}
 
 	/**
@@ -96,6 +95,6 @@ public class HighChart extends AbstractJavaScriptComponent {
 	 * @param hcjs Highcharts JavaScript code describing the chart
 	 */
 	public void setHcjs(String hcjs) {
-		getState().hcjs = hcjs;
+		getState().setHcjs(hcjs);
 	}
 }

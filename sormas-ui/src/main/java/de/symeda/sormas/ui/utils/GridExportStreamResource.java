@@ -31,13 +31,13 @@ import java.util.Date;
 import java.util.List;
 
 import com.opencsv.CSVWriter;
-import com.vaadin.data.Container.Indexed;
-import com.vaadin.data.Property;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
-import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.v7.data.Container.Indexed;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.ui.Grid.Column;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -53,50 +53,47 @@ public class GridExportStreamResource extends StreamResource {
 		super(new StreamSource() {
 			@Override
 			public InputStream getStream() {
-				try {
-					List<String> ignoredPropertyIdsList = Arrays.asList(ignoredPropertyIds);
-					List<Column> columns = new ArrayList<>(gridColumns);
-					columns.removeIf(c -> c.isHidden());
-					columns.removeIf(c -> ignoredPropertyIdsList.contains(c.getPropertyId()));
-					Collection<?> itemIds = container.getItemIds();
+				List<String> ignoredPropertyIdsList = Arrays.asList(ignoredPropertyIds);
+				List<Column> columns = new ArrayList<>(gridColumns);
+				columns.removeIf(c -> c.isHidden());
+				columns.removeIf(c -> ignoredPropertyIdsList.contains(c.getPropertyId()));
+				Collection<?> itemIds = container.getItemIds();
 
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					OutputStreamWriter osw = new OutputStreamWriter(baos, StandardCharsets.UTF_8.name());
-					CSVWriter writer = CSVUtils.createCSVWriter(osw, FacadeProvider.getConfigFacade().getCsvSeparator());
-
-					List<String> headerRow = new ArrayList<>();
-					columns.forEach(c -> {
-						headerRow.add(c.getHeaderCaption());
-					});
-					writer.writeNext(headerRow.toArray(new String[headerRow.size()]));
-					
-					itemIds.forEach(i -> {
-						List<String> row = new ArrayList<>();
+				try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
+					try (CSVWriter writer = CSVUtils.createCSVWriter(new OutputStreamWriter(new ByteArrayOutputStream(), StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
+		
+						List<String> headerRow = new ArrayList<>();
 						columns.forEach(c -> {
-							Property<?> property = container.getItem(i).getItemProperty(c.getPropertyId());
-							if (property.getValue() != null) {
-								if (property.getType() == Date.class) {
-									row.add(DateHelper.formatLocalDateTime((Date) property.getValue()));
-								} else if (property.getType() == Boolean.class) {
-									if ((Boolean) property.getValue() == true) {
-										row.add(I18nProperties.getEnumCaption(YesNoUnknown.YES));
-									} else
-										row.add(I18nProperties.getEnumCaption(YesNoUnknown.NO));
-								} else {
-									row.add(property.getValue().toString());
-								}
-							} else {
-								row.add("");
-							}
+							headerRow.add(c.getHeaderCaption());
 						});
-
-						writer.writeNext(row.toArray(new String[row.size()]));
-					});
-
-					osw.flush();
-					baos.flush();
-					
-					return new BufferedInputStream(new ByteArrayInputStream(baos.toByteArray()));
+						writer.writeNext(headerRow.toArray(new String[headerRow.size()]));
+						
+						itemIds.forEach(i -> {
+							List<String> row = new ArrayList<>();
+							columns.forEach(c -> {
+								Property<?> property = container.getItem(i).getItemProperty(c.getPropertyId());
+								if (property.getValue() != null) {
+									if (property.getType() == Date.class) {
+										row.add(DateHelper.formatLocalDateTime((Date) property.getValue()));
+									} else if (property.getType() == Boolean.class) {
+										if ((Boolean) property.getValue() == true) {
+											row.add(I18nProperties.getEnumCaption(YesNoUnknown.YES));
+										} else
+											row.add(I18nProperties.getEnumCaption(YesNoUnknown.NO));
+									} else {
+										row.add(property.getValue().toString());
+									}
+								} else {
+									row.add("");
+								}
+							});
+		
+							writer.writeNext(row.toArray(new String[row.size()]));
+						});
+		
+						writer.flush();
+					}					
+					return new BufferedInputStream(new ByteArrayInputStream(byteStream.toByteArray()));
 				} catch (IOException e) {
 					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
 					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)

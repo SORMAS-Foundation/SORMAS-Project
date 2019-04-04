@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.CheckBox;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
@@ -74,6 +74,8 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 		addStyleName(DashboardCssStyles.CURVE_AND_MAP_LAYOUT);
 		setWidth(100, Unit.PERCENTAGE);
 		setHeightUndefined();
+		setMargin(false);
+		setSpacing(false);
 
 		HorizontalLayout carouselMenuLayout = createCarouselMenuLayout();
 		addComponent(carouselMenuLayout);
@@ -90,6 +92,7 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 
 	private HorizontalLayout createCarouselMenuLayout() {
 		HorizontalLayout layout = new HorizontalLayout();
+		layout.setMargin(false);
 		CssStyles.style(layout, CssStyles.HSPACE_LEFT_2);
 
 		CheckBox autoSlide = this.setupSlideShow();

@@ -23,7 +23,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -69,6 +69,7 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 		this.dashboardDataProvider = dashboardDataProvider;
 		this.setWidth(100, Unit.PERCENTAGE);
 		this.setMargin(new MarginInfo(true, true, false, true));
+		this.setSpacing(false);
 
 		subComponentsLayout = new CustomLayout();
 		subComponentsLayout.setTemplateContents(
@@ -148,9 +149,9 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 	}
 
 	private void addShowMoreAndLessButtons() {
-		showMoreButton = new Button(I18nProperties.getCaption(Captions.dashboardShowAllDiseases), FontAwesome.CHEVRON_DOWN);
+		showMoreButton = new Button(I18nProperties.getCaption(Captions.dashboardShowAllDiseases), VaadinIcons.CHEVRON_DOWN);
 		CssStyles.style(showMoreButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_3);
-		showLessButton = new Button(I18nProperties.getCaption(Captions.dashboardShowFirstDiseases), FontAwesome.CHEVRON_UP);
+		showLessButton = new Button(I18nProperties.getCaption(Captions.dashboardShowFirstDiseases), VaadinIcons.CHEVRON_UP);
 		CssStyles.style(showLessButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_3);
 
 		showMoreButton.addClickListener(e -> {

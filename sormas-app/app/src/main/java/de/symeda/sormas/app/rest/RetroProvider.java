@@ -107,6 +107,9 @@ public final class RetroProvider {
     private OutbreakFacadeRetro outbreakFacadeRetro;
     private ClassificationFacadeRetro classificationFacadeRetro;
     private UserRoleConfigFacadeRetro userRoleConfigFacadeRetro;
+    private PrescriptionFacadeRetro prescriptionFacadeRetro;
+    private TreatmentFacadeRetro treatmentFacadeRetro;
+    private AdditionalTestFacadeRetro additionalTestFacadeRetro;
 
     private RetroProvider(Context context, Interceptor... additionalInterceptors) throws ServerConnectionException, ServerCommunicationException, ApiVersionException {
 
@@ -327,8 +330,8 @@ public final class RetroProvider {
                         } else if (taskResult.getError() instanceof ServerConnectionException) {
                             ServerConnectionException exception = (ServerConnectionException)taskResult.getError();
 
-                            if (exception.getCustomHtmlErrorCode() == 401) {
-                                // could not authenticate
+                            if (exception.getCustomHtmlErrorCode() == 401 || exception.getCustomHtmlErrorCode() == 403) {
+                                // could not authenticate or user does not have access to the app
                                 ConfigProvider.clearUsernameAndPassword();
                             }
 
@@ -626,6 +629,39 @@ public final class RetroProvider {
             }
         }
         return instance.userRoleConfigFacadeRetro;
+    }
+
+    public static PrescriptionFacadeRetro getPrescriptionFacade() {
+        if (instance.prescriptionFacadeRetro == null) {
+            synchronized ((RetroProvider.class)) {
+                if (instance.prescriptionFacadeRetro == null) {
+                    instance.prescriptionFacadeRetro = instance.retrofit.create(PrescriptionFacadeRetro.class);
+                }
+            }
+        }
+        return instance.prescriptionFacadeRetro;
+    }
+
+    public static TreatmentFacadeRetro getTreatmentFacade() {
+        if (instance.treatmentFacadeRetro == null) {
+            synchronized ((RetroProvider.class)) {
+                if (instance.treatmentFacadeRetro == null) {
+                    instance.treatmentFacadeRetro = instance.retrofit.create(TreatmentFacadeRetro.class);
+                }
+            }
+        }
+        return instance.treatmentFacadeRetro;
+    }
+
+    public static AdditionalTestFacadeRetro getAdditionalTestFacade() {
+        if (instance.additionalTestFacadeRetro == null) {
+            synchronized ((RetroProvider.class)) {
+                if (instance.additionalTestFacadeRetro == null) {
+                    instance.additionalTestFacadeRetro = instance.retrofit.create(AdditionalTestFacadeRetro.class);
+                }
+            }
+        }
+        return instance.additionalTestFacadeRetro;
     }
 
     public static void throwException(Response<?> response) throws ServerConnectionException, ServerCommunicationException {

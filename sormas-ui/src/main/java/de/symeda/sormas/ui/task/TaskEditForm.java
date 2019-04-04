@@ -20,11 +20,11 @@ package de.symeda.sormas.ui.task;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.data.Property;
-import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.TextArea;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.OptionGroup;
+import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;

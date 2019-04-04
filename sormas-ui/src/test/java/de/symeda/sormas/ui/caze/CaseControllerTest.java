@@ -7,7 +7,7 @@ import java.security.Principal;
 import org.junit.Before;
 import org.mockito.Mockito;
 
-import com.vaadin.data.util.converter.ConverterFactory;
+import com.vaadin.v7.data.util.converter.ConverterFactory;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinService;
@@ -38,7 +38,7 @@ public class CaseControllerTest extends AbstractBeanTest {
 			}
 		});
 
-		CurrentInstance.setInheritable(VaadinRequest.class, request);
+		CurrentInstance.set(VaadinRequest.class, request);
 
 		VaadinService service = Mockito.mock(VaadinService.class);
 		CurrentInstance.set(VaadinService.class, service);
@@ -50,7 +50,7 @@ public class CaseControllerTest extends AbstractBeanTest {
 		CurrentInstance.set(VaadinSession.class, session);
 
 		ui = new SormasUI();
-		CurrentInstance.setInheritable(UI.class, ui);
+		CurrentInstance.set(UI.class, ui);
 
 		java.lang.reflect.Field pageField = UI.class.getDeclaredField("page");
 		pageField.setAccessible(true);

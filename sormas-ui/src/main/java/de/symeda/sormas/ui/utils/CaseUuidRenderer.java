@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.renderers.HtmlRenderer;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -38,7 +38,7 @@ public class CaseUuidRenderer extends HtmlRenderer {
 	@Override
 	public JsonValue encode(String value) {
 		if(withCreateCaseIfEmpty && (value == null || value.isEmpty())) {
-			value = "<a title='" + I18nProperties.getString(Strings.headingCreateNewCase) +"'>" + I18nProperties.getCaption(Captions.actionCreate) + "</a> " + FontAwesome.EDIT.getHtml();
+			value = "<a title='" + I18nProperties.getString(Strings.headingCreateNewCase) +"'>" + I18nProperties.getCaption(Captions.actionCreate) + "</a> " + VaadinIcons.EDIT.getHtml();
 			return super.encode(value);
 		}
 		

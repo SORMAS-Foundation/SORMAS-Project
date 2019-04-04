@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.vaadin.ui.OptionGroup;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -159,20 +159,12 @@ public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 			}
 
 			hcjs.append("series: [");
-			hcjs.append("{ name: '" + I18nProperties.getCaption(Captions.dashboardConfirmed) + "', color: '#B22222', dataLabels: { allowOverlap: false }, data: [");
-			for (int i = 0; i < confirmedNumbers.length; i++) {
-				if (i == confirmedNumbers.length - 1) {
-					hcjs.append(confirmedNumbers[i] + "]},");
+			hcjs.append("{ name: '" + I18nProperties.getCaption(Captions.dashboardNotYetClassified) + "', color: '#808080', dataLabels: { allowOverlap: false }, data: [");
+			for (int i = 0; i < notYetClassifiedNumbers.length; i++) {
+				if (i == notYetClassifiedNumbers.length - 1) {
+					hcjs.append(notYetClassifiedNumbers[i] + "]},");
 				} else {
-					hcjs.append(confirmedNumbers[i] + ", ");
-				}
-			}
-			hcjs.append("{ name: '" + I18nProperties.getCaption(Captions.dashboardProbable) + "', color: '#FF4500', dataLabels: { allowOverlap: false },  data: [");
-			for (int i = 0; i < probableNumbers.length; i++) {
-				if (i == probableNumbers.length - 1) {
-					hcjs.append(probableNumbers[i] + "]},");
-				} else {
-					hcjs.append(probableNumbers[i] + ", ");
+					hcjs.append(notYetClassifiedNumbers[i] + ", ");
 				}
 			}
 			hcjs.append("{ name: '" + I18nProperties.getCaption(Captions.dashboardSuspect) + "', color: '#FFD700', dataLabels: { allowOverlap: false },  data: [");
@@ -183,12 +175,20 @@ public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 					hcjs.append(suspectNumbers[i] + ", ");
 				}
 			}
-			hcjs.append("{name: '" + I18nProperties.getCaption(Captions.dashboardNotYetClassified) + "', color: '#808080', dataLabels: { allowOverlap: false }, data: [");
-			for (int i = 0; i < notYetClassifiedNumbers.length; i++) {
-				if (i == notYetClassifiedNumbers.length - 1) {
-					hcjs.append(notYetClassifiedNumbers[i] + "]}]};");
+			hcjs.append("{ name: '" + I18nProperties.getCaption(Captions.dashboardProbable) + "', color: '#FF4500', dataLabels: { allowOverlap: false },  data: [");
+			for (int i = 0; i < probableNumbers.length; i++) {
+				if (i == probableNumbers.length - 1) {
+					hcjs.append(probableNumbers[i] + "]},");
 				} else {
-					hcjs.append(notYetClassifiedNumbers[i] + ", ");
+					hcjs.append(probableNumbers[i] + ", ");
+				}
+			}
+			hcjs.append("{ name: '" + I18nProperties.getCaption(Captions.dashboardConfirmed) + "', color: '#B22222', dataLabels: { allowOverlap: false }, data: [");
+			for (int i = 0; i < confirmedNumbers.length; i++) {
+				if (i == confirmedNumbers.length - 1) {
+					hcjs.append(confirmedNumbers[i] + "]}]};");
+				} else {
+					hcjs.append(confirmedNumbers[i] + ", ");
 				}
 			}
 		} else {

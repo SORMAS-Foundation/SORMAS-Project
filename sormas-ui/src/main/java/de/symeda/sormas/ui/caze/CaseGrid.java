@@ -17,15 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import java.util.List;
+import java.lang.reflect.Method;
+import java.util.Date;
+import java.util.EventObject;
+import java.util.stream.Collectors;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.data.util.PropertyValueGenerator;
+import com.vaadin.data.provider.ConfigurableFilterDataProvider;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.shared.Registration;
+import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Grid;
-import com.vaadin.ui.Grid.SelectionModel.HasUserSelectionAllowed;
 import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.util.ReflectTools;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
@@ -35,20 +38,25 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractGrid;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 @SuppressWarnings("serial")
-public class CaseGrid extends Grid implements AbstractGrid<CaseCriteria> {
+public class CaseGrid extends Grid<CaseIndexDto> implements AbstractGrid<CaseCriteria> {
 
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
 
-	private CaseCriteria caseCriteria = new CaseCriteria();
+	private CaseCriteria caseCriteria;
+	private ConfigurableFilterDataProvider<CaseIndexDto,Void,CaseCriteria> dataProvider;
+	private int itemCount = 0;
 
+	@SuppressWarnings("unchecked")
 	public CaseGrid() {
+		super(CaseIndexDto.class);
 		setSizeFull();
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
@@ -56,36 +64,34 @@ public class CaseGrid extends Grid implements AbstractGrid<CaseCriteria> {
 		} else {
 			setSelectionMode(SelectionMode.NONE);
 		}
+		
+		DataProvider<CaseIndexDto,CaseCriteria> data = DataProvider.fromFilteringCallbacks(
+				query -> FacadeProvider.getCaseFacade().getIndexList(
+						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
+						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+							.collect(Collectors.toList())).stream(),
+				query -> {
+					int itemCount = (int)FacadeProvider.getCaseFacade().count(
+						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null));
+					if (this.itemCount != itemCount) {
+						this.itemCount = itemCount;
+						fireEvent(new GridItemCountChangedEvent(CaseGrid.this, itemCount));
+					}
+					return itemCount;
+				});
+		dataProvider = data.withConfigurableFilter();
+		setDataProvider(dataProvider);
 
-		BeanItemContainer<CaseIndexDto> container = new BeanItemContainer<CaseIndexDto>(CaseIndexDto.class);
-		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
-		setContainerDataSource(generatedContainer);
-
-		// TODO move to index dto
-		generatedContainer.addGeneratedProperty(NUMBER_OF_PENDING_TASKS, new PropertyValueGenerator<String>() {
-			@Override
-			public String getValue(Item item, Object itemId, Object propertyId) {
-				CaseIndexDto caseDto = (CaseIndexDto)itemId;
-				return String.format(I18nProperties.getCaption(Captions.formatSimpleNumberFormat), 
-						FacadeProvider.getTaskFacade().getPendingTaskCountByCase(caseDto.toReference()));
-			}
-			@Override
-			public Class<String> getType() {
-				return String.class;
-			}
-		});
-
-		generatedContainer.addGeneratedProperty(DISEASE_SHORT, new PropertyValueGenerator<String>() {
-			@Override
-			public String getValue(Item item, Object itemId, Object propertyId) {
-				CaseIndexDto caseDto = (CaseIndexDto) itemId;
-				return DiseaseHelper.toString(caseDto.getDisease(), caseDto.getDiseaseDetails());
-			}
-			@Override
-			public Class<String> getType() {
-				return String.class;
-			}
-		});
+		Column<CaseIndexDto, String> diseaseShortColumn = addColumn(caze -> 
+			DiseaseHelper.toString(caze.getDisease(), caze.getDiseaseDetails()));
+		diseaseShortColumn.setId(DISEASE_SHORT);
+		diseaseShortColumn.setSortProperty(CaseIndexDto.DISEASE);
+		
+		Column<CaseIndexDto, String> pendingTasksColumn = addColumn(caze -> 
+			String.format(I18nProperties.getCaption(Captions.formatSimpleNumberFormat), 
+				FacadeProvider.getTaskFacade().getPendingTaskCountByCase(caze.toReference())));
+		pendingTasksColumn.setId(NUMBER_OF_PENDING_TASKS);
+		pendingTasksColumn.setSortable(false);
 
 		setColumns(CaseIndexDto.UUID, CaseIndexDto.EPID_NUMBER, DISEASE_SHORT, 
 				CaseIndexDto.CASE_CLASSIFICATION, CaseIndexDto.OUTCOME, CaseIndexDto.INVESTIGATION_STATUS, 
@@ -93,23 +99,25 @@ public class CaseGrid extends Grid implements AbstractGrid<CaseCriteria> {
 				CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME,
 				CaseIndexDto.REPORT_DATE, CaseIndexDto.CREATION_DATE, NUMBER_OF_PENDING_TASKS);
 
-		getColumn(CaseIndexDto.UUID).setRenderer(new UuidRenderer());
-		getColumn(CaseIndexDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+
+		((Column<CaseIndexDto, String>)getColumn(CaseIndexDto.UUID)).setRenderer(new UuidRenderer());
+		((Column<CaseIndexDto, Date>)getColumn(CaseIndexDto.REPORT_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
-			getColumn(CaseIndexDto.CREATION_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+			((Column<CaseIndexDto, Date>)getColumn(CaseIndexDto.CREATION_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
 		} else {
 			removeColumn(CaseIndexDto.CREATION_DATE);
 		}
 
-		for (Column column : getColumns()) {
-			column.setHeaderCaption(I18nProperties.getPrefixCaption(
-					CaseIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
+		for (Column<?, ?> column : getColumns()) {
+			column.setCaption(I18nProperties.getPrefixCaption(
+					CaseIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
-
+		
 		addItemClickListener(e ->  {
-			if (e.getPropertyId() != null && (e.getPropertyId().equals(CaseIndexDto.UUID) || e.isDoubleClick())) {
-				ControllerProvider.getCaseController().navigateToCase(((CaseIndexDto) e.getItemId()).getUuid());
+			if ((e.getColumn() != null && CaseIndexDto.UUID.equals(e.getColumn().getId()))
+					|| e.getMouseEventDetails().isDoubleClick()) {
+				ControllerProvider.getCaseController().navigateToCase(e.getItem().getUuid());
 			}
 		});
 	}
@@ -117,6 +125,7 @@ public class CaseGrid extends Grid implements AbstractGrid<CaseCriteria> {
 	@Override
 	public void setCriteria(CaseCriteria caseCriteria) {
 		this.caseCriteria = caseCriteria;
+		dataProvider.setFilter(caseCriteria);
 	}
 
 	@Override
@@ -124,30 +133,48 @@ public class CaseGrid extends Grid implements AbstractGrid<CaseCriteria> {
 		return caseCriteria;
 	}
 
-	@SuppressWarnings("unchecked")
-	public BeanItemContainer<CaseIndexDto> getContainer() {
-		GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
-		return (BeanItemContainer<CaseIndexDto>) container.getWrappedContainer();
-	}
-
 	public void reload() {
-		if (getSelectionModel() instanceof HasUserSelectionAllowed) {
+		if (getSelectionModel().isUserSelectionAllowed()) {
 			deselectAll();
 		}
-
-		List<CaseIndexDto> cases = FacadeProvider.getCaseFacade().getIndexList(
-				UserProvider.getCurrent().getUuid(), 
-				caseCriteria);
-
-		getContainer().removeAllItems();
-
+		
 		if (caseCriteria.getOutcome() == null) {
 			this.getColumn(CaseIndexDto.OUTCOME).setHidden(false);
 		} else if (this.getColumn(CaseIndexDto.OUTCOME) != null) {
 			this.getColumn(CaseIndexDto.OUTCOME).setHidden(true);
 		}
 
-		getContainer().addAll(cases);
+		getDataProvider().refreshAll();
 	}
 
+	public int getItemCount() {
+		return itemCount;
+	}
+	
+	public Registration addItemCountChangedListener(GridItemCountChangedListener listener)
+	{
+		return addListener(GridItemCountChangedEvent.class, listener, GridItemCountChangedEvent.EVENT_METHOD);
+	}
+	
+	public static class GridItemCountChangedEvent extends EventObject
+	{
+		public static final Method EVENT_METHOD = ReflectTools.findMethod(GridItemCountChangedListener.class, "itemCountChangedEvent", GridItemCountChangedEvent.class);
+
+		private final int itemCount;
+
+		public GridItemCountChangedEvent(Object source, int itemCount)
+		{
+			super(source);
+			this.itemCount = itemCount;
+		}
+
+		public int getItemCount() {
+			return itemCount;
+		}
+	}
+	
+	public interface GridItemCountChangedListener
+	{
+		public void itemCountChangedEvent(GridItemCountChangedEvent event);
+	}
 }

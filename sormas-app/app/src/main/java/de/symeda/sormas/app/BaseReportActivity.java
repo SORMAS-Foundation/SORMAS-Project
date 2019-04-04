@@ -111,6 +111,7 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
     protected void onResumeFragments() {
         super.onResumeFragments();
         replaceFragment(buildReportFragment(getActivePage()));
+        updatePageMenu();
     }
 
     protected abstract BaseReportFragment buildReportFragment(PageMenuItem menuItem);

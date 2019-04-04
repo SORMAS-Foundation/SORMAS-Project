@@ -58,8 +58,8 @@ public class CaseReadSampleListFragment extends BaseReadFragment<FragmentFormLis
         SampleListViewModel model = ViewModelProviders.of(this).get(SampleListViewModel.class);
         model.initializeViewModel(getActivityRootData());
         model.getSamples().observe(this, samples -> {
-            ((CaseReadActivity) getActivity()).hidePreloader();
             adapter.submitList(samples);
+            ((CaseReadActivity) getActivity()).hidePreloader();
             updateEmptyListHint(samples);
         });
     }

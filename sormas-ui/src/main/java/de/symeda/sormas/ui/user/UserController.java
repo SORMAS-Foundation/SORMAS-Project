@@ -21,10 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.navigator.View;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -189,7 +189,7 @@ public class UserController {
 	}
 
 	public Button createResetPasswordButton(String userUuid, CommitDiscardWrapperComponent<UserEditForm> editView) {
-		Button resetPasswordButton = new Button(null, FontAwesome.UNLOCK_ALT);
+		Button resetPasswordButton = new Button(null, VaadinIcons.UNLOCK);
 		resetPasswordButton.setCaption(I18nProperties.getCaption(Captions.userResetPassword));
 		resetPasswordButton.addStyleName(ValoTheme.BUTTON_LINK);
 		resetPasswordButton.addClickListener(new ClickListener() {

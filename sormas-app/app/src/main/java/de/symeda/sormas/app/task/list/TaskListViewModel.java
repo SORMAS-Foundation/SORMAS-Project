@@ -82,8 +82,11 @@ public class TaskListViewModel extends ViewModel {
     }
 
     void notifyCriteriaUpdated() {
-        if (tasks.getValue() != null && tasks.getValue().getDataSource() != null) {
+        if (tasks.getValue() != null) {
             tasks.getValue().getDataSource().invalidate();
+            if (!tasks.getValue().isEmpty()) {
+                tasks.getValue().loadAround(0);
+            }
         }
     }
 

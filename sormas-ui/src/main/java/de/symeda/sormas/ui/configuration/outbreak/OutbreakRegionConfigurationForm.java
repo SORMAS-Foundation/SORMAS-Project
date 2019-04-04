@@ -24,7 +24,7 @@ import java.util.Set;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -55,7 +55,6 @@ public class OutbreakRegionConfigurationForm extends VerticalLayout {
 	private Label affectedDistrictsNumberLabel;
 
 	public OutbreakRegionConfigurationForm(OutbreakRegionConfiguration regionOutbreakConfiguration) {
-		//TODO #232 - Possibly needs to be refactored
 		setStyleName("configuration-view");
 
 		// Copy the set of affected districts because the CommitDiscardWrapperComponent is not reset when discarding this form

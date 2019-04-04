@@ -21,15 +21,15 @@ import java.util.Date;
 import java.util.List;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.grid.HeightMode;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.v7.shared.ui.grid.HeightMode;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Grid;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -79,6 +79,7 @@ public class ReportsView extends AbstractView {
 
 	public HorizontalLayout createFilterBar() {
 		HorizontalLayout filterLayout = new HorizontalLayout();
+		filterLayout.setMargin(false);
 		filterLayout.setSpacing(true);
 		filterLayout.addStyleName(CssStyles.VSPACE_3);
 		filterLayout.setWidth(100, Unit.PERCENTAGE);
@@ -117,7 +118,7 @@ public class ReportsView extends AbstractView {
 		});
 		filterLayout.addComponent(lastWeekButton);
 
-		Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 		infoLabel.setDescription(I18nProperties.getString(Strings.infoWeeklyReportsView));
 		infoLabel.setSizeUndefined();
 		CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);

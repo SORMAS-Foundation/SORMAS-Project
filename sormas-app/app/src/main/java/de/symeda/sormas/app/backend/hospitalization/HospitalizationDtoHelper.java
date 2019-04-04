@@ -27,10 +27,6 @@ import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import retrofit2.Call;
 
-/**
- * Created by Mate Strysewske on 22.02.2017.
- */
-
 public class HospitalizationDtoHelper extends AdoDtoHelper<Hospitalization, HospitalizationDto> {
 
     private PreviousHospitalizationDtoHelper previousHospitalizationDtoHelper;

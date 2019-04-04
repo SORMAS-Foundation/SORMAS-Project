@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
@@ -49,6 +49,7 @@ public class SampleListEntry extends HorizontalLayout {
 
 	public SampleListEntry(SampleIndexDto sample) {
 
+		setMargin(false);
 		setSpacing(true);
 		setWidth(100, Unit.PERCENTAGE);
 		addStyleName(CssStyles.SORMAS_LIST_ENTRY);
@@ -56,6 +57,8 @@ public class SampleListEntry extends HorizontalLayout {
 
 		VerticalLayout labelLayout = new VerticalLayout();
 		labelLayout.setWidth(100, Unit.PERCENTAGE);
+		labelLayout.setMargin(false);
+		labelLayout.setSpacing(false);
 		addComponent(labelLayout);
 		setExpandRatio(labelLayout, 1);
 
@@ -69,7 +72,9 @@ public class SampleListEntry extends HorizontalLayout {
 						+ ": " + DateHelper.formatLocalShortDate(sample.getSampleDateTime()))
 				+ LayoutUtil.div(DataHelper.toStringNullable(sample.getLab()));
 		Label labelLeft = new Label(htmlLeft, ContentMode.HTML);
+		labelLeft.setWidth(100, Unit.PERCENTAGE);
 		topLabelLayout.addComponent(labelLeft);
+		topLabelLayout.setExpandRatio(labelLeft, 0.7f);
 
 		String htmlRight = "";
 		if (sample.getPathogenTestResult() != null) {
@@ -99,8 +104,10 @@ public class SampleListEntry extends HorizontalLayout {
 			htmlRight += LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE, I18nProperties.getCaption(Captions.sampleNotShippedLong));
 		}
 		Label labelRight = new Label(htmlRight, ContentMode.HTML);
+		labelRight.setWidth(100, Unit.PERCENTAGE);
 		labelRight.addStyleName(CssStyles.ALIGN_RIGHT);
 		topLabelLayout.addComponent(labelRight);
+		topLabelLayout.setExpandRatio(labelRight, 0.3f);
 		topLabelLayout.setComponentAlignment(labelRight, Alignment.TOP_RIGHT);
 		
 		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
@@ -111,7 +118,7 @@ public class SampleListEntry extends HorizontalLayout {
 
 	public void addEditListener(ClickListener editClickListener) {
 		if (editButton == null) {
-			editButton = new Button(FontAwesome.PENCIL);
+			editButton = new Button(VaadinIcons.PENCIL);
 			CssStyles.style(editButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 			addComponent(editButton);
 			setComponentAlignment(editButton, Alignment.MIDDLE_RIGHT);

@@ -20,19 +20,19 @@ package de.symeda.sormas.ui.caze;
 import java.util.Arrays;
 import java.util.List;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.validator.RegexpValidator;
-import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.validator.RegexpValidator;
+import com.vaadin.v7.data.validator.StringLengthValidator;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.AbstractSelect;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.OptionGroup;
+import com.vaadin.v7.ui.TextField;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
@@ -258,7 +258,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		// Automatic case classification rules button - invisible for other diseases
 		if (disease != Disease.OTHER) {
-			Button classificationRulesButton = new Button(I18nProperties.getCaption(Captions.info), FontAwesome.INFO_CIRCLE);
+			Button classificationRulesButton = new Button(I18nProperties.getCaption(Captions.info), VaadinIcons.INFO_CIRCLE);
 			CssStyles.style(classificationRulesButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
 			classificationRulesButton.addClickListener(e -> {
 				ControllerProvider.getCaseController().openClassificationRulesPopup(getValue());

@@ -49,11 +49,16 @@ public abstract class PaginationList<T> extends VerticalLayout {
 	private Label nextGapLabel;
 	
 	public PaginationList(int maxDisplayedEntries) {
+		setMargin(false);
+		setSpacing(false);
 		this.maxDisplayedEntries = maxDisplayedEntries;
 		this.currentPage = 1;
 		
 		this.listLayout = new VerticalLayout();
+		listLayout.setMargin(false);
+		listLayout.setSpacing(false);
 		this.paginationLayout = new HorizontalLayout();
+		paginationLayout.setMargin(false);
 		paginationLayout.setSpacing(true);
 		CssStyles.style(paginationLayout, CssStyles.SPACING_SMALL, CssStyles.VSPACE_TOP_4);
 		initializePaginationLayout();

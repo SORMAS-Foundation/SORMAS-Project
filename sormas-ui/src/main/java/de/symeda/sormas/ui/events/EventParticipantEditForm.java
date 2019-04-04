@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;

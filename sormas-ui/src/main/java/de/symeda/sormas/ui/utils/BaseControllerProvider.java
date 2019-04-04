@@ -18,29 +18,23 @@
 package de.symeda.sormas.ui.utils;
 
 /**
- * Setzt die App-Id serverseitig, falls sie in diesem Request noch nicht gesetzt wurde.
- * Ich hätte gerne CDI statt ThreadLocal benutzt, aber der ServiceLocator funktioniert static.
- * Der BaseControllerProvider wird in der Session gehalten!
- * Er wird also innerhalb der Session zwischen allen Instanzen der Applikation (Tabs) geteilt;
- * Durch F5 wird er nicht neu geladen.
- * 
- * @author HReise, Martin Wahnschaffe
+ * Sets the app id on the server side if it has not yet been set in this request.
+ * I would have liked to use CDI instead of ThreadLocal, but the ServiceLocator works static.
+ * The BaseControllerProvider is held in the session!
+ * So it is shared within the session between all instances of the application (tabs);
+ * F5 does not reload it.
  */
 public class BaseControllerProvider {
 
 	private static ThreadLocal<BaseControllerProvider> controllerProviderThreadLocal = new ThreadLocal<>();
-
 
 	protected static BaseControllerProvider get() {
 		return controllerProviderThreadLocal.get();
 	}
 
 	/**
-	 * Muss aufgerufen werden, wenn von Vaadin ein neuer Request gestartet wurde
-	 * XXX Könnte z. B. über die Vaadin Session geregelt werden
-	 * 
-	 * @param appId
-	 *            die id der Vaadin Applikation
+	 * Must be called if a new request was started by Vaadin.
+	 * Could be controlled via the Vaadin session, for example.
 	 */
 	public static void requestStart(BaseControllerProvider controllerProvider) {
 		controllerProviderThreadLocal.set(controllerProvider);
@@ -54,6 +48,4 @@ public class BaseControllerProvider {
 
 		controllerProviderThreadLocal.remove();
 	}
-
-
 }

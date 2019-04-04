@@ -20,11 +20,11 @@ package de.symeda.sormas.ui.user;
 import java.util.List;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -79,7 +79,7 @@ public class UsersView extends AbstractView {
     	if (UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE)) {
 	        createButton = new Button(I18nProperties.getCaption(Captions.userNewUser));
 	        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-	        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+	        createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 	        createButton.addClickListener(e -> ControllerProvider.getUserController().create());
 	        addHeaderComponent(createButton);
     	}
@@ -87,6 +87,7 @@ public class UsersView extends AbstractView {
 	
 	public HorizontalLayout createFilterBar() {
     	HorizontalLayout filterLayout = new HorizontalLayout();
+		filterLayout.setMargin(false);
     	filterLayout.setSpacing(true);
     	filterLayout.setSizeUndefined();
     	filterLayout.addStyleName(CssStyles.VSPACE_3);

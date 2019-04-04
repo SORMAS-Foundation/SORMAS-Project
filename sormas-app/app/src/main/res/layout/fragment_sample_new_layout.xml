@@ -30,6 +30,7 @@
 
         <variable name="data" type="de.symeda.sormas.app.backend.sample.Sample"/>
         <variable name="pathogenTestTypeClass" type="Class" />
+        <variable name="additionalTestTypeClass" type="Class" />
     </data>
 
     <ScrollView
@@ -150,6 +151,38 @@
                 app:dependencyParentValue="@{true}"
                 app:dependencyParentClearOnHide="@{false}"
                 style="@style/ControlSingleColumnStyle" />
+
+            <LinearLayout
+                android:id="@+id/additional_testing_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/sample_additionalTestingRequested"
+                    app:useBoolean="true"
+                    app:value="@={data.additionalTestingRequested}"
+                    app:required="true"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxGroupField
+                    android:id="@+id/sample_requestedAdditionalTests"
+                    app:enumClass="@{additionalTestTypeClass}"
+                    app:value="@={data.requestedAdditionalTests}"
+                    app:dependencyParentField="@{sampleAdditionalTestingRequested}"
+                    app:dependencyParentValue="@{true}"
+                    app:dependencyParentClearOnHide="@{false}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/sample_requestedOtherAdditionalTests"
+                    app:value="@={data.requestedOtherAdditionalTests}"
+                    app:dependencyParentField="@{sampleAdditionalTestingRequested}"
+                    app:dependencyParentValue="@{true}"
+                    app:dependencyParentClearOnHide="@{false}"
+                    style="@style/ControlSingleColumnStyle" />
+
+            </LinearLayout>
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 

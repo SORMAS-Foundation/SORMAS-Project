@@ -31,6 +31,9 @@ public class DashboardStatisticsPercentageElement extends VerticalLayout {
 	private Label percentageLabel;
 	
 	public DashboardStatisticsPercentageElement(String caption, String svgFillClass) {
+		this.setMargin(false);
+		this.setSpacing(false);
+
 		HorizontalLayout captionAndValueLayout = new HorizontalLayout();
 		captionAndValueLayout.setWidth(100, Unit.PERCENTAGE);
 		

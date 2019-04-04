@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.v7.data.Property.ValueChangeListener;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;

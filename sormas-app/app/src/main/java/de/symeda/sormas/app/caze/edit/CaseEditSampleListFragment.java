@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import androidx.recyclerview.widget.RecyclerView;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -55,7 +56,7 @@ public class CaseEditSampleListFragment extends BaseEditFragment<FragmentFormLis
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ((CaseEditActivity) getActivity()).showPreloader();
+        ((BaseActivity) getActivity()).showPreloader();
         adapter = new SampleListAdapter();
         SampleListViewModel model = ViewModelProviders.of(this).get(SampleListViewModel.class);
         model.initializeViewModel(getActivityRootData());

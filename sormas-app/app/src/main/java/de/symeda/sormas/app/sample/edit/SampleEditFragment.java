@@ -31,11 +31,13 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.sample.AdditionalTest;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.component.Item;
@@ -52,6 +54,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
     private Sample record;
     private Sample referredSample;
     private PathogenTest mostRecentTest;
+    private AdditionalTest mostRecentAdditionalTests;
 
     // Enum lists
 
@@ -59,6 +62,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
     private List<Item> sampleSourceList;
     private List<Facility> labList;
     private List<String> requestedPathogenTests;
+    private List<String> requestedAdditionalTests = new ArrayList<>();
 
     public static SampleEditFragment newInstance(Sample activityRootData) {
         return newInstance(SampleEditFragment.class, null, activityRootData);
@@ -91,6 +95,20 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
                 contentBinding.noRecentTest.setVisibility(GONE);
             }
         }
+
+        // Most recent additional tests layout
+        if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+            if (!record.isReceived() || record.getSpecimenCondition() != SpecimenCondition.ADEQUATE
+                    || !record.getAdditionalTestingRequested() || mostRecentAdditionalTests == null) {
+                contentBinding.mostRecentAdditionalTestsLayout.setVisibility(GONE);
+            } else {
+                if (!mostRecentAdditionalTests.hasArterialVenousGasValue()) {
+                    contentBinding.mostRecentAdditionalTests.arterialVenousGasLayout.setVisibility(GONE);
+                }
+            }
+        } else {
+            contentBinding.mostRecentAdditionalTestsLayout.setVisibility(GONE);
+        }
     }
 
     // Overrides
@@ -109,6 +127,9 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
     protected void prepareFragmentData() {
         record = getActivityRootData();
         mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(record);
+        if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+            mostRecentAdditionalTests = DatabaseHelper.getAdditionalTestDao().queryMostRecentBySample(record);
+        }
         if (!StringUtils.isEmpty(record.getReferredToUuid())) {
             referredSample = DatabaseHelper.getSampleDao().queryUuid(record.getReferredToUuid());
         } else {
@@ -125,6 +146,11 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
                 requestedPathogenTests.add(pathogenTest.toString());
             }
         }
+        if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+            for (AdditionalTestType additionalTest : record.getRequestedAdditionalTests()) {
+                requestedAdditionalTests.add(additionalTest.toString());
+            }
+        }
     }
 
     @Override
@@ -133,11 +159,13 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 
         contentBinding.setData(record);
         contentBinding.setPathogenTest(mostRecentTest);
+        contentBinding.setAdditionalTest(mostRecentAdditionalTests);
         contentBinding.setReferredSample(referredSample);
 
         SampleValidator.initializeSampleValidation(contentBinding);
 
         contentBinding.setPathogenTestTypeClass(PathogenTestType.class);
+        contentBinding.setAdditionalTestTypeClass(AdditionalTestType.class);
     }
 
     @Override
@@ -178,6 +206,8 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
             contentBinding.sampleShipmentDetails.setEnabled(false);
             contentBinding.samplePathogenTestingRequested.setVisibility(GONE);
             contentBinding.sampleRequestedPathogenTests.setVisibility(GONE);
+            contentBinding.sampleAdditionalTestingRequested.setVisibility(GONE);
+            contentBinding.sampleRequestedAdditionalTests.setVisibility(GONE);
 
             if (!requestedPathogenTests.isEmpty()) {
                 contentBinding.sampleRequestedPathogenTestsTags.setTags(requestedPathogenTests);
@@ -186,8 +216,23 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
                 }
             } else {
                 contentBinding.sampleRequestedPathogenTestsTags.setVisibility(GONE);
-                contentBinding.pathogenTestingDivider.setVisibility(GONE);
                 contentBinding.sampleRequestedOtherPathogenTests.setVisibility(GONE);
+            }
+
+            if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+                if (!requestedAdditionalTests.isEmpty()) {
+                    contentBinding.sampleRequestedAdditionalTestsTags.setTags(requestedAdditionalTests);
+                    if (StringUtils.isEmpty(record.getRequestedOtherAdditionalTests())) {
+                        contentBinding.sampleRequestedOtherAdditionalTests.setVisibility(GONE);
+                    }
+                } else {
+                    contentBinding.sampleRequestedAdditionalTestsTags.setVisibility(GONE);
+                    contentBinding.sampleRequestedOtherAdditionalTests.setVisibility(GONE);
+                }
+            }
+
+            if (requestedPathogenTests.isEmpty() && requestedAdditionalTests.isEmpty()) {
+                contentBinding.pathogenTestingDivider.setVisibility(GONE);
             }
 
             if (!Boolean.TRUE.equals(record.getPathogenTestingRequested())) {
@@ -196,6 +241,11 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         } else {
             contentBinding.sampleRequestedPathogenTestsTags.setVisibility(GONE);
             contentBinding.sampleRequestedPathogenTests.removeItem(PathogenTestType.OTHER);
+            contentBinding.sampleRequestedAdditionalTestsTags.setVisibility(GONE);
+        }
+
+        if (!ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+            contentBinding.additionalTestingLayout.setVisibility(GONE);
         }
     }
 

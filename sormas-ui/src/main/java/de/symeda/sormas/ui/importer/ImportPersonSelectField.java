@@ -20,12 +20,12 @@ package de.symeda.sormas.ui.importer;
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.vaadin.ui.CheckBox;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomField;
+import com.vaadin.v7.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.DiseaseHelper;

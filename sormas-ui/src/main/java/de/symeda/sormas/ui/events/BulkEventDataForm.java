@@ -19,8 +19,8 @@ package de.symeda.sormas.ui.events;
 
 import java.util.Arrays;
 
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.OptionGroup;
+import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;

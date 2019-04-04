@@ -41,6 +41,7 @@ import android.widget.EditText;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -66,6 +67,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
     private FragmentManager fragmentManager;
     private SimpleDateFormat dateFormat;
     private int allowedDaysInFuture;
+    private Date cachedDate;
 
     // Constructors
 
@@ -188,11 +190,26 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
             return null;
         }
 
-        return DateHelper.parseDate(input.getText().toString(), dateFormat);
+        Date date = DateHelper.parseDate(input.getText().toString(), dateFormat);
+        if (cachedDate != null) {
+            Calendar dateCalendar = Calendar.getInstance();
+            dateCalendar.setTime(date);
+
+            Calendar cachedCalendar = Calendar.getInstance();
+            cachedCalendar.setTime(cachedDate);
+            cachedCalendar.set(Calendar.YEAR, dateCalendar.get(Calendar.YEAR));
+            cachedCalendar.set(Calendar.MONTH, dateCalendar.get(Calendar.MONTH));
+            cachedCalendar.set(Calendar.DAY_OF_MONTH, dateCalendar.get(Calendar.DAY_OF_MONTH));
+            date = cachedCalendar.getTime();
+        }
+
+        return date;
     }
 
     @Override
     protected void setFieldValue(Date value) {
+        cachedDate = value;
+
         if (value == null) {
             input.setText(null);
         } else {

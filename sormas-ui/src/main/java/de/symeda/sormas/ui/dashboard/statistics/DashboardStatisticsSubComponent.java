@@ -42,16 +42,20 @@ public class DashboardStatisticsSubComponent extends VerticalLayout {
 
 	public DashboardStatisticsSubComponent() {
 		this.setMargin(new MarginInfo(false, true, false, true));
+		this.setSpacing(false);
 	}
 
 	public void addHeader(String headline, Image icon, boolean showTotalCount) {
 		HorizontalLayout headerLayout = new HorizontalLayout();
 		headerLayout.setWidth(100, Unit.PERCENTAGE);
 		headerLayout.setSpacing(true);
+		headerLayout.setMargin(false);
 		CssStyles.style(headerLayout, CssStyles.VSPACE_4);
 
 		VerticalLayout labelAndTotalLayout = new VerticalLayout();
 		{
+			labelAndTotalLayout.setMargin(false);
+			labelAndTotalLayout.setSpacing(false);
 			Label headlineLabel = new Label(headline);
 			CssStyles.style(headlineLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 			labelAndTotalLayout.addComponent(headlineLabel);
@@ -97,6 +101,7 @@ public class DashboardStatisticsSubComponent extends VerticalLayout {
 	public void addMainContent() {
 		if (contentLayout == null) {
 			contentLayout = new VerticalLayout();
+			contentLayout.setMargin(false);
 			contentLayout.setSpacing(false);
 			contentLayout.setWidth(100, Unit.PERCENTAGE);
 			contentLayout.setHeightUndefined();
@@ -109,6 +114,7 @@ public class DashboardStatisticsSubComponent extends VerticalLayout {
 	public void addTwoColumnsMainContent(boolean showSeparator, int leftColumnPercentalWidth) {
 		if (contentLayout == null) {
 			contentLayout = new HorizontalLayout();
+			contentLayout.setMargin(false);
 			contentLayout.setSpacing(true);
 			contentLayout.setWidth(100, Unit.PERCENTAGE);
 			contentLayout.setHeightUndefined();
@@ -117,6 +123,7 @@ public class DashboardStatisticsSubComponent extends VerticalLayout {
 			setExpandRatio(contentLayout, 1);
 
 			leftContentColumnLayout = new VerticalLayout();
+			leftContentColumnLayout.setMargin(false);
 			leftContentColumnLayout.setWidth(100, Unit.PERCENTAGE);
 			leftContentColumnLayout.setHeightUndefined();
 			contentLayout.addComponent(leftContentColumnLayout);
@@ -129,6 +136,7 @@ public class DashboardStatisticsSubComponent extends VerticalLayout {
 			}
 
 			rightContentColumnLayout = new VerticalLayout();
+			rightContentColumnLayout.setMargin(false);
 			rightContentColumnLayout.setWidth(100, Unit.PERCENTAGE);
 			rightContentColumnLayout.setHeightUndefined();
 			contentLayout.addComponent(rightContentColumnLayout);

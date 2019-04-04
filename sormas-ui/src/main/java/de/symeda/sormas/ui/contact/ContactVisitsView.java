@@ -20,7 +20,7 @@ package de.symeda.sormas.ui.contact;
 import java.util.HashMap;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -120,7 +120,7 @@ public class ContactVisitsView extends AbstractContactView {
 					}
 				});
 			};
-			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), FontAwesome.TRASH, deleteCommand);
+			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
 
 			topLayout.addComponent(bulkOperationsDropdown);
 			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
@@ -130,7 +130,7 @@ public class ContactVisitsView extends AbstractContactView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE)) {
 			newButton = new Button(I18nProperties.getCaption(Captions.visitNewVisit));
 			newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			newButton.setIcon(FontAwesome.PLUS_CIRCLE);
+			newButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			newButton.addClickListener(e -> {
 				ControllerProvider.getVisitController().createVisit(this.getContactRef(), 
 						r -> grid.reload(getContactRef()));

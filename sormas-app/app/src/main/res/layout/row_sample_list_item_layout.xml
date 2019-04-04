@@ -25,7 +25,6 @@
         <variable name="testResultMessage" type="String" />
     </data>
 
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -34,8 +33,7 @@
         android:layout_gravity="fill"
         android:paddingLeft="@dimen/rowListItemHorizontalMargin"
         android:paddingRight="@dimen/rowListItemHorizontalMargin"
-        android:background="@drawable/selector_list_activity_row_background"
-        >
+        android:background="@drawable/selector_list_activity_row_background">
 
         <LinearLayout
             android:id="@+id/row_item"
@@ -44,8 +42,7 @@
             android:orientation="vertical"
             android:paddingTop="@dimen/rowListItemVerticalPadding"
             android:paddingBottom="@dimen/rowListItemVerticalPadding"
-            android:background="@drawable/background_list_activity_row"
-            >
+            android:background="@drawable/background_list_activity_row">
 
             <LinearLayout
                 android:layout_width="match_parent"

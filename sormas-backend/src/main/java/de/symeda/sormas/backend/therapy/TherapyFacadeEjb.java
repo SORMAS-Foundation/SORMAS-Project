@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.therapy.TherapyFacade;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -23,6 +24,8 @@ public class TherapyFacadeEjb implements TherapyFacade {
 	
 	@EJB
 	TherapyService service;
+	@EJB
+	private UserService userService;
 
 	public static TherapyReferenceDto toReferenceDto(Therapy entity) {
 		if (entity == null) {

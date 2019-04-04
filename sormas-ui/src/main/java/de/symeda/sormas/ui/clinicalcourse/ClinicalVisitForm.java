@@ -1,6 +1,6 @@
 package de.symeda.sormas.ui.clinicalcourse;
 
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;

@@ -20,12 +20,12 @@ package de.symeda.sormas.ui.dashboard;
 import java.util.List;
 import java.util.Locale;
 
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.data.util.converter.StringToLongConverter;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.renderers.HtmlRenderer;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.data.util.GeneratedPropertyContainer;
+import com.vaadin.v7.data.util.converter.StringToLongConverter;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.v7.ui.Grid;
+import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -77,20 +77,20 @@ public class DiseaseBurdenGrid extends Grid {
 				String criticalLevel = "";
 
 				if (value > 0) {
-					chevronType = FontAwesome.CHEVRON_UP.getHtml();
+					chevronType = VaadinIcons.CHEVRON_UP.getHtml();
 					criticalLevel = CssStyles.LABEL_CRITICAL;
 				} else if (value < 0) {
-					chevronType = FontAwesome.CHEVRON_DOWN.getHtml();
+					chevronType = VaadinIcons.CHEVRON_DOWN.getHtml();
 					criticalLevel = CssStyles.LABEL_POSITIVE;
 				} else {
-					chevronType = FontAwesome.CHEVRON_RIGHT.getHtml();
+					chevronType = VaadinIcons.CHEVRON_RIGHT.getHtml();
 					criticalLevel = CssStyles.LABEL_IMPORTANT;
 				}
 
 				stringRepresentation = "<div class=\"v-label v-widget " + criticalLevel + " v-label-" + criticalLevel
 						+ " align-center v-label-align-center bold v-label-bold large v-label-large v-has-width\" "
 						+ "	  style=\"width: 15px;\">"
-						+ "		<span class=\"v-icon\" style=\"font-family: FontAwesome;\">" + chevronType
+						+ "		<span class=\"v-icon\" style=\"font-family: VaadinIcons;\">" + chevronType
 						+ "		</span>" + "</div>";
 
 				return stringRepresentation;

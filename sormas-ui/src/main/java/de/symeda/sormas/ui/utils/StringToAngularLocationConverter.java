@@ -21,7 +21,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-import com.vaadin.data.util.converter.StringToDoubleConverter;
+import com.vaadin.v7.data.util.converter.StringToDoubleConverter;
 
 public final class StringToAngularLocationConverter extends StringToDoubleConverter {
 	

@@ -19,13 +19,13 @@ package de.symeda.sormas.ui.events;
 
 import java.util.List;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.renderers.HtmlRenderer;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.data.util.GeneratedPropertyContainer;
+import com.vaadin.v7.data.util.PropertyValueGenerator;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.v7.ui.Grid;
+import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
@@ -39,7 +39,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CaseUuidRenderer;
-import de.symeda.sormas.ui.utils.UuidRenderer;
+import de.symeda.sormas.ui.utils.V7UuidRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
@@ -64,7 +64,7 @@ public class EventParticipantsGrid extends Grid {
 		
 		BeanItemContainer<EventParticipantDto> container = new BeanItemContainer<EventParticipantDto>(EventParticipantDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
-        VaadinUiUtil.addIconColumn(generatedContainer, EDIT_BTN_ID, FontAwesome.PENCIL_SQUARE);
+        VaadinUiUtil.addIconColumn(generatedContainer, EDIT_BTN_ID, VaadinIcons.EDIT);
 		setContainerDataSource(generatedContainer);
 		
 		generatedContainer.addGeneratedProperty(PERSON_UUID, new PropertyValueGenerator<String>() {
@@ -138,7 +138,7 @@ public class EventParticipantsGrid extends Grid {
         getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
         getColumn(EDIT_BTN_ID).setWidth(60);
         getColumn(EDIT_BTN_ID).setHeaderCaption("");
-		getColumn(PERSON_UUID).setRenderer(new UuidRenderer());
+		getColumn(PERSON_UUID).setRenderer(new V7UuidRenderer());
 		getColumn(CASE_ID).setRenderer(new CaseUuidRenderer(true));
 		
 		for(Column column : getColumns()) {

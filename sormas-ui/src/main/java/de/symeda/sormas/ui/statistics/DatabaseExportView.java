@@ -23,12 +23,12 @@ import java.util.Map;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -59,15 +59,18 @@ public class DatabaseExportView extends AbstractStatisticsView {
 
 		databaseTableToggles = new HashMap<>();
 		databaseExportLayout = new VerticalLayout();
+		databaseExportLayout.setSpacing(false);
+		databaseExportLayout.setMargin(false);
 		HorizontalLayout headerLayout = new HorizontalLayout();
 		headerLayout.setSpacing(true);
+		headerLayout.setMargin(false);
 		Label infoLabel = new Label(I18nProperties.getString(Strings.infoDatabaseExportTables));
 		headerLayout.addComponent(infoLabel);
 		headerLayout.setComponentAlignment(infoLabel, Alignment.MIDDLE_LEFT);
 		headerLayout.addComponent(createSelectionButtonsLayout());
 		databaseExportLayout.addComponent(headerLayout);
 		databaseExportLayout.addComponent(createDatabaseTablesLayout());
-		Button exportButton = new Button(I18nProperties.getCaption(Captions.export), FontAwesome.DOWNLOAD);
+		Button exportButton = new Button(I18nProperties.getCaption(Captions.export), VaadinIcons.DOWNLOAD);
 		CssStyles.style(exportButton, ValoTheme.BUTTON_PRIMARY);
 		StreamResource streamResource = DownloadUtil.createDatabaseExportStreamResource(this, "sormas_export_" + DateHelper.formatDateForExport(new Date()) + ".zip", "application/zip");
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
@@ -86,6 +89,7 @@ public class DatabaseExportView extends AbstractStatisticsView {
 	
 	private HorizontalLayout createSelectionButtonsLayout() {
 		HorizontalLayout selectionButtonsLayout = new HorizontalLayout();
+		selectionButtonsLayout.setMargin(false);
 		selectionButtonsLayout.setSpacing(true);
 		
 		Button selectAll = new Button(I18nProperties.getCaption(Captions.actionSelectAll));
@@ -103,6 +107,8 @@ public class DatabaseExportView extends AbstractStatisticsView {
 			for (CheckBox checkBox : databaseTableToggles.keySet()) {
 				if (databaseTableToggles.get(checkBox).getDatabaseTableType() == DatabaseTableType.SORMAS) {
 					checkBox.setValue(true);
+				} else {
+					checkBox.setValue(false);
 				}
 			}
 		});
@@ -122,14 +128,19 @@ public class DatabaseExportView extends AbstractStatisticsView {
 
 	private HorizontalLayout createDatabaseTablesLayout() {
 		HorizontalLayout databaseTablesLayout = new HorizontalLayout();
+		databaseTablesLayout.setMargin(false);
 		databaseTablesLayout.setSpacing(true);
 		
 		VerticalLayout sormasDataLayout = new VerticalLayout();
+		sormasDataLayout.setMargin(false);
+		sormasDataLayout.setSpacing(false);
 		Label sormasDataHeadline = new Label(I18nProperties.getCaption(Captions.exportSormasData));
 		CssStyles.style(sormasDataHeadline, CssStyles.H4);
 		sormasDataLayout.addComponent(sormasDataHeadline);
 		
 		VerticalLayout infrastructureDataLayout = new VerticalLayout();
+		infrastructureDataLayout.setMargin(false);
+		infrastructureDataLayout.setSpacing(false);
 		Label infrastructureDataHeadline = new Label(I18nProperties.getCaption(Captions.exportInfrastructureData));
 		CssStyles.style(infrastructureDataHeadline, CssStyles.H4);
 		infrastructureDataLayout.addComponent(infrastructureDataHeadline);

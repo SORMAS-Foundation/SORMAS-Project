@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <import type="de.symeda.sormas.api.therapy.TreatmentType" />
+        <import type="de.symeda.sormas.api.therapy.TreatmentRoute" />
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.therapy.Prescription"/>
+        <variable name="typeOfDrugClass" type="Class" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/fragment_padding"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:id="@+id/main_content">
+
+                <requestFocus/>
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/prescription_prescriptionType"
+                    app:value="@={data.prescriptionType}"
+                    app:required="true"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/prescription_prescriptionDetails"
+                    app:value="@={data.prescriptionDetails}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/prescription_typeOfDrug"
+                    app:enumClass="@{typeOfDrugClass}"
+                    app:value="@={data.typeOfDrug}"
+                    app:dependencyParentField="@{prescriptionPrescriptionType}"
+                    app:dependencyParentValue="@{TreatmentType.DRUG_INTAKE}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/prescription_prescriptionDate"
+                    app:value="@={data.prescriptionDate}"
+                    app:required="true"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/prescription_prescribingClinician"
+                    app:value="@={data.prescribingClinician}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/prescription_prescriptionStart"
+                    app:value="@={data.prescriptionStart}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/prescription_prescriptionEnd"
+                    app:value="@={data.prescriptionEnd}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/prescription_frequency"
+                    app:value="@={data.frequency}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/prescription_dose"
+                    app:value="@={data.dose}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/prescription_route"
+                    app:value="@={data.route}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/prescription_routeDetails"
+                    app:value="@={data.routeDetails}"
+                    app:dependencyParentField="@{prescriptionRoute}"
+                    app:dependencyParentValue="@{TreatmentRoute.OTHER}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/prescription_additionalNotes"
+                    app:value="@={data.additionalNotes}"
+                    app:maxLines="5"
+                    style="@style/ControlSingleColumnStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/prescription_buttons_panel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/background_full_width_border"
+                android:paddingLeft="@dimen/buttonPanelHorizontalMargin"
+                android:paddingRight="@dimen/buttonPanelHorizontalMargin"
+                android:paddingTop="@dimen/buttonPanelVerticalMargin"
+                android:paddingBottom="@dimen/buttonPanelVerticalMargin"
+                android:elevation="16dp">
+
+                <de.symeda.sormas.app.component.controls.ControlButton
+                    android:id="@+id/create_treatment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/controlHalfMarginBottom"
+                    android:text="@string/action_create_treatment"
+                    app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
+                    app:rounded="true"
+                    app:iconStart="@drawable/ic_pan_tool_black_24dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</layout>
+

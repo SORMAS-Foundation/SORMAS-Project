@@ -20,16 +20,16 @@ package de.symeda.sormas.ui;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileDownloader;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServletRequest;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
@@ -58,7 +58,7 @@ public class AboutView extends VerticalLayout implements View {
 		VerticalLayout infoLayout = new VerticalLayout();
 		aboutContent.addComponent(infoLayout, "info");
 		
-		Label versionLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml()
+		Label versionLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml()
 						+ " "
 						+ I18nProperties.getCaption(Captions.aboutSormasVersion)
 						+ ": "

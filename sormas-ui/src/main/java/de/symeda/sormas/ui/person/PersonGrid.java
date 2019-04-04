@@ -20,16 +20,16 @@ package de.symeda.sormas.ui.person;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.data.util.MethodProperty;
-import com.vaadin.data.util.PropertyValueGenerator;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.BeanItem;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.data.util.GeneratedPropertyContainer;
+import com.vaadin.v7.data.util.MethodProperty;
+import com.vaadin.v7.data.util.PropertyValueGenerator;
 import com.vaadin.server.Page;
-import com.vaadin.shared.ui.grid.HeightMode;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.renderers.HtmlRenderer;
+import com.vaadin.v7.shared.ui.grid.HeightMode;
+import com.vaadin.v7.ui.Grid;
+import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;

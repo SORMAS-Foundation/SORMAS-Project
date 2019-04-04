@@ -52,8 +52,8 @@ public class CaseImporterTest extends AbstractBeanTest {
 		when(MockProducer.getSessionContext().getCallerPrincipal()).thenReturn(principal);
 		when(request.getUserPrincipal()).thenReturn(principal);
 		
-		CurrentInstance.setInheritable(VaadinRequest.class, request);
-		CurrentInstance.setInheritable(UI.class, new SormasUI());
+		CurrentInstance.set(VaadinRequest.class, request);
+		CurrentInstance.set(UI.class, new SormasUI());
 	}
 
 	@Test

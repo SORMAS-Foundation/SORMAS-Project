@@ -20,6 +20,8 @@ package de.symeda.sormas.backend.sample;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -128,7 +130,7 @@ public class PathogenTestService extends AbstractAdoService<PathogenTest> {
 		return resultList;
 	}
 
-	public List<DashboardTestResultDto> getNewTestResultsForDashboard(Region region, District district, Disease disease,
+	public List<DashboardTestResultDto> getNewTestResultsForDashboard (Region region, District district, Disease disease,
 			Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardTestResultDto> cq = cb.createQuery(DashboardTestResultDto.class);
@@ -184,8 +186,42 @@ public class PathogenTestService extends AbstractAdoService<PathogenTest> {
 		return result;
 	}
 
-	public List<PathogenTestResultType> getPathogenTestResultsForCase(long caseId) {
+	public Map<PathogenTestResultType, Long> getTestResultCountByResultType (Region region, District district, Disease disease, Date from, Date to, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<PathogenTest> sampleTest = cq.from(PathogenTest.class);
+		Join<PathogenTest, Sample> sample = sampleTest.join(PathogenTest.SAMPLE, JoinType.LEFT);
+		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
+		
+		cq.multiselect(sampleTest.get(PathogenTest.TEST_RESULT), cb.countDistinct(sampleTest));
+		cq.groupBy(sampleTest.get(PathogenTest.TEST_RESULT));
+		
+		Predicate filter = createUserFilter(cb, cq, sampleTest, user);
+		
+		if (from != null || to != null)
+			filter = and(cb, filter, cb.between(sampleTest.get(PathogenTest.TEST_DATE_TIME), from, to));
+		
+		if (region != null)
+			filter = and(cb, filter, cb.equal(caze.get(Case.REGION), region));
 
+		if (district != null)
+			filter = and(cb, filter, cb.equal(caze.get(Case.DISTRICT), district));
+
+		if (disease != null)
+			filter = and(cb, filter, cb.equal(caze.get(Case.DISEASE), disease));
+		
+		if (filter != null)
+			cq.where(filter);
+		
+		List<Object[]> results = em.createQuery(cq).getResultList();
+		
+		Map<PathogenTestResultType, Long> testResults = results.stream().collect(
+				Collectors.toMap(e -> (PathogenTestResultType) e[0], e -> (Long) e[1]));
+		
+		return testResults;
+	}
+
+	public List<PathogenTestResultType> getPathogenTestResultsForCase(long caseId) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PathogenTestResultType> cq = cb.createQuery(PathogenTestResultType.class);
 		Root<PathogenTest> root = cq.from(getElementClass());

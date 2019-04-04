@@ -32,18 +32,18 @@ import org.slf4j.LoggerFactory;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.server.ExternalResource;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.grid.HeightMode;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.v7.shared.ui.grid.HeightMode;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -134,7 +134,10 @@ public class DashboardMapComponent extends VerticalLayout {
 	public DashboardMapComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
 
+		setMargin(false);
+		setSpacing(false);
 		setSizeFull();
+
 		map = new LeafletMap();
 		map.setSizeFull();
 		map.addMarkerClickListener(new MarkerClickListener() {
@@ -255,10 +258,10 @@ public class DashboardMapComponent extends VerticalLayout {
 		mapHeaderLayout.setExpandRatio(mapLabel, 1);
 
 		// "Expand" and "Collapse" buttons
-		Button expandMapButton = new Button("", FontAwesome.EXPAND);
+		Button expandMapButton = new Button("", VaadinIcons.EXPAND);
 		CssStyles.style(expandMapButton, CssStyles.BUTTON_SUBTLE);
 		expandMapButton.addStyleName(CssStyles.VSPACE_NONE);
-		Button collapseMapButton = new Button("", FontAwesome.COMPRESS);
+		Button collapseMapButton = new Button("", VaadinIcons.COMPRESS);
 		CssStyles.style(collapseMapButton, CssStyles.BUTTON_SUBTLE);
 		collapseMapButton.addStyleName(CssStyles.VSPACE_NONE);
 
@@ -301,6 +304,7 @@ public class DashboardMapComponent extends VerticalLayout {
 
 			VerticalLayout layersLayout = new VerticalLayout();
 			layersLayout.setMargin(true);
+			layersLayout.setSpacing(false);
 			layersLayout.setSizeUndefined();
 			layersDropdown.setContent(layersLayout);
 
@@ -317,8 +321,9 @@ public class DashboardMapComponent extends VerticalLayout {
 
 				HorizontalLayout showCasesLayout = new HorizontalLayout();
 				{
+					showCasesLayout.setMargin(false);
+					showCasesLayout.setSpacing(false);
 					CheckBox showCasesCheckBox = new CheckBox();
-					CssStyles.style(showCasesCheckBox, CssStyles.VSPACE_NONE);
 					showCasesCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowCases));
 					showCasesCheckBox.setValue(showCases);
 					showCasesCheckBox.addValueChangeListener(e -> {
@@ -329,7 +334,7 @@ public class DashboardMapComponent extends VerticalLayout {
 					});
 					showCasesLayout.addComponent(showCasesCheckBox);
 
-					Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+					Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 					infoLabel.setDescription(I18nProperties.getString(Strings.infoCaseMap));
 					CssStyles.style(infoLabel, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_SECONDARY,
 							CssStyles.HSPACE_LEFT_3);
@@ -346,7 +351,6 @@ public class DashboardMapComponent extends VerticalLayout {
 				CheckBox showUnconfirmedContactsCheckBox = new CheckBox();
 
 				CheckBox showContactsCheckBox = new CheckBox();
-				CssStyles.style(showContactsCheckBox, CssStyles.VSPACE_NONE);
 				showContactsCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowContacts));
 				showContactsCheckBox.setValue(showContacts);
 				showContactsCheckBox.addValueChangeListener(e -> {
@@ -359,7 +363,6 @@ public class DashboardMapComponent extends VerticalLayout {
 				});
 				layersLayout.addComponent(showContactsCheckBox);
 
-				CssStyles.style(showConfirmedContactsCheckBox, CssStyles.VSPACE_NONE);
 				showConfirmedContactsCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowConfirmedContacts));
 				showConfirmedContactsCheckBox.setValue(showConfirmedContacts);
 				showConfirmedContactsCheckBox.addValueChangeListener(e -> {
@@ -368,7 +371,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				});
 				layersLayout.addComponent(showConfirmedContactsCheckBox);
 
-				CssStyles.style(showUnconfirmedContactsCheckBox, CssStyles.VSPACE_NONE);
+				CssStyles.style(showUnconfirmedContactsCheckBox, CssStyles.VSPACE_3);
 				showUnconfirmedContactsCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowUnconfirmedContacts));
 				showUnconfirmedContactsCheckBox.setValue(showUnconfirmedContacts);
 				showUnconfirmedContactsCheckBox.addValueChangeListener(e -> {
@@ -381,7 +384,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				showUnconfirmedContactsCheckBox.setEnabled(showContacts);
 
 				CheckBox showEventsCheckBox = new CheckBox();
-				CssStyles.style(showEventsCheckBox, CssStyles.VSPACE_NONE);
+				CssStyles.style(showEventsCheckBox, CssStyles.VSPACE_3);
 				showEventsCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowEvents));
 				showEventsCheckBox.setValue(showEvents);
 				showEventsCheckBox.addValueChangeListener(e -> {
@@ -403,8 +406,9 @@ public class DashboardMapComponent extends VerticalLayout {
 
 					HorizontalLayout showRegionsLayout = new HorizontalLayout();
 					{
+						showRegionsLayout.setMargin(false);
+						showRegionsLayout.setSpacing(false);
 						CheckBox showRegionsCheckBox = new CheckBox();
-						CssStyles.style(showRegionsCheckBox, CssStyles.VSPACE_NONE);
 						showRegionsCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowRegions));
 						showRegionsCheckBox.setValue(showRegions);
 						showRegionsCheckBox.addValueChangeListener(e -> {
@@ -415,7 +419,7 @@ public class DashboardMapComponent extends VerticalLayout {
 						});
 						showRegionsLayout.addComponent(showRegionsCheckBox);
 
-						Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+						Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 						infoLabel.setDescription(I18nProperties.getString(Strings.infoCaseIncidence));
 						CssStyles.style(infoLabel, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_SECONDARY,
 								CssStyles.HSPACE_LEFT_3);
@@ -437,6 +441,7 @@ public class DashboardMapComponent extends VerticalLayout {
 
 	private VerticalLayout createLegend() {
 		VerticalLayout legendLayout = new VerticalLayout();
+		legendLayout.setSpacing(false);
 		legendLayout.setMargin(true);
 		legendLayout.setSizeUndefined();
 
@@ -461,6 +466,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				HorizontalLayout facilitiesKeyLayout = new HorizontalLayout();
 				{
 					facilitiesKeyLayout.setSpacing(false);
+					facilitiesKeyLayout.setMargin(false);
 					HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.FACILITY_UNCLASSIFIED, I18nProperties.getCaption(Captions.dashboardNotYetClassifiedOnly));
 					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
 					facilitiesKeyLayout.addComponent(legendEntry);
@@ -488,6 +494,7 @@ public class DashboardMapComponent extends VerticalLayout {
 			HorizontalLayout casesKeyLayout = new HorizontalLayout();
 			{
 				casesKeyLayout.setSpacing(false);
+				casesKeyLayout.setMargin(false);
 				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.CASE_UNCLASSIFIED, I18nProperties.getCaption(Captions.dashboardNotYetClassified));
 				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
 				casesKeyLayout.addComponent(legendEntry);
@@ -516,6 +523,7 @@ public class DashboardMapComponent extends VerticalLayout {
 			HorizontalLayout contactsKeyLayout = new HorizontalLayout();
 			{
 				contactsKeyLayout.setSpacing(false);
+				contactsKeyLayout.setMargin(false);
 				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_OK, I18nProperties.getCaption(Captions.dashboardLastVisitLt24));
 				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
 				contactsKeyLayout.addComponent(legendEntry);
@@ -541,6 +549,7 @@ public class DashboardMapComponent extends VerticalLayout {
 			HorizontalLayout eventsKeyLayout = new HorizontalLayout();
 			{
 				eventsKeyLayout.setSpacing(false);
+				eventsKeyLayout.setMargin(false);
 				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_RUMOR,
 						EventType.RUMOR.toString());
 				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);

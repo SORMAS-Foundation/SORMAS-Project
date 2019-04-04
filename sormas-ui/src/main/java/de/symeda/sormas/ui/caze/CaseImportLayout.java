@@ -34,7 +34,7 @@ import java.util.function.Consumer;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.Extension;
 import com.vaadin.server.FileDownloader;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
@@ -43,10 +43,10 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Upload;
-import com.vaadin.ui.Upload.Receiver;
-import com.vaadin.ui.Upload.SucceededEvent;
-import com.vaadin.ui.Upload.SucceededListener;
+import com.vaadin.v7.ui.Upload;
+import com.vaadin.v7.ui.Upload.Receiver;
+import com.vaadin.v7.ui.Upload.SucceededEvent;
+import com.vaadin.v7.ui.Upload.SucceededListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -92,14 +92,14 @@ public class CaseImportLayout extends VerticalLayout {
 		// Step 1: Download SORMAS Import Guide
 		String headline = I18nProperties.getString(Strings.headingDownloadImportGuide);
 		String infoText = I18nProperties.getString(Strings.infoDownloadImportGuide);
-		Resource buttonIcon = FontAwesome.FILE_PDF_O;
+		Resource buttonIcon = VaadinIcons.FILE_PRESENTATION;
 		String buttonCaption = I18nProperties.getCaption(Captions.importDownloadImportGuide);
 		CaseImportLayoutComponent importGuideComponent = new CaseImportLayoutComponent(1, headline, infoText, buttonIcon, buttonCaption);
 		FileDownloader importGuideDownloader = new FileDownloader(new ClassResource("/SORMAS_Import_Guide.pdf"));
 		importGuideDownloader.extend(importGuideComponent.getButton());
 		addComponent(importGuideComponent);
 
-		Button dataDictionaryButton = new Button(I18nProperties.getCaption(Captions.importDownloadDataDictionary), FontAwesome.FILE_EXCEL_O);
+		Button dataDictionaryButton = new Button(I18nProperties.getCaption(Captions.importDownloadDataDictionary), VaadinIcons.FILE_TABLE);
 		CssStyles.style(dataDictionaryButton, ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_TOP_3);
 		FileDownloader dataDictionaryDownloader = new FileDownloader(new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
 		dataDictionaryDownloader.extend(dataDictionaryButton);
@@ -109,7 +109,7 @@ public class CaseImportLayout extends VerticalLayout {
 		// Step 2: Download case import template
 		headline = I18nProperties.getString(Strings.headingDownloadCaseImportTemplate);
 		infoText = I18nProperties.getString(Strings.infoDownloadCaseImportTemplate);
-		buttonIcon = FontAwesome.DOWNLOAD;
+		buttonIcon = VaadinIcons.DOWNLOAD;
 		buttonCaption = I18nProperties.getCaption(Captions.importDownloadCaseImportTemplate);
 		CaseImportLayoutComponent importTemplateComponent = new CaseImportLayoutComponent(2, headline, infoText, buttonIcon, buttonCaption);
 		String templateFilePath = FacadeProvider.getImportFacade().getCaseImportTemplateFilePath().toString();
@@ -135,7 +135,7 @@ public class CaseImportLayout extends VerticalLayout {
 		// Step 4: Download error report
 		headline = I18nProperties.getString(Strings.headingDownloadErrorReport);
 		infoText = I18nProperties.getString(Strings.infoDownloadErrorReport);
-		buttonIcon = FontAwesome.DOWNLOAD;
+		buttonIcon = VaadinIcons.DOWNLOAD;
 		buttonCaption = I18nProperties.getCaption(Captions.importDownloadErrorReport);
 		CaseImportLayoutComponent errorReportComponent = new CaseImportLayoutComponent(4, headline, infoText, buttonIcon, buttonCaption);
 		downloadErrorReportButton = errorReportComponent.getButton();

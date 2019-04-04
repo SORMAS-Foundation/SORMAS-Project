@@ -2,7 +2,7 @@ package de.symeda.sormas.ui.clinicalcourse;
 
 import java.util.Arrays;
 
-import com.vaadin.ui.TextArea;
+import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.i18n.I18nProperties;

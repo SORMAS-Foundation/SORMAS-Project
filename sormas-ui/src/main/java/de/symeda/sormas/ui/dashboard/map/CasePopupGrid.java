@@ -19,13 +19,13 @@ package de.symeda.sormas.ui.dashboard.map;
 
 import java.util.List;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.ui.Grid;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.data.util.GeneratedPropertyContainer;
+import com.vaadin.v7.data.util.PropertyValueGenerator;
+import com.vaadin.v7.ui.Grid;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.v7.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -37,7 +37,7 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.utils.UuidRenderer;
+import de.symeda.sormas.ui.utils.V7UuidRenderer;
 
 @SuppressWarnings("serial")
 public class CasePopupGrid extends Grid {
@@ -103,7 +103,7 @@ public class CasePopupGrid extends Grid {
         setColumns(CaseDataDto.UUID, DISEASE_SHORT, CaseDataDto.CASE_CLASSIFICATION, FIRST_NAME,
         		LAST_NAME, CaseDataDto.REPORT_DATE, CaseDataDto.HEALTH_FACILITY_DETAILS);
         
-        getColumn(CaseDataDto.UUID).setRenderer(new UuidRenderer());
+        getColumn(CaseDataDto.UUID).setRenderer(new V7UuidRenderer());
         getColumn(CaseDataDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
         
         if (facility == null || !FacilityHelper.isOtherOrNoneHealthFacility(facility.getUuid())) {

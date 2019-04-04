@@ -2,8 +2,8 @@ package de.symeda.sormas.ui.samples;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
@@ -25,11 +25,14 @@ public class AdditionalTestListEntry extends HorizontalLayout {
 
 	public AdditionalTestListEntry(AdditionalTestDto additionalTest) {
 		setSpacing(true);
+		setMargin(false);
 		setWidth(100, Unit.PERCENTAGE);
 		addStyleName(CssStyles.SORMAS_LIST_ENTRY);
 		this.additionalTest = additionalTest;
 
 		VerticalLayout labelLayout = new VerticalLayout();
+		labelLayout.setSpacing(false);
+		labelLayout.setMargin(false);
 		labelLayout.setWidth(100, Unit.PERCENTAGE);
 		addComponent(labelLayout);
 		setExpandRatio(labelLayout, 1);
@@ -133,7 +136,7 @@ public class AdditionalTestListEntry extends HorizontalLayout {
 
 	public void addEditListener(ClickListener editClickListener) {
 		if (editButton == null) {
-			editButton = new Button(FontAwesome.PENCIL);
+			editButton = new Button(VaadinIcons.PENCIL);
 			CssStyles.style(editButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 			addComponent(editButton);
 			setComponentAlignment(editButton, Alignment.MIDDLE_RIGHT);

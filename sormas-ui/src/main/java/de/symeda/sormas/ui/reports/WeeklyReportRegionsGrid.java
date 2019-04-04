@@ -19,16 +19,16 @@ package de.symeda.sormas.ui.reports;
 
 import java.util.List;
 
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.grid.HeightMode;
-import com.vaadin.ui.Grid;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.data.util.GeneratedPropertyContainer;
+import com.vaadin.v7.event.ItemClickEvent;
+import com.vaadin.v7.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.v7.shared.ui.grid.HeightMode;
+import com.vaadin.v7.ui.Grid;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.renderers.HtmlRenderer;
+import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
@@ -83,7 +83,7 @@ public class WeeklyReportRegionsGrid extends Grid implements ItemClickListener {
 		BeanItemContainer<WeeklyReportRegionSummaryDto> container = new BeanItemContainer<WeeklyReportRegionSummaryDto>(
 				WeeklyReportRegionSummaryDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
-		VaadinUiUtil.addIconColumn(generatedContainer, VIEW_DETAILS_BTN_ID, FontAwesome.EYE);
+		VaadinUiUtil.addIconColumn(generatedContainer, VIEW_DETAILS_BTN_ID, VaadinIcons.EYE);
 		setContainerDataSource(generatedContainer);
 
 		setColumns(VIEW_DETAILS_BTN_ID, 

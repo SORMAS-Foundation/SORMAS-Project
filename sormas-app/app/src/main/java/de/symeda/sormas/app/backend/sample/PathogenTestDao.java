@@ -26,13 +26,9 @@ import java.util.List;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
-/**
- * Created by Mate Strysewske on 09.02.2017.
- */
-
 public class PathogenTestDao extends AbstractAdoDao<PathogenTest> {
 
-    public PathogenTestDao(Dao<PathogenTest, Long> innerDao) throws SQLException {
+    public PathogenTestDao(Dao<PathogenTest, Long> innerDao) {
         super(innerDao);
     }
 
@@ -42,7 +38,6 @@ public class PathogenTestDao extends AbstractAdoDao<PathogenTest> {
     }
 
     public PathogenTest queryMostRecentBySample(Sample sample) {
-
         if (sample == null) {
             return null;
         }
@@ -67,7 +62,6 @@ public class PathogenTestDao extends AbstractAdoDao<PathogenTest> {
             throw new RuntimeException(e);
         }
     }
-
 
     public List<PathogenTest> queryBySample(Sample sample) {
         if (sample.isSnapshot()) {

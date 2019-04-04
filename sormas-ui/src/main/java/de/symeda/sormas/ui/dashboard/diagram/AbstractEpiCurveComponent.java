@@ -24,14 +24,14 @@ import java.util.function.Consumer;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.i18n.Captions;
@@ -57,13 +57,16 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 
 	public AbstractEpiCurveComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
+
+		setSpacing(false);
 		setSizeFull();
+		setMargin(true);
+		
 		epiCurveChart = new HighChart();
 		epiCurveChart.setSizeFull();
 		//epiCurveChart.setHeight(0, Unit.PIXELS);
 		epiCurveGrouping = EpiCurveGrouping.WEEK;
 		showMinimumEntries = true;
-		this.setMargin(true);
 
 		addComponent(createHeader());
 		addComponent(epiCurveChart);
@@ -92,10 +95,10 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 		epiCurveHeaderLayout.setExpandRatio(epiCurveLabel, 1);
 
 		// "Expand" and "Collapse" buttons
-		Button expandEpiCurveButton = new Button("", FontAwesome.EXPAND);
+		Button expandEpiCurveButton = new Button("", VaadinIcons.EXPAND);
 		CssStyles.style(expandEpiCurveButton, CssStyles.BUTTON_SUBTLE);
 		expandEpiCurveButton.addStyleName(CssStyles.VSPACE_NONE);
-		Button collapseEpiCurveButton = new Button("", FontAwesome.COMPRESS);
+		Button collapseEpiCurveButton = new Button("", VaadinIcons.COMPRESS);
 		CssStyles.style(collapseEpiCurveButton, CssStyles.BUTTON_SUBTLE);
 		collapseEpiCurveButton.addStyleName(CssStyles.VSPACE_NONE);
 

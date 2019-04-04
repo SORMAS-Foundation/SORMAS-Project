@@ -99,6 +99,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 @import "views/view.scss";
 @import "views/about.scss";
 @import "views/dashboard.scss";
+@import "views/disease.scss";
 @import "views/login.scss";
 @import "views/configuration.scss";
 @import "views/statistics.scss";
@@ -157,13 +158,14 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
   @include sormas-upload;
   @include sormas-window;
 
-  @include sormas-view;
   @include sormas-about-view;
-  @include sormas-dashboard-view;
-  @include sormas-login-view;
-  @include sormas-configuration-view;
-  @include sormas-statistics-view;
   @include sormas-classification-view;
+  @include sormas-configuration-view;
+  @include sormas-dashboard-view;
+  @include sormas-disease-styles;
+  @include sormas-login-view;
+  @include sormas-statistics-view;
+  @include sormas-view;
   
   @include sormas-bootstrap-grid;
   @include sormas-deprecated;

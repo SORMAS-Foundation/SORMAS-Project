@@ -33,6 +33,7 @@ import java.util.Random;
 
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.task.TaskAssignee;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -48,6 +49,7 @@ import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 
 public class TaskListActivity extends PagedBaseListActivity {
@@ -65,6 +67,15 @@ public class TaskListActivity extends PagedBaseListActivity {
 
         showPreloader();
         adapter = new TaskListAdapter();
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                // Scroll to the topmost position after cases have been inserted
+                if (positionStart == 0) {
+                    ((RecyclerView) findViewById(R.id.recyclerViewForList)).scrollToPosition(0);
+                }
+            }
+        });
         model = ViewModelProviders.of(this).get(TaskListViewModel.class);
         model.initializeViewModel();
         model.getTasks().observe(this, tasks -> {
@@ -81,6 +92,15 @@ public class TaskListActivity extends PagedBaseListActivity {
     @Override
     public List<PageMenuItem> getPageMenuData(){
         return PageMenuItem.fromEnum(statusFilters, getContext());
+    }
+
+    @Override
+    protected Callback getSynchronizeResultCallback() {
+        // Reload the list after a synchronization has been done
+        return () -> {
+            showPreloader();
+            model.getTasks().getValue().getDataSource().invalidate();
+        };
     }
 
     @Override

@@ -17,9 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
-import com.vaadin.data.util.converter.StringToFloatConverter;
-import com.vaadin.data.util.converter.StringToIntegerConverter;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.data.util.converter.StringToFloatConverter;
+import com.vaadin.v7.data.util.converter.StringToIntegerConverter;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;

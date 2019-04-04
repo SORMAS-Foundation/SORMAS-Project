@@ -64,7 +64,9 @@ public final class AdoPropertyHelper {
 
     public static boolean hasEmbeddedAnnotation(PropertyDescriptor property) {
         if (!propertyHasEmbeddedAnnotationCache.containsKey(property)) {
-            propertyHasEmbeddedAnnotationCache.put(property, property.getPropertyType().isAnnotationPresent(EmbeddedAdo.class));
+            boolean hasEmbedded = property.getPropertyType().isAnnotationPresent(EmbeddedAdo.class)
+                    && !(property.getReadMethod() != null && property.getReadMethod().isAnnotationPresent(ParentAdo.class));
+            propertyHasEmbeddedAnnotationCache.put(property, hasEmbedded);
         }
         return propertyHasEmbeddedAnnotationCache.get(property);
     }

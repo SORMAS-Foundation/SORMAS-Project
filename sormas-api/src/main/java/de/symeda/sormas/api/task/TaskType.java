@@ -86,7 +86,7 @@ public enum TaskType {
 		
 		// make lists in the map unmodifiable
 		for (Map.Entry<TaskContext, List<TaskType>> taskContext : taskTypesByContext.entrySet()) {
-			taskTypesByContext.put(taskContext.getKey(), Collections.unmodifiableList(taskContext.getValue())); // TODO @Martin please review if this is correct
+			taskTypesByContext.put(taskContext.getKey(), Collections.unmodifiableList(taskContext.getValue()));
 		}
 	}
 	

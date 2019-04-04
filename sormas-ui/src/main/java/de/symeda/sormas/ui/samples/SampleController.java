@@ -19,12 +19,12 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.Collection;
 
-import com.vaadin.data.Buffered.SourceException;
-import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.v7.data.Buffered.SourceException;
+import com.vaadin.v7.data.Validator.InvalidValueException;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;

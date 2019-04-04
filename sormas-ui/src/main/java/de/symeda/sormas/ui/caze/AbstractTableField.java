@@ -32,28 +32,28 @@ import org.apache.commons.lang3.exception.CloneFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.Container.ItemSetChangeEvent;
-import com.vaadin.data.Container.ItemSetChangeListener;
-import com.vaadin.data.Property;
-import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.converter.Converter.ConversionException;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.v7.data.Container.ItemSetChangeEvent;
+import com.vaadin.v7.data.Container.ItemSetChangeListener;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.Validator.InvalidValueException;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.data.util.converter.Converter.ConversionException;
+import com.vaadin.v7.event.ItemClickEvent;
+import com.vaadin.v7.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomField;
+import com.vaadin.v7.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.ColumnGenerator;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.Table.ColumnGenerator;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.BaseTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -223,13 +223,13 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 	}
 
 	protected Object generateEditCell(Table source, Object itemId, Object columnId) {
-		return new Label(FontAwesome.PENCIL_SQUARE.getHtml(), ContentMode.HTML);
+		return new Label(VaadinIcons.EDIT.getHtml(), ContentMode.HTML);
 	}
 
 	protected Button createAddButton() {
 
 		Button button = new Button(I18nProperties.getCaption(Captions.actionNewEntry));
-		button.addStyleName(BaseTheme.BUTTON_LINK);
+		button.addStyleName(ValoTheme.BUTTON_LINK);
 
 		button.addClickListener(new ClickListener() {
 
@@ -568,7 +568,7 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void setValue(Collection newFieldValue, boolean repaintIsNotNeeded, boolean ignoreReadOnly)
-			throws com.vaadin.data.Property.ReadOnlyException, ConversionException, InvalidValueException {
+			throws com.vaadin.v7.data.Property.ReadOnlyException, ConversionException, InvalidValueException {
 
 		BeanItemContainer<E> container = getContainer();
 		if (container == null) {

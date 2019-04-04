@@ -19,7 +19,7 @@ package de.symeda.sormas.ui.epidata;
 
 import java.util.function.Consumer;
 
-import com.vaadin.ui.Table;
+import com.vaadin.v7.ui.Table;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;

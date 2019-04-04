@@ -22,11 +22,12 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.view.Menu;
 
-import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.user.UserHelper;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
@@ -49,6 +50,9 @@ import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.sample.edit.SampleNewActivity;
 import de.symeda.sormas.app.symptoms.SymptomsEditFragment;
 import de.symeda.sormas.app.task.edit.TaskNewActivity;
+import de.symeda.sormas.app.therapy.edit.PrescriptionEditActivity;
+import de.symeda.sormas.app.therapy.edit.PrescriptionNewActivity;
+import de.symeda.sormas.app.therapy.edit.TreatmentNewActivity;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
 
@@ -89,7 +93,13 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     public List<PageMenuItem> getPageMenuData() {
         List<PageMenuItem> menuItems = PageMenuItem.fromEnum(CaseSection.values(), getContext());
         Case caze = getStoredRootEntity();
-        if (caze != null && !DiseaseHelper.hasContactFollowUp(caze.getDisease(), caze.getPlagueType())) {
+        // Sections must be removed in reverse order
+        if (!ConfigProvider.hasUserRight(UserRight.THERAPY_VIEW)) {
+            menuItems.remove(CaseSection.TREATMENTS.ordinal());
+            menuItems.remove(CaseSection.PRESCRIPTIONS.ordinal());
+        }
+        if (!ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW)
+                || (caze != null && !DiseaseHelper.hasContactFollowUp(caze.getDisease(), caze.getPlagueType()))) {
             menuItems.remove(CaseSection.CONTACTS.ordinal());
         }
         return menuItems;
@@ -121,6 +131,12 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                 break;
             case SAMPLES:
                 fragment = CaseEditSampleListFragment.newInstance(activityRootData);
+                break;
+            case PRESCRIPTIONS:
+                fragment = CaseEditPrescriptionListFragment.newInstance(activityRootData);
+                break;
+            case TREATMENTS:
+                fragment = CaseEditTreatmentListFragment.newInstance(activityRootData);
                 break;
             case TASKS:
                 fragment = CaseEditTaskListFragment.newInstance(activityRootData);
@@ -209,6 +225,10 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
             SampleNewActivity.startActivity(getContext(), getRootUuid());
         } else if (activeSection == CaseSection.TASKS) {
             TaskNewActivity.startActivityFromCase(getContext(), getRootUuid());
+        } else if (activeSection == CaseSection.PRESCRIPTIONS) {
+            PrescriptionNewActivity.startActivity(getContext(), getRootUuid());
+        } else if (activeSection == CaseSection.TREATMENTS) {
+            TreatmentNewActivity.startActivity(getContext(), getRootUuid());
         }
     }
 

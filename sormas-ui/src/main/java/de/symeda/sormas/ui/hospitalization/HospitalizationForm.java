@@ -21,9 +21,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import com.vaadin.server.UserError;
-import com.vaadin.ui.DateField;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.OptionGroup;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;

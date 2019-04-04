@@ -53,6 +53,8 @@ public abstract class AbstractSubNavigationView extends AbstractView {
 
 	protected Optional<VerticalLayout> createInfoLayout() {
 		VerticalLayout infoLayout = new VerticalLayout();
+		infoLayout.setMargin(false);
+		infoLayout.setSpacing(false);
         infoLayout.setSizeUndefined();
         CssStyles.stylePrimary(infoLayout, CssStyles.CALLOUT);
         infoLabel = new Label("");

@@ -234,6 +234,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
             applicationTitleBar.setVisibility(View.VISIBLE);
             updateStatusFrame();
         }
+
         updatePageMenu();
     }
 
@@ -549,7 +550,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
     public void synchronizeChangedData() {
         SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-        synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, true, refreshLayout, null, null);
+        synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, true, refreshLayout, getSynchronizeResultCallback(), null);
     }
 
     private boolean checkActiveUser() {
@@ -711,6 +712,10 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     protected abstract int getActivityTitle();
 
     protected abstract boolean openPage(PageMenuItem menuItem);
+
+    protected Callback getSynchronizeResultCallback() {
+        return null;
+    }
 
     public PageMenuItem initPageMenuAndGetInitialSelection(List<PageMenuItem> menuList) {
         this.pageItems = menuList;

@@ -1,7 +1,10 @@
 package de.symeda.sormas.backend.therapy;
 
 import java.sql.Timestamp;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -90,6 +93,38 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		
 		Prescription prescription = service.getByUuid(prescriptionUuid);
 		service.delete(prescription);
+	}
+	
+	@Override
+	public List<PrescriptionDto> getAllActivePrescriptionsAfter(Date date, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return service.getAllActivePrescriptionsAfter(date, user).stream()
+				.map(p -> toDto(p))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<PrescriptionDto> getByUuids(List<String> uuids) {
+		return service.getByUuids(uuids)
+				.stream()
+				.map(p -> toDto(p))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<String> getAllActiveUuids(String userUuid) {
+		User user = userService.getByUuid(userUuid);
+
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return service.getAllActiveUuids(user);
 	}
 	
 	public static PrescriptionDto toDto(Prescription source) {

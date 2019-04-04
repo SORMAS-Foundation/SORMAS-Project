@@ -65,8 +65,8 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login_layout);
         binding.setData(loginViewModel);
 
-        binding.username.setLiveValidationDisabled(true);
-        binding.password.setLiveValidationDisabled(true);
+        binding.userUserName.setLiveValidationDisabled(true);
+        binding.userPassword.setLiveValidationDisabled(true);
 
         boolean hasDefaultUser = !DataHelper.isNullOrEmpty(SormasProperties.getUserNameDefault())
                 && !DataHelper.isNullOrEmpty(SormasProperties.getUserPasswordDefault());
@@ -92,7 +92,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
     public void onPause() {
         super.onPause();
 
-        SoftKeyboardHelper.hideKeyboard(this, binding.password.getWindowToken());
+        SoftKeyboardHelper.hideKeyboard(this, binding.userPassword.getWindowToken());
     }
 
     @Override
@@ -148,16 +148,16 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
     public void login(View view) {
         //Hide notification
         //NotificationHelper.hideNotification(binding);
-        binding.username.disableErrorState();
-        binding.password.disableErrorState();
+        binding.userUserName.disableErrorState();
+        binding.userPassword.disableErrorState();
 
-        String userName = binding.username.getValue().trim();
-        String password = binding.password.getValue();
+        String userName = binding.userUserName.getValue().trim();
+        String password = binding.userPassword.getValue();
 
         if (userName.isEmpty()) {
-            binding.username.enableErrorState(R.string.message_empty_username);
+            binding.userUserName.enableErrorState(R.string.message_empty_username);
         } else if (password.isEmpty()) {
-            binding.password.enableErrorState(R.string.message_empty_password);
+            binding.userPassword.enableErrorState(R.string.message_empty_password);
         } else {
             ConfigProvider.setUsernameAndPassword(userName, password);
             processLogin(true);

@@ -22,15 +22,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.Grid.SelectionModel.HasUserSelectionAllowed;
-import com.vaadin.ui.renderers.DateRenderer;
-import com.vaadin.ui.renderers.HtmlRenderer;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.data.util.GeneratedPropertyContainer;
+import com.vaadin.v7.event.ItemClickEvent;
+import com.vaadin.v7.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.v7.ui.Grid;
+import com.vaadin.v7.ui.Grid.SelectionModel.HasUserSelectionAllowed;
+import com.vaadin.v7.ui.renderers.DateRenderer;
+import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
@@ -117,7 +117,7 @@ public class TaskGrid extends Grid implements ItemClickListener, AbstractGrid<Ta
 
         BeanItemContainer<TaskIndexDto> container = new BeanItemContainer<TaskIndexDto>(TaskIndexDto.class);
 		GeneratedPropertyContainer editContainer = new GeneratedPropertyContainer(container);
-        VaadinUiUtil.addIconColumn(editContainer, EDIT_BTN_ID, FontAwesome.PENCIL_SQUARE);
+        VaadinUiUtil.addIconColumn(editContainer, EDIT_BTN_ID, VaadinIcons.EDIT);
         setContainerDataSource(editContainer);
 
         setColumns(EDIT_BTN_ID, TaskIndexDto.CONTEXT_REFERENCE, TaskIndexDto.TASK_TYPE,  TaskIndexDto.PRIORITY,

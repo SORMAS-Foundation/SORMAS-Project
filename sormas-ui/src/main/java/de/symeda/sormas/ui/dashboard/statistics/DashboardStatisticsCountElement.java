@@ -30,6 +30,9 @@ public class DashboardStatisticsCountElement extends VerticalLayout {
 	private Label captionLabel;
 	
 	public DashboardStatisticsCountElement(String caption, CountElementStyle countElementStyle) {
+		this.setMargin(false);
+		this.setSpacing(false);
+
 		addStyleName("count-element");
 		addStyleName(countElementStyle.getCssClass());
 		countLabel = new Label();

@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.sample;
 
 import java.sql.Timestamp;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,7 +71,39 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 		
 		AdditionalTest additionalTest = service.getByUuid(additionalTestUuid);
 		service.delete(additionalTest);
+	}	
+
+	@Override
+	public List<AdditionalTestDto> getAllActiveAdditionalTestsAfter(Date date, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+
+		if(user == null) {
+			return Collections.emptyList();
+		}
+
+		return service.getAllActiveAdditionalTestsAfter(date, user).stream()
+				.map(e -> toDto(e))
+				.collect(Collectors.toList());
 	}
+
+	@Override
+	public List<AdditionalTestDto> getByUuids(List<String> uuids) {
+		return service.getByUuids(uuids)
+				.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<String> getAllActiveUuids(String userUuid) {
+		User user = userService.getByUuid(userUuid);
+
+		if (user == null) {
+			return Collections.emptyList();
+		}
+
+		return service.getAllActiveUuids(user);
+	}	
 	
 	public AdditionalTest fromDto(@NotNull AdditionalTestDto source) {
 		AdditionalTest target = service.getByUuid(source.getUuid());

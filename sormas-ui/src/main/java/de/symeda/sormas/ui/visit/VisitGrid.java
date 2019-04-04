@@ -19,12 +19,12 @@ package de.symeda.sormas.ui.visit;
 
 import java.util.List;
 
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.renderers.DateRenderer;
-import com.vaadin.ui.renderers.HtmlRenderer;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.data.util.GeneratedPropertyContainer;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.v7.ui.Grid;
+import com.vaadin.v7.ui.renderers.DateRenderer;
+import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -64,7 +64,7 @@ public class VisitGrid extends Grid {
 		container.addNestedContainerProperty(SYMPTOMS_TEMPERATURE);
 
 		GeneratedPropertyContainer editContainer = new GeneratedPropertyContainer(container);
-		VaadinUiUtil.addIconColumn(editContainer, EDIT_BTN_ID, FontAwesome.PENCIL_SQUARE);
+		VaadinUiUtil.addIconColumn(editContainer, EDIT_BTN_ID, VaadinIcons.EDIT);
 		setContainerDataSource(editContainer);
 
 		setColumns(EDIT_BTN_ID, VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_STATUS, VisitDto.VISIT_REMARKS, 

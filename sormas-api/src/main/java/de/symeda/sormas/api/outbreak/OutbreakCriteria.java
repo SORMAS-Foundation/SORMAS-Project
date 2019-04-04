@@ -35,6 +35,8 @@ public class OutbreakCriteria extends BaseCriteria implements Serializable {
 	private Boolean active;
 	private Date activeLower, activeUpper;
 	private Date changeDateAfter;
+	private Date reportedDateFrom;
+	private Date reportedDateTo;
 	
 	public RegionReferenceDto getRegion() {
 		return region;
@@ -94,5 +96,25 @@ public class OutbreakCriteria extends BaseCriteria implements Serializable {
 	public OutbreakCriteria changeDateAfter(Date changeDateAfter) {
 		this.changeDateAfter = changeDateAfter;
 		return this;
+	}
+	
+	public OutbreakCriteria reportedBetween (Date reportedDateFrom, Date reportedDateTo) {
+		this.reportedDateFrom = reportedDateFrom;
+		this.reportedDateTo = reportedDateTo;
+		return this;
+	}
+	public OutbreakCriteria reportedDateFrom (Date reportedDateFrom) {
+		this.reportedDateFrom = reportedDateFrom;
+		return this;
+	}
+	public Date getReportedDateFrom() {
+		return reportedDateFrom;
+	}
+	public OutbreakCriteria reportedDateTo (Date reportedDateTo) {
+		this.reportedDateTo = reportedDateTo;
+		return this;
+	}
+	public Date getReportedDateTo() {
+		return reportedDateTo;
 	}
 }

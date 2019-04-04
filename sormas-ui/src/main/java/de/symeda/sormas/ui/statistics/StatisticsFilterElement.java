@@ -30,6 +30,11 @@ import de.symeda.sormas.api.statistics.StatisticsHelper;
 @SuppressWarnings("serial")
 public abstract class StatisticsFilterElement extends HorizontalLayout {
 
+	protected StatisticsFilterElement() {
+		setMargin(false);
+		setSpacing(false);
+	}
+	
 	abstract public List<TokenizableValue> getSelectedValues();
 
 	protected List<TokenizableValue> createTokens(Object ...values) {

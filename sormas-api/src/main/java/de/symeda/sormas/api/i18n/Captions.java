@@ -597,6 +597,8 @@ public interface Captions {
 	public static String Sample_reportDateTime = "Sample.reportDateTime";
 	public static String Sample_reportInfo = "Sample.reportInfo";
 	public static String Sample_reportingUser = "Sample.reportingUser";
+	public static String Sample_requestedAdditionalTests = "Sample.requestedAdditionalTests";
+	public static String Sample_requestedAdditionalTestsTags = "Sample.requestedAdditionalTestsTags";
 	public static String Sample_requestedOtherAdditionalTests = "Sample.requestedOtherAdditionalTests";
 	public static String Sample_requestedOtherPathogenTests = "Sample.requestedOtherPathogenTests";
 	public static String Sample_requestedPathogenTests = "Sample.requestedPathogenTests";

@@ -32,7 +32,9 @@
         <variable name="data" type="de.symeda.sormas.app.backend.sample.Sample"/>
         <variable name="referredSample" type="de.symeda.sormas.app.backend.sample.Sample"/>
         <variable name="pathogenTest" type="de.symeda.sormas.app.backend.sample.PathogenTest" />
+        <variable name="additionalTest" type="de.symeda.sormas.app.backend.sample.AdditionalTest" />
         <variable name="pathogenTestTypeClass" type="Class" />
+        <variable name="additionalTestTypeClass" type="Class" />
     </data>
 
     <ScrollView
@@ -173,6 +175,42 @@
                     app:dependencyParentClearOnHide="@{false}"
                     style="@style/ControlSingleColumnStyle" />
 
+                <LinearLayout
+                    android:id="@+id/additional_testing_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <de.symeda.sormas.app.component.controls.ControlSwitchField
+                        android:id="@+id/sample_additionalTestingRequested"
+                        app:useBoolean="true"
+                        app:value="@={data.additionalTestingRequested}"
+                        app:required="true"
+                        style="@style/ControlSingleColumnStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlCheckBoxGroupField
+                        android:id="@+id/sample_requestedAdditionalTests"
+                        app:enumClass="@{additionalTestTypeClass}"
+                        app:value="@={data.requestedAdditionalTests}"
+                        app:dependencyParentField="@{sampleAdditionalTestingRequested}"
+                        app:dependencyParentValue="@{true}"
+                        app:dependencyParentClearOnHide="@{false}"
+                        style="@style/ControlSingleColumnStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTagViewField
+                        android:id="@+id/sample_requestedAdditionalTestsTags"
+                        style="@style/ControlSingleColumnStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/sample_requestedOtherAdditionalTests"
+                        app:value="@={data.requestedOtherAdditionalTests}"
+                        app:dependencyParentField="@{sampleAdditionalTestingRequested}"
+                        app:dependencyParentValue="@{true}"
+                        app:dependencyParentClearOnHide="@{false}"
+                        style="@style/ControlSingleColumnStyle" />
+
+                </LinearLayout>
+
                 <ImageView style="@style/FullHorizontalDividerStyle"/>
 
                 <LinearLayout
@@ -280,6 +318,28 @@
                     android:text="@string/info_no_sample_test"
                     android:textColor="@android:color/tab_indicator_text"
                     android:textSize="@dimen/empty_list_hint_size" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/most_recent_additional_tests_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/formListSectionBackground"
+                android:padding="@dimen/fragment_padding">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/heading_most_recent_additional_tests"
+                    style="@style/SubHeadingStyle" />
+
+                <include
+                    android:id="@+id/most_recent_additional_tests"
+                    layout="@layout/row_additional_test_layout"
+                    app:data="@{additionalTest}"
+                    android:padding="@dimen/rowListItemParentPadding" />
 
             </LinearLayout>
 

@@ -53,6 +53,9 @@
 * Make sure the JAVA_HOME environment variable is set
 * Download payara 4.1.2.172 [downloadlink](http://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/4.1.2.172/payara-4.1.2.172.zip) and extract it to the directory where your servers should be located (e.g. /opt/payara-172).  
 The `/opt/payara-172/` as payara-directory can, in some linux distros, only be modified by root. For a local development environment, it may be easier to use another directory owned by logged-in user. Same for `/opt/domains/` as domain directory and `/root/deploy/sormas/$(date +%F)` as directory for the sormas deploy (both used later in this document).
+* **Linux** Create a payara group and user:
+	* ``addgroup --system payara``
+	* ``adduser --system --shell /bin/bash --ingroup payara payara``
 * Remove the default domains from the server:
 	* **Linux**
 		* ``rm -R /opt/payara-172/glassfish/domains/domain1``
@@ -71,7 +74,7 @@ The `/opt/payara-172/` as payara-directory can, in some linux distros, only be m
 * Set up a payara domain called "sormas" by executing it: ``./server-setup.sh`` Press enter whenever asked for it.
 * **IMPORTANT**: Make sure the script executed successfully. If anything goes you need to fix the problem (or ask for help), then delete the created domain directory and re-execute the script.
 * Adjust the logging configuration in opt/domains/sormas/config/logback.xml based on your needs (e.g. configure and activate email appender)
-* Make sure the domain folder is owned by the glassfish user: ``chown -R glassfish:glassfish opt/domains/sormas/``  
+* Make sure the domain folder is owned by the payara user: ``chown -R payara:payara opt/domains/sormas/``  
 This is not necessary when you setup a development environment and use another folder as domain directory. 
 * **Only** necessary if you are setting up a **productive environment**
 	* Copy the startup script to init.d: ``cp payara-sormas /etc/init.d``

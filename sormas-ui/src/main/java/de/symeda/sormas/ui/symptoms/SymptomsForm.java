@@ -22,23 +22,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.vaadin.data.Validator;
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.util.converter.Converter.ConversionException;
+import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.data.util.converter.Converter.ConversionException;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.AbstractField;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.DateField;
-import com.vaadin.ui.Field;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
@@ -530,7 +530,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		if(visitStatusField != null) {
 			visitStatusField.addValueChangeListener(new ValueChangeListener() {
 				@Override
-				public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
+				public void valueChange(com.vaadin.v7.data.Property.ValueChangeEvent event) {
 					if (isAnySymptomSetToYes(fieldGroup, sourcePropertyIds, sourceValues) &&
 							visitStatusField.getValue() == VisitStatus.COOPERATIVE) {
 						FieldHelper.addSoftRequiredStyle(targetField);

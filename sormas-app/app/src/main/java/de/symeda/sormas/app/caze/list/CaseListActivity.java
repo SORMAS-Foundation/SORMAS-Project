@@ -21,12 +21,16 @@ package de.symeda.sormas.app.caze.list;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
 import android.widget.AdapterView;
 
 import java.util.List;
 import java.util.Random;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivity;
@@ -36,6 +40,8 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
 
 public class CaseListActivity extends PagedBaseListActivity {
@@ -53,24 +59,39 @@ public class CaseListActivity extends PagedBaseListActivity {
 
         showPreloader();
         adapter = new CaseListAdapter();
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                // Scroll to the topmost position after cases have been inserted
+                if (positionStart == 0) {
+                    ((RecyclerView) findViewById(R.id.recyclerViewForList)).scrollToPosition(0);
+                }
+            }
+        });
         model = ViewModelProviders.of(this).get(CaseListViewModel.class);
         model.getCases().observe(this, cases -> {
-            hidePreloader();
             adapter.submitList(cases);
+            hidePreloader();
         });
 
-        setOpenPageCallback(new Consumer<PageMenuItem>() {
-            @Override
-            public void accept(PageMenuItem pageMenuItem) {
-                showPreloader();
-                model.setInvestigationStatus(statusFilters[pageMenuItem.getKey()]);
-            }
+        setOpenPageCallback(pageMenuItem -> {
+            showPreloader();
+            model.setInvestigationStatus(statusFilters[((PageMenuItem) pageMenuItem).getKey()]);
         });
     }
 
     @Override
     public List<PageMenuItem> getPageMenuData() {
         return PageMenuItem.fromEnum(statusFilters, getContext());
+    }
+
+    @Override
+    protected Callback getSynchronizeResultCallback() {
+        // Reload the list after a synchronization has been done
+        return () -> {
+            showPreloader();
+            model.getCases().getValue().getDataSource().invalidate();
+        };
     }
 
     @Override

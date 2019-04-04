@@ -20,16 +20,16 @@ package de.symeda.sormas.ui.samples;
 import java.util.HashMap;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -94,6 +94,7 @@ public class SampleGridComponent extends VerticalLayout {
 
 	public SampleGridComponent(Label viewTitleLabel, AbstractView samplesView) {
 		setSizeFull();
+		setMargin(false);
 
 		this.viewTitleLabel = viewTitleLabel;
 		this.samplesView = samplesView;
@@ -122,6 +123,7 @@ public class SampleGridComponent extends VerticalLayout {
 
 	public HorizontalLayout createFilterBar() {
 		HorizontalLayout filterLayout = new HorizontalLayout();
+		filterLayout.setMargin(false);
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
 
@@ -240,6 +242,7 @@ public class SampleGridComponent extends VerticalLayout {
 
 	public HorizontalLayout createShipmentFilterBar() {
 		HorizontalLayout shipmentFilterLayout = new HorizontalLayout();
+		shipmentFilterLayout.setMargin(false);
 		shipmentFilterLayout.setSpacing(true);
 		shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
 		shipmentFilterLayout.addStyleName(CssStyles.VSPACE_3);
@@ -296,7 +299,7 @@ public class SampleGridComponent extends VerticalLayout {
 						}
 					});
 				};
-				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), FontAwesome.TRASH, deleteCommand);
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
 
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
 			}

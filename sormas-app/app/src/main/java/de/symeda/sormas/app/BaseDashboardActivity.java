@@ -66,8 +66,8 @@ public abstract class BaseDashboardActivity extends BaseActivity {
     @Override
     protected void onResumeFragments() {
         super.onResumeFragments();
-
         replaceFragments(buildSummaryFragments());
+        updatePageMenu();
     }
 
     public boolean showTitleBar() {

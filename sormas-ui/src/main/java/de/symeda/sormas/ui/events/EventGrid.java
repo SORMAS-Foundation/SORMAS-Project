@@ -19,13 +19,13 @@ package de.symeda.sormas.ui.events;
 
 import java.util.List;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.Grid.SelectionModel.HasUserSelectionAllowed;
-import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.data.util.GeneratedPropertyContainer;
+import com.vaadin.v7.data.util.PropertyValueGenerator;
+import com.vaadin.v7.ui.Grid;
+import com.vaadin.v7.ui.Grid.SelectionModel.HasUserSelectionAllowed;
+import com.vaadin.v7.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -42,7 +42,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractGrid;
-import de.symeda.sormas.ui.utils.UuidRenderer;
+import de.symeda.sormas.ui.utils.V7UuidRenderer;
 
 @SuppressWarnings("serial")
 public class EventGrid extends Grid implements AbstractGrid<EventCriteria> {
@@ -111,7 +111,7 @@ public class EventGrid extends Grid implements AbstractGrid<EventCriteria> {
 		setColumns(EventIndexDto.UUID, EventIndexDto.EVENT_TYPE, DISEASE_SHORT, EventIndexDto.EVENT_STATUS,
 				EventIndexDto.EVENT_DATE, EventIndexDto.EVENT_DESC, EventIndexDto.EVENT_LOCATION, INFORMATION_SOURCE, EventIndexDto.REPORT_DATE_TIME, PENDING_EVENT_TASKS);
 		
-		getColumn(EventIndexDto.UUID).setRenderer(new UuidRenderer());
+		getColumn(EventIndexDto.UUID).setRenderer(new V7UuidRenderer());
 		getColumn(EventIndexDto.EVENT_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateFormat()));
 		getColumn(EventIndexDto.REPORT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
 		
