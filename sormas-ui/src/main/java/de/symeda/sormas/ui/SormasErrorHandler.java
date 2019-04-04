@@ -83,7 +83,7 @@ public class SormasErrorHandler implements ErrorHandler {
 				
 	    // finds the original source of the error/exception
 	    AbstractComponent component = DefaultErrorHandler.findAbstractComponent(event);
-	    if (component != null) {
+	    if (errorMessage != null && component != null) {
 	        // Shows the error in AbstractComponent
 	        if (errorMessage instanceof SystemError) {
         		Notification.show(I18nProperties.getString(Strings.errorOccurred, I18nProperties.getString(Strings.errorOccurred)), I18nProperties.getString(Strings.errorWasReported), Notification.Type.ERROR_MESSAGE);

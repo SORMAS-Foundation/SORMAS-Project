@@ -154,10 +154,8 @@ public class CasesView extends AbstractView {
 		gridLayout.setSizeFull();
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
-		// TODO #1012
-//		grid.getContainer().addItemSetChangeListener(e -> {
-//			updateStatusButtons();
-//		});
+
+		grid.addItemCountChangedListener(e -> updateStatusButtons());
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
 			Button importButton = new Button(I18nProperties.getCaption(Captions.actionImport));
@@ -653,11 +651,10 @@ public class CasesView extends AbstractView {
 			}
 		});
 		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
-		// TODO #1012
-//		if (activeStatusButton != null) {
-//			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) 
-//					+ LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataProvider().)));
-//		}
+		if (activeStatusButton != null) {
+			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) 
+					+ LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+		}
 	}
 
 	private void updateArchivedButton() {

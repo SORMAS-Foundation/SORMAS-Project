@@ -17,14 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import java.lang.reflect.Method;
 import java.util.Date;
+import java.util.EventObject;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.shared.Registration;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.util.ReflectTools;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
@@ -48,6 +52,7 @@ public class CaseGrid extends Grid<CaseIndexDto> implements AbstractGrid<CaseCri
 
 	private CaseCriteria caseCriteria;
 	private ConfigurableFilterDataProvider<CaseIndexDto,Void,CaseCriteria> dataProvider;
+	private int itemCount = 0;
 
 	@SuppressWarnings("unchecked")
 	public CaseGrid() {
@@ -59,15 +64,21 @@ public class CaseGrid extends Grid<CaseIndexDto> implements AbstractGrid<CaseCri
 		} else {
 			setSelectionMode(SelectionMode.NONE);
 		}
-
+		
 		DataProvider<CaseIndexDto,CaseCriteria> data = DataProvider.fromFilteringCallbacks(
 				query -> FacadeProvider.getCaseFacade().getIndexList(
 						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
 						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
 							.collect(Collectors.toList())).stream(),
-				query -> (int)FacadeProvider.getCaseFacade().count(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null))
-				);
+				query -> {
+					int itemCount = (int)FacadeProvider.getCaseFacade().count(
+						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null));
+					if (this.itemCount != itemCount) {
+						this.itemCount = itemCount;
+						fireEvent(new GridItemCountChangedEvent(CaseGrid.this, itemCount));
+					}
+					return itemCount;
+				});
 		dataProvider = data.withConfigurableFilter();
 		setDataProvider(dataProvider);
 
@@ -134,5 +145,36 @@ public class CaseGrid extends Grid<CaseIndexDto> implements AbstractGrid<CaseCri
 		}
 
 		getDataProvider().refreshAll();
+	}
+
+	public int getItemCount() {
+		return itemCount;
+	}
+	
+	public Registration addItemCountChangedListener(GridItemCountChangedListener listener)
+	{
+		return addListener(GridItemCountChangedEvent.class, listener, GridItemCountChangedEvent.EVENT_METHOD);
+	}
+	
+	public static class GridItemCountChangedEvent extends EventObject
+	{
+		public static final Method EVENT_METHOD = ReflectTools.findMethod(GridItemCountChangedListener.class, "itemCountChangedEvent", GridItemCountChangedEvent.class);
+
+		private final int itemCount;
+
+		public GridItemCountChangedEvent(Object source, int itemCount)
+		{
+			super(source);
+			this.itemCount = itemCount;
+		}
+
+		public int getItemCount() {
+			return itemCount;
+		}
+	}
+	
+	public interface GridItemCountChangedListener
+	{
+		public void itemCountChangedEvent(GridItemCountChangedEvent event);
 	}
 }
