@@ -54,9 +54,12 @@ public class CaseListViewModel extends ViewModel {
     }
 
     public void setInvestigationStatus(InvestigationStatus investigationStatus) {
+        InvestigationStatus currentInvestigationStatus = caseDataFactory.getInvestigationStatus();
         caseDataFactory.setInvestigationStatus(investigationStatus);
-        if (casesList.getValue() != null
-            && casesList.getValue().getDataSource() != null) {
+        if (casesList.getValue() != null) {
+            if (!casesList.getValue().isEmpty() && currentInvestigationStatus != investigationStatus) {
+                casesList.getValue().loadAround(0);
+            }
             casesList.getValue().getDataSource().invalidate();
         }
     }
@@ -79,7 +82,7 @@ public class CaseListViewModel extends ViewModel {
             int offset = params.requestedStartPosition;
             int count = params.requestedLoadSize;
             if (offset + count > totalCount) {
-                offset = (int)Math.max(0, totalCount - count);
+                offset = (int) Math.max(0, totalCount - count);
             }
             List<Case> cases = DatabaseHelper.getCaseDao().queryForEq(Case.INVESTIGATION_STATUS, investigationStatus, Case.REPORT_DATE, false, offset, count);
             callback.onResult(cases, offset, (int)totalCount);
@@ -118,4 +121,5 @@ public class CaseListViewModel extends ViewModel {
             return investigationStatus;
         }
     }
+
 }

@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Random;
 
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.PagedBaseListActivity;
@@ -36,6 +37,7 @@ import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.sample.ShipmentStatus;
+import de.symeda.sormas.app.util.Callback;
 
 public class SampleListActivity extends PagedBaseListActivity {
 
@@ -55,6 +57,15 @@ public class SampleListActivity extends PagedBaseListActivity {
 
         showPreloader();
         adapter = new SampleListAdapter();
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                // Scroll to the topmost position after cases have been inserted
+                if (positionStart == 0) {
+                    ((RecyclerView) findViewById(R.id.recyclerViewForList)).scrollToPosition(0);
+                }
+            }
+        });
         model = ViewModelProviders.of(this).get(SampleListViewModel.class);
         model.initializeViewModel();
         model.getSamples().observe(this, samples -> {
@@ -71,6 +82,15 @@ public class SampleListActivity extends PagedBaseListActivity {
     @Override
     public List<PageMenuItem> getPageMenuData(){
         return PageMenuItem.fromEnum(statusFilters, getContext());
+    }
+
+    @Override
+    protected Callback getSynchronizeResultCallback() {
+        // Reload the list after a synchronization has been done
+        return () -> {
+            showPreloader();
+            model.getSamples().getValue().getDataSource().invalidate();
+        };
     }
 
     @Override

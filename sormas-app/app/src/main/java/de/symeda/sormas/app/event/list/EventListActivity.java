@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Random;
 
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivity;
@@ -39,6 +40,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.event.edit.EventNewActivity;
+import de.symeda.sormas.app.util.Callback;
 
 public class EventListActivity extends PagedBaseListActivity {
 
@@ -55,6 +57,15 @@ public class EventListActivity extends PagedBaseListActivity {
 
         showPreloader();
         adapter = new EventListAdapter();
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                // Scroll to the topmost position after cases have been inserted
+                if (positionStart == 0) {
+                    ((RecyclerView) findViewById(R.id.recyclerViewForList)).scrollToPosition(0);
+                }
+            }
+        });
         model = ViewModelProviders.of(this).get(EventListViewModel.class);
         model.getEvents().observe(this, events -> {
             adapter.submitList(events);
@@ -70,6 +81,15 @@ public class EventListActivity extends PagedBaseListActivity {
     @Override
     public List<PageMenuItem> getPageMenuData() {
         return PageMenuItem.fromEnum(statusFilters, getContext());
+    }
+
+    @Override
+    protected Callback getSynchronizeResultCallback() {
+        // Reload the list after a synchronization has been done
+        return () -> {
+            showPreloader();
+            model.getEvents().getValue().getDataSource().invalidate();
+        };
     }
 
     @Override
