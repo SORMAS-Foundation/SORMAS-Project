@@ -63,10 +63,10 @@ public class SampleListViewModel extends ViewModel {
 
     void notifyCriteriaUpdated() {
         if (samples.getValue() != null) {
+            samples.getValue().getDataSource().invalidate();
             if (!samples.getValue().isEmpty()) {
                 samples.getValue().loadAround(0);
             }
-            samples.getValue().getDataSource().invalidate();
         }
     }
 

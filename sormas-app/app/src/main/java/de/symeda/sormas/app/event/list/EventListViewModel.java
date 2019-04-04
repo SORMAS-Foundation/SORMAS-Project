@@ -61,10 +61,10 @@ public class EventListViewModel extends ViewModel {
 
     void notifyCriteriaUpdated() {
         if (events.getValue() != null) {
+            events.getValue().getDataSource().invalidate();
             if (!events.getValue().isEmpty()) {
                 events.getValue().loadAround(0);
             }
-            events.getValue().getDataSource().invalidate();
         }
     }
 

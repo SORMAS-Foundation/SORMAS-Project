@@ -63,10 +63,10 @@ public class ContactListViewModel extends ViewModel {
 
     void notifyCriteriaUpdated() {
         if (contacts.getValue() != null) {
+            contacts.getValue().getDataSource().invalidate();
             if (!contacts.getValue().isEmpty()) {
                 contacts.getValue().loadAround(0);
             }
-            contacts.getValue().getDataSource().invalidate();
         }
     }
 

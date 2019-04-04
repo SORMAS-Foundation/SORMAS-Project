@@ -57,10 +57,10 @@ public class CaseListViewModel extends ViewModel {
         InvestigationStatus currentInvestigationStatus = caseDataFactory.getInvestigationStatus();
         caseDataFactory.setInvestigationStatus(investigationStatus);
         if (casesList.getValue() != null) {
+            casesList.getValue().getDataSource().invalidate();
             if (!casesList.getValue().isEmpty() && currentInvestigationStatus != investigationStatus) {
                 casesList.getValue().loadAround(0);
             }
-            casesList.getValue().getDataSource().invalidate();
         }
     }
 
