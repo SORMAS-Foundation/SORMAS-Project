@@ -49,10 +49,17 @@
 			* Open sormas_schema.sql with a texteditor and copy the content to the query-tool of sormas_db (And execute the query).
 	
 ## Payara Application Server
-* Download and install the latest Java 8 JDK for your operating system: https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
-* Make sure the JAVA_HOME environment variable is set
+* Download and install the latest Java 8 JDK for your operating system. We suggest to use the Zulu OpenJDK: https://www.azul.com/downloads/zulu/
+  * **Linux**: https://docs.azul.com/zulu/zuludocs/#ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm
+    ```sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
+	sudo apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main'
+	sudo apt-get update
+	sudo apt-get install zulu-8```
+* Make sure the JAVA_HOME environment variable is set to the correct directory
+  ``export JAVA_HOME=/usr/lib/jvm/<zulu_jdk>``
 * Download payara 4.1.2.172 [downloadlink](http://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/4.1.2.172/payara-4.1.2.172.zip) and extract it to the directory where your servers should be located (e.g. /opt/payara-172).  
 The `/opt/payara-172/` as payara-directory can, in some linux distros, only be modified by root. For a local development environment, it may be easier to use another directory owned by logged-in user. Same for `/opt/domains/` as domain directory and `/root/deploy/sormas/$(date +%F)` as directory for the sormas deploy (both used later in this document).
+* Check that the AS_JAVA entry in `/opt/payara-172/glassfish/config` points to the correct JDK (should be Zulu OpenJDK).
 * **Linux** Create a payara group and user:
 	* ``addgroup --system payara``
 	* ``adduser --system --shell /bin/bash --ingroup payara payara``
@@ -127,6 +134,21 @@ Here are some things that you should do to configure the apache server as proxy:
 		ProxyPassReverse /sormas-ui http://localhost:5080/sormas-ui
 		ProxyPass /sormas-rest http://localhost:5080/sormas-rest
 		ProxyPassReverse /sormas-rest http://localhost:5080/sormas-rest
+* Configure security settings:
+
+		Header always set X-Content-Type-Options "nosniff"
+		Header always set X-Xss-Protection "1; mode=block"
+		# Disable Caching
+		Header always set Cache-Control "no-cache, no-store, must-revalidate, private"
+		Header always set Pragma "no-cache"
+
+		# The Content-Type header was either missing or empty.
+		# Ensure each page is setting the specific and appropriate content-type value for the content being delivered.
+		AddType application/vnd.ms-fontobject    .eot
+		AddType application/x-font-opentype      .otf
+		AddType image/svg+xml                    .svg
+		AddType application/x-font-ttf           .ttf
+		AddType application/font-woff            .woff
 * Activate output compression (very important!): 
 
         <IfModule mod_deflate.c>
@@ -143,6 +165,24 @@ Here are some things that you should do to configure the apache server as proxy:
         Options -Indexes
 		AliasMatch "/downloads/sormas-(.*)" "/var/www/sormas/downloads/sormas-$1"
 
+* For the apache 2 security configuration we suggest the following settings (``/etc/apache2/conf-available/security.conf``)
+
+		ServerTokens Prod
+		ServerSignature Off
+		TraceEnable Off
+
+		Header always set Strict-Transport-Security "max-age=15768000; includeSubDomains; preload"
+		Header unset X-Frame-Options
+		Header always set X-Frame-Options SAMEORIGIN
+		Header unset Referrer-Policy
+		Header always set Referrer-Policy "same-origin"
+		Header edit Set-Cookie "(?i)^((?:(?!;\s?HttpOnly).)+)$" "$1;HttpOnly"
+		Header edit Set-Cookie "(?i)^((?:(?!;\s?Secure).)+)$" "$1;Secure"
+
+		Header unset X-Powered-By
+		Header unset Server
+		
+		
 * In case you need to update the site config while the server is running, use the following command to publish the changes without the need for a reload:
 
         apache2ctl graceful
