@@ -51,10 +51,11 @@
 ## Payara Application Server
 * Download and install the latest Java 8 JDK for your operating system. We suggest to use the Zulu OpenJDK: https://www.azul.com/downloads/zulu/
   * **Linux**: https://docs.azul.com/zulu/zuludocs/#ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm
-    ```sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
-	sudo apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main'
-	sudo apt-get update
-	sudo apt-get install zulu-8```
+        
+		sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
+		sudo apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main'
+		sudo apt-get update
+		sudo apt-get install zulu-8
 * Make sure the JAVA_HOME environment variable is set to the correct directory
   ``export JAVA_HOME=/usr/lib/jvm/<zulu_jdk>``
 * Download payara 4.1.2.172 [downloadlink](http://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/4.1.2.172/payara-4.1.2.172.zip) and extract it to the directory where your servers should be located (e.g. /opt/payara-172).  
