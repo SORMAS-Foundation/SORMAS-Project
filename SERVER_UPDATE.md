@@ -70,7 +70,7 @@ You can ignore the following warning/error:
 
 If the update procedure fails, you can use the following command to restore the data:
 
-``sudo -u postgres pg_restore -Fc -d sormas_db sormas_db_....dump``
+``sudo -u postgres pg_restore --clean -Fc -d sormas_db sormas_db_....dump``
 
 ### Automatic Update
 * ``cd /root/deploy/sormas/$(date +%F)/sql``
