@@ -60,7 +60,7 @@
   ``export JAVA_HOME=/usr/lib/jvm/<zulu_jdk>``
 * Download payara 4.1.2.172 [downloadlink](http://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/4.1.2.172/payara-4.1.2.172.zip) and extract it to the directory where your servers should be located (e.g. /opt/payara-172).  
 The `/opt/payara-172/` as payara-directory can, in some linux distros, only be modified by root. For a local development environment, it may be easier to use another directory owned by logged-in user. Same for `/opt/domains/` as domain directory and `/root/deploy/sormas/$(date +%F)` as directory for the sormas deploy (both used later in this document).
-* Check that the AS_JAVA entry in `/opt/payara-172/glassfish/config` points to the correct JDK (should be Zulu OpenJDK).
+* Check that the AS_JAVA entry in `/opt/payara-172/glassfish/config/asenv.conf` points to the correct JDK (should be Zulu OpenJDK).
 * **Linux** Create a payara group and user:
 	* ``addgroup --system payara``
 	* ``adduser --system --shell /bin/bash --ingroup payara payara``
