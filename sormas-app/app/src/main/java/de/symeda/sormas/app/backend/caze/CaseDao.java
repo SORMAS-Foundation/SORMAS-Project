@@ -184,7 +184,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
         caze.setEpiData(DatabaseHelper.getEpiDataDao().build());
 
         // Therapy
-        caze.setTherapy(DatabaseHelper.getTherapyDao().build());
+//        caze.setTherapy(DatabaseHelper.getTherapyDao().build());
 
         // Location
         User currentUser = ConfigProvider.getUser();
