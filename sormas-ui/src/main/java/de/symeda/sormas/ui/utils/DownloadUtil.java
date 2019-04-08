@@ -93,7 +93,7 @@ public class DownloadUtil {
 	}
 
 	public static StreamResource createGridExportStreamResource(Indexed container, List<Column> columns, String tempFilePrefix, String fileName, String... ignoredPropertyIds) {
-		return new GridExportStreamResource(container, columns, tempFilePrefix, fileName, ignoredPropertyIds);
+		return new V7GridExportStreamResource(container, columns, tempFilePrefix, fileName, ignoredPropertyIds);
 	}
 
 	@SuppressWarnings("serial")

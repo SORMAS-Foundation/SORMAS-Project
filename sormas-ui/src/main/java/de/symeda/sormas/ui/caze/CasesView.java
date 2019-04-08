@@ -80,6 +80,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -189,11 +190,9 @@ public class CasesView extends AbstractView {
 			basicExportButton.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(basicExportButton);
 
-			// TODO #1012
-//			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(
-//					grid.getDataProvider().fetch(query)grid.getContainerDataSource(), grid.getColumns(), "sormas_cases", "sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
-//			FileDownloader fileDownloader = new FileDownloader(streamResource);
-//			fileDownloader.extend(basicExportButton);
+			StreamResource streamResource = new GridExportStreamResource(grid, "sormas_cases", "sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(basicExportButton);
 
 			Button extendedExportButton = new Button(I18nProperties.getCaption(Captions.exportDetailed));
 			extendedExportButton.setDescription(I18nProperties.getString(Strings.infoDetailedExport));
