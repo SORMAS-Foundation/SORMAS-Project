@@ -28,6 +28,7 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
 
 @Remote
@@ -54,8 +55,9 @@ public interface ContactFacade {
 	List<MapContactDto> getContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date fromDate, Date toDate, String userUuid, List<MapCaseDto> mapCaseDtos);
 	
 	void deleteContact(ContactReferenceDto contactRef, String userUuid);
-	
-	List<ContactIndexDto> getIndexList(String userUuid, ContactCriteria contactCriteria);
+
+	List<ContactIndexDto> getIndexList(String userUuid, ContactCriteria contactCriteria, int first, int max,
+			List<SortProperty> sortProperties);
 	
 	List<ContactReferenceDto> getAllByVisit(VisitReferenceDto visitRef);
 
@@ -70,5 +72,8 @@ public interface ContactFacade {
 	Map<FollowUpStatus, Long> getNewContactCountPerFollowUpStatus(ContactCriteria contactCriteria, String userUuid);
 	
 	int getFollowUpUntilCount(ContactCriteria contactCriteria, String userUuid);
+
+	long count(String userUuid, ContactCriteria contactCriteria);
+
 	
 }

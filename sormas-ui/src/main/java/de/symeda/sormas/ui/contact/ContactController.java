@@ -17,9 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
@@ -223,20 +221,19 @@ public class ContactController {
 		return editComponent;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void showBulkContactDataEditComponent(Collection<Object> selectedRows, String caseUuid) {
-		if (selectedRows.size() == 0) {
+	public void showBulkContactDataEditComponent(Collection<ContactIndexDto> selectedContacts, String caseUuid) {
+		if (selectedContacts.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 
 					I18nProperties.getString(Strings.messageNoContactsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 			return;
 		}
 
-		List<ContactIndexDto> selectedContacts = new ArrayList(selectedRows);
-
 		// Check if cases with multiple districts have been selected
-		String districtUuid = selectedContacts.get(0).getCaseDistrictUuid();
+		String districtUuid = null;
 		for (ContactIndexDto selectedContact : selectedContacts) {
-			if (!districtUuid.equals(selectedContact.getCaseDistrictUuid())) {
+			if (districtUuid == null) {
+				districtUuid = selectedContact.getCaseDistrictUuid();
+			} else if (!districtUuid.equals(selectedContact.getCaseDistrictUuid())) {
 				districtUuid = null;
 				break;
 			}
@@ -287,15 +284,15 @@ public class ContactController {
 		});
 	}
 
-	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(Collection<ContactIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 
 					I18nProperties.getString(Strings.messageNoContactsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
 			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteContacts), selectedRows.size()), new Runnable() {
 				public void run() {
-					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getContactFacade().deleteContact(new ContactReferenceDto(((ContactIndexDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
+					for (ContactIndexDto selectedRow : selectedRows) {
+						FacadeProvider.getContactFacade().deleteContact(new ContactReferenceDto((selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification(I18nProperties.getString(Strings.headingContactsDeleted), 
@@ -305,15 +302,14 @@ public class ContactController {
 		}
 	}
 	
-	public void cancelFollowUpOfAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+	public void cancelFollowUpOfAllSelectedItems(Collection<ContactIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 
 					I18nProperties.getString(Strings.messageNoContactsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
 			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationCancelFollowUp), selectedRows.size()), new Runnable() {
 				public void run() {
-					for (Object selectedRow : selectedRows) {
-						ContactIndexDto contact = (ContactIndexDto) selectedRow;
+					for (ContactIndexDto contact : selectedRows) {
 						if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 							ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
 							contactDto.setFollowUpStatus(FollowUpStatus.CANCELED);
@@ -329,15 +325,14 @@ public class ContactController {
 		}
 	}
 	
-	public void setAllSelectedItemsToLostToFollowUp(Collection<Object> selectedRows, Runnable callback) {
+	public void setAllSelectedItemsToLostToFollowUp(Collection<ContactIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 
 					I18nProperties.getString(Strings.messageNoContactsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
 			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationLostToFollowUp), selectedRows.size()), new Runnable() {
 				public void run() {
-					for (Object selectedRow : selectedRows) {
-						ContactIndexDto contact = (ContactIndexDto) selectedRow;
+					for (ContactIndexDto contact : selectedRows) {
 						if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 							ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
 							contactDto.setFollowUpStatus(FollowUpStatus.LOST);

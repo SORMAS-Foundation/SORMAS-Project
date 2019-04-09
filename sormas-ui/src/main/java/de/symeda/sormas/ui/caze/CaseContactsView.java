@@ -20,19 +20,19 @@ package de.symeda.sormas.ui.caze;
 import java.util.Date;
 import java.util.HashMap;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -53,7 +53,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.contact.ContactGrid;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 public class CaseContactsView extends AbstractCaseView {
@@ -93,9 +93,7 @@ public class CaseContactsView extends AbstractCaseView {
 		gridLayout.setSpacing(false);
 		gridLayout.setSizeFull();
 		gridLayout.setExpandRatio(grid, 1);
-		grid.getContainer().addItemSetChangeListener(e -> {
-			updateStatusButtons();
-		});
+		grid.addItemCountChangedListener(e -> updateStatusButtons());
 
 		setSubComponent(gridLayout);
 	}
@@ -103,7 +101,7 @@ public class CaseContactsView extends AbstractCaseView {
 	public HorizontalLayout createFilterBar() {
 		HorizontalLayout topLayout = new HorizontalLayout();
 		topLayout.setSpacing(true);
-		topLayout.setWidth(100, Unit.PERCENTAGE);
+		topLayout.setSizeUndefined();
 
 		classificationFilter = new ComboBox();
 		classificationFilter.setWidth(240, Unit.PIXELS);
@@ -140,7 +138,6 @@ public class CaseContactsView extends AbstractCaseView {
 		});
 		topLayout.addComponent(resetButton);
 
-		topLayout.setExpandRatio(resetButton, 1);
 		return topLayout;
 	}
 
@@ -183,12 +180,12 @@ public class CaseContactsView extends AbstractCaseView {
 			MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 			Command changeCommand = selectedItem -> {
-				ControllerProvider.getContactController().showBulkContactDataEditComponent(grid.getSelectedRows(), getCaseRef().getUuid());
+				ControllerProvider.getContactController().showBulkContactDataEditComponent(grid.asMultiSelect().getSelectedItems(), getCaseRef().getUuid());
 			};
 			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, changeCommand);
 
 			Command cancelFollowUpCommand = selectedItem -> {
-				ControllerProvider.getContactController().cancelFollowUpOfAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+				ControllerProvider.getContactController().cancelFollowUpOfAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 					public void run() {
 						grid.deselectAll();
 						grid.reload();
@@ -198,7 +195,7 @@ public class CaseContactsView extends AbstractCaseView {
 			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkCancelFollowUp), VaadinIcons.CLOSE, cancelFollowUpCommand);
 
 			Command lostToFollowUpCommand = selectedItem -> {
-				ControllerProvider.getContactController().setAllSelectedItemsToLostToFollowUp(grid.getSelectedRows(), new Runnable() {
+				ControllerProvider.getContactController().setAllSelectedItemsToLostToFollowUp(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 					public void run() {
 						grid.deselectAll();
 						grid.reload();
@@ -208,7 +205,7 @@ public class CaseContactsView extends AbstractCaseView {
 			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkLostToFollowUp), VaadinIcons.UNLINK, lostToFollowUpCommand);
 
 			Command deleteCommand = selectedItem -> {
-				ControllerProvider.getContactController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+				ControllerProvider.getContactController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 					public void run() {
 						grid.deselectAll();
 						grid.reload();
@@ -227,7 +224,7 @@ public class CaseContactsView extends AbstractCaseView {
 			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			exportButton.setIcon(VaadinIcons.DOWNLOAD);
 
-			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), grid.getColumns(), "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			StreamResource streamResource = new GridExportStreamResource(grid, "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 
@@ -252,31 +249,18 @@ public class CaseContactsView extends AbstractCaseView {
 		return statusFilterLayout;
 	}
 
-	private void update() {
-		grid.setCaseFilter(getCaseRef());
-
-		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
-
-		classificationFilter.removeAllItems();
-		classificationFilter.addItems((Object[]) ContactClassification.values());
-
-		districtFilter.removeAllItems();
-		districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(caseDto.getRegion().getUuid()));
-
-		officerFilter.removeAllItems();
-		officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(caseDto.getRegion(), UserRole.CONTACT_OFFICER));
-	}
-
 	@Override
 	public void enter(ViewChangeEvent event) {
 		super.enter(event);
-		update();		
+
 		String params = event.getParameters().trim();
 		if (params.startsWith("?")) {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);
 		}
 		updateFilterComponents();
+
+		criteria.caze(getCaseRef());
 		grid.reload();
 	}
 
@@ -288,8 +272,18 @@ public class CaseContactsView extends AbstractCaseView {
 		
 		updateStatusButtons();
 		
+		classificationFilter.removeAllItems();
+		classificationFilter.addItems((Object[]) ContactClassification.values());
 		classificationFilter.setValue(criteria.getContactClassification());
+
+		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
+
+		districtFilter.removeAllItems();
+		districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(caseDto.getRegion().getUuid()));
 		districtFilter.setValue(criteria.getCaseDistrict());
+
+		officerFilter.removeAllItems();
+		officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(caseDto.getRegion(), UserRole.CONTACT_OFFICER));
 		officerFilter.setValue(criteria.getContactOfficer());
 		
 		applyingCriteria = false;
@@ -305,7 +299,8 @@ public class CaseContactsView extends AbstractCaseView {
 		});
 		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 		if (activeStatusButton != null) {
-			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getContainer().size())));
+			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) 
+					+ LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
 	}
 

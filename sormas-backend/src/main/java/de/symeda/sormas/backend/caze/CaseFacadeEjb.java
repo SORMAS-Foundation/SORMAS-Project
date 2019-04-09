@@ -288,17 +288,17 @@ public class CaseFacadeEjb implements CaseFacade {
 	public long count(String userUuid, CaseCriteria caseCriteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Case> caze = cq.from(Case.class);
+		Root<Case> root = cq.from(Case.class);
 		User user = userService.getByUuid(userUuid);
-		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
+		Predicate filter = caseService.createUserFilter(cb, cq, root, user);
 		if (caseCriteria != null) {
-			Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
+			Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, root);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
 		if (filter != null) {
 			cq.where(filter);
 		}
-		cq.select(cb.count(caze));
+		cq.select(cb.count(root));
 		return em.createQuery(cq).getSingleResult();
 	}
 	

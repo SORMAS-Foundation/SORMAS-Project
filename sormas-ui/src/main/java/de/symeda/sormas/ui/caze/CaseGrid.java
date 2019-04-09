@@ -75,7 +75,7 @@ public class CaseGrid extends Grid<CaseIndexDto> implements AbstractGrid<CaseCri
 						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null));
 					if (this.itemCount != itemCount) {
 						this.itemCount = itemCount;
-						fireEvent(new GridItemCountChangedEvent(CaseGrid.this, itemCount));
+						fireEvent(new GridItemCountChangedEvent(this, itemCount));
 					}
 					return itemCount;
 				});
