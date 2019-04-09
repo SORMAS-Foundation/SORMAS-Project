@@ -60,7 +60,7 @@ public class V7GridExportStreamResource extends StreamResource {
 				Collection<?> itemIds = container.getItemIds();
 
 				try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
-					try (CSVWriter writer = CSVUtils.createCSVWriter(new OutputStreamWriter(new ByteArrayOutputStream(), StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
+					try (CSVWriter writer = CSVUtils.createCSVWriter(new OutputStreamWriter(byteStream, StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
 		
 						List<String> headerRow = new ArrayList<>();
 						columns.forEach(c -> {
