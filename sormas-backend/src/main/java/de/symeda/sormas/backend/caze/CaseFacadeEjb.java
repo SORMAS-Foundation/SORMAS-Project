@@ -71,6 +71,7 @@ import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
@@ -100,6 +101,7 @@ import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
+import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -1137,12 +1139,14 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setInvestigationStatus(source.getInvestigationStatus());
 		target.setHospitalization(hospitalizationFacade.fromDto(source.getHospitalization()));
 		target.setEpiData(epiDataFacade.fromDto(source.getEpiData()));
-		if (source.getTherapy() != null) {
-			target.setTherapy(therapyFacade.fromDto(source.getTherapy()));
+		if (source.getTherapy() == null) {
+			source.setTherapy(TherapyDto.build());
 		}
-		if (source.getClinicalCourse() != null) {
-			target.setClinicalCourse(clinicalCourseFacade.fromDto(source.getClinicalCourse()));
+		target.setTherapy(therapyFacade.fromDto(source.getTherapy()));
+		if (source.getClinicalCourse() == null) {
+			source.setClinicalCourse(ClinicalCourseDto.build());
 		}
+		target.setClinicalCourse(clinicalCourseFacade.fromDto(source.getClinicalCourse()));
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
