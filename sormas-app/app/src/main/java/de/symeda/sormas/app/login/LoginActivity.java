@@ -61,6 +61,9 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
             return;
         }
 
+        // Disconnect
+        RetroProvider.disconnect();
+
         LoginViewModel loginViewModel = new LoginViewModel();
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login_layout);
         binding.setData(loginViewModel);
@@ -165,7 +168,6 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
     }
 
     private void processLogin(boolean checkLoginAndVersion) {
-
         if (progressDialog == null || !progressDialog.isShowing()) {
             boolean isInitialSync = DatabaseHelper.getFacilityDao().isEmpty();
             progressDialog = ProgressDialog.show(this, getString(R.string.heading_synchronization),
