@@ -41,6 +41,7 @@ import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -172,6 +173,9 @@ public class Case extends AbstractDomainObject {
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private Therapy therapy;
+
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private ClinicalCourse clinicalCourse;
 
     @Deprecated
     @Column
@@ -423,6 +427,14 @@ public class Case extends AbstractDomainObject {
 
     public void setTherapy(Therapy therapy) {
         this.therapy = therapy;
+    }
+
+    public ClinicalCourse getClinicalCourse() {
+        return clinicalCourse;
+    }
+
+    public void setClinicalCourse(ClinicalCourse clinicalCourse) {
+        this.clinicalCourse = clinicalCourse;
     }
 
     public Double getReportLat() {

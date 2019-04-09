@@ -86,4 +86,5 @@ public class VisitResource extends EntityDtoResource {
 		List<String> uuids = FacadeProvider.getVisitFacade().getAllActiveUuids(userDto.getUuid());
 		return uuids;
 	}
+	
 }

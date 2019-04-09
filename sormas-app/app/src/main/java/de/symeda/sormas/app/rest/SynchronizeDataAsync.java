@@ -30,6 +30,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -37,6 +38,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationDtoHelper;
+import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisitDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -187,7 +189,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                 DatabaseHelper.getVisitDao().isAnyModified() ||
                 DatabaseHelper.getWeeklyReportDao().isAnyModified() ||
                 DatabaseHelper.getPrescriptionDao().isAnyModified() ||
-                DatabaseHelper.getTreatmentDao().isAnyModified();
+                DatabaseHelper.getTreatmentDao().isAnyModified() ||
+                DatabaseHelper.getClinicalVisitDao().isAnyModified();
     }
 
     private void synchronizeChangedData() throws DaoException, ServerConnectionException, ServerCommunicationException {
@@ -204,6 +207,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         WeeklyReportDtoHelper weeklyReportDtoHelper = new WeeklyReportDtoHelper();
         PrescriptionDtoHelper prescriptionDtoHelper = new PrescriptionDtoHelper();
         TreatmentDtoHelper treatmentDtoHelper = new TreatmentDtoHelper();
+        ClinicalVisitDtoHelper clinicalVisitDtoHelper = new ClinicalVisitDtoHelper();
 
         // order is important, due to dependencies (e.g. case & person)
 
@@ -222,6 +226,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         boolean weeklyReportsNeedPull = weeklyReportDtoHelper.pullAndPushEntities();
         boolean prescriptionsNeedPull = prescriptionDtoHelper.pullAndPushEntities();
         boolean treatmentsNeedPull = treatmentDtoHelper.pullAndPushEntities();
+        boolean clinicalVisitsNeedPull = clinicalVisitDtoHelper.pullAndPushEntities();
 
         if (personsNeedPull)
             personDtoHelper.pullEntities(true);
@@ -249,6 +254,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             prescriptionDtoHelper.pullEntities(true);
         if (treatmentsNeedPull)
             treatmentDtoHelper.pullEntities(true);
+        if (clinicalVisitsNeedPull)
+            clinicalVisitDtoHelper.pullEntities(true);
     }
 
     private void repullData() throws DaoException, ServerConnectionException, ServerCommunicationException {
@@ -265,6 +272,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         WeeklyReportDtoHelper weeklyReportDtoHelper = new WeeklyReportDtoHelper();
         PrescriptionDtoHelper prescriptionDtoHelper = new PrescriptionDtoHelper();
         TreatmentDtoHelper treatmentDtoHelper = new TreatmentDtoHelper();
+        ClinicalVisitDtoHelper clinicalVisitDtoHelper = new ClinicalVisitDtoHelper();
 
         // order is important, due to dependencies (e.g. case & person)
 
@@ -285,6 +293,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         weeklyReportDtoHelper.repullEntities();
         prescriptionDtoHelper.repullEntities();
         treatmentDtoHelper.repullEntities();
+        clinicalVisitDtoHelper.repullEntities();
     }
 
     private void pullInfrastructure() throws DaoException, ServerConnectionException, ServerCommunicationException {
@@ -373,6 +382,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // prescriptions
         List<String> prescriptionUuids = executeUuidCall(RetroProvider.getPrescriptionFacade().pullUuids());
         DatabaseHelper.getPrescriptionDao().deleteInvalid(prescriptionUuids);
+        // clinical visits
+        List<String> clinicalVisitUuids = executeUuidCall(RetroProvider.getClinicalVisitFacade().pullUuids());
+        DatabaseHelper.getClinicalVisitDao().deleteInvalid(clinicalVisitUuids);
         // cases
         List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullUuids());
         DatabaseHelper.getCaseDao().deleteInvalid(caseUuids);
@@ -400,6 +412,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new WeeklyReportDtoHelper().pullMissing(weeklyReportUuids);
         new PrescriptionDtoHelper().pullMissing(prescriptionUuids);
         new TreatmentDtoHelper().pullMissing(treatmentUuids);
+        new ClinicalVisitDtoHelper().pullMissing(clinicalVisitUuids);
     }
 
     private void pullMissingAndDeleteInvalidInfrastructure() throws ServerConnectionException, ServerCommunicationException, DaoException {
