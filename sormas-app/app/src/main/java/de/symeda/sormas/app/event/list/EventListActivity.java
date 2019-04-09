@@ -62,7 +62,10 @@ public class EventListActivity extends PagedBaseListActivity {
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 // Scroll to the topmost position after cases have been inserted
                 if (positionStart == 0) {
-                    ((RecyclerView) findViewById(R.id.recyclerViewForList)).scrollToPosition(0);
+                    RecyclerView recyclerView = findViewById(R.id.recyclerViewForList);
+                    if (recyclerView != null) {
+                        recyclerView.scrollToPosition(0);
+                    }
                 }
             }
         });
