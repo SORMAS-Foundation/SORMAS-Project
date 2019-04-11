@@ -18,6 +18,8 @@
 
 package de.symeda.sormas.app.sample.edit;
 
+import org.joda.time.DateTimeComparator;
+
 import java.util.Date;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -29,30 +31,26 @@ import de.symeda.sormas.app.util.Callback;
 public class SampleValidator {
 
     static void initializeSampleValidation(final FragmentSampleEditLayoutBinding contentBinding) {
-        Callback sampleDateCallback = new Callback() {
-            public void call() {
-                // Must not be after date of shipment
-                if (contentBinding.sampleSampleDateTime.getValue() != null && contentBinding.sampleShipmentDate.getValue() != null) {
-                    if (((Date) contentBinding.sampleSampleDateTime.getValue()).after(contentBinding.sampleShipmentDate.getValue())) {
-                        contentBinding.sampleSampleDateTime.enableErrorState(
-                                I18nProperties.getValidationError(Validations.beforeDate,
-                                        contentBinding.sampleSampleDateTime.getCaption(),
-                                        contentBinding.sampleShipmentDate.getCaption()));
-                    }
+        Callback sampleDateCallback = () -> {
+            // Must not be after date of shipment
+            if (contentBinding.sampleSampleDateTime.getValue() != null && contentBinding.sampleShipmentDate.getValue() != null) {
+                if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.sampleSampleDateTime.getValue(), contentBinding.sampleShipmentDate.getValue()) > 0) {
+                    contentBinding.sampleSampleDateTime.enableErrorState(
+                            I18nProperties.getValidationError(Validations.beforeDate,
+                                    contentBinding.sampleSampleDateTime.getCaption(),
+                                    contentBinding.sampleShipmentDate.getCaption()));
                 }
             }
         };
 
-        Callback shipmentDateCallback = new Callback() {
-            public void call() {
-                // Must not be before sample date
-                if (contentBinding.sampleShipmentDate.getValue() != null && contentBinding.sampleSampleDateTime.getValue() != null) {
-                    if (contentBinding.sampleShipmentDate.getValue().before((Date) contentBinding.sampleSampleDateTime.getValue())) {
-                        contentBinding.sampleShipmentDate.enableErrorState(
-                                I18nProperties.getValidationError(Validations.afterDate,
-                                        contentBinding.sampleShipmentDate.getCaption(),
-                                        contentBinding.sampleSampleDateTime.getCaption()));
-                    }
+        Callback shipmentDateCallback = () -> {
+            // Must not be before sample date
+            if (contentBinding.sampleShipmentDate.getValue() != null && contentBinding.sampleSampleDateTime.getValue() != null) {
+                if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.sampleShipmentDate.getValue(), contentBinding.sampleSampleDateTime.getValue()) < 0) {
+                    contentBinding.sampleShipmentDate.enableErrorState(
+                            I18nProperties.getValidationError(Validations.afterDate,
+                                    contentBinding.sampleShipmentDate.getCaption(),
+                                    contentBinding.sampleSampleDateTime.getCaption()));
                 }
             }
         };
@@ -62,30 +60,26 @@ public class SampleValidator {
     }
 
     static void initializeSampleValidation(final FragmentSampleNewLayoutBinding contentBinding) {
-        Callback sampleDateCallback = new Callback() {
-            public void call() {
-                // Must not be after date of shipment
-                if (contentBinding.sampleSampleDateTime.getValue() != null && contentBinding.sampleShipmentDate.getValue() != null) {
-                    if (((Date) contentBinding.sampleSampleDateTime.getValue()).after(contentBinding.sampleShipmentDate.getValue())) {
-                        contentBinding.sampleSampleDateTime.enableErrorState(
-                                I18nProperties.getValidationError(Validations.beforeDate,
-                                        contentBinding.sampleSampleDateTime.getCaption(),
-                                        contentBinding.sampleShipmentDate.getCaption()));
-                    }
+        Callback sampleDateCallback = () -> {
+            // Must not be after date of shipment
+            if (contentBinding.sampleSampleDateTime.getValue() != null && contentBinding.sampleShipmentDate.getValue() != null) {
+                if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.sampleSampleDateTime.getValue(), contentBinding.sampleShipmentDate.getValue()) > 0) {
+                    contentBinding.sampleSampleDateTime.enableErrorState(
+                            I18nProperties.getValidationError(Validations.beforeDate,
+                                    contentBinding.sampleSampleDateTime.getCaption(),
+                                    contentBinding.sampleShipmentDate.getCaption()));
                 }
             }
         };
 
-        Callback shipmentDateCallback = new Callback() {
-            public void call() {
-                // Must not be before sample date
-                if (contentBinding.sampleShipmentDate.getValue() != null && contentBinding.sampleSampleDateTime.getValue() != null) {
-                    if (contentBinding.sampleShipmentDate.getValue().before((Date) contentBinding.sampleSampleDateTime.getValue())) {
-                        contentBinding.sampleShipmentDate.enableErrorState(
-                                I18nProperties.getValidationError(Validations.afterDate,
-                                        contentBinding.sampleShipmentDate.getCaption(),
-                                        contentBinding.sampleSampleDateTime.getCaption()));
-                    }
+        Callback shipmentDateCallback = () -> {
+            // Must not be before sample date
+            if (contentBinding.sampleShipmentDate.getValue() != null && contentBinding.sampleSampleDateTime.getValue() != null) {
+                if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.sampleShipmentDate.getValue(), contentBinding.sampleSampleDateTime.getValue()) < 0) {
+                    contentBinding.sampleShipmentDate.enableErrorState(
+                            I18nProperties.getValidationError(Validations.afterDate,
+                                    contentBinding.sampleShipmentDate.getCaption(),
+                                    contentBinding.sampleSampleDateTime.getCaption()));
                 }
             }
         };

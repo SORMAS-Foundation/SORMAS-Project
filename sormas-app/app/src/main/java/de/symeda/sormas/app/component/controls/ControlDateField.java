@@ -191,17 +191,20 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
         }
 
         Date date = DateHelper.parseDate(input.getText().toString(), dateFormat);
-        if (cachedDate != null) {
-            Calendar dateCalendar = Calendar.getInstance();
-            dateCalendar.setTime(date);
+        Calendar dateCalendar = Calendar.getInstance();
+        Calendar cachedCalendar = Calendar.getInstance();
+        dateCalendar.setTime(date);
 
-            Calendar cachedCalendar = Calendar.getInstance();
+        if (cachedDate != null) {
             cachedCalendar.setTime(cachedDate);
-            cachedCalendar.set(Calendar.YEAR, dateCalendar.get(Calendar.YEAR));
-            cachedCalendar.set(Calendar.MONTH, dateCalendar.get(Calendar.MONTH));
-            cachedCalendar.set(Calendar.DAY_OF_MONTH, dateCalendar.get(Calendar.DAY_OF_MONTH));
-            date = cachedCalendar.getTime();
+        } else {
+            cachedCalendar.setTime(new Date());
         }
+
+        cachedCalendar.set(Calendar.YEAR, dateCalendar.get(Calendar.YEAR));
+        cachedCalendar.set(Calendar.MONTH, dateCalendar.get(Calendar.MONTH));
+        cachedCalendar.set(Calendar.DAY_OF_MONTH, dateCalendar.get(Calendar.DAY_OF_MONTH));
+        date = cachedCalendar.getTime();
 
         return date;
     }
