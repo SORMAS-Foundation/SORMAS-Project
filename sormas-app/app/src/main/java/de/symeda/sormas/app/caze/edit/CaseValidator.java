@@ -28,6 +28,7 @@ import java.util.Date;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
@@ -40,28 +41,24 @@ import de.symeda.sormas.app.util.Callback;
 final class CaseValidator {
 
     static void initializeEpiDataBurialValidation(final DialogCaseEpidBurialEditLayoutBinding contentBinding) {
-        Callback burialDateFromCallback = new Callback() {
-            public void call() {
-                if (contentBinding.epiDataBurialBurialDateFrom.getValue() != null && contentBinding.epiDataBurialBurialDateTo.getValue() != null) {
-                    if (contentBinding.epiDataBurialBurialDateFrom.getValue().after(contentBinding.epiDataBurialBurialDateTo.getValue())) {
-                        contentBinding.epiDataBurialBurialDateFrom.enableErrorState(
-                                I18nProperties.getValidationError(Validations.beforeDate,
-                                        contentBinding.epiDataBurialBurialDateFrom.getCaption(),
-                                        contentBinding.epiDataBurialBurialDateTo.getCaption()));
-                    }
+        Callback burialDateFromCallback = () -> {
+            if (contentBinding.epiDataBurialBurialDateFrom.getValue() != null && contentBinding.epiDataBurialBurialDateTo.getValue() != null) {
+                if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.epiDataBurialBurialDateFrom.getValue(), contentBinding.epiDataBurialBurialDateTo.getValue()) > 0) {
+                    contentBinding.epiDataBurialBurialDateFrom.enableErrorState(
+                            I18nProperties.getValidationError(Validations.beforeDate,
+                                    contentBinding.epiDataBurialBurialDateFrom.getCaption(),
+                                    contentBinding.epiDataBurialBurialDateTo.getCaption()));
                 }
             }
         };
 
-        Callback burialDateToCallback = new Callback() {
-            public void call() {
-                if (contentBinding.epiDataBurialBurialDateTo.getValue() != null && contentBinding.epiDataBurialBurialDateFrom.getValue() != null) {
-                    if (contentBinding.epiDataBurialBurialDateTo.getValue().before(contentBinding.epiDataBurialBurialDateFrom.getValue())) {
-                        contentBinding.epiDataBurialBurialDateTo.enableErrorState(
-                                I18nProperties.getValidationError(Validations.afterDate,
-                                        contentBinding.epiDataBurialBurialDateTo.getCaption(),
-                                        contentBinding.epiDataBurialBurialDateFrom.getCaption()));
-                    }
+        Callback burialDateToCallback = () -> {
+            if (contentBinding.epiDataBurialBurialDateTo.getValue() != null && contentBinding.epiDataBurialBurialDateFrom.getValue() != null) {
+                if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.epiDataBurialBurialDateTo.getValue(), contentBinding.epiDataBurialBurialDateFrom.getValue()) < 0) {
+                    contentBinding.epiDataBurialBurialDateTo.enableErrorState(
+                            I18nProperties.getValidationError(Validations.afterDate,
+                                    contentBinding.epiDataBurialBurialDateTo.getCaption(),
+                                    contentBinding.epiDataBurialBurialDateFrom.getCaption()));
                 }
             }
         };
@@ -71,30 +68,24 @@ final class CaseValidator {
     }
 
     static void initializeEpiDataTravelValidation(final DialogCaseEpidTravelEditLayoutBinding contentBinding) {
-        Callback travelDateFromCallback = new Callback() {
-            @Override
-            public void call() {
-                if (contentBinding.epiDataTravelTravelDateFrom.getValue() != null && contentBinding.epiDataTravelTravelDateTo.getValue() != null) {
-                    if (contentBinding.epiDataTravelTravelDateFrom.getValue().after(contentBinding.epiDataTravelTravelDateTo.getValue())) {
-                        contentBinding.epiDataTravelTravelDateFrom.enableErrorState(
-                                I18nProperties.getValidationError(Validations.beforeDate,
-                                        contentBinding.epiDataTravelTravelDateFrom.getCaption(),
-                                        contentBinding.epiDataTravelTravelDateTo.getCaption()));
-                    }
+        Callback travelDateFromCallback = () -> {
+            if (contentBinding.epiDataTravelTravelDateFrom.getValue() != null && contentBinding.epiDataTravelTravelDateTo.getValue() != null) {
+                if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.epiDataTravelTravelDateFrom.getValue(), contentBinding.epiDataTravelTravelDateTo.getValue()) > 0) {
+                    contentBinding.epiDataTravelTravelDateFrom.enableErrorState(
+                            I18nProperties.getValidationError(Validations.beforeDate,
+                                    contentBinding.epiDataTravelTravelDateFrom.getCaption(),
+                                    contentBinding.epiDataTravelTravelDateTo.getCaption()));
                 }
             }
         };
 
-        Callback burialDateToCallback = new Callback() {
-            @Override
-            public void call() {
-                if (contentBinding.epiDataTravelTravelDateTo.getValue() != null && contentBinding.epiDataTravelTravelDateFrom.getValue() != null) {
-                    if (contentBinding.epiDataTravelTravelDateTo.getValue().before(contentBinding.epiDataTravelTravelDateFrom.getValue())) {
-                        contentBinding.epiDataTravelTravelDateTo.enableErrorState(
-                                I18nProperties.getValidationError(Validations.afterDate,
-                                        contentBinding.epiDataTravelTravelDateTo.getCaption(),
-                                        contentBinding.epiDataTravelTravelDateFrom.getCaption()));
-                    }
+        Callback burialDateToCallback = () -> {
+            if (contentBinding.epiDataTravelTravelDateTo.getValue() != null && contentBinding.epiDataTravelTravelDateFrom.getValue() != null) {
+                if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.epiDataTravelTravelDateTo.getValue(), contentBinding.epiDataTravelTravelDateFrom.getValue()) < 0) {
+                    contentBinding.epiDataTravelTravelDateTo.enableErrorState(
+                            I18nProperties.getValidationError(Validations.afterDate,
+                                    contentBinding.epiDataTravelTravelDateTo.getCaption(),
+                                    contentBinding.epiDataTravelTravelDateFrom.getCaption()));
                 }
             }
         };
@@ -104,44 +95,35 @@ final class CaseValidator {
     }
 
     static void initializeHospitalizationValidation(final FragmentCaseEditHospitalizationLayoutBinding contentBinding, final Case caze) {
-        contentBinding.caseHospitalizationAdmissionDate.addValueChangedListener(new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                Date value = (Date) field.getValue();
-                if (caze.getSymptoms().getOnsetDate() != null && DateTimeComparator.getDateOnlyInstance().compare(value, caze.getSymptoms().getOnsetDate()) <= 0) {
-                    contentBinding.caseHospitalizationAdmissionDate.enableWarningState(
-                            I18nProperties.getValidationError(Validations.afterDateSoft, contentBinding.caseHospitalizationAdmissionDate.getCaption(),
-                                    I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE)));
-                } else {
-                    contentBinding.caseHospitalizationAdmissionDate.disableWarningState();
-                }
+        contentBinding.caseHospitalizationAdmissionDate.addValueChangedListener(field -> {
+            Date value = (Date) field.getValue();
+            if (caze.getSymptoms().getOnsetDate() != null && DateTimeComparator.getDateOnlyInstance().compare(value, caze.getSymptoms().getOnsetDate()) <= 0) {
+                contentBinding.caseHospitalizationAdmissionDate.enableWarningState(
+                        I18nProperties.getValidationError(Validations.afterDateSoft, contentBinding.caseHospitalizationAdmissionDate.getCaption(),
+                                I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE)));
+            } else {
+                contentBinding.caseHospitalizationAdmissionDate.disableWarningState();
             }
         });
 
-        Callback admissionDateCallback = new Callback() {
-            @Override
-            public void call() {
-                if (contentBinding.caseHospitalizationAdmissionDate.getValue() != null && contentBinding.caseHospitalizationDischargeDate.getValue() != null) {
-                    if (contentBinding.caseHospitalizationAdmissionDate.getValue().after(contentBinding.caseHospitalizationDischargeDate.getValue())) {
-                        contentBinding.caseHospitalizationAdmissionDate.enableErrorState(
-                                I18nProperties.getValidationError(Validations.beforeDate,
-                                        contentBinding.caseHospitalizationAdmissionDate.getCaption(),
-                                        contentBinding.caseHospitalizationDischargeDate.getCaption()));
-                    }
+        Callback admissionDateCallback = () -> {
+            if (contentBinding.caseHospitalizationAdmissionDate.getValue() != null && contentBinding.caseHospitalizationDischargeDate.getValue() != null) {
+                if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.caseHospitalizationAdmissionDate.getValue(), contentBinding.caseHospitalizationDischargeDate.getValue()) > 0) {
+                    contentBinding.caseHospitalizationAdmissionDate.enableErrorState(
+                            I18nProperties.getValidationError(Validations.beforeDate,
+                                    contentBinding.caseHospitalizationAdmissionDate.getCaption(),
+                                    contentBinding.caseHospitalizationDischargeDate.getCaption()));
                 }
             }
         };
 
-        Callback dischargeDateCallback = new Callback() {
-            @Override
-            public void call() {
-                if (contentBinding.caseHospitalizationDischargeDate.getValue() != null && contentBinding.caseHospitalizationAdmissionDate.getValue() != null) {
-                    if (contentBinding.caseHospitalizationDischargeDate.getValue().before(contentBinding.caseHospitalizationAdmissionDate.getValue())) {
-                        contentBinding.caseHospitalizationDischargeDate.enableErrorState(
-                                I18nProperties.getValidationError(Validations.afterDate,
-                                        contentBinding.caseHospitalizationDischargeDate.getCaption(),
-                                        contentBinding.caseHospitalizationAdmissionDate.getCaption()));
-                    }
+        Callback dischargeDateCallback = () -> {
+            if (contentBinding.caseHospitalizationDischargeDate.getValue() != null && contentBinding.caseHospitalizationAdmissionDate.getValue() != null) {
+                if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.caseHospitalizationDischargeDate.getValue(), contentBinding.caseHospitalizationAdmissionDate.getValue()) < 0) {
+                    contentBinding.caseHospitalizationDischargeDate.enableErrorState(
+                            I18nProperties.getValidationError(Validations.afterDate,
+                                    contentBinding.caseHospitalizationDischargeDate.getCaption(),
+                                    contentBinding.caseHospitalizationAdmissionDate.getCaption()));
                 }
             }
         };
@@ -151,16 +133,13 @@ final class CaseValidator {
     }
 
     static void initializePreviousHospitalizationValidation(final DialogPreviousHospitalizationLayoutBinding contentBinding) {
-        Callback admissionDateCallback = new Callback() {
-            @Override
-            public void call() {
-                if (contentBinding.casePreviousHospitalizationAdmissionDate.getValue() != null && contentBinding.casePreviousHospitalizationDischargeDate.getValue() != null) {
-                    if (contentBinding.casePreviousHospitalizationAdmissionDate.getValue().after(contentBinding.casePreviousHospitalizationDischargeDate.getValue())) {
-                        contentBinding.casePreviousHospitalizationAdmissionDate.enableErrorState(
-                                I18nProperties.getValidationError(Validations.beforeDate,
-                                        contentBinding.casePreviousHospitalizationAdmissionDate.getCaption(),
-                                        contentBinding.casePreviousHospitalizationDischargeDate.getCaption()));
-                    }
+        Callback admissionDateCallback = () -> {
+            if (contentBinding.casePreviousHospitalizationAdmissionDate.getValue() != null && contentBinding.casePreviousHospitalizationDischargeDate.getValue() != null) {
+                if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.casePreviousHospitalizationAdmissionDate.getValue(), contentBinding.casePreviousHospitalizationDischargeDate.getValue()) > 0) {
+                    contentBinding.casePreviousHospitalizationAdmissionDate.enableErrorState(
+                            I18nProperties.getValidationError(Validations.beforeDate,
+                                    contentBinding.casePreviousHospitalizationAdmissionDate.getCaption(),
+                                    contentBinding.casePreviousHospitalizationDischargeDate.getCaption()));
                 }
             }
         };
@@ -169,7 +148,7 @@ final class CaseValidator {
             @Override
             public void call() {
                 if (contentBinding.casePreviousHospitalizationDischargeDate.getValue() != null && contentBinding.casePreviousHospitalizationAdmissionDate.getValue() != null) {
-                    if (contentBinding.casePreviousHospitalizationDischargeDate.getValue().before(contentBinding.casePreviousHospitalizationAdmissionDate.getValue())) {
+                    if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.casePreviousHospitalizationDischargeDate.getValue(), contentBinding.casePreviousHospitalizationAdmissionDate.getValue()) < 0) {
                         contentBinding.casePreviousHospitalizationDischargeDate.enableErrorState(
                                 I18nProperties.getValidationError(Validations.afterDate,
                                         contentBinding.casePreviousHospitalizationDischargeDate.getCaption(),

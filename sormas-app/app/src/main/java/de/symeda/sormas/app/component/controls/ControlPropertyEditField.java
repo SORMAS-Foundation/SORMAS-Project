@@ -420,7 +420,12 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
     }
 
     public void setLiveValidationDisabled(boolean liveValidationDisabled) {
-        this.liveValidationDisabled = liveValidationDisabled;
+        if (this.liveValidationDisabled != liveValidationDisabled) {
+            this.liveValidationDisabled = liveValidationDisabled;
+            if (liveValidationDisabled) {
+                disableErrorState();
+            }
+        }
     }
 
     public static void applyLiveValidationDisabledToChildren(ViewGroup parent, boolean liveValidationDisabled) {

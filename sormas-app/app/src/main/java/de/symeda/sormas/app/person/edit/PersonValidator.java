@@ -38,16 +38,14 @@ import de.symeda.sormas.app.util.Callback;
 final class PersonValidator {
 
     static void initializePersonValidation(final FragmentPersonEditLayoutBinding contentBinding) {
-        Callback deathDateCallback = new Callback() {
-            public void call() {
-                Date birthDate = PersonEditFragment.calculateBirthDateValue(contentBinding);
-                if (contentBinding.personDeathDate.getValue() != null && birthDate != null) {
-                    if (contentBinding.personDeathDate.getValue().before(birthDate)) {
-                        contentBinding.personDeathDate.enableErrorState(
-                                I18nProperties.getValidationError(Validations.afterDate,
-                                        contentBinding.personDeathDate.getCaption(),
-                                        contentBinding.personBirthdateLabel.getText()));
-                    }
+        Callback deathDateCallback = () -> {
+            Date birthDate = PersonEditFragment.calculateBirthDateValue(contentBinding);
+            if (contentBinding.personDeathDate.getValue() != null && birthDate != null) {
+                if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.personDeathDate.getValue(), birthDate) < 0) {
+                    contentBinding.personDeathDate.enableErrorState(
+                            I18nProperties.getValidationError(Validations.afterDate,
+                                    contentBinding.personDeathDate.getCaption(),
+                                    contentBinding.personBirthdateLabel.getText()));
                 }
             }
         };
@@ -55,7 +53,7 @@ final class PersonValidator {
         Callback burialDateCallback = new Callback() {
             public void call() {
                 if (contentBinding.personBurialDate.getValue() != null && contentBinding.personDeathDate.getValue() != null) {
-                    if (contentBinding.personBurialDate.getValue().before(contentBinding.personDeathDate.getValue())) {
+                    if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.personBurialDate.getValue(), contentBinding.personDeathDate.getValue()) < 0) {
                         contentBinding.personBurialDate.enableErrorState(
                                 I18nProperties.getValidationError(Validations.afterDate,
                                         contentBinding.personBurialDate.getCaption(),

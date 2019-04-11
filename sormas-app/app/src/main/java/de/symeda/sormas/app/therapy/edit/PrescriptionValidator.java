@@ -18,6 +18,8 @@
 
 package de.symeda.sormas.app.therapy.edit;
 
+import org.joda.time.DateTimeComparator;
+
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.app.databinding.FragmentPrescriptionEditLayoutBinding;
@@ -28,7 +30,7 @@ public final class PrescriptionValidator {
     public static void initializeValidation(final FragmentPrescriptionEditLayoutBinding contentBinding) {
         Callback prescriptionStartCallback = () -> {
             if (contentBinding.prescriptionPrescriptionStart.getValue() != null && contentBinding.prescriptionPrescriptionEnd.getValue() != null) {
-                if (contentBinding.prescriptionPrescriptionStart.getValue().after(contentBinding.prescriptionPrescriptionEnd.getValue())) {
+                if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.prescriptionPrescriptionStart.getValue(), contentBinding.prescriptionPrescriptionEnd.getValue()) > 0) {
                     contentBinding.prescriptionPrescriptionStart.enableErrorState(
                             I18nProperties.getValidationError(Validations.beforeDate,
                                     contentBinding.prescriptionPrescriptionStart.getCaption(),
@@ -39,7 +41,7 @@ public final class PrescriptionValidator {
 
         Callback prescriptionEndCallback = () -> {
             if (contentBinding.prescriptionPrescriptionStart.getValue() != null && contentBinding.prescriptionPrescriptionEnd.getValue() != null) {
-                if (contentBinding.prescriptionPrescriptionEnd.getValue().before(contentBinding.prescriptionPrescriptionStart.getValue())) {
+                if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.prescriptionPrescriptionEnd.getValue(), contentBinding.prescriptionPrescriptionStart.getValue()) < 0) {
                     contentBinding.prescriptionPrescriptionEnd.enableErrorState(
                             I18nProperties.getValidationError(Validations.afterDate,
                                     contentBinding.prescriptionPrescriptionEnd.getCaption(),

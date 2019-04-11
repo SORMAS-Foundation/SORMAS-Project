@@ -42,6 +42,7 @@ import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelper;
+import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteria;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.Item;
@@ -106,7 +107,8 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         });
 
         // Button panel
-        if (!DatabaseHelper.getDiseaseClassificationCriteriaDao().getByDisease(record.getDisease()).hasAnyCriteria()) {
+        DiseaseClassificationCriteria classificationCriteria = DatabaseHelper.getDiseaseClassificationCriteriaDao().getByDisease(record.getDisease());
+        if (classificationCriteria == null || !classificationCriteria.hasAnyCriteria()) {
             contentBinding.showClassificationRules.setVisibility(GONE);
         }
         if (!ConfigProvider.hasUserRight(UserRight.CASE_TRANSFER)) {
