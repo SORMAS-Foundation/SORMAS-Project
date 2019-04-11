@@ -111,6 +111,7 @@ SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutBinding, Sampl
 
         if (!ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
             contentBinding.additionalTestingLayout.setVisibility(GONE);
+            contentBinding.sampleAdditionalTestingRequested.setRequired(false);
         }
 
         // Initialize ControlDateFields and ControlDateTimeFields

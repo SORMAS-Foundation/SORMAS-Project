@@ -246,6 +246,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 
         if (!ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
             contentBinding.additionalTestingLayout.setVisibility(GONE);
+            contentBinding.sampleAdditionalTestingRequested.setRequired(false);
         }
     }
 

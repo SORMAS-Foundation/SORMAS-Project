@@ -18,6 +18,8 @@
 
 package de.symeda.sormas.app.contact.edit;
 
+import org.joda.time.DateTimeComparator;
+
 import java.util.Date;
 
 import de.symeda.sormas.api.contact.ContactDto;
@@ -32,29 +34,25 @@ public final class ContactValidator {
 
     public static void initializeValidation(final Contact contact, final FragmentContactEditLayoutBinding contentBinding) {
         if (contact != null) {
-            Callback lastContactDateCallback = new Callback() {
-                public void call() {
-                    Date lastContactDate = contentBinding.contactLastContactDate.getValue();
-                    Date contactReferenceDate = contact.getReportDateTime();
-                    if (lastContactDate != null && contactReferenceDate != null && lastContactDate.after(contactReferenceDate)) {
-                        contentBinding.contactLastContactDate.enableErrorState(I18nProperties.getValidationError(Validations.beforeDate, contentBinding.contactLastContactDate.getCaption(),
-                                contentBinding.contactReportDateTime.getCaption()));
-                    }
-            }
-            };
+            Callback lastContactDateCallback = () -> {
+                Date lastContactDate = contentBinding.contactLastContactDate.getValue();
+                Date contactReferenceDate = contact.getReportDateTime();
+                if (lastContactDate != null && contactReferenceDate != null && DateTimeComparator.getDateOnlyInstance().compare(lastContactDate, contactReferenceDate) > 0) {
+                    contentBinding.contactLastContactDate.enableErrorState(I18nProperties.getValidationError(Validations.beforeDate, contentBinding.contactLastContactDate.getCaption(),
+                            contentBinding.contactReportDateTime.getCaption()));
+                }
+        };
             contentBinding.contactLastContactDate.setValidationCallback(lastContactDateCallback);
         }
     }
 
     public static void initializeValidation(final Contact contact, final FragmentContactNewLayoutBinding contentBinding) {
         if (contact != null) {
-            Callback lastContactDateCallback = new Callback() {
-                public void call() {
-                    Date lastContactDate = contentBinding.contactLastContactDate.getValue();
-                    Date contactReferenceDate = contact.getReportDateTime();
-                    if (lastContactDate != null && contactReferenceDate != null && lastContactDate.after(contactReferenceDate)) {
-                        contentBinding.contactLastContactDate.enableErrorState(I18nProperties.getValidationError(Validations.beforeDate, contentBinding.contactLastContactDate.getCaption(), I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.REPORT_DATE_TIME)));
-                    }
+            Callback lastContactDateCallback = () -> {
+                Date lastContactDate = contentBinding.contactLastContactDate.getValue();
+                Date contactReferenceDate = contact.getReportDateTime();
+                if (lastContactDate != null && contactReferenceDate != null && DateTimeComparator.getDateOnlyInstance().compare(lastContactDate, contactReferenceDate) > 0) {
+                    contentBinding.contactLastContactDate.enableErrorState(I18nProperties.getValidationError(Validations.beforeDate, contentBinding.contactLastContactDate.getCaption(), I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.REPORT_DATE_TIME)));
                 }
             };
             contentBinding.contactLastContactDate.setValidationCallback(lastContactDateCallback);
