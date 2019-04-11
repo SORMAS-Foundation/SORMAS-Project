@@ -103,9 +103,12 @@
 
     <string name="caption_address">Address</string>
     <string name="caption_age">Age</string>
+    <string name="caption_attended_by">Attended by</string>
+    <string name="caption_case_clinical_visits">Clinical Assessments</string>
     <string name="caption_case_contacts">Case Contacts</string>
     <string name="caption_case_epidemiological_data">Epidemiological Info</string>
     <string name="caption_case_fatality_rate">Case Fatality Rate</string>
+    <string name="caption_case_health_conditions">Pre-Existing Conditions</string>
     <string name="caption_case_hospitalization">Hospitalization Info</string>
     <string name="caption_case_information">Case Information</string>
     <string name="caption_case_prescriptions">Prescriptions</string>
@@ -263,6 +266,7 @@
     <string name="heading_gathering">Gathering</string>
     <string name="heading_gps_activation">Turn On GPS</string>
     <string name="heading_gps_permission">Allow GPS Access</string>
+    <string name="heading_health_conditions">Pre-Existing Conditions</string>
     <string name="heading_help">Help</string>
     <string name="heading_informant_reports">Informant Reports</string>
     <string name="heading_install_app">Ready to install</string>
@@ -462,6 +466,7 @@
     <string name="validation_visit_date_time_before_report_date">The visit cannot be more than 30 days before the contact report date.</string>
 
     <string name="value_age_unknown">Age N/A</string>
+    <string name="value_blood_pressure_unknown">Blood Pressure N/A</string>
     <string name="value_case_uuid_unknown">Case ID N/A</string>
     <string name="value_comment_unknown">Comment N/A</string>
     <string name="value_contact_proximity_unknown">Proximity N/A</string>
@@ -473,6 +478,7 @@
     <string name="value_facility_unknown">Health Facility N/A</string>
     <string name="value_frequency_unknown">Frequency N/A</string>
     <string name="value_gender_unknown">Gender N/A</string>
+    <string name="value_heart_rate_unknown">Heart Rate N/A</string>
     <string name="value_inadequate_specimen_condition">Specimen condition not adequate</string>
     <string name="value_lab_unknown">Lab N/A</string>
     <string name="value_location_unknown">Location N/A</string>
@@ -493,11 +499,13 @@
     <string name="value_task_date_unknown">Task Date N/A</string>
     <string name="value_task_priority_unknown">Priority N/A</string>
     <string name="value_task_type_unknown">Type N/A</string>
+    <string name="value_temperature_unknown">Temperature N/A</string>
     <string name="value_treatment_date_time_unknown">Treatment Date N/A</string>
     <string name="value_type_unknown">Type N/A</string>
     <string name="value_uuid_unknown">ID N/A</string>
     <string name="value_visit_date_unknown">Visit Date N/A</string>
     <string name="value_visit_remarks_unknown">Remarks N/A</string>
     <string name="value_visit_time_unknown">Visit Time N/A</string>
+    <string name="value_visiting_person_unknown">Attending Clinician N/A</string>
 
 </resources>

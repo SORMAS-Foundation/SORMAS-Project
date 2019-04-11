@@ -111,6 +111,12 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
             case TREATMENTS:
                 fragment = CaseReadTreatmentListFragment.newInstance(activityRootData);
                 break;
+            case HEALTH_CONDITIONS:
+                fragment = CaseReadHealthConditionsFragment.newInstance(activityRootData);
+                break;
+            case CLINICAL_VISITS:
+                fragment = CaseReadClinicalVisitListFragment.newInstance(activityRootData);
+                break;
             case TASKS:
                 fragment = CaseReadTaskListFragment.newInstance(activityRootData);
                 break;

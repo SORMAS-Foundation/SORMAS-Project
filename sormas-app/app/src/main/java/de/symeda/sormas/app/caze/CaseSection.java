@@ -34,6 +34,8 @@ public enum CaseSection implements StatusElaborator {
     SAMPLES(R.string.caption_case_samples, R.drawable.ic_drawer_sample_blue_24dp),
     PRESCRIPTIONS(R.string.caption_case_prescriptions, R.drawable.ic_receipt_black_24dp),
     TREATMENTS(R.string.caption_case_treatments, R.drawable.ic_pan_tool_black_24dp),
+    HEALTH_CONDITIONS(R.string.caption_case_health_conditions, R.drawable.ic_dvr_black_24dp),
+    CLINICAL_VISITS(R.string.caption_case_clinical_visits, R.drawable.ic_add_alarm_black_24dp),
     TASKS(R.string.caption_case_tasks, R.drawable.ic_drawer_user_task_blue_24dp);
 
     private int friendlyNameResourceId;

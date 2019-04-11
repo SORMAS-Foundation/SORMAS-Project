@@ -31,6 +31,7 @@ import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.ParentAdo;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 
@@ -61,6 +62,7 @@ public class ClinicalVisit extends AbstractDomainObject {
     @Column(length=512)
     private String visitingPerson;
 
+    @ParentAdo
     public ClinicalCourse getClinicalCourse() {
         return clinicalCourse;
     }

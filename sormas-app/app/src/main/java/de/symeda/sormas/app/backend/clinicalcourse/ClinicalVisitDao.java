@@ -45,6 +45,25 @@ public class ClinicalVisitDao extends AbstractAdoDao<ClinicalVisit> {
         }
     }
 
+    public long countByCriteria(ClinicalVisitCriteria criteria) {
+        try {
+            return buildQueryBuilder(criteria).countOf();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform countByCriteria on ClinicalVisit");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<ClinicalVisit> queryByCriteria(ClinicalVisitCriteria criteria, long offset, long limit) {
+        try {
+            return buildQueryBuilder(criteria).orderBy(ClinicalVisit.VISIT_DATE_TIME, true)
+                    .offset(offset).limit(limit).query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform queryByCriteria on ClinicalVisit");
+            throw new RuntimeException(e);
+        }
+    }
+
     private QueryBuilder<ClinicalVisit, Long> buildQueryBuilder(ClinicalVisitCriteria criteria) throws SQLException {
         QueryBuilder<ClinicalVisit, Long> queryBuilder = queryBuilder();
         Where<ClinicalVisit, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);

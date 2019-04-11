@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.clinicalcourse;
 import java.util.Date;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -15,6 +16,7 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.user.User;
 
@@ -22,6 +24,9 @@ import de.symeda.sormas.backend.user.User;
 @LocalBean
 public class ClinicalVisitService extends AbstractAdoService<ClinicalVisit> {
 
+	@EJB
+	CaseService caseService;
+	
 	public ClinicalVisitService() {
 		super(ClinicalVisit.class);
 	}
@@ -106,8 +111,8 @@ public class ClinicalVisitService extends AbstractAdoService<ClinicalVisit> {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<ClinicalVisit, ClinicalVisit> from, User user) {
-		// A user should not directly query for this
-		throw new UnsupportedOperationException();
+		Join<ClinicalVisit, ClinicalCourse> clinicalCourse = from.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
+		return caseService.createUserFilter(cb, cq, clinicalCourse.join(ClinicalCourse.CASE, JoinType.LEFT), user);
 	}
 	
 }

@@ -138,6 +138,12 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
             case TREATMENTS:
                 fragment = CaseEditTreatmentListFragment.newInstance(activityRootData);
                 break;
+            case HEALTH_CONDITIONS:
+                fragment = CaseEditHealthConditionsFragment.newInstance(activityRootData);
+                break;
+            case CLINICAL_VISITS:
+                fragment = CaseEditClinicalVisitListFragment.newInstance(activityRootData);
+                break;
             case TASKS:
                 fragment = CaseEditTaskListFragment.newInstance(activityRootData);
                 break;
