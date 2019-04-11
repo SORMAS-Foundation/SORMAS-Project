@@ -501,13 +501,21 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     }
 
     public void showPreloader() {
-        fragmentFrame.setVisibility(View.GONE);
-        preloader.setVisibility(View.VISIBLE);
+        if (fragmentFrame != null) {
+            fragmentFrame.setVisibility(View.GONE);
+        }
+        if (preloader != null) {
+            preloader.setVisibility(View.VISIBLE);
+        }
     }
 
     public void hidePreloader() {
-        preloader.setVisibility(View.GONE);
-        fragmentFrame.setVisibility(View.VISIBLE);
+        if (preloader != null) {
+            preloader.setVisibility(View.GONE);
+        }
+        if (fragmentFrame != null) {
+            fragmentFrame.setVisibility(View.VISIBLE);
+        }
     }
 
     public void setPageMenuVisibility(boolean visible) {

@@ -56,8 +56,8 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
     private Sample referredSample;
     private PathogenTest mostRecentTest;
     private AdditionalTest mostRecentAdditionalTests;
-    private List<String> requestedPathogenTests;
-    private List<String> requestedAdditionalTests;
+    private List<String> requestedPathogenTests = new ArrayList<>();
+    private List<String> requestedAdditionalTests = new ArrayList<>();
 
     public static SampleReadFragment newInstance(Sample activityRootData) {
         return newInstance(SampleReadFragment.class, null, activityRootData);
@@ -126,7 +126,6 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
             referredSample = null;
         }
 
-        requestedPathogenTests = new ArrayList<>();
         for (PathogenTestType pathogenTest : record.getRequestedPathogenTests()) {
             if (pathogenTest != PathogenTestType.OTHER) {
                 requestedPathogenTests.add(pathogenTest.toString());
@@ -134,7 +133,6 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
         }
 
         if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
-            requestedAdditionalTests = new ArrayList<>();
             for (AdditionalTestType additionalTest : record.getRequestedAdditionalTests()) {
                 requestedAdditionalTests.add(additionalTest.toString());
             }

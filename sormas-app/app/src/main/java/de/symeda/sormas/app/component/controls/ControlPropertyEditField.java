@@ -354,9 +354,8 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
         addValueChangedListener(new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
+                ((ControlPropertyEditField) field).disableErrorState();
                 if (!liveValidationDisabled) {
-                    ((ControlPropertyEditField) field).disableErrorState();
-
                     ((ControlPropertyEditField) field).setErrorIfEmpty();
 
                     if (validationCallback != null) {
@@ -422,7 +421,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
     public void setLiveValidationDisabled(boolean liveValidationDisabled) {
         if (this.liveValidationDisabled != liveValidationDisabled) {
             this.liveValidationDisabled = liveValidationDisabled;
-            if (liveValidationDisabled) {
+            if (liveValidationDisabled && hasError) {
                 disableErrorState();
             }
         }
