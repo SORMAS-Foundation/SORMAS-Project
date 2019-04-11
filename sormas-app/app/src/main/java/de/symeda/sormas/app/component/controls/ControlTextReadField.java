@@ -344,6 +344,12 @@ public class ControlTextReadField extends ControlPropertyField<String> {
         setValue(textField, uuid != null ? DataHelper.getShortUuid(uuid) : null, null, valueFormat, defaultValue, uuid);
     }
 
+    // Decimal value
+    @BindingAdapter(value = {"decimalValue"})
+    public static void setDecimalValue(ControlTextReadField textField, Integer value) {
+        textField.setValue(value != null ? SymptomsHelper.getDecimalString(value) : null);
+    }
+
     // Age with date
     @BindingAdapter(value = {"ageWithDateValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setAgeWithDateValue(ControlTextReadField textField, Person person, String valueFormat, String defaultValue) {
@@ -391,5 +397,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
             textField.setValue(ageWithDateBuilder.toString());
         }
     }
+
+
 
 }

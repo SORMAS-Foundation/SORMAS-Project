@@ -39,6 +39,7 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.CaseSection;
+import de.symeda.sormas.app.clinicalcourse.edit.ClinicalVisitNewActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.contact.edit.ContactNewActivity;
@@ -94,6 +95,10 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         List<PageMenuItem> menuItems = PageMenuItem.fromEnum(CaseSection.values(), getContext());
         Case caze = getStoredRootEntity();
         // Sections must be removed in reverse order
+        if (!ConfigProvider.hasUserRight(UserRight.CLINICAL_COURSE_VIEW)) {
+            menuItems.remove(CaseSection.CLINICAL_VISITS.ordinal());
+            menuItems.remove(CaseSection.HEALTH_CONDITIONS.ordinal());
+        }
         if (!ConfigProvider.hasUserRight(UserRight.THERAPY_VIEW)) {
             menuItems.remove(CaseSection.TREATMENTS.ordinal());
             menuItems.remove(CaseSection.PRESCRIPTIONS.ordinal());
@@ -231,6 +236,8 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
             SampleNewActivity.startActivity(getContext(), getRootUuid());
         } else if (activeSection == CaseSection.TASKS) {
             TaskNewActivity.startActivityFromCase(getContext(), getRootUuid());
+        } else if (activeSection == CaseSection.CLINICAL_VISITS) {
+            ClinicalVisitNewActivity.startActivity(getContext(), getRootUuid());
         } else if (activeSection == CaseSection.PRESCRIPTIONS) {
             PrescriptionNewActivity.startActivity(getContext(), getRootUuid());
         } else if (activeSection == CaseSection.TREATMENTS) {

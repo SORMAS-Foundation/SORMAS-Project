@@ -21,7 +21,6 @@ package de.symeda.sormas.app.component.controls;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
-import androidx.databinding.BindingAdapter;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -36,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.databinding.BindingAdapter;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.util.ControlLabelOnTouchListener;
@@ -403,6 +403,13 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
         field.visibilityChild = visibilityChild;
         if (visibilityChild != null) {
             visibilityChild.setVisibility(field.getVisibility());
+        }
+    }
+
+    @BindingAdapter(value = {"goneIfValue", "goneIfVariable"})
+    public static void setGoneIf(ControlPropertyField field, Enum goneIfValue, Enum goneIfVariable) {
+        if (goneIfVariable == goneIfValue) {
+            field.setVisibility(GONE);
         }
     }
 

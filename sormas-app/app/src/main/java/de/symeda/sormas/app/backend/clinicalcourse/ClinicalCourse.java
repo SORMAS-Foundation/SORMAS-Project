@@ -36,6 +36,8 @@ public class ClinicalCourse extends AbstractDomainObject {
     public static final String TABLE_NAME = "clinicalCourse";
     public static final String I18N_PREFIX = "ClinicalCourse";
 
+    public static final String HEALTH_CONDITIONS = "healthConditions";
+
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private HealthConditions healthConditions;
 

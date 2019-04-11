@@ -136,7 +136,7 @@ public class TestDataCreator {
 	}
 	
 	public ClinicalVisitDto createClinicalVisit(CaseDataDto caze) {
-		ClinicalVisitDto clinicalVisit = ClinicalVisitDto.buildClinicalVisit(caze.getClinicalCourse().toReference(), SymptomsDto.build(), caze.getDisease(), caze.getPerson());
+		ClinicalVisitDto clinicalVisit = ClinicalVisitDto.buildClinicalVisit(caze.getClinicalCourse().toReference(), SymptomsDto.build(), caze.getDisease());
 		
 		clinicalVisit = beanTest.getClinicalVisitFacade().saveClinicalVisit(clinicalVisit, caze.getUuid());
 	

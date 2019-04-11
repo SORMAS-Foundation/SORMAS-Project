@@ -18,6 +18,8 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -106,6 +108,16 @@ public class ClinicalVisitService extends AbstractAdoService<ClinicalVisit> {
 		}
 		
 		return filter;
+	}
+	
+	@Override
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<ClinicalVisit, ClinicalVisit> path, Date date) {
+		Predicate dateFilter = cb.greaterThan(path.get(ClinicalVisit.CHANGE_DATE), date);
+		
+		Join<ClinicalVisit, Symptoms> symptoms = path.join(ClinicalVisit.SYMPTOMS, JoinType.LEFT);
+		dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
+		
+		return dateFilter;
 	}
 
 	@SuppressWarnings("rawtypes")

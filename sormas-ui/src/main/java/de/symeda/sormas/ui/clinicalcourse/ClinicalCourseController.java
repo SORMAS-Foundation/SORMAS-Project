@@ -32,9 +32,9 @@ public class ClinicalCourseController {
 
 	public void openClinicalVisitCreateForm(ClinicalCourseReferenceDto clinicalCourse, String caseUuid, Runnable callback) {
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-		ClinicalVisitDto clinicalVisit = ClinicalVisitDto.buildClinicalVisit(clinicalCourse, new SymptomsDto(), caze.getDisease(), caze.getPerson());
+		ClinicalVisitDto clinicalVisit = ClinicalVisitDto.buildClinicalVisit(clinicalCourse, new SymptomsDto(), caze.getDisease());
 		ClinicalVisitForm form = new ClinicalVisitForm(true, clinicalVisit.getDisease(),
-				FacadeProvider.getPersonFacade().getPersonByUuid(clinicalVisit.getPerson().getUuid()),
+				FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()),
 				UserRight.CLINICAL_VISIT_CREATE);
 		form.setValue(clinicalVisit);
 
@@ -61,9 +61,10 @@ public class ClinicalCourseController {
 	}
 
 	public void openClinicalVisitEditForm(ClinicalVisitIndexDto clinicalVisitIndex, String caseUuid, Runnable callback) {
+		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 		ClinicalVisitDto clinicalVisit = FacadeProvider.getClinicalVisitFacade().getClinicalVisitByUuid(clinicalVisitIndex.getUuid());
 		ClinicalVisitForm form = new ClinicalVisitForm(false, clinicalVisit.getDisease(), 
-				FacadeProvider.getPersonFacade().getPersonByUuid(clinicalVisit.getPerson().getUuid()), 
+				FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()), 
 				UserRight.CLINICAL_VISIT_EDIT);
 		form.setValue(clinicalVisit);
 

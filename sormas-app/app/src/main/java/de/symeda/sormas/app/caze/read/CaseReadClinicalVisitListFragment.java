@@ -35,8 +35,10 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.app.backend.therapy.Treatment;
+import de.symeda.sormas.app.clinicalcourse.ClinicalVisitSection;
 import de.symeda.sormas.app.clinicalcourse.list.ClinicalVisitListAdapter;
 import de.symeda.sormas.app.clinicalcourse.list.ClinicalVisitListViewModel;
+import de.symeda.sormas.app.clinicalcourse.read.ClinicalVisitReadActivity;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.therapy.list.TreatmentListAdapter;
@@ -108,7 +110,7 @@ public class CaseReadClinicalVisitListFragment extends BaseReadFragment<Fragment
     @Override
     public void onListItemClick(View view, int position, Object item) {
         ClinicalVisit clinicalVisit = (ClinicalVisit) item;
-//        ClinicalVisitReadActivity.startActivity(getActivity(), clinicalVisit.getUuid());
+        ClinicalVisitReadActivity.startActivity(getActivity(), clinicalVisit.getUuid(), ClinicalVisitSection.VISIT_INFO);
     }
 
 }

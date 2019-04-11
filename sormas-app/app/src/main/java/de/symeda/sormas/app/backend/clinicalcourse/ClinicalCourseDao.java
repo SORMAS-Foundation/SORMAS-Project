@@ -20,6 +20,8 @@ package de.symeda.sormas.app.backend.clinicalcourse;
 
 import com.j256.ormlite.dao.Dao;
 
+import java.util.Date;
+
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
@@ -34,6 +36,22 @@ public class ClinicalCourseDao extends AbstractAdoDao<ClinicalCourse> {
         ClinicalCourse clinicalCourse = super.build();
         clinicalCourse.setHealthConditions(DatabaseHelper.getHealthConditionsDao().build());
         return clinicalCourse;
+    }
+
+    @Override
+    public Date getLatestChangeDate() {
+        Date date = super.getLatestChangeDate();
+        if (date == null) {
+            return null;
+        }
+
+
+        Date healthConditionsDate = getLatestChangeDateJoin(HealthConditions.TABLE_NAME, ClinicalCourse.HEALTH_CONDITIONS);
+        if (healthConditionsDate != null && healthConditionsDate.after(date)) {
+            date = healthConditionsDate;
+        }
+
+        return date;
     }
 
     @Override

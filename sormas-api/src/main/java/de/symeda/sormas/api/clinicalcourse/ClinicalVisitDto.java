@@ -4,7 +4,6 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
@@ -17,7 +16,6 @@ public class ClinicalVisitDto extends EntityDto {
 	public static final String CLINICAL_COURSE = "clinicalCourse";
 	public static final String SYMPTOMS = "symptoms";
 	public static final String DISEASE = "disease";
-	public static final String PERSON = "person";
 	public static final String VISIT_DATE_TIME = "visitDateTime";
 	public static final String VISIT_REMARKS = "visitRemarks";
 	public static final String VISITING_PERSON = "visitingPerson";
@@ -25,19 +23,16 @@ public class ClinicalVisitDto extends EntityDto {
 	private ClinicalCourseReferenceDto clinicalCourse;
 	private SymptomsDto symptoms;
 	private Disease disease;
-	private PersonReferenceDto person;
 	private Date visitDateTime;
 	private String visitRemarks;
 	private String visitingPerson;
 	
-	public static ClinicalVisitDto buildClinicalVisit(ClinicalCourseReferenceDto clinicalCourse, SymptomsDto symptoms,
-			Disease disease, PersonReferenceDto person) {
+	public static ClinicalVisitDto buildClinicalVisit(ClinicalCourseReferenceDto clinicalCourse, SymptomsDto symptoms, Disease disease) {
 		ClinicalVisitDto clinicalVisit = new ClinicalVisitDto();
 		clinicalVisit.setUuid(DataHelper.createUuid());
 		clinicalVisit.setClinicalCourse(clinicalCourse);
 		clinicalVisit.setSymptoms(symptoms);
 		clinicalVisit.setDisease(disease);
-		clinicalVisit.setPerson(person);
 		clinicalVisit.setVisitDateTime(new Date());
 		
 		return clinicalVisit;
@@ -62,13 +57,6 @@ public class ClinicalVisitDto extends EntityDto {
 	}
 	public void setDisease(Disease disease) {
 		this.disease = disease;
-	}
-	
-	public PersonReferenceDto getPerson() {
-		return person;
-	}
-	public void setPerson(PersonReferenceDto person) {
-		this.person = person;
 	}
 
 	public Date getVisitDateTime() {

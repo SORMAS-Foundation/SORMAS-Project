@@ -905,7 +905,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							"snapshot integer," +
 							"clinicalCourse_id bigint REFERENCES clinicalCourse(id)," +
 							"symptoms_id bigint REFERENCES symptoms(id)," +
-							"person_id bigint REFERENCES person(id)," +
 							"disease varchar(255)," +
 							"visitDateTime timestamp," +
 							"visitRemarks varchar(512)," +

@@ -18,6 +18,7 @@ public class ClinicalCourse extends AbstractDomainObject {
 	
 	public static final String TABLE_NAME = "clinicalcourse";
 	
+	public static final String HEALTH_CONDITIONS = "healthConditions";
 	public static final String CASE = "caze";
 	
 	private HealthConditions healthConditions;

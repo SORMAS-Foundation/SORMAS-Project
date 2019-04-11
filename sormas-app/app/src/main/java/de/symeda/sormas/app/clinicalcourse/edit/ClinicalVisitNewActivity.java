@@ -16,78 +16,78 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.visit.edit;
+package de.symeda.sormas.app.clinicalcourse.edit;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 
+import java.util.List;
+
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
-import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.visit.Visit;
+import de.symeda.sormas.app.clinicalcourse.ClinicalVisitSection;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.symptoms.SymptomsEditFragment;
 import de.symeda.sormas.app.util.Bundler;
-import de.symeda.sormas.app.visit.VisitSection;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
-public class VisitNewActivity extends BaseEditActivity<Visit> {
-
-    public static final String TAG = VisitNewActivity.class.getSimpleName();
+public class ClinicalVisitNewActivity extends BaseEditActivity<ClinicalVisit> {
 
     private AsyncTask saveTask;
-    private String contactUuid = null;
+    private String caseUuid;
 
-    public static void startActivity(Context context, String contactUuid) {
-        BaseEditActivity.startActivity(context, VisitNewActivity.class, buildBundle(contactUuid));
+    public static void startActivity(Context context, String caseUuid) {
+        BaseEditActivity.startActivity(context, ClinicalVisitNewActivity.class, buildBundle(caseUuid));
     }
 
-    public static Bundler buildBundle(String contactUuid) {
-        return buildBundle(null, 0).setContactUuid(contactUuid);
+    public static Bundler buildBundle(String caseUuid) {
+        return buildBundle(null, 0).setCaseUuid(caseUuid);
     }
 
     @Override
     protected void onCreateInner(Bundle savedInstanceState) {
         super.onCreateInner(savedInstanceState);
-        contactUuid = new Bundler(savedInstanceState).getContactUuid();
+        caseUuid = new Bundler(savedInstanceState).getCaseUuid();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        new Bundler(outState).setContactUuid(contactUuid);
+        new Bundler(outState).setCaseUuid(caseUuid);
     }
 
     @Override
-    protected Visit queryRootEntity(String recordUuid) {
+    protected ClinicalVisit queryRootEntity(String recordUuid) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected Visit buildRootEntity() {
-        Visit visit = DatabaseHelper.getVisitDao().build(contactUuid);
-        return visit;
+    protected ClinicalVisit buildRootEntity() {
+        return DatabaseHelper.getClinicalVisitDao().build(caseUuid);
     }
 
     @Override
-    public VisitStatus getPageStatus() {
+    public Enum getPageStatus() {
         return null;
     }
 
     @Override
-    protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Visit activityRootData) {
-        BaseEditFragment fragment = VisitEditFragment.newInstance(activityRootData, contactUuid);
+    protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, ClinicalVisit activityRootData) {
+        BaseEditFragment fragment = ClinicalVisitEditFragment.newInstance(activityRootData);
         fragment.setLiveValidationDisabled(true);
         return fragment;
     }
@@ -95,13 +95,8 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         boolean result = super.onCreateOptionsMenu(menu);
-        getSaveMenu().setTitle(R.string.action_save_visit);
+        getSaveMenu().setTitle(R.string.action_save_clinical_visit);
         return result;
-    }
-
-    @Override
-    public void replaceFragment(BaseEditFragment f, boolean allowBackNavigation) {
-        super.replaceFragment(f, allowBackNavigation);
     }
 
     @Override
@@ -112,19 +107,19 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
             return; // don't save multiple times
         }
 
-        final Visit visitToSave = getStoredRootEntity();
-        VisitEditFragment fragment = (VisitEditFragment) getActiveFragment();
+        final ClinicalVisit clinicalVisit = getStoredRootEntity();
+        ClinicalVisitEditFragment fragment = (ClinicalVisitEditFragment) getActiveFragment();
 
         fragment.setLiveValidationDisabled(false);
 
         try {
-            FragmentValidator.validate(getContext(), fragment.getContentBinding());
+            FragmentValidator.validate(getContext(), getActiveFragment().getContentBinding());
         } catch (ValidationException e) {
             NotificationHelper.showNotification(this, ERROR, e.getMessage());
             return;
         }
 
-        saveTask = new SavingAsyncTask(getRootView(), visitToSave) {
+        saveTask = new SavingAsyncTask(getRootView(), clinicalVisit) {
 
             @Override
             protected void onPreExecute() {
@@ -133,7 +128,7 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
 
             @Override
             public void doInBackground(TaskResultHolder resultHolder) throws Exception {
-                DatabaseHelper.getVisitDao().saveAndSnapshot(visitToSave);
+                DatabaseHelper.getClinicalVisitDao().saveAndSnapshot(clinicalVisit);
             }
 
             @Override
@@ -141,14 +136,10 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
                 hidePreloader();
                 super.onPostExecute(taskResult);
                 if (taskResult.getResultStatus().isSuccess()) {
-                    if (visitToSave.getVisitStatus() == VisitStatus.COOPERATIVE) {
-                        // enter symptoms
-                        finish();
-                        VisitEditActivity.startActivity(getContext(), visitToSave.getUuid(), contactUuid, VisitSection.SYMPTOMS);
-                    } else {
-                        finish(); // back to contact
-                    }
+                    finish();
+                    ClinicalVisitEditActivity.startActivity(getContext(), clinicalVisit.getUuid(), ClinicalVisitSection.CLINICAL_MEASUREMENTS);
                 }
+
                 saveTask = null;
             }
         }.executeOnThreadPool();
@@ -156,9 +147,8 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
 
     @Override
     protected int getActivityTitle() {
-        return R.string.heading_contact_visit;
+        return R.string.heading_clinical_visit_new;
     }
-
 
     @Override
     public void onDestroy() {
@@ -167,4 +157,5 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
         if (saveTask != null && !saveTask.isCancelled())
             saveTask.cancel(true);
     }
+
 }

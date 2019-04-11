@@ -33,6 +33,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
@@ -40,10 +41,12 @@ import de.symeda.sormas.api.utils.DependantOn;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
+import de.symeda.sormas.app.clinicalcourse.edit.ClinicalVisitEditActivity;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
@@ -51,6 +54,7 @@ import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentSymptomsEditLayoutBinding;
+import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.DataUtils;
 
 import static android.view.View.GONE;
@@ -62,6 +66,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
     private Disease disease;
     private boolean isInfant;
     private AbstractDomainObject ado;
+    private SymptomsContext symptomsContext;
 
     private List<Item> bodyTempList;
     private List<Item> tempSourceList;
@@ -71,13 +76,16 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 
     private List<ControlSwitchField> symptomFields;
 
-
     public static SymptomsEditFragment newInstance(Case activityRootData) {
         return newInstance(SymptomsEditFragment.class, null, activityRootData);
     }
 
     public static SymptomsEditFragment newInstance(Visit activityRootData) {
         return newInstance(SymptomsEditFragment.class, null, activityRootData);
+    }
+
+    public static SymptomsEditFragment newInstance(ClinicalVisit activityRootData, String caseUuid) {
+        return newInstance(SymptomsEditFragment.class, ClinicalVisitEditActivity.buildBundleWithCase(caseUuid).get(), activityRootData);
     }
 
     @Override
@@ -96,13 +104,21 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
         ado = getActivityRootData();
         Person person;
         if (ado instanceof Case) {
+            symptomsContext = SymptomsContext.CASE;
             record = ((Case) ado).getSymptoms();
             disease = ((Case) ado).getDisease();
             person = ((Case) ado).getPerson();
         } else if (ado instanceof Visit) {
+            symptomsContext = SymptomsContext.VISIT;
             record = ((Visit) ado).getSymptoms();
             disease = ((Visit) ado).getDisease();
             person = ((Visit) ado).getPerson();
+        } else if (ado instanceof ClinicalVisit) {
+            symptomsContext = SymptomsContext.CLINICAL_VISIT;
+            record = ((ClinicalVisit) ado).getSymptoms();
+            disease = ((ClinicalVisit) ado).getDisease();
+            // TODO: Get the person
+            person = null;
         } else {
             throw new UnsupportedOperationException("ActivityRootData of class " + ado.getClass().getSimpleName()
                     + " does not support PersonReadFragment");
@@ -119,6 +135,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
         setupCallback();
 
         contentBinding.setData(record);
+        contentBinding.setSymptomsContext(symptomsContext);
         contentBinding.setSymptomStateClass(SymptomState.class);
         contentBinding.setClearAllCallback(clearAllCallback);
         contentBinding.setSetClearedToNoCallback(setClearedToNoCallback);

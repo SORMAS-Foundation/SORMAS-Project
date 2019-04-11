@@ -43,6 +43,8 @@ import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
@@ -66,6 +68,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.therapy.Therapy;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
@@ -480,6 +483,15 @@ public class CaseService extends AbstractAdoService<Case> {
 		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataGatherings.get(AbstractDomainObject.CHANGE_DATE), date));
 		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataGatherings.join(EpiDataGathering.GATHERING_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
 
+		Join<Case, Therapy> therapy = casePath.join(Case.THERAPY, JoinType.LEFT);
+		dateFilter = cb.or(dateFilter, cb.greaterThan(therapy.get(AbstractDomainObject.CHANGE_DATE), date));
+
+		Join<Case, ClinicalCourse> clinicalCourse = casePath.join(Case.CLINICAL_COURSE, JoinType.LEFT);
+		dateFilter = cb.or(dateFilter, cb.greaterThan(clinicalCourse.get(AbstractDomainObject.CHANGE_DATE), date));
+
+		Join<ClinicalCourse, HealthConditions> healthConditions = clinicalCourse.join(ClinicalCourse.HEALTH_CONDITIONS, JoinType.LEFT);
+		dateFilter = cb.or(dateFilter, cb.greaterThan(healthConditions.get(AbstractDomainObject.CHANGE_DATE), date));
+		
 		return dateFilter;
 	}
 

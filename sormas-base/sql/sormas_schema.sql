@@ -3064,3 +3064,9 @@ END;
 $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (139, 'Replace creation of therapies/clinical courses in StartupShutdownService with SQL script #1042');
+
+-- 2019-04-11 Drop person_id from clinical visits #1005
+
+ALTER TABLE clinicalvisit DROP COLUMN person_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (140, 'Drop person_id from clinical visits #1005');

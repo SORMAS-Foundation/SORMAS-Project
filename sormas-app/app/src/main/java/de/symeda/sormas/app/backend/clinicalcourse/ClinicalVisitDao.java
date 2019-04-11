@@ -25,15 +25,29 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.symptoms.Symptoms;
 
 public class ClinicalVisitDao extends AbstractAdoDao<ClinicalVisit> {
 
     public ClinicalVisitDao(Dao<ClinicalVisit, Long> innerDao) {
         super(innerDao);
+    }
+
+    public ClinicalVisit build(String caseUuid) {
+        Case caze = DatabaseHelper.getCaseDao().queryUuidBasic(caseUuid);
+        ClinicalVisit clinicalVisit = super.build();
+        clinicalVisit.setClinicalCourse(caze.getClinicalCourse());
+        clinicalVisit.setSymptoms(DatabaseHelper.getSymptomsDao().build());
+        clinicalVisit.setDisease(caze.getDisease());
+        clinicalVisit.setVisitDateTime(new Date());
+        return clinicalVisit;
     }
 
     public List<ClinicalVisit> findBy(ClinicalVisitCriteria criteria) {
@@ -74,6 +88,21 @@ public class ClinicalVisitDao extends AbstractAdoDao<ClinicalVisit> {
 
         queryBuilder.setWhere(where);
         return queryBuilder;
+    }
+
+    @Override
+    public Date getLatestChangeDate() {
+        Date date = super.getLatestChangeDate();
+        if (date == null) {
+            return null;
+        }
+
+        Date symptomsDate = getLatestChangeDateJoin(Symptoms.TABLE_NAME, ClinicalVisit.SYMPTOMS);
+        if (symptomsDate != null && symptomsDate.after(date)) {
+            date = symptomsDate;
+        }
+
+        return date;
     }
 
     @Override

@@ -65,7 +65,6 @@ public class ClinicalVisitDtoHelper extends AdoDtoHelper<ClinicalVisit, Clinical
         target.setClinicalCourse(DatabaseHelper.getClinicalCourseDao().getByReferenceDto(source.getClinicalCourse()));
         target.setSymptoms(symptomsDtoHelper.fillOrCreateFromDto(target.getSymptoms(), source.getSymptoms()));
         target.setDisease(source.getDisease());
-        target.setPerson(DatabaseHelper.getPersonDao().getByReferenceDto(source.getPerson()));
         target.setVisitDateTime(source.getVisitDateTime());
         target.setVisitRemarks(source.getVisitRemarks());
         target.setVisitingPerson(source.getVisitingPerson());
@@ -85,13 +84,6 @@ public class ClinicalVisitDtoHelper extends AdoDtoHelper<ClinicalVisit, Clinical
             target.setSymptoms(symptomsDtoHelper.adoToDto(symptoms));
         } else {
             target.setSymptoms(null);
-        }
-
-        if (source.getPerson() != null) {
-            Person person = DatabaseHelper.getPersonDao().queryForId(source.getPerson().getId());
-            target.setPerson(PersonDtoHelper.toReferenceDto(person));
-        } else {
-            target.setPerson(null);
         }
 
         target.setDisease(source.getDisease());

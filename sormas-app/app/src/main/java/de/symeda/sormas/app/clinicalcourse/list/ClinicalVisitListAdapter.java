@@ -41,6 +41,7 @@ public class ClinicalVisitListAdapter extends BindingPagedListAdapter<ClinicalVi
         if (getItemViewType(position) == TYPE_ITEM) {
             BindingViewHolder<ClinicalVisit, RowClinicalVisitListItemLayoutBinding> pagedHolder = (BindingViewHolder) holder;
             ClinicalVisit item = getItem(position);
+            pagedHolder.binding.setSymptoms(item.getSymptoms());
 
             pagedHolder.setOnListItemClickListener(this.mOnListItemClickListener);
 

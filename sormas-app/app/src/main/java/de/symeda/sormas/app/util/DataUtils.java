@@ -103,7 +103,7 @@ public class DataUtils {
         return listOut;
     }
 
-    public static <E>  List<Item> addEmptyItem(List<Item> items) {
+    public static <E> List<Item> addEmptyItem(List<Item> items) {
         boolean hasEmptyItem = false;
         for (int i = 0; i < items.size(); i++) {
              if (items.get(i).getKey().equals("")) {
@@ -117,7 +117,7 @@ public class DataUtils {
         return items;
     }
 
-    public static <E>  List<Item> addItems(List<Item> items, List<E> listIn) {
+    public static <E> List<Item> addItems(List<Item> items, List<E> listIn) {
         for (E listInEntry: listIn) {
             items.add(new Item<E>(listInEntry.toString(),listInEntry));
         }

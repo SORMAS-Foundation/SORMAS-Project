@@ -27,8 +27,6 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.person.PersonFacadeEjb;
-import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
@@ -53,8 +51,6 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	private ClinicalCourseService clinicalCourseService;
 	@EJB
 	SymptomsFacadeEjbLocal symptomsFacade;
-	@EJB
-	PersonService personService;
 
 	//	private String countPositiveSymptomsQuery;
 	
@@ -219,7 +215,6 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		target.setClinicalCourse(ClinicalCourseFacadeEjb.toReferenceDto(source.getClinicalCourse()));
 		target.setSymptoms(SymptomsFacadeEjb.toDto(source.getSymptoms()));
 		target.setDisease(source.getDisease());
-		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
 		target.setVisitDateTime(source.getVisitDateTime());
 		target.setVisitRemarks(source.getVisitRemarks());
 		target.setVisitingPerson(source.getVisitingPerson());
@@ -243,7 +238,6 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		target.setClinicalCourse(clinicalCourseService.getByReferenceDto(source.getClinicalCourse()));
 		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms()));
 		target.setDisease(source.getDisease());
-		target.setPerson(personService.getByReferenceDto(source.getPerson()));
 		target.setVisitDateTime(source.getVisitDateTime());
 		target.setVisitRemarks(source.getVisitRemarks());
 		target.setVisitingPerson(source.getVisitingPerson());

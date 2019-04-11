@@ -46,6 +46,7 @@ public class ClinicalVisit extends AbstractDomainObject {
 
     public static final String CLINICAL_COURSE = "clinicalCourse";
     public static final String VISIT_DATE_TIME = "visitDateTime";
+    public static final String SYMPTOMS = "symptoms";
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private ClinicalCourse clinicalCourse;
@@ -53,8 +54,6 @@ public class ClinicalVisit extends AbstractDomainObject {
     private Symptoms symptoms;
     @Enumerated(EnumType.STRING)
     private Disease disease;
-    @DatabaseField(foreign = true, foreignAutoRefresh=true)
-    private Person person;
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date visitDateTime;
     @Column(length=512)
@@ -85,14 +84,6 @@ public class ClinicalVisit extends AbstractDomainObject {
 
     public void setDisease(Disease disease) {
         this.disease = disease;
-    }
-
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson(Person person) {
-        this.person = person;
     }
 
     public Date getVisitDateTime() {

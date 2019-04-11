@@ -82,6 +82,7 @@
     <string name="action_repull_data">Re-synchronize data</string>
     <string name="action_save">Save</string>
     <string name="action_save_case">Save Case</string>
+    <string name="action_save_clinical_visit">Save Clinical Visit</string>
     <string name="action_save_contact">Save Contact</string>
     <string name="action_save_event">Save Event</string>
     <string name="action_save_event_participant">Save Event Participant</string>
@@ -116,6 +117,10 @@
     <string name="caption_case_tasks">Case Tasks</string>
     <string name="caption_case_treatments">Treatments</string>
     <string name="caption_changed_data_lost">Changed data lost during re-sync.</string>
+    <string name="caption_clinical_measurements">Clinical Measurements</string>
+    <string name="caption_clinical_visit_date">Date of Assessment</string>
+    <string name="caption_clinical_visit_information">Assessment Information</string>
+    <string name="caption_clinical_visit_time">Time of Assessment</string>
     <string name="caption_confirmation_date">Confirmation Date: %1$s</string>
     <string name="caption_confirmed">Confirmed</string>
     <string name="caption_confirmed_case">Confirmed Case</string>
@@ -239,6 +244,8 @@
     <string name="heading_case_summary">Case Summary</string>
     <string name="heading_cases_list">Case Listing</string>
     <string name="heading_classification_for">Classification for</string>
+    <string name="heading_clinical_visit">Clinical Assessment</string>
+    <string name="heading_clinical_visit_new">New Clinical Assessment</string>
     <string name="heading_complications">Complications</string>
     <string name="heading_confirm_pin">Confirm PIN</string>
     <string name="heading_confirmation_dialog">Confirmation</string>

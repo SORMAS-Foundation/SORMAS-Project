@@ -114,8 +114,8 @@
                             app:defaultValue='@{@string/value_temperature_unknown}' />
 
                         <ImageView
-                            android:layout_width="@dimen/separatorThickness"
-                            android:layout_height="match_parent"
+                            android:layout_width="@dimen/boldSeparatorThickness"
+                            android:layout_height="15dp"
                             android:background="@color/listActivityRowTopCaptionSeparator"
                             android:layout_marginTop="2dp"
                             android:layout_marginBottom="2dp"
@@ -136,8 +136,8 @@
                             app:defaultValue='@{@string/value_blood_pressure_unknown}' />
 
                         <ImageView
-                            android:layout_width="@dimen/separatorThickness"
-                            android:layout_height="match_parent"
+                            android:layout_width="@dimen/boldSeparatorThickness"
+                            android:layout_height="15dp"
                             android:background="@color/listActivityRowTopCaptionSeparator"
                             android:layout_marginTop="2dp"
                             android:layout_marginBottom="2dp"
