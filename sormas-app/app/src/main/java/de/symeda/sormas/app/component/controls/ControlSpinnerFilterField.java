@@ -104,4 +104,14 @@ public class ControlSpinnerFilterField extends ControlSpinnerField {
         setEnabled(state != VisualState.DISABLED);
     }
 
+    @Override
+    public void enableErrorState(String errorMessage) {
+        // Don't do anything here
+    }
+
+    @Override
+    public void disableErrorState() {
+        // Don't do anything here
+    }
+
 }
