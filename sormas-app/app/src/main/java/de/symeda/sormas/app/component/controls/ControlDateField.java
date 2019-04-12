@@ -67,7 +67,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
     private FragmentManager fragmentManager;
     private SimpleDateFormat dateFormat;
     private int allowedDaysInFuture;
-    private Date cachedDate;
+    private Date cachedTime;
 
     // Constructors
 
@@ -123,6 +123,9 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
         fragment.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int yy, int mm, int dd) {
+                if (cachedTime == null) {
+                    cachedTime = new Date();
+                }
                 input.setText(DateHelper.formatLocalDate(DateHelper.getDateZero(yy, mm, dd), dateFormat));
             }
         });
@@ -202,8 +205,8 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
         Calendar cachedCalendar = Calendar.getInstance();
         dateCalendar.setTime(date);
 
-        if (cachedDate != null) {
-            cachedCalendar.setTime(cachedDate);
+        if (cachedTime != null) {
+            cachedCalendar.setTime(cachedTime);
         } else {
             cachedCalendar.setTime(new Date());
         }
@@ -218,7 +221,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 
     @Override
     protected void setFieldValue(Date value) {
-        cachedDate = value;
+        cachedTime = value;
 
         if (value == null) {
             input.setText(null);
