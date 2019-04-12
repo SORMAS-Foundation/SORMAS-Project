@@ -71,18 +71,15 @@ public class FragmentValidator {
                 boolean fieldHasError = field.setErrorIfEmpty();
 
                 if (field instanceof ControlDateField) {
-                    boolean dateRangeError = ((ControlDateField) field).setErrorIfOutOfDateRange();
-                    if (dateRangeError) fieldHasError = true;
+                    fieldHasError |= ((ControlDateField) field).setErrorIfOutOfDateRange();
                 }
 
                 if (field instanceof ControlDateTimeField) {
-                    boolean dateRangeError = ((ControlDateTimeField) field).setErrorIfOutOfDateRange();
-                    if (dateRangeError) fieldHasError = true;
+                    fieldHasError |= ((ControlDateTimeField) field).setErrorIfOutOfDateRange();
                 }
 
                 if (field.getValidationCallback() != null) {
-                    boolean customValidationError = (Boolean) field.getValidationCallback().call();
-                    if (customValidationError) fieldHasError = true;
+                    fieldHasError |= (Boolean) field.getValidationCallback().call();
                 }
 
                 // Disable error state on the field if all check returned without errors
