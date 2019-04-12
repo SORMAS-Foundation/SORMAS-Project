@@ -35,20 +35,24 @@ import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.databinding.FragmentSymptomsEditLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ResultCallback;
 
 final class SymptomsValidator {
 
     static void initializeSymptomsValidation(final FragmentSymptomsEditLayoutBinding contentBinding, final AbstractDomainObject ado) {
-        Callback temperatureCallback = () -> {
+        ResultCallback<Boolean> temperatureCallback = () -> {
             if (contentBinding.symptomsFever.getVisibility() == View.VISIBLE) {
                 if (contentBinding.symptomsTemperature.getValue() != null
                         && (Float) contentBinding.symptomsTemperature.getValue() >= 38.0f) {
                     if (contentBinding.symptomsFever.getValue() != SymptomState.YES) {
                         contentBinding.symptomsFever.enableErrorState(
                                 R.string.validation_symptoms_fever);
+                        return true;
                     }
                 }
             }
+
+            return false;
         };
 
         contentBinding.symptomsTemperature.setValidationCallback(temperatureCallback);

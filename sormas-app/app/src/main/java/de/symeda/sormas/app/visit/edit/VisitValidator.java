@@ -30,22 +30,27 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.databinding.FragmentVisitEditLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ResultCallback;
 
 public final class VisitValidator {
 
     public static void initializeVisitValidation(final Contact contact, final FragmentVisitEditLayoutBinding contentBinding) {
         if (contact != null) {
-            Callback visitDateTimeCallback = () -> {
+            ResultCallback<Boolean> visitDateTimeCallback = () -> {
                 Date visitDateTime = (Date) contentBinding.visitVisitDateTime.getValue();
                 Date contactReferenceDate = contact.getLastContactDate() != null ? contact.getLastContactDate() : contact.getReportDateTime();
                 if (DateTimeComparator.getDateOnlyInstance().compare(visitDateTime, contactReferenceDate) < 0 && DateHelper.getDaysBetween(visitDateTime, contactReferenceDate) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
                     contentBinding.visitVisitDateTime.enableErrorState(
                             contact.getLastContactDate() != null ? R.string.validation_visit_date_time_before_contact_date
                                     : R.string.validation_visit_date_time_before_report_date);
+                    return true;
                 } else if (contact.getFollowUpUntil() != null && DateTimeComparator.getDateOnlyInstance().compare(visitDateTime, contact.getFollowUpUntil()) > 0 && DateHelper.getDaysBetween(contact.getFollowUpUntil(), visitDateTime) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
                     contentBinding.visitVisitDateTime.enableErrorState(
                             R.string.validation_visit_date_time_after_followup);
+                    return true;
                 }
+
+                return false;
             };
 
             contentBinding.visitVisitDateTime.setValidationCallback(visitDateTimeCallback);

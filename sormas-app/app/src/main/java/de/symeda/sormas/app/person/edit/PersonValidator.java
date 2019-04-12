@@ -34,11 +34,12 @@ import de.symeda.sormas.app.databinding.DialogPreviousHospitalizationLayoutBindi
 import de.symeda.sormas.app.databinding.FragmentCaseEditHospitalizationLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ResultCallback;
 
 final class PersonValidator {
 
     static void initializePersonValidation(final FragmentPersonEditLayoutBinding contentBinding) {
-        Callback deathDateCallback = () -> {
+        ResultCallback<Boolean> deathDateCallback = () -> {
             Date birthDate = PersonEditFragment.calculateBirthDateValue(contentBinding);
             if (contentBinding.personDeathDate.getValue() != null && birthDate != null) {
                 if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.personDeathDate.getValue(), birthDate) < 0) {
@@ -46,21 +47,25 @@ final class PersonValidator {
                             I18nProperties.getValidationError(Validations.afterDate,
                                     contentBinding.personDeathDate.getCaption(),
                                     contentBinding.personBirthdateLabel.getText()));
+                    return true;
                 }
             }
+
+            return false;
         };
 
-        Callback burialDateCallback = new Callback() {
-            public void call() {
-                if (contentBinding.personBurialDate.getValue() != null && contentBinding.personDeathDate.getValue() != null) {
-                    if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.personBurialDate.getValue(), contentBinding.personDeathDate.getValue()) < 0) {
-                        contentBinding.personBurialDate.enableErrorState(
-                                I18nProperties.getValidationError(Validations.afterDate,
-                                        contentBinding.personBurialDate.getCaption(),
-                                        contentBinding.personDeathDate.getCaption()));
-                    }
+        ResultCallback<Boolean> burialDateCallback = () -> {
+            if (contentBinding.personBurialDate.getValue() != null && contentBinding.personDeathDate.getValue() != null) {
+                if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.personBurialDate.getValue(), contentBinding.personDeathDate.getValue()) < 0) {
+                    contentBinding.personBurialDate.enableErrorState(
+                            I18nProperties.getValidationError(Validations.afterDate,
+                                    contentBinding.personBurialDate.getCaption(),
+                                    contentBinding.personDeathDate.getCaption()));
+                    return true;
                 }
             }
+
+            return false;
         };
 
         contentBinding.personDeathDate.setValidationCallback(deathDateCallback);

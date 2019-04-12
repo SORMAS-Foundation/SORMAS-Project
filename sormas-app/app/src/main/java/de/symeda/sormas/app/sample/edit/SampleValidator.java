@@ -27,11 +27,12 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.app.databinding.FragmentSampleEditLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentSampleNewLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ResultCallback;
 
 public class SampleValidator {
 
     static void initializeSampleValidation(final FragmentSampleEditLayoutBinding contentBinding) {
-        Callback sampleDateCallback = () -> {
+        ResultCallback<Boolean> sampleDateCallback = () -> {
             // Must not be after date of shipment
             if (contentBinding.sampleSampleDateTime.getValue() != null && contentBinding.sampleShipmentDate.getValue() != null) {
                 if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.sampleSampleDateTime.getValue(), contentBinding.sampleShipmentDate.getValue()) > 0) {
@@ -39,11 +40,14 @@ public class SampleValidator {
                             I18nProperties.getValidationError(Validations.beforeDate,
                                     contentBinding.sampleSampleDateTime.getCaption(),
                                     contentBinding.sampleShipmentDate.getCaption()));
+                    return true;
                 }
             }
+
+            return false;
         };
 
-        Callback shipmentDateCallback = () -> {
+        ResultCallback<Boolean> shipmentDateCallback = () -> {
             // Must not be before sample date
             if (contentBinding.sampleShipmentDate.getValue() != null && contentBinding.sampleSampleDateTime.getValue() != null) {
                 if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.sampleShipmentDate.getValue(), contentBinding.sampleSampleDateTime.getValue()) < 0) {
@@ -51,8 +55,11 @@ public class SampleValidator {
                             I18nProperties.getValidationError(Validations.afterDate,
                                     contentBinding.sampleShipmentDate.getCaption(),
                                     contentBinding.sampleSampleDateTime.getCaption()));
+                    return true;
                 }
             }
+
+            return false;
         };
 
         contentBinding.sampleSampleDateTime.setValidationCallback(sampleDateCallback);
@@ -60,7 +67,7 @@ public class SampleValidator {
     }
 
     static void initializeSampleValidation(final FragmentSampleNewLayoutBinding contentBinding) {
-        Callback sampleDateCallback = () -> {
+        ResultCallback<Boolean> sampleDateCallback = () -> {
             // Must not be after date of shipment
             if (contentBinding.sampleSampleDateTime.getValue() != null && contentBinding.sampleShipmentDate.getValue() != null) {
                 if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.sampleSampleDateTime.getValue(), contentBinding.sampleShipmentDate.getValue()) > 0) {
@@ -68,11 +75,14 @@ public class SampleValidator {
                             I18nProperties.getValidationError(Validations.beforeDate,
                                     contentBinding.sampleSampleDateTime.getCaption(),
                                     contentBinding.sampleShipmentDate.getCaption()));
+                    return true;
                 }
             }
+
+            return false;
         };
 
-        Callback shipmentDateCallback = () -> {
+        ResultCallback<Boolean> shipmentDateCallback = () -> {
             // Must not be before sample date
             if (contentBinding.sampleShipmentDate.getValue() != null && contentBinding.sampleSampleDateTime.getValue() != null) {
                 if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.sampleShipmentDate.getValue(), contentBinding.sampleSampleDateTime.getValue()) < 0) {
@@ -80,8 +90,11 @@ public class SampleValidator {
                             I18nProperties.getValidationError(Validations.afterDate,
                                     contentBinding.sampleShipmentDate.getCaption(),
                                     contentBinding.sampleSampleDateTime.getCaption()));
+                    return true;
                 }
             }
+
+            return false;
         };
 
         contentBinding.sampleSampleDateTime.setValidationCallback(sampleDateCallback);

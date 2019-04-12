@@ -96,20 +96,27 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
 
     // Instance methods
 
-    public void setErrorIfOutOfDateRange() {
+    /**
+     * @return true if an error is set, false if not
+     */
+    public boolean setErrorIfOutOfDateRange() {
         if (getFieldValue() == null || getFieldValue().before(new Date())) {
-            return;
+            return false;
         }
 
         if (allowedDaysInFuture > 0) {
             if (DateHelper.getFullDaysBetween(new Date(), getFieldValue()) > allowedDaysInFuture) {
                 enableErrorState(I18nProperties.getValidationError(Validations.futureDate, getCaption(), allowedDaysInFuture));
+                return true;
             }
         } else if (allowedDaysInFuture == 0) {
             if (!DateHelper.isSameDay(new Date(), getFieldValue())) {
                 enableErrorState(I18nProperties.getValidationError(Validations.futureDateStrict, getCaption()));
+                return true;
             }
         }
+
+        return false;
     }
 
     private void showDateFragment() {

@@ -24,30 +24,37 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.app.databinding.FragmentPrescriptionEditLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ResultCallback;
 
 public final class PrescriptionValidator {
 
     public static void initializeValidation(final FragmentPrescriptionEditLayoutBinding contentBinding) {
-        Callback prescriptionStartCallback = () -> {
+        ResultCallback<Boolean> prescriptionStartCallback = () -> {
             if (contentBinding.prescriptionPrescriptionStart.getValue() != null && contentBinding.prescriptionPrescriptionEnd.getValue() != null) {
                 if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.prescriptionPrescriptionStart.getValue(), contentBinding.prescriptionPrescriptionEnd.getValue()) > 0) {
                     contentBinding.prescriptionPrescriptionStart.enableErrorState(
                             I18nProperties.getValidationError(Validations.beforeDate,
                                     contentBinding.prescriptionPrescriptionStart.getCaption(),
                                     contentBinding.prescriptionPrescriptionEnd.getCaption()));
+                    return true;
                 }
             }
+
+            return false;
         };
 
-        Callback prescriptionEndCallback = () -> {
+        ResultCallback<Boolean> prescriptionEndCallback = () -> {
             if (contentBinding.prescriptionPrescriptionStart.getValue() != null && contentBinding.prescriptionPrescriptionEnd.getValue() != null) {
                 if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.prescriptionPrescriptionEnd.getValue(), contentBinding.prescriptionPrescriptionStart.getValue()) < 0) {
                     contentBinding.prescriptionPrescriptionEnd.enableErrorState(
                             I18nProperties.getValidationError(Validations.afterDate,
                                     contentBinding.prescriptionPrescriptionEnd.getCaption(),
                                     contentBinding.prescriptionPrescriptionStart.getCaption()));
+                    return true;
                 }
             }
+
+            return false;
         };
 
         contentBinding.prescriptionPrescriptionStart.setValidationCallback(prescriptionStartCallback);
