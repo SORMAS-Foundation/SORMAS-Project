@@ -20,10 +20,12 @@ package de.symeda.sormas.app.clinicalcourse.edit;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.view.Menu;
 
 import java.util.List;
 
+import androidx.annotation.Nullable;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditActivity;
@@ -49,13 +51,26 @@ public class ClinicalVisitEditActivity extends BaseEditActivity<ClinicalVisit> {
     public static final String TAG = ClinicalVisitEditActivity.class.getSimpleName();
 
     private AsyncTask saveTask;
+    private String caseUuid;
 
-    public static void startActivity(Context context, String rootUuid, ClinicalVisitSection section) {
-        BaseEditActivity.startActivity(context, ClinicalVisitEditActivity.class, buildBundle(rootUuid, section));
+    public static void startActivity(Context context, String rootUuid, String caseUuid, ClinicalVisitSection section) {
+        BaseEditActivity.startActivity(context, ClinicalVisitEditActivity.class, buildBundle(rootUuid, section).setCaseUuid(caseUuid));
     }
 
     public static Bundler buildBundleWithCase(String caseUuid) {
         return BaseEditActivity.buildBundle(null).setCaseUuid(caseUuid);
+    }
+
+    @Override
+    public void onCreateInner(@Nullable Bundle savedInstanceState) {
+        super.onCreateInner(savedInstanceState);
+        caseUuid = new Bundler(savedInstanceState).getCaseUuid();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        new Bundler(outState).setCaseUuid(caseUuid);
     }
 
     @Override
@@ -90,8 +105,7 @@ public class ClinicalVisitEditActivity extends BaseEditActivity<ClinicalVisit> {
                 fragment = ClinicalMeasurementsEditFragment.newInstance(activityRootData.getSymptoms());
                 break;
             case SYMPTOMS:
-                // TODO get the case
-                fragment = SymptomsEditFragment.newInstance(activityRootData, null);
+                fragment = SymptomsEditFragment.newInstance(activityRootData, caseUuid);
                 break;
             default:
                 throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));

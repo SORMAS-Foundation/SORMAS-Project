@@ -137,7 +137,7 @@ public class ClinicalVisitNewActivity extends BaseEditActivity<ClinicalVisit> {
                 super.onPostExecute(taskResult);
                 if (taskResult.getResultStatus().isSuccess()) {
                     finish();
-                    ClinicalVisitEditActivity.startActivity(getContext(), clinicalVisit.getUuid(), ClinicalVisitSection.CLINICAL_MEASUREMENTS);
+                    ClinicalVisitEditActivity.startActivity(getContext(), clinicalVisit.getUuid(), caseUuid, ClinicalVisitSection.CLINICAL_MEASUREMENTS);
                 }
 
                 saveTask = null;

@@ -19,9 +19,11 @@
 package de.symeda.sormas.app.clinicalcourse.read;
 
 import android.content.Context;
+import android.os.Bundle;
 
 import java.util.List;
 
+import androidx.annotation.Nullable;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
@@ -32,18 +34,33 @@ import de.symeda.sormas.app.clinicalcourse.ClinicalVisitSection;
 import de.symeda.sormas.app.clinicalcourse.edit.ClinicalVisitEditActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.symptoms.SymptomsReadFragment;
+import de.symeda.sormas.app.util.Bundler;
 
 public class ClinicalVisitReadActivity extends BaseReadActivity<ClinicalVisit> {
 
     public static final String TAG = ClinicalVisitReadActivity.class.getSimpleName();
 
-    public static void startActivity(Context context, String rootUuid, ClinicalVisitSection section) {
-        BaseReadActivity.startActivity(context, ClinicalVisitReadActivity.class, buildBundle(rootUuid, section));
+    private String caseUuid;
+
+    public static void startActivity(Context context, String rootUuid, String caseUuid, ClinicalVisitSection section) {
+        BaseReadActivity.startActivity(context, ClinicalVisitReadActivity.class, buildBundle(rootUuid, section).setCaseUuid(caseUuid));
     }
 
     @Override
     protected ClinicalVisit queryRootEntity(String recordUuid) {
         return DatabaseHelper.getClinicalVisitDao().queryUuid(recordUuid);
+    }
+
+    @Override
+    public void onCreateInner(@Nullable Bundle savedInstanceState) {
+        super.onCreateInner(savedInstanceState);
+        caseUuid = new Bundler(savedInstanceState).getCaseUuid();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        new Bundler(outState).setCaseUuid(caseUuid);
     }
 
     @Override
@@ -84,7 +101,7 @@ public class ClinicalVisitReadActivity extends BaseReadActivity<ClinicalVisit> {
     @Override
     public void goToEditView() {
         ClinicalVisitSection section = ClinicalVisitSection.fromOrdinal(getActivePage().getKey());
-        ClinicalVisitEditActivity.startActivity(getContext(), getRootUuid(), section);
+        ClinicalVisitEditActivity.startActivity(getContext(), getRootUuid(), caseUuid, section);
     }
 
 }

@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -43,6 +44,8 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
@@ -117,8 +120,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
             symptomsContext = SymptomsContext.CLINICAL_VISIT;
             record = ((ClinicalVisit) ado).getSymptoms();
             disease = ((ClinicalVisit) ado).getDisease();
-            // TODO: Get the person
-            person = null;
+            person = DatabaseHelper.getCaseDao().queryUuidBasic(new Bundler(getArguments()).getCaseUuid()).getPerson();
         } else {
             throw new UnsupportedOperationException("ActivityRootData of class " + ado.getClass().getSimpleName()
                     + " does not support PersonReadFragment");

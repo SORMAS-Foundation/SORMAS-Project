@@ -110,7 +110,7 @@ public class CaseReadClinicalVisitListFragment extends BaseReadFragment<Fragment
     @Override
     public void onListItemClick(View view, int position, Object item) {
         ClinicalVisit clinicalVisit = (ClinicalVisit) item;
-        ClinicalVisitReadActivity.startActivity(getActivity(), clinicalVisit.getUuid(), ClinicalVisitSection.VISIT_INFO);
+        ClinicalVisitReadActivity.startActivity(getActivity(), clinicalVisit.getUuid(), getActivityRootData().getUuid(), ClinicalVisitSection.VISIT_INFO);
     }
 
 }

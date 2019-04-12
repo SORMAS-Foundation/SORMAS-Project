@@ -109,7 +109,7 @@ public class CaseEditClinicalVisitListFragment extends BaseEditFragment<Fragment
     @Override
     public void onListItemClick(View view, int position, Object item) {
         ClinicalVisit clinicalVisit = (ClinicalVisit) item;
-        ClinicalVisitEditActivity.startActivity(getActivity(), clinicalVisit.getUuid(), ClinicalVisitSection.VISIT_INFO);
+        ClinicalVisitEditActivity.startActivity(getActivity(), clinicalVisit.getUuid(), getActivityRootData().getUuid(), ClinicalVisitSection.VISIT_INFO);
     }
 
     @Override
