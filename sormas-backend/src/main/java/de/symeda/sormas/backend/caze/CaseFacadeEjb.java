@@ -627,6 +627,20 @@ public class CaseFacadeEjb implements CaseFacade {
 			return null;
 		}
 	}
+	
+	@Override
+	public CaseDataDto getCaseByClinicalCourse(String clinicalCourseUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Case> cq = cb.createQuery(Case.class);
+		Root<Case> caze = cq.from(Case.class);
+		Join<Case, ClinicalCourse> clinicalCourse = caze.join(Case.CLINICAL_COURSE, JoinType.LEFT);
+		
+		Predicate filter = cb.equal(clinicalCourse.get(ClinicalCourse.UUID), clinicalCourseUuid);
+		cq.where(filter);
+		cq.distinct(true);
+
+		return toDto(em.createQuery(cq).getSingleResult());
+	}
 
 	@Override
 	public List<CaseDataDto> getAllCasesOfPerson(String personUuid, String userUuid) {

@@ -153,11 +153,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	 */
 	@Override
 	public ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit) {
-		ClinicalVisit entity = fromDto(clinicalVisit);
-
-		service.ensurePersisted(entity);
-
-		return toDto(entity);
+		return saveClinicalVisit(clinicalVisit, caseFacade.getCaseByClinicalCourse(clinicalVisit.getClinicalCourse().getUuid()).getUuid());
 	}
 
 	@Override

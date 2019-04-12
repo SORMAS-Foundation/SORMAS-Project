@@ -228,6 +228,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         boolean treatmentsNeedPull = treatmentDtoHelper.pullAndPushEntities();
         boolean clinicalVisitsNeedPull = clinicalVisitDtoHelper.pullAndPushEntities();
 
+        casesNeedPull |= clinicalVisitsNeedPull;
+
         if (personsNeedPull)
             personDtoHelper.pullEntities(true);
         if (casesNeedPull)

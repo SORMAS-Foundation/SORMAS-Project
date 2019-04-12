@@ -51,6 +51,8 @@ public interface CaseFacade {
 	List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria, int first, int max);
 	
 	CaseDataDto getCaseDataByUuid(String uuid);
+	
+	CaseDataDto getCaseByClinicalCourse(String clinicalCourseUuid);
     
 	/**
 	 * Saves the case. Throws a ValidationRuntimeException when a required field that does not have a not null constraint in the database
