@@ -3070,3 +3070,27 @@ INSERT INTO schema_version (version_number, comment) VALUES (139, 'Replace creat
 ALTER TABLE clinicalvisit DROP COLUMN person_id;
 
 INSERT INTO schema_version (version_number, comment) VALUES (140, 'Drop person_id from clinical visits #1005');
+
+-- 2019-04-12 Create potentially missing therapies and/or clinical courses #1042
+
+DO $$
+DECLARE rec RECORD;
+DECLARE new_therapy_id INTEGER;
+DECLARE new_clinical_course_id INTEGER;
+DECLARE new_health_conditions_id INTEGER;
+BEGIN
+FOR rec IN SELECT id FROM public.cases WHERE therapy_id IS NULL
+LOOP
+INSERT INTO therapy(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now()) RETURNING id INTO new_therapy_id;
+UPDATE cases SET therapy_id = new_therapy_id WHERE id = rec.id;
+END LOOP;
+FOR rec IN SELECT id FROM public.cases WHERE clinicalcourse_id IS NULL
+LOOP
+INSERT INTO healthconditions(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now()) RETURNING id INTO new_health_conditions_id;
+INSERT INTO clinicalcourse(id, uuid, creationdate, changedate, healthconditions_id) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now(), new_health_conditions_id) RETURNING id INTO new_clinical_course_id;
+UPDATE cases SET clinicalcourse_id = new_clinical_course_id WHERE id = rec.id;
+END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (141, 'Create potentially missing therapies and/or clinical courses #1042');
