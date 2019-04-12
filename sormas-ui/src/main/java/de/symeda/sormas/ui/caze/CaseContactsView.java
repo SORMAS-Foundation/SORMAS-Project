@@ -93,7 +93,7 @@ public class CaseContactsView extends AbstractCaseView {
 		gridLayout.setSpacing(false);
 		gridLayout.setSizeFull();
 		gridLayout.setExpandRatio(grid, 1);
-		grid.addItemCountChangedListener(e -> updateStatusButtons());
+		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 
 		setSubComponent(gridLayout);
 	}

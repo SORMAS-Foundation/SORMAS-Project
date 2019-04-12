@@ -35,9 +35,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.AbstractGrid;
+import de.symeda.sormas.ui.utils.V7AbstractGrid;
 
-public class FacilitiesGrid extends Grid implements AbstractGrid<FacilityCriteria> {
+public class FacilitiesGrid extends Grid implements V7AbstractGrid<FacilityCriteria> {
 
 	private static final long serialVersionUID = 4488941182432777837L;
 

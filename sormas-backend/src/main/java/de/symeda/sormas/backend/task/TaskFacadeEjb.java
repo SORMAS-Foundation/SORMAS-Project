@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.task;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -31,8 +32,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -54,6 +57,7 @@ import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -263,7 +267,33 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	public List<TaskIndexDto> getIndexList(String userUuid, TaskCriteria taskCriteria) {
+	public long count(String userUuid, TaskCriteria taskCriteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Task> task = cq.from(Task.class);
+
+		Predicate filter = null;
+		if (userUuid != null 
+				&& (taskCriteria == null || !taskCriteria.hasContextCriteria())) {
+			User user = userService.getByUuid(userUuid);		
+			filter = taskService.createUserFilter(cb, cq, task, user);
+		}
+
+		if (taskCriteria != null) {
+			Predicate criteriaFilter = taskService.buildCriteriaFilter(taskCriteria, cb, task);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.select(cb.count(task));
+		return em.createQuery(cq).getSingleResult();
+	}
+	
+	@Override
+	public List<TaskIndexDto> getIndexList(String userUuid, TaskCriteria taskCriteria, int first, int max, List<SortProperty> sortProperties) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<TaskIndexDto> cq = cb.createQuery(TaskIndexDto.class);
@@ -304,7 +334,51 @@ public class TaskFacadeEjb implements TaskFacade {
 			cq.where(filter);
 		}
 
-		List<TaskIndexDto> resultList = em.createQuery(cq).getResultList();
+		List<Order> order = new ArrayList<Order>();
+		if (sortProperties != null && sortProperties.size() > 0) {
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case TaskIndexDto.UUID:
+				case TaskIndexDto.ASSIGNEE_REPLY:
+				case TaskIndexDto.CREATOR_COMMENT:
+				case TaskIndexDto.PRIORITY:
+				case TaskIndexDto.DUE_DATE:
+				case TaskIndexDto.SUGGESTED_START:
+				case TaskIndexDto.TASK_CONTEXT:
+				case TaskIndexDto.TASK_STATUS:
+				case TaskIndexDto.TASK_TYPE:
+					expression = task.get(sortProperty.propertyName);
+					break;
+				case TaskIndexDto.ASSIGNEE_USER:
+					expression = assignee.get(User.USER_NAME);
+					break;
+				case TaskIndexDto.CREATOR_USER:
+					expression = creator.get(User.USER_NAME);
+					break;
+				case TaskIndexDto.CAZE:
+					expression = cazePerson.get(Person.LAST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = cazePerson.get(Person.FIRST_NAME);
+					break;
+				case TaskIndexDto.CONTACT:
+					expression = contactPerson.get(Person.LAST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = contactPerson.get(Person.FIRST_NAME);
+					break;
+				case TaskIndexDto.EVENT:
+					expression = event.get(Event.EVENT_DATE);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+		}
+		order.add(cb.desc(task.get(Task.DUE_DATE)));
+		cq.orderBy(order);
+
+		List<TaskIndexDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 		return resultList;
 	}
 

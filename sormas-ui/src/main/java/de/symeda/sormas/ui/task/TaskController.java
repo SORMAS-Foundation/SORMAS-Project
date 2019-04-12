@@ -143,15 +143,15 @@ public class TaskController {
 		return user.getCaption() + " (" + taskCount + ")";
 	}
 	
-	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(Collection<TaskIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoTasksSelected), 
 					I18nProperties.getString(Strings.messageNoTasksSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
 			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteTasks), selectedRows.size()), new Runnable() {
 				public void run() {
-					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getTaskFacade().deleteTask(FacadeProvider.getTaskFacade().getByUuid(((TaskIndexDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
+					for (TaskIndexDto selectedRow : selectedRows) {
+						FacadeProvider.getTaskFacade().deleteTask(FacadeProvider.getTaskFacade().getByUuid(selectedRow.getUuid()), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification(I18nProperties.getString(Strings.headingTasksDeleted), 

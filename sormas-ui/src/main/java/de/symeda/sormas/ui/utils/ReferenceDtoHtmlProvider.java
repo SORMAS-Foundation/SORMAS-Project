@@ -17,30 +17,24 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import com.vaadin.ui.renderers.HtmlRenderer;
+import com.vaadin.data.ValueProvider;
 
-import elemental.json.JsonValue;
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 @SuppressWarnings("serial")
-public class ShortStringRenderer extends HtmlRenderer {
-	
-	private final int length;
-	
-	public ShortStringRenderer(int length) {
-		this.length = length;
-	}
-	
+public class ReferenceDtoHtmlProvider implements ValueProvider<ReferenceDto, String> {
+
 	@Override
-	public JsonValue encode(String value) {
-		if(value != null && !value.isEmpty()) {
-			if(value.length() > length) {
-				value = value.substring(0, length);
-				value += "...";
-			}
-			return super.encode(value);
+	public String apply(ReferenceDto source) {
+		String html;
+		if (source != null) {
+			String uuid = source.getUuid();
+			html = "<a title='" + uuid + "'>" + DataHelper.getShortUuid(uuid) + "</a> (" + source.getCaption() + ")";
 		} else {
-			return null;
+			html = "";
 		}
+		return html;
 	}
 
 }

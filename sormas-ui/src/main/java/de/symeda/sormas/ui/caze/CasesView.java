@@ -156,7 +156,7 @@ public class CasesView extends AbstractView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
 
-		grid.addItemCountChangedListener(e -> updateStatusButtons());
+		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
 			Button importButton = new Button(I18nProperties.getCaption(Captions.actionImport));

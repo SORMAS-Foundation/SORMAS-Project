@@ -17,11 +17,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.AbstractGrid;
+import de.symeda.sormas.ui.utils.V7AbstractGrid;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
-public class ClinicalVisitGrid extends Grid implements AbstractGrid<ClinicalVisitCriteria> {
+public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVisitCriteria> {
 
 	private static final String EDIT_BTN_ID = "edit";
 	

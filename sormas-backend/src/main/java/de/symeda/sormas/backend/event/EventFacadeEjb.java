@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.event;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -31,8 +32,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
@@ -46,12 +49,13 @@ import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
@@ -203,7 +207,32 @@ public class EventFacadeEjb implements EventFacade {
 	}
 	
 	@Override
-	public List<EventIndexDto> getIndexList(String userUuid, EventCriteria eventCriteria) {
+	public long count(String userUuid, EventCriteria eventCriteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Event> event = cq.from(Event.class);
+				
+		Predicate filter = null;
+		if (userUuid != null) {
+			User user = userService.getByUuid(userUuid);
+			filter = eventService.createUserFilter(cb, cq, event, user);
+		}
+		
+		if (eventCriteria != null) {
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		}
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.select(cb.count(event));
+		return em.createQuery(cq).getSingleResult();
+	}
+	
+	@Override
+	public List<EventIndexDto> getIndexList(String userUuid, EventCriteria eventCriteria, int first, int max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventIndexDto> cq = cb.createQuery(EventIndexDto.class);
 		Root<Event> event = cq.from(Event.class);
@@ -245,9 +274,43 @@ public class EventFacadeEjb implements EventFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}
-		cq.orderBy(cb.desc(event.get(Event.REPORT_DATE_TIME)));
-		
-		List<EventIndexDto> resultList = em.createQuery(cq).getResultList();
+
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case EventIndexDto.UUID:
+				case EventIndexDto.EVENT_TYPE:
+				case EventIndexDto.EVENT_STATUS:
+				case EventIndexDto.DISEASE:
+				case EventIndexDto.DISEASE_DETAILS:
+				case EventIndexDto.EVENT_DATE:
+				case EventIndexDto.EVENT_DESC:
+				case EventIndexDto.SRC_FIRST_NAME:
+				case EventIndexDto.SRC_LAST_NAME:
+				case EventIndexDto.SRC_TEL_NO:
+				case EventIndexDto.REPORT_DATE_TIME:
+					expression = event.get(sortProperty.propertyName);
+					break;
+				case EventIndexDto.EVENT_LOCATION:
+					expression = region.get(Region.NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = district.get(District.NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = community.get(Community.NAME);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(event.get(Contact.CHANGE_DATE)));
+		}
+
+		List<EventIndexDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 		return resultList;
 	}
 

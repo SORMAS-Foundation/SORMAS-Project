@@ -17,16 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import com.vaadin.ui.renderers.HtmlRenderer;
+import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import elemental.json.JsonValue;
 
 @SuppressWarnings("serial")
-public class ShortStringRenderer extends HtmlRenderer {
+public class V7ShortStringRenderer extends HtmlRenderer {
 	
 	private final int length;
 	
-	public ShortStringRenderer(int length) {
+	public V7ShortStringRenderer(int length) {
 		this.length = length;
 	}
 	

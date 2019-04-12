@@ -25,6 +25,7 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface TaskFacade {
@@ -59,7 +60,9 @@ public interface TaskFacade {
 	
 	void deleteTask(TaskDto taskDto, String userUuid);
 
-	List<TaskIndexDto> getIndexList(String userUuid, TaskCriteria taskCriteria);
+	long count(String userUuid, TaskCriteria criteria);
 	
+	List<TaskIndexDto> getIndexList(String userUuid, TaskCriteria criteria, int first, int max, List<SortProperty> sortProperties);
+
 	void sendNewAndDueTaskMessages();
 }

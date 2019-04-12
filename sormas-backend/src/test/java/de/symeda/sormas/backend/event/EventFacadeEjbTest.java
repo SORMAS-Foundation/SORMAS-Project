@@ -93,7 +93,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		eventLocation.setDistrict(getDistrictFacade().getDistrictReferenceByUuid(rdcf.district.getUuid()));
 		creator.createEvent(EventType.OUTBREAK, EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE, DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, eventLocation);
 
-		List<EventIndexDto> results = getEventFacade().getIndexList(user.getUuid(), null);
+		List<EventIndexDto> results = getEventFacade().getIndexList(user.getUuid(), null, 0, 100, null);
 
 		// List should have one entry
 		assertEquals(1, results.size());

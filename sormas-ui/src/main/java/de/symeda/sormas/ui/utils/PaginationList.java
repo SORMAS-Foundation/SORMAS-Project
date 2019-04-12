@@ -32,7 +32,7 @@ public abstract class PaginationList<T> extends VerticalLayout {
 	
 	protected final VerticalLayout listLayout;
 	protected final HorizontalLayout paginationLayout;
-	private final int maxDisplayedEntries;
+	protected final int maxDisplayedEntries;
 	private List<T> entries;
 	private List<T> displayedEntries;
 	private int currentPage;

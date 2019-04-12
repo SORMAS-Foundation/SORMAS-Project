@@ -17,9 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
@@ -131,7 +129,7 @@ public class EventController {
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
-				if(!eventEditForm.getFieldGroup().isModified()) {
+				if (!eventEditForm.getFieldGroup().isModified()) {
 					EventDto eventDto = eventEditForm.getValue();
 					eventDto = FacadeProvider.getEventFacade().saveEvent(eventDto);
 					Notification.show(I18nProperties.getString(Strings.messageEventSaved), Type.WARNING_MESSAGE);
@@ -172,15 +170,12 @@ public class EventController {
 		return editView;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void showBulkEventDataEditComponent(Collection<Object> selectedRows) {
-		if (selectedRows.size() == 0) {
+	public void showBulkEventDataEditComponent(Collection<EventIndexDto> selectedEvents) {
+		if (selectedEvents.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoEventsSelected), 
 					I18nProperties.getString(Strings.messageNoEventsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 			return;
 		}
-
-		List<EventIndexDto> selectedEvents = new ArrayList(selectedRows);
 
 		// Create a temporary event in order to use the CommitDiscardWrapperComponent
 		EventDto tempEvent = new EventDto();
@@ -252,15 +247,15 @@ public class EventController {
 		}
 	}
 
-	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(Collection<EventIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoEventsSelected), 
 					I18nProperties.getString(Strings.messageNoEventsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
 			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEvents), selectedRows.size()), new Runnable() {
 				public void run() {
-					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getEventFacade().deleteEvent(new EventReferenceDto(((EventIndexDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
+					for (EventIndexDto selectedRow : selectedRows) {
+						FacadeProvider.getEventFacade().deleteEvent(new EventReferenceDto(selectedRow.getUuid()), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification(I18nProperties.getString(Strings.headingEventsDeleted), 
@@ -271,7 +266,7 @@ public class EventController {
 	}
 
 
-	public void archiveAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+	public void archiveAllSelectedItems(Collection<EventIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoEventsSelected), 
 					I18nProperties.getString(Strings.messageNoEventsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
@@ -280,8 +275,8 @@ public class EventController {
 					new Label(String.format(I18nProperties.getString(Strings.confirmationArchiveEvents), selectedRows.size())), 
 					I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), null, e -> {
 				if (e.booleanValue() == true) {
-					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getEventFacade().archiveOrDearchiveEvent(((EventIndexDto) selectedRow).getUuid(), true);
+					for (EventIndexDto selectedRow : selectedRows) {
+						FacadeProvider.getEventFacade().archiveOrDearchiveEvent(selectedRow.getUuid(), true);
 					}
 					callback.run();
 					new Notification(I18nProperties.getString(Strings.headingEventsArchived), 
@@ -291,7 +286,7 @@ public class EventController {
 		}
 	}
 
-	public void dearchiveAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+	public void dearchiveAllSelectedItems(Collection<EventIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoEventsSelected), 
 					I18nProperties.getString(Strings.messageNoEventsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
@@ -300,8 +295,8 @@ public class EventController {
 					new Label(String.format(I18nProperties.getString(Strings.confirmationDearchiveEvents), selectedRows.size())), 
 					I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), null, e -> {
 				if (e.booleanValue() == true) {
-					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getEventFacade().archiveOrDearchiveEvent(((EventIndexDto) selectedRow).getUuid(), false);
+					for (EventIndexDto selectedRow : selectedRows) {
+						FacadeProvider.getEventFacade().archiveOrDearchiveEvent(selectedRow.getUuid(), false);
 					}
 					callback.run();
 					new Notification(I18nProperties.getString(Strings.headingEventsDearchived), 

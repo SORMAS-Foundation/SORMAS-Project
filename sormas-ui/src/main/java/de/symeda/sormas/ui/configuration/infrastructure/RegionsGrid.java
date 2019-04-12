@@ -35,9 +35,9 @@ import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.AbstractGrid;
+import de.symeda.sormas.ui.utils.V7AbstractGrid;
 
-public class RegionsGrid extends Grid implements AbstractGrid<RegionCriteria> {
+public class RegionsGrid extends Grid implements V7AbstractGrid<RegionCriteria> {
 
 	private static final long serialVersionUID = 6289713952342575369L;
 

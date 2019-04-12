@@ -17,18 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import java.lang.reflect.Method;
 import java.util.Date;
-import java.util.EventObject;
 import java.util.stream.Collectors;
 
-import com.vaadin.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.data.provider.DataProvider;
-import com.vaadin.shared.Registration;
 import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
-import com.vaadin.util.ReflectTools;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
@@ -41,18 +35,14 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.AbstractGrid;
+import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 @SuppressWarnings("serial")
-public class CaseGrid extends Grid<CaseIndexDto> implements AbstractGrid<CaseCriteria> {
+public class CaseGrid extends FilteredGrid<CaseIndexDto,CaseCriteria> {
 
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
-
-	private CaseCriteria caseCriteria;
-	private ConfigurableFilterDataProvider<CaseIndexDto,Void,CaseCriteria> dataProvider;
-	private int itemCount = 0;
 
 	@SuppressWarnings("unchecked")
 	public CaseGrid() {
@@ -65,21 +55,15 @@ public class CaseGrid extends Grid<CaseIndexDto> implements AbstractGrid<CaseCri
 			setSelectionMode(SelectionMode.NONE);
 		}
 		
-		DataProvider<CaseIndexDto,CaseCriteria> data = DataProvider.fromFilteringCallbacks(
+		DataProvider<CaseIndexDto,CaseCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 				query -> FacadeProvider.getCaseFacade().getIndexList(
 						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
 						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
 							.collect(Collectors.toList())).stream(),
 				query -> {
-					int itemCount = (int)FacadeProvider.getCaseFacade().count(
+					return (int)FacadeProvider.getCaseFacade().count(
 						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null));
-					if (this.itemCount != itemCount) {
-						this.itemCount = itemCount;
-						fireEvent(new GridItemCountChangedEvent(this, itemCount));
-					}
-					return itemCount;
 				});
-		dataProvider = data.withConfigurableFilter();
 		setDataProvider(dataProvider);
 
 		Column<CaseIndexDto, String> diseaseShortColumn = addColumn(caze -> 
@@ -121,60 +105,17 @@ public class CaseGrid extends Grid<CaseIndexDto> implements AbstractGrid<CaseCri
 			}
 		});
 	}
-
-	@Override
-	public void setCriteria(CaseCriteria caseCriteria) {
-		this.caseCriteria = caseCriteria;
-		dataProvider.setFilter(caseCriteria);
-	}
-
-	@Override
-	public CaseCriteria getCriteria() {
-		return caseCriteria;
-	}
-
 	public void reload() {
 		if (getSelectionModel().isUserSelectionAllowed()) {
 			deselectAll();
 		}
 		
-		if (caseCriteria.getOutcome() == null) {
+		if (getCriteria().getOutcome() == null) {
 			this.getColumn(CaseIndexDto.OUTCOME).setHidden(false);
 		} else if (this.getColumn(CaseIndexDto.OUTCOME) != null) {
 			this.getColumn(CaseIndexDto.OUTCOME).setHidden(true);
 		}
 
 		getDataProvider().refreshAll();
-	}
-
-	public int getItemCount() {
-		return itemCount;
-	}
-	
-	public Registration addItemCountChangedListener(GridItemCountChangedListener listener)
-	{
-		return addListener(GridItemCountChangedEvent.class, listener, GridItemCountChangedEvent.EVENT_METHOD);
-	}
-	
-	public static class GridItemCountChangedEvent extends EventObject
-	{
-		public static final Method EVENT_METHOD = ReflectTools.findMethod(GridItemCountChangedListener.class, "itemCountChangedEvent", GridItemCountChangedEvent.class);
-
-		private final int itemCount;
-
-		public GridItemCountChangedEvent(Object source, int itemCount)
-		{
-			super(source);
-			this.itemCount = itemCount;
-		}
-
-		public int getItemCount() {
-			return itemCount;
-		}
-	}
-	
-	public interface GridItemCountChangedListener
-	{
-		public void itemCountChangedEvent(GridItemCountChangedEvent event);
 	}
 }

@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
-import java.util.Comparator;
 import java.util.List;
 
 import com.vaadin.ui.Button.ClickEvent;
@@ -34,7 +33,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskIndexDto;
-import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -68,28 +66,7 @@ public class TaskList extends PaginationList<TaskIndexDto> {
 	@Override
 	public void reload() {
 		List<TaskIndexDto> tasks = FacadeProvider.getTaskFacade()
-				.getIndexList(UserProvider.getCurrent().getUuid(), taskCriteria);
-		
-		tasks.sort(new Comparator<TaskIndexDto>() {
-			@Override
-			public int compare(TaskIndexDto o1, TaskIndexDto o2) {
-				if (o1.getTaskStatus() != o2.getTaskStatus()) {
-					if (o1.getTaskStatus() == TaskStatus.PENDING)
-						return -1;
-					if (o2.getTaskStatus() == TaskStatus.PENDING)
-						return 1;
-				}
-
-				if (o1.getTaskStatus() == TaskStatus.PENDING) {
-					if (o1.getPriority() != o2.getPriority()) {
-						return o1.getPriority().compareTo(o2.getPriority());
-					}
-					return o1.getDueDate().compareTo(o2.getDueDate());
-				} else {
-					return -o1.getDueDate().compareTo(o2.getDueDate());
-				}
-			}
-		});
+				.getIndexList(UserProvider.getCurrent().getUuid(), taskCriteria, 0, maxDisplayedEntries * 20, null);
 
 		setEntries(tasks);
 		if (!tasks.isEmpty()) {

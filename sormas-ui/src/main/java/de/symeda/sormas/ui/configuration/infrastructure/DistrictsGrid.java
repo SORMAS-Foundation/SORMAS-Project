@@ -35,9 +35,9 @@ import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.AbstractGrid;
+import de.symeda.sormas.ui.utils.V7AbstractGrid;
 
-public class DistrictsGrid extends Grid implements AbstractGrid<DistrictCriteria> {
+public class DistrictsGrid extends Grid implements V7AbstractGrid<DistrictCriteria> {
 
 	private static final long serialVersionUID = -4437531618828715458L;
 

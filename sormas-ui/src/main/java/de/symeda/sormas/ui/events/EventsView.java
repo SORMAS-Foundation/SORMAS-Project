@@ -51,6 +51,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 public class EventsView extends AbstractView {
@@ -102,9 +103,7 @@ public class EventsView extends AbstractView {
 		gridLayout.setSizeFull();
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
-		grid.getContainer().addItemSetChangeListener(e -> {
-			updateStatusButtons();
-		});
+		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 
 		addComponent(gridLayout);
 
@@ -113,7 +112,7 @@ public class EventsView extends AbstractView {
 			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			exportButton.setIcon(VaadinIcons.DOWNLOAD);
 
-			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), grid.getColumns(), "sormas_events", "sormas_events_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			StreamResource streamResource = new GridExportStreamResource(grid, "sormas_events", "sormas_events_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 
@@ -227,12 +226,12 @@ public class EventsView extends AbstractView {
 				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 				Command changeCommand = selectedItem -> {
-					ControllerProvider.getEventController().showBulkEventDataEditComponent(grid.getSelectedRows());
+					ControllerProvider.getEventController().showBulkEventDataEditComponent(grid.asMultiSelect().getSelectedItems());
 				};
 				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, changeCommand);
 
 				Command deleteCommand = selectedItem -> {
-					ControllerProvider.getEventController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+					ControllerProvider.getEventController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 						public void run() {
 							grid.reload();
 						}
@@ -241,7 +240,7 @@ public class EventsView extends AbstractView {
 				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
 
 				Command archiveCommand = selectedItem -> {
-					ControllerProvider.getEventController().archiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+					ControllerProvider.getEventController().archiveAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 						public void run() {
 							grid.reload();
 						}
@@ -250,7 +249,7 @@ public class EventsView extends AbstractView {
 				archiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(I18nProperties.getCaption(Captions.actionArchive)), VaadinIcons.ARCHIVE, archiveCommand);
 
 				Command dearchiveCommand = selectedItem -> {
-					ControllerProvider.getEventController().dearchiveAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+					ControllerProvider.getEventController().dearchiveAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 						public void run() {
 							grid.reload();
 						}
@@ -306,7 +305,8 @@ public class EventsView extends AbstractView {
 		});
 		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 		if (activeStatusButton != null) {
-			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getContainer().size())));
+			activeStatusButton.setCaption(statusButtons.get(activeStatusButton)
+					+ LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
 	}
 	
@@ -317,7 +317,7 @@ public class EventsView extends AbstractView {
 		
 		if (Boolean.TRUE.equals(criteria.getArchived())) {
 			getViewTitleLabel().setValue(I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", ".") + ".archive"));
-			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(I18nProperties.getCaption(Captions.eventShowArchived)));
+			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(I18nProperties.getCaption(Captions.eventShowActive)));
 			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
 			if (archiveItem != null && dearchiveItem != null) {
 				archiveItem.setVisible(false);
