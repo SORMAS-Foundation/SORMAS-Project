@@ -194,7 +194,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
         caze.setTherapy(DatabaseHelper.getTherapyDao().build());
 
         // Clinical Course
-//        caze.setClinicalCourse(DatabaseHelper.getClinicalCourseDao().build());
+        caze.setClinicalCourse(DatabaseHelper.getClinicalCourseDao().build());
 
         // Location
         User currentUser = ConfigProvider.getUser();
