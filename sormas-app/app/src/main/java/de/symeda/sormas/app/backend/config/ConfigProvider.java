@@ -39,6 +39,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
 import java.security.interfaces.RSAPublicKey;
@@ -334,13 +335,12 @@ public final class ConfigProvider {
                 generator.generateKeyPair();
             }
 
-            KeyStore.PrivateKeyEntry privateKeyEntry;
+            PublicKey publicKey;
             try {
-                privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(keyStoreAlias, null);
+                publicKey = keyStore.getCertificate(keyStoreAlias).getPublicKey();
             } catch (Exception e) { // root cause can be a KeyStoreException - try again (see #866)
-                privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(keyStoreAlias, null);
+                publicKey = keyStore.getCertificate(keyStoreAlias).getPublicKey();
             }
-            RSAPublicKey publicKey = (RSAPublicKey) privateKeyEntry.getCertificate().getPublicKey();
 
             Cipher input = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             input.init(Cipher.ENCRYPT_MODE, publicKey);
@@ -355,8 +355,6 @@ public final class ConfigProvider {
             return result;
 
         } catch (KeyStoreException e) {
-            throw new RuntimeException(e);
-        } catch (UnrecoverableEntryException e) {
             throw new RuntimeException(e);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
@@ -389,16 +387,15 @@ public final class ConfigProvider {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
             keyStore.load(null);
 
-            KeyStore.PrivateKeyEntry privateKeyEntry;
+            PrivateKey privateKey;
             try {
-                privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(keyStoreAlias, null);
+                privateKey = (PrivateKey) keyStore.getKey(keyStoreAlias, null);
             } catch (KeyStoreException e) { // root cause can be a KeyStoreException - try again (see #866)
-                privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(keyStoreAlias, null);
+                privateKey = (PrivateKey) keyStore.getKey(keyStoreAlias, null);
             }
-            if (privateKeyEntry == null) {
+            if (privateKey == null) {
                 return null;
             }
-            PrivateKey privateKey = privateKeyEntry.getPrivateKey();
 
             Cipher decryptCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             decryptCipher.init(Cipher.DECRYPT_MODE, privateKey);
