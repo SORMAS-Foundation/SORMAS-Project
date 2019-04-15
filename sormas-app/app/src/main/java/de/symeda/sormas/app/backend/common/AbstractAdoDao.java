@@ -211,7 +211,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         }
     }
 
-
     public long countOfEq(String fieldName, Object value) {
         try {
             QueryBuilder builder = queryBuilder();

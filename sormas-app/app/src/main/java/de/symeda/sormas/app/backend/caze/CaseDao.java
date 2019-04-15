@@ -141,7 +141,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
         return date;
     }
 
-    public List<Case> queryBaseForEq(String fieldName, Object value, String orderBy, boolean ascending) {
+    public List<Case> queryBaseForEq(String fieldName, Object value, String orderBy, boolean ascending, long offset, long limit) {
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
@@ -151,7 +151,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
                     Case.REPORTING_USER, Case.DISEASE, Case.DISEASE_DETAILS, Case.PERSON,
                     Case.CASE_CLASSIFICATION, Case.INVESTIGATION_STATUS, Case.OUTCOME,
                     Case.HEALTH_FACILITY);
-            return builder.orderBy(orderBy, ascending).query();
+            return builder.orderBy(orderBy, ascending).offset(offset).limit(limit).query();
         } catch (SQLException | IllegalArgumentException e) {
             Log.e(getTableName(), "Could not perform queryForEq");
             throw new RuntimeException(e);
