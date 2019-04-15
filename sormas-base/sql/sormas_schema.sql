@@ -3127,3 +3127,9 @@ CREATE FUNCTION export_database_join(table_name text, join_table_name text, colu
 ;
 
 INSERT INTO schema_version (version_number, comment) VALUES (142, 'Adjust export_database_join function to not include cases #1016');
+
+-- 2019-04-15 Added missing foreign key constraint to events surveillance officer
+
+ALTER TABLE events ADD CONSTRAINT fk_events_surveillanceofficer_id FOREIGN KEY (surveillanceofficer_id) REFERENCES users (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (143, 'Added missing foreign key constraint to events surveillance officer');
