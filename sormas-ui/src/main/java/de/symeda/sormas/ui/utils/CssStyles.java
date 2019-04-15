@@ -72,6 +72,7 @@ public final class CssStyles {
 	
 	public static final String INDENT_LEFT_1 = "indent-left-1";
 	public static final String INDENT_LEFT_2 = "indent-left-2";
+	public static final String INDENT_LEFT_3 = "indent-left-3";
 
 	public static final String VAADIN_LABEL = "v-label";
 	

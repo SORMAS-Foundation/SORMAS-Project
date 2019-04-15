@@ -3094,3 +3094,36 @@ END;
 $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (141, 'Create potentially missing therapies and/or clinical courses #1042');
+
+-- 2019-04-15 Adjust export_database_join function to not include cases #1016
+
+DROP FUNCTION export_database_join(text, text, text, text, text);
+
+CREATE FUNCTION export_database_join(table_name text, join_table_name text, column_name text, join_column_name text, file_path text)
+	RETURNS VOID
+	LANGUAGE plpgsql
+	SECURITY DEFINER
+	AS $BODY$
+		BEGIN
+			EXECUTE '
+				COPY (SELECT
+					' || quote_ident(table_name) || '
+				.* FROM 
+					' || quote_ident(table_name) || ' 
+				INNER JOIN 
+					' || quote_ident(join_table_name) || ' 
+				ON 
+					' || column_name || ' 
+				= 
+					' || join_column_name || ' 
+				) TO 
+					' || quote_literal(file_path) || ' 
+				WITH (
+					FORMAT CSV, DELIMITER '';'', HEADER
+				);
+			';
+		END;
+	$BODY$
+;
+
+INSERT INTO schema_version (version_number, comment) VALUES (142, 'Adjust export_database_join function to not include cases #1016');
