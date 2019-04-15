@@ -69,11 +69,11 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
         List<PageMenuItem> menuItems = PageMenuItem.fromEnum(CaseSection.values(), getContext());
         Case caze = getStoredRootEntity();
         // Sections must be removed in reverse order
-        if (!ConfigProvider.hasUserRight(UserRight.CLINICAL_COURSE_VIEW)) {
+        if (!ConfigProvider.hasUserRight(UserRight.CLINICAL_COURSE_VIEW) || caze.getClinicalCourse() == null) {
             menuItems.remove(CaseSection.CLINICAL_VISITS.ordinal());
             menuItems.remove(CaseSection.HEALTH_CONDITIONS.ordinal());
         }
-        if (!ConfigProvider.hasUserRight(UserRight.THERAPY_VIEW)) {
+        if (!ConfigProvider.hasUserRight(UserRight.THERAPY_VIEW) || caze.getTherapy() == null) {
             menuItems.remove(CaseSection.TREATMENTS.ordinal());
             menuItems.remove(CaseSection.PRESCRIPTIONS.ordinal());
         }
