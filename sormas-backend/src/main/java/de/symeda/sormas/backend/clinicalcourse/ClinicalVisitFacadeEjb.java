@@ -27,6 +27,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
@@ -50,7 +51,9 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	@EJB
 	private ClinicalCourseService clinicalCourseService;
 	@EJB
-	SymptomsFacadeEjbLocal symptomsFacade;
+	private SymptomsFacadeEjbLocal symptomsFacade;
+	@EJB
+	private ClinicalCourseFacadeEjbLocal clinicalCourseFacade;
 
 	//	private String countPositiveSymptomsQuery;
 	
@@ -153,7 +156,9 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	 */
 	@Override
 	public ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit) {
-		return saveClinicalVisit(clinicalVisit, caseFacade.getCaseByClinicalCourse(clinicalVisit.getClinicalCourse().getUuid()).getUuid());
+		ClinicalCourse clinicalCourse = clinicalCourseService.getByReferenceDto(clinicalVisit.getClinicalCourse());
+				
+		return saveClinicalVisit(clinicalVisit, clinicalCourse.getCaze().getUuid());
 	}
 
 	@Override

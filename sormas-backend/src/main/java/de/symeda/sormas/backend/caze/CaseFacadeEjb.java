@@ -113,7 +113,6 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
-import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
@@ -626,20 +625,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		} else {
 			return null;
 		}
-	}
-	
-	@Override
-	public CaseDataDto getCaseByClinicalCourse(String clinicalCourseUuid) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Case> cq = cb.createQuery(Case.class);
-		Root<Case> caze = cq.from(Case.class);
-		Join<Case, ClinicalCourse> clinicalCourse = caze.join(Case.CLINICAL_COURSE, JoinType.LEFT);
-		
-		Predicate filter = cb.equal(clinicalCourse.get(ClinicalCourse.UUID), clinicalCourseUuid);
-		cq.where(filter);
-		cq.distinct(true);
-
-		return toDto(em.createQuery(cq).getSingleResult());
 	}
 
 	@Override
