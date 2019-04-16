@@ -51,6 +51,7 @@ import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.clinicalcourse.edit.ClinicalVisitEditActivity;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ControlSwitchField;
@@ -143,10 +144,6 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
         contentBinding.setSetClearedToNoCallback(setClearedToNoCallback);
 
         SymptomsValidator.initializeSymptomsValidation(contentBinding, ado);
-
-        if (ado instanceof Visit) {
-            makeAllSymptomsRequired();
-        }
     }
 
     @Override
@@ -197,6 +194,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
     private void initOnsetSymptomField(FragmentSymptomsEditLayoutBinding contentBinding) {
 
         final ControlSpinnerField onsetSymptomField = contentBinding.symptomsOnsetSymptom;
+        final ControlDateField onsetDateField = contentBinding.symptomsOnsetDate;
         List<Item> initialSpinnerItems = new ArrayList<>();
         for (ControlSwitchField symptomField : symptomFields) {
 
@@ -209,10 +207,14 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
                         if (position == -1) {
                             onsetSymptomField.getAdapter().add(item);
                         }
+
+                        onsetDateField.setEnabled(true);
                     } else {
                         if (position != -1) {
                             onsetSymptomField.getAdapter().remove(onsetSymptomField.getAdapter().getItem(position));
                         }
+
+                        onsetDateField.setEnabled(isAnySymptomSetToYes());
                     }
                     onsetSymptomField.setEnabled(onsetSymptomField.getAdapter().getCount() > 1); // first is "empty item"
                 }
@@ -225,6 +227,19 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 
         onsetSymptomField.initializeSpinner(DataUtils.addEmptyItem(initialSpinnerItems));
         onsetSymptomField.setEnabled(onsetSymptomField.getAdapter().getCount() > 1); // first is "empty item"
+        onsetDateField.setEnabled(isAnySymptomSetToYes());
+    }
+
+    private boolean isAnySymptomSetToYes() {
+        boolean anySymptomSetToYes = false;
+        for (ControlSwitchField symptomField : symptomFields) {
+            if (symptomField.getValue() == SymptomState.YES) {
+                anySymptomSetToYes = true;
+                break;
+            }
+        }
+
+        return anySymptomSetToYes;
     }
 
     @Override
@@ -278,22 +293,6 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
         }
 
         return temperature;
-    }
-
-    private void makeAllSymptomsRequired() {
-        ViewGroup root = (ViewGroup) getContentBinding().getRoot();
-        makeAllChildrenRequired(root);
-    }
-
-    private static void makeAllChildrenRequired(ViewGroup parent) {
-        for (int i = 0; i < parent.getChildCount(); i++) {
-            View child = parent.getChildAt(i);
-            if (child instanceof ControlSwitchField) {
-                ((ControlSwitchField) child).setRequired(true);
-            } else if (child instanceof ViewGroup) {
-                makeAllChildrenRequired((ViewGroup) child);
-            }
-        }
     }
 
 }

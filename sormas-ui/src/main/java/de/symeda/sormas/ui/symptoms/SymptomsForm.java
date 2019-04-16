@@ -345,7 +345,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		FieldHelper.setRequiredWhen(getFieldGroup(), getFieldGroup().getField(SymptomsDto.LESIONS), lesionsFieldIds, Arrays.asList(SymptomState.YES), disease);
 		FieldHelper.setRequiredWhen(getFieldGroup(), getFieldGroup().getField(SymptomsDto.LESIONS), monkeypoxImageFieldIds, Arrays.asList(SymptomState.YES), disease);
 
-		addListenerForOnsetSymptom(onsetSymptom);
+		addListenerForOnsetFields(onsetSymptom, onsetDateField);
 
 		Button clearAllButton = new Button(I18nProperties.getCaption(Captions.actionClearAll));
 		clearAllButton.addStyleName(ValoTheme.BUTTON_LINK);
@@ -418,8 +418,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	}
 
 	public void initializeSymptomRequirementsForVisit(OptionGroup visitStatus) {
-		FieldHelper.setRequiredWhen(getFieldGroup(), visitStatus, unconditionalSymptomFieldIds, Arrays.asList(VisitStatus.COOPERATIVE), disease);
-		FieldHelper.setRequiredWhen(getFieldGroup(), getFieldGroup().getField(SymptomsDto.UNEXPLAINED_BLEEDING), conditionalBleedingSymptomFieldIds, Arrays.asList(SymptomState.YES), disease);
 		FieldHelper.addSoftRequiredStyleWhen(getFieldGroup(), visitStatus, Arrays.asList(SymptomsDto.TEMPERATURE, SymptomsDto.TEMPERATURE_SOURCE), Arrays.asList(VisitStatus.COOPERATIVE), disease);
 		addSoftRequiredStyleWhenSymptomaticAndCooperative(getFieldGroup(), SymptomsDto.ONSET_DATE, unconditionalSymptomFieldIds, Arrays.asList(SymptomState.YES), visitStatus);
 		addSoftRequiredStyleWhenSymptomaticAndCooperative(getFieldGroup(), SymptomsDto.ONSET_SYMPTOM, unconditionalSymptomFieldIds, Arrays.asList(SymptomState.YES), visitStatus);
@@ -566,8 +564,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private void addListenerForOnsetSymptom(ComboBox onsetSymptom) {
-		List<Object> allPropertyIds = 
+	private void addListenerForOnsetFields(ComboBox onsetSymptom, DateField onsetDateField) {
+		List<String> allPropertyIds = 
 				Stream.concat(unconditionalSymptomFieldIds.stream(), conditionalBleedingSymptomFieldIds.stream())
 				.collect(Collectors.toList());
 		allPropertyIds.add(SymptomsDto.LESIONS_THAT_ITCH);
@@ -577,13 +575,16 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			sourceField.addValueChangeListener(event -> {
 				if (sourceField.getValue() == SymptomState.YES) {
 					onsetSymptom.addItem(sourceField.getCaption());
+					onsetDateField.setEnabled(true);
 				} else {
 					onsetSymptom.removeItem(sourceField.getCaption());
+					onsetDateField.setEnabled(isAnySymptomSetToYes(getFieldGroup(), allPropertyIds, Arrays.asList(SymptomState.YES)));
 				}
 				onsetSymptom.setEnabled(!onsetSymptom.getItemIds().isEmpty());
 			});
 		}
-		onsetSymptom.setEnabled(false); // will be updated by listener, if needed
+		onsetSymptom.setEnabled(false); // will be updated by listener if needed
+		onsetDateField.setEnabled(false); // will be updated by listener if needed
 	}
 
 	private void setUpMonkeypoxVisibilities() {
