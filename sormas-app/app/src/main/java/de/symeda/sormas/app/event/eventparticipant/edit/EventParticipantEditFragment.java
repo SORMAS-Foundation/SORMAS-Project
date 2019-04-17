@@ -93,7 +93,6 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
         setUpControlListeners(contentBinding);
 
         contentBinding.setData(record);
-        contentBinding.setPresentConditionClass(PresentCondition.class);
     }
 
     @Override
