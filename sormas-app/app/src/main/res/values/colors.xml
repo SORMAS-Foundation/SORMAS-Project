@@ -374,8 +374,8 @@
     <color name="indicatorCaseConfirmed">@color/watchOut</color>
     <color name="indicatorNotACase">@color/gray</color>
 
-    <color name="indicatorPossibleContact">@color/orange</color>
-    <color name="indicatorConfirmedContact">@color/blue</color>
+    <color name="indicatorPossibleContact">@color/lightBlue50</color>
+    <color name="indicatorConfirmedContact">@color/red</color>
     <color name="indicatorNoContact">@color/green</color>
 
     <color name="indicatorRumorEvent">@color/lightBlue50</color>
