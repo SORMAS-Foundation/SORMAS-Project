@@ -105,6 +105,7 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto,CaseCriteria> {
 			}
 		});
 	}
+	
 	public void reload() {
 		if (getSelectionModel().isUserSelectionAllowed()) {
 			deselectAll();
@@ -118,4 +119,5 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto,CaseCriteria> {
 
 		getDataProvider().refreshAll();
 	}
+	
 }

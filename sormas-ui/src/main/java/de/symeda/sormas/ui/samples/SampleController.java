@@ -278,7 +278,7 @@ public class SampleController {
 		});
 	}
 
-	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(Collection<SampleIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoSamplesSelected), 
 					I18nProperties.getString(Strings.messageNoSamplesSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());

@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.sample;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -30,8 +31,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
@@ -54,6 +57,7 @@ import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -180,7 +184,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	public SampleDto saveSample(SampleDto dto) {
 		SampleDto existingSample = toDto(sampleService.getByUuid(dto.getUuid()));
 		Sample sample = fromDto(dto);
-		
+
 		// Set defaults for testing requests
 		if (sample.getPathogenTestingRequested() == null) {
 			sample.setPathogenTestingRequested(false);
@@ -188,7 +192,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		if (sample.getAdditionalTestingRequested() == null) {
 			sample.setAdditionalTestingRequested(false);
 		}
-		
+
 		sampleService.ensurePersisted(sample);
 
 		onSampleChanged(existingSample, sample);
@@ -202,8 +206,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public List<SampleIndexDto> getIndexList(String userUuid, SampleCriteria sampleCriteria) {
-
+	public List<SampleIndexDto> getIndexList(String userUuid, SampleCriteria sampleCriteria, int first, int max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
 		Root<Sample> sample = cq.from(Sample.class);
@@ -239,12 +242,70 @@ public class SampleFacadeEjb implements SampleFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
-		cq.orderBy(cb.desc(sample.get(Sample.SAMPLE_DATE_TIME)));
+
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case SampleIndexDto.UUID:
+				case SampleIndexDto.SAMPLE_CODE:
+				case SampleIndexDto.LAB_SAMPLE_ID:
+				case SampleIndexDto.SHIPPED:
+				case SampleIndexDto.RECEIVED:
+				case SampleIndexDto.REFERRED:
+				case SampleIndexDto.SAMPLE_DATE_TIME:
+				case SampleIndexDto.SHIPMENT_DATE:
+				case SampleIndexDto.RECEIVED_DATE:
+				case SampleIndexDto.SAMPLE_MATERIAL:
+				case SampleIndexDto.PATHOGEN_TEST_RESULT:
+				case SampleIndexDto.ADDITIONAL_TESTING_STATUS:
+					expression = sample.get(sortProperty.propertyName);
+					break;
+				case SampleIndexDto.DISEASE:
+					expression = caze.get(Case.DISEASE);
+					break;
+				case SampleIndexDto.ASSOCIATED_CASE:
+					expression = cazePerson.get(Person.LAST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = cazePerson.get(Person.FIRST_NAME);
+					break;
+				case SampleIndexDto.CASE_DISTRICT:
+					expression = caseDistrict.get(District.NAME);
+					break;
+				case SampleIndexDto.LAB:
+					expression = lab.get(Facility.NAME);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(sample.get(Sample.SAMPLE_DATE_TIME)));
+		}
 
 		List<SampleIndexDto> resultList = em.createQuery(cq).getResultList();
-
 		return resultList;	
+	}
+	
+	@Override
+	public long count(String userUuid, SampleCriteria sampleCriteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Sample> root = cq.from(Sample.class);
+		User user = userService.getByUuid(userUuid);
+		Predicate filter = sampleService.createUserFilter(cb, cq, root, user);
+		if (sampleCriteria != null) {
+			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, root);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.select(cb.count(root));
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	@Override
@@ -313,7 +374,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setPathogenTestResult(source.getPathogenTestResult());
 		target.setRequestedOtherPathogenTests(source.getRequestedOtherPathogenTests());
 		target.setRequestedOtherAdditionalTests(source.getRequestedOtherAdditionalTests());
-		
+
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
