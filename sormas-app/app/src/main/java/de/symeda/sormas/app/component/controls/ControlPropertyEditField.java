@@ -34,6 +34,7 @@ import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ResultCallback;
 
 public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T> {
 
@@ -60,7 +61,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
     private String errorMessage;
     private String warningMessage;
     private boolean liveValidationDisabled;
-    private Callback validationCallback;
+    private ResultCallback<Boolean> validationCallback;
 
     // Constructors
 
@@ -226,16 +227,22 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
         }
     }
 
-    public void setErrorIfEmpty() {
+    /**
+     * @return true if an error is set, false if not
+     */
+    public boolean setErrorIfEmpty() {
         if (!required) {
-            return;
+            return false;
         }
 
         if (getValue() == null
                 || (this instanceof ControlTextEditField
                 && ((String) getValue()).isEmpty())) {
             enableErrorState(R.string.validation_error_required);
+            return true;
         }
+
+        return false;
     }
 
     public void setSoftRequired(boolean softRequired) {
@@ -439,11 +446,11 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
         }
     }
 
-    public Callback getValidationCallback() {
+    public ResultCallback<Boolean> getValidationCallback() {
         return validationCallback;
     }
 
-    public void setValidationCallback(Callback validationCallback) {
+    public void setValidationCallback(ResultCallback<Boolean> validationCallback) {
         this.validationCallback = validationCallback;
     }
 

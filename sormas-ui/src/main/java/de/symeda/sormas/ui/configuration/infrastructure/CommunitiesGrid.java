@@ -35,9 +35,9 @@ import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.AbstractGrid;
+import de.symeda.sormas.ui.utils.V7AbstractGrid;
 
-public class CommunitiesGrid extends Grid implements AbstractGrid<CommunityCriteria> {
+public class CommunitiesGrid extends Grid implements V7AbstractGrid<CommunityCriteria> {
 
 	private static final long serialVersionUID = 3355810665696318673L;
 

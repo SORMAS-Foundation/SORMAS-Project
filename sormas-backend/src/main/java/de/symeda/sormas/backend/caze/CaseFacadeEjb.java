@@ -288,17 +288,17 @@ public class CaseFacadeEjb implements CaseFacade {
 	public long count(String userUuid, CaseCriteria caseCriteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Case> caze = cq.from(Case.class);
+		Root<Case> root = cq.from(Case.class);
 		User user = userService.getByUuid(userUuid);
-		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
+		Predicate filter = caseService.createUserFilter(cb, cq, root, user);
 		if (caseCriteria != null) {
-			Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
+			Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, root);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
 		if (filter != null) {
 			cq.where(filter);
 		}
-		cq.select(cb.count(caze));
+		cq.select(cb.count(root));
 		return em.createQuery(cq).getSingleResult();
 	}
 	
@@ -454,7 +454,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				epiData.get(EpiData.BURIAL_ATTENDED),
 				epiData.get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE),
 				epiData.get(EpiData.RODENTS),
-				symptoms.get(Symptoms.ONSET_DATE),
+//				symptoms.get(Symptoms.ONSET_DATE),
 				caze.get(Case.VACCINATION),
 				caze.get(Case.VACCINATION_DOSES),
 				caze.get(Case.VACCINATION_DATE),
@@ -482,7 +482,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			exportDto.setSampleTaken((sampleDates == null || sampleDates.isEmpty()) ? YesNoUnknown.NO : YesNoUnknown.YES);
 			exportDto.setSampleDates(sampleDates);
 			exportDto.setLabResults(pathogenTestService.getPathogenTestResultsForCase(exportDto.getId()));
-			exportDto.setSymptoms(symptomsService.getById(exportDto.getSymptomsId()).toHumanString(false));
+//			exportDto.setSymptoms(symptomsService.getById(exportDto.getSymptomsId()).toHumanString(false));
+			exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptomsService.getById(exportDto.getSymptomsId())));
 			exportDto.setAddress(personService.getAddressByPersonId(exportDto.getPersonId()).toString());
 			List<CaseClassification> sourceCaseClassifications = contactService.getSourceCaseClassifications(exportDto.getId());
 			exportDto.setMaxSourceCaseClassifcation(sourceCaseClassifications.stream()

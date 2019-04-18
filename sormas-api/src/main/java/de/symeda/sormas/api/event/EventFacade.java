@@ -25,8 +25,8 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface EventFacade {
@@ -54,8 +54,11 @@ public interface EventFacade {
 	List<EventDto> getByUuids(List<String> uuids);
 
 	void deleteEvent(EventReferenceDto eventRef, String userUuid);
-	
-	List<EventIndexDto> getIndexList(String userUuid, EventCriteria eventCriteria);
+
+	long count(String userUuid, EventCriteria eventCriteria);
+
+	List<EventIndexDto> getIndexList(String userUuid, EventCriteria eventCriteria, int first, int max,
+			List<SortProperty> sortProperties);
 	
 	boolean isArchived(String caseUuid);
 	

@@ -35,6 +35,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.symptoms.SymptomsHelper;
+import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.therapy.TreatmentRoute;
 import de.symeda.sormas.api.therapy.TreatmentType;
@@ -256,6 +258,33 @@ public class TextViewBindingAdapters {
             } else {
                 textField.setText(val);
             }
+        }
+    }
+
+    @BindingAdapter(value={"temperatureValue", "temperatureSource", "defaultValue"})
+    public static void setTemperatureValue(TextView textField, Float temperature, TemperatureSource temperatureSource, String defaultValue) {
+        if (temperature == null) {
+            textField.setText(defaultValue);
+        } else {
+            textField.setText(TemperatureSource.formatTemperatureSource(temperature, temperatureSource));
+        }
+    }
+
+    @BindingAdapter(value={"bloodPressureSystolicValue", "bloodPressureDiastolicValue", "defaultValue"})
+    public static void setBloodPressureValue(TextView textField, Integer bloodPressureSystolic, Integer bloodPressureDiastolic, String defaultValue) {
+        if (bloodPressureSystolic == null && bloodPressureDiastolic == null) {
+            textField.setText(defaultValue);
+        } else {
+            textField.setText(SymptomsHelper.getBloodPressureString(bloodPressureSystolic, bloodPressureDiastolic));
+        }
+    }
+
+    @BindingAdapter(value={"heartRateValue", "defaultValue"})
+    public static void setHeartRateValue(TextView textField, Integer heartRate, String defaultValue) {
+        if (heartRate == null) {
+            textField.setText(defaultValue);
+        } else {
+            textField.setText(SymptomsHelper.getHeartRateString(heartRate));
         }
     }
 

@@ -3018,6 +3018,10 @@ DELETE FROM weeklyreport a USING weeklyreport b WHERE a.id < b.id AND a.year = b
 
 INSERT INTO schema_version (version_number, comment) VALUES (136, 'Delete duplicate weekly reports #994');
 
+-- 2019-03-28 Add therapies to all cases
+
+INSERT INTO schema_version (version_number, comment) VALUES (137, 'Add therapies to all cases');
+
 -- 2019-03-28 Change serialization of approximate age type to string (instead of number) #1015
 
 ALTER TABLE person DISABLE TRIGGER versioning_trigger;
@@ -3035,8 +3039,97 @@ ALTER TABLE person DROP COLUMN approximateagetype_temp;
 ALTER TABLE person_history DROP COLUMN approximateagetype_temp;
 ALTER TABLE person ENABLE TRIGGER versioning_trigger;
 
-INSERT INTO schema_version (version_number, comment) VALUES (137, 'Change serialization of approximate age type to string (instead of number) #1015');
+INSERT INTO schema_version (version_number, comment) VALUES (138, 'Change serialization of approximate age type to string (instead of number) #1015');
 
--- 2019-03-28 Add therapies to all cases
+-- 2019-04-05 Replace creation of therapies/clinical courses in StartupShutdownService with SQL script #1042
 
-INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (138, 'Add therapies to all cases', true);
+DO $$
+DECLARE rec RECORD;
+DECLARE new_therapy_id INTEGER;
+DECLARE new_clinical_course_id INTEGER;
+DECLARE new_health_conditions_id INTEGER;
+BEGIN
+FOR rec IN SELECT id FROM public.cases WHERE therapy_id IS NULL
+LOOP
+INSERT INTO therapy(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now()) RETURNING id INTO new_therapy_id;
+UPDATE cases SET therapy_id = new_therapy_id WHERE id = rec.id;
+END LOOP;
+FOR rec IN SELECT id FROM public.cases WHERE clinicalcourse_id IS NULL
+LOOP
+INSERT INTO healthconditions(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now()) RETURNING id INTO new_health_conditions_id;
+INSERT INTO clinicalcourse(id, uuid, creationdate, changedate, healthconditions_id) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now(), new_health_conditions_id) RETURNING id INTO new_clinical_course_id;
+UPDATE cases SET clinicalcourse_id = new_clinical_course_id WHERE id = rec.id;
+END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (139, 'Replace creation of therapies/clinical courses in StartupShutdownService with SQL script #1042');
+
+-- 2019-04-11 Drop person_id from clinical visits #1005
+
+ALTER TABLE clinicalvisit DROP COLUMN person_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (140, 'Drop person_id from clinical visits #1005');
+
+-- 2019-04-12 Create potentially missing therapies and/or clinical courses #1042
+
+DO $$
+DECLARE rec RECORD;
+DECLARE new_therapy_id INTEGER;
+DECLARE new_clinical_course_id INTEGER;
+DECLARE new_health_conditions_id INTEGER;
+BEGIN
+FOR rec IN SELECT id FROM public.cases WHERE therapy_id IS NULL
+LOOP
+INSERT INTO therapy(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now()) RETURNING id INTO new_therapy_id;
+UPDATE cases SET therapy_id = new_therapy_id WHERE id = rec.id;
+END LOOP;
+FOR rec IN SELECT id FROM public.cases WHERE clinicalcourse_id IS NULL
+LOOP
+INSERT INTO healthconditions(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now()) RETURNING id INTO new_health_conditions_id;
+INSERT INTO clinicalcourse(id, uuid, creationdate, changedate, healthconditions_id) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now(), new_health_conditions_id) RETURNING id INTO new_clinical_course_id;
+UPDATE cases SET clinicalcourse_id = new_clinical_course_id WHERE id = rec.id;
+END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (141, 'Create potentially missing therapies and/or clinical courses #1042');
+
+-- 2019-04-15 Adjust export_database_join function to not include cases #1016
+
+DROP FUNCTION export_database_join(text, text, text, text, text);
+
+CREATE FUNCTION export_database_join(table_name text, join_table_name text, column_name text, join_column_name text, file_path text)
+	RETURNS VOID
+	LANGUAGE plpgsql
+	SECURITY DEFINER
+	AS $BODY$
+		BEGIN
+			EXECUTE '
+				COPY (SELECT
+					' || quote_ident(table_name) || '
+				.* FROM 
+					' || quote_ident(table_name) || ' 
+				INNER JOIN 
+					' || quote_ident(join_table_name) || ' 
+				ON 
+					' || column_name || ' 
+				= 
+					' || join_column_name || ' 
+				) TO 
+					' || quote_literal(file_path) || ' 
+				WITH (
+					FORMAT CSV, DELIMITER '';'', HEADER
+				);
+			';
+		END;
+	$BODY$
+;
+
+INSERT INTO schema_version (version_number, comment) VALUES (142, 'Adjust export_database_join function to not include cases #1016');
+
+-- 2019-04-15 Added missing foreign key constraint to events surveillance officer
+
+ALTER TABLE events ADD CONSTRAINT fk_events_surveillanceofficer_id FOREIGN KEY (surveillanceofficer_id) REFERENCES users (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (143, 'Added missing foreign key constraint to events surveillance officer');

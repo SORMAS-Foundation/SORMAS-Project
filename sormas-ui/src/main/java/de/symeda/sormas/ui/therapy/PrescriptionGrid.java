@@ -23,12 +23,12 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.AbstractGrid;
+import de.symeda.sormas.ui.utils.V7AbstractGrid;
 import de.symeda.sormas.ui.utils.GridButtonRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
-public class PrescriptionGrid extends Grid implements AbstractGrid<PrescriptionCriteria> {
+public class PrescriptionGrid extends Grid implements V7AbstractGrid<PrescriptionCriteria> {
 
 	private static final String EDIT_BTN_ID = "edit";
 	private static final String DOCUMENT_TREATMENT_BTN_ID = "documentTreatment";

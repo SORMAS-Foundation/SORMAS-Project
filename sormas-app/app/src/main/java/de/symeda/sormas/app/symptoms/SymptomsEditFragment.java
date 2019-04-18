@@ -29,10 +29,12 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
@@ -40,17 +42,23 @@ import de.symeda.sormas.api.utils.DependantOn;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
+import de.symeda.sormas.app.clinicalcourse.edit.ClinicalVisitEditActivity;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentSymptomsEditLayoutBinding;
+import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.DataUtils;
 
 import static android.view.View.GONE;
@@ -62,6 +70,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
     private Disease disease;
     private boolean isInfant;
     private AbstractDomainObject ado;
+    private SymptomsContext symptomsContext;
 
     private List<Item> bodyTempList;
     private List<Item> tempSourceList;
@@ -71,13 +80,16 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 
     private List<ControlSwitchField> symptomFields;
 
-
     public static SymptomsEditFragment newInstance(Case activityRootData) {
         return newInstance(SymptomsEditFragment.class, null, activityRootData);
     }
 
     public static SymptomsEditFragment newInstance(Visit activityRootData) {
         return newInstance(SymptomsEditFragment.class, null, activityRootData);
+    }
+
+    public static SymptomsEditFragment newInstance(ClinicalVisit activityRootData, String caseUuid) {
+        return newInstance(SymptomsEditFragment.class, ClinicalVisitEditActivity.buildBundleWithCase(caseUuid).get(), activityRootData);
     }
 
     @Override
@@ -96,13 +108,20 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
         ado = getActivityRootData();
         Person person;
         if (ado instanceof Case) {
+            symptomsContext = SymptomsContext.CASE;
             record = ((Case) ado).getSymptoms();
             disease = ((Case) ado).getDisease();
             person = ((Case) ado).getPerson();
         } else if (ado instanceof Visit) {
+            symptomsContext = SymptomsContext.VISIT;
             record = ((Visit) ado).getSymptoms();
             disease = ((Visit) ado).getDisease();
             person = ((Visit) ado).getPerson();
+        } else if (ado instanceof ClinicalVisit) {
+            symptomsContext = SymptomsContext.CLINICAL_VISIT;
+            record = ((ClinicalVisit) ado).getSymptoms();
+            disease = ((ClinicalVisit) ado).getDisease();
+            person = DatabaseHelper.getCaseDao().queryUuidBasic(new Bundler(getArguments()).getCaseUuid()).getPerson();
         } else {
             throw new UnsupportedOperationException("ActivityRootData of class " + ado.getClass().getSimpleName()
                     + " does not support PersonReadFragment");
@@ -119,15 +138,12 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
         setupCallback();
 
         contentBinding.setData(record);
+        contentBinding.setSymptomsContext(symptomsContext);
         contentBinding.setSymptomStateClass(SymptomState.class);
         contentBinding.setClearAllCallback(clearAllCallback);
         contentBinding.setSetClearedToNoCallback(setClearedToNoCallback);
 
         SymptomsValidator.initializeSymptomsValidation(contentBinding, ado);
-
-        if (ado instanceof Visit) {
-            makeAllSymptomsRequired();
-        }
     }
 
     @Override
@@ -178,6 +194,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
     private void initOnsetSymptomField(FragmentSymptomsEditLayoutBinding contentBinding) {
 
         final ControlSpinnerField onsetSymptomField = contentBinding.symptomsOnsetSymptom;
+        final ControlDateField onsetDateField = contentBinding.symptomsOnsetDate;
         List<Item> initialSpinnerItems = new ArrayList<>();
         for (ControlSwitchField symptomField : symptomFields) {
 
@@ -190,10 +207,14 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
                         if (position == -1) {
                             onsetSymptomField.getAdapter().add(item);
                         }
+
+                        onsetDateField.setEnabled(true);
                     } else {
                         if (position != -1) {
                             onsetSymptomField.getAdapter().remove(onsetSymptomField.getAdapter().getItem(position));
                         }
+
+                        onsetDateField.setEnabled(isAnySymptomSetToYes());
                     }
                     onsetSymptomField.setEnabled(onsetSymptomField.getAdapter().getCount() > 1); // first is "empty item"
                 }
@@ -206,6 +227,19 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 
         onsetSymptomField.initializeSpinner(DataUtils.addEmptyItem(initialSpinnerItems));
         onsetSymptomField.setEnabled(onsetSymptomField.getAdapter().getCount() > 1); // first is "empty item"
+        onsetDateField.setEnabled(isAnySymptomSetToYes());
+    }
+
+    private boolean isAnySymptomSetToYes() {
+        boolean anySymptomSetToYes = false;
+        for (ControlSwitchField symptomField : symptomFields) {
+            if (symptomField.getValue() == SymptomState.YES) {
+                anySymptomSetToYes = true;
+                break;
+            }
+        }
+
+        return anySymptomSetToYes;
     }
 
     @Override
@@ -259,22 +293,6 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
         }
 
         return temperature;
-    }
-
-    private void makeAllSymptomsRequired() {
-        ViewGroup root = (ViewGroup) getContentBinding().getRoot();
-        makeAllChildrenRequired(root);
-    }
-
-    private static void makeAllChildrenRequired(ViewGroup parent) {
-        for (int i = 0; i < parent.getChildCount(); i++) {
-            View child = parent.getChildAt(i);
-            if (child instanceof ControlSwitchField) {
-                ((ControlSwitchField) child).setRequired(true);
-            } else if (child instanceof ViewGroup) {
-                makeAllChildrenRequired((ViewGroup) child);
-            }
-        }
     }
 
 }

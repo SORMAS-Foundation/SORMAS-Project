@@ -48,6 +48,8 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisit;
+import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -131,10 +133,15 @@ public class CaseDao extends AbstractAdoDao<Case> {
             date = therapyDate;
         }
 
+        Date clinicalCourseDate = DatabaseHelper.getClinicalCourseDao().getLatestChangeDate();
+        if (clinicalCourseDate != null && clinicalCourseDate.after(date)) {
+            date = clinicalCourseDate;
+        }
+
         return date;
     }
 
-    public List<Case> queryBaseForEq(String fieldName, Object value, String orderBy, boolean ascending) {
+    public List<Case> queryBaseForEq(String fieldName, Object value, String orderBy, boolean ascending, long offset, long limit) {
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
@@ -144,7 +151,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
                     Case.REPORTING_USER, Case.DISEASE, Case.DISEASE_DETAILS, Case.PERSON,
                     Case.CASE_CLASSIFICATION, Case.INVESTIGATION_STATUS, Case.OUTCOME,
                     Case.HEALTH_FACILITY);
-            return builder.orderBy(orderBy, ascending).query();
+            return builder.orderBy(orderBy, ascending).offset(offset).limit(limit).query();
         } catch (SQLException | IllegalArgumentException e) {
             Log.e(getTableName(), "Could not perform queryForEq");
             throw new RuntimeException(e);
@@ -185,6 +192,9 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
         // Therapy
         caze.setTherapy(DatabaseHelper.getTherapyDao().build());
+
+        // Clinical Course
+        caze.setClinicalCourse(DatabaseHelper.getClinicalCourseDao().build());
 
         // Location
         User currentUser = ConfigProvider.getUser();
@@ -464,6 +474,13 @@ public class CaseDao extends AbstractAdoDao<Case> {
             }
             for (Prescription prescription : DatabaseHelper.getPrescriptionDao().findBy(new PrescriptionCriteria().therapy(caze.getTherapy()))) {
                 DatabaseHelper.getPrescriptionDao().delete(prescription);
+            }
+        }
+
+        // Delete clinical visits
+        if (caze.getClinicalCourse() != null) {
+            for (ClinicalVisit clinicalVisit : DatabaseHelper.getClinicalVisitDao().findBy(new ClinicalVisitCriteria().clinicalCourse(caze.getClinicalCourse()))) {
+                DatabaseHelper.getClinicalVisitDao().delete(clinicalVisit);
             }
         }
 

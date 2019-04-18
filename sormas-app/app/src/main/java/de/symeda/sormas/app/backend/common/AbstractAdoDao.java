@@ -211,7 +211,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         }
     }
 
-
     public long countOfEq(String fieldName, Object value) {
         try {
             QueryBuilder builder = queryBuilder();
@@ -581,14 +580,17 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
                     // get the embedded entity
                     AbstractDomainObject embeddedSource = (AbstractDomainObject) property.getReadMethod().invoke(source);
-                    // merge it - will return the merged result
-                    AbstractDomainObject embeddedCurrent = DatabaseHelper.getAdoDao(embeddedSource.getClass()).mergeOrCreateWithCast(embeddedSource);
 
-                    if (embeddedCurrent == null) {
-                        throw new IllegalArgumentException("No merge result was created for " + embeddedSource);
+                    if (embeddedSource != null) {
+                        // merge it - will return the merged result
+                        AbstractDomainObject embeddedCurrent = DatabaseHelper.getAdoDao(embeddedSource.getClass()).mergeOrCreateWithCast(embeddedSource);
+
+                        if (embeddedCurrent == null) {
+                            throw new IllegalArgumentException("No merge result was created for " + embeddedSource);
+                        }
+                        // write link for merged embedded
+                        property.getWriteMethod().invoke(current, embeddedCurrent);
                     }
-                    // write link for merged embedded
-                    property.getWriteMethod().invoke(current, embeddedCurrent);
                 }
                 // 2. "value" types like String, Date, Enum, ...
                 // -> just copy value from source into target and base

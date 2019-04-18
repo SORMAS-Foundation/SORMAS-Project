@@ -31,9 +31,12 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.opencsv.CSVWriter;
 import com.vaadin.server.Page;
@@ -45,6 +48,7 @@ import com.vaadin.v7.data.Container.Indexed;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.Grid.Column;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -93,7 +97,7 @@ public class DownloadUtil {
 	}
 
 	public static StreamResource createGridExportStreamResource(Indexed container, List<Column> columns, String tempFilePrefix, String fileName, String... ignoredPropertyIds) {
-		return new GridExportStreamResource(container, columns, tempFilePrefix, fileName, ignoredPropertyIds);
+		return new V7GridExportStreamResource(container, columns, tempFilePrefix, fileName, ignoredPropertyIds);
 	}
 
 	@SuppressWarnings("serial")
@@ -137,22 +141,57 @@ public class DownloadUtil {
 					try (CSVWriter writer = CSVUtils.createCSVWriter(
 							new OutputStreamWriter(byteStream, StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
 	
-						// fields in order of declaration - not using Introspector here, because it gives properties in alphabetical order
-						Method[] readMethods = Arrays.stream(exportRowClass.getDeclaredMethods())
+						// 1. fields in order of declaration - not using Introspector here, because it gives properties in alphabetical order
+						List<Method> readMethods = new ArrayList<Method>();
+						readMethods.addAll(Arrays.stream(exportRowClass.getDeclaredMethods())
 								.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) && m.isAnnotationPresent(Order.class))
 								.sorted((a,b) -> Integer.compare(a.getAnnotationsByType(Order.class)[0].value(), 
 										b.getAnnotationsByType(Order.class)[0].value()))
-								.toArray(Method[]::new);
-	
-						String[] fieldValues = new String[readMethods.length];
-						for (int i = 0; i < readMethods.length; i++) {
-							Method method = readMethods[i];
+								.collect(Collectors.toList()));
+
+						// 2. replace entity fields with all the columns of the entity 
+						Map<Method, Function<T,?>> subEntityProviders = new HashMap<Method, Function<T,?>>();
+						for (int i = 0; i < readMethods.size(); i++) {
+							Method method = readMethods.get(i);
+							if (EntityDto.class.isAssignableFrom(method.getReturnType())) {
+								
+								// allows us to access the sub entity
+								Function<T, ?> subEntityProvider = (o) -> {
+									try {
+										return method.invoke(o);
+									} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+										throw new RuntimeException(e);
+									}
+								};
+
+								// remove entity field
+								readMethods.remove(i);
+								
+								// add columns of the entity
+								List<Method> subReadMethods = Arrays.stream(method.getReturnType().getDeclaredMethods())
+										.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) && m.isAnnotationPresent(Order.class))
+										.sorted((a,b) -> Integer.compare(a.getAnnotationsByType(Order.class)[0].value(), 
+												b.getAnnotationsByType(Order.class)[0].value()))
+										.collect(Collectors.toList());
+								readMethods.addAll(i, subReadMethods);
+								i--;
+								
+								for (Method subReadMethod : subReadMethods) {
+									subEntityProviders.put(subReadMethod, subEntityProvider);
+								}
+							}							
+						}
+						
+						
+						String[] fieldValues = new String[readMethods.size()];
+						for (int i = 0; i < readMethods.size(); i++) {
+							Method method = readMethods.get(i);
+							// field caption
 							String propertyId = method.getName().startsWith("get") 
 									? method.getName().substring(3)
 											: method.getName().substring(2); 
-									propertyId = Character.toLowerCase(propertyId.charAt(0)) + propertyId.substring(1);
-									// field caption - export, case, person, symptoms, hospitalization
-									fieldValues[i] = propertyIdCaptionFunction.apply(propertyId, method.getReturnType());
+							propertyId = Character.toLowerCase(propertyId.charAt(0)) + propertyId.substring(1);
+							fieldValues[i] = propertyIdCaptionFunction.apply(propertyId, method.getReturnType());
 						}
 						writer.writeNext(fieldValues);
 	
@@ -161,9 +200,11 @@ public class DownloadUtil {
 						while (!exportRows.isEmpty()) {						
 							try {
 								for (T exportRow : exportRows) {
-									for (int i=0; i<readMethods.length; i++) {
-										Method method = readMethods[i];
-										Object value = method.invoke(exportRow);
+									for (int i=0; i<readMethods.size(); i++) {
+										Method method = readMethods.get(i);
+										Function<T,?> subEntityProvider = subEntityProviders.getOrDefault(method, null);
+										Object entity = subEntityProvider != null ? subEntityProvider.apply(exportRow) : exportRow;
+										Object value = method.invoke(entity);
 										if (value == null) {
 											fieldValues[i] = "";
 										} else if (value instanceof Date) {

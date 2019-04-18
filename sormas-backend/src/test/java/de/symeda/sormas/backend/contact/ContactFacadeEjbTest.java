@@ -205,7 +205,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze.toReference(), new Date(), new Date());
 		
 		// Database should contain one contact, associated visit and task
-		assertEquals(1, getContactFacade().getIndexList(userUuid, null).size());
+		assertEquals(1, getContactFacade().getIndexList(userUuid, null, 0, 100, null).size());
 	}
 
 	@Test

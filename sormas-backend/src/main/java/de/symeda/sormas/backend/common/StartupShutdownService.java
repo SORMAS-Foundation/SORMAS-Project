@@ -39,10 +39,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
-import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -59,7 +56,6 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
-import de.symeda.sormas.backend.therapy.Therapy;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.MockDataGenerator;
@@ -183,6 +179,9 @@ public class StartupShutdownService {
 				.createNativeQuery("SELECT version_number FROM schema_version WHERE upgradeNeeded")
 				.getResultList();
 		
+		// IMPORTANT: Never write code to go through all entities in a table and do something
+		// here. This will make the deployment fail when there are too many entities in the database.
+		
 		for (Integer versionNeedingUpgrade : versionsNeedingUpgrade) {
 			switch (versionNeedingUpgrade) {
 				case 95:
@@ -190,26 +189,6 @@ public class StartupShutdownService {
 					for (Contact contact : contactService.getAll()) {				
 						contactService.updateFollowUpUntilAndStatus(contact);
 						contactService.udpateContactStatus(contact);
-					}
-					break;
-				case 137:
-					// add therapies to all existing cases
-					for (Case caze : caseService.getAll()) {
-						if (caze.getTherapy() == null) {
-							Therapy therapy = new Therapy();
-							therapy.setUuid(DataHelper.createUuid());
-							caze.setTherapy(therapy);
-							caseService.ensurePersisted(caze);
-						}
-						if (caze.getClinicalCourse() == null) {
-							ClinicalCourse clinicalCourse = new ClinicalCourse();
-							clinicalCourse.setUuid(DataHelper.createUuid());
-							HealthConditions healthConditions = new HealthConditions();
-							healthConditions.setUuid(DataHelper.createUuid());
-							clinicalCourse.setHealthConditions(healthConditions);
-							caze.setClinicalCourse(clinicalCourse);
-							caseService.ensurePersisted(caze);
-						}
 					}
 					break;
 					

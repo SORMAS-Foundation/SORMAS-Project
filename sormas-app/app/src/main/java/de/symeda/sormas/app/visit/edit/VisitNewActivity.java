@@ -47,9 +47,7 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
     public static final String TAG = VisitNewActivity.class.getSimpleName();
 
     private AsyncTask saveTask;
-
     private String contactUuid = null;
-
 
     public static void startActivity(Context context, String contactUuid) {
         BaseEditActivity.startActivity(context, VisitNewActivity.class, buildBundle(contactUuid));

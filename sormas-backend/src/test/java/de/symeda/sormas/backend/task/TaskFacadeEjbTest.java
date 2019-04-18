@@ -88,7 +88,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		
 		// Database should contain the created task
-		assertNotNull(getTaskFacade().getIndexList(user.getUuid(), null));
+		assertNotNull(getTaskFacade().getIndexList(user.getUuid(), null, 0, 100, null));
 	}
 	
 	@Test

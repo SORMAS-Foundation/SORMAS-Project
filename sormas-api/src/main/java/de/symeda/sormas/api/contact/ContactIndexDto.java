@@ -31,6 +31,7 @@ public class ContactIndexDto implements Serializable {
 	public static final String I18N_PREFIX = "Contact";
 	
 	public static final String UUID = "uuid";
+	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String PERSON = "person";
 	public static final String CAZE = "caze";
 	public static final String CASE_DISEASE = "caseDisease";
@@ -45,8 +46,6 @@ public class ContactIndexDto implements Serializable {
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String CONTACT_OFFICER_UUID = "contactOfficerUuid";
-	public static final String NUMBER_OF_COOPERATIVE_VISITS = "numberOfCooperativeVisits";
-	public static final String NUMBER_OF_MISSED_VISITS = "numberOfMissedVisits";
 
 	private String uuid;
 	private PersonReferenceDto person;
@@ -63,13 +62,13 @@ public class ContactIndexDto implements Serializable {
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntil;
 	private String contactOfficerUuid;
-	private Date reportDate;
+	private Date reportDateTime;
 	
 	public ContactIndexDto(String uuid, String personUuid, String personFirstName, String personLastName, String cazeUuid,
 			Disease caseDisease, String caseDiseaseDetails, String casePersonUuid, String caseFirstName, String caseLastName, String caseRegionUuid,
 			String caseDistrictUuid, String caseHealthFacilityUuid, Date lastContactDate, ContactProximity contactProximity,
 			ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus, 
-			Date followUpUntil, String contactOfficerUuid, Date reportDate) {
+			Date followUpUntil, String contactOfficerUuid, Date reportDateTime) {
 		this.uuid = uuid;
 		this.person = new PersonReferenceDto(personUuid, personFirstName, personLastName);
 		this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName);
@@ -85,7 +84,7 @@ public class ContactIndexDto implements Serializable {
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
 		this.contactOfficerUuid = contactOfficerUuid;
-		this.reportDate = reportDate;
+		this.reportDateTime = reportDateTime;
 	}
 	
 	public String getUuid() {
@@ -178,11 +177,11 @@ public class ContactIndexDto implements Serializable {
 	public void setContactOfficerUuid(String contactOfficerUuid) {
 		this.contactOfficerUuid = contactOfficerUuid;
 	}
-	public Date getReportDate() {
-		return reportDate;
+	public Date getReportDateTime() {
+		return reportDateTime;
 	}
-	public void setReportDate(Date reportDate) {
-		this.reportDate = reportDate;
+	public void setReportDateTime(Date reportDateTime) {
+		this.reportDateTime = reportDateTime;
 	}
 
 	public ContactReferenceDto toReference() {

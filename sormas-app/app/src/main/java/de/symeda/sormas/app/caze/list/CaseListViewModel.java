@@ -42,8 +42,8 @@ public class CaseListViewModel extends ViewModel {
         caseDataFactory.setInvestigationStatus(InvestigationStatus.PENDING);
         PagedList.Config config = new PagedList.Config.Builder()
                         .setEnablePlaceholders(true)
-                        .setInitialLoadSizeHint(16)
-                        .setPageSize(8).build();
+                        .setInitialLoadSizeHint(32)
+                        .setPageSize(16).build();
 
         LivePagedListBuilder casesListBuilder = new LivePagedListBuilder(caseDataFactory, config);
         casesList = casesListBuilder.build();
@@ -84,13 +84,13 @@ public class CaseListViewModel extends ViewModel {
             if (offset + count > totalCount) {
                 offset = (int) Math.max(0, totalCount - count);
             }
-            List<Case> cases = DatabaseHelper.getCaseDao().queryForEq(Case.INVESTIGATION_STATUS, investigationStatus, Case.REPORT_DATE, false, offset, count);
+            List<Case> cases = DatabaseHelper.getCaseDao().queryBaseForEq(Case.INVESTIGATION_STATUS, investigationStatus, Case.REPORT_DATE, false, offset, count);
             callback.onResult(cases, offset, (int)totalCount);
         }
 
         @Override
         public void loadRange(@NonNull LoadRangeParams params, @NonNull LoadRangeCallback<Case> callback) {
-            List<Case> cases = DatabaseHelper.getCaseDao().queryForEq(Case.INVESTIGATION_STATUS, investigationStatus, Case.REPORT_DATE, false, params.startPosition, params.loadSize);
+            List<Case> cases = DatabaseHelper.getCaseDao().queryBaseForEq(Case.INVESTIGATION_STATUS, investigationStatus, Case.REPORT_DATE, false, params.startPosition, params.loadSize);
             callback.onResult(cases);
         }
     }

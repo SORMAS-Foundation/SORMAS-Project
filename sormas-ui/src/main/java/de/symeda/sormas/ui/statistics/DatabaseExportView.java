@@ -152,6 +152,8 @@ public class DatabaseExportView extends AbstractStatisticsView {
 				CssStyles.style(checkBox, CssStyles.INDENT_LEFT_1);
 			} else if (indent == 2) {
 				CssStyles.style(checkBox, CssStyles.INDENT_LEFT_2);
+			} else if (indent == 3) {
+				CssStyles.style(checkBox, CssStyles.INDENT_LEFT_3);
 			}
 
 			if (databaseTable.getDatabaseTableType() == DatabaseTableType.SORMAS) {

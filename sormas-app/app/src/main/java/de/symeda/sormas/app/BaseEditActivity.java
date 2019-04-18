@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
@@ -101,6 +102,11 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
     protected void onResumeFragments() {
         super.onResumeFragments();
 
@@ -128,11 +134,10 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
 
     protected void requestRootData(final Consumer<ActivityRootEntity> callback) {
 
-        boolean hadRootEntity = storedRootEntity != null;
+        ActivityRootEntity previousRootEntity = storedRootEntity;
 
         if (rootUuid != null && !rootUuid.isEmpty()) {
             storedRootEntity = queryRootEntity(rootUuid);
-
         } else {
             storedRootEntity = buildRootEntity();
         }
@@ -142,15 +147,18 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         // this case, the activity should be closed.
         if (storedRootEntity == null) {
             finish();
-        } else if (!storedRootEntity.isNew()
-                && storedRootEntity.isUnreadOrChildUnread()) {
-            // TODO #704 do in background and retrieve entity again
-            // DatabaseHelper.getAdoDao(storedRootEntity.getClass()).markAsReadWithCast(storedRootEntity);
-            if (hadRootEntity) {
+        } else if (previousRootEntity != null) {
+            if (DataHelper.equal(previousRootEntity.getLocalChangeDate(), storedRootEntity.getLocalChangeDate())) {
+                // not changed -> keep existing that possibly has unsaved changes
+                storedRootEntity = previousRootEntity;
+            } else {
                 NotificationHelper.showNotification(BaseEditActivity.this, NotificationType.WARNING,
                         String.format(getResources().getString(R.string.message_entity_overridden), storedRootEntity.getEntityName()));
             }
         }
+
+        // TODO #704 do in background and retrieve entity again
+        // DatabaseHelper.getAdoDao(storedRootEntity.getClass()).markAsReadWithCast(storedRootEntity);
 
         callback.accept(storedRootEntity);
     }

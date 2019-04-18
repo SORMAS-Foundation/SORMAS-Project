@@ -1,7 +1,10 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
 import java.sql.Timestamp;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -24,8 +27,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.person.PersonFacadeEjb;
-import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
@@ -49,9 +51,9 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	@EJB
 	private ClinicalCourseService clinicalCourseService;
 	@EJB
-	SymptomsFacadeEjbLocal symptomsFacade;
+	private SymptomsFacadeEjbLocal symptomsFacade;
 	@EJB
-	PersonService personService;
+	private ClinicalCourseFacadeEjbLocal clinicalCourseFacade;
 
 	//	private String countPositiveSymptomsQuery;
 	
@@ -148,6 +150,17 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		return toDto(entity);
 	}
 
+	/**
+	 * Should only be used for synchronization purposes since the associated
+	 * case symptoms are not updated from this method.
+	 */
+	@Override
+	public ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit) {
+		ClinicalCourse clinicalCourse = clinicalCourseService.getByReferenceDto(clinicalVisit.getClinicalCourse());
+				
+		return saveClinicalVisit(clinicalVisit, clinicalCourse.getCaze().getUuid());
+	}
+
 	@Override
 	public void deleteClinicalVisit(String clinicalVisitUuid, String userUuid) {
 		User user = userService.getByUuid(userUuid);
@@ -158,6 +171,38 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 		ClinicalVisit clinicalVisit = service.getByUuid(clinicalVisitUuid);
 		service.delete(clinicalVisit);
+	}
+
+	@Override
+	public List<ClinicalVisitDto> getAllActiveClinicalVisitsAfter(Date date, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return service.getAllActiveClinicalVisitsAfter(date, user).stream()
+				.map(t -> toDto(t))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<ClinicalVisitDto> getByUuids(List<String> uuids) {
+		return service.getByUuids(uuids)
+				.stream()
+				.map(t -> toDto(t))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<String> getAllActiveUuids(String userUuid) {
+		User user = userService.getByUuid(userUuid);
+
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return service.getAllActiveUuids(user);
 	}
 	
 	public static ClinicalVisitDto toDto(ClinicalVisit source) {
@@ -171,7 +216,6 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		target.setClinicalCourse(ClinicalCourseFacadeEjb.toReferenceDto(source.getClinicalCourse()));
 		target.setSymptoms(SymptomsFacadeEjb.toDto(source.getSymptoms()));
 		target.setDisease(source.getDisease());
-		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
 		target.setVisitDateTime(source.getVisitDateTime());
 		target.setVisitRemarks(source.getVisitRemarks());
 		target.setVisitingPerson(source.getVisitingPerson());
@@ -195,7 +239,6 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		target.setClinicalCourse(clinicalCourseService.getByReferenceDto(source.getClinicalCourse()));
 		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms()));
 		target.setDisease(source.getDisease());
-		target.setPerson(personService.getByReferenceDto(source.getPerson()));
 		target.setVisitDateTime(source.getVisitDateTime());
 		target.setVisitRemarks(source.getVisitRemarks());
 		target.setVisitingPerson(source.getVisitingPerson());

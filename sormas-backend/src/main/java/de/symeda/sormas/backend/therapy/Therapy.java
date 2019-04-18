@@ -29,6 +29,4 @@ public class Therapy extends AbstractDomainObject {
 		this.caze = caze;
 	}
 	
-	
-
 }

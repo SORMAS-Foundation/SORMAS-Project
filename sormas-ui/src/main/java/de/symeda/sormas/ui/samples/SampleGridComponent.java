@@ -71,7 +71,6 @@ public class SampleGridComponent extends VerticalLayout {
 
 	private SampleGrid grid;
 	private AbstractView samplesView;
-
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
 
@@ -111,9 +110,7 @@ public class SampleGridComponent extends VerticalLayout {
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createShipmentFilterBar());
 		gridLayout.addComponent(grid);
-		grid.getContainer().addItemSetChangeListener(e -> {
-			updateStatusButtons();
-		});
+		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 
 		styleGridLayout(gridLayout);
 		gridLayout.setMargin(true);
@@ -293,7 +290,7 @@ public class SampleGridComponent extends VerticalLayout {
 				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 				Command deleteCommand = selectedItem -> {
-					ControllerProvider.getSampleController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+					ControllerProvider.getSampleController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 						public void run() {
 							grid.reload();
 						}
@@ -400,7 +397,7 @@ public class SampleGridComponent extends VerticalLayout {
 		});
 		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 		if (activeStatusButton != null) {
-			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getContainer().size())));
+			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
 	}
 

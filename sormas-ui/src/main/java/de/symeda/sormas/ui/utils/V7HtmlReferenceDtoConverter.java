@@ -25,7 +25,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
 @SuppressWarnings("serial")
-public class HtmlReferenceDtoConverter implements Converter<String,ReferenceDto> {
+public class V7HtmlReferenceDtoConverter implements Converter<String,ReferenceDto> {
 
 	@Override
 	public ReferenceDto convertToModel(String value, Class<? extends ReferenceDto> targetType, Locale locale) throws ConversionException {

@@ -129,6 +129,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         contentBinding.personBurialConductor.initializeSpinner(burialConductorList);
         contentBinding.personOccupationType.initializeSpinner(DataUtils.getEnumItems(OccupationType.class, true));
         contentBinding.personEducationType.initializeSpinner(DataUtils.getEnumItems(EducationType.class, true));
+        contentBinding.personPresentCondition.initializeSpinner(DataUtils.getEnumItems(PresentCondition.class, true));
 
         contentBinding.personApproximateAge.addValueChangedListener(new ValueChangeListener() {
             @Override
@@ -329,7 +330,6 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
     @Override
     public void onLayoutBinding(FragmentPersonEditLayoutBinding contentBinding) {
         contentBinding.setData(record);
-        contentBinding.setPresentConditionClass(PresentCondition.class);
 
         PersonValidator.initializePersonValidation(contentBinding);
     }

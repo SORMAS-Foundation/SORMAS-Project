@@ -24,6 +24,8 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
+import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.epidata.EpiData;
@@ -58,7 +60,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
     private HospitalizationDtoHelper hospitalizationDtoHelper = new HospitalizationDtoHelper();
     private EpiDataDtoHelper epiDataDtoHelper = new EpiDataDtoHelper();
     private TherapyDtoHelper therapyDtoHelper = new TherapyDtoHelper();
-
+    private ClinicalCourseDtoHelper clinicalCourseDtoHelper = new ClinicalCourseDtoHelper();
 
     @Override
     protected Class<Case> getAdoClass() {
@@ -116,6 +118,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setHospitalization(hospitalizationDtoHelper.fillOrCreateFromDto(target.getHospitalization(), source.getHospitalization()));
         target.setEpiData(epiDataDtoHelper.fillOrCreateFromDto(target.getEpiData(), source.getEpiData()));
         target.setTherapy(therapyDtoHelper.fillOrCreateFromDto(target.getTherapy(), source.getTherapy()));
+        target.setClinicalCourse(clinicalCourseDtoHelper.fillOrCreateFromDto(target.getClinicalCourse(), source.getClinicalCourse()));
 
         target.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getSurveillanceOfficer()));
         target.setPregnant(source.getPregnant());
@@ -235,6 +238,13 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
             target.setTherapy(therapyDtoHelper.adoToDto(therapy));
         } else {
             target.setTherapy(null);
+        }
+
+        if (source.getClinicalCourse() != null) {
+            ClinicalCourse clinicalCourse = DatabaseHelper.getClinicalCourseDao().queryForId(source.getClinicalCourse().getId());
+            target.setClinicalCourse(clinicalCourseDtoHelper.adoToDto(clinicalCourse));
+        } else {
+            target.setClinicalCourse(null);
         }
 
         target.setPregnant(source.getPregnant());

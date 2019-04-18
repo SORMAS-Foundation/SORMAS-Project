@@ -30,6 +30,7 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -37,6 +38,7 @@ import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
@@ -50,6 +52,7 @@ public class SymptomsReadFragment extends BaseReadFragment<FragmentSymptomsReadL
 
     private Symptoms record;
     private Disease disease;
+    private SymptomsContext symptomsContext;
 
     private List<String> yesResult;
     private List<String> unknownResult;
@@ -62,15 +65,25 @@ public class SymptomsReadFragment extends BaseReadFragment<FragmentSymptomsReadL
         return newInstance(SymptomsReadFragment.class, null, activityRootData);
     }
 
+    public static SymptomsReadFragment newInstance(ClinicalVisit activityRootData) {
+        return newInstance(SymptomsReadFragment.class, null, activityRootData);
+    }
+
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
         AbstractDomainObject ado = getActivityRootData();
         if (ado instanceof Case) {
+            symptomsContext = SymptomsContext.CASE;
             record = ((Case) ado).getSymptoms();
             disease = ((Case) ado).getDisease();
         } else if (ado instanceof Visit) {
+            symptomsContext = SymptomsContext.VISIT;
             record = ((Visit) ado).getSymptoms();
             disease = ((Visit) ado).getDisease();
+        } else if (ado instanceof ClinicalVisit) {
+            symptomsContext = SymptomsContext.CLINICAL_VISIT;
+            record = ((ClinicalVisit) ado).getSymptoms();
+            disease = ((ClinicalVisit) ado).getDisease();
         } else {
             throw new UnsupportedOperationException("ActivityRootData of class " + ado.getClass().getSimpleName()
                     + " does not support PersonReadFragment");
@@ -82,11 +95,16 @@ public class SymptomsReadFragment extends BaseReadFragment<FragmentSymptomsReadL
     @Override
     public void onLayoutBinding(FragmentSymptomsReadLayoutBinding contentBinding) {
         contentBinding.setData(record);
+        contentBinding.setSymptomsContext(symptomsContext);
         contentBinding.symptomsSymptomsOccurred.setTags(yesResult);
         contentBinding.symptomsSymptomsUnknownOccurred.setTags(unknownResult);
 
         if (!Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, SymptomsDto.LESIONS, disease)) {
             contentBinding.symptomsLesionsLayout.setVisibility(GONE);
+        }
+
+        if (symptomsContext == SymptomsContext.CLINICAL_VISIT) {
+            contentBinding.symptomsSeparator.setVisibility(GONE);
         }
     }
 

@@ -51,6 +51,9 @@ import de.symeda.sormas.api.utils.ExportErrorException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.epidata.EpiData;
@@ -75,10 +78,13 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.PathogenTest;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
+import de.symeda.sormas.backend.therapy.Prescription;
+import de.symeda.sormas.backend.therapy.Therapy;
+import de.symeda.sormas.backend.therapy.Treatment;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.visit.Visit;
@@ -150,6 +156,24 @@ public class ExportFacadeEjb implements ExportFacade {
 			case EPIDATATRAVELS:
 				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, EpiDataTravel.TABLE_NAME).getResultList();
 				break;
+			case THERAPIES:
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Therapy.TABLE_NAME).getResultList();
+				break;
+			case PRESCRIPTIONS:
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Prescription.TABLE_NAME).getResultList();
+				break;
+			case TREATMENTS:
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Treatment.TABLE_NAME).getResultList();
+				break;
+			case CLINICAL_COURSES:
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, ClinicalCourse.TABLE_NAME).getResultList();
+				break;
+			case HEALTH_CONDITIONS:
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, HealthConditions.TABLE_NAME).getResultList();
+				break;
+			case CLINICAL_VISITS:
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, ClinicalVisit.TABLE_NAME).getResultList();
+				break;
 			case CONTACTS:
 				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Contact.TABLE_NAME).getResultList();
 				break;
@@ -197,7 +221,10 @@ public class ExportFacadeEjb implements ExportFacade {
 				break;
 			case VISIT_SYMPTOMS:
 				generateCsvExportJoinQuery(databaseTable.getFileName(), date, randomNumber, Symptoms.TABLE_NAME, Visit.TABLE_NAME, "id", "symptoms_id").getResultList();
-				break;				
+				break;	
+			case CLINICAL_VISIT_SYMPTOMS:
+				generateCsvExportJoinQuery(databaseTable.getFileName(), date, randomNumber, Symptoms.TABLE_NAME, ClinicalVisit.TABLE_NAME, "id", "symptoms_id").getResultList();
+				break;
 			}
 		}
 

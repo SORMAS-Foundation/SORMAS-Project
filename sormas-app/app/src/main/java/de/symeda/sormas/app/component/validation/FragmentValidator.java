@@ -30,51 +30,68 @@ import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 
 import static android.view.View.VISIBLE;
 
+/**
+ * Custom validator that iterates over all ControlPropertyEditFields in the given Fragment and
+ * builds information about encountered validation errors. These include:
+ * - Required fields without a value
+ * - ControlDateFields or ControlDateTimeFields that have a value outside the allowed range
+ * - Any custom validation that is done on the specific field with a ValidationCallback
+ */
 public class FragmentValidator {
 
     private FragmentValidator() { }
 
+    /**
+     * Validates all ControlPropertyEditFields within the given ViewDataBinding. If there are
+     * any fields with an error, throws a ValidationException containing a description of all
+     * errors.
+     */
     public static void validate(Context context, ViewDataBinding contentBinding) throws ValidationException {
-        ValidationErrorInfo errorInfo = FragmentValidator.validateFragmentRequirements(context, contentBinding);
+        ValidationErrorInfo errorInfo = FragmentValidator.validateFragment(context, contentBinding);
 
         if (errorInfo.hasError()) {
             throw new ValidationException(errorInfo.toString());
         }
     }
 
-    private static ValidationErrorInfo validateFragmentRequirements(Context context, ViewDataBinding fragmentBinding) {
+    private static ValidationErrorInfo validateFragment(Context context, ViewDataBinding fragmentBinding) {
         ValidationErrorInfo errorInfo = new ValidationErrorInfo(context);
 
         ViewGroup root = (ViewGroup) fragmentBinding.getRoot();
-        validateRequiredPropertyEditFields(root, errorInfo);
+        validatePropertyEditFields(root, errorInfo);
 
         return errorInfo;
     }
 
-    private static void validateRequiredPropertyEditFields(ViewGroup parent, ValidationErrorInfo errorInfo) {
+    private static void validatePropertyEditFields(ViewGroup parent, ValidationErrorInfo errorInfo) {
         for (int i = 0; i < parent.getChildCount(); i++) {
             View child = parent.getChildAt(i);
             if (child instanceof ControlPropertyEditField) {
                 ControlPropertyEditField field = (ControlPropertyEditField) child;
-                field.setErrorIfEmpty();
+                boolean fieldHasError = field.setErrorIfEmpty();
 
                 if (field instanceof ControlDateField) {
-                    ((ControlDateField) field).setErrorIfOutOfDateRange();
+                    fieldHasError |= ((ControlDateField) field).setErrorIfOutOfDateRange();
                 }
 
                 if (field instanceof ControlDateTimeField) {
-                    ((ControlDateTimeField) field).setErrorIfOutOfDateRange();
+                    fieldHasError |= ((ControlDateTimeField) field).setErrorIfOutOfDateRange();
                 }
 
                 if (field.getValidationCallback() != null) {
-                    field.getValidationCallback().call();
+                    fieldHasError |= (Boolean) field.getValidationCallback().call();
+                }
+
+                // Disable error state on the field if all check returned without errors
+                if (!fieldHasError) {
+                    field.disableErrorState();
                 }
 
                 if (field.isHasError() && field.getVisibility() == VISIBLE) {
                     errorInfo.addFieldWithError(field);
                 }
             } else if (child instanceof ViewGroup) {
-                validateRequiredPropertyEditFields((ViewGroup) child, errorInfo);
+                validatePropertyEditFields((ViewGroup) child, errorInfo);
             }
         }
     }

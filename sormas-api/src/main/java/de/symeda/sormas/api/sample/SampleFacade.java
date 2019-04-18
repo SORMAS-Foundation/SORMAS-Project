@@ -26,6 +26,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface SampleFacade {
@@ -36,7 +37,9 @@ public interface SampleFacade {
 	
 	int getReceivedSampleCountByCase(CaseReferenceDto caseRef);
 	
-	List<SampleIndexDto> getIndexList(String userUuid, SampleCriteria sampleCriteria);
+	List<SampleIndexDto> getIndexList(String userUuid, SampleCriteria sampleCriteria, int first, int max, List<SortProperty> sortProperties);
+	
+	long count(String userUuid, SampleCriteria sampleCriteria);
 	
 	SampleDto getSampleByUuid(String uuid);
 	

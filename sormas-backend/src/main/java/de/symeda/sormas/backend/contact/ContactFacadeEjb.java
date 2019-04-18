@@ -35,8 +35,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
@@ -45,6 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -65,6 +68,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -321,7 +325,34 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 	
 	@Override
-	public List<ContactIndexDto> getIndexList(String userUuid, ContactCriteria contactCriteria) {
+	public long count(String userUuid, ContactCriteria contactCriteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Contact> root = cq.from(Contact.class);
+		
+		Predicate filter = null;		
+		// Only use user filter if no restricting case is specified
+		if (userUuid != null 
+				&& (contactCriteria == null || contactCriteria.getCaze() == null)) {
+			User user = userService.getByUuid(userUuid);
+			filter = contactService.createUserFilter(cb, cq, root, user);
+		}
+		
+		if (contactCriteria != null) {
+			Predicate criteriaFilter = contactService.buildCriteriaFilter(contactCriteria, cb, root);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.select(cb.count(root));
+		return em.createQuery(cq).getSingleResult();
+	}
+	
+	@Override
+	public List<ContactIndexDto> getIndexList(String userUuid, ContactCriteria contactCriteria, int first, int max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ContactIndexDto> cq = cb.createQuery(ContactIndexDto.class);
 		Root<Contact> contact = cq.from(Contact.class);
@@ -340,8 +371,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				contact.get(Contact.CONTACT_CLASSIFICATION), contact.get(Contact.CONTACT_STATUS), contact.get(Contact.FOLLOW_UP_STATUS), contact.get(Contact.FOLLOW_UP_UNTIL),
 				contactOfficer.get(User.UUID), contact.get(Contact.REPORT_DATE_TIME));
 		
-		Predicate filter = null;
-		
+		Predicate filter = null;		
 		// Only use user filter if no restricting case is specified
 		if (userUuid != null 
 				&& (contactCriteria == null || contactCriteria.getCaze() == null)) {
@@ -357,9 +387,55 @@ public class ContactFacadeEjb implements ContactFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}
-		cq.orderBy(cb.desc(contact.get(Contact.REPORT_DATE_TIME)));
 		
-		List<ContactIndexDto> resultList = em.createQuery(cq).getResultList();
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case ContactIndexDto.UUID:
+				case ContactIndexDto.LAST_CONTACT_DATE:
+				case ContactIndexDto.CONTACT_PROXIMITY:
+				case ContactIndexDto.CONTACT_CLASSIFICATION:
+				case ContactIndexDto.CONTACT_STATUS:
+				case ContactIndexDto.FOLLOW_UP_STATUS:
+				case ContactIndexDto.FOLLOW_UP_UNTIL:
+				case ContactIndexDto.REPORT_DATE_TIME:
+					expression = contact.get(sortProperty.propertyName);
+					break;
+				case ContactIndexDto.PERSON:
+					expression = contactPerson.get(Person.FIRST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = contactPerson.get(Person.LAST_NAME);
+					break;
+				case ContactIndexDto.CAZE:
+					expression = contactCasePerson.get(Person.FIRST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = contactCasePerson.get(Person.LAST_NAME);
+					break;
+				case ContactIndexDto.CASE_DISEASE:
+					expression = contactCase.get(Case.DISEASE);
+					break;
+				case ContactIndexDto.CASE_REGION_UUID:
+					expression = contactCaseRegion.get(Region.NAME);
+					break;
+				case ContactIndexDto.CASE_DISTRICT_UUID:
+					expression = contactCaseDistrict.get(District.NAME);
+					break;
+				case ContactIndexDto.CASE_HEALTH_FACILITY_UUID:
+					expression = contactCaseFacility.get(Facility.NAME);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(contact.get(Contact.CHANGE_DATE)));
+		}
+
+		List<ContactIndexDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 		return resultList;
 	}
 	

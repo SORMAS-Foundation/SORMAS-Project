@@ -25,7 +25,10 @@
     android:descendantFocusability="beforeDescendants">
 
     <data>
-        <variable name="data" type="de.symeda.sormas.app.backend.symptoms.Symptoms"/>
+        <import type="de.symeda.sormas.api.symptoms.SymptomsContext" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.symptoms.Symptoms" />
+        <variable name="symptomsContext" type="de.symeda.sormas.api.symptoms.SymptomsContext" />
     </data>
 
     <ScrollView
@@ -47,11 +50,15 @@
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/symptoms_onsetSymptom"
                     app:value="@{data.onsetSymptom}"
+                    app:goneIfVariable="@{symptomsContext}"
+                    app:goneIfValue="@{SymptomsContext.CLINICAL_VISIT}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/symptoms_onsetDate"
                     app:value="@{data.onsetDate}"
+                    app:goneIfVariable="@{symptomsContext}"
+                    app:goneIfValue="@{SymptomsContext.CLINICAL_VISIT}"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
@@ -61,14 +68,13 @@
                 app:appendValue="@{data.temperatureSource.toString()}"
                 app:value="@{data.temperature}"
                 app:valueFormat='@{@string/two_strings_with_brackets_format}'
+                app:goneIfVariable="@{symptomsContext}"
+                app:goneIfValue="@{SymptomsContext.CLINICAL_VISIT}"
                 style="@style/ControlSingleColumnStyle" />
 
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/symptoms_patientIllLocation"
-                app:value="@{data.patientIllLocation}"
-                style="@style/ControlSingleColumnStyle" />
-
-            <ImageView style="@style/FullHorizontalDividerStyle"/>
+            <ImageView
+                android:id="@+id/symptoms_separator"
+                style="@style/FullHorizontalDividerStyle"/>
 
             <de.symeda.sormas.app.component.controls.ControlTagViewField
                 android:id="@+id/symptoms_symptomsOccurred"
@@ -205,6 +211,12 @@
                 app:goneIfEmpty="@{data.otherNonHemorrhagicSymptomsText}"
                 app:value="@{data.otherNonHemorrhagicSymptoms}"
                 app:valueFormat="@{@string/two_strings_with_hyphen_format}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/symptoms_symptomsComments"
+                app:value="@{data.symptomsComments}"
+                app:goneIfEmpty="@{data.symptomsComments}"
+                style="@style/ControlSingleColumnStyle" />
 
         </LinearLayout>
 

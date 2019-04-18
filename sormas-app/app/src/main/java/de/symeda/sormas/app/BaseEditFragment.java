@@ -18,12 +18,7 @@
 
 package de.symeda.sormas.app;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.OnRebindCallback;
-import androidx.databinding.ViewDataBinding;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,14 +27,15 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.OnRebindCallback;
+import androidx.databinding.ViewDataBinding;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.NotificationContext;
-import de.symeda.sormas.app.core.async.AsyncTaskResult;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
@@ -49,7 +45,7 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
 
     public static final String TAG = BaseEditFragment.class.getSimpleName();
 
-    private AsyncTask jobTask;
+//    private AsyncTask jobTask;
     private BaseEditActivity baseEditActivity;
     private IUpdateSubHeadingTitle subHeadingHandler;
     private NotificationContext notificationCommunicator;
@@ -149,28 +145,30 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
         });
 
         vsChildFragmentFrame.setLayoutResource(getEditLayout());
+        prepareFragmentData();
+        vsChildFragmentFrame.inflate();
 
-        jobTask = new DefaultAsyncTask(getContext()) {
-            @Override
-            public void onPreExecute() {
-                getBaseActivity().showPreloader();
-            }
-
-            @Override
-            public void doInBackground(final TaskResultHolder resultHolder) {
-                prepareFragmentData();
-            }
-
-            @Override
-            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-                getBaseActivity().hidePreloader();
-
-                if (taskResult.getResultStatus().isFailed())
-                    return;
-
-                vsChildFragmentFrame.inflate();
-            }
-        }.executeOnThreadPool();
+//        jobTask = new DefaultAsyncTask(getContext()) {
+//            @Override
+//            public void onPreExecute() {
+//                getBaseActivity().showPreloader();
+//            }
+//
+//            @Override
+//            public void doInBackground(final TaskResultHolder resultHolder) {
+//                prepareFragmentData();
+//            }
+//
+//            @Override
+//            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+//                getBaseActivity().hidePreloader();
+//
+//                if (taskResult.getResultStatus().isFailed())
+//                    return;
+//
+//                vsChildFragmentFrame.inflate();
+//            }
+//        }.executeOnThreadPool();
 
         return rootView;
     }
@@ -281,11 +279,11 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
         return false;
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (jobTask != null && !jobTask.isCancelled())
-            jobTask.cancel(true);
-    }
+//    @Override
+//    public void onDestroy() {
+//        super.onDestroy();
+//
+//        if (jobTask != null && !jobTask.isCancelled())
+//            jobTask.cancel(true);
+//    }
 }

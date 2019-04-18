@@ -17,7 +17,6 @@ import javax.persistence.TemporalType;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 
 @Entity
@@ -31,7 +30,6 @@ public class ClinicalVisit extends AbstractDomainObject {
 	public static final String CLINICAL_COURSE = "clinicalCourse";
 	public static final String SYMPTOMS = "symptoms";
 	public static final String DISEASE = "disease";
-	public static final String PERSON = "person";
 	public static final String VISIT_DATE_TIME = "visitDateTime";
 	public static final String VISIT_REMARKS = "visitRemarks";
 	public static final String VISITING_PERSON = "visitingPerson";
@@ -39,7 +37,6 @@ public class ClinicalVisit extends AbstractDomainObject {
 	private ClinicalCourse clinicalCourse;
 	private Symptoms symptoms;
 	private Disease disease;
-	private Person person;
 	private Date visitDateTime;
 	private String visitRemarks;
 	private String visitingPerson;
@@ -55,6 +52,9 @@ public class ClinicalVisit extends AbstractDomainObject {
 	
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	public Symptoms getSymptoms() {
+		if (symptoms == null) {
+			symptoms = new Symptoms();
+		}
 		return symptoms;
 	}
 	public void setSymptoms(Symptoms symptoms) {
@@ -67,15 +67,6 @@ public class ClinicalVisit extends AbstractDomainObject {
 	}
 	public void setDisease(Disease disease) {
 		this.disease = disease;
-	}
-	
-	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=false)
-	public Person getPerson() {
-		return person;
-	}
-	public void setPerson(Person person) {
-		this.person = person;
 	}
 	
 	@Temporal(TemporalType.TIMESTAMP)

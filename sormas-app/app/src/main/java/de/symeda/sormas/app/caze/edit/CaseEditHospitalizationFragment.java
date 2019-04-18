@@ -192,7 +192,6 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
 
         contentBinding.setData(record);
         contentBinding.setCaze(caze);
-        contentBinding.setAccommodationClass(AccommodationType.class);
         contentBinding.setPreviousHospitalizationList(getPreviousHospitalizations());
         contentBinding.setPrevHosItemClickCallback(onPrevHosItemClickListener);
     }
@@ -206,6 +205,9 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
         contentBinding.caseHospitalizationAdmissionDate.initializeDateField(getFragmentManager());
         contentBinding.caseHospitalizationDischargeDate.initializeDateField(getFragmentManager());
         contentBinding.caseHospitalizationIsolationDate.initializeDateField(getFragmentManager());
+
+        // Initialize ControlSpinnerFields
+        contentBinding.caseHospitalizationAccommodation.initializeSpinner(DataUtils.getEnumItems(AccommodationType.class), true);
 
         verifyPrevHospitalizationStatus();
     }

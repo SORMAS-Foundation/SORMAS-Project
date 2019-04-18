@@ -370,6 +370,7 @@
 
 
     <dimen name="separatorThickness">1.2dp</dimen>
+    <dimen name="boldSeparatorThickness">2dp</dimen>
 
 
     <dimen name="readControlSmallIconWidth">10dp</dimen>
