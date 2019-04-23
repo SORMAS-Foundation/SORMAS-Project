@@ -16,18 +16,19 @@ Please make sure to take these actions when you update the server to the respect
 * 0.16.0: Update the glassfish config with the export path, SMS sender name, auth key and secret
 * 0.19.0: Update the glassfish config with the generated files path
 * 1.4.0: Update the glassfish config with the automatic classification feature
-* 1.10.0: Update the auth realm query properties:
+* ~~1.10.0: Update the auth realm query properties:~~
+* 1.19.0: Update the auth realm query properties:
 
 Linux:
 ```
 /opt/payara-172/glassfish/bin/asadmin --port 6048 delete-auth-realm sormas-realm
-/opt/payara-172/glassfish/bin/asadmin --port 6048 create-auth-realm --classname org.wamblee.glassfish.auth.FlexibleJdbcRealm --property "jaas.context=sormasRealm:sql.password=SELECT password FROM users WHERE username\=? AND aktiv\=true:sql.groups=SELECT userrole FROM users_userroles INNER JOIN users ON users_userroles.user_id\=users.id WHERE users.username\=?:sql.seed=SELECT seed FROM users WHERE username\=?:datasource.jndi=jdbc/sormasUsersDataPool:assign-groups=AUTHED_USER:password.digest=SHA-256:charset=UTF-8" sormas-realm
+/opt/payara-172/glassfish/bin/asadmin --port 6048 create-auth-realm --classname org.wamblee.glassfish.auth.FlexibleJdbcRealm --property "jaas.context=sormasRealm:sql.password=SELECT password FROM users WHERE username\=? AND active\=true:sql.groups=SELECT userrole FROM users_userroles INNER JOIN users ON users_userroles.user_id\=users.id WHERE users.username\=?:sql.seed=SELECT seed FROM users WHERE username\=?:datasource.jndi=jdbc/sormasUsersDataPool:assign-groups=AUTHED_USER:password.digest=SHA-256:charset=UTF-8" sormas-realm
 /opt/payara-172/glassfish/bin/asadmin --port 6048 set server-config.security-service.default-realm=sormas-realm
 ```
 Windows:
 ```
 C:/srv/payara-172/glassfish/bin/asadmin --port 6048 delete-auth-realm sormas-realm
-C:/srv/payara-172/glassfish/bin/asadmin --port 6048 create-auth-realm --classname org.wamblee.glassfish.auth.FlexibleJdbcRealm --property "jaas.context=sormasRealm:sql.password=SELECT password FROM users WHERE username\=? AND aktiv\=true:sql.groups=SELECT userrole FROM users_userroles INNER JOIN users ON users_userroles.user_id\=users.id WHERE users.username\=?:sql.seed=SELECT seed FROM users WHERE username\=?:datasource.jndi=jdbc/sormasUsersDataPool:assign-groups=AUTHED_USER:password.digest=SHA-256:charset=UTF-8" sormas-realm
+C:/srv/payara-172/glassfish/bin/asadmin --port 6048 create-auth-realm --classname org.wamblee.glassfish.auth.FlexibleJdbcRealm --property "jaas.context=sormasRealm:sql.password=SELECT password FROM users WHERE username\=? AND active\=true:sql.groups=SELECT userrole FROM users_userroles INNER JOIN users ON users_userroles.user_id\=users.id WHERE users.username\=?:sql.seed=SELECT seed FROM users WHERE username\=?:datasource.jndi=jdbc/sormasUsersDataPool:assign-groups=AUTHED_USER:password.digest=SHA-256:charset=UTF-8" sormas-realm
 C:/srv/payara-172/glassfish/bin/asadmin --port 6048 set server-config.security-service.default-realm=sormas-realm
 ```
 
