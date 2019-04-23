@@ -286,7 +286,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			cq.orderBy(cb.desc(sample.get(Sample.SAMPLE_DATE_TIME)));
 		}
 
-		List<SampleIndexDto> resultList = em.createQuery(cq).getResultList();
+		List<SampleIndexDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 		return resultList;	
 	}
 	

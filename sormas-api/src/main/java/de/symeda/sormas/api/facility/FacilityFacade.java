@@ -25,6 +25,7 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
@@ -32,7 +33,9 @@ public interface FacilityFacade {
 
 	List<FacilityReferenceDto> getAll();
 	
-	List<FacilityDto> getIndexList(String userUuid, FacilityCriteria facilityCriteria);
+	List<FacilityDto> getIndexList(FacilityCriteria facilityCriteria, int first, int max, List<SortProperty> sortProperties);
+
+	long count(FacilityCriteria criteria);
 	
     List<FacilityReferenceDto> getHealthFacilitiesByCommunity(CommunityReferenceDto community, boolean includeStaticFacilities);
     List<FacilityReferenceDto> getHealthFacilitiesByDistrict(DistrictReferenceDto district, boolean includeStaticFacilities);

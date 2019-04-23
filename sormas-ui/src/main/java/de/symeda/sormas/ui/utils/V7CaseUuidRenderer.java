@@ -18,7 +18,7 @@
 package de.symeda.sormas.ui.utils;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.ui.renderers.HtmlRenderer;
+import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -27,11 +27,11 @@ import de.symeda.sormas.api.utils.DataHelper;
 import elemental.json.JsonValue;
 
 @SuppressWarnings("serial")
-public class CaseUuidRenderer extends HtmlRenderer {
+public class V7CaseUuidRenderer extends HtmlRenderer {
 	
 	private final boolean withCreateCaseIfEmpty;
 	
-	public CaseUuidRenderer(boolean withCreateCaseIfEmpty) {
+	public V7CaseUuidRenderer(boolean withCreateCaseIfEmpty) {
 		this.withCreateCaseIfEmpty = withCreateCaseIfEmpty;
 	}
 	

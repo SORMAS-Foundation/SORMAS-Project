@@ -1894,7 +1894,7 @@ class UserGenerator extends BaseDataGenerator {
             User data1 = new User();
             data1.setUuid(getRandomUuid());
             data1.setUserName(getRandomUserName());
-            data1.setAktiv(getRandomBoolean());
+            data1.setActive(getRandomBoolean());
             data1.setFirstName(getRandomName());
             data1.setLastName(getRandomName());
             data1.setUserEmail(getRandomEmail());

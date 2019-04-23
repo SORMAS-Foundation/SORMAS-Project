@@ -38,6 +38,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -51,8 +52,8 @@ public class VisitController {
     	
     }
 
-	public void editVisit(VisitReferenceDto visitRef, ContactReferenceDto contactRef, Consumer<VisitReferenceDto> doneConsumer) {
-    	VisitDto visit = FacadeProvider.getVisitFacade().getVisitByUuid(visitRef.getUuid());
+	public void editVisit(String visitUuid, ContactReferenceDto contactRef, Consumer<VisitReferenceDto> doneConsumer) {
+    	VisitDto visit = FacadeProvider.getVisitFacade().getVisitByUuid(visitUuid);
     	ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
     	VisitReferenceDto referenceDto = visit.toReference();
     	PersonDto visitPerson = FacadeProvider.getPersonFacade().getPersonByUuid(visit.getPerson().getUuid());
@@ -131,7 +132,7 @@ public class VisitController {
     	return visit;
     }
 	
-	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(Collection<VisitIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoVisitsSelected), 
 					I18nProperties.getString(Strings.messageNoVisitsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());

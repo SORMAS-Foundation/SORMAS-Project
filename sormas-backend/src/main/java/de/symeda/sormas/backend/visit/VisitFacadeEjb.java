@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.visit;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -28,6 +29,16 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
@@ -39,9 +50,12 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.visit.DashboardVisitDto;
+import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitFacade;
+import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
@@ -53,15 +67,20 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "VisitFacade")
 public class VisitFacadeEjb implements VisitFacade {
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	protected EntityManager em;
 
 	@EJB
 	private VisitService visitService;	
@@ -143,7 +162,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	@Override
 	public VisitDto saveVisit(VisitDto dto) {
 		VisitDto existingVisit = toDto(visitService.getByUuid(dto.getUuid()));
-		
+
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 		Visit entity = fromDto(dto);
 		visitService.ensurePersisted(entity);
@@ -170,12 +189,80 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		return visitService.getVisitCount(contact, null);
 	}
-	
+
 	@Override
 	public List<DashboardVisitDto> getDashboardVisitsByContact(ContactReferenceDto contactRef, Date from, Date to) {
 		Contact contact = contactService.getByReferenceDto(contactRef);
-		
+
 		return visitService.getDashboardVisitsByContact(contact, from, to);
+	}
+
+	@Override
+	public List<VisitIndexDto> getIndexList(VisitCriteria visitCriteria, int first, int max, List<SortProperty> sortProperties) {
+		if (visitCriteria == null || visitCriteria.getContact() == null) {
+			return new ArrayList<>(); // Retrieving an index list independent of a contact is not possible
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<VisitIndexDto> cq = cb.createQuery(VisitIndexDto.class);
+		Root<Visit> visit = cq.from(Visit.class);
+
+		Join<Visit, Symptoms> symptoms = visit.join(Visit.SYMPTOMS, JoinType.LEFT);
+
+		cq.multiselect(visit.get(Visit.UUID),
+				visit.get(Visit.VISIT_DATE_TIME),
+				visit.get(Visit.VISIT_STATUS),
+				visit.get(Visit.VISIT_REMARKS),
+				visit.get(Visit.DISEASE),
+				symptoms.get(Symptoms.SYMPTOMATIC),
+				symptoms.get(Symptoms.TEMPERATURE),
+				symptoms.get(Symptoms.TEMPERATURE_SOURCE));
+
+		Predicate filter = visitService.buildCriteriaFilter(visitCriteria, cb, visit);
+		cq.where(filter);
+
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case VisitIndexDto.VISIT_DATE_TIME:
+				case VisitIndexDto.VISIT_STATUS:
+				case VisitIndexDto.VISIT_REMARKS:
+				case VisitIndexDto.DISEASE:
+					expression = visit.get(sortProperty.propertyName);
+					break;
+				case VisitIndexDto.SYMPTOMATIC:
+				case VisitIndexDto.TEMPERATURE:
+					expression = symptoms.get(sortProperty.propertyName);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(visit.get(Visit.VISIT_DATE_TIME)));
+		}
+		
+		List<VisitIndexDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		return resultList;
+	}
+	
+	@Override
+	public long count(VisitCriteria visitCriteria) {
+		if (visitCriteria == null || visitCriteria.getContact() == null) {
+			return 0L; // Retrieving a list count independent of a contact is not possible
+		}
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Visit> root = cq.from(Visit.class);
+		Predicate filter = visitService.buildCriteriaFilter(visitCriteria, cb, root);
+		cq.where(filter);
+		cq.select(cb.count(root));
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	public Visit fromDto(@NotNull VisitDto source) {
@@ -264,7 +351,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		contactService.updateFollowUpUntilAndStatusByVisit(newVisit);
 	}
-	
+
 	@LocalBean
 	@Stateless
 	public static class VisitFacadeEjbLocal extends VisitFacadeEjb {

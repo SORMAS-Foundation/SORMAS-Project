@@ -24,6 +24,7 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface UserFacade {
@@ -47,6 +48,10 @@ public interface UserFacade {
 	List<UserReferenceDto> getAllAfterAsReference(Date date);
 
 	List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles);
+	
+	List<UserDto> getIndexList(UserCriteria userCriteria, int first, int max, List<SortProperty> sortProperties);
+
+	long count(UserCriteria userCriteria);
 	
 	/**
 	 * 

@@ -28,7 +28,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.GridExportStreamResource;
 
 public class LaboratoriesView extends AbstractFacilitiesView {
 
@@ -39,7 +39,7 @@ public class LaboratoriesView extends AbstractFacilitiesView {
 	public LaboratoriesView() {
 		super(VIEW_NAME, true);
 
-		StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), grid.getColumns(), "sormas_laboratories", "sormas_laboratories_" + DateHelper.formatDateForExport(new Date()) + ".csv", FacilitiesGrid.EDIT_BTN_ID);
+		StreamResource streamResource = new GridExportStreamResource(grid, "sormas_laboratories", "sormas_laboratories_" + DateHelper.formatDateForExport(new Date()) + ".csv", FacilitiesGrid.EDIT_BTN_ID);
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
 		fileDownloader.extend(exportButton);
 

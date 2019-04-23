@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.event;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -26,22 +27,41 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
+import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "EventParticipantFacade")
 public class EventParticipantFacadeEjb implements EventParticipantFacade {
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	protected EntityManager em;
 
 	@EJB
 	private EventService eventService;
@@ -127,6 +147,87 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		
 		EventParticipant eventParticipant = eventParticipantService.getByReferenceDto(eventParticipantRef);
 		eventParticipantService.delete(eventParticipant);
+	}
+	
+	@Override
+	public List<EventParticipantIndexDto> getIndexList(EventParticipantCriteria eventParticipantCriteria, int first, int max, List<SortProperty> sortProperties) {
+		if (eventParticipantCriteria == null || eventParticipantCriteria.getEvent() == null) {
+			return new ArrayList<>(); // Retrieving an index list independent of an event is not possible
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventParticipantIndexDto> cq = cb.createQuery(EventParticipantIndexDto.class);
+		Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
+		
+		Join<EventParticipant, Person> person = eventParticipant.join(EventParticipant.PERSON, JoinType.LEFT);
+		Join<EventParticipant, Case> resultingCase = eventParticipant.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
+		Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
+		
+		cq.multiselect(eventParticipant.get(EventParticipant.UUID),
+				person.get(Person.UUID),
+				resultingCase.get(Case.UUID),
+				event.get(Event.UUID),
+				person.get(Person.FIRST_NAME),
+				person.get(Person.LAST_NAME),
+				person.get(Person.SEX),
+				person.get(Person.APPROXIMATE_AGE),
+				person.get(Person.APPROXIMATE_AGE_TYPE),
+				eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION));
+				
+		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant);
+		cq.where(filter);
+
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case EventParticipantIndexDto.UUID:
+				case EventParticipantIndexDto.INVOLVEMENT_DESCRIPTION:
+					expression = eventParticipant.get(sortProperty.propertyName);
+					break;
+				case EventParticipantIndexDto.PERSON_UUID:
+					expression = person.get(Person.UUID);
+					break;
+				case EventParticipantIndexDto.APPROXIMATE_AGE:
+				case EventParticipantIndexDto.SEX:
+					expression = person.get(sortProperty.propertyName);
+					break;
+				case EventParticipantIndexDto.NAME:
+					expression = person.get(Person.LAST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = person.get(Person.FIRST_NAME);
+					break;
+				case EventParticipantIndexDto.CASE_UUID:
+					expression = resultingCase.get(Case.UUID);
+					break;
+					default:
+						throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(person.get(Person.LAST_NAME)));
+		}
+		
+		List<EventParticipantIndexDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		return resultList;
+	}
+	
+	@Override
+	public long count(EventParticipantCriteria eventParticipantCriteria) {
+		if (eventParticipantCriteria == null || eventParticipantCriteria.getEvent() == null) {
+			return 0L; // Retrieving a count independent of an event is not possible
+		}
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<EventParticipant> root = cq.from(EventParticipant.class);
+		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, root);
+		cq.where(filter);
+		cq.select(cb.count(root));
+		return em.createQuery(cq).getSingleResult();
 	}
 	
 	public EventParticipant fromDto(@NotNull EventParticipantDto source) {

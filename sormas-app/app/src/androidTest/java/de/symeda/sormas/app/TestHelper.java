@@ -75,7 +75,7 @@ public class TestHelper {
         // Create user and set username and password
         User user = new User();
         user.setUserName("SanaObas");
-        user.setAktiv(true);
+        user.setActive(true);
         user.setFirstName("Sana");
         user.setLastName("Obas");
         user.setUserRoles(new HashSet(Arrays.asList(UserRole.SURVEILLANCE_OFFICER)));
@@ -92,7 +92,7 @@ public class TestHelper {
         // Create a second user with a specific region and district
         User secondUser = new User();
         secondUser.setUserName("SaboAnas");
-        secondUser.setAktiv(true);
+        secondUser.setActive(true);
         secondUser.setFirstName("Sabo");
         secondUser.setLastName("Anas");
         secondUser.setUserRoles(new HashSet(Arrays.asList(UserRole.SURVEILLANCE_OFFICER, UserRole.CASE_OFFICER)));
@@ -106,7 +106,7 @@ public class TestHelper {
         // Create an informant
         User informant = new User();
         informant.setUserName("InfoUser");
-        informant.setAktiv(true);
+        informant.setActive(true);
         informant.setFirstName("Info");
         informant.setLastName("User");
         informant.setUserRoles(new HashSet(Arrays.asList(UserRole.HOSPITAL_INFORMANT)));

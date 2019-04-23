@@ -39,7 +39,7 @@ import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 @SuppressWarnings("serial")
-public class CaseGrid extends FilteredGrid<CaseIndexDto,CaseCriteria> {
+public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
@@ -84,8 +84,8 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto,CaseCriteria> {
 				CaseIndexDto.REPORT_DATE, CaseIndexDto.CREATION_DATE, NUMBER_OF_PENDING_TASKS);
 
 
-		((Column<CaseIndexDto, String>)getColumn(CaseIndexDto.UUID)).setRenderer(new UuidRenderer());
-		((Column<CaseIndexDto, Date>)getColumn(CaseIndexDto.REPORT_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+		((Column<CaseIndexDto, String>) getColumn(CaseIndexDto.UUID)).setRenderer(new UuidRenderer());
+		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
 			((Column<CaseIndexDto, Date>)getColumn(CaseIndexDto.CREATION_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));

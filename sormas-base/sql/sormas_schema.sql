@@ -3133,3 +3133,10 @@ INSERT INTO schema_version (version_number, comment) VALUES (142, 'Adjust export
 ALTER TABLE events ADD CONSTRAINT fk_events_surveillanceofficer_id FOREIGN KEY (surveillanceofficer_id) REFERENCES users (id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (143, 'Added missing foreign key constraint to events surveillance officer');
+
+-- 2019-04-23 Rename "aktiv" to "active" in user table
+
+ALTER TABLE users RENAME COLUMN aktiv TO active;
+ALTER TABLE users_history RENAME COLUMN aktiv TO active;
+
+INSERT INTO schema_version (version_number, comment) VALUES (144, 'Rename aktiv to active in user table');

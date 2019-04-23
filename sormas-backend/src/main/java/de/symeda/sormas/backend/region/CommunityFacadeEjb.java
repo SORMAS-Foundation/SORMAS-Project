@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.region;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -29,8 +30,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
@@ -42,6 +45,7 @@ import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -79,28 +83,68 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	}
 
 	@Override
-	public List<CommunityDto> getIndexList(CommunityCriteria criteria) {
+	public List<CommunityDto> getIndexList(CommunityCriteria criteria, int first, int max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<CommunityDto> cq = cb.createQuery(CommunityDto.class);
+		CriteriaQuery<Community> cq = cb.createQuery(Community.class);
 		Root<Community> community = cq.from(Community.class);
 		Join<Community, District> district = community.join(Community.DISTRICT, JoinType.LEFT);
 		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
 
-		if (criteria != null) {
-			Predicate filter = communityService.buildCriteriaFilter(criteria, cb, community);
-			if (filter != null) {
-				cq.where(filter);
-			}
+		Predicate filter = communityService.buildCriteriaFilter(criteria, cb, community);
+		
+		if (filter != null) {
+			cq.where(filter);
 		}
 		
-		cq.multiselect(community.get(Community.CREATION_DATE), community.get(Community.CHANGE_DATE),
-				community.get(Community.UUID), community.get(Community.NAME),
-				region.get(Region.UUID), region.get(Region.NAME),
-				district.get(District.UUID), district.get(District.NAME));
-		cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)), cb.asc(community.get(Community.NAME)));
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case Community.NAME:
+					expression = community.get(sortProperty.propertyName);
+					break;
+				case District.REGION:
+					expression = region.get(Region.NAME);
+					break;
+				case Community.DISTRICT:
+					expression = district.get(District.NAME);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)), cb.asc(community.get(Community.NAME)));
+		}
+		
+		cq.select(community);
+		
+//		cq.multiselect(community.get(Community.CREATION_DATE), community.get(Community.CHANGE_DATE),
+//				community.get(Community.UUID), community.get(Community.NAME),
+//				region.get(Region.UUID), region.get(Region.NAME),
+//				district.get(District.UUID), district.get(District.NAME));
 
-		List<CommunityDto> resultList = em.createQuery(cq).getResultList();
-		return resultList;
+		List<Community> communities = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		return communities.stream().map(c -> toDto(c)).collect(Collectors.toList());
+	}
+	
+	@Override
+	public long count(CommunityCriteria criteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Community> root = cq.from(Community.class);
+		
+		Predicate filter = communityService.buildCriteriaFilter(criteria, cb, root);
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.select(cb.count(root));
+		return em.createQuery(cq).getSingleResult();
 	}
 	
 	@Override

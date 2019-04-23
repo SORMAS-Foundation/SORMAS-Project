@@ -113,8 +113,10 @@ public class CaseController {
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));    	
 	}
 
-	public void create(PersonReferenceDto person, Disease disease, EventParticipantDto eventParticipant) {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(person, disease, null, eventParticipant);
+	public void create(String personUuid, Disease disease, String eventParticipantUuid) {
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(
+				new PersonReferenceDto(personUuid), disease, null, 
+				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid));
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase)); 
 	}
 

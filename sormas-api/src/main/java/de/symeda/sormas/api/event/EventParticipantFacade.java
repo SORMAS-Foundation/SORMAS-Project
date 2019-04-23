@@ -22,6 +22,8 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.utils.SortProperty;
+
 @Remote
 public interface EventParticipantFacade {
 	
@@ -38,4 +40,9 @@ public interface EventParticipantFacade {
 	List<EventParticipantDto> getByUuids(List<String> uuids);
 
 	void deleteEventParticipant(EventParticipantReferenceDto eventParticipantRef, String userUuid);
+	
+	List<EventParticipantIndexDto> getIndexList(EventParticipantCriteria eventParticipantCriteria, int first, int max, List<SortProperty> sortProperties);
+	
+	long count(EventParticipantCriteria eventParticipantCriteria);
+	
 }

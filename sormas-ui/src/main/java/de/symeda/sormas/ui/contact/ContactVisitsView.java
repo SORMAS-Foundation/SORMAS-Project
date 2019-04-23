@@ -17,10 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
-import java.util.HashMap;
-
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -31,15 +29,15 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.visit.VisitGrid;
 
 public class ContactVisitsView extends AbstractContactView {
@@ -48,19 +46,24 @@ public class ContactVisitsView extends AbstractContactView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/visits";
 
+	private VisitCriteria criteria;
+	
 	private VisitGrid grid;    
 	private Button newButton;
 	private VerticalLayout gridLayout;
-	private HashMap<Button, String> statusButtons;
-	private Button activeStatusButton;
+//	private HashMap<Button, String> statusButtons;
+//	private Button activeStatusButton;
 
 	public ContactVisitsView() {
 		super(VIEW_NAME);
 
 		setSizeFull();
+		
+		criteria = ViewModelProviders.of(ContactVisitsView.class).get(VisitCriteria.class);
 
 		grid = new VisitGrid();
-
+		grid.setCriteria(criteria);
+		
 		gridLayout = new VerticalLayout();
 		gridLayout.setSizeFull();
 		gridLayout.setMargin(true);
@@ -70,10 +73,6 @@ public class ContactVisitsView extends AbstractContactView {
 		gridLayout.addComponent(grid);
 		gridLayout.setExpandRatio(grid, 1);
 
-		grid.getContainer().addItemSetChangeListener(e -> {
-			updateActiveStatusButtonCaption();
-		});
-
 		setSubComponent(gridLayout);
 	}
 
@@ -82,28 +81,28 @@ public class ContactVisitsView extends AbstractContactView {
 		topLayout.setSpacing(true);
 		topLayout.setWidth(100, Unit.PERCENTAGE);
 
-		statusButtons = new HashMap<>();
+//		statusButtons = new HashMap<>();
+//
+//		Button contactButton = new Button(I18nProperties.getCaption(Captions.contactRelated), e -> {
+//			grid.reload(getContactRef());
+//			processStatusChangeVisuals(e.getButton());
+//		});
+//		CssStyles.style(contactButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
+//		contactButton.setCaptionAsHtml(true);
+//		topLayout.addComponent(contactButton);
+//		statusButtons.put(contactButton, I18nProperties.getCaption(Captions.contactRelated));
+//
+//		Button personButton = new Button(I18nProperties.getCaption(Captions.contactPersonVisits), e -> {
+//			ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
+//			grid.reload(contact.getPerson());
+//			processStatusChangeVisuals(e.getButton());
+//		});
+//		CssStyles.style(personButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
+//		personButton.setCaptionAsHtml(true);
+//		topLayout.addComponent(personButton);
+//		statusButtons.put(personButton, I18nProperties.getCaption(Captions.contactPersonVisits));
 
-		Button contactButton = new Button(I18nProperties.getCaption(Captions.contactRelated), e -> {
-			grid.reload(getContactRef());
-			processStatusChangeVisuals(e.getButton());
-		});
-		CssStyles.style(contactButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
-		contactButton.setCaptionAsHtml(true);
-		topLayout.addComponent(contactButton);
-		statusButtons.put(contactButton, I18nProperties.getCaption(Captions.contactRelated));
-
-		Button personButton = new Button(I18nProperties.getCaption(Captions.contactPersonVisits), e -> {
-			ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
-			grid.reload(contact.getPerson());
-			processStatusChangeVisuals(e.getButton());
-		});
-		CssStyles.style(personButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
-		personButton.setCaptionAsHtml(true);
-		topLayout.addComponent(personButton);
-		statusButtons.put(personButton, I18nProperties.getCaption(Captions.contactPersonVisits));
-
-		topLayout.setExpandRatio(topLayout.getComponent(topLayout.getComponentCount()-1), 1);
+//		topLayout.setExpandRatio(topLayout.getComponent(topLayout.getComponentCount()-1), 1);
 
 		// Bulk operation dropdown
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
@@ -113,10 +112,10 @@ public class ContactVisitsView extends AbstractContactView {
 			MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 			Command deleteCommand = selectedItem -> {
-				ControllerProvider.getVisitController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+				ControllerProvider.getVisitController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 					public void run() {
 						grid.deselectAll();
-						grid.reload(getContactRef());
+						grid.reload();
 					}
 				});
 			};
@@ -133,32 +132,32 @@ public class ContactVisitsView extends AbstractContactView {
 			newButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			newButton.addClickListener(e -> {
 				ControllerProvider.getVisitController().createVisit(this.getContactRef(), 
-						r -> grid.reload(getContactRef()));
+						r -> grid.reload());
 			});
 			topLayout.addComponent(newButton);
 			topLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
 		}
 
 		topLayout.addStyleName(CssStyles.VSPACE_3);
-		activeStatusButton = contactButton;
+//		activeStatusButton = contactButton;
 		return topLayout;
 	}
 
-	private void updateActiveStatusButtonCaption() {
-		if (activeStatusButton != null) {
-			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getContainer().size())));
-		}
-	}
+//	private void updateActiveStatusButtonCaption() {
+//		if (activeStatusButton != null) {
+//			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getContainer().size())));
+//		}
+//	}
 
-	private void processStatusChangeVisuals(Button button) {
-		statusButtons.keySet().forEach(b -> {
-			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
-			b.setCaption(statusButtons.get(b));
-		});
-		CssStyles.removeStyles(button, CssStyles.BUTTON_FILTER_LIGHT);
-		activeStatusButton = button;
-		updateActiveStatusButtonCaption();
-	}
+//	private void processStatusChangeVisuals(Button button) {
+//		statusButtons.keySet().forEach(b -> {
+//			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
+//			b.setCaption(statusButtons.get(b));
+//		});
+//		CssStyles.removeStyles(button, CssStyles.BUTTON_FILTER_LIGHT);
+//		activeStatusButton = button;
+//		updateActiveStatusButtonCaption();
+//	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
@@ -168,8 +167,10 @@ public class ContactVisitsView extends AbstractContactView {
 		if (FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid()).getContactStatus() == ContactStatus.CONVERTED) {
 			newButton.setVisible(false);
 		}
-		
-		grid.reload(getContactRef());
-		updateActiveStatusButtonCaption();
+
+		criteria.contact(getContactRef());
+		grid.reload();
+//		updateActiveStatusButtonCaption();
 	}
+
 }

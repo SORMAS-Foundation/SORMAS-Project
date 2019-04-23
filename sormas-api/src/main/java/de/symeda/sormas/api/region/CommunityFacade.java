@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
@@ -31,7 +32,9 @@ public interface CommunityFacade {
 
 	List<CommunityDto> getAllAfter(Date date);
 	
-	List<CommunityDto> getIndexList(CommunityCriteria criteria);
+	List<CommunityDto> getIndexList(CommunityCriteria criteria, int first, int max, List<SortProperty> sortProperties);
+
+	long count(CommunityCriteria criteria);
 	
 	CommunityDto getByUuid(String uuid);
 

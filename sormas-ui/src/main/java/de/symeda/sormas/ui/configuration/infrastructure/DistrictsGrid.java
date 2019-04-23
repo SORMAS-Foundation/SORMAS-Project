@@ -17,103 +17,66 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
-import java.util.List;
+import java.util.stream.Collectors;
 
-import com.vaadin.v7.data.Item;
-import com.vaadin.v7.data.util.BeanItemContainer;
-import com.vaadin.v7.data.util.GeneratedPropertyContainer;
-import com.vaadin.v7.data.util.PropertyValueGenerator;
+import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.v7.ui.Grid;
-import com.vaadin.v7.ui.Grid.SelectionModel.HasUserSelectionAllowed;
-import com.vaadin.v7.ui.renderers.HtmlRenderer;
+import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictCriteria;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.V7AbstractGrid;
+import de.symeda.sormas.ui.utils.FilteredGrid;
 
-public class DistrictsGrid extends Grid implements V7AbstractGrid<DistrictCriteria> {
+public class DistrictsGrid extends FilteredGrid<DistrictDto, DistrictCriteria> {
 
 	private static final long serialVersionUID = -4437531618828715458L;
 
 	public static final String EDIT_BTN_ID = "edit";
 	
-	private DistrictCriteria districtCriteria = new DistrictCriteria();
-	
 	public DistrictsGrid() {
+		super(DistrictDto.class);
 		setSizeFull();
 		setSelectionMode(SelectionMode.NONE);
-		
-		BeanItemContainer<DistrictDto> container = new BeanItemContainer<DistrictDto>(DistrictDto.class);
-		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
-		setContainerDataSource(generatedContainer);
-		
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			generatedContainer.addGeneratedProperty(EDIT_BTN_ID, new PropertyValueGenerator<String>() {
-				private static final long serialVersionUID = -7255691609662228895L;
 
-				@Override
-				public String getValue(Item item, Object itemId, Object propertyId) {
-					return VaadinIcons.EDIT.getHtml();
-				}
-
-				@Override
-				public Class<String> getType() {
-					return String.class;
-				}
-			});
-		}
+		DataProvider<DistrictDto, DistrictCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+				query -> FacadeProvider.getDistrictFacade().getIndexList(
+						query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
+						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+						.collect(Collectors.toList())).stream(),
+				query -> {
+					return (int) FacadeProvider.getDistrictFacade().count(query.getFilter().orElse(null));
+				});
+		setDataProvider(dataProvider);
 		
 		setColumns(DistrictDto.NAME, DistrictDto.REGION, DistrictDto.EPID_CODE, DistrictDto.POPULATION, DistrictDto.GROWTH_RATE);
 
-        for (Column column : getColumns()) {
-        	column.setHeaderCaption(I18nProperties.getPrefixCaption(
-        			DistrictDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
-        }
-        
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addColumn(EDIT_BTN_ID);
-			getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
-			getColumn(EDIT_BTN_ID).setWidth(40);
-			getColumn(EDIT_BTN_ID).setHeaderCaption("");
+			Column<DistrictDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
+			editColumn.setId(EDIT_BTN_ID);
+			editColumn.setWidth(60);
 
 			addItemClickListener(e -> {
-				if (e.getPropertyId() != null && (e.getPropertyId().equals(EDIT_BTN_ID) || e.isDoubleClick())) {
-					ControllerProvider.getInfrastructureController().editDistrict(((DistrictDto) e.getItemId()).getUuid());
+				if (e.getColumn() != null && (EDIT_BTN_ID.equals(e.getColumn().getId()) || e.getMouseEventDetails().isDoubleClick())) {
+					ControllerProvider.getInfrastructureController().editDistrict(e.getItem().getUuid());
 				}
 			});
+		}	
+		
+		for(Column<?, ?> column : getColumns()) {
+			column.setCaption(I18nProperties.getPrefixCaption(
+					DistrictDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public BeanItemContainer<DistrictDto> getContainer() {
-		GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
-		return (BeanItemContainer<DistrictDto>) container.getWrappedContainer();
 	}
 
 	public void reload() {
-		if (getSelectionModel() instanceof HasUserSelectionAllowed) {
-			deselectAll();
-		}
-		
-		List<DistrictDto> districts = FacadeProvider.getDistrictFacade().getIndexList(districtCriteria);
-		getContainer().removeAllItems();
-		getContainer().addAll(districts);
-	}
-	
-	@Override
-	public DistrictCriteria getCriteria() {
-		return districtCriteria;
-	}
-	
-	@Override
-	public void setCriteria(DistrictCriteria districtCriteria) {
-		this.districtCriteria = districtCriteria;
+		getDataProvider().refreshAll();
 	}
 	
 }
