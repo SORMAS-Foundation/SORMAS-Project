@@ -88,7 +88,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		addField(EventDto.UUID, TextField.class);
 		addField(EventDto.EVENT_TYPE, OptionGroup.class);
-		addField(EventDto.DISEASE, ComboBox.class).setNullSelectionAllowed(true);
+		addDiseaseField(EventDto.DISEASE, false);
 		addField(EventDto.DISEASE_DETAILS, TextField.class);
 		DateField eventDate = addField(EventDto.EVENT_DATE, DateField.class);
 		addField(EventDto.EVENT_STATUS, OptionGroup.class);

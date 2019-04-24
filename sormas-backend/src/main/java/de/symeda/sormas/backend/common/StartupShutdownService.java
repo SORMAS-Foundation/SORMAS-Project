@@ -36,6 +36,8 @@ import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -43,6 +45,9 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.disease.DiseaseConfiguration;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
@@ -97,13 +102,16 @@ public class StartupShutdownService {
 	private FacilityService facilityService;
 	@EJB
 	private ImportFacadeEjbLocal importFacade;
+	@EJB
+	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
+	@EJB
+	private DiseaseConfigurationService diseaseConfigurationService;
 
 	@PostConstruct
 	public void startup() {
-		
 		String countryName = configFacade.getCountryName();
 		
-		de.symeda.sormas.api.i18n.I18nProperties.setLocale(configFacade.getCountryLocale());
+		I18nProperties.setLocale(configFacade.getCountryLocale());
 		
 		importAdministrativeDivisions(countryName);
 		
@@ -115,11 +123,12 @@ public class StartupShutdownService {
 		
 		createImportTemplateFiles();
 		
+		createMissingDiseaseConfigurations();
+		
 		configFacade.validateAppUrls();
 	}
 	
 	public void importAdministrativeDivisions(String countryName) {
-
 		Timestamp latestRegionChangeDate = regionService.getLatestChangeDate();
 		if (latestRegionChangeDate != null
 				// last change made to district data for nigeria
@@ -173,7 +182,6 @@ public class StartupShutdownService {
 	}
 
 	private void upgrade() {
-		
 		@SuppressWarnings("unchecked")
 		List<Integer> versionsNeedingUpgrade = em
 				.createNativeQuery("SELECT version_number FROM schema_version WHERE upgradeNeeded")
@@ -202,9 +210,7 @@ public class StartupShutdownService {
 			if (updatedRows != 1) {
 				logger.error("Could not UPDATE schema_version table. Missing user rights?");
 			}
-		}
-
-		
+		}		
 	}
 	
 	private void createImportTemplateFiles() {
@@ -212,6 +218,15 @@ public class StartupShutdownService {
 			importFacade.generateCaseImportTemplateFile();
 		} catch (IOException e) {
 			logger.error("Could not create case import template .csv file.");
+		}
+	}
+	
+	private void createMissingDiseaseConfigurations() {
+		for (Disease disease : Disease.values()) {
+			if (diseaseConfigurationFacade.getDiseaseConfiguration(disease) == null) {
+				DiseaseConfiguration configuration = DiseaseConfiguration.build(disease);
+				diseaseConfigurationService.ensurePersisted(configuration);
+			}
 		}
 	}
 

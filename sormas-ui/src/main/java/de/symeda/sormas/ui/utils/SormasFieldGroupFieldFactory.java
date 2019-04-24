@@ -1,7 +1,10 @@
 package de.symeda.sormas.ui.utils;
 
 import java.util.Date;
+import java.util.List;
 
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory;
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -10,8 +13,9 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
-import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -37,26 +41,34 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public <T extends Field> T createField(Class<?> type, Class<T> fieldType) {
-
 		if (type.isEnum()) {
 			if (fieldType.isAssignableFrom(Field.class) // no specific fieldType defined?
 					&& (SymptomState.class.isAssignableFrom(type)
-					|| YesNoUnknown.class.isAssignableFrom(type))) {
+							|| YesNoUnknown.class.isAssignableFrom(type))) {
 				OptionGroup field = super.createField(type, OptionGroup.class);
 				CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
 				return (T) field;
 			} else {
-				if (!AbstractSelect.class.isAssignableFrom(fieldType)) {
-					fieldType = (Class<T>) ComboBox.class;
+				if (DiseaseComboBox.class.isAssignableFrom(fieldType)) {
+					fieldType = (Class<T>) DiseaseComboBox.class;
+					DiseaseComboBox field = new DiseaseComboBox();
+					field.setImmediate(true);
+					field.setNullSelectionAllowed(true);
+					field.setFilteringMode(FilteringMode.CONTAINS);
+					return (T) field;
+				} else {
+					if (!AbstractSelect.class.isAssignableFrom(fieldType)) {
+						fieldType = (Class<T>) ComboBox.class;
+					}
+					T field = super.createField(type, fieldType);
+					if (field instanceof OptionGroup) {
+						CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL);
+					} else if (field instanceof ComboBox) {
+						((ComboBox) field).setFilteringMode(FilteringMode.CONTAINS);
+						((ComboBox) field).setNullSelectionAllowed(true);
+					}
+					return field;
 				}
-				T field = super.createField(type, fieldType);
-				if (field instanceof OptionGroup) {
-					CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL);
-				} else if (field instanceof ComboBox) {
-					((ComboBox) field).setFilteringMode(FilteringMode.CONTAINS);
-					((ComboBox) field).setNullSelectionAllowed(true);
-				}
-				return field;
 			}
 		}
 		else if (Boolean.class.isAssignableFrom(type)) {
@@ -122,7 +134,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 		textField.setNullRepresentation("");
 		return textField;
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	protected <T extends Field> T createBooleanField(Class<T> fieldType) {
@@ -136,6 +148,6 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 		} else {
 			return super.createBooleanField(fieldType);
 		}
-    }
-	
+	}
+
 }

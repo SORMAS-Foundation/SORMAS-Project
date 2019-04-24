@@ -31,6 +31,7 @@ import com.vaadin.v7.ui.Grid;
 import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -61,7 +62,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		addColumn(REGION, RegionReferenceDto.class).setMaximumWidth(200);
 		getColumn(REGION).setHeaderCaption(I18nProperties.getCaption(Captions.region));
 
-		for (Disease disease : Disease.values()) {
+		for (Disease disease : DiseaseHelper.getAllActivePrimaryDiseases()) {
 			
 			if (!disease.isSupportingOutbreakMode()) {
 				continue;
@@ -178,13 +179,15 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		// Alter cells with regions and diseases that actually have an outbreak
 		List<OutbreakDto> activeOutbreaks = FacadeProvider.getOutbreakFacade().getActive();
 
-		for (OutbreakDto outbreak : activeOutbreaks) {
-			
+		for (OutbreakDto outbreak : activeOutbreaks) {			
 			DistrictReferenceDto outbreakDistrict = outbreak.getDistrict();
 			RegionReferenceDto outbreakRegion = FacadeProvider.getDistrictFacade().getDistrictByUuid(outbreakDistrict.getUuid()).getRegion();
 			Disease outbreakDisease = outbreak.getDisease();
-			
-			((OutbreakRegionConfiguration) container.getItem(outbreakRegion).getItemProperty(outbreakDisease).getValue()).getAffectedDistricts().add(outbreakDistrict);
+
+			// Only show the Outbreak if its Disease is active on the system
+			if (Boolean.TRUE.equals(FacadeProvider.getDiseaseConfigurationFacade().getDiseaseConfiguration(outbreakDisease).getActive())) {
+				((OutbreakRegionConfiguration) container.getItem(outbreakRegion).getItemProperty(outbreakDisease).getValue()).getAffectedDistricts().add(outbreakDistrict);
+			}
 		}
 	}
 
@@ -193,7 +196,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		int totalDistricts = FacadeProvider.getDistrictFacade().getCountByRegion(region.getUuid());
 		Item item = getContainerDataSource().addItem(region);
 		item.getItemProperty(REGION).setValue(region);
-		for (Disease disease : Disease.values()) {
+		for (Disease disease : DiseaseHelper.getAllActivePrimaryDiseases()) {
 
 			if (!disease.isSupportingOutbreakMode()) {
 				continue;

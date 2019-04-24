@@ -34,6 +34,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -159,7 +160,7 @@ public class SampleGridComponent extends VerticalLayout {
 		diseaseFilter = new ComboBox();
 		diseaseFilter.setWidth(140, Unit.PIXELS);
 		diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
-		diseaseFilter.addItems((Object[])Disease.values());
+		diseaseFilter.addItems(DiseaseHelper.getAllActivePrimaryDiseases().toArray());
 		diseaseFilter.addValueChangeListener(e -> {
 			criteria.disease(((Disease)e.getProperty().getValue()));
 			samplesView.navigateTo(criteria);

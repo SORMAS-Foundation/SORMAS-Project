@@ -121,8 +121,8 @@ public class EventController {
 	}
 
 	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid) {
-		EventDataForm eventEditForm = new EventDataForm(false, UserRight.EVENT_EDIT);
 		EventDto event = findEvent(eventUuid);
+		EventDataForm eventEditForm = new EventDataForm(false, UserRight.EVENT_EDIT);
 		eventEditForm.setValue(event);
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventEditForm, eventEditForm.getFieldGroup());
 

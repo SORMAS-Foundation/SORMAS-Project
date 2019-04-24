@@ -43,6 +43,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -231,7 +232,7 @@ public class ContactsView extends AbstractView {
 			diseaseFilter = new ComboBox();
 			diseaseFilter.setWidth(140, Unit.PIXELS);
 			diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISEASE));
-			diseaseFilter.addItems((Object[])Disease.values());
+			diseaseFilter.addItems(DiseaseHelper.getAllActivePrimaryDiseases().toArray());
 			diseaseFilter.addValueChangeListener(e -> {
 				criteria.caseDisease(((Disease)e.getProperty().getValue()));
 				navigateTo(criteria);

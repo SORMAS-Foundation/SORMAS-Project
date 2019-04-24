@@ -3140,3 +3140,28 @@ ALTER TABLE users RENAME COLUMN aktiv TO active;
 ALTER TABLE users_history RENAME COLUMN aktiv TO active;
 
 INSERT INTO schema_version (version_number, comment) VALUES (144, 'Rename aktiv to active in user table');
+
+-- 2019-04-24 Add DiseaseConfiguration entity #1074
+
+CREATE TABLE diseaseconfiguration(
+id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	disease varchar(255),
+	active boolean,
+	primarydisease boolean,
+	followupenabled boolean,
+	followupduration integer,
+	sys_period tstzrange not null,
+	primary key(id));
+	
+ALTER TABLE diseaseconfiguration OWNER TO sormas_user;
+
+CREATE TABLE diseaseconfiguration_history (LIKE diseaseconfiguration);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON diseaseconfiguration
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'diseaseconfiguration_history', true);
+ALTER TABLE diseaseconfiguration_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (145, 'Add DiseaseConfiguration entity #1074');

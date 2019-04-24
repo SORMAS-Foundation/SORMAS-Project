@@ -35,6 +35,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
@@ -147,7 +148,7 @@ public class EventsView extends AbstractView {
 		diseaseFilter = new ComboBox();
 		diseaseFilter.setWidth(140, Unit.PIXELS);
 		diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.DISEASE));
-		diseaseFilter.addItems((Object[])Disease.values());
+		diseaseFilter.addItems(DiseaseHelper.getAllActivePrimaryDiseases().toArray());
 		diseaseFilter.addValueChangeListener(e -> {
 			criteria.disease(((Disease)e.getProperty().getValue()));
 			navigateTo(criteria);

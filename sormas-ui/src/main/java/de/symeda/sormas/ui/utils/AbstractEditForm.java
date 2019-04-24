@@ -21,6 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.Validator.InvalidValueException;
 import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
@@ -31,16 +36,14 @@ import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitHandler;
 import com.vaadin.v7.data.util.BeanItem;
 import com.vaadin.v7.data.util.converter.Converter.ConversionException;
 import com.vaadin.v7.ui.AbstractField;
-import com.vaadin.ui.Component;
+import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.CustomField;
-import com.vaadin.ui.CustomLayout;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
@@ -65,7 +68,6 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	}
 
 	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight, boolean addFields) {
-
 		this.type = type;
 		this.propertyI18nPrefix = propertyI18nPrefix;
 
@@ -247,7 +249,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 
 	@SuppressWarnings("rawtypes")
 	protected <T extends Field> void addFields(Class<T> fieldType, String ...properties) {
-		for (String property: properties) {
+		for (String property : properties) {
 			addField(property, fieldType);
 		}
 	}
@@ -259,6 +261,26 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		addDefaultAdditionalValidators(field);
 		getContent().addComponent(field, fieldId);
 		customFields.add(field);
+		return field;
+	}
+
+	/**
+	 * Adds the field to the form by using addField(fieldId, fieldType), but additionally sets up a ValueChangeListener
+	 * that makes sure the value that is about to be selected is added to the list of allowed values. This is intended
+	 * to be used for Disease fields that might contain a disease that is no longer active in the system and thus will
+	 * not be returned by DiseaseHelper.isActivePrimaryDisease(disease).
+	 */
+	@SuppressWarnings("rawtypes")
+	protected DiseaseComboBox addDiseaseField(String fieldId, boolean showNonPrimaryDiseases) {
+		DiseaseComboBox field = addField(fieldId, DiseaseComboBox.class);
+		field.setShowNonPrimaryDiseases(showNonPrimaryDiseases);
+		populateWithDiseaseData(field);
+		field.addValueChangeListener(e -> {
+			if (!((AbstractSelect) field).containsId(e.getProperty().getValue())) {
+				Item newItem = ((AbstractSelect) field).addItem(e.getProperty().getValue());
+				newItem.getItemProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(e.getProperty().getValue().toString());
+			}
+		});
 		return field;
 	}
 
@@ -275,7 +297,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		addDefaultAdditionalValidators(field);	
 		return field;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	/**
 	 * @param allowedDaysInFuture How many days in the future the value of this field can be or
@@ -326,12 +348,12 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		if (amountOfDays < 0) {
 			return field;
 		}
-		
+
 		if (DateField.class.isAssignableFrom(field.getClass())
 				|| DateTimeField.class.isAssignableFrom(field.getClass())) {
 			field.addValidator(new FutureDateValidator(field, amountOfDays, field.getCaption()));
 		}
-		
+
 		return field;
 	}
 
@@ -379,7 +401,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			field.setRequired(required);
 		}
 	}
-	
+
 	protected void setSoftRequired(boolean required, String ...fieldOrPropertyIds) {
 		for (String propertyId : fieldOrPropertyIds) {
 			Field<?> field = getField(propertyId);
@@ -473,6 +495,25 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 
 	protected boolean isVisibleAllowed(String propertyId) {
 		return isVisibleAllowed(getFieldGroup().getField(propertyId));
+	}
+
+	protected void populateWithDiseaseData(DiseaseComboBox diseaseField) {
+		diseaseField.removeAllItems();
+		for (Object p : diseaseField.getContainerPropertyIds()) {
+			diseaseField.removeContainerProperty(p);
+		}
+		diseaseField.addContainerProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID, String.class, "");
+		diseaseField.setItemCaptionPropertyId(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID);
+		List<Disease> diseases = null;
+		if (diseaseField.isShowNonPrimaryDiseases()) {
+			diseases = DiseaseHelper.getAllActiveDiseases();
+		} else {
+			diseases = DiseaseHelper.getAllActivePrimaryDiseases();
+		}
+		for (Disease disease : diseases) {
+			Item newItem = diseaseField.addItem(disease);
+			newItem.getItemProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(disease.toString());
+		}
 	}
 
 }

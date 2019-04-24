@@ -35,6 +35,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -188,7 +189,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 				List<Object> ageIntervalValues = StatisticsHelper.getListOfAgeIntervalValues(attribute);
 				return createTokens(ageIntervalValues.toArray());
 			case DISEASE:
-				return createTokens((Object[]) Disease.values());
+				return createTokens(DiseaseHelper.getAllActivePrimaryDiseases().toArray());
 			case CLASSIFICATION:
 				return createTokens((Object[]) CaseClassification.values());
 			case OUTCOME:

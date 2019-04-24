@@ -580,14 +580,14 @@ public class ContactService extends AbstractAdoService<Contact> {
 		boolean changeStatus = contact.getFollowUpStatus() != FollowUpStatus.CANCELED
 				&& contact.getFollowUpStatus() != FollowUpStatus.LOST;
 
-		if (!DiseaseHelper.hasContactFollowUp(disease, contact.getCaze().getPlagueType())) {
+		if (!DiseaseHelper.hasContactFollowUp(disease)) {
 			contact.setFollowUpUntil(null);
 			if (changeStatus) {
 				contact.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
 			}
 		} else {
 
-			int followUpDuration = DiseaseHelper.getIncubationPeriodDays(disease, contact.getCaze().getPlagueType());
+			int followUpDuration = DiseaseHelper.getFollowUpDuration(disease);
 			LocalDate beginDate = DateHelper8.toLocalDate(contact.getReportDateTime());
 			LocalDate untilDate = beginDate.plusDays(followUpDuration);
 
