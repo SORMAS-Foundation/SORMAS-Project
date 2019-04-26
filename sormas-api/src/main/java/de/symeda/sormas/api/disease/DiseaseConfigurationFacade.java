@@ -20,6 +20,8 @@ public interface DiseaseConfigurationFacade {
 	
 	List<Disease> getAllActiveDiseases();
 	
+	List<Disease> getAllActiveDiseases(Disease includedDisease);
+	
 	boolean isPrimaryDisease(Disease disease);
 	
 	List<Disease> getAllPrimaryDiseases();

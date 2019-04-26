@@ -263,17 +263,23 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		customFields.add(field);
 		return field;
 	}
+	@SuppressWarnings("rawtypes")
+	protected ComboBox addDiseaseField(String fieldId, boolean showNonPrimaryDiseases) {
+		return addDiseaseField(fieldId, showNonPrimaryDiseases, null);
+	}
 
 	/**
 	 * Adds the field to the form by using addField(fieldId, fieldType), but additionally sets up a ValueChangeListener
 	 * that makes sure the value that is about to be selected is added to the list of allowed values. This is intended
 	 * to be used for Disease fields that might contain a disease that is no longer active in the system and thus will
 	 * not be returned by DiseaseHelper.isActivePrimaryDisease(disease).
+	 * 
+	 * @param includedDisease A disease that should always be included in the list, no matter its status on the system
 	 */
 	@SuppressWarnings("rawtypes")
-	protected ComboBox addDiseaseField(String fieldId, boolean showNonPrimaryDiseases) {
+	protected ComboBox addDiseaseField(String fieldId, boolean showNonPrimaryDiseases, Disease includedDisease) {
 		ComboBox field = addField(fieldId, ComboBox.class);
-		populateWithDiseaseData(field, showNonPrimaryDiseases);
+		populateWithDiseaseData(field, showNonPrimaryDiseases, includedDisease);
 		field.addValueChangeListener(e -> {
 			if (!field.containsId(e.getProperty().getValue())) {
 				Item newItem = field.addItem(e.getProperty().getValue());
@@ -496,7 +502,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		return isVisibleAllowed(getFieldGroup().getField(propertyId));
 	}
 
-	protected void populateWithDiseaseData(ComboBox diseaseField, boolean showNonPrimaryDiseases) {
+	protected void populateWithDiseaseData(ComboBox diseaseField, boolean showNonPrimaryDiseases, Disease includedDisease) {
 		diseaseField.removeAllItems();
 		for (Object p : diseaseField.getContainerPropertyIds()) {
 			diseaseField.removeContainerProperty(p);
@@ -505,7 +511,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		diseaseField.setItemCaptionPropertyId(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID);
 		List<Disease> diseases = null;
 		if (showNonPrimaryDiseases) {
-			diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllActiveDiseases();
+			diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllActiveDiseases(includedDisease);
 		} else {
 			diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases();
 		}
