@@ -163,8 +163,6 @@ public interface Captions {
 	public static String columnAdditionalTests = "columnAdditionalTests";
 	public static String columnDiseaseShort = "columnDiseaseShort";
 	public static String columnNumberOfPendingTasks = "columnNumberOfPendingTasks";
-	public static String columnUserActive = "columnUserActive";
-	public static String columnUserRoles = "columnUserRoles";
 	public static String community = "community";
 	public static String communityName = "communityName";
 	public static String Configuration_HealthFacilities = "Configuration.HealthFacilities";

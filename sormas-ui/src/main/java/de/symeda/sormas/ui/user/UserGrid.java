@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
@@ -29,9 +30,10 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.utils.CollectionToStringConverter;
+import de.symeda.sormas.ui.utils.CollectionValueProvider;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import elemental.json.JsonValue;
@@ -42,9 +44,6 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 	private static final long serialVersionUID = -1L;
 
 	private static final String EDIT_BTN_ID = "edit";
-
-	public static final String USER_ROLES_COLUMN = Captions.columnUserRoles;
-	public static final String ACTIVE_COLUMN = Captions.columnUserActive;
 
 	@SuppressWarnings("unchecked")
 	public UserGrid() {
@@ -67,19 +66,14 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 		editColumn.setId(EDIT_BTN_ID);
 		editColumn.setWidth(60);
 
-		Column<UserDto, String> userRolesColumn = addColumn(entry -> new CollectionToStringConverter().convertToPresentation(entry.getUserRoles(), String.class, null));
-		userRolesColumn.setId(USER_ROLES_COLUMN);
-		userRolesColumn.setSortable(false);
-		
-		Column<UserDto, String> userActiveColumn = addColumn(entry -> String.valueOf(entry.isActive()), new ActiveRenderer());
-		userActiveColumn.setId(ACTIVE_COLUMN);
-		userActiveColumn.setSortProperty(UserDto.ACTIVE);
-
-		setColumns(EDIT_BTN_ID, UserDto.UUID, ACTIVE_COLUMN, USER_ROLES_COLUMN, UserDto.USER_NAME, 
+		setColumns(EDIT_BTN_ID, UserDto.UUID, UserDto.ACTIVE, UserDto.USER_ROLES, UserDto.USER_NAME, 
 				UserDto.NAME, UserDto.USER_EMAIL, UserDto.ADDRESS, UserDto.DISTRICT);
 
 		((Column<UserDto, String>) getColumn(UserDto.UUID)).setRenderer(new UuidRenderer());
-
+		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.USER_ROLES)).setRenderer(new CollectionValueProvider<Set<UserRole>>(), new HtmlRenderer());
+		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.USER_ROLES)).setSortable(false);
+		((Column<UserDto, Boolean>) getColumn(UserDto.ACTIVE)).setRenderer(value -> String.valueOf(value), new ActiveRenderer());
+		
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(
 					UserDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
