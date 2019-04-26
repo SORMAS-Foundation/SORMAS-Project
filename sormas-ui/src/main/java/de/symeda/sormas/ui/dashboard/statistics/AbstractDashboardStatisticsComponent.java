@@ -33,6 +33,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
@@ -88,10 +89,10 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 		addComponent(subComponentsLayout);
 
 		if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
-			if (DiseaseHelper.getAllDiseasesWithFollowUp().size() > 6) {
+			if (FacadeProvider.getDiseaseConfigurationFacade().getAllDiseasesWithFollowUp().size() > 6) {
 				addShowMoreAndLessButtons();
 			}
-		} else if (DiseaseHelper.getAllActivePrimaryDiseases().size() > 6) {
+		} else if (FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases().size() > 6) {
 			addShowMoreAndLessButtons();
 		}
 	}
@@ -123,7 +124,7 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 			}
 		}
 
-		int visibleDiseasesCount = currentDisease == null ? (isFullMode() ? DiseaseHelper.getAllActivePrimaryDiseases().size() : 6) : 0; 
+		int visibleDiseasesCount = currentDisease == null ? (isFullMode() ? FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases().size() : 6) : 0; 
 		updateFirstComponent(visibleDiseasesCount);
 		updateSecondComponent(visibleDiseasesCount);
 		updateThirdComponent(visibleDiseasesCount);

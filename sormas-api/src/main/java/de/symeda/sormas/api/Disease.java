@@ -22,17 +22,29 @@ import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
 public enum Disease implements StatisticsGroupingKey {
 	
-	CHOLERA,
-	CSM,
-	DENGUE,
-	EVD,
-	LASSA,
-	MEASLES,
-	MONKEYPOX,
-	NEW_INFLUENCA,
-	PLAGUE,
-	YELLOW_FEVER,
-	OTHER;
+	CHOLERA(true, true, true, 5),
+	CSM(true, true, false, 10),
+	DENGUE(true, true, false, 14),
+	EVD(true, true, true, 21),
+	LASSA(true, true, true, 21),
+	MEASLES(true, true, false, 21),
+	MONKEYPOX(true, true, true, 21),
+	NEW_INFLUENCA(true, true, true, 17),
+	PLAGUE(true, true, true, 7),
+	YELLOW_FEVER(true, true, false, 6),
+	OTHER(true, true, true, 21);
+	
+	private boolean defaultActive;
+	private boolean defaultPrimary;
+	private boolean defaultFollowUpEnabled;
+	private int defaultFollowUpDuration;
+	
+	private Disease(boolean defaultActive, boolean defaultPrimary, boolean defaultFollowUpEnabled, int defaultFollowUpDuration) {
+		this.defaultActive = defaultActive;
+		this.defaultPrimary = defaultPrimary;
+		this.defaultFollowUpEnabled = defaultFollowUpEnabled;
+		this.defaultFollowUpDuration = defaultFollowUpDuration;
+	}
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
@@ -53,6 +65,22 @@ public enum Disease implements StatisticsGroupingKey {
 		default:
 			return false;		
 		}
+	}
+	
+	public boolean isDefaultActive() {
+		return defaultActive;
+	}
+
+	public boolean isDefaultPrimary() {
+		return defaultPrimary;
+	}
+	
+	public boolean isDefaultFollowUpEnabled() {
+		return defaultFollowUpEnabled;
+	}
+
+	public int getDefaultFollowUpDuration() {
+		return defaultFollowUpDuration;
 	}
 
 	@Override

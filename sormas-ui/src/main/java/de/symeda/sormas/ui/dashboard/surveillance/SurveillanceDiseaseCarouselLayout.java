@@ -28,6 +28,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.SormasUI;
@@ -56,7 +57,7 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 		statisticsComponent = new DiseaseStatisticsComponent(dashboardDataProvider);
 		epiCurveComponent = new SurveillanceEpiCurveComponent(dashboardDataProvider);
 		mapComponent = new DashboardMapComponent(dashboardDataProvider);
-		diseases = DiseaseHelper.getAllActivePrimaryDiseases();
+		diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases();
 
 		this.initLayout();
 	}

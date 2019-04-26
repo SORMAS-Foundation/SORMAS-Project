@@ -19,8 +19,10 @@ package de.symeda.sormas.backend.common;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -222,12 +224,12 @@ public class StartupShutdownService {
 	}
 	
 	private void createMissingDiseaseConfigurations() {
-		for (Disease disease : Disease.values()) {
-			if (diseaseConfigurationFacade.getDiseaseConfiguration(disease) == null) {
-				DiseaseConfiguration configuration = DiseaseConfiguration.build(disease);
-				diseaseConfigurationService.ensurePersisted(configuration);
-			}
-		}
+		List<DiseaseConfiguration> diseaseConfigurations = diseaseConfigurationService.getAll();
+		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(c -> c.getDisease()).collect(Collectors.toList());
+		Arrays.stream(Disease.values()).filter(d -> !configuredDiseases.contains(d)).forEach(d -> {
+			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
+			diseaseConfigurationService.ensurePersisted(configuration);
+		});
 	}
 
 	@PreDestroy

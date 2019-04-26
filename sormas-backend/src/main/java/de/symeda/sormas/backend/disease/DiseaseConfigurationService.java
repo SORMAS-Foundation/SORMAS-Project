@@ -22,7 +22,7 @@ public class DiseaseConfigurationService extends AbstractAdoService<DiseaseConfi
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq,
 			From<DiseaseConfiguration, DiseaseConfiguration> from, User user) {
-		throw new UnsupportedOperationException();
+		return null;
 	}
 	
 }

@@ -56,6 +56,7 @@ import de.symeda.sormas.app.therapy.edit.PrescriptionNewActivity;
 import de.symeda.sormas.app.therapy.edit.TreatmentNewActivity;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
@@ -104,7 +105,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
             menuItems.remove(CaseSection.PRESCRIPTIONS.ordinal());
         }
         if (!ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW)
-                || (caze != null && !DiseaseHelper.hasContactFollowUp(caze.getDisease(), caze.getPlagueType()))) {
+                || (caze != null && !DiseaseConfigurationHelper.getInstance().hasFollowUp(caze.getDisease()))) {
             menuItems.remove(CaseSection.CONTACTS.ordinal());
         }
         return menuItems;

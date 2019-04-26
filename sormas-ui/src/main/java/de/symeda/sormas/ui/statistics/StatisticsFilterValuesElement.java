@@ -189,7 +189,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 				List<Object> ageIntervalValues = StatisticsHelper.getListOfAgeIntervalValues(attribute);
 				return createTokens(ageIntervalValues.toArray());
 			case DISEASE:
-				return createTokens(DiseaseHelper.getAllActivePrimaryDiseases().toArray());
+				return createTokens(FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases().toArray());
 			case CLASSIFICATION:
 				return createTokens((Object[]) CaseClassification.values());
 			case OUTCOME:

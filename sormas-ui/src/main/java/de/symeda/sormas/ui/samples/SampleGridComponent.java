@@ -160,7 +160,7 @@ public class SampleGridComponent extends VerticalLayout {
 		diseaseFilter = new ComboBox();
 		diseaseFilter.setWidth(140, Unit.PIXELS);
 		diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
-		diseaseFilter.addItems(DiseaseHelper.getAllActivePrimaryDiseases().toArray());
+		diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases().toArray());
 		diseaseFilter.addValueChangeListener(e -> {
 			criteria.disease(((Disease)e.getProperty().getValue()));
 			samplesView.navigateTo(criteria);

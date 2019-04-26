@@ -62,7 +62,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		addColumn(REGION, RegionReferenceDto.class).setMaximumWidth(200);
 		getColumn(REGION).setHeaderCaption(I18nProperties.getCaption(Captions.region));
 
-		for (Disease disease : DiseaseHelper.getAllActivePrimaryDiseases()) {
+		for (Disease disease : FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases()) {
 			
 			if (!disease.isSupportingOutbreakMode()) {
 				continue;
@@ -185,7 +185,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 			Disease outbreakDisease = outbreak.getDisease();
 
 			// Only show the Outbreak if its Disease is active on the system
-			if (Boolean.TRUE.equals(FacadeProvider.getDiseaseConfigurationFacade().getDiseaseConfiguration(outbreakDisease).getActive())) {
+			if (Boolean.TRUE.equals(FacadeProvider.getDiseaseConfigurationFacade().isActiveDisease(outbreakDisease))) {
 				((OutbreakRegionConfiguration) container.getItem(outbreakRegion).getItemProperty(outbreakDisease).getValue()).getAffectedDistricts().add(outbreakDistrict);
 			}
 		}
@@ -196,7 +196,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		int totalDistricts = FacadeProvider.getDistrictFacade().getCountByRegion(region.getUuid());
 		Item item = getContainerDataSource().addItem(region);
 		item.getItemProperty(REGION).setValue(region);
-		for (Disease disease : DiseaseHelper.getAllActivePrimaryDiseases()) {
+		for (Disease disease : FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases()) {
 
 			if (!disease.isSupportingOutbreakMode()) {
 				continue;

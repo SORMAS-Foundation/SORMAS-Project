@@ -36,6 +36,7 @@ import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
@@ -49,15 +50,14 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 	
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
-	
 	@EJB
 	private EventFacadeEjbLocal eventFacade;
-	
 	@EJB
 	private OutbreakFacadeEjbLocal outbreakFacade;
-	
 	@EJB
 	private PersonFacadeEjbLocal personFacade;
+	@EJB
+	DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	
 	//@Override
 	public List<DiseaseBurdenDto> getDiseaseBurdenForDashboard(
@@ -70,7 +70,7 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 			String userUuid) {
 		
 		//diseases
-		List<Disease> diseases = DiseaseHelper.getAllActivePrimaryDiseases();
+		List<Disease> diseases = diseaseConfigurationFacade.getAllActivePrimaryDiseases();
 				
 		//new cases
 		CaseCriteria caseCriteria = new CaseCriteria()

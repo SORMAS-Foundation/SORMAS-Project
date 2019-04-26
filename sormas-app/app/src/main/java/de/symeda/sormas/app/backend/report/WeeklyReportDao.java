@@ -38,6 +38,7 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
 
 /**
  * Created by Mate Strysewske on 07.09.2017.
@@ -137,7 +138,7 @@ public class WeeklyReportDao extends AbstractAdoDao<WeeklyReport> {
 
         WeeklyReportEntryDao entryDao = DatabaseHelper.getWeeklyReportEntryDao();
         List<WeeklyReportEntry> entries = new ArrayList<>();
-        for (Disease disease : Disease.values()) {
+        for (Disease disease : DiseaseConfigurationHelper.getInstance().getAllActivePrimaryDiseases()) {
             entries.add(entryDao.build(epiWeek, disease, report));
         }
         report.setReportEntries(entries);

@@ -179,7 +179,7 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 
 			// Create a map with all diseases as keys and their respective case counts as values
 			Map<Disease, Integer> diseaseMap = new TreeMap<Disease, Integer>();
-			for (Disease disease : DiseaseHelper.getAllDiseasesWithFollowUp()) {
+			for (Disease disease : FacadeProvider.getDiseaseConfigurationFacade().getAllDiseasesWithFollowUp()) {
 				diseaseMap.put(disease, (int) contacts.stream().filter(c -> c.getDisease() == disease).count());
 			}
 

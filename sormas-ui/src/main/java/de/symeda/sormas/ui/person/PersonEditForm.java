@@ -58,7 +58,6 @@ import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
-import de.symeda.sormas.ui.utils.DiseaseComboBox;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -78,7 +77,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private Disease disease;
 	private String diseaseDetails;
 	private ComboBox causeOfDeathField;
-	private DiseaseComboBox causeOfDeathDiseaseField;
+	private ComboBox causeOfDeathDiseaseField;
 	private TextField causeOfDeathDetailsField;
 	private ComboBox occupationFacility;
 	private TextField occupationFacilityDetails;

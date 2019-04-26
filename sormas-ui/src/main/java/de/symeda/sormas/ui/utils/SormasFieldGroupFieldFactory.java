@@ -1,10 +1,8 @@
 package de.symeda.sormas.ui.utils;
 
 import java.util.Date;
-import java.util.List;
 
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory;
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -15,7 +13,6 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -49,9 +46,9 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 				CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
 				return (T) field;
 			} else {
-				if (DiseaseComboBox.class.isAssignableFrom(fieldType)) {
-					fieldType = (Class<T>) DiseaseComboBox.class;
-					DiseaseComboBox field = new DiseaseComboBox();
+				if (Disease.class.isAssignableFrom(type)) {
+					fieldType = (Class<T>) ComboBox.class;
+					ComboBox field = new ComboBox();
 					field.setImmediate(true);
 					field.setNullSelectionAllowed(true);
 					field.setFilteringMode(FilteringMode.CONTAINS);

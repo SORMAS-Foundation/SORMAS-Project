@@ -147,7 +147,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 				menu.addView(ClinicalCourseView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICAL_COURSE), params);
 			}
 		}
-		if (DiseaseHelper.hasContactFollowUp(caze.getDisease())) {
+		if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(caze.getDisease())) {
 			menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseContacts), params);
 		}
 		

@@ -36,15 +36,15 @@ import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitHandler;
 import com.vaadin.v7.data.util.BeanItem;
 import com.vaadin.v7.data.util.converter.Converter.ConversionException;
 import com.vaadin.v7.ui.AbstractField;
-import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.CustomField;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.Diseases;
@@ -271,13 +271,12 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	 * not be returned by DiseaseHelper.isActivePrimaryDisease(disease).
 	 */
 	@SuppressWarnings("rawtypes")
-	protected DiseaseComboBox addDiseaseField(String fieldId, boolean showNonPrimaryDiseases) {
-		DiseaseComboBox field = addField(fieldId, DiseaseComboBox.class);
-		field.setShowNonPrimaryDiseases(showNonPrimaryDiseases);
-		populateWithDiseaseData(field);
+	protected ComboBox addDiseaseField(String fieldId, boolean showNonPrimaryDiseases) {
+		ComboBox field = addField(fieldId, ComboBox.class);
+		populateWithDiseaseData(field, showNonPrimaryDiseases);
 		field.addValueChangeListener(e -> {
-			if (!((AbstractSelect) field).containsId(e.getProperty().getValue())) {
-				Item newItem = ((AbstractSelect) field).addItem(e.getProperty().getValue());
+			if (!field.containsId(e.getProperty().getValue())) {
+				Item newItem = field.addItem(e.getProperty().getValue());
 				newItem.getItemProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(e.getProperty().getValue().toString());
 			}
 		});
@@ -497,7 +496,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		return isVisibleAllowed(getFieldGroup().getField(propertyId));
 	}
 
-	protected void populateWithDiseaseData(DiseaseComboBox diseaseField) {
+	protected void populateWithDiseaseData(ComboBox diseaseField, boolean showNonPrimaryDiseases) {
 		diseaseField.removeAllItems();
 		for (Object p : diseaseField.getContainerPropertyIds()) {
 			diseaseField.removeContainerProperty(p);
@@ -505,10 +504,10 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		diseaseField.addContainerProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID, String.class, "");
 		diseaseField.setItemCaptionPropertyId(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID);
 		List<Disease> diseases = null;
-		if (diseaseField.isShowNonPrimaryDiseases()) {
-			diseases = DiseaseHelper.getAllActiveDiseases();
+		if (showNonPrimaryDiseases) {
+			diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllActiveDiseases();
 		} else {
-			diseases = DiseaseHelper.getAllActivePrimaryDiseases();
+			diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases();
 		}
 		for (Disease disease : diseases) {
 			Item newItem = diseaseField.addItem(disease);

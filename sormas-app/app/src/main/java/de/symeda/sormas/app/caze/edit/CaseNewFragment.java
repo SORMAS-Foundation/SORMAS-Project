@@ -21,6 +21,7 @@ package de.symeda.sormas.app.caze.edit;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.user.UserRole;
@@ -33,6 +34,7 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentCaseNewLayoutBinding;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 
@@ -76,7 +78,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     protected void prepareFragmentData() {
         record = getActivityRootData();
 
-        diseaseList = DataUtils.getEnumItems(Disease.class, true);
+        diseaseList = DataUtils.toItems(DiseaseConfigurationHelper.getInstance().getAllActivePrimaryDiseases(record.getDisease()));
         plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);
         dengueFeverTypeList = DataUtils.getEnumItems(DengueFeverType.class, true);
 

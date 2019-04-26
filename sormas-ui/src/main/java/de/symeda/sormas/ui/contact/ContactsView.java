@@ -232,7 +232,7 @@ public class ContactsView extends AbstractView {
 			diseaseFilter = new ComboBox();
 			diseaseFilter.setWidth(140, Unit.PIXELS);
 			diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISEASE));
-			diseaseFilter.addItems(DiseaseHelper.getAllActivePrimaryDiseases().toArray());
+			diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases().toArray());
 			diseaseFilter.addValueChangeListener(e -> {
 				criteria.caseDisease(((Disease)e.getProperty().getValue()));
 				navigateTo(criteria);

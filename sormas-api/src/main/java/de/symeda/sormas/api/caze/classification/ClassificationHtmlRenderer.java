@@ -18,11 +18,11 @@
 package de.symeda.sormas.api.caze.classification;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -78,7 +78,7 @@ public class ClassificationHtmlRenderer {
 		return sb.toString();
 	}
 
-	public static String createHtmlForDownload(String sormasServerUrl) {
+	public static String createHtmlForDownload(String sormasServerUrl, List<Disease> diseases) {
 		StringBuilder html = new StringBuilder();
 		html.append("<html><header><style>");
 
@@ -133,7 +133,7 @@ public class ClassificationHtmlRenderer {
 		html.append("<h1 style=\"text-align: center; color: #005A9C;\">").append(I18nProperties.getString(Strings.classificationClassificationRules)).append("</h1>");
 		html.append("<h4 style=\"text-align: center;\">").append(I18nProperties.getString(Strings.classificationGeneratedFor)).append(" ").append(InfoProvider.get().getVersion()).append(StringUtils.wrap(I18nProperties.getString(Strings.on), " ")).append(sormasServerUrl).append(StringUtils.wrap(I18nProperties.getString(Strings.at), " ")).append(DateHelper.formatLocalShortDateTime(new Date())).append("</h4>");
 
-		for (Disease disease : DiseaseHelper.getAllActivePrimaryDiseases()) {
+		for (Disease disease : diseases) {
 			DiseaseClassificationCriteriaDto diseaseCriteria = FacadeProvider.getCaseClassificationFacade().getByDisease(disease);
 			if (diseaseCriteria != null && diseaseCriteria.hasAnyCriteria()) {
 				html.append("<h2 style=\"text-align: center; color: #005A9C;\">" + disease.toString() + "</h2>");

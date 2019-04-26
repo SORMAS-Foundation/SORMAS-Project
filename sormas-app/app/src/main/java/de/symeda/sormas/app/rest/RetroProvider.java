@@ -59,6 +59,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
@@ -78,9 +79,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Created by Martin Wahnschaffe on 27.07.2016.
- */
 public final class RetroProvider {
 
     private static RetroProvider instance = null;
@@ -111,6 +109,7 @@ public final class RetroProvider {
     private TreatmentFacadeRetro treatmentFacadeRetro;
     private AdditionalTestFacadeRetro additionalTestFacadeRetro;
     private ClinicalVisitFacadeRetro clinicalVisitFacadeRetro;
+    private DiseaseConfigurationFacadeRetro diseaseConfigurationFacadeRetro;
 
     private RetroProvider(Context context, Interceptor... additionalInterceptors) throws ServerConnectionException, ServerCommunicationException, ApiVersionException {
 
@@ -674,6 +673,17 @@ public final class RetroProvider {
             }
         }
         return instance.clinicalVisitFacadeRetro;
+    }
+
+    public static DiseaseConfigurationFacadeRetro getDiseaseConfigurationFacade() {
+        if (instance.diseaseConfigurationFacadeRetro == null) {
+            synchronized ((RetroProvider.class)) {
+                if (instance.diseaseConfigurationFacadeRetro == null) {
+                    instance.diseaseConfigurationFacadeRetro = instance.retrofit.create(DiseaseConfigurationFacadeRetro.class);
+                }
+            }
+        }
+        return instance.diseaseConfigurationFacadeRetro;
     }
 
     public static void throwException(Response<?> response) throws ServerConnectionException, ServerCommunicationException {

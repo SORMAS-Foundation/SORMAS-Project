@@ -23,6 +23,7 @@ import android.view.View;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -36,6 +37,7 @@ import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.databinding.FragmentEventEditLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
 
 public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutBinding, Event, Event> {
 
@@ -92,7 +94,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
     protected void prepareFragmentData() {
         record = getActivityRootData();
 
-        diseaseList = DataUtils.getEnumItems(Disease.class, true);
+        diseaseList = DataUtils.toItems(DiseaseConfigurationHelper.getInstance().getAllActivePrimaryDiseases(record.getDisease()));
         typeOfPlaceList = DataUtils.getEnumItems(TypeOfPlace.class, true);
     }
 

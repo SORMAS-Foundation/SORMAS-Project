@@ -44,6 +44,7 @@ import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.enumeration.StatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.databinding.RowReadContactListItemLayoutBinding;
+import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
 
 public class ContactListAdapter extends BindingPagedListAdapter<Contact, RowReadContactListItemLayoutBinding> {
 
@@ -77,7 +78,7 @@ public class ContactListAdapter extends BindingPagedListAdapter<Contact, RowRead
                 pagedHolder.binding.imgSyncIcon.setVisibility(View.GONE);
             }
 
-            if (DiseaseHelper.hasContactFollowUp(item.getCaseDisease(), null)
+            if (DiseaseConfigurationHelper.getInstance().hasFollowUp(item.getCaseDisease())
                     && (currentListFilter == null || currentListFilter != FollowUpStatus.NO_FOLLOW_UP)) {
                 int numberOfVisits = DatabaseHelper.getVisitDao().getVisitCount(item, null);
                 int numberOfCooperativeVisits = DatabaseHelper.getVisitDao().getVisitCount(item, VisitStatus.COOPERATIVE);

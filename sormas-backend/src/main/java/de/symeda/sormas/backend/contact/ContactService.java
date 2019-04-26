@@ -39,7 +39,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -55,6 +54,7 @@ import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
@@ -77,6 +77,8 @@ public class ContactService extends AbstractAdoService<Contact> {
 	VisitService visitService;
 	@EJB
 	PersonFacadeEjbLocal personFacade;
+	@EJB
+	DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 
 	public ContactService() {
 		super(Contact.class);
@@ -580,14 +582,14 @@ public class ContactService extends AbstractAdoService<Contact> {
 		boolean changeStatus = contact.getFollowUpStatus() != FollowUpStatus.CANCELED
 				&& contact.getFollowUpStatus() != FollowUpStatus.LOST;
 
-		if (!DiseaseHelper.hasContactFollowUp(disease)) {
+		if (!diseaseConfigurationFacade.hasFollowUp(disease)) {
 			contact.setFollowUpUntil(null);
 			if (changeStatus) {
 				contact.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
 			}
 		} else {
 
-			int followUpDuration = DiseaseHelper.getFollowUpDuration(disease);
+			int followUpDuration = diseaseConfigurationFacade.getFollowUpDuration(disease);
 			LocalDate beginDate = DateHelper8.toLocalDate(contact.getReportDateTime());
 			LocalDate untilDate = beginDate.plusDays(followUpDuration);
 

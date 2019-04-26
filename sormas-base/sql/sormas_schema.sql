@@ -3144,7 +3144,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (144, 'Rename aktiv 
 -- 2019-04-24 Add DiseaseConfiguration entity #1074
 
 CREATE TABLE diseaseconfiguration(
-id bigint not null,
+	id bigint not null,
 	uuid varchar(36) not null unique,
 	changedate timestamp not null,
 	creationdate timestamp not null,
