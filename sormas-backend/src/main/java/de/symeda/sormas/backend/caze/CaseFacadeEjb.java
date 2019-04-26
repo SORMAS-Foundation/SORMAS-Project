@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -57,6 +58,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -799,10 +801,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		CaseDataDto existingCaseDto = toDto(caseService.getByUuid(dto.getUuid()));
 
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
-
+		
 		validate(dto);
 
 		caze = fillOrBuildEntity(dto, caze);
+		
 		caseService.ensurePersisted(caze);
 		onCaseChanged(existingCaseDto, caze);
 
@@ -868,6 +871,16 @@ public class CaseFacadeEjb implements CaseFacade {
 				facility.setLongitude(newCase.getReportLon());
 				facilityService.ensurePersisted(facility);
 			}
+		}
+		
+		// epid number
+		if (existingCase == null && newCase.getEpidNumber() == null) {
+			// Generate EPID number prefix
+			Calendar calendar = Calendar.getInstance();
+			String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
+			newCase.setEpidNumber((newCase.getRegion().getEpidCode() != null ? newCase.getRegion().getEpidCode() : "") 
+					+ "-" + (newCase.getDistrict().getEpidCode() != null ? newCase.getDistrict().getEpidCode() : "") 
+					+ "-" + year + "-");
 		}
 
 		// update the plague type based on symptoms
@@ -1272,6 +1285,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 
 			if (caze.getInvestigationStatus() == InvestigationStatus.DONE
+					&& existingCase != null
 					&& existingCase.getInvestigationStatus() != InvestigationStatus.DONE) {
 				sendInvestigationDoneNotifications(caze);
 			}

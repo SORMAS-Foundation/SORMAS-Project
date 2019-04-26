@@ -281,9 +281,10 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		ComboBox field = addField(fieldId, ComboBox.class);
 		populateWithDiseaseData(field, showNonPrimaryDiseases, includedDisease);
 		field.addValueChangeListener(e -> {
-			if (!field.containsId(e.getProperty().getValue())) {
-				Item newItem = field.addItem(e.getProperty().getValue());
-				newItem.getItemProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(e.getProperty().getValue().toString());
+			Object value = e.getProperty().getValue();
+			if (value != null && !field.containsId(value)) {
+				Item newItem = field.addItem(value);
+				newItem.getItemProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(value.toString());
 			}
 		});
 		return field;

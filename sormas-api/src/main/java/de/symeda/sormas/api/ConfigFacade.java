@@ -49,5 +49,7 @@ public interface ConfigFacade {
 	String getAppLegacyUrl();
 
 	void validateAppUrls();
+
+	boolean isDevMode();
 	
 }
