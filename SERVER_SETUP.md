@@ -218,3 +218,5 @@ By default the server will be setup with a memory size of 1024MB. You can change
 	/opt/payara-172/glassfish/bin/asadmin --port 6048 delete-jvm-options -Xmx512m
 	/opt/payara-172/glassfish/bin/asadmin --port 6048 delete-jvm-options -Xmx1024m
 	/opt/payara-172/glassfish/bin/asadmin --port 6048 create-jvm-options -Xmx2048m
+
+Alternative: You can edit the setting directly in the domain.xml in the config directory of the sormas domain. Just search for ``Xmx`` - there should be two entries that need to be changed.
