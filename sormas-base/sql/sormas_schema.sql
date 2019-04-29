@@ -3165,3 +3165,9 @@ FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'diseaseconfiguration_hi
 ALTER TABLE diseaseconfiguration_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (145, 'Add DiseaseConfiguration entity #1074');
+
+-- 2019-04-29 Rename education "nursery" to "no education" #1073
+
+UPDATE person SET educationtype='NONE' WHERE educationtype='NURSERY';
+
+INSERT INTO schema_version (version_number, comment) VALUES (146, 'Rename education "nursery" to "no education" #1073');
