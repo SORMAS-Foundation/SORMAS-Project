@@ -3167,7 +3167,11 @@ ALTER TABLE diseaseconfiguration_history OWNER TO sormas_user;
 INSERT INTO schema_version (version_number, comment) VALUES (145, 'Add DiseaseConfiguration entity #1074');
 
 -- 2019-04-29 Rename education "nursery" to "no education" #1073
-
 UPDATE person SET educationtype='NONE' WHERE educationtype='NURSERY';
-
+UPDATE person_history SET educationtype='NONE' WHERE educationtype='NURSERY';
 INSERT INTO schema_version (version_number, comment) VALUES (146, 'Rename education "nursery" to "no education" #1073');
+
+-- 2019-04-29 Merge event type and status #1077
+ALTER TABLE events DROP COLUMN eventtype;
+ALTER TABLE events_history DROP COLUMN eventtype;
+INSERT INTO schema_version (version_number, comment) VALUES (147, 'Merge event type and status #1077');

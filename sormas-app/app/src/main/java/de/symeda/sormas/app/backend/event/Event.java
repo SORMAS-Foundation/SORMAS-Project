@@ -30,10 +30,9 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.user.User;
@@ -47,7 +46,6 @@ public class Event extends AbstractDomainObject {
 	public static final String TABLE_NAME = "events";
 	public static final String I18N_PREFIX = "Event";
 	
-	public static final String EVENT_TYPE = "eventType";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_PERSONS = "eventPersons";
 	public static final String EVENT_DESC = "eventDesc";
@@ -65,8 +63,9 @@ public class Event extends AbstractDomainObject {
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 
-	@Enumerated(EnumType.STRING)
-	private EventType eventType;
+	@Deprecated
+	@DatabaseField
+	private String eventType;
 
 	@Enumerated(EnumType.STRING)
 	private EventStatus eventStatus;
@@ -121,13 +120,6 @@ public class Event extends AbstractDomainObject {
 	private Float reportLatLonAccuracy;
 
 
-	public EventType getEventType() {
-		return eventType;
-	}
-	public void setEventType(EventType eventType) {
-		this.eventType = eventType;
-	}
-	
 	public EventStatus getEventStatus() {
 		return eventStatus;
 	}
@@ -254,11 +246,7 @@ public class Event extends AbstractDomainObject {
 
 	@Override
 	public String toString() {
-		String diseaseString = disease == null ? "" : disease.toString();
-		String _eventType = eventType == null? "" : eventType.toString();
-
-		String eventTypeString = diseaseString.isEmpty() ? _eventType : _eventType.toLowerCase();
-		return diseaseString + " " + eventTypeString + " on " + DateHelper.formatLocalShortDate(eventDate);
+		return EventReferenceDto.buildCaption(getDisease(), getDiseaseDetails(), getEventStatus(), getEventDate());
 	}
 
 	@Override

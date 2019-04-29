@@ -31,22 +31,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.hene.popupbutton.PopupButton;
 
-import com.vaadin.server.ExternalResource;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.v7.shared.ui.grid.HeightMode;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.shared.ui.grid.HeightMode;
+import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
@@ -58,7 +58,7 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.event.DashboardEventDto;
-import de.symeda.sormas.api.event.EventType;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -550,11 +550,10 @@ public class DashboardMapComponent extends VerticalLayout {
 			{
 				eventsKeyLayout.setSpacing(false);
 				eventsKeyLayout.setMargin(false);
-				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_RUMOR,
-						EventType.RUMOR.toString());
+				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_RUMOR, EventStatus.POSSIBLE.toString());
 				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
 				eventsKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_OUTBREAK, EventType.OUTBREAK.toString());
+				legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_OUTBREAK, EventStatus.CONFIRMED.toString());
 				eventsKeyLayout.addComponent(legendEntry);
 			}
 			legendLayout.addComponent(eventsKeyLayout);
@@ -1007,10 +1006,15 @@ public class DashboardMapComponent extends VerticalLayout {
 
 		for (DashboardEventDto event : events) {
 			MarkerIcon icon;
-			if (event.getEventType() == EventType.OUTBREAK) {
+			switch(event.getEventStatus()) {
+			case CONFIRMED:
 				icon = MarkerIcon.EVENT_OUTBREAK;
-			} else {
+				break;
+			case POSSIBLE:
 				icon = MarkerIcon.EVENT_RUMOR;
+				break;
+			default:
+				continue;
 			}
 
 			LeafletMarker marker = new LeafletMarker();

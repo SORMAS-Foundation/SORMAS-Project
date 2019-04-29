@@ -34,13 +34,9 @@ import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.task.Task;
@@ -54,7 +50,6 @@ public class Event extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "events";
 	
-	public static final String EVENT_TYPE = "eventType";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_PERSONS = "eventPersons";
 	public static final String EVENT_DESC = "eventDesc";
@@ -76,7 +71,6 @@ public class Event extends AbstractDomainObject {
 	public static final String REPORT_LON = "reportLon";
 	public static final String ARCHIVED = "archived";
 	
-	private EventType eventType;
 	private EventStatus eventStatus;
 	private List<EventParticipant> eventPersons;
 	private String eventDesc;
@@ -100,16 +94,6 @@ public class Event extends AbstractDomainObject {
 	private boolean archived;
 
 	private List<Task> tasks;
-	
-	@Enumerated(EnumType.STRING)
-	@Column(nullable=false)
-	public EventType getEventType() {
-		return eventType;
-	}
-
-	public void setEventType(EventType eventType) {
-		this.eventType = eventType;
-	}
 	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable=false)
@@ -294,11 +278,7 @@ public class Event extends AbstractDomainObject {
 	
 	@Override
 	public String toString() {
-		String diseaseString = getDisease() != Disease.OTHER
-				? DataHelper.toStringNullable(getDisease())
-				: DataHelper.toStringNullable(getDiseaseDetails());
-		String eventTypeString = diseaseString.isEmpty() ? eventType.toString() : eventType.toString().toLowerCase();
-		return diseaseString + " " + eventTypeString + " " + I18nProperties.getString(Strings.on) + " " + DateHelper.formatLocalDate(eventDate);
+		return EventReferenceDto.buildCaption(getDisease(), getDiseaseDetails(), getEventStatus(), getEventDate());
 	}
 
 	public Float getReportLatLonAccuracy() {

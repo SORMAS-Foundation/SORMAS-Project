@@ -32,7 +32,6 @@ public class EventDto extends EntityDto {
 	
 	public static final String I18N_PREFIX = "Event";
 	
-	public static final String EVENT_TYPE = "eventType";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_PERSONS = "eventPersons";
 	public static final String EVENT_DESC = "eventDesc";
@@ -52,8 +51,6 @@ public class EventDto extends EntityDto {
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
 	
-	@Required
-	private EventType eventType;
 	@Required
 	private EventStatus eventStatus;
 	@Required
@@ -88,14 +85,6 @@ public class EventDto extends EntityDto {
 		event.setReportDateTime(new Date());
 
 		return event;
-	}
-	
-	public EventType getEventType() {
-		return eventType;
-	}
-	
-	public void setEventType(EventType eventType) {
-		this.eventType = eventType;
 	}
 	
 	public EventStatus getEventStatus() {

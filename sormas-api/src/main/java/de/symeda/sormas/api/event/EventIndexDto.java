@@ -30,7 +30,6 @@ public class EventIndexDto implements Serializable {
 	public static final String I18N_PREFIX = "Event";
 	
 	public static final String UUID = "uuid";
-	public static final String EVENT_TYPE = "eventType";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
@@ -43,7 +42,6 @@ public class EventIndexDto implements Serializable {
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	
 	private String uuid;
-	private EventType eventType;
 	private EventStatus eventStatus;
 	private Disease disease;
 	private String diseaseDetails;
@@ -55,11 +53,10 @@ public class EventIndexDto implements Serializable {
 	private String srcTelNo;
 	private Date reportDateTime;
 	
-	public EventIndexDto(String uuid, EventType eventType, EventStatus eventStatus, Disease disease, String diseaseDetails,
+	public EventIndexDto(String uuid, EventStatus eventStatus, Disease disease, String diseaseDetails,
 			Date eventDate, String eventDesc, String locationUuid, String regionName, String districtName, String communityName, String city, String address,
 			String srcFirstName, String srcLastName, String srcTelNo, Date reportDateTime) {
 		this.uuid = uuid;
-		this.eventType = eventType;
 		this.eventStatus = eventStatus;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
@@ -77,12 +74,6 @@ public class EventIndexDto implements Serializable {
 	}
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
-	}
-	public EventType getEventType() {
-		return eventType;
-	}
-	public void setEventType(EventType eventType) {
-		this.eventType = eventType;
 	}
 	public EventStatus getEventStatus() {
 		return eventStatus;
@@ -146,6 +137,6 @@ public class EventIndexDto implements Serializable {
 	}
 	
 	public EventReferenceDto toReference() {
-		return new EventReferenceDto(getUuid(), getDisease(), getDiseaseDetails(), getEventType(), getEventDate());
+		return new EventReferenceDto(getUuid(), getDisease(), getDiseaseDetails(), getEventStatus(), getEventDate());
 	}
 }

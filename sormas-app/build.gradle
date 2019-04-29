@@ -27,6 +27,23 @@ allprojects {
             dirs 'libs'
         }
     }
+
+    // this makes sure that the compiler let's us know about underlying errors
+    // otherwise you only see "error: cannot find symbol class DataBindingComponent"
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile.class) {
+            options.compilerArgs << "-Xmaxerrs" << "10000"
+        }
+    }
+    afterEvaluate {
+        if (project.plugins.hasPlugin("kotlin-kapt")) {
+            kapt {
+                javacOptions {
+                    option("-Xmaxerrs", 10000)
+                }
+            }
+        }
+    }
 }
 
 task clean(type: Delete) {

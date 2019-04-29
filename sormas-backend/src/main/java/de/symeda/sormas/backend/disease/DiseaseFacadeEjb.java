@@ -27,7 +27,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.disease.DiseaseFacade;

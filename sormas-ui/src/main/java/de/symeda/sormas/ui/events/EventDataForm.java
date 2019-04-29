@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.events;
 import java.util.Arrays;
 import java.util.List;
 
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.ComboBox;
@@ -27,7 +28,6 @@ import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -53,8 +53,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 	private static final String HTML_LAYOUT = LayoutUtil.h3(I18nProperties.getString(Strings.headingEventData))
 			+ LayoutUtil.fluidRowLocs(4, EventDto.UUID, 3, EventDto.REPORT_DATE_TIME, 5, EventDto.REPORTING_USER)
-			+ LayoutUtil.fluidRowLocs(EventDto.EVENT_TYPE, EventDto.DISEASE, EventDto.DISEASE_DETAILS)
 			+ LayoutUtil.fluidRowLocs(4, EventDto.EVENT_DATE, 8, EventDto.EVENT_STATUS)
+			+ LayoutUtil.fluidRowLocs(EventDto.DISEASE, EventDto.DISEASE_DETAILS)
 			+ LayoutUtil.fluidRowLocs(EventDto.EVENT_DESC) + LayoutUtil.h3(I18nProperties.getString(Strings.headingInformationSource))
 			+ LayoutUtil.fluidRowLocs(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME)
 			+ LayoutUtil.fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL) + LayoutUtil.h3(I18nProperties.getString(Strings.headingLocation))
@@ -87,7 +87,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		}
 
 		addField(EventDto.UUID, TextField.class);
-		addField(EventDto.EVENT_TYPE, OptionGroup.class);
 		addDiseaseField(EventDto.DISEASE, false);
 		addField(EventDto.DISEASE_DETAILS, TextField.class);
 		DateField eventDate = addField(EventDto.EVENT_DATE, DateField.class);
@@ -123,7 +122,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		FieldHelper.setRequiredWhen(getFieldGroup(), EventDto.DISEASE, Arrays.asList(EventDto.DISEASE_DETAILS),
 				Arrays.asList(Disease.OTHER));
 
-		setRequired(true, EventDto.EVENT_TYPE, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_DESC,
+		setRequired(true, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_DESC,
 				EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 		setTypeOfPlaceTextRequirement();
 		locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);

@@ -68,7 +68,6 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
     @Override
     public void fillInnerFromDto(Event target, EventDto source) {
 
-        target.setEventType(source.getEventType());
         target.setEventStatus(source.getEventStatus());
         target.setEventDesc(source.getEventDesc());
         target.setEventDate(source.getEventDate());
@@ -94,7 +93,6 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
     @Override
     public void fillInnerFromAdo(EventDto target, Event source) {
 
-        target.setEventType(source.getEventType());
         target.setEventStatus(source.getEventStatus());
         target.setEventDesc(source.getEventDesc());
         target.setEventDate(source.getEventDate());

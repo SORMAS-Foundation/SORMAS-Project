@@ -242,7 +242,6 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
 		
 		cq.multiselect(event.get(Event.UUID),
-				event.get(Event.EVENT_TYPE),
 				event.get(Event.EVENT_STATUS),
 				event.get(Event.DISEASE),
 				event.get(Event.DISEASE_DETAILS),
@@ -281,7 +280,6 @@ public class EventFacadeEjb implements EventFacade {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case EventIndexDto.UUID:
-				case EventIndexDto.EVENT_TYPE:
 				case EventIndexDto.EVENT_STATUS:
 				case EventIndexDto.DISEASE:
 				case EventIndexDto.DISEASE_DETAILS:
@@ -360,7 +358,6 @@ public class EventFacadeEjb implements EventFacade {
 		}
 		DtoHelper.validateDto(source, target);
 		
-		target.setEventType(source.getEventType());
 		target.setEventStatus(source.getEventStatus());
 		target.setEventDesc(source.getEventDesc());
 		target.setEventDate(source.getEventDate());
@@ -400,7 +397,6 @@ public class EventFacadeEjb implements EventFacade {
 		EventDto target = new EventDto();
 		DtoHelper.fillDto(target, source);
 		
-		target.setEventType(source.getEventType());
 		target.setEventStatus(source.getEventStatus());
 		target.setEventDesc(source.getEventDesc());
 		target.setEventDate(source.getEventDate());

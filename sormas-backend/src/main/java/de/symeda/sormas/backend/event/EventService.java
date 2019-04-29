@@ -38,10 +38,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.location.Location;
@@ -156,7 +153,6 @@ public class EventService extends AbstractAdoService<Event> {
 			cq.where(filter);
 			cq.multiselect(
 					event.get(Event.UUID),
-					event.get(Event.EVENT_TYPE),
 					event.get(Event.EVENT_STATUS),
 					event.get(Event.DISEASE),
 					event.get(Event.DISEASE_DETAILS),
@@ -328,9 +324,6 @@ public class EventService extends AbstractAdoService<Event> {
 		}
 		if (eventCriteria.getEventStatus() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Event.EVENT_STATUS), eventCriteria.getEventStatus()));
-		}
-		if (eventCriteria.getEventType() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Event.EVENT_TYPE), eventCriteria.getEventType()));
 		}
 		if (Boolean.TRUE.equals(eventCriteria.getArchived())) {
 			filter = and(cb, filter, cb.equal(from.get(Event.ARCHIVED), true));

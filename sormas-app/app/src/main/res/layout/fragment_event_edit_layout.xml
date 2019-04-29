@@ -25,12 +25,10 @@
     android:id="@+id/base_layout">
 
     <data>
-        <import type="de.symeda.sormas.api.event.EventType" />
         <import type="de.symeda.sormas.api.event.TypeOfPlace" />
         <import type="de.symeda.sormas.api.Disease" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.event.Event"/>
-        <variable name="eventTypeClass" type="Class" />
         <variable name="eventStatusClass" type="Class" />
     </data>
 
@@ -81,13 +79,6 @@
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
-            <de.symeda.sormas.app.component.controls.ControlSwitchField
-                android:id="@+id/event_eventStatus"
-                app:enumClass="@{eventStatusClass}"
-                app:value="@={data.eventStatus}"
-                app:required="true"
-                style="@style/ControlSingleColumnStyle" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -100,9 +91,9 @@
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/event_eventType"
-                    app:enumClass="@{eventTypeClass}"
-                    app:value="@={data.eventType}"
+                    android:id="@+id/event_eventStatus"
+                    app:enumClass="@{eventStatusClass}"
+                    app:value="@={data.eventStatus}"
                     app:required="true"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
@@ -122,7 +113,6 @@
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/event_disease"
                     app:value="@={data.disease}"
-                    app:required="true"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField

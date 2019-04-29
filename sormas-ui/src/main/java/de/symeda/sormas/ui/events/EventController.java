@@ -195,9 +195,6 @@ public class EventController {
 					if (form.getEventStatusCheckBox().getValue() == true) {
 						eventDto.setEventStatus(updatedTempEvent.getEventStatus());
 					}
-					if (form.getEventTypeCheckBox().getValue() == true) {
-						eventDto.setEventType(updatedTempEvent.getEventType());
-					}
 
 					FacadeProvider.getEventFacade().saveEvent(eventDto);
 				}
