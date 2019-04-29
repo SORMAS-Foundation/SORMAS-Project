@@ -58,7 +58,6 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -882,7 +881,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					+ "-" + (newCase.getDistrict().getEpidCode() != null ? newCase.getDistrict().getEpidCode() : "") 
 					+ "-" + year + "-");
 		}
-
+		
 		// update the plague type based on symptoms
 		if (newCase.getDisease() == Disease.PLAGUE) {
 			PlagueType plagueType = DiseaseHelper
@@ -1141,7 +1140,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
-		target.setReportDate(source.getReportDate());
+		if (source.getReportDate() != null) {
+			target.setReportDate(source.getReportDate());
+		} else { //	make sure we do have a report date
+			target.setReportDate(new Date());
+		}
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setInvestigatedDate(source.getInvestigatedDate());
 		target.setReceptionDate(source.getReceptionDate());
