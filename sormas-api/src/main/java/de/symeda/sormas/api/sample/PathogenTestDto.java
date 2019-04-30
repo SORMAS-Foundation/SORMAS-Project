@@ -19,6 +19,7 @@ package de.symeda.sormas.api.sample;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -33,6 +34,8 @@ public class PathogenTestDto extends EntityDto {
 	public static final String I18N_PREFIX = "PathogenTest";
 
 	public static final String SAMPLE = "sample";
+	public static final String TESTED_DISEASE = "testedDisease";
+	public static final String TESTED_DISEASE_DETAILS = "testedDiseaseDetails";
 	public static final String TEST_TYPE = "testType";
 	public static final String TEST_TYPE_TEXT = "testTypeText";
 	public static final String TEST_DATE_TIME = "testDateTime";
@@ -46,6 +49,9 @@ public class PathogenTestDto extends EntityDto {
 
 	@Required
 	private SampleReferenceDto sample;
+	@Required
+	private Disease testedDisease;
+	private String testedDiseaseDetails;
 	@Required
 	private PathogenTestType testType;
 	private String testTypeText;
@@ -78,6 +84,22 @@ public class PathogenTestDto extends EntityDto {
 
 	public void setSample(SampleReferenceDto sample) {
 		this.sample = sample;
+	}
+
+	public Disease getTestedDisease() {
+		return testedDisease;
+	}
+
+	public void setTestedDisease(Disease testedDisease) {
+		this.testedDisease = testedDisease;
+	}
+
+	public String getTestedDiseaseDetails() {
+		return testedDiseaseDetails;
+	}
+	
+	public void setTestedDiseaseDetails(String testedDiseaseDetails) {
+		this.testedDiseaseDetails = testedDiseaseDetails;
 	}
 
 	public PathogenTestType getTestType() {

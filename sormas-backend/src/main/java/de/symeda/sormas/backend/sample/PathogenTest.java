@@ -29,6 +29,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -44,6 +45,7 @@ public class PathogenTest extends AbstractDomainObject {
 	public static final String TABLE_NAME = "pathogentest";
 	
 	public static final String SAMPLE = "sample";
+	public static final String TESTED_DISEASE = "testedDisease";
 	public static final String TEST_TYPE = "testType";
 	public static final String TEST_TYPE_TEXT = "testTypeText";
 	public static final String TEST_DATE_TIME = "testDateTime";
@@ -56,6 +58,8 @@ public class PathogenTest extends AbstractDomainObject {
 	public static final String FOUR_FOLD_INCREASE_ANTIBODY_TITER = "fourFoldIncreaseAntibodyTiter";
 	
 	private Sample sample;
+	private Disease testedDisease;
+	private String testedDiseaseDetails;
 	private PathogenTestType testType;
 	private String testTypeText;
 	private Date testDateTime;
@@ -74,6 +78,22 @@ public class PathogenTest extends AbstractDomainObject {
 	}
 	public void setSample(Sample sample) {
 		this.sample = sample;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Disease getTestedDisease() {
+		return testedDisease;
+	}
+	public void setTestedDisease(Disease testedDisease) {
+		this.testedDisease = testedDisease;
+	}
+
+	@Column(length=512)
+	public String getTestedDiseaseDetails() {
+		return testedDiseaseDetails;
+	}
+	public void setTestedDiseaseDetails(String testedDiseaseDetails) {
+		this.testedDiseaseDetails = testedDiseaseDetails;
 	}
 	
 	@Enumerated(EnumType.STRING)

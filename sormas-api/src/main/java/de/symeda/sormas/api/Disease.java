@@ -31,6 +31,8 @@ public enum Disease implements StatisticsGroupingKey {
 	MONKEYPOX(true, true, true, 21),
 	NEW_INFLUENCA(true, true, true, 17),
 	PLAGUE(true, true, true, 7),
+	UNSPECIFIED_VHF(true, true, true, 21),
+	WEST_NILE_FEVER(true, false, false, 0),
 	YELLOW_FEVER(true, true, false, 6),
 	OTHER(true, true, true, 21);
 	
@@ -83,6 +85,10 @@ public enum Disease implements StatisticsGroupingKey {
 		return defaultFollowUpDuration;
 	}
 
+	public boolean isDiseaseGroup() {
+		return this == UNSPECIFIED_VHF;
+	}
+	
 	@Override
 	public int keyCompareTo(StatisticsGroupingKey o) {
 		if (o == null) {

@@ -72,13 +72,13 @@ public class ContactDto extends EntityDto {
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	private FollowUpStatus followUpStatus;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	private String followUpComment;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	private Date followUpUntil;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	private UserReferenceDto contactOfficer;
 	private String description;
 	private ContactRelation relationToCase;

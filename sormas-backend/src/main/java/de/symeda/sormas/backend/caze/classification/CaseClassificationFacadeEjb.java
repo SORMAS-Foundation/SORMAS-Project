@@ -151,7 +151,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 								epiData(EpiDataDto.DIRECT_CONTACT_DEAD_UNSAFE))));
 		confirmed = allOf(
 				suspect, 
-				positiveTestResult(PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestType.PCR_RT_PCR, PathogenTestType.ISOLATION));
+				positiveTestResult(Disease.EVD, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestType.PCR_RT_PCR, PathogenTestType.ISOLATION));
 		addCriteria(Disease.EVD, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed);
 
 		// CSM
@@ -168,7 +168,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				epiData(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE));
 		confirmed = allOf(
 				suspect, 
-				positiveTestResult(PathogenTestType.ISOLATION));
+				positiveTestResult(Disease.CSM, PathogenTestType.ISOLATION));
 		addCriteria(Disease.CSM, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed);
 
 		// Lassa Fever
@@ -187,7 +187,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				suspect);
 		confirmed = allOf(
 				suspect,
-				positiveTestResult(PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestType.PCR_RT_PCR, PathogenTestType.ISOLATION));
+				positiveTestResult(Disease.LASSA, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestType.PCR_RT_PCR, PathogenTestType.ISOLATION));
 		addCriteria(Disease.LASSA, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed);
 
 		// Yellow fever
@@ -200,21 +200,22 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 						epiData(EpiDataDto.AREA_CONFIRMED_CASES),
 						allOfCompact(
 								caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED),
-								positiveTestResult(PathogenTestType.HISTOPATHOLOGY))));
+								positiveTestResult(Disease.YELLOW_FEVER, PathogenTestType.HISTOPATHOLOGY))));
 		confirmed = allOf(
 				suspect, 
 				notInStartDateRange(CaseDataDto.VACCINATION_DATE, 30),
 				xOf(1, 
-						allOf(positiveTestResult(PathogenTestType.YELLOW_FEVER_IGM),
-						noneOf(
-								positiveTestResult(PathogenTestType.WEST_NILE_FEVER_IGM),
-								positiveTestResult(PathogenTestType.DENGUE_FEVER_IGM))),
 						allOf(
-								positiveTestResult(PathogenTestType.YELLOW_FEVER_ANTIBODIES),
+								positiveTestResult(Disease.YELLOW_FEVER, PathogenTestType.IGM_SERUM_ANTIBODY),
 								noneOf(
-										positiveTestResult(PathogenTestType.WEST_NILE_FEVER_ANTIBODIES),
-										positiveTestResult(PathogenTestType.DENGUE_FEVER_ANTIBODIES))),
-						positiveTestResult(
+										positiveTestResult(Disease.WEST_NILE_FEVER, PathogenTestType.IGM_SERUM_ANTIBODY),
+										positiveTestResult(Disease.DENGUE, PathogenTestType.IGM_SERUM_ANTIBODY))),
+						allOf(
+								positiveTestResult(Disease.YELLOW_FEVER, PathogenTestType.NEUTRALIZING_ANTIBODIES),
+								noneOf(
+										positiveTestResult(Disease.WEST_NILE_FEVER, PathogenTestType.NEUTRALIZING_ANTIBODIES),
+										positiveTestResult(Disease.DENGUE, PathogenTestType.NEUTRALIZING_ANTIBODIES))),
+						positiveTestResult(Disease.YELLOW_FEVER, 
 								PathogenTestType.PCR_RT_PCR, PathogenTestType.ANTIGEN_DETECTION, PathogenTestType.ISOLATION),
 						sampleTest(
 								PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER,
@@ -237,12 +238,12 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		confirmed = allOf(
 				suspect,
 				xOf(1,
-						allOf(positiveTestResult(PathogenTestType.DENGUE_FEVER_IGM),
+						allOf(positiveTestResult(Disease.DENGUE, PathogenTestType.IGM_SERUM_ANTIBODY),
 						noneOf(
-								positiveTestResult(PathogenTestType.WEST_NILE_FEVER_IGM),
-								positiveTestResult(PathogenTestType.YELLOW_FEVER_IGM))),
-						positiveTestResult(PathogenTestType.PCR_RT_PCR), 
-						positiveTestResult(PathogenTestType.ISOLATION),
+								positiveTestResult(Disease.WEST_NILE_FEVER, PathogenTestType.IGM_SERUM_ANTIBODY),
+								positiveTestResult(Disease.YELLOW_FEVER, PathogenTestType.IGM_SERUM_ANTIBODY))),
+						positiveTestResult(Disease.DENGUE, PathogenTestType.PCR_RT_PCR), 
+						positiveTestResult(Disease.DENGUE, PathogenTestType.ISOLATION),
 						sampleTest(
 								PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER,
 								Arrays.asList(new PathogenTestType[] { PathogenTestType.IGG_SERUM_ANTIBODY }), true)));
@@ -267,7 +268,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		confirmed = allOf(
 				suspect,
 				xOf(1, 
-						positiveTestResult(PathogenTestType.ISOLATION, PathogenTestType.NEUTRALIZING_ANTIBODIES, PathogenTestType.PCR_RT_PCR),
+						positiveTestResult(Disease.NEW_INFLUENCA, PathogenTestType.ISOLATION, PathogenTestType.NEUTRALIZING_ANTIBODIES, PathogenTestType.PCR_RT_PCR),
 						sampleTest(
 								PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER,
 								Arrays.asList(new PathogenTestType[] { PathogenTestType.IGG_SERUM_ANTIBODY }), true)));
@@ -284,7 +285,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		probable = epiData(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE);
 		confirmed = allOf(
 				suspect, 
-				positiveTestResult(PathogenTestType.IGM_SERUM_ANTIBODY));
+				positiveTestResult(Disease.MEASLES, PathogenTestType.IGM_SERUM_ANTIBODY));
 		addCriteria(Disease.MEASLES, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed);
 
 		// Cholera
@@ -300,7 +301,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		probable = null;
 		confirmed = allOf(
 				suspect, 
-				positiveTestResult(PathogenTestType.ISOLATION));
+				positiveTestResult(Disease.CHOLERA, PathogenTestType.ISOLATION));
 		addCriteria(Disease.CHOLERA, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed);
 
 		// Monkey pox
@@ -310,7 +311,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		probable = null;
 		confirmed = allOf(
 				suspect, 
-				positiveTestResult(PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestType.PCR_RT_PCR, PathogenTestType.ISOLATION));
+				positiveTestResult(Disease.MONKEYPOX, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestType.PCR_RT_PCR, PathogenTestType.ISOLATION));
 		addCriteria(Disease.MONKEYPOX, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed);
 
 		// Plague
@@ -335,10 +336,10 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		probable = allOf(
 				suspect, 
 				xOf(1, epiData(EpiDataDto.AREA_CONFIRMED_CASES),
-				positiveTestResult(PathogenTestType.YERSINIA_PESTIS_ANTIGEN)));
+				positiveTestResult(Disease.PLAGUE, PathogenTestType.ANTIGEN_DETECTION)));
 		confirmed = allOf(
 				suspect,
-				positiveTestResult(PathogenTestType.ISOLATION, PathogenTestType.PCR_RT_PCR));
+				positiveTestResult(Disease.PLAGUE, PathogenTestType.ISOLATION, PathogenTestType.PCR_RT_PCR));
 		addCriteria(Disease.PLAGUE, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed);
 	}
 
@@ -391,9 +392,9 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		return new ClassificationPathogenTestCriteriaDto(propertyId, testTypes, propertyValues);
 	}
 
-	private static ClassificationPathogenTestPositiveResultCriteriaDto positiveTestResult(
+	private static ClassificationPathogenTestPositiveResultCriteriaDto positiveTestResult(Disease testedDisease, 
 			PathogenTestType... pathogenTestTypes) {
-		return new ClassificationPathogenTestPositiveResultCriteriaDto(pathogenTestTypes);
+		return new ClassificationPathogenTestPositiveResultCriteriaDto(testedDisease, pathogenTestTypes);
 	}
 
 	private static ClassificationNotInStartDateRangeCriteriaDto notInStartDateRange(String propertyId,

@@ -306,6 +306,10 @@ public final class CssStyles {
 			return "background-disease-other";
 		case PLAGUE:
 			return "background-disease-plague";
+		case UNSPECIFIED_VHF:
+			return "background-disease-unspecified-vhf";
+		case WEST_NILE_FEVER:
+			return "background-disease-west-nile-fever";
 		case YELLOW_FEVER:
 			return "background-disease-yellow-fever";
 		default:

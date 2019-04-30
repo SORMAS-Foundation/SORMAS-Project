@@ -987,6 +987,30 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 			}
 		}
+		
+		// Send an email to all responsible supervisors when the disease of an Unspecified VHF
+		// case has changed
+		if (existingCase != null && existingCase.getDisease() == Disease.UNSPECIFIED_VHF && existingCase.getDisease() != newCase.getDisease()) {
+			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(newCase.getRegion(),
+					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
+			for (User recipient : messageRecipients) {
+				try {
+					messagingService.sendMessage(recipient,
+							I18nProperties.getString(MessagingService.SUBJECT_DISEASE_CHANGED),
+							String.format(
+									I18nProperties.getString(MessagingService.CONTENT_DISEASE_CHANGED),
+									DataHelper.getShortUuid(newCase.getUuid()),
+									existingCase.getDisease().toString(),
+									newCase.getDisease().toString()),
+							MessageType.EMAIL, MessageType.SMS);
+				} catch (NotificationDeliveryFailedException e) {
+					logger.error(String.format(
+							"NotificationDeliveryFailedException when trying to notify supervisors about the change of a case disease. "
+									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
+									recipient.getUuid()));
+				}
+			}
+		}
 
 	}
 

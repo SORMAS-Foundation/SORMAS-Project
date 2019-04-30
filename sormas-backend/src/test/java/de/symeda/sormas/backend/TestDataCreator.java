@@ -274,12 +274,13 @@ public class TestDataCreator {
 		return sample;
 	}
 
-	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, PathogenTestType testType, Date testDateTime,
-			Facility lab, UserReferenceDto labUser, PathogenTestResultType testResult, String testResultText,
+	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, PathogenTestType testType, Disease testedDisease,
+			Date testDateTime, Facility lab, UserReferenceDto labUser, PathogenTestResultType testResult, String testResultText,
 			boolean verified) {
 		PathogenTestDto sampleTest = new PathogenTestDto();
 		sampleTest.setUuid(DataHelper.createUuid());
 		sampleTest.setSample(sample);
+		sampleTest.setTestedDisease(testedDisease);
 		sampleTest.setTestType(testType);
 		sampleTest.setTestDateTime(testDateTime);
 		sampleTest.setLab(lab != null ? beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()) : null);
@@ -292,13 +293,18 @@ public class TestDataCreator {
 
 		return sampleTest;
 	}
-
-	public PathogenTestDto createPathogenTest(CaseDataDto associatedCase, PathogenTestType testType,
-			PathogenTestResultType resultType) {
+	
+	public PathogenTestDto createPathogenTest(CaseDataDto associatedCase,
+			PathogenTestType testType, PathogenTestResultType resultType) {
+		return createPathogenTest(associatedCase, null, testType, resultType);
+	}
+	
+	public PathogenTestDto createPathogenTest(CaseDataDto associatedCase, Disease testedDisease,
+			PathogenTestType testType, PathogenTestResultType resultType) {
 		RDCF rdcf = createRDCF("Region", "District", "Community", "Facility");
 		SampleDto sample = createSample(new CaseReferenceDto(associatedCase.getUuid()), new Date(), new Date(),
 				associatedCase.getReportingUser(), SampleMaterial.BLOOD, rdcf.facility);
-		return createPathogenTest(new SampleReferenceDto(sample.getUuid()), testType, new Date(), rdcf.facility,
+		return createPathogenTest(new SampleReferenceDto(sample.getUuid()), testType, testedDisease, new Date(), rdcf.facility,
 				associatedCase.getReportingUser(), resultType, "", true);
 	}
 	
