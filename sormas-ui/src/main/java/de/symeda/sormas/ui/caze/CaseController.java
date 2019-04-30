@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
@@ -52,14 +51,13 @@ import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -190,6 +188,19 @@ public class CaseController {
 		caze.setReportingUser(userReference);
 		caze.setRegion(user.getRegion());
 		caze.setDistrict(user.getDistrict());
+		caze.setCommunity(user.getCommunity());
+		
+        if (user.getHealthFacility() != null) {
+        	FacilityDto healthFacility = FacadeProvider.getFacilityFacade().getByUuid(user.getHealthFacility().getUuid());
+            caze.setRegion(healthFacility.getRegion());
+            caze.setDistrict(healthFacility.getDistrict());
+            caze.setCommunity(healthFacility.getCommunity());
+            caze.setHealthFacility(healthFacility.toReference());
+        } else {
+            caze.setRegion(user.getRegion());
+            caze.setDistrict(user.getDistrict());
+            caze.setCommunity(user.getCommunity());
+        }
 
 		return caze;
 	}
