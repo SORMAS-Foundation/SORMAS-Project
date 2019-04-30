@@ -58,8 +58,10 @@ public class I18nProperties {
 	
 	public static void setLocale (Locale _locale) {
 		if (_locale == null) return;
-		
-		locale = _locale;
+		if (_locale != locale) {
+			locale = _locale;
+			instance = null;
+		}
 	}
 	
 	public static void setLocale (String _locale) {
