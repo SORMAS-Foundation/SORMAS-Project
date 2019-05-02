@@ -49,6 +49,7 @@ import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -61,13 +62,13 @@ import de.symeda.sormas.ui.utils.CssStyles;
 public class DevModeView extends AbstractConfigurationView {
 
 	private static final long serialVersionUID = -6589135368637794263L;
-	
+
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/devMode";
 
 	private VerticalLayout contentLayout;
 
 	private Binder<CaseGenerationConfig> caseGeneratorConfigBinder = new Binder<>();
-	
+
 	public DevModeView() {
 		super(VIEW_NAME);
 
@@ -76,16 +77,16 @@ public class DevModeView extends AbstractConfigurationView {
 		contentLayout.setSpacing(true);
 		contentLayout.setSizeFull();
 		contentLayout.setStyleName("crud-main-layout");
-		
+
 		HorizontalLayout caseGeneratorLayout = new HorizontalLayout();
-		
+
 		TextField caseCountField = new TextField();
 		caseCountField.setCaption(I18nProperties.getCaption(Captions.devModeCaseCount));
 		caseGeneratorConfigBinder.forField(caseCountField)
-		  .withConverter(new StringToIntegerConverter("Must be a number"))
-		  .bind(CaseGenerationConfig::getCaseCount, CaseGenerationConfig::setCaseCount);
+		.withConverter(new StringToIntegerConverter("Must be a number"))
+		.bind(CaseGenerationConfig::getCaseCount, CaseGenerationConfig::setCaseCount);
 		caseGeneratorLayout.addComponent(caseCountField);
-		
+
 		DateField startDateField = new DateField();
 		startDateField.setCaption(I18nProperties.getCaption(Captions.devModeStartDate));
 		startDateField.setDateFormat(DateHelper.getLocalDatePattern());
@@ -99,12 +100,12 @@ public class DevModeView extends AbstractConfigurationView {
 		endDateField.setLenient(true);
 		caseGeneratorConfigBinder.bind(endDateField, CaseGenerationConfig::getEndDate, CaseGenerationConfig::setEndDate);
 		caseGeneratorLayout.addComponent(endDateField);
-		
+
 		ComboBox<Disease> diseaseField = new ComboBox<>(null, FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases());
 		diseaseField.setCaption(I18nProperties.getCaption(Captions.devModeDisease));
 		caseGeneratorConfigBinder.bind(diseaseField, CaseGenerationConfig::getDisease, CaseGenerationConfig::setDisease);
 		caseGeneratorLayout.addComponent(diseaseField);
-		
+
 		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllAsReference();
 		ComboBox<RegionReferenceDto> regionField = new ComboBox<RegionReferenceDto>(null, regions);
 		regionField.setCaption(I18nProperties.getCaption(Captions.devModeRegion));
@@ -129,16 +130,16 @@ public class DevModeView extends AbstractConfigurationView {
 		CssStyles.style(generateButton, CssStyles.FORCE_CAPTION);
 		generateButton.addClickListener(e -> generateCases());
 		caseGeneratorLayout.addComponent(generateButton);
-		
+
 		contentLayout.addComponent(caseGeneratorLayout);
-		
+
 		CaseGenerationConfig config = new CaseGenerationConfig();
 		config.setRegion(regions.get(0));
 		caseGeneratorConfigBinder.setBean(config);
-		
+
 		addComponent(contentLayout);
 	}
-	
+
 	private final String[] maleFirstNames = new String[] {
 			"Nelson", "Malik", "Thato", "Omar", "Dion", "Darius", "Bandile", "Demarco" };
 	private final String[] femaleFirstNames = new String[] { 
@@ -146,33 +147,44 @@ public class DevModeView extends AbstractConfigurationView {
 	private final String[] lastNames = new String[] { 
 			"Ajanlekoko", "Omiata", "Apeloko", "Adisa", "Abioye", "Chipo", "Baako", "Akua", 
 			"Ekua", "Katlego", "Furaha", "Chuks", "Babak", "Tinibu", "Okar", "Egwu" };
-//	private final String[] words = new String[] {
-//		    "gold","snail","card","taste","hanging","materialistic","wasteful","lamp","wry","rhetorical","scene","unlock" };
-	
+	//	private final String[] words = new String[] {
+	//		    "gold","snail","card","taste","hanging","materialistic","wasteful","lamp","wry","rhetorical","scene","unlock" };
+
 	public void fillEntity(EntityDto entity, LocalDateTime referenceDateTime) {
 		Random random = new Random();
 		try {
 			Class<? extends EntityDto> entityClass = entity.getClass();
 			List<Method> setters = Arrays.stream(entityClass.getDeclaredMethods())
-				.filter(method -> method.getName().startsWith("set") && method.getParameterTypes().length == 1)
-				.collect(Collectors.toList());
+					.filter(method -> method.getName().startsWith("set") && method.getParameterTypes().length == 1)
+					.collect(Collectors.toList());
 			for (Method setter : setters) {
 				if (random.nextInt(10) > 6) {
 					continue; // leave some empty/default
 				}
 				Class<?> parameterType = setter.getParameterTypes()[0];
 				// doesn't make sense
-//				if (parameterType.isAssignableFrom(String.class)) {
-//					setter.invoke(entity, words[random.nextInt(words.length)]);
-//				} 
-//				else 
+				//				if (parameterType.isAssignableFrom(String.class)) {
+				//					setter.invoke(entity, words[random.nextInt(words.length)]);
+				//				} 
+				//				else 
 				if (parameterType.isAssignableFrom(Date.class)) {
 					setter.invoke(entity, Date.from(referenceDateTime.plusMinutes(random.nextInt(60*24*5))
 							.atZone(ZoneId.systemDefault()).toInstant()));
 				}
 				else if (parameterType.isEnum()) {
-					Object[] enumConstants = parameterType.getEnumConstants();
-					setter.invoke(entity, enumConstants[random.nextInt(enumConstants.length)]);
+					Object[] enumConstants = null;
+					// Only use active primary diseases
+					if (parameterType == Disease.class) {
+						enumConstants = FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases().toArray();
+					} else {
+						enumConstants = parameterType.getEnumConstants();
+					}
+					// Generate more living persons
+					if (parameterType == PresentCondition.class && random.nextInt(10) <= 5) {
+						setter.invoke(entity, PresentCondition.ALIVE);
+					} else {
+						setter.invoke(entity, enumConstants[random.nextInt(enumConstants.length)]);
+					}
 				}
 				else if (EntityDto.class.isAssignableFrom(parameterType)) {
 					Method getter = entityClass.getDeclaredMethod(setter.getName().replaceFirst("set", "get"));
@@ -188,41 +200,41 @@ public class DevModeView extends AbstractConfigurationView {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public void generateCases() {
 		CaseGenerationConfig config = caseGeneratorConfigBinder.getBean();
-		
-		Disease[] diseases = Disease.values();
+
+		List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases();
 		Random random = new Random();
 		float baseOffset = random.nextFloat();
 		int daysBetween = (int)ChronoUnit.DAYS.between(config.startDate, config.endDate);
-		
+
 		FacilityCriteria facilityCriteria = new FacilityCriteria();
 		facilityCriteria.region(config.getRegion());
 		facilityCriteria.district(config.getDistrict());
 		// just load some health facilities. Alphabetical order is not random, but the best we can get
 		List<FacilityDto> healthFacilities = FacadeProvider.getFacilityFacade().getIndexList(facilityCriteria, 0, Math.min(config.getCaseCount()*2, 300), Arrays.asList(new SortProperty(FacilityDto.NAME)));
-		
+
 		for (int i=0; i<config.getCaseCount(); i++) {
-			
+
 			Disease disease = config.getDisease();
 			if (disease == null) {
-			    int rnd = random.nextInt(diseases.length);
-				disease = diseases[rnd];
+				int rnd = random.nextInt(diseases.size());
+				disease = diseases.get(rnd);
 			}
-			
+
 			float x = (float)i/config.getCaseCount();
 			x += baseOffset;
 			x += 0.13f * disease.ordinal();
 			x += 0.5f * random.nextFloat();
 			x = (float)(Math.asin((x % 2 ) - 1) / Math.PI/2) + 0.5f;
-			
+
 			LocalDateTime referenceDateTime = config.getStartDate().atStartOfDay().plusMinutes((int)(x*60*24*daysBetween));
-			
+
 			// person
 			PersonDto person = PersonDto.build();
 			fillEntity(person, referenceDateTime);
-			
+
 			Sex sex = Sex.values()[random.nextInt(2)];
 			person.setSex(sex);
 			if (sex == Sex.MALE) {
@@ -231,16 +243,19 @@ public class DevModeView extends AbstractConfigurationView {
 				person.setFirstName(femaleFirstNames[random.nextInt(femaleFirstNames.length)] + " " + femaleFirstNames[random.nextInt(femaleFirstNames.length)]);
 			}
 			person.setLastName(lastNames[random.nextInt(lastNames.length)] + "-" + lastNames[random.nextInt(lastNames.length)]);
-			
+
 			CaseDataDto caze = CaseDataDto.build(person.toReference(), disease);
 			fillEntity(caze, referenceDateTime);
 			caze.setDisease(disease); // reset
-			
+			if (caze.getDisease() == Disease.OTHER) {
+				caze.setDiseaseDetails("RD " + (random.nextInt(20) + 1));
+			}
+
 			// report
 			UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
 			caze.setReportingUser(userReference);
 			caze.setReportDate(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
-			
+
 			// region & facility
 			FacilityDto healthFacility = healthFacilities.get(random.nextInt(healthFacilities.size()));
 			caze.setRegion(healthFacility.getRegion());
@@ -249,7 +264,7 @@ public class DevModeView extends AbstractConfigurationView {
 			caze.setHealthFacility(healthFacility.toReference());
 			caze.setReportLat(healthFacility.getLatitude());
 			caze.setReportLon(healthFacility.getLongitude());
-			
+
 			FacadeProvider.getPersonFacade().savePerson(person);
 			FacadeProvider.getCaseFacade().saveCase(caze);
 		}
@@ -259,7 +274,7 @@ public class DevModeView extends AbstractConfigurationView {
 	public void enter(ViewChangeEvent event) {
 		super.enter(event);
 	}
-	
+
 	public static class CaseGenerationConfig {
 		private int caseCount = 10;
 		private LocalDate startDate = LocalDate.now().minusDays(90);
@@ -267,7 +282,7 @@ public class DevModeView extends AbstractConfigurationView {
 		private Disease disease = null;
 		private RegionReferenceDto region = null;
 		private DistrictReferenceDto district = null;
-		
+
 		public int getCaseCount() {
 			return caseCount;
 		}
