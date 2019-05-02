@@ -281,6 +281,12 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 							|| similarity(finalShapeDistrictName, districtName) > 0.7f;
 				}).reduce((r1, r2) -> {
 					// take the result that best fits
+					
+					if (r1.getCaption().replaceAll("\\W", "").toLowerCase().equals(finalShapeDistrictName))
+						return r1;
+					if (r2.getCaption().replaceAll("\\W", "").toLowerCase().equals(finalShapeDistrictName))
+						return r2;
+					
 					return Double.compare(similarity(r1.getCaption(), finalShapeDistrictName),
 							similarity(r2.getCaption(), finalShapeDistrictName)) <= 0 ? r1 : r2;
 				});
