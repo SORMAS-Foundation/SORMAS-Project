@@ -46,6 +46,8 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -54,6 +56,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 public class DevModeView extends AbstractConfigurationView {
 
@@ -77,33 +80,39 @@ public class DevModeView extends AbstractConfigurationView {
 		HorizontalLayout caseGeneratorLayout = new HorizontalLayout();
 		
 		TextField caseCountField = new TextField();
+		caseCountField.setCaption(I18nProperties.getCaption(Captions.devModeCaseCount));
 		caseGeneratorConfigBinder.forField(caseCountField)
 		  .withConverter(new StringToIntegerConverter("Must be a number"))
 		  .bind(CaseGenerationConfig::getCaseCount, CaseGenerationConfig::setCaseCount);
 		caseGeneratorLayout.addComponent(caseCountField);
 		
 		DateField startDateField = new DateField();
+		startDateField.setCaption(I18nProperties.getCaption(Captions.devModeStartDate));
 		startDateField.setDateFormat(DateHelper.getLocalDatePattern());
 		startDateField.setLenient(true);
 		caseGeneratorConfigBinder.bind(startDateField, CaseGenerationConfig::getStartDate, CaseGenerationConfig::setStartDate);
 		caseGeneratorLayout.addComponent(startDateField);
 
 		DateField endDateField = new DateField();
+		endDateField.setCaption(I18nProperties.getCaption(Captions.devModeEndDate));
 		endDateField.setDateFormat(DateHelper.getLocalDatePattern());
 		endDateField.setLenient(true);
 		caseGeneratorConfigBinder.bind(endDateField, CaseGenerationConfig::getEndDate, CaseGenerationConfig::setEndDate);
 		caseGeneratorLayout.addComponent(endDateField);
 		
-		ComboBox<Disease> diseaseField = new ComboBox<>(null, Arrays.asList(Disease.values()));
+		ComboBox<Disease> diseaseField = new ComboBox<>(null, FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases());
+		diseaseField.setCaption(I18nProperties.getCaption(Captions.devModeDisease));
 		caseGeneratorConfigBinder.bind(diseaseField, CaseGenerationConfig::getDisease, CaseGenerationConfig::setDisease);
 		caseGeneratorLayout.addComponent(diseaseField);
 		
 		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllAsReference();
 		ComboBox<RegionReferenceDto> regionField = new ComboBox<RegionReferenceDto>(null, regions);
+		regionField.setCaption(I18nProperties.getCaption(Captions.devModeRegion));
 		caseGeneratorConfigBinder.bind(regionField, CaseGenerationConfig::getRegion, CaseGenerationConfig::setRegion);
 		caseGeneratorLayout.addComponent(regionField);
 
 		ComboBox<DistrictReferenceDto> districtField = new ComboBox<DistrictReferenceDto>();
+		districtField.setCaption(I18nProperties.getCaption(Captions.devModeDistrict));
 		caseGeneratorConfigBinder.bind(districtField, CaseGenerationConfig::getDistrict, CaseGenerationConfig::setDistrict);
 		caseGeneratorLayout.addComponent(districtField);
 
@@ -117,6 +126,7 @@ public class DevModeView extends AbstractConfigurationView {
 		});
 
 		Button generateButton = new Button("generate cases");
+		CssStyles.style(generateButton, CssStyles.FORCE_CAPTION);
 		generateButton.addClickListener(e -> generateCases());
 		caseGeneratorLayout.addComponent(generateButton);
 		

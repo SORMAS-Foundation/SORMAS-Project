@@ -315,6 +315,12 @@ public interface Captions {
 	public static String dashboardUnderFollowUp = "dashboardUnderFollowUp";
 	public static String dashboardUnderFollowUpShort = "dashboardUnderFollowUpShort";
 	public static String dashboardYesterday = "dashboardYesterday";
+	public static String devModeCaseCount = "devModeCaseCount";
+	public static String devModeDisease = "devModeDisease";
+	public static String devModeDistrict = "devModeDistrict";
+	public static String devModeEndDate = "devModeEndDate";
+	public static String devModeRegion = "devModeRegion";
+	public static String devModeStartDate = "devModeStartDate";
 	public static String disease = "disease";
 	public static String DiseaseBurden_caseCount = "DiseaseBurden.caseCount";
 	public static String DiseaseBurden_caseDeathCount = "DiseaseBurden.caseDeathCount";
@@ -911,4 +917,4 @@ public interface Captions {
 	public static String WeeklyReportRegionSummary_officers = "WeeklyReportRegionSummary.officers";
 	public static String WeeklyReportRegionSummary_officerZeroReports = "WeeklyReportRegionSummary.officerZeroReports";
 	public static String weeklyReportsInDistrict = "weeklyReportsInDistrict";
- }
+}
