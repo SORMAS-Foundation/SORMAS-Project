@@ -3199,3 +3199,8 @@ UPDATE samples SET requestedpathogentestsstring = REPLACE(requestedpathogentests
 UPDATE samples SET requestedpathogentestsstring = REPLACE(requestedpathogentestsstring, 'YERSINIA_PESTIS_ANTIGEN', 'ANTIGEN_DETECTION');
 
 INSERT INTO schema_version (version_number, comment) VALUES (148, 'Add tested disease to PathogenTests #1075');
+
+-- 2019-04-29 Rename "no education" back to "nursery" #1073
+UPDATE person SET educationtype='NURSERY' WHERE educationtype='NONE';
+UPDATE person_history SET educationtype='NURSERY' WHERE educationtype='NONE';
+INSERT INTO schema_version (version_number, comment) VALUES (149, 'Rename "no education" back to "nursery" #1073');
