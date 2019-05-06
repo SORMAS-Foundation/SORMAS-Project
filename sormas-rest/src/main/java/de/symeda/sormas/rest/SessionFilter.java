@@ -15,33 +15,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.utils;
+package de.symeda.sormas.rest;
 
-import java.util.Collection;
+import java.io.IOException;
 
-import com.vaadin.data.ValueProvider;
+import javax.ejb.EJB;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
 
-/**
- * A ValueProvider that allows displaying a collection as a comma separated list of
- * strings.
- */
-@SuppressWarnings({ "serial", "rawtypes" })
-public class CollectionValueProvider<T extends Collection> implements
-        ValueProvider<T, String> {
+@WebFilter(asyncSupported = true, urlPatterns = "/*")
+public class SessionFilter implements Filter {
 
-    @Override
-    public String apply(T source) {
-    	if (source == null)
-            return "";
-        StringBuilder b = new StringBuilder();
-        for (Object o : source) {
-            b.append(o.toString());
-            b.append(", ");
-        }
-        if (b.length() >= 2) {
-        	return b.substring(0, b.length() - 2);
-        }
-        return "";
-    }
+	//protected static final Logger LOGGER = LoggerFactory.getLogger(SessionFilter.class);
+	
+	@EJB
+	private SessionFilterBean sessionFilterBean;
+
+	@Override
+	public void destroy() {
+	}
+
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		sessionFilterBean.doFilter(chain, request, response);
+	}
+
+	@Override
+	public void init(FilterConfig cfg) throws ServletException {
+	}
 
 }

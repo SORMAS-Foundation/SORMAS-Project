@@ -67,7 +67,7 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 		editColumn.setWidth(60);
 
 		setColumns(EDIT_BTN_ID, UserDto.UUID, UserDto.ACTIVE, UserDto.USER_ROLES, UserDto.USER_NAME, 
-				UserDto.NAME, UserDto.USER_EMAIL, UserDto.ADDRESS, UserDto.DISTRICT);
+				UserDto.NAME, UserDto.USER_EMAIL, UserDto.ADDRESS, UserDto.DISTRICT, UserDto.HEALTH_FACILITY);
 
 		((Column<UserDto, String>) getColumn(UserDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.USER_ROLES)).setRenderer(new CollectionValueProvider<Set<UserRole>>(), new HtmlRenderer());

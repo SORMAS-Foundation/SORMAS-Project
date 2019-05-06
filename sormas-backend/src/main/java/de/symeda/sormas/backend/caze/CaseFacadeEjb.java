@@ -58,7 +58,6 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -882,7 +881,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					+ "-" + (newCase.getDistrict().getEpidCode() != null ? newCase.getDistrict().getEpidCode() : "") 
 					+ "-" + year + "-");
 		}
-
+		
 		// update the plague type based on symptoms
 		if (newCase.getDisease() == Disease.PLAGUE) {
 			PlagueType plagueType = DiseaseHelper
@@ -983,6 +982,30 @@ public class CaseFacadeEjb implements CaseFacade {
 				} catch (NotificationDeliveryFailedException e) {
 					logger.error(String.format(
 							"NotificationDeliveryFailedException when trying to notify supervisors about the change of a case classification. "
+									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
+									recipient.getUuid()));
+				}
+			}
+		}
+		
+		// Send an email to all responsible supervisors when the disease of an Unspecified VHF
+		// case has changed
+		if (existingCase != null && existingCase.getDisease() == Disease.UNSPECIFIED_VHF && existingCase.getDisease() != newCase.getDisease()) {
+			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(newCase.getRegion(),
+					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
+			for (User recipient : messageRecipients) {
+				try {
+					messagingService.sendMessage(recipient,
+							I18nProperties.getString(MessagingService.SUBJECT_DISEASE_CHANGED),
+							String.format(
+									I18nProperties.getString(MessagingService.CONTENT_DISEASE_CHANGED),
+									DataHelper.getShortUuid(newCase.getUuid()),
+									existingCase.getDisease().toString(),
+									newCase.getDisease().toString()),
+							MessageType.EMAIL, MessageType.SMS);
+				} catch (NotificationDeliveryFailedException e) {
+					logger.error(String.format(
+							"NotificationDeliveryFailedException when trying to notify supervisors about the change of a case disease. "
 									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
 									recipient.getUuid()));
 				}
@@ -1141,7 +1164,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
-		target.setReportDate(source.getReportDate());
+		if (source.getReportDate() != null) {
+			target.setReportDate(source.getReportDate());
+		} else { //	make sure we do have a report date
+			target.setReportDate(new Date());
+		}
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setInvestigatedDate(source.getInvestigatedDate());
 		target.setReceptionDate(source.getReceptionDate());

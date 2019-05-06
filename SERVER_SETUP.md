@@ -210,3 +210,13 @@ Here are some things that you should do to configure the apache server as proxy:
 
 1. Check that the users table does have a corresponding entry. If not, the database initialization that is done when deploying sormas-ear.ear probably had an error.
 2. Have a look into the server log. If you find `Web Login Failed: com.sun.enterprise.security.auth.login.common.LoginException: Login failed: No LoginModules configured for fileRealm` the domain was probably not correctly set up (see [SORMAS Domain](#sormas-domain)). Likely the flexiblejdbcrealm-deploy-1.2-all.jar was not copied to the domains /lib directory.
+
+### Problem: Server is out of memory
+
+By default the server will be setup with a memory size of 1024MB. You can change this using the following command:
+
+	/opt/payara-172/glassfish/bin/asadmin --port 6048 delete-jvm-options -Xmx512m
+	/opt/payara-172/glassfish/bin/asadmin --port 6048 delete-jvm-options -Xmx1024m
+	/opt/payara-172/glassfish/bin/asadmin --port 6048 create-jvm-options -Xmx2048m
+
+Alternative: You can edit the setting directly in the domain.xml in the config directory of the sormas domain. Just search for ``Xmx`` - there should be two entries that need to be changed.

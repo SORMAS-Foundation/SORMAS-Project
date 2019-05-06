@@ -976,7 +976,7 @@ public class TextViewBindingAdapters {
             result = record.getContact().getPerson().getFirstName() + " " + record.getContact().getPerson().getLastName().toUpperCase();
         } else if (record.getEvent() != null) {
             StringBuilder sb = new StringBuilder();
-            sb.append(record.getEvent().getEventType());
+            sb.append(record.getEvent().getEventStatus());
             sb.append(", " + DateHelper.formatLocalShortDate(record.getEvent().getEventDate()));
             if (record.getEvent().getEventLocation().getCity() != null && !record.getEvent().getEventLocation().getCity().isEmpty()) {
                 sb.append(", " + record.getEvent().getEventLocation().getCity());

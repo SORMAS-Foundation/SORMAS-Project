@@ -116,7 +116,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 150;
+	public static final int DATABASE_VERSION = 153;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -942,6 +942,31 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							"followUpEnabled boolean," +
 							"followUpDuration integer," +
 							"UNIQUE(snapshot, uuid));");
+				case 150:
+					currentVersion = 150;
+					getDao(Person.class).executeRaw("UPDATE person SET educationtype='NONE' WHERE educationtype='NURSERY';");
+				case 151:
+					currentVersion = 151;
+					getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTests ADD COLUMN testedDisease varchar(255);");
+					getDao(PathogenTest.class).executeRaw("UPDATE pathogenTests SET testedDisease = 'WEST_NILE_FEVER' WHERE testType = 'WEST_NILE_FEVER_IGM' OR testType = 'WEST_NILE_FEVER_ANTIBODIES';");
+					getDao(PathogenTest.class).executeRaw("UPDATE pathogenTests SET testedDisease = 'DENGUE' WHERE testType = 'DENGUE_FEVER_IGM' OR testType = 'DENGUE_FEVER_ANTIBODIES';");
+					getDao(PathogenTest.class).executeRaw("UPDATE pathogenTests SET testedDisease = 'YELLOW_FEVER' WHERE testType = 'YELLOW_FEVER_IGM' OR testType = 'YELLOW_FEVER_ANTIBODIES';");
+					getDao(PathogenTest.class).executeRaw("UPDATE pathogenTests SET testedDisease = 'PLAGUE' WHERE testType = 'YERSINIA_PESTIS_ANTIGEN';");
+					getDao(PathogenTest.class).executeRaw("UPDATE pathogenTests SET testedDisease = (SELECT disease FROM cases WHERE cases.id = (SELECT associatedCase_id FROM samples WHERE samples.id = pathogenTests.sample_id)) WHERE testedDisease IS NULL;");
+					getDao(PathogenTest.class).executeRaw("UPDATE pathogenTests SET testType = 'IGM_SERUM_ANTIBODY' WHERE testType = 'DENGUE_FEVER_IGM' OR testType = 'WEST_NILE_FEVER_IGM' OR testType = 'YELLOW_FEVER_IGM';");
+					getDao(PathogenTest.class).executeRaw("UPDATE pathogenTests SET testType = 'NEUTRALIZING_ANTIBODIES' WHERE testType = 'DENGUE_FEVER_ANTIBODIES' OR testType = 'WEST_NILE_FEVER_ANTIBODIES' OR testType = 'YELLOW_FEVER_ANTIBODIES';");
+					getDao(PathogenTest.class).executeRaw("UPDATE pathogenTests SET testType = 'ANTIGEN_DETECTION' WHERE testType = 'YERSINIA_PESTIS_ANTIGEN';");
+					getDao(Sample.class).executeRaw("UPDATE samples SET requestedPathogenTestsString = REPLACE(requestedPathogenTestsString, 'DENGUE_FEVER_IGM', 'IGM_SERUM_ANTIBODY');");
+					getDao(Sample.class).executeRaw("UPDATE samples SET requestedPathogenTestsString = REPLACE(requestedPathogenTestsString, 'WEST_NILE_FEVER_IGM', 'IGM_SERUM_ANTIBODY');");
+					getDao(Sample.class).executeRaw("UPDATE samples SET requestedPathogenTestsString = REPLACE(requestedPathogenTestsString, 'YELLOW_FEVER_IGM', 'IGM_SERUM_ANTIBODY');");
+					getDao(Sample.class).executeRaw("UPDATE samples SET requestedPathogenTestsString = REPLACE(requestedPathogenTestsString, 'DENGUE_FEVER_ANTIBODIES', 'NEUTRALIZING_ANTIBODIES');");
+					getDao(Sample.class).executeRaw("UPDATE samples SET requestedPathogenTestsString = REPLACE(requestedPathogenTestsString, 'WEST_NILE_FEVER_ANTIBODIES', 'NEUTRALIZING_ANTIBODIES');");
+					getDao(Sample.class).executeRaw("UPDATE samples SET requestedPathogenTestsString = REPLACE(requestedPathogenTestsString, 'YELLOW_FEVER_ANTIBODIES', 'NEUTRALIZING_ANTIBODIES');");
+					getDao(Sample.class).executeRaw("UPDATE samples SET requestedPathogenTestsString = REPLACE(requestedPathogenTestsString, 'YERSINIA_PESTIS_ANTIGEN', 'ANTIGEN_DETECTION');");
+					getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTests ADD COLUMN testedDiseaseDetails varchar(512);");
+				case 152:
+					currentVersion = 152;
+					getDao(Person.class).executeRaw("UPDATE person SET educationType='NURSERY' WHERE educationType='NONE';");
 
 					// ATTENTION: break should only be done after last version
 					break;

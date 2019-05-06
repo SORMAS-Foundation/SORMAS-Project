@@ -69,6 +69,8 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 	
 	private Map<RegionReferenceDto, MultiPolygon> regionMultiPolygons = new HashMap<>();
 	private Map<RegionReferenceDto, GeoLatLon[][]> regionShapes = new HashMap<>();
+	
+	private GeoLatLon regionsCenter;
 
 	private Map<DistrictReferenceDto, MultiPolygon> districtMultiPolygons = new HashMap<>();
 	private Map<DistrictReferenceDto, GeoLatLon[][]> districtShapes = new HashMap<>();
@@ -91,30 +93,40 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 
 	@Override
 	public GeoLatLon getCenterOfAllRegions() {
-
-		if (regionMultiPolygons.isEmpty()) {
+		if (regionsCenter == null) {
 			return defaultCenter;
 		}
-		
-		double lat = 0, lon = 0;
-		int count = 0;
-		for (MultiPolygon polygon : regionMultiPolygons.values()) {
-			lat += polygon.getCentroid().getX();
-			lon += polygon.getCentroid().getY();
-			count++;
-		}
-		if (count > 0) {
-			return new GeoLatLon(lat / count, lon / count);
+		return regionsCenter;
+	}
+
+	protected void updateCenterOfAllRegions() {
+		if (regionMultiPolygons.isEmpty()) {
+			regionsCenter = null;
+			
 		} else {
-			return null;
+			
+			double lat = 0, lon = 0;
+			int count = 0;
+			for (MultiPolygon polygon : regionMultiPolygons.values()) {
+				lat += polygon.getCentroid().getX();
+				lon += polygon.getCentroid().getY();
+				count++;
+			}
+			
+			if (count > 0) {
+				regionsCenter = new GeoLatLon(lat / count, lon / count);
+			} else {
+				regionsCenter = null;
+			}
 		}
 	}
 
 	@Override
 	public GeoLatLon getCenterOfRegion(RegionReferenceDto region) {
 		
-		if (regionMultiPolygons.isEmpty()) {
-			return defaultCenter;
+		if (regionMultiPolygons.isEmpty()
+				|| !regionMultiPolygons.containsKey(region)) {
+			return getCenterOfAllRegions();
 		}
 		
 		Point polygonCenter = regionMultiPolygons.get(region).getCentroid();
@@ -141,8 +153,9 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 	@Override
 	public GeoLatLon getCenterOfDistrict(DistrictReferenceDto district) {
 		
-		if (districtMultiPolygons.isEmpty()) {
-			return defaultCenter;
+		if (districtMultiPolygons.isEmpty()
+				|| !districtMultiPolygons.containsKey(district)) {
+			return getCenterOfAllRegions();
 		}
 		
 		Point polygonCenter = districtMultiPolygons.get(district).getCentroid();
@@ -236,6 +249,8 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		
+		updateCenterOfAllRegions();
 	}
 
 	private void loadDistrictData() {

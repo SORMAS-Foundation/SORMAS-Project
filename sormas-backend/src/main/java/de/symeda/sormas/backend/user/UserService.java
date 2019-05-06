@@ -36,7 +36,6 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.user.UserCriteria;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;

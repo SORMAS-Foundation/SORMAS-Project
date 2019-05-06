@@ -144,7 +144,11 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
                 super.onPostExecute(taskResult);
 
                 if (taskResult.getResultStatus().isSuccess()) {
-                    goToNextPage();
+                    if (getActivePage().getKey() == ContactSection.PERSON_INFO.ordinal()) {
+                        finish();
+                    } else {
+                        goToNextPage();
+                    }
                 }  else {
                     onResume(); // reload data
                 }

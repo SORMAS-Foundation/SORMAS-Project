@@ -20,27 +20,25 @@ package de.symeda.sormas.ui.events;
 import java.util.Date;
 import java.util.HashMap;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -52,7 +50,6 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -70,7 +67,6 @@ public class EventsView extends AbstractView {
 	private Button activeStatusButton;
 
 	// Filter
-	private ComboBox typeFilter;
 	private ComboBox diseaseFilter;
 	private ComboBox reportedByFilter;
 	private Button resetButton;
@@ -135,16 +131,6 @@ public class EventsView extends AbstractView {
 		filterLayout.setSpacing(true);
 		filterLayout.setMargin(false);
 		filterLayout.setSizeUndefined();
-
-		typeFilter = new ComboBox();
-		typeFilter.setWidth(140, Unit.PIXELS);
-		typeFilter.setInputPrompt(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.EVENT_TYPE));
-		typeFilter.addItems((Object[])EventType.values());
-		typeFilter.addValueChangeListener(e -> {
-			criteria.eventType(((EventType)e.getProperty().getValue()));
-			navigateTo(criteria);
-		});
-		filterLayout.addComponent(typeFilter);
 
 		diseaseFilter = new ComboBox();
 		diseaseFilter.setWidth(140, Unit.PIXELS);
@@ -290,7 +276,6 @@ public class EventsView extends AbstractView {
 		updateStatusButtons();
 		updateArchivedButton();
 
-		typeFilter.setValue(criteria.getEventType());
 		diseaseFilter.setValue(criteria.getDisease());
 		reportedByFilter.setValue(criteria.getReportingUserRole());
 		

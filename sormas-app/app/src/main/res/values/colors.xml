@@ -378,9 +378,6 @@
     <color name="indicatorConfirmedContact">@color/red</color>
     <color name="indicatorNoContact">@color/green</color>
 
-    <color name="indicatorRumorEvent">@color/lightBlue50</color>
-    <color name="indicatorOutbreakEvent">@color/watchOut</color>
-
     <color name="indicatorPossibleEvent">@color/orange</color>
     <color name="indicatorConfirmedEvent">@color/watchOut</color>
     <color name="indicatorNoEvent">@color/gray</color>

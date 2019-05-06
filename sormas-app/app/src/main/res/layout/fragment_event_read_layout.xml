@@ -49,11 +49,6 @@
                     app:shortUuidValue="@{data.uuid}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/event_eventStatus"
-                    app:value="@{data.eventStatus}"
-                    style="@style/ControlSecondOfTwoColumnsStyle" />
-
             </LinearLayout>
 
             <LinearLayout
@@ -67,8 +62,8 @@
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/event_eventType"
-                    app:value="@{data.eventType}"
+                    android:id="@+id/event_eventStatus"
+                    app:value="@{data.eventStatus}"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>

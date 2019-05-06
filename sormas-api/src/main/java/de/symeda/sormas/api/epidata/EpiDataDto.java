@@ -86,19 +86,19 @@ public class EpiDataDto extends EntityDto {
 	private List<EpiDataGatheringDto> gatherings = new ArrayList<>();
 	private List<EpiDataTravelDto> travels = new ArrayList<>();
 
-	@Diseases({Disease.EVD,Disease.NEW_INFLUENCA,Disease.CSM,Disease.MEASLES,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.NEW_INFLUENCA,Disease.CSM,Disease.MEASLES,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	private YesNoUnknown directContactConfirmedCase;
-	@Diseases({Disease.LASSA,Disease.OTHER})
+	@Diseases({Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	private YesNoUnknown directContactProbableCase;
 	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
 	private YesNoUnknown closeContactProbableCase;
-	@Diseases({Disease.DENGUE, Disease.EVD, Disease.PLAGUE, Disease.YELLOW_FEVER, Disease.OTHER})
+	@Diseases({Disease.DENGUE, Disease.EVD, Disease.PLAGUE, Disease.YELLOW_FEVER,Disease.UNSPECIFIED_VHF, Disease.OTHER})
 	private YesNoUnknown areaConfirmedCases;
-	@Diseases({Disease.EVD, Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.UNSPECIFIED_VHF, Disease.OTHER})
 	private YesNoUnknown processingConfirmedCaseFluidUnsafe;
-	@Diseases({Disease.EVD, Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.UNSPECIFIED_VHF, Disease.OTHER})
 	private YesNoUnknown percutaneousCaseBlood;
-	@Diseases({Disease.EVD, Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.UNSPECIFIED_VHF, Disease.OTHER})
 	private YesNoUnknown directContactDeadUnsafe;
 	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
 	private YesNoUnknown processingSuspectedCaseSampleUnsafe;
@@ -118,21 +118,21 @@ public class EpiDataDto extends EntityDto {
 	private YesNoUnknown eatingRawAnimals;
 	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
 	private String eatingRawAnimalsDetails;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	private YesNoUnknown rodents;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	private YesNoUnknown bats;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	private YesNoUnknown primates;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	private YesNoUnknown swine;
-	@Diseases({Disease.EVD,Disease.LASSA})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	private YesNoUnknown birds;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	private YesNoUnknown cattle;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	private YesNoUnknown otherAnimals;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	private String otherAnimalsDetails;
 	@Diseases({Disease.CHOLERA,Disease.OTHER})
 	private WaterSource waterSource;
@@ -142,7 +142,7 @@ public class EpiDataDto extends EntityDto {
 	private YesNoUnknown waterBody;
 	@Diseases({Disease.CHOLERA,Disease.OTHER})
 	private String waterBodyDetails;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	private YesNoUnknown tickBite;
 	@Diseases({Disease.PLAGUE,Disease.OTHER})
 	private YesNoUnknown fleaBite;

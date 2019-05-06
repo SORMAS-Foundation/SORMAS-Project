@@ -198,16 +198,15 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
         // Location
         User currentUser = ConfigProvider.getUser();
-        caze.setRegion(currentUser.getRegion());
-        caze.setDistrict(currentUser.getDistrict());
-
-        if (currentUser.getCommunity() != null) {
-            caze.setCommunity(currentUser.getCommunity());
-        } else {
+        if (currentUser.getHealthFacility() != null) {
+            caze.setRegion(currentUser.getHealthFacility().getRegion());
+            caze.setDistrict(currentUser.getHealthFacility().getDistrict());
+            caze.setCommunity(currentUser.getHealthFacility().getCommunity());
             caze.setHealthFacility(currentUser.getHealthFacility());
-            if (caze.getHealthFacility() != null) {
-                caze.setCommunity(caze.getHealthFacility().getCommunity());
-            }
+        } else {
+            caze.setRegion(currentUser.getRegion());
+            caze.setDistrict(currentUser.getDistrict());
+            caze.setCommunity(currentUser.getCommunity());
         }
 
         return caze;

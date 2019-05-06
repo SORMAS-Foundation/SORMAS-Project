@@ -31,7 +31,6 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private static final long serialVersionUID = 2194071020732246594L;
 	
 	private EventStatus eventStatus;
-	private EventType eventType;
 	private Disease disease;
 	private UserRole reportingUserRole;
 	private Boolean archived;
@@ -45,13 +44,6 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	}
 	public EventCriteria eventStatus(EventStatus eventStatus) {
 		this.eventStatus = eventStatus;
-		return this;
-	}
-	public EventType getEventType() {
-		return eventType;
-	}
-	public EventCriteria eventType(EventType eventType) {
-		this.eventType = eventType;
 		return this;
 	}
 	public Disease getDisease() {

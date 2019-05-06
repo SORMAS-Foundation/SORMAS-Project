@@ -14,6 +14,7 @@ public interface Strings {
 	public static String classificationConfirmed = "classificationConfirmed";
 	public static String classificationCriteriaForTestType = "classificationCriteriaForTestType";
 	public static String classificationDaysBeforeCaseStart = "classificationDaysBeforeCaseStart";
+	public static String classificationForDisease = "classificationForDisease";
 	public static String classificationGeneratedFor = "classificationGeneratedFor";
 	public static String classificationInfoText = "classificationInfoText";
 	public static String classificationNoneOf = "classificationNoneOf";

@@ -33,19 +33,18 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
@@ -219,13 +218,12 @@ public class TestDataCreator {
 		return visit;
 	}
 
-	public EventDto createEvent(EventType eventType, EventStatus eventStatus, String eventDesc, String srcFirstName,
+	public EventDto createEvent(EventStatus eventStatus, String eventDesc, String srcFirstName,
 			String srcLastName, String srcTelNo, TypeOfPlace typeOfPlace, Date eventDate, Date reportDateTime,
 			UserReferenceDto reportingUser, UserReferenceDto surveillanceOfficer, Disease disease,
 			LocationDto eventLocation) {
 		EventDto event = new EventDto();
 		event.setUuid(DataHelper.createUuid());
-		event.setEventType(eventType);
 		event.setEventStatus(eventStatus);
 		event.setEventDesc(eventDesc);
 		event.setSrcFirstName(srcFirstName);
@@ -276,12 +274,13 @@ public class TestDataCreator {
 		return sample;
 	}
 
-	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, PathogenTestType testType, Date testDateTime,
-			Facility lab, UserReferenceDto labUser, PathogenTestResultType testResult, String testResultText,
+	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, PathogenTestType testType, Disease testedDisease,
+			Date testDateTime, Facility lab, UserReferenceDto labUser, PathogenTestResultType testResult, String testResultText,
 			boolean verified) {
 		PathogenTestDto sampleTest = new PathogenTestDto();
 		sampleTest.setUuid(DataHelper.createUuid());
 		sampleTest.setSample(sample);
+		sampleTest.setTestedDisease(testedDisease);
 		sampleTest.setTestType(testType);
 		sampleTest.setTestDateTime(testDateTime);
 		sampleTest.setLab(lab != null ? beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()) : null);
@@ -294,13 +293,18 @@ public class TestDataCreator {
 
 		return sampleTest;
 	}
-
-	public PathogenTestDto createPathogenTest(CaseDataDto associatedCase, PathogenTestType testType,
-			PathogenTestResultType resultType) {
+	
+	public PathogenTestDto createPathogenTest(CaseDataDto associatedCase,
+			PathogenTestType testType, PathogenTestResultType resultType) {
+		return createPathogenTest(associatedCase, null, testType, resultType);
+	}
+	
+	public PathogenTestDto createPathogenTest(CaseDataDto associatedCase, Disease testedDisease,
+			PathogenTestType testType, PathogenTestResultType resultType) {
 		RDCF rdcf = createRDCF("Region", "District", "Community", "Facility");
 		SampleDto sample = createSample(new CaseReferenceDto(associatedCase.getUuid()), new Date(), new Date(),
 				associatedCase.getReportingUser(), SampleMaterial.BLOOD, rdcf.facility);
-		return createPathogenTest(new SampleReferenceDto(sample.getUuid()), testType, new Date(), rdcf.facility,
+		return createPathogenTest(new SampleReferenceDto(sample.getUuid()), testType, testedDisease, new Date(), rdcf.facility,
 				associatedCase.getReportingUser(), resultType, "", true);
 	}
 	

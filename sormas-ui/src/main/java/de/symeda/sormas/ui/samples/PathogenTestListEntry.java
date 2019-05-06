@@ -27,6 +27,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -77,23 +78,27 @@ public class PathogenTestListEntry extends HorizontalLayout {
 			topLabelLayout.setComponentAlignment(labelTopRight, Alignment.TOP_RIGHT);
 		}
 
-		HorizontalLayout bottomLabelLayout = new HorizontalLayout();
-		bottomLabelLayout.setSpacing(false);
-		bottomLabelLayout.setMargin(false);
-		bottomLabelLayout.setWidth(100, Unit.PERCENTAGE);
-		labelLayout.addComponent(bottomLabelLayout);
-		String htmlLeft = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE
-				+ " " + (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE ? CssStyles.LABEL_CRITICAL : 
-					(pathogenTest.getTestResult() == PathogenTestResultType.INDETERMINATE ? CssStyles.LABEL_WARNING : "")),
-				DataHelper.toStringNullable(pathogenTest.getTestResult()));
+		HorizontalLayout middleLabelLayout = new HorizontalLayout();
+		middleLabelLayout.setSpacing(false);
+		middleLabelLayout.setMargin(false);
+		middleLabelLayout.setWidth(100, Unit.PERCENTAGE);
+		labelLayout.addComponent(middleLabelLayout);
+		String htmlLeft = LayoutUtil.div(DataHelper.toStringNullable(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails())));
 		Label labelLeft = new Label(htmlLeft, ContentMode.HTML);
-		bottomLabelLayout.addComponent(labelLeft);
+		middleLabelLayout.addComponent(labelLeft);
 
 		String htmlRight = LayoutUtil.div(DateHelper.formatLocalShortDateTime(pathogenTest.getTestDateTime()));
 		Label labelRight = new Label(htmlRight, ContentMode.HTML);
 		labelRight.addStyleName(CssStyles.ALIGN_RIGHT);
-		bottomLabelLayout.addComponent(labelRight);
-		bottomLabelLayout.setComponentAlignment(labelRight, Alignment.TOP_RIGHT);
+		middleLabelLayout.addComponent(labelRight);
+		middleLabelLayout.setComponentAlignment(labelRight, Alignment.TOP_RIGHT);
+
+		String htmlBottom = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE
+				+ " " + (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE ? CssStyles.LABEL_CRITICAL : 
+					(pathogenTest.getTestResult() == PathogenTestResultType.INDETERMINATE ? CssStyles.LABEL_WARNING : "")),
+				DataHelper.toStringNullable(pathogenTest.getTestResult()));
+		Label labelBottom = new Label(htmlBottom, ContentMode.HTML);
+		labelLayout.addComponent(labelBottom);
 	}
 
 	public void addEditListener(ClickListener editClickListener) {

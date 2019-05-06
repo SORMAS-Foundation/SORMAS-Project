@@ -82,6 +82,24 @@
   		fill: #7565B8;
   	}
   }
+  .background-disease-unspecified-vhf {
+  	background-color: #448282;
+  	fill: #448282;
+  	
+  	&.background-darker {
+  		background-color: #2F4F4F;
+  		fill: #2F4F4F;
+  	}
+  }
+  .background-disease-west-nile-fever {
+  	background-color: #87CEFA;
+  	fill: #87CEFA;
+  	
+  	&.background-darker {
+  		background-color: #5b94b7;
+  		fill: #5b94b7;
+  	}
+  }
   .background-disease-yellow-fever {
   	background-color: #E2D320;
   	fill: #E2D320;

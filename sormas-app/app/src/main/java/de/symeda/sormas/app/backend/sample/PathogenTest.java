@@ -29,14 +29,11 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-
-/**
- * Created by Mate Strysewske on 09.02.2017.
- */
 
 @Entity(name= PathogenTest.TABLE_NAME)
 @DatabaseTable(tableName = PathogenTest.TABLE_NAME)
@@ -56,6 +53,12 @@ public class PathogenTest extends AbstractDomainObject {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PathogenTestType testType;
+
+    @Enumerated(EnumType.STRING)
+    private Disease testedDisease;
+
+    @Column(length = 512)
+    private String testedDiseaseDetails;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -78,6 +81,22 @@ public class PathogenTest extends AbstractDomainObject {
 
     public void setTestType(PathogenTestType testType) {
         this.testType = testType;
+    }
+
+    public Disease getTestedDisease() {
+        return testedDisease;
+    }
+
+    public void setTestedDisease(Disease testedDisease) {
+        this.testedDisease = testedDisease;
+    }
+
+    public String getTestedDiseaseDetails() {
+        return testedDiseaseDetails;
+    }
+
+    public void setTestedDiseaseDetails(String testedDiseaseDetails) {
+        this.testedDiseaseDetails = testedDiseaseDetails;
     }
 
     public PathogenTestResultType getTestResult() {

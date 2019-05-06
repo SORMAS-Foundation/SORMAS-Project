@@ -43,19 +43,19 @@ public class EventReferenceDto extends ReferenceDto {
 		setCaption(caption);
 	}
 	
-	public EventReferenceDto(String uuid, Disease disease, String diseaseDetails, EventType eventType, Date eventDate) {
+	public EventReferenceDto(String uuid, Disease disease, String diseaseDetails, EventStatus eventStatus, Date eventDate) {
 		setUuid(uuid);
-		setCaption(buildCaption(disease, diseaseDetails, eventType, eventDate));
+		setCaption(buildCaption(disease, diseaseDetails, eventStatus, eventDate));
 	}
 	
-	public static String buildCaption(Disease disease, String diseaseDetails, EventType eventType, Date eventDate) {
+	public static String buildCaption(Disease disease, String diseaseDetails, EventStatus eventStatus, Date eventDate) {
 		String diseaseString = disease != Disease.OTHER
 				? DataHelper.toStringNullable(disease)
 				: DataHelper.toStringNullable(diseaseDetails);
-		String eventTypeString = DataHelper.toStringNullable(eventType);
+		String eventStatusString = DataHelper.toStringNullable(eventStatus);
 		if (!diseaseString.isEmpty()) {
-			eventTypeString = eventTypeString.toLowerCase();
+			eventStatusString = eventStatusString.toLowerCase();
 		}
-		return diseaseString + " " + eventTypeString + " " + I18nProperties.getString(Strings.on) + " " + DateHelper.formatLocalDate(eventDate);
+		return diseaseString + " " + eventStatusString + " " + I18nProperties.getString(Strings.on) + " " + DateHelper.formatLocalDate(eventDate);
 	}
 }

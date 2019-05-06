@@ -196,6 +196,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		DtoHelper.validateDto(source, target);
 
 		target.setSample(sampleService.getByReferenceDto(source.getSample()));
+		target.setTestedDisease(source.getTestedDisease());
+		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 		target.setTestType(source.getTestType());
 		target.setTestTypeText(source.getTestTypeText());
 		target.setTestDateTime(source.getTestDateTime());
@@ -218,6 +220,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setSample(SampleFacadeEjb.toReferenceDto(source.getSample()));
+		target.setTestedDisease(source.getTestedDisease());
+		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 		target.setTestType(source.getTestType());
 		target.setTestTypeText(source.getTestTypeText());
 		target.setTestDateTime(source.getTestDateTime());
@@ -243,7 +247,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 				try {
 					messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_LAB_RESULT_ARRIVED), 
 							String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_RESULT_ARRIVED), 
-									newPathogenTest.getTestResult().toString(), DataHelper.getShortUuid(newPathogenTest.getUuid())), 
+									newPathogenTest.getTestResult().toString(), existingSampleCase.getDisease(), DataHelper.getShortUuid(newPathogenTest.getUuid()),
+									newPathogenTest.getTestType(), newPathogenTest.getTestedDisease()), 
 							MessageType.EMAIL, MessageType.SMS);
 				} catch (NotificationDeliveryFailedException e) {
 					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the arrival of a lab result. "
@@ -260,7 +265,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 				try {
 					messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_LAB_RESULT_SPECIFIED), 
 							String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_RESULT_SPECIFIED), 
-									DataHelper.getShortUuid(newPathogenTest.getUuid()), newPathogenTest.getTestResult().toString()), 
+									existingSampleCase.getDisease(), DataHelper.getShortUuid(newPathogenTest.getUuid()), newPathogenTest.getTestResult().toString(),
+									newPathogenTest.getTestType(), newPathogenTest.getTestedDisease()), 
 							MessageType.EMAIL, MessageType.SMS);
 				} catch (NotificationDeliveryFailedException e) {
 					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the specification of a lab result. "
