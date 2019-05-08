@@ -72,17 +72,6 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	public List<Disease> getAllActiveDiseases() {
 		return activeDiseases;
 	}
-	
-	@Override
-	public List<Disease> getAllActiveDiseases(Disease includedDisease) {
-		if (includedDisease == null || activeDiseases.contains(includedDisease)) {
-			return activeDiseases;
-		}
-		
-		List<Disease> diseases = new ArrayList<>(activeDiseases);
-		diseases.add(includedDisease);
-		return diseases;
-	}
 
 	@Override
 	public boolean isPrimaryDisease(Disease disease) {

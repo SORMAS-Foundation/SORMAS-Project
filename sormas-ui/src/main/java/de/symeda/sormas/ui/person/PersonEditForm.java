@@ -184,7 +184,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS);
 
 		causeOfDeathField = addField(PersonDto.CAUSE_OF_DEATH, ComboBox.class);
-		causeOfDeathDiseaseField = addDiseaseField(PersonDto.CAUSE_OF_DEATH_DISEASE, true, disease);
+		causeOfDeathDiseaseField = addDiseaseField(PersonDto.CAUSE_OF_DEATH_DISEASE, true);
 		causeOfDeathDetailsField = addField(PersonDto.CAUSE_OF_DEATH_DETAILS, TextField.class);
 		ComboBox facilityRegion = addField(PersonDto.OCCUPATION_REGION, ComboBox.class);
 		facilityRegion.setImmediate(true);

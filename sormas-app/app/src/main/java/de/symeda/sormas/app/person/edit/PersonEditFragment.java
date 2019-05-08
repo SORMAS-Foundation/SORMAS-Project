@@ -86,12 +86,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         List<Item> approximateAgeTypeList = DataUtils.getEnumItems(ApproximateAgeType.class, true);
         List<Item> sexList = DataUtils.getEnumItems(Sex.class, true);
         List<Item> causeOfDeathList = DataUtils.getEnumItems(CauseOfDeath.class, true);
-        List<Item> diseaseList = DataUtils.toItems(DiseaseConfigurationHelper.getInstance().getAllActiveDiseases(
-                rootData instanceof Case ? ((Case) rootData).getDisease() :
-                        rootData instanceof Contact ? ((Contact) rootData).getCaseDisease() :
-                                rootData instanceof Event ? ((Event) rootData).getDisease() :
-                                    null
-        ));
+        List<Item> diseaseList = DataUtils.toItems(DiseaseConfigurationHelper.getInstance().getAllActiveDiseases());
         List<Item> deathPlaceTypeList = DataUtils.getEnumItems(DeathPlaceType.class, true);
         List<Item> burialConductorList = DataUtils.getEnumItems(BurialConductor.class, true);
 

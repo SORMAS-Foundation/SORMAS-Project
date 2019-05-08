@@ -22,6 +22,7 @@ import android.view.View;
 
 import java.util.List;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.app.BaseActivity;
@@ -91,7 +92,11 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
     protected void prepareFragmentData() {
         record = getActivityRootData();
 
-        diseaseList = DataUtils.toItems(DiseaseConfigurationHelper.getInstance().getAllActivePrimaryDiseases(record.getDisease()));
+        List<Disease> diseases = DiseaseConfigurationHelper.getInstance().getAllActivePrimaryDiseases();
+        diseaseList = DataUtils.toItems(diseases);
+        if (!diseases.contains(record.getDisease())) {
+            diseaseList.add(DataUtils.toItem(record.getDisease()));
+        }
         typeOfPlaceList = DataUtils.getEnumItems(TypeOfPlace.class, true);
     }
 
