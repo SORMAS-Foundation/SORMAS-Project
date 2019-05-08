@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
+import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -43,6 +44,7 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.ContactDtoHelper;
+import de.symeda.sormas.app.backend.disease.DiseaseConfigurationDtoHelper;
 import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.event.EventParticipantDtoHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
@@ -212,6 +214,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // order is important, due to dependencies (e.g. case & person)
 
         new OutbreakDtoHelper().pullEntities(false);
+        new DiseaseConfigurationDtoHelper().pullEntities(false);
 
         boolean personsNeedPull = personDtoHelper.pullAndPushEntities();
         boolean casesNeedPull = caseDtoHelper.pullAndPushEntities();
@@ -282,6 +285,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new DiseaseClassificationDtoHelper().repullEntities();
         new UserDtoHelper().repullEntities();
         new OutbreakDtoHelper().repullEntities();
+        new DiseaseConfigurationDtoHelper().repullEntities();
         personDtoHelper.repullEntities();
         caseDtoHelper.repullEntities();
         eventDtoHelper.repullEntities();
@@ -306,6 +310,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new FacilityDtoHelper().pullEntities(false);
         new UserDtoHelper().pullEntities(false);
         new DiseaseClassificationDtoHelper().pullEntities(false);
+        new DiseaseConfigurationDtoHelper().pullEntities(false);
 
         // user role configurations may be removed, so have to pull the deleted uuids
         // this may be applied to other entities later as well
@@ -425,6 +430,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // users
         List<String> userUuids = executeUuidCall(RetroProvider.getUserFacade().pullUuids());
         DatabaseHelper.getUserDao().deleteInvalid(userUuids);
+        // disease configurations
+        List<String> diseaseConfigurationUuids = executeUuidCall(RetroProvider.getDiseaseConfigurationFacade().pullUuids());
+        DatabaseHelper.getDiseaseConfigurationDao().deleteInvalid(diseaseConfigurationUuids);
         // user role config
         List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullUuids());
         DatabaseHelper.getUserRoleConfigDao().deleteInvalid(userRoleConfigUuids);
@@ -449,6 +457,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new FacilityDtoHelper().pullMissing(facilityUuids);
         new UserRoleConfigDtoHelper().pullMissing(userRoleConfigUuids);
         new UserDtoHelper().pullMissing(userUuids);
+        new DiseaseConfigurationDtoHelper().pullMissing(diseaseConfigurationUuids);
     }
 
     private List<String> executeUuidCall(Call<List<String>> call) throws ServerConnectionException, ServerCommunicationException {

@@ -315,6 +315,12 @@ public interface Captions {
 	public static String dashboardUnderFollowUp = "dashboardUnderFollowUp";
 	public static String dashboardUnderFollowUpShort = "dashboardUnderFollowUpShort";
 	public static String dashboardYesterday = "dashboardYesterday";
+	public static String devModeCaseCount = "devModeCaseCount";
+	public static String devModeDisease = "devModeDisease";
+	public static String devModeDistrict = "devModeDistrict";
+	public static String devModeEndDate = "devModeEndDate";
+	public static String devModeRegion = "devModeRegion";
+	public static String devModeStartDate = "devModeStartDate";
 	public static String disease = "disease";
 	public static String DiseaseBurden_caseCount = "DiseaseBurden.caseCount";
 	public static String DiseaseBurden_caseDeathCount = "DiseaseBurden.caseDeathCount";
@@ -504,6 +510,8 @@ public interface Captions {
 	public static String PathogenTest_lab = "PathogenTest.lab";
 	public static String PathogenTest_labDetails = "PathogenTest.labDetails";
 	public static String PathogenTest_testDateTime = "PathogenTest.testDateTime";
+	public static String PathogenTest_testedDisease = "PathogenTest.testedDisease";
+	public static String PathogenTest_testedDiseaseDetails = "PathogenTest.testedDiseaseDetails";
 	public static String PathogenTest_testResult = "PathogenTest.testResult";
 	public static String PathogenTest_testResultText = "PathogenTest.testResultText";
 	public static String PathogenTest_testResultVerified = "PathogenTest.testResultVerified";
@@ -841,6 +849,8 @@ public interface Captions {
 	public static String View_cases_therapy = "View.cases.therapy";
 	public static String View_configuration_communities = "View.configuration.communities";
 	public static String View_configuration_communities_short = "View.configuration.communities.short";
+	public static String View_configuration_devMode = "View.configuration.devMode";
+	public static String View_configuration_devMode_short = "View.configuration.devMode.short";
 	public static String View_configuration_districts = "View.configuration.districts";
 	public static String View_configuration_districts_short = "View.configuration.districts.short";
 	public static String View_configuration_healthFacilities = "View.configuration.healthFacilities";

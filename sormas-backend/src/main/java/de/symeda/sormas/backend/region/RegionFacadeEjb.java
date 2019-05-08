@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.region;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -29,6 +30,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
@@ -37,6 +40,7 @@ import de.symeda.sormas.api.region.RegionCriteria;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionFacade;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -72,24 +76,58 @@ public class RegionFacadeEjb implements RegionFacade {
 	}
 	
 	@Override
-	public List<RegionDto> getIndexList(RegionCriteria criteria) {
+	public List<RegionDto> getIndexList(RegionCriteria criteria, int first, int max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Region> cq = cb.createQuery(Region.class);
 		Root<Region> region = cq.from(Region.class);
 		
-		if (criteria != null) {
-			Predicate filter = regionService.buildCriteriaFilter(criteria, cb, region);
-			if (filter != null) {
-				cq.where(filter);
+		Predicate filter = regionService.buildCriteriaFilter(criteria, cb, region);
+		
+		if (filter != null) {
+			cq.where(filter).distinct(true);
+		}
+		
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case Region.NAME:
+				case Region.EPID_CODE:
+				case Region.POPULATION:
+				case Region.GROWTH_RATE:
+					expression = region.get(sortProperty.propertyName);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.asc(region.get(Region.NAME)));
 		}
 		
 		cq.select(region);
-		cq.orderBy(cb.asc(region.get(Region.NAME)));
-		cq.distinct(true);
 		
-		List<Region> regions = em.createQuery(cq).getResultList();
+		List<Region> regions = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 		return regions.stream().map(r -> toDto(r)).collect(Collectors.toList());
+	}
+	
+	@Override
+	public long count(RegionCriteria criteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Region> root = cq.from(Region.class);
+		
+		Predicate filter = regionService.buildCriteriaFilter(criteria, cb, root);
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.select(cb.count(root));
+		return em.createQuery(cq).getSingleResult();
 	}
 	
 	@Override

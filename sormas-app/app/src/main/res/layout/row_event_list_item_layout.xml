@@ -46,15 +46,13 @@
             android:background="@drawable/background_list_activity_row"
             >
 
-
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/caseData_disease"
+                    android:id="@+id/event_disease"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/listActivityRowTertiaryTextSize"
@@ -105,7 +103,7 @@
                     >
 
 
-                    <!-- Event Type and Icon -->
+                    <!-- Event Status and Icon -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -113,7 +111,7 @@
                         >
 
                         <TextView
-                            android:id="@+id/txtEventType"
+                            android:id="@+id/txtEventStatus"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="@dimen/listActivityRowPrimaryTextSize"
@@ -122,12 +120,12 @@
                             android:scrollHorizontally="true"
                             android:maxLines="1"
                             android:ellipsize="end"
-                            app:value="@{data.eventType}"
+                            app:value="@{data.eventStatus}"
                             app:defaultValue='@{@string/value_type_unknown}'
                             />
 
                         <ImageView
-                            android:id="@+id/imgEventTypeIcon"
+                            android:id="@+id/imgEventStatusIcon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="top|right"

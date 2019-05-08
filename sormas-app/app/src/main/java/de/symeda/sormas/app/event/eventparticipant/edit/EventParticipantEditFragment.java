@@ -100,7 +100,7 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
         setUpFieldVisibilities(contentBinding);
 
         if (contentBinding.eventParticipantPersonLayout != null) {
-            PersonEditFragment.setUpLayoutBinding(this, record.getPerson(), contentBinding.eventParticipantPersonLayout);
+            PersonEditFragment.setUpLayoutBinding(this, record.getPerson(), contentBinding.eventParticipantPersonLayout, record.getEvent());
         }
     }
 

@@ -44,6 +44,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
@@ -53,6 +54,7 @@ import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 import static android.view.View.GONE;
@@ -63,6 +65,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
     public static final String TAG = PersonEditFragment.class.getSimpleName();
 
     private Person record;
+    private AbstractDomainObject rootData;
 
     // Instance methods
 
@@ -74,7 +77,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         return newInstance(PersonEditFragment.class, null, activityRootData);
     }
 
-    public static void setUpLayoutBinding(final BaseEditFragment fragment, final Person record, final FragmentPersonEditLayoutBinding contentBinding) {
+    public static void setUpLayoutBinding(final BaseEditFragment fragment, final Person record, final FragmentPersonEditLayoutBinding contentBinding, AbstractDomainObject rootData) {
         setUpControlListeners(record, contentBinding);
 
         List<Item> dayList = DataUtils.toItems(DateHelper.getDaysInMonth(), true);
@@ -83,7 +86,12 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         List<Item> approximateAgeTypeList = DataUtils.getEnumItems(ApproximateAgeType.class, true);
         List<Item> sexList = DataUtils.getEnumItems(Sex.class, true);
         List<Item> causeOfDeathList = DataUtils.getEnumItems(CauseOfDeath.class, true);
-        List<Item> diseaseList = DataUtils.getEnumItems(Disease.class, true);
+        List<Item> diseaseList = DataUtils.toItems(DiseaseConfigurationHelper.getInstance().getAllActiveDiseases(
+                rootData instanceof Case ? ((Case) rootData).getDisease() :
+                        rootData instanceof Contact ? ((Contact) rootData).getCaseDisease() :
+                                rootData instanceof Event ? ((Event) rootData).getDisease() :
+                                    null
+        ));
         List<Item> deathPlaceTypeList = DataUtils.getEnumItems(DeathPlaceType.class, true);
         List<Item> burialConductorList = DataUtils.getEnumItems(BurialConductor.class, true);
 
@@ -319,8 +327,10 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
         if (ado instanceof Case) {
             record = ((Case) ado).getPerson();
+            rootData = ado;
         } else if (ado instanceof Contact) {
             record = ((Contact) ado).getPerson();
+            rootData = ado;
         } else {
             throw new UnsupportedOperationException("ActivityRootData of class " + ado.getClass().getSimpleName()
                     + " does not support PersonReadFragment");
@@ -336,7 +346,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
     @Override
     public void onAfterLayoutBinding(final FragmentPersonEditLayoutBinding contentBinding) {
-        PersonEditFragment.setUpLayoutBinding(this, record, contentBinding);
+        PersonEditFragment.setUpLayoutBinding(this, record, contentBinding, rootData);
     }
 
     @Override

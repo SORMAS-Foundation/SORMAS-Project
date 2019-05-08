@@ -20,6 +20,7 @@ package de.symeda.sormas.api.caze.classification;
 import java.util.Arrays;
 import java.util.List;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -31,14 +32,16 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 public class ClassificationPathogenTestPositiveResultCriteriaDto extends ClassificationCriteriaDto {
 
 	private static final long serialVersionUID = 3811127784970509183L;
-	
+
+	protected Disease testedDisease;
 	protected List<PathogenTestType> pathogenTestTypes;
 
 	public ClassificationPathogenTestPositiveResultCriteriaDto() {
-		
+
 	}
-	
-	public ClassificationPathogenTestPositiveResultCriteriaDto(PathogenTestType... pathogenTestTypes) {
+
+	public ClassificationPathogenTestPositiveResultCriteriaDto(Disease testedDisease, PathogenTestType... pathogenTestTypes) {
+		this.testedDisease = testedDisease;
 		this.pathogenTestTypes = Arrays.asList(pathogenTestTypes);
 	}
 
@@ -47,7 +50,9 @@ public class ClassificationPathogenTestPositiveResultCriteriaDto extends Classif
 		for (PathogenTestDto pathogenTest : pathogenTests) {
 			if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE
 					&& pathogenTestTypes.contains(pathogenTest.getTestType())) {
-				return true;
+				if (testedDisease == null || pathogenTest.getTestedDisease() == testedDisease) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -67,6 +72,10 @@ public class ClassificationPathogenTestPositiveResultCriteriaDto extends Classif
 			}
 
 			stringBuilder.append(pathogenTestTypes.get(i).toString());	
+		}
+		
+		if (testedDisease != null) {
+			stringBuilder.append(" ").append(I18nProperties.getString(Strings.classificationForDisease)).append(" ").append(testedDisease.toString());
 		}
 
 		return stringBuilder.toString();

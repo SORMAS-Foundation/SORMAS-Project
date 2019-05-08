@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.user;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -26,20 +27,33 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.validation.ValidationException;
 
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRole.UserRoleValidationException;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
@@ -51,10 +65,14 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "UserFacade")
 public class UserFacadeEjb implements UserFacade {
 
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	protected EntityManager em;
+	
 	@EJB
 	private UserService userService;
 	@EJB
@@ -165,6 +183,77 @@ public class UserFacadeEjb implements UserFacade {
 
 		return toDto(user);
 	}
+	
+	@Override
+	public List<UserDto> getIndexList(UserCriteria userCriteria, int first, int max, List<SortProperty> sortProperties) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<User> cq = cb.createQuery(User.class);
+		Root<User> user = cq.from(User.class);
+		Join<User, District> district = user.join(User.DISTRICT, JoinType.LEFT);
+		Join<User, Location> address = user.join(User.ADDRESS, JoinType.LEFT);
+	
+		// TODO: We'll need a user filter for users at some point, to make sure that users can edit their own details,
+		// but not those of others
+		
+		Predicate filter = userService.buildCriteriaFilter(userCriteria, cb, user);
+				
+		if (filter != null) {
+			cq.where(filter).distinct(true);
+		}
+		
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case UserDto.UUID:
+				case UserDto.ACTIVE:
+				case UserDto.USER_NAME:
+				case UserDto.USER_EMAIL:
+					expression = user.get(sortProperty.propertyName);
+					break;
+				case UserDto.NAME:
+					expression = user.get(User.FIRST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = user.get(User.LAST_NAME);
+					break;
+				case UserDto.DISTRICT:
+					expression = district.get(District.NAME);
+					break;
+				case UserDto.ADDRESS:
+					expression = address.get(Location.ADDRESS);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(user.get(User.CHANGE_DATE)));
+		}
+		
+		cq.select(user);
+		
+		List<User> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		return resultList.stream().map(u -> toDto(u)).collect(Collectors.toList());
+	}
+	
+	@Override
+	public long count(UserCriteria userCriteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<User> root = cq.from(User.class);
+		
+		Predicate filter = userService.buildCriteriaFilter(userCriteria, cb, root);
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.select(cb.count(root));
+		return em.createQuery(cq).getSingleResult();
+	}
 
 	public static UserDto toDto(User source) {
 		if (source == null) {
@@ -173,7 +262,7 @@ public class UserFacadeEjb implements UserFacade {
 		UserDto target = new UserDto();
 		DtoHelper.fillDto(target, source);
 
-		target.setActive(source.isAktiv());
+		target.setActive(source.isActive());
 		target.setUserName(source.getUserName());
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
@@ -213,7 +302,7 @@ public class UserFacadeEjb implements UserFacade {
 		}
 		DtoHelper.validateDto(source, target);
 
-		target.setAktiv(source.isActive());
+		target.setActive(source.isActive());
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
 		target.setPhone(source.getPhone());

@@ -18,7 +18,7 @@
 package de.symeda.sormas.ui.utils;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.v7.ui.renderers.HtmlRenderer;
+import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;

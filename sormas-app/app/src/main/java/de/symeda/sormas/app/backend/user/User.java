@@ -104,12 +104,12 @@ public class User extends AbstractDomainObject {
         this.userName = userName;
     }
 
-    public boolean isAktiv() {
+    public boolean isActive() {
         return active;
     }
 
-    public void setAktiv(boolean aktiv) {
-        this.active = aktiv;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public String getFirstName() {

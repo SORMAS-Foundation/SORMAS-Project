@@ -20,23 +20,23 @@ package de.symeda.sormas.ui.caze;
 import java.util.Arrays;
 import java.util.List;
 
-import com.vaadin.v7.data.Property;
-import com.vaadin.v7.data.validator.RegexpValidator;
-import com.vaadin.v7.data.validator.StringLengthValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.ui.Button;
-import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
-import com.vaadin.v7.ui.OptionGroup;
-import com.vaadin.v7.ui.TextField;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.validator.RegexpValidator;
+import com.vaadin.v7.data.validator.StringLengthValidator;
+import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.OptionGroup;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -142,7 +142,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.SEQUELAE, OptionGroup.class);
 		addFields(CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.SEQUELAE_DETAILS);
 
-		ComboBox diseaseField = addField(CaseDataDto.DISEASE, ComboBox.class);
+		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false);
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
 		addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, OptionGroup.class);

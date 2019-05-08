@@ -21,11 +21,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 
 public class DashboardEventDto implements Serializable {
 
@@ -33,12 +29,10 @@ public class DashboardEventDto implements Serializable {
 
 	public static final String I18N_PREFIX = "Event";
 
-	public static final String EVENT_TYPE = "eventType";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String DISEASE = "disease";
 
 	private String uuid;
-	private EventType eventType;
 	private EventStatus eventStatus;
 	private Disease disease;
 	private String diseaseDetails;
@@ -48,9 +42,8 @@ public class DashboardEventDto implements Serializable {
 	private String districtUuid;
 	private DistrictReferenceDto district;
 	
-	public DashboardEventDto(String uuid, EventType eventType, EventStatus eventStatus, Disease disease, String diseaseDetails, Date eventDate, Double reportLat, Double reportLon, String districtUuid) {
+	public DashboardEventDto(String uuid, EventStatus eventStatus, Disease disease, String diseaseDetails, Date eventDate, Double reportLat, Double reportLon, String districtUuid) {
 		this.uuid = uuid;
-		this.eventType = eventType;
 		this.eventStatus = eventStatus;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
@@ -66,14 +59,6 @@ public class DashboardEventDto implements Serializable {
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
-	}
-
-	public EventType getEventType() {
-		return eventType;
-	}
-
-	public void setEventType(EventType eventType) {
-		this.eventType = eventType;
 	}
 
 	public EventStatus getEventStatus() {
@@ -142,11 +127,7 @@ public class DashboardEventDto implements Serializable {
 	
 	@Override
 	public String toString() {
-		String diseaseString = getDisease() != Disease.OTHER
-				? DataHelper.toStringNullable(getDisease())
-				: DataHelper.toStringNullable(getDiseaseDetails());
-		String eventTypeString = diseaseString.isEmpty() ? eventType.toString() : eventType.toString().toLowerCase();
-		return diseaseString + " " + eventTypeString + " " + I18nProperties.getString(Strings.on) + " " + DateHelper.formatLocalDate(eventDate);
+		return EventReferenceDto.buildCaption(getDisease(), getDiseaseDetails(), getEventStatus(), getEventDate());
 	}
 	
 }

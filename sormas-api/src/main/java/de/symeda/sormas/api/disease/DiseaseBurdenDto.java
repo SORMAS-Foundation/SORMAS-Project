@@ -20,7 +20,6 @@ package de.symeda.sormas.api.disease;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.region.CommunityDto;
 
 public class DiseaseBurdenDto  implements Serializable {
 	

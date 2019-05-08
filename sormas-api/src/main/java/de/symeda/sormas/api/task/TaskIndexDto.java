@@ -25,7 +25,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.event.EventType;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 public class TaskIndexDto implements Serializable {
@@ -66,11 +66,9 @@ public class TaskIndexDto implements Serializable {
 	private String creatorComment;
 	private UserReferenceDto assigneeUser;
 	private String assigneeReply;
-	
-	
 
 	public TaskIndexDto(String uuid, TaskContext taskContext, String caseUuid, String caseFirstName, String caseLastName,
-			String eventUuid, Disease eventDisease, String eventDiseaseDetails, EventType eventType, Date eventDate, 
+			String eventUuid, Disease eventDisease, String eventDiseaseDetails, EventStatus eventStatus, Date eventDate, 
 			String contactUuid, String contactFirstName, String contactLastName, String contactCaseFirstName, String contactCaseLastName,
 			TaskType taskType, TaskPriority priority, Date dueDate, Date suggestedStart, TaskStatus taskStatus,
 			String creatorUserUuid, String creatorUserFirstName, String creatorUserLastName, String creatorComment,
@@ -78,7 +76,7 @@ public class TaskIndexDto implements Serializable {
 		this.setUuid(uuid);
 		this.taskContext = taskContext;
 		this.caze = new CaseReferenceDto(caseUuid, caseFirstName, caseLastName);
-		this.event = new EventReferenceDto(eventUuid, eventDisease, eventDiseaseDetails, eventType, eventDate);
+		this.event = new EventReferenceDto(eventUuid, eventDisease, eventDiseaseDetails, eventStatus, eventDate);
 		this.contact = new ContactReferenceDto(contactUuid, contactFirstName, contactLastName, contactCaseFirstName, contactCaseLastName);
 		this.taskType = taskType;
 		this.priority = priority;

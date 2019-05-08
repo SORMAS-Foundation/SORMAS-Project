@@ -24,6 +24,7 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface VisitFacade {
@@ -49,5 +50,9 @@ public interface VisitFacade {
 	int getNumberOfVisits(ContactReferenceDto contactRef, VisitStatus visitStatus);
 	
 	List<DashboardVisitDto> getDashboardVisitsByContact(ContactReferenceDto contactRef, Date from, Date to);
+	
+	List<VisitIndexDto> getIndexList(VisitCriteria visitCriteria, int first, int max, List<SortProperty> sortProperties);
+	
+	long count(VisitCriteria visitCriteria);
 	
 }

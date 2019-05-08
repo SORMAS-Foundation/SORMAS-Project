@@ -150,7 +150,7 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		// order by district, community so the app can do caching while reading the data
 		cq.orderBy(cb.asc(from.get(Facility.DISTRICT)), cb.asc(from.get(Facility.COMMUNITY)),
 				cb.asc(from.get(Facility.NAME)));

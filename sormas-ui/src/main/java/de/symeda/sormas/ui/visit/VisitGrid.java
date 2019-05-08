@@ -17,40 +17,35 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.visit;
 
-import java.util.List;
+import java.util.Date;
+import java.util.stream.Collectors;
 
-import com.vaadin.v7.data.util.BeanItemContainer;
-import com.vaadin.v7.data.util.GeneratedPropertyContainer;
+import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.v7.ui.Grid;
-import com.vaadin.v7.ui.renderers.DateRenderer;
-import com.vaadin.v7.ui.renderers.HtmlRenderer;
+import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.visit.VisitCriteria;
+import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.V7BooleanRenderer;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.BooleanRenderer;
+import de.symeda.sormas.ui.utils.FilteredGrid;
 
 @SuppressWarnings("serial")
-public class VisitGrid extends Grid {
+public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 
 	private static final String EDIT_BTN_ID = "edit";
 
-	public static final String SYMPTOMS_SYMPTOMATIC = VisitDto.SYMPTOMS + "." + SymptomsDto.SYMPTOMATIC;
-	public static final String SYMPTOMS_TEMPERATURE = VisitDto.SYMPTOMS + "." + SymptomsDto.TEMPERATURE;
-
-	private ContactReferenceDto filterContact;
-	private PersonReferenceDto filterPerson;
-
+	@SuppressWarnings("unchecked")
 	public VisitGrid() {
+		super(VisitIndexDto.class);
 		setSizeFull();
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
@@ -59,67 +54,44 @@ public class VisitGrid extends Grid {
         	setSelectionMode(SelectionMode.NONE);
         }
 
-		BeanItemContainer<VisitDto> container = new BeanItemContainer<VisitDto>(VisitDto.class);
-		container.addNestedContainerProperty(SYMPTOMS_SYMPTOMATIC);
-		container.addNestedContainerProperty(SYMPTOMS_TEMPERATURE);
+		DataProvider<VisitIndexDto, VisitCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+				query -> FacadeProvider.getVisitFacade().getIndexList(
+						query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
+						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+						.collect(Collectors.toList())).stream(),
+				query -> {
+					return (int) FacadeProvider.getVisitFacade().count(query.getFilter().orElse(null));
+				});
+		setDataProvider(dataProvider);
 
-		GeneratedPropertyContainer editContainer = new GeneratedPropertyContainer(container);
-		VaadinUiUtil.addIconColumn(editContainer, EDIT_BTN_ID, VaadinIcons.EDIT);
-		setContainerDataSource(editContainer);
+		Column<VisitIndexDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
+		editColumn.setId(EDIT_BTN_ID);
+		editColumn.setWidth(60);
 
-		setColumns(EDIT_BTN_ID, VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_STATUS, VisitDto.VISIT_REMARKS, 
-				VisitDto.DISEASE, SYMPTOMS_SYMPTOMATIC, SYMPTOMS_TEMPERATURE);
+		setColumns(EDIT_BTN_ID, VisitIndexDto.VISIT_DATE_TIME, VisitIndexDto.VISIT_STATUS, VisitIndexDto.VISIT_REMARKS, 
+				VisitIndexDto.DISEASE, VisitIndexDto.SYMPTOMATIC, VisitIndexDto.TEMPERATURE);
+		
+		((Column<VisitIndexDto, Date>) getColumn(VisitIndexDto.VISIT_DATE_TIME)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+		((Column<VisitIndexDto, String>) getColumn(VisitIndexDto.SYMPTOMATIC)).setRenderer(new BooleanRenderer());
 
-		getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
-		getColumn(EDIT_BTN_ID).setWidth(60);
-		getColumn(EDIT_BTN_ID).setHeaderCaption("");
-		getColumn(SYMPTOMS_SYMPTOMATIC).setRenderer(new V7BooleanRenderer());
-
-		getColumn(VisitDto.VISIT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
-
-		for (Column column : getColumns()) {
-			column.setHeaderCaption(I18nProperties.getPrefixCaption(
-					VisitDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
+		for(Column<?, ?> column : getColumns()) {
+			column.setCaption(I18nProperties.getPrefixCaption(
+					VisitIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
 
 		addItemClickListener(e -> {
-			if (e.getPropertyId() != null && (e.getPropertyId().equals(EDIT_BTN_ID) || e.isDoubleClick())) {
-				VisitDto indexDto = (VisitDto)e.getItemId();
-				ControllerProvider.getVisitController().editVisit(indexDto.toReference(), filterContact, r -> reload());
+			if (e.getColumn() != null && (EDIT_BTN_ID.equals(e.getColumn().getId()) || e.getMouseEventDetails().isDoubleClick())) {
+				ControllerProvider.getVisitController().editVisit(e.getItem().getUuid(), getCriteria().getContact(), r -> reload());
 			}
 		});
 	}
 
-	@SuppressWarnings("unchecked")
-	public BeanItemContainer<VisitDto> getContainer() {
-		GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
-		return (BeanItemContainer<VisitDto>) container.getWrappedContainer();
-	}
-
-	public void reload(ContactReferenceDto contact) {
-		this.filterContact = contact;
-		filterPerson = null;
-		reload(); 	
-	}
-
-	public void reload(PersonReferenceDto person) {
-		this.filterPerson = person;
-		filterContact = null;
-		reload(); 	
-	}
-
-	protected void reload() {
-		List<VisitDto> entries;
-		if (filterContact != null) {
-			entries = FacadeProvider.getVisitFacade().getAllByContact(filterContact);
-		} else if (filterPerson != null) {
-			entries = FacadeProvider.getVisitFacade().getAllByPerson(filterPerson);
-		} else {
-			throw new UnsupportedOperationException("a person or contact filter needs to be set for the visits list");
+	public void reload() {
+		if (getSelectionModel().isUserSelectionAllowed()) {
+			deselectAll();
 		}
 
-		getContainer().removeAllItems();
-		getContainer().addAll(entries);    	
+		getDataProvider().refreshAll();
 	}
 
 }

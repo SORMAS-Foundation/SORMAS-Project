@@ -61,19 +61,23 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
         target.setTestDateTime(source.getTestDateTime());
         target.setTestResult(source.getTestResult());
         target.setTestType(source.getTestType());
+        target.setTestedDisease(source.getTestedDisease());
+        target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
     }
 
     @Override
-    protected void fillInnerFromAdo(PathogenTestDto dto, PathogenTest ado) {
-        if(ado.getSample() != null) {
-            Sample sample = DatabaseHelper.getSampleDao().queryForId(ado.getSample().getId());
-            dto.setSample(SampleDtoHelper.toReferenceDto(sample));
+    protected void fillInnerFromAdo(PathogenTestDto target, PathogenTest source) {
+        if(source.getSample() != null) {
+            Sample sample = DatabaseHelper.getSampleDao().queryForId(source.getSample().getId());
+            target.setSample(SampleDtoHelper.toReferenceDto(sample));
         } else {
-            dto.setSample(null);
+            target.setSample(null);
         }
 
-        dto.setTestDateTime(ado.getTestDateTime());
-        dto.setTestResult(ado.getTestResult());
-        dto.setTestType(ado.getTestType());
+        target.setTestDateTime(source.getTestDateTime());
+        target.setTestResult(source.getTestResult());
+        target.setTestType(source.getTestType());
+        target.setTestedDisease(source.getTestedDisease());
+        target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
     }
 }

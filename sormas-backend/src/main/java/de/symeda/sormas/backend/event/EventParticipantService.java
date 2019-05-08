@@ -31,6 +31,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.person.Person;
@@ -111,6 +112,16 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 		
 		List<EventParticipant> resultList = em.createQuery(cq).getResultList();
 		return resultList;
+	}
+	
+	public Predicate buildCriteriaFilter(EventParticipantCriteria criteria, CriteriaBuilder cb, Root<EventParticipant> from) {
+		Join<EventParticipant, Event> event = from.join(EventParticipant.EVENT, JoinType.LEFT);
+		Predicate filter = null;
+		if (criteria.getEvent() != null) {
+			filter = and(cb, filter, cb.equal(event.get(Event.UUID), criteria.getEvent().getUuid()));
+		}
+
+		return filter;
 	}
 
 	/**

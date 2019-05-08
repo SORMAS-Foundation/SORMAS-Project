@@ -44,6 +44,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	
 	public static final String VERSION_PLACEHOLER = "%version";
 	
+	public static final String DEV_MODE = "devmode";
+	
 	public static final String APP_URL = "app.url";
 	public static final String APP_LEGACY_URL = "app.legacy.url";
 	
@@ -87,6 +89,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getCountryLocale() {
 		return getProperty(COUNTRY_LOCALE, Locale.getDefault().toString());
+	}
+	
+	@Override
+	public boolean isDevMode() {
+		return getBoolean(DEV_MODE, false);
 	}
 
 	@Override

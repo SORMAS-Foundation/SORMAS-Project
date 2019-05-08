@@ -23,8 +23,10 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
@@ -60,13 +62,21 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			menu.addView(LaboratoriesView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
 					LaboratoriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
 		}
+
 //		if (LoginHelper.hasUserRight(UserRight.USER_RIGHTS_MANAGE)) {
 //			menu.addView(UserRightsView.VIEW_NAME, I18nProperties.getPrefixFragment("View", 
 //					UserRightsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
 //		}
+
 		menu.addView(OutbreaksView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", OutbreaksView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 				params);
+
+		if (FacadeProvider.getConfigFacade().isDevMode()
+				&& UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+			menu.addView(DevModeView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
+					DevModeView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
+		}
 	}
 
 	public static void registerViews(Navigator navigator) {
@@ -77,10 +87,17 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			navigator.addView(HealthFacilitiesView.VIEW_NAME, HealthFacilitiesView.class);
 			navigator.addView(LaboratoriesView.VIEW_NAME, LaboratoriesView.class);
 		}
+		
 //		if (LoginHelper.hasUserRight(UserRight.USER_RIGHTS_MANAGE)) {
 //			navigator.addView(UserRightsView.VIEW_NAME, UserRightsView.class);
 //		}
+		
 		navigator.addView(OutbreaksView.VIEW_NAME, OutbreaksView.class);
+		
+		if (FacadeProvider.getConfigFacade().isDevMode()
+				&& UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+			navigator.addView(DevModeView.VIEW_NAME, DevModeView.class);
+		}
 	}
 
 	@Override

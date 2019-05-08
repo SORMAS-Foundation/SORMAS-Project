@@ -17,9 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.backend;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
@@ -55,6 +60,8 @@ import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb.ClinicalVi
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.disease.DiseaseConfiguration;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
@@ -96,6 +103,16 @@ public class AbstractBeanTest extends BaseBeanTest {
 	@Before
 	public void resetMocks() {
 		MockProducer.resetMocks();
+	}
+	
+	@Before
+	public void createDiseaseConfigurations() {
+		List<DiseaseConfiguration> diseaseConfigurations = getDiseaseConfigurationService().getAll();
+		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(c -> c.getDisease()).collect(Collectors.toList());
+		Arrays.stream(Disease.values()).filter(d -> !configuredDiseases.contains(d)).forEach(d -> {
+			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
+			getDiseaseConfigurationService().ensurePersisted(configuration);
+		});
 	}
 
 	public ConfigFacade getConfigFacade() {
@@ -236,6 +253,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 	
 	public TreatmentFacade getTreatmentFacade() {
 		return getBean(TreatmentFacadeEjbLocal.class);
+	}
+	
+	public DiseaseConfigurationService getDiseaseConfigurationService() {
+		return getBean(DiseaseConfigurationService.class);
 	}
 
 }

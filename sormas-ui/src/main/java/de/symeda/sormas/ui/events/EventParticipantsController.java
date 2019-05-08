@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.events;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.navigator.View;
@@ -32,12 +31,12 @@ import com.vaadin.ui.Window;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
+import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonFacade;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -72,7 +71,7 @@ public class EventParticipantsController {
 									dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(person.getUuid()));
 									EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
 									Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
-				        			ControllerProvider.getEventParticipantController().editEventParticipant(savedDto);
+				        			ControllerProvider.getEventParticipantController().editEventParticipant(savedDto.getUuid());
 								}
 							});
 				}
@@ -82,7 +81,8 @@ public class EventParticipantsController {
 		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewEventParticipant));
 	}
 	
-	public void editEventParticipant(EventParticipantDto eventParticipant) {
+	public void editEventParticipant(String eventParticipantUuid) {
+		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
 		EventParticipantEditForm editForm = new EventParticipantEditForm(FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid()), UserRight.EVENTPARTICIPANT_EDIT);
 		editForm.setValue(eventParticipant);
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> editView = new CommitDiscardWrapperComponent<EventParticipantEditForm>(editForm, editForm.getFieldGroup());
@@ -116,11 +116,6 @@ public class EventParticipantsController {
 		}
 	}
 	
-	public List<EventParticipantDto> getEventParticipantIndexListByEvent(EventReferenceDto eventRef) {
-		UserDto user = UserProvider.getCurrent().getUser();
-		return FacadeProvider.getEventParticipantFacade().getAllEventParticipantsByEventAfter(null, eventRef.getUuid(), user.getUuid());
-	}
-	
 	private void refreshView() {
 		View currentView = SormasUI.get().getNavigator().getCurrentView();
     	if (currentView instanceof EventParticipantsView) {
@@ -129,7 +124,7 @@ public class EventParticipantsController {
     	}
 	}
 
-	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(Collection<EventParticipantIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoEventParticipantsSelected), 
 					I18nProperties.getString(Strings.messageNoEventParticipantsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());

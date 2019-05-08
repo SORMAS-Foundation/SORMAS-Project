@@ -38,12 +38,9 @@ public class BulkEventDataForm extends AbstractEditForm<EventDto> {
 	
 	private static final String HTML_LAYOUT =
 			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, EVENT_STATUS_CHECKBOX) +
-			LayoutUtil.fluidRowLocs(EventDto.EVENT_STATUS) +
-			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, EVENT_TYPE_CHECKBOX) +
-			LayoutUtil.fluidRowLocs(EventDto.EVENT_TYPE);
+			LayoutUtil.fluidRowLocs(EventDto.EVENT_STATUS);
 
 	private CheckBox eventStatusCheckBox;
-	private CheckBox eventTypeCheckBox;
 	
 	public BulkEventDataForm() {
 		super(EventDto.class, EventDto.I18N_PREFIX, null);
@@ -55,21 +52,13 @@ public class BulkEventDataForm extends AbstractEditForm<EventDto> {
 	protected void addFields() {
 		eventStatusCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkEventStatus));
 		getContent().addComponent(eventStatusCheckBox, EVENT_STATUS_CHECKBOX);
-		eventTypeCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkEventType));
-		getContent().addComponent(eventTypeCheckBox, EVENT_TYPE_CHECKBOX);
 		OptionGroup eventStatus = addField(EventDto.EVENT_STATUS, OptionGroup.class);
 		eventStatus.setEnabled(false);
-		OptionGroup eventType = addField(EventDto.EVENT_TYPE, OptionGroup.class);
-		eventType.setEnabled(false);
 		
 		FieldHelper.setRequiredWhen(getFieldGroup(), eventStatusCheckBox, Arrays.asList(EventDto.EVENT_STATUS), Arrays.asList(true));
-		FieldHelper.setRequiredWhen(getFieldGroup(), eventTypeCheckBox, Arrays.asList(EventDto.EVENT_TYPE), Arrays.asList(true));
 	
 		eventStatusCheckBox.addValueChangeListener(e -> {
 			eventStatus.setEnabled((boolean) e.getProperty().getValue());
-		});
-		eventTypeCheckBox.addValueChangeListener(e -> {
-			eventType.setEnabled((boolean) e.getProperty().getValue());
 		});
 	}
 	
@@ -81,9 +70,4 @@ public class BulkEventDataForm extends AbstractEditForm<EventDto> {
 	public CheckBox getEventStatusCheckBox() {
 		return eventStatusCheckBox;
 	}
-
-	public CheckBox getEventTypeCheckBox() {
-		return eventTypeCheckBox;
-	}
-	
 }

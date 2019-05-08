@@ -24,6 +24,7 @@
 
     <data>
         <import type="android.view.View" />
+        <import type="de.symeda.sormas.api.DiseaseHelper" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.sample.PathogenTest" />
     </data>
@@ -37,19 +38,37 @@
         android:background="@drawable/selector_list_section_row_background"
         android:visibility="@{data != null ? View.VISIBLE : View.GONE}">
 
-        <TextView
-            android:id="@+id/test_type"
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="match_parent"
             android:layout_weight="1"
+            android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
             android:gravity="start|center_vertical"
-            android:textSize="@dimen/row_entry_secondary_text_size"
-            android:textColor="@color/row_entry_secondary_text"
-            android:scrollHorizontally="true"
-            android:maxLines="1"
-            android:ellipsize="end"
-            app:value="@{data.testType.toString()}" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/test_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/row_entry_secondary_text_size"
+                android:textColor="@color/row_entry_secondary_text"
+                android:scrollHorizontally="true"
+                android:maxLines="1"
+                android:ellipsize="end"
+                app:value="@{data.testType.toString()}" />
+
+            <TextView
+                android:id="@+id/tested_disease"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/row_entry_secondary_text_size"
+                android:textColor="@color/row_entry_secondary_text"
+                android:scrollHorizontally="true"
+                android:maxLines="1"
+                android:ellipsize="end"
+                app:value="@{DiseaseHelper.toString(data.testedDisease, data.testedDiseaseDetails)}" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"

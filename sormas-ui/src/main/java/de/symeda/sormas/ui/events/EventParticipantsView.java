@@ -32,9 +32,11 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class EventParticipantsView extends AbstractEventView {
@@ -43,6 +45,8 @@ public class EventParticipantsView extends AbstractEventView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/eventparticipants";
 
+	private EventParticipantCriteria criteria;
+	
 	private EventParticipantsGrid grid;
 	private Button addButton;
 	private VerticalLayout gridLayout;
@@ -53,8 +57,11 @@ public class EventParticipantsView extends AbstractEventView {
 		setSizeFull();
 		addStyleName("crud-view");
 
+		criteria = ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantCriteria.class);
+		
 		grid = new EventParticipantsGrid();
-
+		grid.setCriteria(criteria);
+		
 		gridLayout = new VerticalLayout();
 		gridLayout.setSizeFull();
 		gridLayout.setMargin(true);
@@ -86,10 +93,10 @@ public class EventParticipantsView extends AbstractEventView {
 			MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 			Command deleteCommand = selectedItem -> {
-				ControllerProvider.getEventParticipantController().deleteAllSelectedItems(grid.getSelectedRows(), new Runnable() {
+				ControllerProvider.getEventParticipantController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 					public void run() {
 						grid.deselectAll();
-						grid.reload(getEventRef());
+						grid.reload();
 					}
 				});
 			};
@@ -106,7 +113,7 @@ public class EventParticipantsView extends AbstractEventView {
 			addButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			addButton.addClickListener(e -> {
 				ControllerProvider.getEventParticipantController().createEventParticipant(this.getEventRef(),
-						r -> grid.reload(getEventRef()));
+						r -> grid.reload());
 			});
 			topLayout.addComponent(addButton);
 			topLayout.setComponentAlignment(addButton, Alignment.MIDDLE_RIGHT);
@@ -122,7 +129,8 @@ public class EventParticipantsView extends AbstractEventView {
 			super.enter(event);
 		}
 		
-		grid.reload(getEventRef());
+		criteria.event(getEventRef());
+		grid.reload();
 	}
 
 }

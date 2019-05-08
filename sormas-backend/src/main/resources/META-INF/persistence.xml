@@ -41,6 +41,7 @@
 		<class>de.symeda.sormas.backend.clinicalcourse.ClinicalVisit</class>
 		<class>de.symeda.sormas.backend.clinicalcourse.HealthConditions</class>
 		<class>de.symeda.sormas.backend.sample.AdditionalTest</class>
+		<class>de.symeda.sormas.backend.disease.DiseaseConfiguration</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

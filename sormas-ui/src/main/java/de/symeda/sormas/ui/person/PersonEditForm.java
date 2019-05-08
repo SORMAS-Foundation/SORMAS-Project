@@ -24,12 +24,12 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
-import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
@@ -184,7 +184,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS);
 
 		causeOfDeathField = addField(PersonDto.CAUSE_OF_DEATH, ComboBox.class);
-		causeOfDeathDiseaseField = addField(PersonDto.CAUSE_OF_DEATH_DISEASE, ComboBox.class);
+		causeOfDeathDiseaseField = addDiseaseField(PersonDto.CAUSE_OF_DEATH_DISEASE, true, disease);
 		causeOfDeathDetailsField = addField(PersonDto.CAUSE_OF_DEATH_DETAILS, TextField.class);
 		ComboBox facilityRegion = addField(PersonDto.OCCUPATION_REGION, ComboBox.class);
 		facilityRegion.setImmediate(true);

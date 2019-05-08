@@ -24,8 +24,6 @@ import java.lang.annotation.Target;
 
 /**
  * Used to annotate which fields are required
- * 
- * @author Maté Strysewske
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

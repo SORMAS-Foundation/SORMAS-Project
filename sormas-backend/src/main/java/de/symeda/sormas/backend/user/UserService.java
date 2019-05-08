@@ -35,7 +35,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
@@ -198,6 +200,36 @@ public class UserService extends AbstractAdoService<User> {
 	
 	public User getCurrentUser() {
 		return getByUserName(sessionContext.getCallerPrincipal().getName());
+	}
+	
+	public Predicate buildCriteriaFilter(UserCriteria userCriteria, CriteriaBuilder cb, Root<User> from) {
+		Predicate filter = null;
+		if (userCriteria.getActive() != null) {
+			filter = and(cb, filter, cb.equal(from.get(User.ACTIVE), userCriteria.getActive()));
+		}
+		if (userCriteria.getUserRole() != null) {
+			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
+			filter = and(cb, filter, joinRoles.in(Arrays.asList(userCriteria.getUserRole())));
+		}
+		if (userCriteria.getFreeText() != null) {
+			String[] textFilters = userCriteria.getFreeText().split("\\s+");
+			for (int i = 0; i < textFilters.length; i++) {
+				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+							cb.like(cb.lower(from.get(User.FIRST_NAME)), textFilter),
+							cb.like(cb.lower(from.get(User.LAST_NAME)), textFilter),
+							cb.like(cb.lower(from.get(User.USER_NAME)), textFilter),
+							cb.like(cb.lower(from.get(User.USER_EMAIL)), textFilter),
+							cb.like(cb.lower(from.get(User.PHONE)), textFilter),
+							cb.like(cb.lower(from.get(User.UUID)), textFilter));
+					filter = and(cb, filter, likeFilters);
+				}
+			}
+			
+		}
+		
+		return filter;
 	}
 
 	@SuppressWarnings("rawtypes")

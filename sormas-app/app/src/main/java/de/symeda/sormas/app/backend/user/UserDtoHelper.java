@@ -80,7 +80,7 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 
     @Override
     protected void fillInnerFromDto(User target, UserDto source) {
-        target.setAktiv(source.isActive());
+        target.setActive(source.isActive());
         target.setUserName(source.getUserName());
         target.setFirstName(source.getFirstName());
         target.setLastName(source.getLastName());

@@ -52,6 +52,7 @@ public class MessagingService {
 	public static final String SUBJECT_TASK_START = "notificationTaskStartSubject";
 	public static final String SUBJECT_TASK_DUE = "notificationTtaskDueSubject";
 	public static final String SUBJECT_VISIT_COMPLETED = "notificationVisitCompletedSubject";
+	public static final String SUBJECT_DISEASE_CHANGED = "notificationDiseaseChangedSubject";
 	
 	// Message contents (via properties file)
 	public static final String CONTENT_CASE_CLASSIFICATION_CHANGED = "notificationCaseClassificationChanged";
@@ -66,6 +67,7 @@ public class MessagingService {
 	public static final String CONTENT_TASK_DUE_GENERAL = "notificationTaskDueGeneral";
 	public static final String CONTENT_TASK_DUE_SPECIFIC = "notificationTaskDueSpecific";
 	public static final String CONTENT_VISIT_COMPLETED = "notificationVisitCompleted";
+	public static final String CONTENT_DISEASE_CHANGED = "notificationDiseaseChanged";
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessagingService.class);
 

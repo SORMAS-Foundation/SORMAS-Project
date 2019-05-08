@@ -120,11 +120,11 @@ public class User extends AbstractDomainObject {
 	}
 	
 	@Column(nullable = false)
-	public boolean isAktiv() {
+	public boolean isActive() {
 		return active;
 	}
-	public void setAktiv(boolean aktiv) {
-		this.active = aktiv;
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 	
 	@Column(nullable = false)

@@ -38,6 +38,7 @@ import com.vaadin.ui.Link;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -92,7 +93,7 @@ public class AboutView extends VerticalLayout implements View {
 		try {
 			String serverUrl = new URL(((VaadinServletRequest) VaadinService.getCurrentRequest()).getHttpServletRequest().getRequestURL().toString()).getAuthority();
 			StreamResource classificationResource = DownloadUtil.createStringStreamResource(
-					ClassificationHtmlRenderer.createHtmlForDownload(serverUrl), "classification_rules.html", "text/html");
+					ClassificationHtmlRenderer.createHtmlForDownload(serverUrl, FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases()), "classification_rules.html", "text/html");
 			new FileDownloader(classificationResource).extend(classificationDocumentButton);
 		} catch (MalformedURLException e) {
 

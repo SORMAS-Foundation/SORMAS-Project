@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -43,6 +44,7 @@ import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentReportWeeklyLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -62,7 +64,7 @@ public class ReportOverviewFragment extends ReportFragment {
     protected void onAfterLayoutBinding(FragmentReportWeeklyLayoutBinding contentBinding) {
         super.onAfterLayoutBinding(contentBinding);
 
-        List<Item> diseaseList = DataUtils.getEnumItems(Disease.class, true);
+        List<Item> diseaseList = DataUtils.toItems(DiseaseConfigurationHelper.getInstance().getAllActivePrimaryDiseases());
         contentBinding.weeklyReportEntryDisease.initializeSpinner(diseaseList);
         contentBinding.weeklyReportEntryDisease.setVisibility(VISIBLE);
         contentBinding.weeklyReportEntryDisease.addValueChangedListener(new ValueChangeListener() {

@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
@@ -52,14 +51,13 @@ import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -113,8 +111,10 @@ public class CaseController {
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));    	
 	}
 
-	public void create(PersonReferenceDto person, Disease disease, EventParticipantDto eventParticipant) {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(person, disease, null, eventParticipant);
+	public void create(String personUuid, Disease disease, String eventParticipantUuid) {
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(
+				new PersonReferenceDto(personUuid), disease, null, 
+				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid));
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase)); 
 	}
 
@@ -188,6 +188,19 @@ public class CaseController {
 		caze.setReportingUser(userReference);
 		caze.setRegion(user.getRegion());
 		caze.setDistrict(user.getDistrict());
+		caze.setCommunity(user.getCommunity());
+		
+        if (user.getHealthFacility() != null) {
+        	FacilityDto healthFacility = FacadeProvider.getFacilityFacade().getByUuid(user.getHealthFacility().getUuid());
+            caze.setRegion(healthFacility.getRegion());
+            caze.setDistrict(healthFacility.getDistrict());
+            caze.setCommunity(healthFacility.getCommunity());
+            caze.setHealthFacility(healthFacility.toReference());
+        } else {
+            caze.setRegion(user.getRegion());
+            caze.setDistrict(user.getDistrict());
+            caze.setCommunity(user.getCommunity());
+        }
 
 		return caze;
 	}
@@ -265,14 +278,6 @@ public class CaseController {
 			public void onCommit() {
 				if (!createForm.getFieldGroup().isModified()) {
 					final CaseDataDto dto = createForm.getValue();
-					// Generate EPID number prefix
-					Calendar calendar = Calendar.getInstance();
-					String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
-					RegionDto region = FacadeProvider.getRegionFacade().getRegionByUuid(dto.getRegion().getUuid());
-					DistrictDto district = FacadeProvider.getDistrictFacade().getDistrictByUuid(dto.getDistrict().getUuid());
-					dto.setEpidNumber((region.getEpidCode() != null ? region.getEpidCode() : "") 
-							+ "-" + (district.getEpidCode() != null ? district.getEpidCode() : "") 
-									+ "-" + year + "-");
 
 					if (contact != null) {
 						// automatically change the contact status to "converted"

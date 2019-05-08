@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -799,10 +800,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		CaseDataDto existingCaseDto = toDto(caseService.getByUuid(dto.getUuid()));
 
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
-
+		
 		validate(dto);
 
 		caze = fillOrBuildEntity(dto, caze);
+		
 		caseService.ensurePersisted(caze);
 		onCaseChanged(existingCaseDto, caze);
 
@@ -869,7 +871,17 @@ public class CaseFacadeEjb implements CaseFacade {
 				facilityService.ensurePersisted(facility);
 			}
 		}
-
+		
+		// epid number
+		if (existingCase == null && newCase.getEpidNumber() == null) {
+			// Generate EPID number prefix
+			Calendar calendar = Calendar.getInstance();
+			String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
+			newCase.setEpidNumber((newCase.getRegion().getEpidCode() != null ? newCase.getRegion().getEpidCode() : "") 
+					+ "-" + (newCase.getDistrict().getEpidCode() != null ? newCase.getDistrict().getEpidCode() : "") 
+					+ "-" + year + "-");
+		}
+		
 		// update the plague type based on symptoms
 		if (newCase.getDisease() == Disease.PLAGUE) {
 			PlagueType plagueType = DiseaseHelper
@@ -970,6 +982,30 @@ public class CaseFacadeEjb implements CaseFacade {
 				} catch (NotificationDeliveryFailedException e) {
 					logger.error(String.format(
 							"NotificationDeliveryFailedException when trying to notify supervisors about the change of a case classification. "
+									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
+									recipient.getUuid()));
+				}
+			}
+		}
+		
+		// Send an email to all responsible supervisors when the disease of an Unspecified VHF
+		// case has changed
+		if (existingCase != null && existingCase.getDisease() == Disease.UNSPECIFIED_VHF && existingCase.getDisease() != newCase.getDisease()) {
+			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(newCase.getRegion(),
+					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
+			for (User recipient : messageRecipients) {
+				try {
+					messagingService.sendMessage(recipient,
+							I18nProperties.getString(MessagingService.SUBJECT_DISEASE_CHANGED),
+							String.format(
+									I18nProperties.getString(MessagingService.CONTENT_DISEASE_CHANGED),
+									DataHelper.getShortUuid(newCase.getUuid()),
+									existingCase.getDisease().toString(),
+									newCase.getDisease().toString()),
+							MessageType.EMAIL, MessageType.SMS);
+				} catch (NotificationDeliveryFailedException e) {
+					logger.error(String.format(
+							"NotificationDeliveryFailedException when trying to notify supervisors about the change of a case disease. "
 									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
 									recipient.getUuid()));
 				}
@@ -1128,7 +1164,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
-		target.setReportDate(source.getReportDate());
+		if (source.getReportDate() != null) {
+			target.setReportDate(source.getReportDate());
+		} else { //	make sure we do have a report date
+			target.setReportDate(new Date());
+		}
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setInvestigatedDate(source.getInvestigatedDate());
 		target.setReceptionDate(source.getReceptionDate());
@@ -1272,6 +1312,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 
 			if (caze.getInvestigationStatus() == InvestigationStatus.DONE
+					&& existingCase != null
 					&& existingCase.getInvestigationStatus() != InvestigationStatus.DONE) {
 				sendInvestigationDoneNotifications(caze);
 			}

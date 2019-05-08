@@ -14,6 +14,7 @@ public interface Strings {
 	public static String classificationConfirmed = "classificationConfirmed";
 	public static String classificationCriteriaForTestType = "classificationCriteriaForTestType";
 	public static String classificationDaysBeforeCaseStart = "classificationDaysBeforeCaseStart";
+	public static String classificationForDisease = "classificationForDisease";
 	public static String classificationGeneratedFor = "classificationGeneratedFor";
 	public static String classificationInfoText = "classificationInfoText";
 	public static String classificationNoneOf = "classificationNoneOf";
@@ -359,6 +360,8 @@ public interface Strings {
 	public static String notificationCaseInvestigationDoneSubject = "notificationCaseInvestigationDoneSubject";
 	public static String notificationContactSymptomatic = "notificationContactSymptomatic";
 	public static String notificationContactSymptomaticSubject = "notificationContactSymptomaticSubject";
+	public static String notificationDiseaseChanged = "notificationDiseaseChanged";
+	public static String notificationDiseaseChangedSubject = "notificationDiseaseChangedSubject";
 	public static String notificationLabResultArrived = "notificationLabResultArrived";
 	public static String notificationLabResultArrivedSubject = "notificationLabResultArrivedSubject";
 	public static String notificationLabResultSpecified = "notificationLabResultSpecified";

@@ -66,7 +66,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     @Override
 	protected void addFields() {
     	addField(CaseDataDto.REPORT_DATE, DateField.class);
-    	addField(CaseDataDto.DISEASE, ComboBox.class);
+    	addDiseaseField(CaseDataDto.DISEASE, false);
     	addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
     	OptionGroup plagueType = addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
     	addField(CaseDataDto.DENGUE_FEVER_TYPE, OptionGroup.class);

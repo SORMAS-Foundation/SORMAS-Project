@@ -23,11 +23,10 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -127,7 +126,6 @@ public class TestEntityCreator {
     }
 
     public static Event createEvent() {
-        EventType eventType = EventType.RUMOR;
         String eventDesc = "FirstEventDescription";
         Date eventDate = DateHelper.subtractDays(new Date(), 2);
         TypeOfPlace typeOfPlace = TypeOfPlace.PUBLIC_PLACE;
@@ -136,7 +134,6 @@ public class TestEntityCreator {
         String srcTelNo = "0150123123123";
 
         Event event = DatabaseHelper.getEventDao().build();
-        event.setEventType(eventType);
         event.setEventDesc(eventDesc);
         event.setEventDate(eventDate);
         event.setTypeOfPlace(typeOfPlace);

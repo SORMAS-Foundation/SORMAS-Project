@@ -23,7 +23,6 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -41,8 +40,6 @@ public class StatusElaboratorFactory {
             result = (StatusElaborator) e;
         } else if (e instanceof EventStatus) {
             result = new EventStatusElaborator((EventStatus) e);
-        } else if (e instanceof EventType) {
-            result = new EventTypeElaborator((EventType) e);
         } else if (e instanceof FollowUpStatus) {
             result = new FollowUpStatusElaborator((FollowUpStatus) e);
         } else if (e instanceof InvestigationStatus) {

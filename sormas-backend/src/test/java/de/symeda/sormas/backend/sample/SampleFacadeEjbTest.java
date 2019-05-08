@@ -71,7 +71,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		SampleDto sample = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
-		creator.createPathogenTest(sample.toReference(), PathogenTestType.MICROSCOPY, new Date(), rdcf.facility, user.toReference(), PathogenTestResultType.POSITIVE, "Positive", true);
+		creator.createPathogenTest(sample.toReference(), PathogenTestType.MICROSCOPY, caze.getDisease(), new Date(), rdcf.facility, user.toReference(), PathogenTestResultType.POSITIVE, "Positive", true);
 
 		List<DashboardTestResultDto> dashboardTestResultDtos = getSampleTestFacade().getNewTestResultsForDashboard(caze.getRegion(), caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid());
 
@@ -111,7 +111,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		SampleDto sample = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
-		PathogenTestDto sampleTest = creator.createPathogenTest(sample.toReference(), PathogenTestType.MICROSCOPY, new Date(), rdcf.facility, user.toReference(), PathogenTestResultType.POSITIVE, "Positive", true);
+		PathogenTestDto sampleTest = creator.createPathogenTest(sample.toReference(), PathogenTestType.MICROSCOPY, caze.getDisease(), new Date(), rdcf.facility, user.toReference(), PathogenTestResultType.POSITIVE, "Positive", true);
 
 		// Database should contain the created sample and sample test
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
@@ -132,7 +132,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		SampleDto sample = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
-		creator.createPathogenTest(sample.toReference(), PathogenTestType.MICROSCOPY, new Date(), rdcf.facility, user.toReference(), PathogenTestResultType.POSITIVE, "Positive", true);
+		creator.createPathogenTest(sample.toReference(), PathogenTestType.MICROSCOPY, caze.getDisease(), new Date(), rdcf.facility, user.toReference(), PathogenTestResultType.POSITIVE, "Positive", true);
 
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 1
 		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null, user.getUuid()).size());

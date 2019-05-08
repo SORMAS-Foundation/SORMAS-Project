@@ -41,6 +41,7 @@ import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.person.read.PersonReadFragment;
 import de.symeda.sormas.app.symptoms.SymptomsReadFragment;
 import de.symeda.sormas.app.util.Bundler;
+import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
 
 public class CaseReadActivity extends BaseReadActivity<Case> {
 
@@ -77,7 +78,7 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
             menuItems.remove(CaseSection.TREATMENTS.ordinal());
             menuItems.remove(CaseSection.PRESCRIPTIONS.ordinal());
         }
-        if (!ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW) || (caze != null && !DiseaseHelper.hasContactFollowUp(caze.getDisease(), caze.getPlagueType()))) {
+        if (!ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW) || (caze != null && !DiseaseConfigurationHelper.getInstance().hasFollowUp(caze.getDisease()))) {
             menuItems.remove(CaseSection.CONTACTS.ordinal());
         }
         return menuItems;

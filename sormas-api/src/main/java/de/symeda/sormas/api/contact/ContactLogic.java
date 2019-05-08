@@ -24,6 +24,10 @@ import de.symeda.sormas.api.utils.DateHelper;
 public class ContactLogic {
 
 	public static int getNumberOfRequiredVisitsSoFar(Date contactReportDate, Date contactFollowUpUntil) {
+		if (contactFollowUpUntil == null) {
+			return 0;
+		}
+		
 		Date now = new Date();
 		if (now.before(contactFollowUpUntil)) {
 			return DateHelper.getDaysBetween(DateHelper.addDays(contactReportDate, 1), now);

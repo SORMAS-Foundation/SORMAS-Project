@@ -24,20 +24,13 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.core.adapter.databinding.BindingPagedListAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.BindingViewHolder;
-import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
-import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
-import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.RowEventListItemLayoutBinding;
 
 public class EventListAdapter extends BindingPagedListAdapter<Event, RowEventListItemLayoutBinding> {
@@ -56,7 +49,7 @@ public class EventListAdapter extends BindingPagedListAdapter<Event, RowEventLis
 
             pagedHolder.setOnListItemClickListener(this.mOnListItemClickListener);
 
-            indicateEventType(pagedHolder.binding.imgEventTypeIcon, item);
+            indicateEventStatus(pagedHolder.binding.imgEventStatusIcon, item);
 
             if (item.isModifiedOrChildModified()) {
                 pagedHolder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
@@ -83,16 +76,23 @@ public class EventListAdapter extends BindingPagedListAdapter<Event, RowEventLis
 //        }
 //    }
 
-    public void indicateEventType(ImageView imgEventTypeIcon, Event eventRecord) {
-        Resources resources = imgEventTypeIcon.getContext().getResources();
-        Drawable drw = ContextCompat.getDrawable(imgEventTypeIcon.getContext(), R.drawable.indicator_status_circle);
-        if (eventRecord.getEventType() == EventType.RUMOR) {
-            drw.setColorFilter(resources.getColor(R.color.indicatorRumorEvent), PorterDuff.Mode.SRC_OVER);
-        } else if (eventRecord.getEventType() == EventType.OUTBREAK) {
-            drw.setColorFilter(resources.getColor(R.color.indicatorOutbreakEvent), PorterDuff.Mode.SRC_OVER);
+    public void indicateEventStatus(ImageView imgEventStatusIcon, Event eventRecord) {
+        Resources resources = imgEventStatusIcon.getContext().getResources();
+        Drawable drw = ContextCompat.getDrawable(imgEventStatusIcon.getContext(), R.drawable.indicator_status_circle);
+        switch (eventRecord.getEventStatus()) {
+
+            case POSSIBLE:
+                drw.setColorFilter(resources.getColor(R.color.indicatorPossibleEvent), PorterDuff.Mode.SRC_OVER);
+                break;
+            case CONFIRMED:
+                drw.setColorFilter(resources.getColor(R.color.indicatorConfirmedEvent), PorterDuff.Mode.SRC_OVER);
+                break;
+            case NO_EVENT:
+                drw.setColorFilter(resources.getColor(R.color.indicatorNoEvent), PorterDuff.Mode.SRC_OVER);
+                break;
         }
 
-        imgEventTypeIcon.setBackground(drw);
+        imgEventStatusIcon.setBackground(drw);
     }
 
 }

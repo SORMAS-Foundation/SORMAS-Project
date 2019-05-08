@@ -3133,3 +3133,74 @@ INSERT INTO schema_version (version_number, comment) VALUES (142, 'Adjust export
 ALTER TABLE events ADD CONSTRAINT fk_events_surveillanceofficer_id FOREIGN KEY (surveillanceofficer_id) REFERENCES users (id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (143, 'Added missing foreign key constraint to events surveillance officer');
+
+-- 2019-04-23 Rename "aktiv" to "active" in user table
+
+ALTER TABLE users RENAME COLUMN aktiv TO active;
+ALTER TABLE users_history RENAME COLUMN aktiv TO active;
+
+INSERT INTO schema_version (version_number, comment) VALUES (144, 'Rename aktiv to active in user table');
+
+-- 2019-04-24 Add DiseaseConfiguration entity #1074
+
+CREATE TABLE diseaseconfiguration(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	disease varchar(255),
+	active boolean,
+	primarydisease boolean,
+	followupenabled boolean,
+	followupduration integer,
+	sys_period tstzrange not null,
+	primary key(id));
+	
+ALTER TABLE diseaseconfiguration OWNER TO sormas_user;
+
+CREATE TABLE diseaseconfiguration_history (LIKE diseaseconfiguration);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON diseaseconfiguration
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'diseaseconfiguration_history', true);
+ALTER TABLE diseaseconfiguration_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (145, 'Add DiseaseConfiguration entity #1074');
+
+-- 2019-04-29 Rename education "nursery" to "no education" #1073
+UPDATE person SET educationtype='NONE' WHERE educationtype='NURSERY';
+UPDATE person_history SET educationtype='NONE' WHERE educationtype='NURSERY';
+INSERT INTO schema_version (version_number, comment) VALUES (146, 'Rename education "nursery" to "no education" #1073');
+
+-- 2019-04-29 Merge event type and status #1077
+ALTER TABLE events DROP COLUMN eventtype;
+ALTER TABLE events_history DROP COLUMN eventtype;
+INSERT INTO schema_version (version_number, comment) VALUES (147, 'Merge event type and status #1077');
+
+-- 2019-04-26 Add tested disease to PathogenTests #1075
+
+ALTER TABLE pathogentest ADD COLUMN testeddisease varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN testeddisease varchar(255);
+ALTER TABLE pathogentest ADD COLUMN testeddiseasedetails varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN testeddiseasedetails varchar(512);
+UPDATE pathogentest SET testeddisease = 'WEST_NILE_FEVER' WHERE testtype = 'WEST_NILE_FEVER_IGM' OR testtype = 'WEST_NILE_FEVER_ANTIBODIES';
+UPDATE pathogentest SET testeddisease = 'DENGUE' WHERE testtype = 'DENGUE_FEVER_IGM' OR testtype = 'DENGUE_FEVER_ANTIBODIES';
+UPDATE pathogentest SET testeddisease = 'YELLOW_FEVER' WHERE testtype = 'YELLOW_FEVER_IGM' OR testtype = 'YELLOW_FEVER_ANTIBODIES';
+UPDATE pathogentest SET testeddisease = 'PLAGUE' WHERE testtype = 'YERSINIA_PESTIS_ANTIGEN';
+UPDATE pathogentest SET testeddisease = (SELECT disease FROM cases WHERE cases.id = (SELECT associatedcase_id FROM samples WHERE samples.id = pathogentest.sample_id)) WHERE testeddisease IS NULL;
+UPDATE pathogentest SET testtype = 'IGM_SERUM_ANTIBODY' WHERE testtype = 'DENGUE_FEVER_IGM' OR testtype = 'WEST_NILE_FEVER_IGM' OR testtype = 'YELLOW_FEVER_IGM';
+UPDATE pathogentest SET testtype = 'NEUTRALIZING_ANTIBODIES' WHERE testtype = 'DENGUE_FEVER_ANTIBODIES' OR testtype = 'WEST_NILE_FEVER_ANTIBODIES' OR testtype = 'YELLOW_FEVER_ANTIBODIES';
+UPDATE pathogentest SET testtype = 'ANTIGEN_DETECTION' WHERE testtype = 'YERSINIA_PESTIS_ANTIGEN';
+UPDATE samples SET requestedpathogentestsstring = REPLACE(requestedpathogentestsstring, 'DENGUE_FEVER_IGM', 'IGM_SERUM_ANTIBODY');
+UPDATE samples SET requestedpathogentestsstring = REPLACE(requestedpathogentestsstring, 'WEST_NILE_FEVER_IGM', 'IGM_SERUM_ANTIBODY');
+UPDATE samples SET requestedpathogentestsstring = REPLACE(requestedpathogentestsstring, 'YELLOW_FEVER_IGM', 'IGM_SERUM_ANTIBODY');
+UPDATE samples SET requestedpathogentestsstring = REPLACE(requestedpathogentestsstring, 'DENGUE_FEVER_ANTIBODIES', 'NEUTRALIZING_ANTIBODIES');
+UPDATE samples SET requestedpathogentestsstring = REPLACE(requestedpathogentestsstring, 'WEST_NILE_FEVER_ANTIBODIES', 'NEUTRALIZING_ANTIBODIES');
+UPDATE samples SET requestedpathogentestsstring = REPLACE(requestedpathogentestsstring, 'YELLOW_FEVER_ANTIBODIES', 'NEUTRALIZING_ANTIBODIES');
+UPDATE samples SET requestedpathogentestsstring = REPLACE(requestedpathogentestsstring, 'YERSINIA_PESTIS_ANTIGEN', 'ANTIGEN_DETECTION');
+
+INSERT INTO schema_version (version_number, comment) VALUES (148, 'Add tested disease to PathogenTests #1075');
+
+-- 2019-04-29 Rename "no education" back to "nursery" #1073
+UPDATE person SET educationtype='NURSERY' WHERE educationtype='NONE';
+UPDATE person_history SET educationtype='NURSERY' WHERE educationtype='NONE';
+INSERT INTO schema_version (version_number, comment) VALUES (149, 'Rename "no education" back to "nursery" #1073');

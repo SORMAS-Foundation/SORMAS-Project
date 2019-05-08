@@ -43,7 +43,6 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.epidata.TravelType;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -53,10 +52,10 @@ import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
@@ -1637,7 +1636,6 @@ class EventGenerator extends BaseDataGenerator {
         for (int i = 0; i < DEFAULT_RECORD_NUMBER; i++) {
             Event data1 = new Event();
             data1.setUuid(getRandomUuid());
-            data1.setEventType(getRandomEventType());
             data1.setEventStatus(getRandomEventStatus());
             data1.setEventDesc(getRandomSentence());
             data1.setEventDate(getRandomDate());
@@ -1894,7 +1892,7 @@ class UserGenerator extends BaseDataGenerator {
             User data1 = new User();
             data1.setUuid(getRandomUuid());
             data1.setUserName(getRandomUserName());
-            data1.setAktiv(getRandomBoolean());
+            data1.setActive(getRandomBoolean());
             data1.setFirstName(getRandomName());
             data1.setLastName(getRandomName());
             data1.setUserEmail(getRandomEmail());
@@ -2323,15 +2321,6 @@ abstract class BaseDataGenerator {
         List<CauseOfDeath> list = new ArrayList<CauseOfDeath>() {{
             add(CauseOfDeath.EPIDEMIC_DISEASE);
             add(CauseOfDeath.OTHER_CAUSE);
-        }};
-
-        return randomItem(list);
-    }
-
-    public static EventType getRandomEventType() {
-        List<EventType> list = new ArrayList<EventType>() {{
-            add(EventType.RUMOR);
-            add(EventType.OUTBREAK);
         }};
 
         return randomItem(list);

@@ -28,9 +28,6 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-/**
- * Created by Martin Wahnschaffe on 07.06.2016.
- */
 public interface CaseFacadeRetro {
 
     @GET("cases/all/{since}")

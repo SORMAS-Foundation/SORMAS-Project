@@ -17,102 +17,66 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
-import java.util.List;
+import java.util.stream.Collectors;
 
-import com.vaadin.v7.data.Item;
-import com.vaadin.v7.data.util.BeanItemContainer;
-import com.vaadin.v7.data.util.GeneratedPropertyContainer;
-import com.vaadin.v7.data.util.PropertyValueGenerator;
+import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.v7.ui.Grid;
-import com.vaadin.v7.ui.Grid.SelectionModel.HasUserSelectionAllowed;
-import com.vaadin.v7.ui.renderers.HtmlRenderer;
+import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.RegionCriteria;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.V7AbstractGrid;
+import de.symeda.sormas.ui.utils.FilteredGrid;
 
-public class RegionsGrid extends Grid implements V7AbstractGrid<RegionCriteria> {
+public class RegionsGrid extends FilteredGrid<RegionDto, RegionCriteria> {
 
 	private static final long serialVersionUID = 6289713952342575369L;
 
 	public static final String EDIT_BTN_ID = "edit";
-	
-	private RegionCriteria regionCriteria = new RegionCriteria();
 
 	public RegionsGrid() {
+		super(RegionDto.class);
 		setSizeFull();
 		setSelectionMode(SelectionMode.NONE);
-		
-		BeanItemContainer<RegionDto> container = new BeanItemContainer<RegionDto>(RegionDto.class);
-		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
-		setContainerDataSource(generatedContainer);
-		
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			generatedContainer.addGeneratedProperty(EDIT_BTN_ID, new PropertyValueGenerator<String>() {
-				private static final long serialVersionUID = -7255691609662228895L;
 
-				@Override
-				public String getValue(Item item, Object itemId, Object propertyId) {
-					return VaadinIcons.EDIT.getHtml();
-				}
+		DataProvider<RegionDto, RegionCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+				query -> FacadeProvider.getRegionFacade().getIndexList(
+						query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
+						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+						.collect(Collectors.toList())).stream(),
+				query -> {
+					return (int) FacadeProvider.getRegionFacade().count(query.getFilter().orElse(null));
+				});
+		setDataProvider(dataProvider);
 
-				@Override
-				public Class<String> getType() {
-					return String.class;
-				}
-			});
-		}
-		
 		setColumns(RegionDto.NAME, RegionDto.EPID_CODE, RegionDto.POPULATION, RegionDto.GROWTH_RATE);
 
-        for (Column column : getColumns()) {
-        	column.setHeaderCaption(I18nProperties.getPrefixCaption(
-        			RegionDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
-        }
-        
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addColumn(EDIT_BTN_ID);
-			getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
-			getColumn(EDIT_BTN_ID).setWidth(40);
-			getColumn(EDIT_BTN_ID).setHeaderCaption("");
-			
+			Column<RegionDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
+			editColumn.setId(EDIT_BTN_ID);
+			editColumn.setWidth(60);
+
 			addItemClickListener(e -> {
-				if (e.getPropertyId() != null && (e.getPropertyId().equals(EDIT_BTN_ID) || e.isDoubleClick())) {
-					ControllerProvider.getInfrastructureController().editRegion(((RegionDto) e.getItemId()).getUuid());
+				if (e.getColumn() != null && (EDIT_BTN_ID.equals(e.getColumn().getId()) || e.getMouseEventDetails().isDoubleClick())) {
+					ControllerProvider.getInfrastructureController().editRegion(e.getItem().getUuid());
 				}
 			});
 		}
-	}
-	
-	@SuppressWarnings("unchecked")
-	public BeanItemContainer<RegionDto> getContainer() {
-		GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
-		return (BeanItemContainer<RegionDto>) container.getWrappedContainer();
-	}
-	
-	public void reload() {
-		if (getSelectionModel() instanceof HasUserSelectionAllowed) {
-			deselectAll();
-		}
 		
-		List<RegionDto> regions = FacadeProvider.getRegionFacade().getIndexList(regionCriteria);
-		getContainer().removeAllItems();
-		getContainer().addAll(regions);
+		for(Column<?, ?> column : getColumns()) {
+			column.setCaption(I18nProperties.getPrefixCaption(
+					RegionDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+		}
 	}
 
-	@Override
-	public RegionCriteria getCriteria() {
-		return regionCriteria;
+	public void reload() {
+		getDataProvider().refreshAll();
 	}
-	
-	@Override
-	public void setCriteria(RegionCriteria regionCriteria) {
-		this.regionCriteria = regionCriteria;
-	}
+
 }

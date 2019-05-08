@@ -39,6 +39,7 @@ import javax.persistence.criteria.Subquery;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.DashboardVisitDto;
+import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
@@ -127,7 +128,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 		CriteriaQuery<Visit> cq = cb.createQuery(getElementClass());
 		Root<Visit> from = cq.from(getElementClass());
 
-		Predicate filter = buildVisitFilter(contact, null, cb, cq, from);
+		Predicate filter = buildVisitFilter(contact, null, cb, from);
 
 		cq.where(filter);
 		cq.orderBy(cb.asc(from.get(Visit.VISIT_DATE_TIME)));
@@ -141,7 +142,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 		CriteriaQuery<DashboardVisitDto> cq = cb.createQuery(DashboardVisitDto.class);
 		Root<Visit> from = cq.from(getElementClass());
 
-		Predicate filter = buildVisitFilter(contact, null, cb, cq, from);
+		Predicate filter = buildVisitFilter(contact, null, cb, from);
 		if (from != null) {
 			filter = cb.and(filter, cb.or(cb.greaterThan(from.get(Visit.VISIT_DATE_TIME), fromDate), cb.equal(from.get(Visit.VISIT_DATE_TIME), fromDate)));
 		}
@@ -161,7 +162,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Visit> from = cq.from(getElementClass());
 
-		Predicate filter = buildVisitFilter(contact, visitStatus, cb, cq, from);
+		Predicate filter = buildVisitFilter(contact, visitStatus, cb, from);
 
 		cq.select(cb.count(from));
 		cq.where(filter);
@@ -175,7 +176,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Visit> from = cq.from(Visit.class);
 
-		Predicate filter = buildVisitFilter(contactPersonId, disease, null, lastContactDate, contactReportDate, followUpUntil, cb, cq, from);
+		Predicate filter = buildVisitFilter(contactPersonId, disease, null, lastContactDate, contactReportDate, followUpUntil, cb, from);
 
 		cq.where(filter);
 
@@ -190,7 +191,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 		Root<Visit> from = cq.from(getElementClass());
 		Join<Visit, Symptoms> symptoms = from.join(Visit.SYMPTOMS, JoinType.LEFT);
 
-		Predicate filter = buildVisitFilter(contact, null, cb, cq, from);
+		Predicate filter = buildVisitFilter(contact, null, cb, from);
 		filter = cb.and(filter, cb.equal(symptoms.get(Symptoms.SYMPTOMATIC), true));
 
 		cq.select(cb.count(from));
@@ -204,7 +205,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 		CriteriaQuery<Visit> cq = cb.createQuery(getElementClass());
 		Root<Visit> from = cq.from(getElementClass());
 
-		Predicate filter = buildVisitFilter(contact, visitStatus, cb, cq, from);
+		Predicate filter = buildVisitFilter(contact, visitStatus, cb, from);
 
 		cq.where(filter);
 		cq.orderBy(cb.desc(from.get(Visit.VISIT_DATE_TIME)));
@@ -225,7 +226,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 		CriteriaQuery<Visit> cq = cb.createQuery(getElementClass());
 		Root<Visit> from = cq.from(getElementClass());
 
-		Predicate filter = buildVisitFilter(contactPersonId, disease, visitStatus, lastContactDate, contactReportDate, followUpUntil, cb, cq, from);
+		Predicate filter = buildVisitFilter(contactPersonId, disease, visitStatus, lastContactDate, contactReportDate, followUpUntil, cb, from);
 
 		cq.where(filter);
 		cq.orderBy(cb.desc(from.get(Visit.VISIT_DATE_TIME)));
@@ -287,14 +288,14 @@ public class VisitService extends AbstractAdoService<Visit> {
 	/**
 	 * The logic to calculate the listed visits needs to match the ContactService.getAllByVisit method.
 	 */
-	private Predicate buildVisitFilter(Contact contact, VisitStatus visitStatus, CriteriaBuilder cb, CriteriaQuery<?> cq, Root<?> from) {
-		return buildVisitFilter(contact.getPerson().getId(), contact.getCaze().getDisease(), visitStatus, contact.getLastContactDate(), contact.getReportDateTime(), contact.getFollowUpUntil(), cb, cq, from);
+	private Predicate buildVisitFilter(Contact contact, VisitStatus visitStatus, CriteriaBuilder cb, Root<?> from) {
+		return buildVisitFilter(contact.getPerson().getId(), contact.getCaze().getDisease(), visitStatus, contact.getLastContactDate(), contact.getReportDateTime(), contact.getFollowUpUntil(), cb, from);
 	}
 	
 	/**
 	 * The logic to calculate the listed visits needs to match the ContactService.getAllByVisit method.
 	 */
-	private Predicate buildVisitFilter(Long personId, Disease cazeDisease, VisitStatus visitStatus, Date lastContactDate, Date contactReportDate, Date followUpUntil, CriteriaBuilder cb, CriteriaQuery<?> cq, Root<?> from) {
+	private Predicate buildVisitFilter(Long personId, Disease cazeDisease, VisitStatus visitStatus, Date lastContactDate, Date contactReportDate, Date followUpUntil, CriteriaBuilder cb, Root<?> from) {
 		// all of the person
 		Predicate filter = cb.equal(from.get(Visit.PERSON).get(Person.ID), personId);
 
@@ -341,6 +342,16 @@ public class VisitService extends AbstractAdoService<Visit> {
 //		}
 //		return builder.toString();
 //	}
+	
+	public Predicate buildCriteriaFilter(VisitCriteria criteria, CriteriaBuilder cb, Root<Visit> from) {
+		Predicate filter = null;
+		if (criteria.getContact() != null) {
+			Predicate visitFilter = buildVisitFilter(contactService.getByReferenceDto(criteria.getContact()), null, cb, from);
+			filter = and(cb, filter, visitFilter);
+		}
+
+		return filter;
+	}
 
 	@SuppressWarnings("rawtypes")
 	@Override

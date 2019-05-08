@@ -19,16 +19,16 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 
 import java.util.Date;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
-import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.v7.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
@@ -47,8 +47,8 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.GridExportStreamResource;
 
 public class CommunitiesView extends AbstractConfigurationView {
 
@@ -91,7 +91,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 		exportButton.setIcon(VaadinIcons.TABLE);
 		addHeaderComponent(exportButton);
 
-		StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), grid.getColumns(), "sormas_communities", "sormas_communities_" + DateHelper.formatDateForExport(new Date()) + ".csv", CommunitiesGrid.EDIT_BTN_ID);
+		StreamResource streamResource = new GridExportStreamResource(grid, "sormas_communities", "sormas_communities_" + DateHelper.formatDateForExport(new Date()) + ".csv", CommunitiesGrid.EDIT_BTN_ID);
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
 		fileDownloader.extend(exportButton);
 

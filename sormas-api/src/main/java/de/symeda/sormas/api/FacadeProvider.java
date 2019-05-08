@@ -25,6 +25,7 @@ import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
+import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.disease.DiseaseFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
@@ -201,6 +202,10 @@ public class FacadeProvider {
 
 	public static DiseaseFacade getDiseaseFacade() {
 		return get().lookupEjbRemote(DiseaseFacade.class);
+	}
+	
+	public static DiseaseConfigurationFacade getDiseaseConfigurationFacade() {
+		return get().lookupEjbRemote(DiseaseConfigurationFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

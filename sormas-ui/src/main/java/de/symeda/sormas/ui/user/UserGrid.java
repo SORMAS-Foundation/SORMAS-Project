@@ -17,122 +17,83 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
-import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import com.vaadin.v7.data.Item;
-import com.vaadin.v7.data.util.BeanItemContainer;
-import com.vaadin.v7.data.util.GeneratedPropertyContainer;
-import com.vaadin.v7.data.util.PropertyValueGenerator;
-import com.vaadin.v7.data.util.converter.StringToCollectionConverter;
-import com.vaadin.v7.data.util.filter.Compare.Equal;
-import com.vaadin.v7.data.util.filter.Or;
-import com.vaadin.v7.data.util.filter.SimpleStringFilter;
+import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.v7.ui.Grid;
-import com.vaadin.v7.ui.renderers.HtmlRenderer;
+import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.renderers.HtmlRenderer;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.ui.utils.RoleFilter;
-import de.symeda.sormas.ui.utils.V7UuidRenderer;
+import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.CollectionValueProvider;
+import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.UuidRenderer;
 import elemental.json.JsonValue;
 
-public class UserGrid extends Grid {
+@SuppressWarnings("serial")
+public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 
 	private static final long serialVersionUID = -1L;
-	
+
 	private static final String EDIT_BTN_ID = "edit";
 
-	@SuppressWarnings("serial")
+	@SuppressWarnings("unchecked")
 	public UserGrid() {
-        setSizeFull();
+		super(UserDto.class);
+		setSizeFull();
 
-        setSelectionMode(SelectionMode.NONE);
+		setSelectionMode(SelectionMode.NONE);
 
-        BeanItemContainer<UserDto> container = new BeanItemContainer<UserDto>(UserDto.class);
-        GeneratedPropertyContainer editContainer = new GeneratedPropertyContainer(container);
-        // edit button
-        editContainer.addGeneratedProperty(EDIT_BTN_ID, new PropertyValueGenerator<String>() {
-			@Override
-			public String getValue(Item item, Object itemId, Object propertyId) {
-				return VaadinIcons.EDIT.getHtml();
-			}
-			@Override
-			public Class<String> getType() {
-				return String.class;
+		DataProvider<UserDto, UserCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+				query -> FacadeProvider.getUserFacade().getIndexList(
+						query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
+						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+						.collect(Collectors.toList())).stream(),
+				query -> {
+					return (int) FacadeProvider.getUserFacade().count(query.getFilter().orElse(null));
+				});
+		setDataProvider(dataProvider);
+
+		Column<UserDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
+		editColumn.setId(EDIT_BTN_ID);
+		editColumn.setWidth(60);
+
+		setColumns(EDIT_BTN_ID, UserDto.UUID, UserDto.ACTIVE, UserDto.USER_ROLES, UserDto.USER_NAME, 
+				UserDto.NAME, UserDto.USER_EMAIL, UserDto.ADDRESS, UserDto.DISTRICT, UserDto.HEALTH_FACILITY);
+
+		((Column<UserDto, String>) getColumn(UserDto.UUID)).setRenderer(new UuidRenderer());
+		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.USER_ROLES)).setRenderer(new CollectionValueProvider<Set<UserRole>>(), new HtmlRenderer());
+		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.USER_ROLES)).setSortable(false);
+		((Column<UserDto, Boolean>) getColumn(UserDto.ACTIVE)).setRenderer(value -> String.valueOf(value), new ActiveRenderer());
+		
+		for (Column<?, ?> column : getColumns()) {
+			column.setCaption(I18nProperties.getPrefixCaption(
+					UserDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+		}
+
+		addItemClickListener(e ->  {
+			if ((e.getColumn() != null && EDIT_BTN_ID.equals(e.getColumn().getId()))
+					|| e.getMouseEventDetails().isDoubleClick()) {
+				ControllerProvider.getUserController().edit(e.getItem());
 			}
 		});
-        
-        setContainerDataSource(editContainer);
-        
-        setColumns(EDIT_BTN_ID, UserDto.UUID, UserDto.ACTIVE, UserDto.USER_ROLES, UserDto.USER_NAME, UserDto.NAME, UserDto.USER_EMAIL, UserDto.ADDRESS, UserDto.DISTRICT);
-
-        getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
-        getColumn(EDIT_BTN_ID).setWidth(60);
-        getColumn(EDIT_BTN_ID).setHeaderCaption("");
-        
-        getColumn(UserDto.UUID).setRenderer(new V7UuidRenderer());
-
-        getColumn(UserDto.ACTIVE).setRenderer(new ActiveRenderer());
-        getColumn(UserDto.ACTIVE).setWidth(80);
-
-        getColumn(UserDto.USER_ROLES).setConverter(new StringToCollectionConverter());
-
-        for (Column column : getColumns()) {
-        	column.setHeaderCaption(I18nProperties.getPrefixCaption(
-        			UserDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
-        }
 	}
-	
-    public void setUserRoleFilter(UserRole roleToFilter) {
-    	getContainer().removeContainerFilters(UserDto.USER_ROLES);
-    	if (roleToFilter != null) {
-    		RoleFilter roleFilter = new RoleFilter(UserDto.USER_ROLES, roleToFilter);
-	        getContainer().addContainerFilter(roleFilter);
-    	}
-    }
-    
-    public void setActiveFilter(Boolean active) {
-    	getContainer().removeContainerFilters(UserDto.ACTIVE);
-    	if(active!=null) {
-    		Equal activeFilter = new Equal(UserDto.ACTIVE,active);
-    		getContainer().addContainerFilter(activeFilter);
-    	}
-    }
-	
-	public void filterByText(String filterString) {
-    	getContainer().removeContainerFilters(UserDto.NAME);
-    	getContainer().removeContainerFilters(UserDto.USER_NAME);
-    	getContainer().removeContainerFilters(UserDto.USER_EMAIL);
-    	getContainer().removeContainerFilters(UserDto.PHONE);
-    	getContainer().removeContainerFilters(UserDto.UUID);
-        if (filterString.length() > 0) {
-            SimpleStringFilter nameFilter = new SimpleStringFilter(UserDto.NAME, filterString, true, false);
-            SimpleStringFilter userNameFilter = new SimpleStringFilter(UserDto.USER_NAME, filterString, true, false);
-            SimpleStringFilter emailFilter = new SimpleStringFilter(UserDto.USER_EMAIL, filterString, true, false);
-            SimpleStringFilter phoneFilter = new SimpleStringFilter(UserDto.PHONE, filterString, true, false);
-            SimpleStringFilter uuidFilter = new SimpleStringFilter(UserDto.UUID, filterString, true, false);
-            getContainer().addContainerFilter(
-            		new Or(nameFilter, userNameFilter, emailFilter, phoneFilter, uuidFilter));
-        }
-    }
 
-    @SuppressWarnings("unchecked")
-	private BeanItemContainer<UserDto> getContainer() {
-    	GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
-        return (BeanItemContainer<UserDto>) container.getWrappedContainer();
-    }
+	public void reload() {
+		getDataProvider().refreshAll();
+	}
 
-    public void setUsers(Collection<UserDto> users) {
-        getContainer().removeAllItems();
-        getContainer().addAll(users);
-    }
-    
-    @SuppressWarnings("serial")
 	public static class ActiveRenderer extends HtmlRenderer {
-   	 
-        @Override
+		
+		@Override
         public JsonValue encode(String value) {
         	String iconValue = VaadinIcons.CHECK_SQUARE_O.getHtml();
         	if(!Boolean.parseBoolean(value)) {
@@ -140,7 +101,9 @@ public class UserGrid extends Grid {
         	}
             return super.encode(iconValue);
         }
-    }
+
+	}
+
 }
 
 
