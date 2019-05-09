@@ -40,7 +40,7 @@
             <item>
                 <shape android:shape="rectangle">
                     <solid android:color="@color/defaultControlBackground"/>
-                    <stroke android:width="1dp"
+                    <stroke android:width="2dp"
                             android:color="@color/controlStrokeActivated"/>
                 </shape>
 
@@ -58,7 +58,7 @@
             <item>
                 <shape android:shape="rectangle">
                     <solid android:color="@color/defaultControlBackground"/>
-                    <stroke android:width="1dp"
+                    <stroke android:width="2dp"
                             android:color="@color/controlStrokeActivated"/>
                 </shape>
 
@@ -76,7 +76,7 @@
             <item>
                 <shape android:shape="rectangle">
                     <solid android:color="@color/defaultControlBackground"/>
-                    <stroke android:width="1dp"
+                    <stroke android:width="2dp"
                             android:color="@color/controlStrokeActivated"/>
                 </shape>
             </item>
@@ -93,7 +93,7 @@
             <item>
                 <shape android:shape="rectangle">
                     <solid android:color="@color/defaultControlBackground"/>
-                    <stroke android:width="1dp"
+                    <stroke android:width="2dp"
                             android:color="@color/controlStrokeActivated"/>
                 </shape>
 

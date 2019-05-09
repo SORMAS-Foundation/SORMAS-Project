@@ -94,7 +94,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
         List<Disease> diseases = DiseaseConfigurationHelper.getInstance().getAllActivePrimaryDiseases();
         diseaseList = DataUtils.toItems(diseases);
-        if (!diseases.contains(record.getDisease())) {
+        if (record.getDisease() != null && !diseases.contains(record.getDisease())) {
             diseaseList.add(DataUtils.toItem(record.getDisease()));
         }
         typeOfPlaceList = DataUtils.getEnumItems(TypeOfPlace.class, true);

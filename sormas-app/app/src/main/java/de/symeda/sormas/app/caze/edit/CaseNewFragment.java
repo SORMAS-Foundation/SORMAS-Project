@@ -80,7 +80,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 
         List<Disease> diseases = DiseaseConfigurationHelper.getInstance().getAllActivePrimaryDiseases();
         diseaseList = DataUtils.toItems(diseases);
-        if (!diseases.contains(record.getDisease())) {
+        if (record.getDisease() != null && !diseases.contains(record.getDisease())) {
             diseaseList.add(DataUtils.toItem(record.getDisease()));
         }
         plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);

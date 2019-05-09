@@ -25,6 +25,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.databinding.BindingAdapter;
+
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -47,7 +49,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
     // Attributes
 
-    private String hint;
+    protected String hint;
     protected boolean required;
     private boolean softRequired;
 
@@ -456,6 +458,11 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
     public void setNotificationContext(NotificationContext notificationContext) {
         this.notificationContext = notificationContext;
+    }
+
+    @BindingAdapter("hint")
+    public static void setHint(ControlTextEditField view, String hint) {
+        view.setHint(hint);
     }
 
 }

@@ -371,7 +371,7 @@ public class PageMenuControl extends LinearLayout {
         if (mLastAnimation == null) {
             setY(this.mOpenPositionY);
             mLastAnimation = ActionType.SHOW;
-        } else if (mLastAnimation != null && mLastAnimation == ActionType.HIDE) {
+        } else if (mLastAnimation == ActionType.HIDE) {
             setY(this.mClosePositionY);
             this.animate().y(this.mOpenPositionY).setInterpolator(new AccelerateInterpolator()).setListener(new Animator.AnimatorListener() {
                 @Override
@@ -393,7 +393,6 @@ public class PageMenuControl extends LinearLayout {
                 }
             }).start();
         }
-
 
         this.mVisible = true;
         updateFabDrawable();
@@ -548,7 +547,13 @@ public class PageMenuControl extends LinearLayout {
         if (visibility) {
             // make sure fab is not out of screen
             if (getY() > mClosePositionY) {
-                setY(mClosePositionY);
+                if (mLastAnimation == ActionType.SHOW) {
+                    // Force re-positioning; this only happens in lists when the soft
+                    // keyboard used for text filters is hidden
+                    show();
+                } else {
+                    setY(mClosePositionY);
+                }
             }
         }
     }

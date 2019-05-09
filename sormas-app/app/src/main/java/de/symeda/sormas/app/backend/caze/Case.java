@@ -73,6 +73,7 @@ public class Case extends AbstractDomainObject {
     public static final String REPORTING_USER = "reportingUser_id";
     public static final String HEALTH_FACILITY = "healthFacility_id";
     public static final String OUTCOME = "outcome";
+    public static final String EPID_NUMBER = "epidNumber";
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
     private Person person;

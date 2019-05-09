@@ -190,6 +190,7 @@
 
     <style name="ControlTextFieldStyle">
         <item name="android:layout_height">@dimen/maxControlHeight</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:minHeight">@dimen/maxControlHeight</item>
         <item name="android:maxHeight">@dimen/maxControlHeight</item>
         <item name="android:layout_marginBottom">@dimen/controlMarginBottom</item>
@@ -291,8 +292,13 @@
         <item name="android:paddingEnd">@dimen/spinnerIconWidth</item>
     </style>
 
-    <style name="ControlSpinnerFilterStyle" parent="ControlSpinnerStyle">
+    <style name="FilterSpinnerFieldStyle" parent="ControlSpinnerStyle">
         <item name="android:background">@drawable/selector_spinner_filter</item>
+        <item name="android:layout_marginBottom">0dp</item>
+    </style>
+
+    <style name="FilterTextFieldStyle" parent="ControlTextFieldStyle">
+        <item name="android:background">@drawable/selector_text_filter</item>
         <item name="android:layout_marginBottom">0dp</item>
     </style>
 
