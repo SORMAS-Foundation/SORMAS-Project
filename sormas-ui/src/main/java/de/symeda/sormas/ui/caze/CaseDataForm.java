@@ -74,6 +74,7 @@ import de.symeda.sormas.ui.utils.ViewMode;
 public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	private static final String MEDICAL_INFORMATION_LOC = "medicalInformationLoc";
+	private static final String PAPER_FORM_DATES_LOC = "paperFormDatesLoc";
 	private static final String SMALLPOX_VACCINATION_SCAR_IMG = "smallpoxVaccinationScarImg";
 	private static final String CLASSIFICATION_RULES_LOC = "classificationRulesLoc";
 	private static final String CLASSIFIED_BY_SYSTEM_LOC = "classifiedBySystemLoc";
@@ -88,7 +89,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 5, 0, CaseDataDto.CLASSIFICATION_USER),
 					LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 4, 0, CLASSIFIED_BY_SYSTEM_LOC))
 			+ LayoutUtil.fluidRowLocs(9, CaseDataDto.INVESTIGATION_STATUS, 3, CaseDataDto.INVESTIGATED_DATE)
-			+ LayoutUtil.fluidRowLocs(6, CaseDataDto.EPID_NUMBER, 3, null, 3, CaseDataDto.RECEPTION_DATE)
+			+ LayoutUtil.fluidRowLocs(6, CaseDataDto.EPID_NUMBER, 6, null)
 			+ LayoutUtil.fluidRow(
 					new FluidColumn(null, 6, 0, CaseDataDto.DISEASE, null),
 					new FluidColumn(null, 6, 0, null,
@@ -105,7 +106,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.SMALLPOX_VACCINATION_SCAR)
 			+ LayoutUtil.fluidRowLocs(SMALLPOX_VACCINATION_SCAR_IMG)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.VACCINATION_DATE, CaseDataDto.VACCINATION_INFO_SOURCE)
-			+ LayoutUtil.fluidRowLocs("", CaseDataDto.SURVEILLANCE_OFFICER);
+			+ LayoutUtil.fluidRowLocs("", CaseDataDto.SURVEILLANCE_OFFICER)
+			+ LayoutUtil.loc(PAPER_FORM_DATES_LOC)
+			+ LayoutUtil.fluidRowLocs(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE, CaseDataDto.NATIONAL_LEVEL_DATE);
 
 	private final PersonDto person;
 	private final Disease disease;
@@ -126,7 +129,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 
 		// Add fields
-		addFields(CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER, CaseDataDto.RECEPTION_DATE,
+		addFields(CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER,
+				CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE, CaseDataDto.NATIONAL_LEVEL_DATE, 
 				CaseDataDto.CLASSIFICATION_DATE, CaseDataDto.CLASSIFICATION_USER, CaseDataDto.CLASSIFICATION_COMMENT);
 
 		TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
@@ -255,6 +259,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				break;
 			}
 		}
+		
+		Label paperFormDatesLabel = new Label(LayoutUtil.h3(I18nProperties.getString(Strings.headingPaperFormDates)));
+		paperFormDatesLabel.setContentMode(ContentMode.HTML);
+		getContent().addComponent(paperFormDatesLabel, PAPER_FORM_DATES_LOC);
 
 		// Automatic case classification rules button - invisible for other diseases
 		if (disease != Disease.OTHER) {

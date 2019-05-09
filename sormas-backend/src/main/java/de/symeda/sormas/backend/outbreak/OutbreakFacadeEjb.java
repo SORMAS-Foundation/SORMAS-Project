@@ -114,6 +114,13 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	}
 
 	@Override
+	public boolean hasOutbreakAtDate(DistrictReferenceDto district, Disease disease, Date date) {
+		Long count = outbreakService.countByCriteria(
+				new OutbreakCriteria().district(district).disease(disease).active(true, date, date), null);
+		return count > 0;
+	}
+	
+	@Override
 	public OutbreakDto startOutbreak(DistrictReferenceDto district, Disease disease) {
 		OutbreakDto outbreak = getActiveByDistrictAndDisease(district, disease);
 		if (outbreak != null) {

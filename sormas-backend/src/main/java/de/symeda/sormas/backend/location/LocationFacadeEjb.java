@@ -64,6 +64,7 @@ public class LocationFacadeEjb implements LocationFacade {
 		target.setAddress(source.getAddress());
 		target.setDetails(source.getDetails());
 		target.setCity(source.getCity());
+		target.setAreaType(source.getAreaType());
 		
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
@@ -88,6 +89,7 @@ public class LocationFacadeEjb implements LocationFacade {
 		target.setAddress(source.getAddress());
 		target.setDetails(source.getDetails());
 		target.setCity(source.getCity());
+		target.setAreaType(source.getAreaType());
 		
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));

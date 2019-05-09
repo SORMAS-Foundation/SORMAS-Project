@@ -195,6 +195,7 @@ public interface Strings {
 	public static String headingNoTreatmentsSelected = "headingNoTreatmentsSelected";
 	public static String headingNoVisitsSelected = "headingNoVisitsSelected";
 	public static String headingOutbreakIn = "headingOutbreakIn";
+	public static String headingPaperFormDates = "headingPaperFormDates";
 	public static String headingPathogenTestsDeleted = "headingPathogenTestsDeleted";
 	public static String headingPersonData = "headingPersonData";
 	public static String headingPersonInformation = "headingPersonInformation";

@@ -26,6 +26,8 @@ public interface ConfigFacade {
 	
 	String getCountryLocale();
 	
+	String getEpidPrefix();
+	
 	String getAppUrl();
 	
 	boolean isFeatureAutomaticCaseClassification();

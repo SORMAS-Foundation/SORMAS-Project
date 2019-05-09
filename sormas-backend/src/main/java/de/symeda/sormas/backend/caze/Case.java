@@ -79,7 +79,7 @@ public class Case extends AbstractDomainObject {
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String INVESTIGATED_DATE = "investigatedDate";
-	public static final String RECEPTION_DATE = "receptionDate";
+	public static final String DISTRICT_LEVEL_DATE = "districtLevelDate";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String CASE_OFFICER = "caseOfficer";
 	public static final String SYMPTOMS = "symptoms";
@@ -139,7 +139,9 @@ public class Case extends AbstractDomainObject {
 	private Float reportLatLonAccuracy;
 
 	private Date investigatedDate;
-	private Date receptionDate;
+	private Date regionLevelDate;
+	private Date nationalLevelDate;
+	private Date districtLevelDate;
 
 	private User surveillanceOfficer;
 	private User caseOfficer;
@@ -291,12 +293,30 @@ public class Case extends AbstractDomainObject {
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
-	public Date getReceptionDate() {
-		return receptionDate;
+	public Date getRegionLevelDate() {
+		return regionLevelDate;
 	}
 
-	public void setReceptionDate(Date receptionDate) {
-		this.receptionDate = receptionDate;
+	public void setRegionLevelDate(Date regionLevelDate) {
+		this.regionLevelDate = regionLevelDate;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getNationalLevelDate() {
+		return nationalLevelDate;
+	}
+
+	public void setNationalLevelDate(Date nationalLevelDate) {
+		this.nationalLevelDate = nationalLevelDate;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getDistrictLevelDate() {
+		return districtLevelDate;
+	}
+
+	public void setDistrictLevelDate(Date districtLevelDate) {
+		this.districtLevelDate = districtLevelDate;
 	}
 
 	@ManyToOne(cascade = {})

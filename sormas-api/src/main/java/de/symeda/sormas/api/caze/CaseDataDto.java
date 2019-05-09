@@ -64,7 +64,9 @@ public class CaseDataDto extends EntityDto {
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String INVESTIGATED_DATE = "investigatedDate";
-	public static final String RECEPTION_DATE = "receptionDate";
+	public static final String DISTRICT_LEVEL_DATE = "districtLevelDate";
+	public static final String REGION_LEVEL_DATE = "regionLevelDate";
+	public static final String NATIONAL_LEVEL_DATE = "nationalLevelDate";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String SYMPTOMS = "symptoms";
 	public static final String HOSPITALIZATION = "hospitalization";
@@ -109,8 +111,10 @@ public class CaseDataDto extends EntityDto {
 	@Outbreaks
 	@Required
 	private UserReferenceDto reportingUser;
+	private Date regionLevelDate;
+	private Date nationalLevelDate;
 	@Outbreaks
-	private Date receptionDate;
+	private Date districtLevelDate;
 	@Outbreaks
 	@Required
 	private CaseClassification caseClassification;
@@ -148,7 +152,7 @@ public class CaseDataDto extends EntityDto {
 	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.OTHER })
 	@Outbreaks
 	private Vaccination vaccination;
-	@Diseases({ Disease.MEASLES, Disease.CSM, Disease.OTHER })
+	@Diseases({ Disease.MEASLES, Disease.CSM, Disease.YELLOW_FEVER, Disease.OTHER })
 	@Outbreaks
 	private String vaccinationDoses;
 	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.MONKEYPOX, Disease.OTHER })
@@ -306,12 +310,28 @@ public class CaseDataDto extends EntityDto {
 		this.investigatedDate = investigatedDate;
 	}
 
-	public Date getReceptionDate() {
-		return receptionDate;
+	public Date getRegionLevelDate() {
+		return regionLevelDate;
 	}
 
-	public void setReceptionDate(Date receptionDate) {
-		this.receptionDate = receptionDate;
+	public void setRegionLevelDate(Date regionLevelDate) {
+		this.regionLevelDate = regionLevelDate;
+	}
+
+	public Date getNationalLevelDate() {
+		return nationalLevelDate;
+	}
+
+	public void setNationalLevelDate(Date nationalLevelDate) {
+		this.nationalLevelDate = nationalLevelDate;
+	}
+
+	public Date getDistrictLevelDate() {
+		return districtLevelDate;
+	}
+
+	public void setDistrictLevelDate(Date districtLevelDate) {
+		this.districtLevelDate = districtLevelDate;
 	}
 
 	public UserReferenceDto getSurveillanceOfficer() {

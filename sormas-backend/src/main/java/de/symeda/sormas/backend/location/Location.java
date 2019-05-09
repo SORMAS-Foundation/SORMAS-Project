@@ -22,6 +22,7 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.location.LocationReferenceDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.region.Community;
@@ -39,6 +40,7 @@ public class Location extends AbstractDomainObject {
 	public static final String ADDRESS = "address";
 	public static final String DETAILS = "details";
 	public static final String CITY = "city";
+	public static final String AREA_TYPE = "areaType";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -48,6 +50,7 @@ public class Location extends AbstractDomainObject {
 	private String address;
 	private String details;
 	private String city;
+	private AreaType areaType;
 	
 	private Region region;
 	private District district;
@@ -81,6 +84,14 @@ public class Location extends AbstractDomainObject {
 		this.city = city;
 	}
 
+	@Column(length = 255)
+	public AreaType getAreaType() {
+		return areaType;
+	}
+	public void setAreaType(AreaType areaType) {
+		this.areaType = areaType;
+	}
+	
 	@ManyToOne(cascade = {})
 	public Region getRegion() {
 		return region;
