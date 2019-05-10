@@ -118,6 +118,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setClinicalCourse(clinicalCourseDtoHelper.fillOrCreateFromDto(target.getClinicalCourse(), source.getClinicalCourse()));
 
         target.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getSurveillanceOfficer()));
+        target.setClinicianDetails(source.getClinicianDetails());
         target.setPregnant(source.getPregnant());
         target.setVaccination(source.getVaccination());
         target.setVaccinationDoses(source.getVaccinationDoses());
@@ -244,6 +245,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
             target.setClinicalCourse(null);
         }
 
+        target.setClinicianDetails(source.getClinicianDetails());
         target.setPregnant(source.getPregnant());
         target.setVaccination(source.getVaccination());
         target.setVaccinationDoses(source.getVaccinationDoses());

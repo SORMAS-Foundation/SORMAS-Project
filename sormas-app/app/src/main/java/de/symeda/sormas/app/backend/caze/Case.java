@@ -135,6 +135,8 @@ public class Case extends AbstractDomainObject {
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
     private User surveillanceOfficer;
+    @Column(length = 512)
+    private String clinicianDetails;
     @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
     private User caseOfficer;
 
@@ -324,6 +326,14 @@ public class Case extends AbstractDomainObject {
 
     public void setSurveillanceOfficer(User surveillanceOfficer) {
         this.surveillanceOfficer = surveillanceOfficer;
+    }
+
+    public String getClinicianDetails() {
+        return clinicianDetails;
+    }
+
+    public void setClinicianDetails(String clinicianDetails) {
+        this.clinicianDetails = clinicianDetails;
     }
 
     public User getCaseOfficer() {

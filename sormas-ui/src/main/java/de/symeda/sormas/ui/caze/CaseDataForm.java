@@ -106,7 +106,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.SMALLPOX_VACCINATION_SCAR)
 			+ LayoutUtil.fluidRowLocs(SMALLPOX_VACCINATION_SCAR_IMG)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.VACCINATION_DATE, CaseDataDto.VACCINATION_INFO_SOURCE)
-			+ LayoutUtil.fluidRowLocs("", CaseDataDto.SURVEILLANCE_OFFICER)
+			+ LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CLINICIAN_DETAILS)
 			+ LayoutUtil.loc(PAPER_FORM_DATES_LOC)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE, CaseDataDto.NATIONAL_LEVEL_DATE);
 
@@ -157,6 +157,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.COMMUNITY, ComboBox.class);
 		ComboBox facility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
 		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
+		TextField fClinicianDetails = addField(CaseDataDto.CLINICIAN_DETAILS, TextField.class);
 		surveillanceOfficerField.setNullSelectionAllowed(true);
 		
 		addFields(CaseDataDto.PREGNANT,
@@ -228,6 +229,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.SEQUELAE_DETAILS,
 					CaseDataDto.SEQUELAE, Arrays.asList(YesNoUnknown.YES), true);
 		}
+		setVisible(UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS), CaseDataDto.CLINICIAN_DETAILS);
 
 		// Other initializations
 

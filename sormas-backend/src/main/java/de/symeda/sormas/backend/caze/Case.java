@@ -106,6 +106,7 @@ public class Case extends AbstractDomainObject {
 	public static final String CASE_AGE = "caseAge";
 	public static final String ARCHIVED = "archived";
 	public static final String THERAPY = "therapy";
+	public static final String CLINICIAN_DETAILS = "clinicianDetails";
 
 	private Person person;
 	private String description;
@@ -144,6 +145,7 @@ public class Case extends AbstractDomainObject {
 	private Date districtLevelDate;
 
 	private User surveillanceOfficer;
+	private String clinicianDetails;
 	private User caseOfficer;
 
 	private Symptoms symptoms;
@@ -344,6 +346,15 @@ public class Case extends AbstractDomainObject {
 
 	public void setSurveillanceOfficer(User surveillanceOfficer) {
 		this.surveillanceOfficer = surveillanceOfficer;
+	}
+
+	@Column(length = 512)
+	public String getClinicianDetails() {
+		return clinicianDetails;
+	}
+
+	public void setClinicianDetails(String clinicianDetails) {
+		this.clinicianDetails = clinicianDetails;
 	}
 
 	@ManyToOne(cascade = {})

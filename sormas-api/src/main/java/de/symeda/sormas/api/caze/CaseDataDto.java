@@ -87,6 +87,7 @@ public class CaseDataDto extends EntityDto {
 	public static final String OUTCOME_DATE = "outcomeDate";
 	public static final String SEQUELAE = "sequelae";
 	public static final String SEQUELAE_DETAILS = "sequelaeDetails";
+	public static final String CLINICIAN_DETAILS = "clinicianDetails";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -166,6 +167,7 @@ public class CaseDataDto extends EntityDto {
 	private YesNoUnknown smallpoxVaccinationReceived;
 	@Outbreaks
 	private UserReferenceDto surveillanceOfficer;
+	private String clinicianDetails;
 	@Deprecated
 	private UserReferenceDto caseOfficer;
 	private Double reportLat;
@@ -340,6 +342,14 @@ public class CaseDataDto extends EntityDto {
 
 	public void setSurveillanceOfficer(UserReferenceDto surveillanceOfficer) {
 		this.surveillanceOfficer = surveillanceOfficer;
+	}
+
+	public String getClinicianDetails() {
+		return clinicianDetails;
+	}
+
+	public void setClinicianDetails(String clinicianDetails) {
+		this.clinicianDetails = clinicianDetails;
 	}
 
 	@Deprecated

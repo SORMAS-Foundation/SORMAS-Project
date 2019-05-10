@@ -23,7 +23,6 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -114,7 +113,6 @@ public class CaseExportDto implements Serializable {
 			YesNoUnknown traveled, YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown contactWithRodent,
 			//Date onsetDate, 
 			Vaccination vaccination, String vaccinationDoses, Date vaccinationDate, VaccinationInfoSource vaccinationInfoSource) {
-		this.country = FacadeProvider.getConfigFacade().getEpidPrefix();
 		this.id = id;
 		this.personId = personId;
 		this.epiDataId = epiDataId;
