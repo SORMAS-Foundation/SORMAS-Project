@@ -87,8 +87,8 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	public void deletePrescription(String prescriptionUuid, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		// TODO replace this with a proper user right call #944
-		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
-			throw new UnsupportedOperationException("Only admins are allowed to delete entities");
+		if (!user.getUserRoles().contains(UserRole.ADMIN) && !user.getUserRoles().contains(UserRole.CASE_SUPERVISOR)) {
+			throw new UnsupportedOperationException("Only admins and clinicians are allowed to delete prescriptions");
 		}
 		
 		Prescription prescription = service.getByUuid(prescriptionUuid);

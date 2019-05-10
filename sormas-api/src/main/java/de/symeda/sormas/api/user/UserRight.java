@@ -632,7 +632,8 @@ public enum UserRight {
 			CASE_OFFICER
 			),
 	PRESCRIPTION_DELETE(
-			ADMIN
+			ADMIN,
+			CASE_SUPERVISOR
 			),
 	TREATMENT_CREATE(
 			ADMIN,
@@ -645,7 +646,8 @@ public enum UserRight {
 			CASE_OFFICER
 			),
 	TREATMENT_DELETE(
-			ADMIN
+			ADMIN,
+			CASE_SUPERVISOR
 			),
 	CLINICAL_COURSE_VIEW(
 			ADMIN,
@@ -668,7 +670,8 @@ public enum UserRight {
 			CASE_OFFICER
 			),
 	CLINICAL_VISIT_DELETE(
-			ADMIN
+			ADMIN,
+			CASE_SUPERVISOR
 			);
 
 	private final Set<UserRole> defaultUserRoles;
