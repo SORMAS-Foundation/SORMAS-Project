@@ -110,9 +110,9 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 
 		// Handle outbreaks for the disease and district of the case
-		if (FacadeProvider.getOutbreakFacade().hasOutbreak(caze.getDistrict(), caze.getDisease())) {
+		if (FacadeProvider.getOutbreakFacade().hasOutbreak(caze.getDistrict(), caze.getDisease()) && caze.getDisease().usesSimpleViewForOutbreaks()) {
 			hasOutbreak = true;
-			
+
 			//			viewConfiguration.setViewMode(ViewMode.SIMPLE);
 			//			// param might change this
 			//			if (passedParams.length > 1 && passedParams[1].startsWith(VIEW_MODE_URL_PREFIX + "=")) {
@@ -126,6 +126,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 			viewModeToggle.setValue(viewConfiguration.getViewMode());
 			viewModeToggle.addValueChangeListener(viewModeToggleListener);
 			viewModeToggle.setVisible(true);
+
 		} else {
 			hasOutbreak = false;
 			viewModeToggle.setVisible(false);
@@ -134,8 +135,8 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		menu.removeAllViews();
 		menu.addView(CasesView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseCasesList));
 		menu.addView(CaseDataView.VIEW_NAME, I18nProperties.getCaption(CaseDataDto.I18N_PREFIX), params);
-		
-		if (!hasOutbreak || viewConfiguration.getViewMode() != ViewMode.SIMPLE) {
+
+		if (!hasOutbreak || !caze.getDisease().usesSimpleViewForOutbreaks() || viewConfiguration.getViewMode() != ViewMode.SIMPLE) {
 			menu.addView(CasePersonView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON), params);
 			menu.addView(HospitalizationView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HOSPITALIZATION), params);
 			menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
@@ -150,7 +151,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(caze.getDisease())) {
 			menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseContacts), params);
 		}
-		
+
 		infoLabel.setValue(caseRef.getCaption());
 
 		infoLabelSub.setValue(caze.getDisease() != Disease.OTHER
@@ -161,7 +162,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 	public CaseReferenceDto getCaseRef() {
 		return caseRef;
 	}
-	
+
 	public boolean isHasOutbreak() {
 		return hasOutbreak;
 	}
@@ -170,7 +171,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		if (Boolean.FALSE.equals(hasOutbreak)) {
 			return ViewMode.NORMAL;
 		}
-		
+
 		return viewConfiguration.getViewMode();
 	}
 }
