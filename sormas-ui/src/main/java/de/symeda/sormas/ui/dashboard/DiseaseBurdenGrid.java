@@ -48,7 +48,7 @@ public class DiseaseBurdenGrid extends Grid {
 				DiseaseBurdenDto.DISEASE, 
 				DiseaseBurdenDto.CASE_COUNT, 
 				DiseaseBurdenDto.PREVIOUS_CASE_COUNT,
-				DiseaseBurdenDto.CASES_DIFFERENCE, 
+				DiseaseBurdenDto.CASES_DIFFERENCE_PERCENTAGE, 
 				DiseaseBurdenDto.EVENT_COUNT,
 				DiseaseBurdenDto.OUTBREAK_DISTRICT_COUNT,
 				DiseaseBurdenDto.CASE_DEATH_COUNT,
@@ -67,7 +67,7 @@ public class DiseaseBurdenGrid extends Grid {
 		getColumn(DiseaseBurdenDto.CASE_FATALITY_RATE).setRenderer(new PercentageRenderer());
 
 		// format casesGrowth column with chevrons
-		getColumn(DiseaseBurdenDto.CASES_DIFFERENCE).setConverter(new StringToLongConverter() {
+		getColumn(DiseaseBurdenDto.CASES_DIFFERENCE_PERCENTAGE).setConverter(new StringToLongConverter() {
 			@Override
 			public String convertToPresentation(Long value, Class<? extends String> targetType, Locale locale)
 					throws ConversionException {
@@ -87,11 +87,14 @@ public class DiseaseBurdenGrid extends Grid {
 					criticalLevel = CssStyles.LABEL_IMPORTANT;
 				}
 
-				stringRepresentation = "<div class=\"v-label v-widget " + criticalLevel + " v-label-" + criticalLevel
-						+ " align-center v-label-align-center bold v-label-bold large v-label-large v-has-width\" "
-						+ "	  style=\"width: 15px;\">"
-						+ "		<span class=\"v-icon\" style=\"font-family: VaadinIcons;\">" + chevronType
-						+ "		</span>" + "</div>";
+				stringRepresentation = 
+					"<div>"
+					+	"<span class=\"align-center v-label-align-center\" style=\"display: inline-block; margin-top: 2px; margin-right: 8px;\">" + (Math.abs(value) * 100) + "%" + "</span>"
+					+	"<div class=\"v-label v-widget " + criticalLevel + " v-label-" + criticalLevel
+					+		" align-center v-label-align-center bold v-label-bold large v-label-large v-has-width\" "
+					+		" style=\"width: 15px;\">"
+					+	"<span class=\"v-icon\" style=\"font-family: VaadinIcons;\">" + chevronType + "</span>" 
+					+ "</div></div>";
 
 				return stringRepresentation;
 			}
