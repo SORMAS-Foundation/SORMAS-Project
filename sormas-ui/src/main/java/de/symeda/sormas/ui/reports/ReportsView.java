@@ -119,7 +119,7 @@ public class ReportsView extends AbstractView {
 		filterLayout.addComponent(lastWeekButton);
 
 		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
-		infoLabel.setDescription(I18nProperties.getString(Strings.infoWeeklyReportsView));
+		infoLabel.setDescription(I18nProperties.getString(Strings.infoWeeklyReportsView), ContentMode.HTML);
 		infoLabel.setSizeUndefined();
 		CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
 		filterLayout.addComponent(infoLabel);
