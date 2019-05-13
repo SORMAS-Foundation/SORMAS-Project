@@ -62,6 +62,8 @@ public class DiseaseBurdenGrid extends Grid {
 						column.getPropertyId().toString(), column.getHeaderCaption()));
 			}
 		}
+		
+		getColumn(DiseaseBurdenDto.CASES_DIFFERENCE_PERCENTAGE).setHeaderCaption(I18nProperties.getPrefixCaption(DiseaseBurdenDto.I18N_PREFIX, DiseaseBurdenDto.CASES_DIFFERENCE));
 
 		// format columns
 		getColumn(DiseaseBurdenDto.CASE_FATALITY_RATE).setRenderer(new PercentageRenderer());
