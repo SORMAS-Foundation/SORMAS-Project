@@ -81,10 +81,17 @@ public class DiseaseBurdenDto  implements Serializable {
 		return getCaseCount() - getPreviousCaseCount();
 	}
 	
-	public Long getCasesDifferencePercentage() {
-		Long percentage = getCasesDifference() / (getPreviousCaseCount() == 0 ? 1 : getPreviousCaseCount());
-//		percentage = Math.round(percentage * 100) / 100f;
-		return percentage;
+	public Float getCasesDifferencePercentage() {
+		float percentage = 0f;
+		
+		if (getPreviousCaseCount() == 0 && getCaseCount() > 0)
+			percentage = 100f;
+		else if (getCaseCount() == 0 && getPreviousCaseCount() > 0)
+			percentage = -100f;
+		else
+			percentage = (float)getCasesDifference() / (float)(getPreviousCaseCount() == 0 ? 1 : getPreviousCaseCount());
+
+		return Math.round(percentage * 10) / 10.0f;
 	}
 	
 	public Long getEventCount() {

@@ -22,6 +22,7 @@ import java.util.Locale;
 
 import com.vaadin.v7.data.util.BeanItemContainer;
 import com.vaadin.v7.data.util.GeneratedPropertyContainer;
+import com.vaadin.v7.data.util.converter.StringToFloatConverter;
 import com.vaadin.v7.data.util.converter.StringToLongConverter;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.v7.ui.Grid;
@@ -69,9 +70,9 @@ public class DiseaseBurdenGrid extends Grid {
 		getColumn(DiseaseBurdenDto.CASE_FATALITY_RATE).setRenderer(new PercentageRenderer());
 
 		// format casesGrowth column with chevrons
-		getColumn(DiseaseBurdenDto.CASES_DIFFERENCE_PERCENTAGE).setConverter(new StringToLongConverter() {
+		getColumn(DiseaseBurdenDto.CASES_DIFFERENCE_PERCENTAGE).setConverter(new StringToFloatConverter() {
 			@Override
-			public String convertToPresentation(Long value, Class<? extends String> targetType, Locale locale)
+			public String convertToPresentation(Float value, Class<? extends String> targetType, Locale locale)
 					throws ConversionException {
 
 				String stringRepresentation = super.convertToPresentation(value, targetType, locale);
@@ -88,15 +89,23 @@ public class DiseaseBurdenGrid extends Grid {
 					chevronType = VaadinIcons.CHEVRON_RIGHT.getHtml();
 					criticalLevel = CssStyles.LABEL_IMPORTANT;
 				}
+				
+				String strValue = "" + Math.abs(value);
+				if (strValue.equals("100.0"))
+					strValue = "100";
+//				or use below to remove insignificant decimals
+//				if (strValue.endsWith(".0"))
+//					strValue = strValue.substring(0, strValue.length() - 3);
 
 				stringRepresentation = 
-					"<div>"
-					+	"<span class=\"align-center v-label-align-center\" style=\"display: inline-block; margin-top: 2px; margin-right: 8px;\">" + (Math.abs(value) * 100) + "%" + "</span>"
+					  "<div style=\"width:100%\">"
+					+	"<div class=\"\" style=\"display: inline-block;margin-top: 2px;width: 70%;text-align:left;\">" + strValue + "%" + "</div>"
 					+	"<div class=\"v-label v-widget " + criticalLevel + " v-label-" + criticalLevel
 					+		" align-center v-label-align-center bold v-label-bold large v-label-large v-has-width\" "
-					+		" style=\"width: 15px;\">"
-					+	"<span class=\"v-icon\" style=\"font-family: VaadinIcons;\">" + chevronType + "</span>" 
-					+ "</div></div>";
+					+		" style=\"width: 15px;width: 30%;text-align: left;\">"
+					+		"<span class=\"v-icon\" style=\"font-family: VaadinIcons;\">" + chevronType + "</span>" 
+					+ 	"</div>"
+					+ "</div>";
 
 				return stringRepresentation;
 			}
