@@ -52,6 +52,13 @@ public class CaseListAdapter extends BindingPagedListAdapter<Case, RowCaseListIt
 
             indicateCaseClassification(pagedHolder.binding.imgCaseStatusIcon, item);
 
+            // #1123 Temporary code to get more information
+            if (item.getPerson() == null) {
+                throw new NullPointerException("getPerson() is null; Case: " + item.getUuid() + "; Position in list: " + position
+                        + "; Change date: " + item.getChangeDate() + "; Creation date: " + item.getCreationDate()
+                        + "; Symptoms null?: " + (item.getSymptoms() == null));
+            }
+
             //Sync Icon
             if (item.isModified() || item.getPerson().isModified()) {
                 pagedHolder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
