@@ -175,11 +175,13 @@ public class CaseListActivity extends PagedBaseListActivity {
 
         caseListFilterBinding.applyFilters.setOnClickListener(e -> {
             showPreloader();
+            pageMenu.hideAll();
             model.notifyCriteriaUpdated();
         });
 
         caseListFilterBinding.resetFilters.setOnClickListener(e -> {
             showPreloader();
+            pageMenu.hideAll();
             caseListFilterBinding.textFilter.setValue(null);
             caseListFilterBinding.diseaseFilter.setValue(null);
             caseListFilterBinding.classificationFilter.setValue(null);
