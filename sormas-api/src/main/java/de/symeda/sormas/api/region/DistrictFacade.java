@@ -42,7 +42,7 @@ public interface DistrictFacade {
 	
 	DistrictReferenceDto getDistrictReferenceByUuid(String uuid);
 	
-	DistrictReferenceDto getDistrictReferenceById(int id);
+	DistrictReferenceDto getDistrictReferenceById(long id);
 
 	List<DistrictReferenceDto> getAllAsReference();
 

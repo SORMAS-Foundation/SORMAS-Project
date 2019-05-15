@@ -745,7 +745,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         return setActivePage(pageItem);
     }
 
-    private void ensureFabHiddenOnSoftKeyboardShown(final PageMenuControl landingPageMenuControl) {
+    protected void ensureFabHiddenOnSoftKeyboardShown(final PageMenuControl landingPageMenuControl) {
         final View _rootView = getRootView();
 
         if (_rootView == null)
@@ -766,14 +766,20 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                 // if keypad is shown, the r.bottom is smaller than that before.
                 int keypadHeight = screenHeight - r.bottom;
 
-                if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
-                    // keyboard is opened
-                    if (landingPageMenuControl != null) {
-                        landingPageMenuControl.hideAll();
+                if (!(BaseActivity.this instanceof PagedBaseListActivity)) {
+                    if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
+                        // keyboard is opened
+                        if (landingPageMenuControl != null) {
+                            landingPageMenuControl.hideAll();
+                        }
                     }
-                }
-                else {
-                    // keyboard is closed
+                    else {
+                        // keyboard is closed
+                        if (landingPageMenuControl != null) {
+                            landingPageMenuControl.showFab();
+                        }
+                    }
+                } else {
                     if (landingPageMenuControl != null) {
                         landingPageMenuControl.showFab();
                     }

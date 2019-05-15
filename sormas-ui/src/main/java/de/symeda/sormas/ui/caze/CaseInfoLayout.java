@@ -74,6 +74,11 @@ public class CaseInfoLayout extends HorizontalLayout {
 						I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
 				leftColumnLayout.addComponent(ageSexLayout);
 			}
+			
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
+				addDescLabel(leftColumnLayout, caseDto.getClinicianDetails(),
+						I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICIAN_DETAILS));
+			}
 		}
 		this.addComponent(leftColumnLayout);
 

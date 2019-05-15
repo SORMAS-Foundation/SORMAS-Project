@@ -143,7 +143,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 // get the embedded entity
                 AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(ado);
 
-                if (parentProperty.equals(property.getName())) {
+                if (embeddedAdo == null || parentProperty.equals(property.getName())) {
                     continue;
                 }
 

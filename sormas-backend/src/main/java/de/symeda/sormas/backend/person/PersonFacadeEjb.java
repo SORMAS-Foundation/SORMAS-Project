@@ -316,7 +316,7 @@ public class PersonFacadeEjb implements PersonFacade {
 					personCase.setCaseAge(0);
 				} else {
 					Date now = new Date();
-					Date referenceDate = CaseLogic.getStartDate(personCase.getSymptoms().getOnsetDate(), personCase.getReceptionDate(), personCase.getReportDate());
+					Date referenceDate = CaseLogic.getStartDate(personCase.getSymptoms().getOnsetDate(), personCase.getDistrictLevelDate(), personCase.getReportDate());
 					personCase.setCaseAge(newPerson.getApproximateAge() - DateHelper.getYearsBetween(referenceDate, now));
 					if (personCase.getCaseAge() < 0) {
 						personCase.setCaseAge(0);

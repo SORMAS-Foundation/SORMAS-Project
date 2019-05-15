@@ -195,6 +195,7 @@ public interface Strings {
 	public static String headingNoTreatmentsSelected = "headingNoTreatmentsSelected";
 	public static String headingNoVisitsSelected = "headingNoVisitsSelected";
 	public static String headingOutbreakIn = "headingOutbreakIn";
+	public static String headingPaperFormDates = "headingPaperFormDates";
 	public static String headingPathogenTestsDeleted = "headingPathogenTestsDeleted";
 	public static String headingPersonData = "headingPersonData";
 	public static String headingPersonInformation = "headingPersonInformation";
@@ -360,6 +361,8 @@ public interface Strings {
 	public static String notificationCaseInvestigationDoneSubject = "notificationCaseInvestigationDoneSubject";
 	public static String notificationContactSymptomatic = "notificationContactSymptomatic";
 	public static String notificationContactSymptomaticSubject = "notificationContactSymptomaticSubject";
+	public static String notificationDiseaseChanged = "notificationDiseaseChanged";
+	public static String notificationDiseaseChangedSubject = "notificationDiseaseChangedSubject";
 	public static String notificationLabResultArrived = "notificationLabResultArrived";
 	public static String notificationLabResultArrivedSubject = "notificationLabResultArrivedSubject";
 	public static String notificationLabResultSpecified = "notificationLabResultSpecified";
@@ -404,6 +407,7 @@ public interface Strings {
 	public static String promptContactsSearchField = "promptContactsSearchField";
 	public static String promptDisease = "promptDisease";
 	public static String promptDistrict = "promptDistrict";
+	public static String promptNamePhoneEmail = "promptNamePhoneEmail";
 	public static String promptNewCaseDateType = "promptNewCaseDateType";
 	public static String promptPrescriptionTextFilter = "promptPrescriptionTextFilter";
 	public static String promptRegion = "promptRegion";

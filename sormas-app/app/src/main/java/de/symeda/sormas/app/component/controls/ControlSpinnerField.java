@@ -284,7 +284,7 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 
     @Override
     public void setHint(String hint) {
-        // Hint is handled in adapter
+        this.hint = hint;
     }
 
     @Override

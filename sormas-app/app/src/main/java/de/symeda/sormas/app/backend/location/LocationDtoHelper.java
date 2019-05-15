@@ -64,6 +64,7 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 
         target.setAddress(source.getAddress());
         target.setCity(source.getCity());
+        target.setAreaType(source.getAreaType());
         target.setDetails(source.getDetails());
         target.setLatitude(source.getLatitude());
         target.setLongitude(source.getLongitude());
@@ -79,6 +80,7 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 
         target.setAddress(source.getAddress());
         target.setCity(source.getCity());
+        target.setAreaType(source.getAreaType());
         target.setDetails(source.getDetails());
         target.setLatitude(source.getLatitude());
         target.setLongitude(source.getLongitude());

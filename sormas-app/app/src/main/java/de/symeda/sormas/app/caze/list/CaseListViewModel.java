@@ -30,6 +30,7 @@ import androidx.paging.PagedList;
 import androidx.paging.PositionalDataSource;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseCriteria;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
 public class CaseListViewModel extends ViewModel {
@@ -39,7 +40,9 @@ public class CaseListViewModel extends ViewModel {
 
     public CaseListViewModel() {
         caseDataFactory = new CaseDataFactory();
-        caseDataFactory.setInvestigationStatus(InvestigationStatus.PENDING);
+        CaseCriteria caseCriteria = new CaseCriteria();
+        caseCriteria.investigationStatus(InvestigationStatus.PENDING);
+        caseDataFactory.setCaseCriteria(caseCriteria);
         PagedList.Config config = new PagedList.Config.Builder()
                         .setEnablePlaceholders(true)
                         .setInitialLoadSizeHint(32)
@@ -53,44 +56,42 @@ public class CaseListViewModel extends ViewModel {
         return casesList;
     }
 
-    public void setInvestigationStatus(InvestigationStatus investigationStatus) {
-        InvestigationStatus currentInvestigationStatus = caseDataFactory.getInvestigationStatus();
-        caseDataFactory.setInvestigationStatus(investigationStatus);
+    void notifyCriteriaUpdated() {
         if (casesList.getValue() != null) {
             casesList.getValue().getDataSource().invalidate();
-            if (!casesList.getValue().isEmpty() && currentInvestigationStatus != investigationStatus) {
+            if (!casesList.getValue().isEmpty()) {
                 casesList.getValue().loadAround(0);
             }
         }
     }
 
-    public InvestigationStatus getInvestigationStatus() {
-        return caseDataFactory.getInvestigationStatus();
+    public CaseCriteria getCaseCriteria() {
+        return caseDataFactory.getCaseCriteria();
     }
 
     public static class CaseDataSource extends PositionalDataSource<Case> {
 
-        private InvestigationStatus investigationStatus;
+        private CaseCriteria caseCriteria;
 
-        CaseDataSource(InvestigationStatus investigationStatus) {
-            this.investigationStatus = investigationStatus;
+        CaseDataSource(CaseCriteria caseCriteria) {
+            this.caseCriteria = caseCriteria;
         }
 
         @Override
         public void loadInitial(@NonNull LoadInitialParams params, @NonNull LoadInitialCallback<Case> callback) {
-            long totalCount = DatabaseHelper.getCaseDao().countOfEq(Case.INVESTIGATION_STATUS, investigationStatus);
+            long totalCount = DatabaseHelper.getCaseDao().countByCriteria(caseCriteria);
             int offset = params.requestedStartPosition;
             int count = params.requestedLoadSize;
             if (offset + count > totalCount) {
                 offset = (int) Math.max(0, totalCount - count);
             }
-            List<Case> cases = DatabaseHelper.getCaseDao().queryBaseForEq(Case.INVESTIGATION_STATUS, investigationStatus, Case.REPORT_DATE, false, offset, count);
-            callback.onResult(cases, offset, (int)totalCount);
+            List<Case> cases = DatabaseHelper.getCaseDao().queryByCriteria(caseCriteria, offset, count);
+            callback.onResult(cases, offset, (int) totalCount);
         }
 
         @Override
         public void loadRange(@NonNull LoadRangeParams params, @NonNull LoadRangeCallback<Case> callback) {
-            List<Case> cases = DatabaseHelper.getCaseDao().queryBaseForEq(Case.INVESTIGATION_STATUS, investigationStatus, Case.REPORT_DATE, false, params.startPosition, params.loadSize);
+            List<Case> cases = DatabaseHelper.getCaseDao().queryByCriteria(caseCriteria, params.startPosition, params.loadSize);
             callback.onResult(cases);
         }
     }
@@ -99,7 +100,7 @@ public class CaseListViewModel extends ViewModel {
 
         private MutableLiveData<CaseDataSource> mutableDataSource;
         private CaseDataSource caseDataSource;
-        private InvestigationStatus investigationStatus;
+        private CaseCriteria caseCriteria;
 
         CaseDataFactory() {
             this.mutableDataSource = new MutableLiveData<>();
@@ -108,17 +109,17 @@ public class CaseListViewModel extends ViewModel {
         @NonNull
         @Override
         public DataSource create() {
-            caseDataSource = new CaseDataSource(investigationStatus);
+            caseDataSource = new CaseDataSource(caseCriteria);
             mutableDataSource.postValue(caseDataSource);
             return caseDataSource;
         }
 
-        void setInvestigationStatus(InvestigationStatus investigationStatus) {
-            this.investigationStatus = investigationStatus;
+        void setCaseCriteria(CaseCriteria caseCriteria) {
+            this.caseCriteria = caseCriteria;
         }
 
-        InvestigationStatus getInvestigationStatus() {
-            return investigationStatus;
+        CaseCriteria getCaseCriteria() {
+            return caseCriteria;
         }
     }
 

@@ -15,28 +15,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.caze;
+package de.symeda.sormas.rest;
 
-import java.util.Date;
+import java.io.IOException;
 
-import de.symeda.sormas.api.utils.ValidationException;
+import javax.ejb.EJB;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
 
-public class CaseLogic {
+@WebFilter(asyncSupported = true, urlPatterns = "/*")
+public class SessionFilter implements Filter {
 
-	public static void validateInvestigationDoneAllowed(CaseDataDto caze) throws ValidationException {
-		if (caze.getCaseClassification() == CaseClassification.NOT_CLASSIFIED) {
-			throw new ValidationException("Not allowed to set investigation status to done for an unclassified case.");
-		}
-	}
+	//protected static final Logger LOGGER = LoggerFactory.getLogger(SessionFilter.class);
 	
-	public static Date getStartDate(Date onsetDate, Date districtLevelDate, Date reportDate) {
-		if (onsetDate != null) {
-			return onsetDate;
-		} else if (districtLevelDate != null) {
-			return districtLevelDate;
-		} else {
-			return reportDate;
-		}
+	@EJB
+	private SessionFilterBean sessionFilterBean;
+
+	@Override
+	public void destroy() {
 	}
-	
+
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		sessionFilterBean.doFilter(chain, request, response);
+	}
+
+	@Override
+	public void init(FilterConfig cfg) throws ServletException {
+	}
+
 }

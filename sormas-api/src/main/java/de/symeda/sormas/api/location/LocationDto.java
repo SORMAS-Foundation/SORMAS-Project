@@ -32,6 +32,7 @@ public class LocationDto extends EntityDto {
 	public static final String ADDRESS = "address";
 	public static final String DETAILS = "details";
 	public static final String CITY = "city";
+	public static final String AREA_TYPE = "areaType";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -45,6 +46,7 @@ public class LocationDto extends EntityDto {
 	private String address;
 	private String details;
 	private String city;
+	private AreaType areaType;
 	private Double latitude;
 	private Double longitude;
 	private Float latLonAccuracy;
@@ -69,7 +71,12 @@ public class LocationDto extends EntityDto {
 	public void setCity(String city) {
 		this.city = city;
 	}
-	
+	public AreaType getAreaType() {
+		return areaType;
+	}
+	public void setAreaType(AreaType areaType) {
+		this.areaType = areaType;
+	}
 	public RegionReferenceDto getRegion() {
 		return region;
 	}
@@ -117,8 +124,8 @@ public class LocationDto extends EntityDto {
 	}
 	
 	public boolean isEmptyLocation() {
-		return address == null && details == null && city == null && region == null
-				&& district == null && community == null;
+		return address == null && details == null && city == null && areaType == null 
+				&& region == null && district == null && community == null;
 	}
 	
 	public Float getLatLonAccuracy() {

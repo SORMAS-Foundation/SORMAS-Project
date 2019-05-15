@@ -263,23 +263,20 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		customFields.add(field);
 		return field;
 	}
-	@SuppressWarnings("rawtypes")
-	protected ComboBox addDiseaseField(String fieldId, boolean showNonPrimaryDiseases) {
-		return addDiseaseField(fieldId, showNonPrimaryDiseases, null);
-	}
 
 	/**
 	 * Adds the field to the form by using addField(fieldId, fieldType), but additionally sets up a ValueChangeListener
 	 * that makes sure the value that is about to be selected is added to the list of allowed values. This is intended
 	 * to be used for Disease fields that might contain a disease that is no longer active in the system and thus will
 	 * not be returned by DiseaseHelper.isActivePrimaryDisease(disease).
-	 * 
-	 * @param includedDisease A disease that should always be included in the list, no matter its status on the system
 	 */
 	@SuppressWarnings("rawtypes")
-	protected ComboBox addDiseaseField(String fieldId, boolean showNonPrimaryDiseases, Disease includedDisease) {
+	protected ComboBox addDiseaseField(String fieldId, boolean showNonPrimaryDiseases) {
 		ComboBox field = addField(fieldId, ComboBox.class);
-		populateWithDiseaseData(field, showNonPrimaryDiseases, includedDisease);
+		if (showNonPrimaryDiseases) {
+			addNonPrimaryDiseasesTo(field);
+		}
+		// Make sure that the ComboBox still contains a pre-selected inactive disease
 		field.addValueChangeListener(e -> {
 			Object value = e.getProperty().getValue();
 			if (value != null && !field.containsId(value)) {
@@ -458,6 +455,18 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		}
 	}
 
+	protected void addNonPrimaryDiseasesTo(ComboBox diseaseField) {
+		List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllActiveDiseases();
+		for (Disease disease : diseases) {
+			if (diseaseField.getItem(disease) != null) {
+				continue;
+			}
+
+			Item newItem = diseaseField.addItem(disease);
+			newItem.getItemProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(disease.toString());
+		}
+	}
+
 	/**
 	 * Sets the initial visibilities based on annotations and builds a list of all fields in a form that are allowed to be visible - 
 	 * this is either because the @Diseases and @Outbreaks annotations are not relevant or at least one of these annotations are present on the respective field.
@@ -501,25 +510,6 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 
 	protected boolean isVisibleAllowed(String propertyId) {
 		return isVisibleAllowed(getFieldGroup().getField(propertyId));
-	}
-
-	protected void populateWithDiseaseData(ComboBox diseaseField, boolean showNonPrimaryDiseases, Disease includedDisease) {
-		diseaseField.removeAllItems();
-		for (Object p : diseaseField.getContainerPropertyIds()) {
-			diseaseField.removeContainerProperty(p);
-		}
-		diseaseField.addContainerProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID, String.class, "");
-		diseaseField.setItemCaptionPropertyId(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID);
-		List<Disease> diseases = null;
-		if (showNonPrimaryDiseases) {
-			diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllActiveDiseases(includedDisease);
-		} else {
-			diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases();
-		}
-		for (Disease disease : diseases) {
-			Item newItem = diseaseField.addItem(disease);
-			newItem.getItemProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(disease.toString());
-		}
 	}
 
 }

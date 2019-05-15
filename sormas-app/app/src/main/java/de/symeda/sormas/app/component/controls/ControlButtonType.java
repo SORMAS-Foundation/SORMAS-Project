@@ -54,7 +54,11 @@ public enum ControlButtonType {
     LINE_WARNING(ControlButtonSubType.LINE, R.color.warningButton, R.color.warningButtonFocused,
             R.color.warningButtonPressed, R.color.warningButtonDisabled, R.color.warningLineButtonText),
     LINE_DANGER(ControlButtonSubType.LINE, R.color.dangerButton, R.color.dangerButtonFocused,
-            R.color.dangerButtonPressed, R.color.dangerButtonDisabled, R.color.dangerLineButtonText);
+            R.color.dangerButtonPressed, R.color.dangerButtonDisabled, R.color.dangerLineButtonText),
+    FILTER_PRIMARY(ControlButtonSubType.FILTER, R.color.primaryButton, R.color.primaryButtonFocused,
+            R.color.primaryButtonPressed, R.color.primaryButtonDisabled, R.color.primaryButtonText),
+    FILTER_SECONDARY(ControlButtonSubType.FILTER, R.color.secondaryButton, R.color.secondaryButtonFocused,
+            R.color.secondaryButtonPressed, R.color.secondaryButtonDisabled, R.color.secondaryButtonText);
 
     private ControlButtonSubType subType;
     private int buttonColorNormal;
@@ -105,7 +109,11 @@ public enum ControlButtonType {
             drawable.setColor(color);
         }
 
-        drawable.setCornerRadius(resources.getDimension(R.dimen.defaultButtonRadius));
+        if (subType != ControlButtonSubType.FILTER) {
+            drawable.setCornerRadius(resources.getDimension(R.dimen.defaultButtonRadius));
+        } else {
+            drawable.setCornerRadius(0);
+        }
 
         if (rounded) {
             drawable.setCornerRadius(resources.getDimension(R.dimen.roundButtonRadius));
@@ -117,7 +125,8 @@ public enum ControlButtonType {
     private enum ControlButtonSubType {
         NORMAL,
         INVERSE,
-        LINE;
+        LINE,
+        FILTER;
     }
 
 }

@@ -112,9 +112,9 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 			if (importedCase.getSymptoms().getOnsetDate() != null) {
 				caseDateField.setCaption(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
 				caseDateField.setValue(DateHelper.formatLocalShortDate(importedCase.getSymptoms().getOnsetDate()));
-			} else if (importedCase.getReceptionDate() != null) {
-				caseDateField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RECEPTION_DATE));
-				caseDateField.setValue(DateHelper.formatLocalShortDate(importedCase.getReceptionDate()));
+			} else if (importedCase.getDistrictLevelDate() != null) {
+				caseDateField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT_LEVEL_DATE));
+				caseDateField.setValue(DateHelper.formatLocalShortDate(importedCase.getDistrictLevelDate()));
 			} else {
 				caseDateField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORT_DATE));
 				caseDateField.setValue(DateHelper.formatLocalShortDate(importedCase.getReportDate()));

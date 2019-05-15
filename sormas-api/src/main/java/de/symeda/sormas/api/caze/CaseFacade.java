@@ -110,7 +110,7 @@ public interface CaseFacade {
 	
 	Date getOldestCaseOnsetDate();
 	
-	Date getOldestCaseReceptionDate();
+	Date getOldestDistrictLevelDate();
 	
 	Date getOldestCaseReportDate();
 	

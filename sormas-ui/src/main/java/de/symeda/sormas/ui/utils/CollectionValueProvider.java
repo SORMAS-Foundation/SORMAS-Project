@@ -38,7 +38,10 @@ public class CollectionValueProvider<T extends Collection> implements
             b.append(o.toString());
             b.append(", ");
         }
-        return b.substring(0, b.length() - 2);
+        if (b.length() >= 2) {
+        	return b.substring(0, b.length() - 2);
+        }
+        return "";
     }
 
 }

@@ -39,8 +39,9 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
     				LayoutUtil.fluidRow(
     						LayoutUtil.loc(LocationDto.ADDRESS), 
     						LayoutUtil.divs(
-    								LayoutUtil.fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT),
-    								LayoutUtil.fluidRowLocs(LocationDto.COMMUNITY, LocationDto.CITY))),
+    								LayoutUtil.fluidRowLocs(LocationDto.AREA_TYPE, LocationDto.CITY))),
+    				LayoutUtil.fluidRowLocs(
+    						LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY),
     				LayoutUtil.fluidRow(
     						LayoutUtil.loc(LocationDto.DETAILS), 
     						LayoutUtil.fluidRowLocs(LocationDto.LATITUDE, LocationDto.LONGITUDE, LocationDto.LAT_LON_ACCURACY))
@@ -59,6 +60,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
     	addField(LocationDto.ADDRESS, TextArea.class).setRows(2);
     	addField(LocationDto.DETAILS, TextField.class);
     	addField(LocationDto.CITY, TextField.class);
+    	addField(LocationDto.AREA_TYPE, ComboBox.class);
     	
     	addField(LocationDto.LATITUDE, TextField.class).setConverter(new StringToAngularLocationConverter());
     	addField(LocationDto.LONGITUDE, TextField.class).setConverter(new StringToAngularLocationConverter());

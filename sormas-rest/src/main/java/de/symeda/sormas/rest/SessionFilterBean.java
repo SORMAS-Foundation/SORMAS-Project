@@ -15,28 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.caze;
+package de.symeda.sormas.rest;
 
-import java.util.Date;
+import java.io.IOException;
 
-import de.symeda.sormas.api.utils.ValidationException;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
-public class CaseLogic {
+@Stateless
+@LocalBean
+public class SessionFilterBean {
 
-	public static void validateInvestigationDoneAllowed(CaseDataDto caze) throws ValidationException {
-		if (caze.getCaseClassification() == CaseClassification.NOT_CLASSIFIED) {
-			throw new ValidationException("Not allowed to set investigation status to done for an unclassified case.");
-		}
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
+	public void doFilter(FilterChain chain, ServletRequest request, ServletResponse response) throws IOException, ServletException {
+		chain.doFilter(request, response);
 	}
-	
-	public static Date getStartDate(Date onsetDate, Date districtLevelDate, Date reportDate) {
-		if (onsetDate != null) {
-			return onsetDate;
-		} else if (districtLevelDate != null) {
-			return districtLevelDate;
-		} else {
-			return reportDate;
-		}
-	}
-	
+
 }

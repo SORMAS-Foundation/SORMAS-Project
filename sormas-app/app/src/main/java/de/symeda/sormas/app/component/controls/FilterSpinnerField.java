@@ -22,38 +22,25 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import androidx.databinding.BindingAdapter;
-import androidx.databinding.InverseBindingAdapter;
-import androidx.databinding.InverseBindingListener;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.VisualStateControlType;
-import de.symeda.sormas.app.util.DataUtils;
 
-public class ControlSpinnerFilterField extends ControlSpinnerField {
+public class FilterSpinnerField extends ControlSpinnerField {
 
     // Constructors
 
-    public ControlSpinnerFilterField(Context context) {
+    public FilterSpinnerField(Context context) {
         super(context);
     }
 
-    public ControlSpinnerFilterField(Context context, AttributeSet attrs) {
+    public FilterSpinnerField(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public ControlSpinnerFilterField(Context context, AttributeSet attrs, int defStyle) {
+    public FilterSpinnerField(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
@@ -65,7 +52,7 @@ public class ControlSpinnerFilterField extends ControlSpinnerField {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         if (inflater != null) {
-            inflater.inflate(R.layout.control_spinner_filter_layout, this);
+            inflater.inflate(R.layout.filter_spinner_field_layout, this);
         } else {
             throw new RuntimeException("Unable to inflate layout in " + getClass().getName());
         }

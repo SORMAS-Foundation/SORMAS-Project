@@ -23,12 +23,15 @@ import androidx.databinding.Bindable;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
+import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
@@ -40,7 +43,7 @@ import de.symeda.sormas.app.backend.region.Region;
 @DatabaseTable(tableName = Location.TABLE_NAME)
 @EmbeddedAdo
 public class Location extends AbstractDomainObject {
-	
+
 	private static final long serialVersionUID = 392776645668778670L;
 
 	public static final String TABLE_NAME = "location";
@@ -53,6 +56,8 @@ public class Location extends AbstractDomainObject {
 	private String details;
 	@Column(length = 255)
 	private String city;
+	@Column
+	private AreaType areaType;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Region region;
@@ -92,6 +97,13 @@ public class Location extends AbstractDomainObject {
 		this.city = city;
 	}
 
+	public AreaType getAreaType() {
+		return areaType;
+	}
+	public void setAreaType(AreaType areaType) {
+		this.areaType = areaType;
+	}
+
 	public Region getRegion() {
 		return region;
 	}
@@ -112,14 +124,14 @@ public class Location extends AbstractDomainObject {
 	public void setCommunity(Community community) {
 		this.community = community;
 	}
-	
+
 	public Double getLatitude() {
 		return latitude;
 	}
 	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
-	
+
 	public Double getLongitude() {
 		return longitude;
 	}
@@ -133,7 +145,8 @@ public class Location extends AbstractDomainObject {
 		if (getAddress() != null && !getAddress().isEmpty()) {
 			sb.append(getAddress());
 		}
-		if ((getCity() != null && !getCity().isEmpty()) || getCommunity() != null || getDistrict() != null) {
+		if ((getCity() != null && !getCity().isEmpty()) || getCommunity() != null || getDistrict() != null
+				|| getAreaType() != null) {
 			if (getAddress() != null && !getAddress().isEmpty()) {
 				sb.append("\n");
 			}
@@ -148,7 +161,14 @@ public class Location extends AbstractDomainObject {
 				}
 				sb.append(getDistrict());
 			}
+			if (getAreaType() != null) {
+				if ((!StringUtils.isEmpty(getCity()) || getCommunity() != null || getDistrict() != null)) {
+					sb.append(", ");
+				}
+				sb.append(getAreaType().toString());
+			}
 		}
+
 		if (getDetails() != null && !getDetails().isEmpty()) {
 			if ((getAddress() != null && !getAddress().isEmpty()) || (getCity() != null && !getCity().isEmpty()) ||
 					getCommunity() != null || getDistrict() != null) {
@@ -160,7 +180,7 @@ public class Location extends AbstractDomainObject {
 		String latLonString = getLatLonString();
 		if (!DataHelper.isNullOrEmpty(latLonString)) {
 			if (sb.length() > 0) {
-				sb.append(" ");
+				sb.append("\n");
 			}
 			sb.append(latLonString);
 		}

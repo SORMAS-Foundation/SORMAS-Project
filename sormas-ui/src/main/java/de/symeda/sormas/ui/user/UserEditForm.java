@@ -164,9 +164,9 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	
     	// health facility
     	ComboBox healthFacility = (ComboBox)getFieldGroup().getField(UserDto.HEALTH_FACILITY);
-    	healthFacility.setVisible(userRoles.contains(UserRole.HOSPITAL_INFORMANT));
+    	healthFacility.setVisible(isOfficer || userRoles.contains(UserRole.HOSPITAL_INFORMANT));
     	setRequired(userRoles.contains(UserRole.HOSPITAL_INFORMANT), UserDto.HEALTH_FACILITY);
-    	if (!userRoles.contains(UserRole.HOSPITAL_INFORMANT)) {
+    	if (!healthFacility.isVisible()) {
     		healthFacility.clear();
     	}
     	
