@@ -26,6 +26,7 @@
     <string name="yes">Yes</string>
     <string name="action_add_missing_case">Add Missing Case</string>
     <string name="action_allow_gps_access">Allow GPS Access</string>
+    <string name="action_apply_filters">Apply filters</string>
     <string name="action_back_to_settings">Back to settings</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_change_PIN">Change PIN</string>
@@ -78,6 +79,7 @@
     <string name="action_redownload_app_later">Redownload later</string>
     <string name="action_report">Report Problem</string>
     <string name="action_repull_data">Re-synchronize data</string>
+    <string name="action_reset_filters">Reset filters</string>
     <string name="action_save">Save</string>
     <string name="action_save_case">Save Case</string>
     <string name="action_save_clinical_visit">Save Clinical Visit</string>
