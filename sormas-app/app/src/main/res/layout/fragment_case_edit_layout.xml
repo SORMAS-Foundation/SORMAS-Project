@@ -331,6 +331,13 @@
 
                 </LinearLayout>
 
+                <ImageView style="@style/FullHorizontalDividerStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/caseData_districtLevelDate"
+                    app:value="@={data.districtLevelDate}"
+                    style="@style/ControlSingleColumnStyle" />
+
             </LinearLayout>
 
             <LinearLayout

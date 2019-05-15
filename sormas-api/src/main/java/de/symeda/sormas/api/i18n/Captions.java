@@ -79,6 +79,7 @@ public interface Captions {
 	public static String CaseData_classificationUser = "CaseData.classificationUser";
 	public static String CaseData_classifiedBy = "CaseData.classifiedBy";
 	public static String CaseData_clinicalCourse = "CaseData.clinicalCourse";
+	public static String CaseData_clinicianDetails = "CaseData.clinicianDetails";
 	public static String CaseData_contactOfficer = "CaseData.contactOfficer";
 	public static String CaseData_dengueFeverType = "CaseData.dengueFeverType";
 	public static String CaseData_diseaseDetails = "CaseData.diseaseDetails";

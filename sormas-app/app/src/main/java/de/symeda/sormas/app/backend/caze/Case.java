@@ -132,6 +132,8 @@ public class Case extends AbstractDomainObject {
     private Date reportDate;
     @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
     private Date investigatedDate;
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date districtLevelDate;
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
     private User surveillanceOfficer;
@@ -294,6 +296,14 @@ public class Case extends AbstractDomainObject {
 
     public void setInvestigatedDate(Date investigatedDate) {
         this.investigatedDate = investigatedDate;
+    }
+
+    public Date getDistrictLevelDate() {
+        return districtLevelDate;
+    }
+
+    public void setDistrictLevelDate(Date districtLevelDate) {
+        this.districtLevelDate = districtLevelDate;
     }
 
     public Facility getHealthFacility() {

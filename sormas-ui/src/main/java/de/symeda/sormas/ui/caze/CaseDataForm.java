@@ -157,8 +157,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.COMMUNITY, ComboBox.class);
 		ComboBox facility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
 		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
-		TextField fClinicianDetails = addField(CaseDataDto.CLINICIAN_DETAILS, TextField.class);
 		surveillanceOfficerField.setNullSelectionAllowed(true);
+		TextField fClinicianDetails = addField(CaseDataDto.CLINICIAN_DETAILS, TextField.class);
+		fClinicianDetails.setInputPrompt(I18nProperties.getString(Strings.promptNamePhoneEmail));
 		
 		addFields(CaseDataDto.PREGNANT,
 				CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES, CaseDataDto.VACCINATION_INFO_SOURCE,
