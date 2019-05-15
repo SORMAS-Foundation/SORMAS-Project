@@ -31,6 +31,7 @@ public class DiseaseBurdenDto  implements Serializable {
 	public static final String CASE_COUNT = "caseCount";
 	public static final String PREVIOUS_CASE_COUNT = "previousCaseCount";
 	public static final String CASES_DIFFERENCE = "casesDifference";
+	public static final String CASES_DIFFERENCE_PERCENTAGE = "casesDifferencePercentage";
 	public static final String EVENT_COUNT = "eventCount";
 	public static final String OUTBREAK_DISTRICT_COUNT = "outbreakDistrictCount";
 	public static final String CASE_DEATH_COUNT = "caseDeathCount";
@@ -78,6 +79,19 @@ public class DiseaseBurdenDto  implements Serializable {
 	
 	public Long getCasesDifference() {
 		return getCaseCount() - getPreviousCaseCount();
+	}
+	
+	public Float getCasesDifferencePercentage() {
+		float percentage = 0f;
+		
+		if (getPreviousCaseCount() == 0 && getCaseCount() > 0)
+			percentage = 100f;
+		else if (getCaseCount() == 0 && getPreviousCaseCount() > 0)
+			percentage = -100f;
+		else
+			percentage = (float)getCasesDifference() / (float)(getPreviousCaseCount() == 0 ? 1 : getPreviousCaseCount());
+
+		return Math.round(percentage * 10) / 10.0f;
 	}
 	
 	public Long getEventCount() {
