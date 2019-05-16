@@ -494,7 +494,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			// Associated with outbreak?
 			DistrictReferenceDto districtRef = districtFacade.getDistrictReferenceById(exportDto.getDistrictId());
 			exportDto.setAssociatedWithOutbreak(outbreakFacade.hasOutbreakAtDate(districtRef,
-					exportDto.getDiseaseSource(), exportDto.getReportDate()));
+					exportDto.getDisease(), exportDto.getReportDate()));
 
 			// Country
 			exportDto.setCountry(configFacade.getEpidPrefix());
