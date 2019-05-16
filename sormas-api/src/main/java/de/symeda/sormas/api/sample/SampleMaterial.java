@@ -27,6 +27,7 @@ public enum SampleMaterial {
 	NASAL_SWAB,
 	THROAT_SWAB,
 	NP_SWAB,
+	RECTAL_SWAB,
 	CEREBROSPINAL_FLUID,
 	CRUST,
 	TISSUE,

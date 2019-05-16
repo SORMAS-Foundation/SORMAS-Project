@@ -63,8 +63,8 @@ public class StatisticsCaseCriteria implements Serializable {
 	private List<EpiWeek> reportEpiWeeksOfYear; 
 	private Date onsetDateFrom;
 	private Date onsetDateTo;
-	private Date receptionDateFrom;
-	private Date receptionDateTo;
+	private Date districtLevelDateFrom;
+	private Date districtLevelDateTo;
 	private Date reportDateFrom;
 	private Date reportDateTo;
 	private List<Sex> sexes;
@@ -168,12 +168,12 @@ public class StatisticsCaseCriteria implements Serializable {
 		return onsetDateTo;
 	}
 
-	public Date getReceptionDateFrom() {
-		return receptionDateFrom;
+	public Date getDistrictLevelDateFrom() {
+		return districtLevelDateFrom;
 	}
 
-	public Date getReceptionDateTo() {
-		return receptionDateTo;
+	public Date getDistrictLevelDateTo() {
+		return districtLevelDateTo;
 	}
 
 	public Date getReportDateFrom() {
@@ -349,8 +349,8 @@ public class StatisticsCaseCriteria implements Serializable {
 			this.onsetDateTo = to;
 			break;
 		case RECEPTION_TIME:
-			this.receptionDateFrom = from;
-			this.receptionDateTo = to;
+			this.districtLevelDateFrom = from;
+			this.districtLevelDateTo = to;
 			break;
 		case REPORT_TIME:
 			this.reportDateFrom = from;

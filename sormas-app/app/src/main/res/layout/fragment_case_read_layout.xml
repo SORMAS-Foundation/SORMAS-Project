@@ -30,6 +30,7 @@
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
         <import type="de.symeda.sormas.api.Disease" />
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
+        <import type="de.symeda.sormas.api.user.UserRight" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case" />
     </data>
@@ -287,9 +288,29 @@
                     app:dependencyParentValue="@{YesNoUnknown.YES}"
                     style="@style/ControlSingleColumnStyle" />
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_surveillanceOfficer"
+                        app:value="@{data.surveillanceOfficer}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_clinicianDetails"
+                        app:value="@{data.clinicianDetails}"
+                        app:userViewRight="@{UserRight.CASE_MANAGEMENT_ACCESS}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <ImageView style="@style/FullHorizontalDividerStyle"/>
+
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/caseData_surveillanceOfficer"
-                    app:value="@{data.surveillanceOfficer}"
+                    android:id="@+id/caseData_districtLevelDate"
+                    app:value="@{data.districtLevelDate}"
                     style="@style/ControlSingleColumnStyle" />
 
             </LinearLayout>

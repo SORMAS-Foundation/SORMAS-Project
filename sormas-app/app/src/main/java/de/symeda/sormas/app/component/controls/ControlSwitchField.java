@@ -143,7 +143,6 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
     }
 
     private void removeAllItems() {
-        input.clearCheck();
         input.removeAllViews();
         radioGroupElements.clear();
     }

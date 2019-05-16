@@ -37,6 +37,9 @@ import java.util.Date;
 import java.util.List;
 
 import androidx.core.app.NotificationCompat;
+
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -486,4 +489,63 @@ public class CaseDao extends AbstractAdoDao<Case> {
         // Delete case
         deleteCascade(caze);
     }
+
+    public long countByCriteria(CaseCriteria criteria) {
+        try {
+            return buildQueryBuilder(criteria).countOf();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform countByCriteria on Case");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Case> queryByCriteria(CaseCriteria criteria, long offset, long limit) {
+        try {
+            return buildQueryBuilder(criteria).orderBy(Case.CHANGE_DATE, false)
+                    .offset(offset).limit(limit).query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform queryByCriteria on Case");
+            throw new RuntimeException(e);
+        }
+    }
+
+    private QueryBuilder<Case, Long> buildQueryBuilder(CaseCriteria criteria) throws SQLException {
+        QueryBuilder<Case, Long> queryBuilder = queryBuilder();
+        QueryBuilder<Person, Long> personQueryBuilder = DatabaseHelper.getPersonDao().queryBuilder();
+
+        Where<Case, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
+
+        if (criteria.getInvestigationStatus() != null) {
+            where.and().eq(Case.INVESTIGATION_STATUS, criteria.getInvestigationStatus());
+        }
+        if (criteria.getDisease() != null) {
+            where.and().eq(Case.DISEASE, criteria.getDisease());
+        }
+        if (criteria.getCaseClassification() != null) {
+            where.and().eq(Case.CASE_CLASSIFICATION, criteria.getCaseClassification());
+        }
+        if (criteria.getOutcome() != null) {
+            where.and().eq(Case.OUTCOME, criteria.getOutcome());
+        }
+        if (!StringUtils.isEmpty(criteria.getTextFilter())) {
+            String[] textFilters = criteria.getTextFilter().split("\\s+");
+            for (int i = 0; i < textFilters.length; i++) {
+                where.and();
+                String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+                if (!StringUtils.isEmpty(textFilter)) {
+                    where.or(
+                            where.raw(Case.TABLE_NAME + "." + Case.UUID + " LIKE '" + textFilter + "'"),
+                            where.raw(Case.TABLE_NAME + "." + Case.EPID_NUMBER + " LIKE '" + textFilter + "'"),
+                            where.raw(Person.TABLE_NAME + "." + Person.FIRST_NAME + " LIKE '" + textFilter + "'"),
+                            where.raw(Person.TABLE_NAME + "." + Person.LAST_NAME + " LIKE '" + textFilter + "'")
+                    );
+                }
+            }
+        }
+
+        queryBuilder.setWhere(where);
+        queryBuilder = queryBuilder.leftJoin(personQueryBuilder);
+        return queryBuilder;
+    }
+
 }

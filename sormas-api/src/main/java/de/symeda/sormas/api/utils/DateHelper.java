@@ -315,15 +315,33 @@ public final class DateHelper {
 		calendar.set(1970, 01, 01, hour, minute);
 		return calendar.getTime();
 	}
-
+	
 	/**
-	 * Returns a list for days in month (1-31)
-	 * 
-	 * @return
+	 * Returns a list for days in the specified month and year. The list is empty
+	 * when the month is null and contains default values (i.e. 28 days in February)
+	 * when the year is null, but a month is provided. Months should start from 1,
+	 * i.e. January is 1 and December is 12.
 	 */
-	public static List<Integer> getDaysInMonth() {
+	public static List<Integer> getDaysInMonth(Integer month, Integer year) {
+		if (month == null) {
+			return new ArrayList<>();
+		}
+		
+		Calendar calendar = new GregorianCalendar();
+		if (year == null) {
+			// 2010 is not a leap year
+			calendar.set(Calendar.YEAR, 2010);
+		} else {
+			calendar.set(Calendar.YEAR, year);
+		}
+		// January is 0 in Calendar API
+		calendar.set(Calendar.MONTH, month - 1);
+		calendar.set(Calendar.DAY_OF_MONTH, 1);
+		
+		Integer daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+		
 		List<Integer> x = new ArrayList<Integer>();
-		for (int i = 1; i <= 31; i++) {
+		for (int i = 1; i <= daysInMonth; i++) {
 			x.add(i);
 		}
 		return x;

@@ -79,9 +79,11 @@ public interface Captions {
 	public static String CaseData_classificationUser = "CaseData.classificationUser";
 	public static String CaseData_classifiedBy = "CaseData.classifiedBy";
 	public static String CaseData_clinicalCourse = "CaseData.clinicalCourse";
+	public static String CaseData_clinicianDetails = "CaseData.clinicianDetails";
 	public static String CaseData_contactOfficer = "CaseData.contactOfficer";
 	public static String CaseData_dengueFeverType = "CaseData.dengueFeverType";
 	public static String CaseData_diseaseDetails = "CaseData.diseaseDetails";
+	public static String CaseData_districtLevelDate = "CaseData.districtLevelDate";
 	public static String CaseData_doses = "CaseData.doses";
 	public static String CaseData_epiData = "CaseData.epiData";
 	public static String CaseData_epidNumber = "CaseData.epidNumber";
@@ -90,6 +92,7 @@ public interface Captions {
 	public static String CaseData_hospitalization = "CaseData.hospitalization";
 	public static String CaseData_investigatedDate = "CaseData.investigatedDate";
 	public static String CaseData_investigationStatus = "CaseData.investigationStatus";
+	public static String CaseData_nationalLevelDate = "CaseData.nationalLevelDate";
 	public static String CaseData_noneHealthFacilityDetails = "CaseData.noneHealthFacilityDetails";
 	public static String CaseData_outcome = "CaseData.outcome";
 	public static String CaseData_outcomeDate = "CaseData.outcomeDate";
@@ -98,7 +101,7 @@ public interface Captions {
 	public static String CaseData_personLastName = "CaseData.personLastName";
 	public static String CaseData_plagueType = "CaseData.plagueType";
 	public static String CaseData_pregnant = "CaseData.pregnant";
-	public static String CaseData_receptionDate = "CaseData.receptionDate";
+	public static String CaseData_regionLevelDate = "CaseData.regionLevelDate";
 	public static String CaseData_reportDate = "CaseData.reportDate";
 	public static String CaseData_reportingUser = "CaseData.reportingUser";
 	public static String CaseData_sequelae = "CaseData.sequelae";
@@ -118,6 +121,7 @@ public interface Captions {
 	public static String CaseExport_ageGroup = "CaseExport.ageGroup";
 	public static String CaseExport_burialInfo = "CaseExport.burialInfo";
 	public static String CaseExport_contactWithRodent = "CaseExport.contactWithRodent";
+	public static String CaseExport_country = "CaseExport.country";
 	public static String CaseExport_id = "CaseExport.id";
 	public static String CaseExport_initialDetectionPlace = "CaseExport.initialDetectionPlace";
 	public static String CaseExport_labResults = "CaseExport.labResults";
@@ -482,6 +486,7 @@ public interface Captions {
 	public static String lastName = "lastName";
 	public static String Location = "Location";
 	public static String Location_address = "Location.address";
+	public static String Location_areaType = "Location.areaType";
 	public static String Location_details = "Location.details";
 	public static String Location_latitude = "Location.latitude";
 	public static String Location_latLon = "Location.latLon";
@@ -749,6 +754,7 @@ public interface Captions {
 	public static String Symptoms_painfulLymphadenitis = "Symptoms.painfulLymphadenitis";
 	public static String Symptoms_palpableLiver = "Symptoms.palpableLiver";
 	public static String Symptoms_palpableSpleen = "Symptoms.palpableSpleen";
+	public static String Symptoms_patientIllLocation = "Symptoms.patientIllLocation";
 	public static String Symptoms_pharyngealErythema = "Symptoms.pharyngealErythema";
 	public static String Symptoms_pharyngealExudate = "Symptoms.pharyngealExudate";
 	public static String Symptoms_rapidBreathing = "Symptoms.rapidBreathing";

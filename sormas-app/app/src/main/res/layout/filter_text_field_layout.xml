@@ -41,9 +41,10 @@
 
         </LinearLayout>
 
-        <Spinner
+        <EditText
             android:id="@+id/input"
-            style="@style/ControlSpinnerFilterStyle" />
+            android:inputType="text"
+            style="@style/FilterTextFieldStyle" />
 
     </LinearLayout>
 

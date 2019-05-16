@@ -20,6 +20,7 @@ package de.symeda.sormas.app.person.edit;
 
 import android.view.View;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -80,18 +81,12 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
     public static void setUpLayoutBinding(final BaseEditFragment fragment, final Person record, final FragmentPersonEditLayoutBinding contentBinding, AbstractDomainObject rootData) {
         setUpControlListeners(record, contentBinding);
 
-        List<Item> dayList = DataUtils.toItems(DateHelper.getDaysInMonth(), true);
         List<Item> monthList = DataUtils.getMonthItems(true);
         List<Item> yearList = DataUtils.toItems(DateHelper.getYearsToNow(), true);
         List<Item> approximateAgeTypeList = DataUtils.getEnumItems(ApproximateAgeType.class, true);
         List<Item> sexList = DataUtils.getEnumItems(Sex.class, true);
         List<Item> causeOfDeathList = DataUtils.getEnumItems(CauseOfDeath.class, true);
-        List<Item> diseaseList = DataUtils.toItems(DiseaseConfigurationHelper.getInstance().getAllActiveDiseases(
-                rootData instanceof Case ? ((Case) rootData).getDisease() :
-                        rootData instanceof Contact ? ((Contact) rootData).getCaseDisease() :
-                                rootData instanceof Event ? ((Event) rootData).getDisease() :
-                                    null
-        ));
+        List<Item> diseaseList = DataUtils.toItems(DiseaseConfigurationHelper.getInstance().getAllActiveDiseases());
         List<Item> deathPlaceTypeList = DataUtils.getEnumItems(DeathPlaceType.class, true);
         List<Item> burialConductorList = DataUtils.getEnumItems(BurialConductor.class, true);
 
@@ -110,23 +105,14 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
                 contentBinding.personOccupationFacility, initialOccupationFacilities);
 
         // Initialize ControlSpinnerFields
-        contentBinding.personBirthdateDD.initializeSpinner(dayList, new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                updateApproximateAgeField(contentBinding);
-            }
+        contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>(), field -> updateApproximateAgeField(contentBinding));
+        contentBinding.personBirthdateMM.initializeSpinner(monthList, field -> {
+            updateApproximateAgeField(contentBinding);
+            updateListOfDays(contentBinding, (Integer) contentBinding.personBirthdateYYYY.getValue(), (Integer) field.getValue());
         });
-        contentBinding.personBirthdateMM.initializeSpinner(monthList, new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                updateApproximateAgeField(contentBinding);
-            }
-        });
-        contentBinding.personBirthdateYYYY.initializeSpinner(yearList, new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                updateApproximateAgeField(contentBinding);
-            }
+        contentBinding.personBirthdateYYYY.initializeSpinner(yearList, field -> {
+            updateApproximateAgeField(contentBinding);
+            updateListOfDays(contentBinding, (Integer) field.getValue(), (Integer) contentBinding.personBirthdateMM.getValue());
         });
         contentBinding.personBirthdateYYYY.setSelectionOnOpen(2000);
         contentBinding.personApproximateAgeType.initializeSpinner(approximateAgeTypeList);
@@ -164,6 +150,15 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         // Initialize ControlDateFields
         contentBinding.personDeathDate.initializeDateField(fragment.getFragmentManager());
         contentBinding.personBurialDate.initializeDateField(fragment.getFragmentManager());
+    }
+
+    private static void updateListOfDays(FragmentPersonEditLayoutBinding binding, Integer selectedYear, Integer selectedMonth) {
+        Integer currentlySelected = (Integer) binding.personBirthdateDD.getValue();
+        List<Item> days = DataUtils.toItems(DateHelper.getDaysInMonth(selectedMonth, selectedYear));
+        binding.personBirthdateDD.setSpinnerData(days);
+        if (currentlySelected != null) {
+            binding.personBirthdateDD.setValue(currentlySelected);
+        }
     }
 
     public static void setUpControlListeners(final Person record, final FragmentPersonEditLayoutBinding contentBinding) {

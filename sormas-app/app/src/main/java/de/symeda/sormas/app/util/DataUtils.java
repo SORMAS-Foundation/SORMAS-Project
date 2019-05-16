@@ -70,6 +70,10 @@ public class DataUtils {
         return toItems(listIn, true);
     }
 
+    public static <E> Item toItem(E item) {
+        return new Item<E>(item.toString(), item);
+    }
+
     public static List<Item> getMonthItems() {
         List<Item> listOut = new ArrayList<>();
         listOut.add(new Item<Integer>("", null));
@@ -85,7 +89,7 @@ public class DataUtils {
             listOut.add(new Item<Integer>("", null));
         }
         for (Month month : Month.values()) {
-            listOut.add(new Item<Integer>(I18nProperties.getEnumCaption(month), month.ordinal()));
+            listOut.add(new Item<>(I18nProperties.getEnumCaption(month), month.ordinal() + 1));
         }
         return listOut;
     }

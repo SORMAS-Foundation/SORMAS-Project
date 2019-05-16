@@ -35,8 +35,6 @@ import de.symeda.sormas.ui.utils.BaseControllerProvider;
 @WebFilter(asyncSupported = true, urlPatterns = "/*")
 public class SessionFilter implements Filter {
 
-	//protected static final Logger LOGGER = LoggerFactory.getLogger(SessionFilter.class);
-	
 	@EJB
 	private SessionFilterBean sessionFilterBean;
 
@@ -66,5 +64,4 @@ public class SessionFilter implements Filter {
 	@Override
 	public void init(FilterConfig cfg) throws ServletException {
 	}
-
 }

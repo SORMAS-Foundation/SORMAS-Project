@@ -79,16 +79,6 @@ public class DiseaseConfigurationHelper {
         return activeDiseases;
     }
 
-    public List<Disease> getAllActiveDiseases(Disease includedDisease) {
-        if (includedDisease == null || activeDiseases.contains(includedDisease)) {
-            return activeDiseases;
-        }
-
-        List<Disease> list = new ArrayList<>(activeDiseases);
-        list.add(includedDisease);
-        return list;
-    }
-
     public boolean isPrimaryDisease(Disease disease) {
         return primaryDiseases.contains(disease);
     }
@@ -97,28 +87,8 @@ public class DiseaseConfigurationHelper {
         return primaryDiseases;
     }
 
-    public List<Disease> getAllPrimaryDiseases(Disease includedDisease) {
-        if (includedDisease == null || primaryDiseases.contains(includedDisease)) {
-            return primaryDiseases;
-        }
-
-        List<Disease> list = new ArrayList<>(primaryDiseases);
-        list.add(includedDisease);
-        return list;
-    }
-
     public List<Disease> getAllActivePrimaryDiseases() {
         return activePrimaryDiseases;
-    }
-
-    public List<Disease> getAllActivePrimaryDiseases(Disease includedDisease) {
-        if (includedDisease == null || activePrimaryDiseases.contains(includedDisease)) {
-            return activePrimaryDiseases;
-        }
-
-        List<Disease> list = new ArrayList<>(activePrimaryDiseases);
-        list.add(includedDisease);
-        return list;
     }
 
     public boolean hasFollowUp(Disease disease) {

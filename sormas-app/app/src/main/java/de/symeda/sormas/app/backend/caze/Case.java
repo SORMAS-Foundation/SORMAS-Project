@@ -73,6 +73,7 @@ public class Case extends AbstractDomainObject {
     public static final String REPORTING_USER = "reportingUser_id";
     public static final String HEALTH_FACILITY = "healthFacility_id";
     public static final String OUTCOME = "outcome";
+    public static final String EPID_NUMBER = "epidNumber";
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
     private Person person;
@@ -131,9 +132,13 @@ public class Case extends AbstractDomainObject {
     private Date reportDate;
     @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
     private Date investigatedDate;
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date districtLevelDate;
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
     private User surveillanceOfficer;
+    @Column(length = 512)
+    private String clinicianDetails;
     @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
     private User caseOfficer;
 
@@ -293,6 +298,14 @@ public class Case extends AbstractDomainObject {
         this.investigatedDate = investigatedDate;
     }
 
+    public Date getDistrictLevelDate() {
+        return districtLevelDate;
+    }
+
+    public void setDistrictLevelDate(Date districtLevelDate) {
+        this.districtLevelDate = districtLevelDate;
+    }
+
     public Facility getHealthFacility() {
         return healthFacility;
     }
@@ -323,6 +336,14 @@ public class Case extends AbstractDomainObject {
 
     public void setSurveillanceOfficer(User surveillanceOfficer) {
         this.surveillanceOfficer = surveillanceOfficer;
+    }
+
+    public String getClinicianDetails() {
+        return clinicianDetails;
+    }
+
+    public void setClinicianDetails(String clinicianDetails) {
+        this.clinicianDetails = clinicianDetails;
     }
 
     public User getCaseOfficer() {

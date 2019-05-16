@@ -57,6 +57,8 @@ public class AboutView extends VerticalLayout implements View {
 
 		// Info section
 		VerticalLayout infoLayout = new VerticalLayout();
+		infoLayout.setSpacing(false);
+		infoLayout.setMargin(false);
 		aboutContent.addComponent(infoLayout, "info");
 		
 		Label versionLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml()
@@ -84,6 +86,8 @@ public class AboutView extends VerticalLayout implements View {
 			
 		// Documents section
 		VerticalLayout documentsLayout = new VerticalLayout();
+		documentsLayout.setSpacing(false);
+		documentsLayout.setMargin(false);
 		aboutContent.addComponent(documentsLayout, "documents");
 		
 		Button classificationDocumentButton = new Button(I18nProperties.getCaption(Captions.aboutCaseClassificationRules));

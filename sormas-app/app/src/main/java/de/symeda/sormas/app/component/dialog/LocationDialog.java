@@ -27,12 +27,15 @@ import java.util.List;
 import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
+
+import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 import de.symeda.sormas.app.util.LocationService;
 
@@ -83,6 +86,8 @@ public class LocationDialog extends AbstractDialog {
         InfrastructureHelper.initializeRegionFields(this.contentBinding.locationRegion, initialRegions,
                 this.contentBinding.locationDistrict, initialDistricts,
                 this.contentBinding.locationCommunity, initialCommunities);
+
+        contentBinding.locationAreaType.initializeSpinner(DataUtils.getEnumItems(AreaType.class));
 
         // "Pick GPS Coordinates" confirmation dialog
         this.contentBinding.pickGpsCoordinates.setOnClickListener(new View.OnClickListener() {

@@ -236,6 +236,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         contentBinding.caseDataReportDate.initializeDateField(getFragmentManager());
         contentBinding.caseDataOutcomeDate.initializeDateField(getFragmentManager());
         contentBinding.caseDataVaccinationDate.initializeDateField(getFragmentManager());
+        contentBinding.caseDataDistrictLevelDate.initializeDateField(getFragmentManager());
 
         // Replace classification user field with classified by field when case has been classified automatically
         if (contentBinding.getData().getClassificationDate() != null && contentBinding.getData().getClassificationUser() == null) {

@@ -33,7 +33,7 @@
         android:focusableInTouchMode="true"
         android:orientation="vertical">
 
-        <de.symeda.sormas.app.component.controls.ControlSpinnerFilterField
+        <de.symeda.sormas.app.component.controls.FilterSpinnerField
             android:id="@+id/taskAssignee"
             app:value="@{TaskAssignee.CURRENT_USER}"
             app:caption="@string/caption_task_filters"

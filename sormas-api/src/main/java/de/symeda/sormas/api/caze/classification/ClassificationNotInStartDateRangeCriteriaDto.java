@@ -58,7 +58,7 @@ public class ClassificationNotInStartDateRangeCriteriaDto extends Classification
 			Method method = getInvokeClass().getMethod("get" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));
 			Object value = method.invoke(getInvokeObject(caze));
 			if (value instanceof Date) {
-				Date startDate = CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReceptionDate(), caze.getReportDate());
+				Date startDate = CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getDistrictLevelDate(), caze.getReportDate());
 				Date lowerThresholdDate = DateHelper.subtractDays(startDate, daysBeforeStartDate);
 				
 				return !(((Date) value).equals(lowerThresholdDate) 

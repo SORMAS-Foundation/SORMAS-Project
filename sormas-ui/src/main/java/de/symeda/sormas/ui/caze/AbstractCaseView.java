@@ -17,15 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import com.vaadin.ui.Label;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.Property.ValueChangeEvent;
 import com.vaadin.v7.data.Property.ValueChangeListener;
-import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.OptionGroup;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -65,7 +64,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 
 		if (!ViewModelProviders.of(AbstractCaseView.class).has(ViewConfiguration.class)) {
 			// init default view mode
-			ViewConfiguration initViewConfiguration = new ViewConfiguration(ViewMode.SIMPLE);
+			ViewConfiguration initViewConfiguration = UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS) ? new ViewConfiguration(ViewMode.NORMAL) : new ViewConfiguration(ViewMode.SIMPLE);
 			ViewModelProviders.of(AbstractCaseView.class).get(ViewConfiguration.class, initViewConfiguration);
 		}
 
@@ -110,9 +109,9 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 
 		// Handle outbreaks for the disease and district of the case
-		if (FacadeProvider.getOutbreakFacade().hasOutbreak(caze.getDistrict(), caze.getDisease())) {
+		if (FacadeProvider.getOutbreakFacade().hasOutbreak(caze.getDistrict(), caze.getDisease()) && caze.getDisease().usesSimpleViewForOutbreaks()) {
 			hasOutbreak = true;
-			
+
 			//			viewConfiguration.setViewMode(ViewMode.SIMPLE);
 			//			// param might change this
 			//			if (passedParams.length > 1 && passedParams[1].startsWith(VIEW_MODE_URL_PREFIX + "=")) {
@@ -126,6 +125,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 			viewModeToggle.setValue(viewConfiguration.getViewMode());
 			viewModeToggle.addValueChangeListener(viewModeToggleListener);
 			viewModeToggle.setVisible(true);
+
 		} else {
 			hasOutbreak = false;
 			viewModeToggle.setVisible(false);
@@ -134,8 +134,8 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		menu.removeAllViews();
 		menu.addView(CasesView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseCasesList));
 		menu.addView(CaseDataView.VIEW_NAME, I18nProperties.getCaption(CaseDataDto.I18N_PREFIX), params);
-		
-		if (!hasOutbreak || viewConfiguration.getViewMode() != ViewMode.SIMPLE) {
+
+		if (!hasOutbreak || !caze.getDisease().usesSimpleViewForOutbreaks() || viewConfiguration.getViewMode() != ViewMode.SIMPLE) {
 			menu.addView(CasePersonView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON), params);
 			menu.addView(HospitalizationView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HOSPITALIZATION), params);
 			menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
@@ -150,7 +150,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(caze.getDisease())) {
 			menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseContacts), params);
 		}
-		
+
 		infoLabel.setValue(caseRef.getCaption());
 
 		infoLabelSub.setValue(caze.getDisease() != Disease.OTHER
@@ -161,7 +161,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 	public CaseReferenceDto getCaseRef() {
 		return caseRef;
 	}
-	
+
 	public boolean isHasOutbreak() {
 		return hasOutbreak;
 	}
@@ -170,7 +170,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		if (Boolean.FALSE.equals(hasOutbreak)) {
 			return ViewMode.NORMAL;
 		}
-		
+
 		return viewConfiguration.getViewMode();
 	}
 }

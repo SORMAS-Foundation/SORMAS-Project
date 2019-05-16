@@ -86,8 +86,7 @@ public class CaseImportLayout extends VerticalLayout {
 	public CaseImportLayout() {
 		currentUser = UserProvider.getCurrent().getUserReference();
 		currentUI = UI.getCurrent();
-		
-		setMargin(true);
+		setSpacing(false);
 
 		// Step 1: Download SORMAS Import Guide
 		String headline = I18nProperties.getString(Strings.headingDownloadImportGuide);
@@ -151,6 +150,7 @@ public class CaseImportLayout extends VerticalLayout {
 
 		public CaseImportLayoutComponent(int step, String headline, String infoText, Resource buttonIcon, String buttonCaption) {
 			setSpacing(false);
+			setMargin(false);
 
 			headlineLabel = new Label(I18nProperties.getString(Strings.step) + " " + step + ": " + headline);
 			CssStyles.style(headlineLabel, CssStyles.H3);

@@ -3204,3 +3204,17 @@ INSERT INTO schema_version (version_number, comment) VALUES (148, 'Add tested di
 UPDATE person SET educationtype='NURSERY' WHERE educationtype='NONE';
 UPDATE person_history SET educationtype='NURSERY' WHERE educationtype='NONE';
 INSERT INTO schema_version (version_number, comment) VALUES (149, 'Rename "no education" back to "nursery" #1073');
+
+-- 2019-05-09 Add new fields for Yellow fever and Measles #1088
+ALTER TABLE location ADD COLUMN areatype varchar(255);
+ALTER TABLE location_history ADD COLUMN areatype varchar(255);
+ALTER TABLE cases ADD COLUMN regionleveldate timestamp;
+ALTER TABLE cases_history ADD COLUMN regionleveldate timestamp;
+ALTER TABLE cases ADD COLUMN nationalleveldate timestamp;
+ALTER TABLE cases_history ADD COLUMN nationalleveldate timestamp;
+ALTER TABLE cases RENAME receptiondate TO districtleveldate;
+ALTER TABLE cases_history RENAME receptiondate TO districtleveldate;
+ALTER TABLE cases ADD COLUMN cliniciandetails varchar(512);
+ALTER TABLE cases_history ADD COLUMN cliniciandetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (150, 'Add new fields for Yellow fever and Measles #1088');

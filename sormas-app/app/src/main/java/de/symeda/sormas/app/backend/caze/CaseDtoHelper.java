@@ -102,6 +102,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setHealthFacilityDetails(source.getHealthFacilityDetails());
         target.setPerson(DatabaseHelper.getPersonDao().getByReferenceDto(source.getPerson()));
         target.setInvestigatedDate(source.getInvestigatedDate());
+        target.setDistrictLevelDate(source.getDistrictLevelDate());
 
         target.setReportDate(source.getReportDate());
         target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
@@ -118,6 +119,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setClinicalCourse(clinicalCourseDtoHelper.fillOrCreateFromDto(target.getClinicalCourse(), source.getClinicalCourse()));
 
         target.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getSurveillanceOfficer()));
+        target.setClinicianDetails(source.getClinicianDetails());
         target.setPregnant(source.getPregnant());
         target.setVaccination(source.getVaccination());
         target.setVaccinationDoses(source.getVaccinationDoses());
@@ -172,6 +174,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
         target.setInvestigatedDate(source.getInvestigatedDate());
         target.setReportDate(source.getReportDate());
+        target.setDistrictLevelDate(source.getDistrictLevelDate());
 
         if (source.getReportingUser() != null) {
             User user = DatabaseHelper.getUserDao().queryForId(source.getReportingUser().getId());
@@ -244,6 +247,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
             target.setClinicalCourse(null);
         }
 
+        target.setClinicianDetails(source.getClinicianDetails());
         target.setPregnant(source.getPregnant());
         target.setVaccination(source.getVaccination());
         target.setVaccinationDoses(source.getVaccinationDoses());

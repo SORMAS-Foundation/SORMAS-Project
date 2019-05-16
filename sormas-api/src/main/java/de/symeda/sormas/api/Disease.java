@@ -60,7 +60,7 @@ public enum Disease implements StatisticsGroupingKey {
 		return this.name();
 	}
 	
-	public boolean isSupportingOutbreakMode() {
+	public boolean usesSimpleViewForOutbreaks() {
 		switch(this) {
 		case CSM:
 			return true;

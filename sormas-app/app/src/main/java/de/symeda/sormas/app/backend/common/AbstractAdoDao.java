@@ -143,7 +143,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 // get the embedded entity
                 AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(ado);
 
-                if (parentProperty.equals(property.getName())) {
+                if (embeddedAdo == null || parentProperty.equals(property.getName())) {
                     continue;
                 }
 
@@ -1147,11 +1147,12 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
     protected void update(ADO data) throws SQLException {
         if (data == null)
             return;
-        int resultRowCount = dao.update(data);
-        if (resultRowCount < 1) {
-            throw new SQLException("Database entry was not updated - update all entered fields and save again.\n" +
-                    "Type: " + data.getClass().getSimpleName() + ", UUID: " + data.getUuid());
-        }
+        dao.update(data);
+        // #1124 returns 0 when nothing has changed
+//        if (resultRowCount < 1) {
+//            throw new SQLException("Database entry was not updated - update all entered fields and save again.\n" +
+//                    "Type: " + data.getClass().getSimpleName() + ", UUID: " + data.getUuid());
+//        }
     }
 
     public void updateWithCast(AbstractDomainObject ado) throws SQLException {

@@ -28,9 +28,14 @@ import java.util.List;
 import java.util.Random;
 
 import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivity;
@@ -39,15 +44,20 @@ import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
+import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.databinding.FilterCaseListLayoutBinding;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
 
 public class CaseListActivity extends PagedBaseListActivity {
 
     private InvestigationStatus statusFilters[] = new InvestigationStatus[]{InvestigationStatus.PENDING, InvestigationStatus.DONE, InvestigationStatus.DISCARDED};
     private CaseListViewModel model;
+    private FilterCaseListLayoutBinding filterBinding;
 
     public static void startActivity(Context context, InvestigationStatus listFilter) {
         BaseListActivity.startActivity(context, CaseListActivity.class, buildBundle(listFilter));
@@ -77,9 +87,12 @@ public class CaseListActivity extends PagedBaseListActivity {
             hidePreloader();
         });
 
-        setOpenPageCallback(pageMenuItem -> {
+        filterBinding.setCriteria(model.getCaseCriteria());
+
+        setOpenPageCallback(p -> {
             showPreloader();
-            model.setInvestigationStatus(statusFilters[((PageMenuItem) pageMenuItem).getKey()]);
+            model.getCaseCriteria().setInvestigationStatus(statusFilters[((PageMenuItem) p).getKey()]);
+            model.notifyCriteriaUpdated();
         });
     }
 
@@ -138,7 +151,34 @@ public class CaseListActivity extends PagedBaseListActivity {
 
     @Override
     public void addFiltersToPageMenu() {
-        // Not supported yet
+        View caseListFilterView = getLayoutInflater().inflate(R.layout.filter_case_list_layout, null);
+        filterBinding = DataBindingUtil.bind(caseListFilterView);
+
+        List<Item> diseases = DataUtils.toItems(DiseaseConfigurationHelper.getInstance().getAllActivePrimaryDiseases());
+        filterBinding.diseaseFilter.initializeSpinner(diseases);
+        List<Item> classifications = DataUtils.getEnumItems(CaseClassification.class);
+        filterBinding.classificationFilter.initializeSpinner(classifications);
+        List<Item> outcomes = DataUtils.getEnumItems(CaseOutcome.class);
+        filterBinding.outcomeFilter.initializeSpinner(outcomes);
+
+        pageMenu.addFilter(caseListFilterView);
+
+        filterBinding.applyFilters.setOnClickListener(e -> {
+            showPreloader();
+            pageMenu.hideAll();
+            model.notifyCriteriaUpdated();
+        });
+
+        filterBinding.resetFilters.setOnClickListener(e -> {
+            showPreloader();
+            pageMenu.hideAll();
+            filterBinding.textFilter.setValue(null);
+            filterBinding.diseaseFilter.setValue(null);
+            filterBinding.classificationFilter.setValue(null);
+            filterBinding.outcomeFilter.setValue(null);
+            model.notifyCriteriaUpdated();
+        });
+
     }
 
 }

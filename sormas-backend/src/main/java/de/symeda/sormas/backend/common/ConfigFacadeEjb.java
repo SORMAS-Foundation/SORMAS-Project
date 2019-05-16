@@ -41,6 +41,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	public static final String COUNTRY_NAME = "country.name";
 	public static final String COUNTRY_LOCALE = "country.locale";
+	public static final String COUNTRY_EPID_PREFIX = "country.epidprefix";
 	
 	public static final String VERSION_PLACEHOLER = "%version";
 	
@@ -89,6 +90,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getCountryLocale() {
 		return getProperty(COUNTRY_LOCALE, Locale.getDefault().toString());
+	}
+	
+	@Override
+	public String getEpidPrefix() {
+		return getProperty(COUNTRY_EPID_PREFIX, "NIE");
 	}
 	
 	@Override

@@ -82,6 +82,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private ComboBox occupationFacility;
 	private TextField occupationFacilityDetails;
 	private final ViewMode viewMode;
+	private ComboBox birthDateDay;
 
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.h3(I18nProperties.getString(Strings.headingPersonInformation))+
@@ -149,10 +150,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.NICKNAME, TextField.class);
 		addField(PersonDto.MOTHERS_MAIDEN_NAME, TextField.class);
 		ComboBox presentCondition = addField(PersonDto.PRESENT_CONDITION, ComboBox.class);
-		ComboBox birthDateDay = addField(PersonDto.BIRTH_DATE_DD, ComboBox.class);
+		birthDateDay = addField(PersonDto.BIRTH_DATE_DD, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
 		birthDateDay.setNullSelectionAllowed(true);
-		birthDateDay.addItems(DateHelper.getDaysInMonth());
 		ComboBox birthDateMonth = addField(PersonDto.BIRTH_DATE_MM, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
 		birthDateMonth.setNullSelectionAllowed(true);
@@ -184,7 +184,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS);
 
 		causeOfDeathField = addField(PersonDto.CAUSE_OF_DEATH, ComboBox.class);
-		causeOfDeathDiseaseField = addDiseaseField(PersonDto.CAUSE_OF_DEATH_DISEASE, true, disease);
+		causeOfDeathDiseaseField = addDiseaseField(PersonDto.CAUSE_OF_DEATH_DISEASE, true);
 		causeOfDeathDetailsField = addField(PersonDto.CAUSE_OF_DEATH_DETAILS, TextField.class);
 		ComboBox facilityRegion = addField(PersonDto.OCCUPATION_REGION, ComboBox.class);
 		facilityRegion.setImmediate(true);
@@ -326,6 +326,23 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				I18nProperties.getValidationError(Validations.afterDate, deathDate.getCaption(), birthDateYear.getCaption())));
 		burialDate.addValidator(new DateComparisonValidator(burialDate, deathDate, false, false, 
 				I18nProperties.getValidationError(Validations.afterDate, burialDate.getCaption(), deathDate.getCaption())));
+		
+		// Update the list of days according to the selected month and year
+		birthDateYear.addValueChangeListener(e -> {
+			updateListOfDays((Integer) e.getProperty().getValue(), (Integer) birthDateMonth.getValue());
+		});
+		birthDateMonth.addValueChangeListener(e -> {
+			updateListOfDays((Integer) birthDateYear.getValue(), (Integer) e.getProperty().getValue());
+		});
+	}
+	
+	private void updateListOfDays(Integer selectedYear, Integer selectedMonth) {
+		Integer currentlySelected = (Integer) birthDateDay.getValue();
+		birthDateDay.removeAllItems();
+		birthDateDay.addItems(DateHelper.getDaysInMonth(selectedMonth, selectedYear));
+		if (birthDateDay.containsId(currentlySelected)) {
+			birthDateDay.setValue(currentlySelected);
+		}
 	}
 
 	@Override

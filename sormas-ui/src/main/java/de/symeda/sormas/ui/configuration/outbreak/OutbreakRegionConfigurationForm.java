@@ -56,6 +56,7 @@ public class OutbreakRegionConfigurationForm extends VerticalLayout {
 
 	public OutbreakRegionConfigurationForm(OutbreakRegionConfiguration regionOutbreakConfiguration) {
 		setStyleName("configuration-view");
+		
 
 		// Copy the set of affected districts because the CommitDiscardWrapperComponent is not reset when discarding this form
 		affectedDistricts = new HashSet<>(regionOutbreakConfiguration.getAffectedDistricts());
@@ -126,13 +127,16 @@ public class OutbreakRegionConfigurationForm extends VerticalLayout {
 	private HorizontalLayout createAffectedDistrictsComponent() {
 		HorizontalLayout affectedDistrictsComponent = new HorizontalLayout();
 		affectedDistrictsComponent.setWidth(100, Unit.PERCENTAGE);
-		affectedDistrictsComponent.setSpacing(true);
+		affectedDistrictsComponent.setMargin(false);
 		CssStyles.style(affectedDistrictsComponent, CssStyles.VSPACE_3);
 
 		// Create two columns to display the districts
 		VerticalLayout leftColumn = new VerticalLayout();
+		leftColumn.setMargin(false);
 		VerticalLayout middleColumn = new VerticalLayout();
+		middleColumn.setMargin(false);
 		VerticalLayout rightColumn = new VerticalLayout();
+		rightColumn.setMargin(false);
 
 		affectedDistrictsComponent.addComponent(leftColumn);
 		// Add spacer label
