@@ -28,6 +28,8 @@
         <import type="de.symeda.sormas.api.i18n.Strings" />
         <import type="de.symeda.sormas.api.caze.CaseDataDto" />
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType"/>
+
+        <variable name="criteria" type="de.symeda.sormas.app.backend.caze.CaseCriteria"/>
     </data>
 
     <ScrollView
@@ -45,24 +47,28 @@
                 android:id="@+id/text_filter"
                 app:hint="@{I18nProperties.getString(Strings.promptCasesSearchField)}"
                 app:showCaption="false"
+                app:value="@={criteria.textFilter}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.FilterSpinnerField
                 android:id="@+id/disease_filter"
                 app:hint="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE)}"
                 app:showCaption="false"
+                app:value="@={criteria.disease}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.FilterSpinnerField
                 android:id="@+id/classification_filter"
                 app:hint="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION)}"
                 app:showCaption="false"
+                app:value="@={criteria.caseClassification}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.FilterSpinnerField
                 android:id="@+id/outcome_filter"
                 app:hint="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.OUTCOME)}"
                 app:showCaption="false"
+                app:value="@={criteria.outcome}"
                 style="@style/ControlSingleColumnStyle" />
 
             <LinearLayout

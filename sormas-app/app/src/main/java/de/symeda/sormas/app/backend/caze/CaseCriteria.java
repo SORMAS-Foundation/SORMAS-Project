@@ -33,7 +33,7 @@ public class CaseCriteria implements Serializable {
     private CaseClassification caseClassification;
     private CaseOutcome outcome;
 
-    public CaseCriteria textFilter(String textFilter) {
+    public CaseCriteria setTextFilter(String textFilter) {
         this.textFilter = textFilter;
         return this;
     }
@@ -42,7 +42,7 @@ public class CaseCriteria implements Serializable {
         return textFilter;
     }
 
-    public CaseCriteria outcome(CaseOutcome outcome) {
+    public CaseCriteria setOutcome(CaseOutcome outcome) {
         this.outcome = outcome;
         return this;
     }
@@ -51,7 +51,7 @@ public class CaseCriteria implements Serializable {
         return outcome;
     }
 
-    public CaseCriteria disease(Disease disease) {
+    public CaseCriteria setDisease(Disease disease) {
         this.disease = disease;
         return this;
     }
@@ -60,7 +60,7 @@ public class CaseCriteria implements Serializable {
         return disease;
     }
 
-    public CaseCriteria caseClassification(CaseClassification caseClassification) {
+    public CaseCriteria setCaseClassification(CaseClassification caseClassification) {
         this.caseClassification = caseClassification;
         return this;
     }
@@ -69,7 +69,7 @@ public class CaseCriteria implements Serializable {
         return caseClassification;
     }
 
-    public CaseCriteria investigationStatus(InvestigationStatus investigationStatus) {
+    public CaseCriteria setInvestigationStatus(InvestigationStatus investigationStatus) {
         this.investigationStatus = investigationStatus;
         return this;
     }
