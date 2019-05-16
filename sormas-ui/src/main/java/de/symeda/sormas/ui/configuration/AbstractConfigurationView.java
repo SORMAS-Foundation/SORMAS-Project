@@ -50,6 +50,11 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 	@Override
 	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		menu.removeAllViews();
+		
+		menu.addView(OutbreaksView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", OutbreaksView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				params);
+		
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
 			menu.addView(RegionsView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
 					RegionsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
@@ -68,10 +73,6 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 //					UserRightsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
 //		}
 
-		menu.addView(OutbreaksView.VIEW_NAME,
-				I18nProperties.getPrefixCaption("View", OutbreaksView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-				params);
-
 		if (FacadeProvider.getConfigFacade().isDevMode()
 				&& UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			menu.addView(DevModeView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
@@ -80,6 +81,8 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 	}
 
 	public static void registerViews(Navigator navigator) {
+		navigator.addView(OutbreaksView.VIEW_NAME, OutbreaksView.class);
+		
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
 			navigator.addView(RegionsView.VIEW_NAME, RegionsView.class);
 			navigator.addView(DistrictsView.VIEW_NAME, DistrictsView.class);
@@ -91,8 +94,6 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 //		if (LoginHelper.hasUserRight(UserRight.USER_RIGHTS_MANAGE)) {
 //			navigator.addView(UserRightsView.VIEW_NAME, UserRightsView.class);
 //		}
-		
-		navigator.addView(OutbreaksView.VIEW_NAME, OutbreaksView.class);
 		
 		if (FacadeProvider.getConfigFacade().isDevMode()
 				&& UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
