@@ -89,7 +89,7 @@ public class DiseaseBurdenDto  implements Serializable {
 		else if (getCaseCount() == 0 && getPreviousCaseCount() > 0)
 			percentage = -100f;
 		else
-			percentage = (float)getCasesDifference() / (float)(getPreviousCaseCount() == 0 ? 1 : getPreviousCaseCount());
+			percentage = (float)getCasesDifference() / (float)(getPreviousCaseCount() == 0 ? 1 : getPreviousCaseCount()) * 100;
 
 		return Math.round(percentage * 10) / 10.0f;
 	}
