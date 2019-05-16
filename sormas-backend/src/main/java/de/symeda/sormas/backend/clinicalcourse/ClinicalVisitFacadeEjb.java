@@ -165,8 +165,8 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	public void deleteClinicalVisit(String clinicalVisitUuid, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		// TODO replace this with a proper right call #944
-		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
-			throw new UnsupportedOperationException("Only admins are allowed to delete entities");
+		if (!user.getUserRoles().contains(UserRole.ADMIN) && !user.getUserRoles().contains(UserRole.CASE_SUPERVISOR)) {
+			throw new UnsupportedOperationException("Only admins and clinicians are allowed to delete clinical visits");
 		}
 
 		ClinicalVisit clinicalVisit = service.getByUuid(clinicalVisitUuid);
