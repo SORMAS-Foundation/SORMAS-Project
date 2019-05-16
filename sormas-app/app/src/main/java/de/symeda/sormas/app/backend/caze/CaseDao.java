@@ -501,7 +501,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
     public List<Case> queryByCriteria(CaseCriteria criteria, long offset, long limit) {
         try {
-            return buildQueryBuilder(criteria).orderBy(Case.CHANGE_DATE, true)
+            return buildQueryBuilder(criteria).orderBy(Case.CHANGE_DATE, false)
                     .offset(offset).limit(limit).query();
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform queryByCriteria on Case");
