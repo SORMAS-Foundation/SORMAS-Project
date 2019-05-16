@@ -754,6 +754,7 @@ public interface Captions {
 	public static String Symptoms_painfulLymphadenitis = "Symptoms.painfulLymphadenitis";
 	public static String Symptoms_palpableLiver = "Symptoms.palpableLiver";
 	public static String Symptoms_palpableSpleen = "Symptoms.palpableSpleen";
+	public static String Symptoms_patientIllLocation = "Symptoms.patientIllLocation";
 	public static String Symptoms_pharyngealErythema = "Symptoms.pharyngealErythema";
 	public static String Symptoms_pharyngealExudate = "Symptoms.pharyngealExudate";
 	public static String Symptoms_rapidBreathing = "Symptoms.rapidBreathing";
