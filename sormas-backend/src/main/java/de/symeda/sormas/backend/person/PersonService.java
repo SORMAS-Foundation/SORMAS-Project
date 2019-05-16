@@ -151,10 +151,11 @@ public class PersonService extends AbstractAdoService<Person> {
 		// date range
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, casePersonsSelect, date);
+			Predicate caseDateFilter = caseService.createChangeDateFilter(cb, casePersonsRoot, date);
 			if (casePersonsFilter != null) {
-				casePersonsFilter = cb.and(casePersonsFilter, dateFilter);
+				casePersonsFilter = cb.and(casePersonsFilter, cb.or(dateFilter, caseDateFilter));
 			} else {
-				casePersonsFilter = dateFilter;
+				casePersonsFilter = cb.or(dateFilter, caseDateFilter);
 			}
 		}
 		if (casePersonsFilter != null) {
@@ -173,7 +174,8 @@ public class PersonService extends AbstractAdoService<Person> {
 		// date range
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, contactPersonsSelect, date);
-			contactPersonsFilter = cb.and(contactPersonsFilter, dateFilter);
+			Predicate contactDateFilter = contactService.createChangeDateFilter(cb, contactPersonsRoot, date);
+			contactPersonsFilter = cb.and(contactPersonsFilter, cb.or(dateFilter, contactDateFilter));
 		}
 		if (contactPersonsFilter != null) {
 			contactPersonsQuery.where(contactPersonsFilter);
@@ -191,7 +193,8 @@ public class PersonService extends AbstractAdoService<Person> {
 		// date range
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, eventPersonsSelect, date);
-			eventPersonsFilter = cb.and(eventPersonsFilter, dateFilter);
+			Predicate eventParticipantDateFilter = eventParticipantService.createChangeDateFilter(cb, eventPersonsRoot, date);
+			eventPersonsFilter = cb.and(eventPersonsFilter, cb.or(dateFilter, eventParticipantDateFilter));
 		}
 		if (eventPersonsFilter != null) {
 			eventPersonsQuery.where(eventPersonsFilter);
