@@ -3218,3 +3218,6 @@ ALTER TABLE cases ADD COLUMN cliniciandetails varchar(512);
 ALTER TABLE cases_history ADD COLUMN cliniciandetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (150, 'Add new fields for Yellow fever and Measles #1088');
+
+-- 2019-05-20 Add new fields for Rubella #1133
+ALTER TABLE users ADD COLUMN limiteddisease varchar(255);

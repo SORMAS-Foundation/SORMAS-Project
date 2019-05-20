@@ -96,6 +96,7 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
         target.setHealthFacility(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getHealthFacility()));
 
         target.setAssociatedOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getAssociatedOfficer()));
+        target.setLimitedDisease(source.getLimitedDisease());
 
         target.setAddress(locationHelper.fillOrCreateFromDto(target.getAddress(), source.getAddress()));
         target.setPhone(source.getPhone());

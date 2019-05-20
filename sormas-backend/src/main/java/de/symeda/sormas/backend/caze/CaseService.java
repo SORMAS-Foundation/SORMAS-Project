@@ -309,7 +309,7 @@ public class CaseService extends AbstractAdoService<Case> {
 
 		return result;
 	}
-	
+
 	public Case getLatestCaseByPerson(Person person, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(Case.class);
@@ -385,10 +385,11 @@ public class CaseService extends AbstractAdoService<Case> {
 		}
 
 		// whoever created the case or is assigned to it is allowed to access it
-		Predicate filter = cb.equal(casePath.join(Case.REPORTING_USER, JoinType.LEFT), user);
-		filter = cb.or(filter, cb.equal(casePath.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT), user));
-		filter = cb.or(filter, cb.equal(casePath.join(Case.CASE_OFFICER, JoinType.LEFT), user));
+		Predicate filterResponsible = cb.equal(casePath.join(Case.REPORTING_USER, JoinType.LEFT), user);
+		filterResponsible = cb.or(filterResponsible, cb.equal(casePath.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT), user));
+		filterResponsible = cb.or(filterResponsible, cb.equal(casePath.join(Case.CASE_OFFICER, JoinType.LEFT), user));
 
+		Predicate filter = null;
 		// allow case access based on user role
 		for (UserRole userRole : user.getUserRoles()) {
 			switch (userRole) {
@@ -399,7 +400,7 @@ public class CaseService extends AbstractAdoService<Case> {
 			case STATE_OBSERVER:
 				// supervisors see all cases of their region
 				if (user.getRegion() != null) {
-					filter = cb.or(filter, cb.equal(casePath.get(Case.REGION), user.getRegion()));
+					filter = cb.equal(casePath.get(Case.REGION), user.getRegion());
 				}
 				break;
 			case SURVEILLANCE_OFFICER:
@@ -408,19 +409,19 @@ public class CaseService extends AbstractAdoService<Case> {
 			case DISTRICT_OBSERVER:
 				// officers see all cases of their district
 				if (user.getDistrict() != null) {
-					filter = cb.or(filter, cb.equal(casePath.get(Case.DISTRICT), user.getDistrict()));
+					filter = cb.equal(casePath.get(Case.DISTRICT), user.getDistrict());
 				}
 				break;
 			case HOSPITAL_INFORMANT:
 				// hospital informants see all cases of their facility
 				if (user.getHealthFacility() != null) {
-					filter = cb.or(filter, cb.equal(casePath.get(Case.HEALTH_FACILITY), user.getHealthFacility()));
+					filter = cb.equal(casePath.get(Case.HEALTH_FACILITY), user.getHealthFacility());
 				}
 				break;
 			case COMMUNITY_INFORMANT:
 				// community informants see all cases of their community
 				if (user.getCommunity() != null) {
-					filter = cb.or(filter, cb.equal(casePath.get(Case.COMMUNITY), user.getCommunity()));
+					filter = cb.equal(casePath.get(Case.COMMUNITY), user.getCommunity());
 				}
 				break;
 			case LAB_USER:
@@ -429,7 +430,7 @@ public class CaseService extends AbstractAdoService<Case> {
 				Root<Sample> sampleRoot = sampleCaseSubquery.from(Sample.class);
 				sampleCaseSubquery.where(sampleService.createUserFilterWithoutCase(cb, cq, sampleRoot, user));
 				sampleCaseSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CASE).get(Case.ID));
-				filter = cb.or(filter, cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery));
+				filter = cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery);
 				break;
 			case ADMIN:
 			case EXTERNAL_LAB_USER:
@@ -445,11 +446,22 @@ public class CaseService extends AbstractAdoService<Case> {
 		Root<Contact> contactRoot = contactCaseSubquery.from(Contact.class);
 		contactCaseSubquery.where(contactService.createUserFilterWithoutCase(cb, cq, contactRoot, user));
 		contactCaseSubquery.select(contactRoot.get(Contact.CAZE).get(Case.ID));
-		filter = cb.or(filter, cb.in(casePath.get(Case.ID)).value(contactCaseSubquery));
+		filter = or(cb, filter, cb.in(casePath.get(Case.ID)).value(contactCaseSubquery));
 
 		// users can only be assigned to a task when they have also access to the case
 		//Join<Case, Task> tasksJoin = from.join(Case.TASKS, JoinType.LEFT);
 		//filter = cb.or(filter, cb.equal(tasksJoin.get(Task.ASSIGNEE_USER), user));
+
+		// only show cases of a specific disease if a limited disease is set
+		if (user.getLimitedDisease() != null) {
+			filter = and(cb, filter, cb.equal(casePath.get(Case.DISEASE), user.getLimitedDisease()));
+		}
+
+		if (filter != null) {
+			filter = cb.or(filter, filterResponsible);
+		} else { 
+			filter = filterResponsible;
+		}
 
 		return filter;
 	}
@@ -491,7 +503,7 @@ public class CaseService extends AbstractAdoService<Case> {
 
 		Join<ClinicalCourse, HealthConditions> healthConditions = clinicalCourse.join(ClinicalCourse.HEALTH_CONDITIONS, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter, cb.greaterThan(healthConditions.get(AbstractDomainObject.CHANGE_DATE), date));
-		
+
 		return dateFilter;
 	}
 

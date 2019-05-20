@@ -276,6 +276,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
 		target.setAssociatedOfficer(toReferenceDto(source.getAssociatedOfficer()));
 		target.setLaboratory(FacilityFacadeEjb.toReferenceDto(source.getLaboratory()));
+		target.setLimitedDisease(source.getLimitedDisease());
 
 		source.getUserRoles().size();
 		target.setUserRoles(source.getUserRoles());
@@ -317,6 +318,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setHealthFacility(facilityService.getByReferenceDto(source.getHealthFacility()));
 		target.setAssociatedOfficer(userService.getByReferenceDto(source.getAssociatedOfficer()));
 		target.setLaboratory(facilityService.getByReferenceDto(source.getLaboratory()));
+		target.setLimitedDisease(source.getLimitedDisease());
 
 		target.setUserRoles(source.getUserRoles());
 
