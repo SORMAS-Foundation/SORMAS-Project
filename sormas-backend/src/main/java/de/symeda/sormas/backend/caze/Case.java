@@ -40,6 +40,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.DengueFeverType;
+import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
@@ -147,6 +148,9 @@ public class Case extends AbstractDomainObject {
 	private User surveillanceOfficer;
 	private String clinicianDetails;
 	private User caseOfficer;
+	
+	private HospitalWardType notifyingClinic;
+	private String notifyingClinicDetails;
 
 	private Symptoms symptoms;
 
@@ -623,7 +627,25 @@ public class Case extends AbstractDomainObject {
 	public void setSequelaeDetails(String sequelaeDetails) {
 		this.sequelaeDetails = sequelaeDetails;
 	}
-	
+
+	@Enumerated(EnumType.STRING)
+	public HospitalWardType getNotifyingClinic() {
+		return notifyingClinic;
+	}
+
+	public void setNotifyingClinic(HospitalWardType notifyingClinic) {
+		this.notifyingClinic = notifyingClinic;
+	}
+
+	@Column(length = 512)
+	public String getNotifyingClinicDetails() {
+		return notifyingClinicDetails;
+	}
+
+	public void setNotifyingClinicDetails(String notifyingClinicDetails) {
+		this.notifyingClinicDetails = notifyingClinicDetails;
+	}
+
 	public Integer getCaseAge() {
 		return caseAge;
 	}

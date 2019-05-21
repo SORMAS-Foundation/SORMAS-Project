@@ -137,6 +137,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setOutcomeDate(source.getOutcomeDate());
         target.setSequelae(source.getSequelae());
         target.setSequelaeDetails(source.getSequelaeDetails());
+        target.setNotifyingClinic(source.getNotifyingClinic());
+        target.setNotifyingClinicDetails(source.getNotifyingClinicDetails());
     }
 
     @Override
@@ -265,6 +267,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setOutcomeDate(source.getOutcomeDate());
         target.setSequelae(source.getSequelae());
         target.setSequelaeDetails(source.getSequelaeDetails());
+        target.setNotifyingClinic(source.getNotifyingClinic());
+        target.setNotifyingClinicDetails(source.getNotifyingClinicDetails());
     }
 
     public static CaseReferenceDto toReferenceDto(Case ado) {

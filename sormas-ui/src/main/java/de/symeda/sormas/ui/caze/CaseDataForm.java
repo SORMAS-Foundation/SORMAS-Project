@@ -42,6 +42,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.facility.FacilityDto;
@@ -107,6 +108,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			+ LayoutUtil.fluidRowLocs(SMALLPOX_VACCINATION_SCAR_IMG)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.VACCINATION_DATE, CaseDataDto.VACCINATION_INFO_SOURCE)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CLINICIAN_DETAILS)
+			+ LayoutUtil.fluidRowLocs(CaseDataDto.NOTIFYING_CLINIC, CaseDataDto.NOTIFYING_CLINIC_DETAILS)
 			+ LayoutUtil.loc(PAPER_FORM_DATES_LOC)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE, CaseDataDto.NATIONAL_LEVEL_DATE);
 
@@ -131,7 +133,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		// Add fields
 		addFields(CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER,
 				CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE, CaseDataDto.NATIONAL_LEVEL_DATE, 
-				CaseDataDto.CLASSIFICATION_DATE, CaseDataDto.CLASSIFICATION_USER, CaseDataDto.CLASSIFICATION_COMMENT);
+				CaseDataDto.CLASSIFICATION_DATE, CaseDataDto.CLASSIFICATION_USER, CaseDataDto.CLASSIFICATION_COMMENT,
+				CaseDataDto.NOTIFYING_CLINIC, CaseDataDto.NOTIFYING_CLINIC_DETAILS);
 
 		TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
 		epidField.addValidator(new RegexpValidator(DataHelper.getEpidNumberRegexp(), true, I18nProperties.getValidationError(Validations.epidNumberPattern)));
@@ -229,6 +232,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		if (isVisibleAllowed(CaseDataDto.SEQUELAE_DETAILS)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.SEQUELAE_DETAILS,
 					CaseDataDto.SEQUELAE, Arrays.asList(YesNoUnknown.YES), true);
+		}
+		if (isVisibleAllowed(CaseDataDto.NOTIFYING_CLINIC_DETAILS)) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.NOTIFYING_CLINIC_DETAILS, 
+					CaseDataDto.NOTIFYING_CLINIC, Arrays.asList(HospitalWardType.OTHER), true);
 		}
 		setVisible(UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS), CaseDataDto.CLINICIAN_DETAILS);
 

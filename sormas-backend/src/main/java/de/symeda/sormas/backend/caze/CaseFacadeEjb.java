@@ -1202,7 +1202,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setOutcomeDate(source.getOutcomeDate());
 		target.setSequelae(source.getSequelae());
 		target.setSequelaeDetails(source.getSequelaeDetails());
-
+		target.setNotifyingClinic(source.getNotifyingClinic());
+		target.setNotifyingClinicDetails(source.getNotifyingClinicDetails());
+		
 		return target;
 	}
 
@@ -1276,6 +1278,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setOutcomeDate(source.getOutcomeDate());
 		target.setSequelae(source.getSequelae());
 		target.setSequelaeDetails(source.getSequelaeDetails());
+		target.setNotifyingClinic(source.getNotifyingClinic());
+		target.setNotifyingClinicDetails(source.getNotifyingClinicDetails());
 
 		return target;
 	}

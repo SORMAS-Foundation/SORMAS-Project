@@ -108,6 +108,8 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 		target.setHivArt(source.getHivArt());
 		target.setMalignancyChemotherapy(source.getMalignancyChemotherapy());
 		target.setTuberculosis(source.getTuberculosis());
+		target.setDownSyndrome(source.getDownSyndrome());
+		target.setCongenitalSyphilis(source.getCongenitalSyphilis());
 		target.setOtherConditions(source.getOtherConditions());
 
 		return target;
@@ -138,6 +140,8 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 		target.setHivArt(source.getHivArt());
 		target.setMalignancyChemotherapy(source.getMalignancyChemotherapy());
 		target.setTuberculosis(source.getTuberculosis());
+		target.setDownSyndrome(source.getDownSyndrome());
+		target.setCongenitalSyphilis(source.getCongenitalSyphilis());
 		target.setOtherConditions(source.getOtherConditions());
 
 		return target;

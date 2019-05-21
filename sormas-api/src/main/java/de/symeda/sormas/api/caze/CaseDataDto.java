@@ -88,6 +88,8 @@ public class CaseDataDto extends EntityDto {
 	public static final String SEQUELAE = "sequelae";
 	public static final String SEQUELAE_DETAILS = "sequelaeDetails";
 	public static final String CLINICIAN_DETAILS = "clinicianDetails";
+	public static final String NOTIFYING_CLINIC = "notifyingClinic";
+	public static final String NOTIFYING_CLINIC_DETAILS = "notifyingClinicDetails";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -168,6 +170,10 @@ public class CaseDataDto extends EntityDto {
 	@Outbreaks
 	private UserReferenceDto surveillanceOfficer;
 	private String clinicianDetails;
+	@Diseases({ Disease.CONGENITAL_RUBELLA })
+	private HospitalWardType notifyingClinic;
+	@Diseases({ Disease.CONGENITAL_RUBELLA })
+	private String notifyingClinicDetails;
 	@Deprecated
 	private UserReferenceDto caseOfficer;
 	private Double reportLat;
@@ -552,6 +558,22 @@ public class CaseDataDto extends EntityDto {
 
 	public void setSequelaeDetails(String sequelaeDetails) {
 		this.sequelaeDetails = sequelaeDetails;
+	}
+
+	public HospitalWardType getNotifyingClinic() {
+		return notifyingClinic;
+	}
+
+	public void setNotifyingClinic(HospitalWardType notifyingClinic) {
+		this.notifyingClinic = notifyingClinic;
+	}
+
+	public String getNotifyingClinicDetails() {
+		return notifyingClinicDetails;
+	}
+
+	public void setNotifyingClinicDetails(String notifyingClinicDetails) {
+		this.notifyingClinicDetails = notifyingClinicDetails;
 	}
 	
 }

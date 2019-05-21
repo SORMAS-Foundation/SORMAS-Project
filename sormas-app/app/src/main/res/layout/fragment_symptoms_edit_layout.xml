@@ -27,6 +27,8 @@
     <data>
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType"/>
         <import type="de.symeda.sormas.api.symptoms.SymptomsContext" />
+        <import type="de.symeda.sormas.api.symptoms.CongenitalHeartDiseaseType" />
+        <import type="de.symeda.sormas.api.symptoms.SymptomState" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.symptoms.Symptoms"/>
         <variable name="symptomStateClass" type="Class"/>
@@ -166,6 +168,20 @@
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_bilateralCataracts"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.bilateralCataracts}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_unilateralCataracts"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.unilateralCataracts}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/symptoms_chestPain"
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
@@ -177,6 +193,34 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.chillsSweats}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_congenitalGlaucoma"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.congenitalGlaucoma}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_congenitalHeartDisease"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.congenitalHeartDisease}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/symptoms_congenitalHeartDiseaseType"
+                app:value="@={data.congenitalHeartDiseaseType}"
+                app:dependencyParentField="@{symptomsCongenitalHeartDisease}"
+                app:dependencyParentValue="@{SymptomState.YES}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/symptoms_congenitalHeartDiseaseDetails"
+                app:value="@={data.congenitalHeartDiseaseDetails}"
+                app:dependencyParentField="@{symptomsCongenitalHeartDiseaseType}"
+                app:dependencyParentValue="@{CongenitalHeartDiseaseType.OTHER}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -205,6 +249,13 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.dehydration}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_developmentalDelay"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.developmentalDelay}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -299,6 +350,14 @@
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_jaundiceWithin24HoursOfBirth"
+                app:slim="true"
+                app:value="@={data.jaundiceWithin24HoursOfBirth}"
+                app:dependencyParentField="@{symptomsJaundice}"
+                app:dependencyParentValue="@{SymptomState.YES}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/symptoms_jointPain"
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
@@ -345,6 +404,20 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.otitisMedia}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_meningoencephalitis"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.meningoencephalitis}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_microcephaly"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.microcephaly}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -418,6 +491,27 @@
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_pigmentaryRetinopathy"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.pigmentaryRetinopathy}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_purpuricRash"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.purpuricRash}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_radiolucentBoneDisease"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.radiolucentBoneDisease}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/symptoms_rapidBreathing"
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
@@ -450,6 +544,13 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.soreThroat}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_splenomegaly"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.splenomegaly}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -812,6 +913,7 @@
             <!-- COMPLICATIONS -->
 
             <TextView
+                android:id="@+id/complications_heading"
                 style="@style/SubHeadingCompactStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
