@@ -118,7 +118,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 159;
+	public static final int DATABASE_VERSION = 160;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -1054,6 +1054,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 					getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 					getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				case 159:
+					currentVersion = 159;
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN mothersName varchar(512);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN fathersName varchar(512);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN placeOfBirthRegion_id bigint REFERENCES region(id);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN placeOfBirthDistrict_id bigint REFERENCES district(id);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN placeOfBirthCommunity_id bigint REFERENCES community(id);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN placeOfBirthFacility_id bigint REFERENCES facility(id);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN placeOfBirthFacilityDetails varchar(512);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN gestationAgeAtBirth integer;");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN birthWeight integer;");
 
 					// ATTENTION: break should only be done after last version
 					break;

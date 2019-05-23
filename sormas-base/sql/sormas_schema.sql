@@ -3219,7 +3219,7 @@ ALTER TABLE cases_history ADD COLUMN cliniciandetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (150, 'Add new fields for Yellow fever and Measles #1088');
 
--- 2019-05-20 Add new fields for Rubella #1133
+-- 2019-05-20 Add new fields for Congenital Rubella #1133
 ALTER TABLE users ADD COLUMN limiteddisease varchar(255);
 ALTER TABLE users_history ADD COLUMN limiteddisease varchar(255);
 ALTER TABLE symptoms ADD COLUMN bilateralcataracts varchar(255);
@@ -3319,3 +3319,29 @@ UPDATE cases SET maternalhistory_id = new_maternalhistory_id WHERE id = rec.id;
 END LOOP;
 END;
 $$ LANGUAGE plpgsql;
+
+ALTER TABLE person ADD COLUMN mothersname varchar(512);
+ALTER TABLE person ADD COLUMN fathersname varchar(512);
+ALTER TABLE person ADD COLUMN placeofbirthregion_id bigint;
+ALTER TABLE person ADD COLUMN placeofbirthdistrict_id bigint;
+ALTER TABLE person ADD COLUMN placeofbirthcommunity_id bigint;
+ALTER TABLE person ADD COLUMN placeofbirthfacility_id bigint;
+ALTER TABLE person ADD COLUMN placeofbirthfacilitydetails varchar(512);
+ALTER TABLE person ADD COLUMN gestationageatbirth integer;
+ALTER TABLE person ADD COLUMN birthweight integer;
+ALTER TABLE person_history ADD COLUMN mothersname varchar(512);
+ALTER TABLE person_history ADD COLUMN fathersname varchar(512);
+ALTER TABLE person_history ADD COLUMN placeofbirthregion_id bigint;
+ALTER TABLE person_history ADD COLUMN placeofbirthdistrict_id bigint;
+ALTER TABLE person_history ADD COLUMN placeofbirthcommunity_id bigint;
+ALTER TABLE person_history ADD COLUMN placeofbirthfacility_id bigint;
+ALTER TABLE person_history ADD COLUMN placeofbirthfacilitydetails varchar(512);
+ALTER TABLE person_history ADD COLUMN gestationageatbirth integer;
+ALTER TABLE person_history ADD COLUMN birthweight integer;
+
+ALTER TABLE person ADD CONSTRAINT fk_person_placeofbirthregion_id FOREIGN KEY (placeofbirthregion_id) REFERENCES region (id);
+ALTER TABLE person ADD CONSTRAINT fk_person_placeofbirthdistrict_id FOREIGN KEY (placeofbirthdistrict_id) REFERENCES district (id);
+ALTER TABLE person ADD CONSTRAINT fk_person_placeofbirthcommunity_id FOREIGN KEY (placeofbirthcommunity_id) REFERENCES community (id);
+ALTER TABLE person ADD CONSTRAINT fk_person_placeofbirthfacility_id FOREIGN KEY (placeofbirthfacility_id) REFERENCES facility (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (151, 'Add new fields for Congenital Rubella #1133');

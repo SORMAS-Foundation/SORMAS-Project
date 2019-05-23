@@ -89,6 +89,25 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/person_mothersName"
+                    android:nextFocusForward="@+id/person_fathersName"
+                    app:value="@={data.mothersName}"
+                    app:imeOptions="actionNext"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/person_fathersName"
+                    app:value="@={data.fathersName}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/person_birthdateLabel"
                 android:layout_width="match_parent"
@@ -144,6 +163,64 @@
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/person_approximateAgeReferenceDate"
                     app:value="@{data.approximateAgeReferenceDate}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/person_placeOfBirthRegion"
+                    app:value="@={data.placeOfBirthRegion}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/person_placeOfBirthDistrict"
+                    app:value="@={data.placeOfBirthDistrict}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/person_placeOfBirthCommunity"
+                    app:value="@={data.placeOfBirthCommunity}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/person_placeOfBirthFacility"
+                    app:value="@={data.placeOfBirthFacility}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/person_placeOfBirthFacilityDetails"
+                app:value="@={data.placeOfBirthFacilityDetails}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/person_gestationAgeAtBirth"
+                    app:value="@={data.gestationAgeAtBirth}"
+                    app:inputType="number"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/person_birthWeight"
+                    app:value="@={data.birthWeight}"
+                    app:inputType="number"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>

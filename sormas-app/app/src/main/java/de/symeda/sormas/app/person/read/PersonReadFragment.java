@@ -20,11 +20,15 @@ package de.symeda.sormas.app.person.read;
 
 import android.os.Bundle;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.databinding.FragmentPersonReadLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
@@ -35,6 +39,7 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
     public static final String TAG = PersonReadFragment.class.getSimpleName();
 
     private Person record;
+    private AbstractDomainObject rootData;
 
     // Instance methods
 
@@ -46,8 +51,22 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
         return newInstance(PersonReadFragment.class, null, activityRootData);
     }
 
-    private void setUpFieldVisibilities(FragmentPersonReadLayoutBinding contentBinding) {
+    public static void setUpFieldVisibilities(BaseReadFragment fragment, FragmentPersonReadLayoutBinding contentBinding, AbstractDomainObject rootData) {
+        Disease rootDisease = null;
+        if (rootData instanceof Case) {
+            rootDisease = ((Case) rootData).getDisease();
+        } else if (rootData instanceof Contact) {
+            rootDisease = ((Contact) rootData).getCaseDisease();
+        } else if (rootData instanceof Event) {
+            rootDisease = ((Event) rootData).getDisease();
+        }
+
+        if (rootDisease != null) {
+            fragment.setVisibilityByDisease(PersonDto.class, rootDisease, contentBinding.mainContent);
+        }
+
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
+        InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personPlaceOfBirthFacility, contentBinding.personPlaceOfBirthFacilityDetails);
         PersonEditFragment.initializeCauseOfDeathDetailsFieldVisibility(contentBinding.personCauseOfDeath, contentBinding.personCauseOfDeathDisease, contentBinding.personCauseOfDeathDetails);
     }
 
@@ -59,8 +78,10 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 
         if (ado instanceof Case) {
             record = ((Case) ado).getPerson();
+            rootData = ado;
         } else if (ado instanceof Contact) {
             record = ((Contact) ado).getPerson();
+            rootData = ado;
         } else {
             throw new UnsupportedOperationException("ActivityRootData of class " + ado.getClass().getSimpleName()
                     + " does not support PersonReadFragment");
@@ -74,7 +95,7 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 
     @Override
     public void onAfterLayoutBinding(FragmentPersonReadLayoutBinding contentBinding) {
-        setUpFieldVisibilities(contentBinding);
+        PersonReadFragment.setUpFieldVisibilities(this, contentBinding, rootData);
     }
 
     @Override

@@ -77,7 +77,17 @@ public class PersonDto extends EntityDto {
 	public static final String OCCUPATION_DISTRICT = "occupationDistrict";
 	public static final String OCCUPATION_COMMUNITY = "occupationCommunity";
 	public static final String OCCUPATION_FACILITY = "occupationFacility";
-	public static final String OCCUPATION_FACILITY_DETAILS = "occupationFacilityDetails";
+	public static final String OCCUPATION_FACILITY_DETAILS = "occupationFacilityDetails";	
+	
+	public static final String FATHERS_NAME = "fathersName";
+	public static final String MOTHERS_NAME = "mothersName";
+	public static final String PLACE_OF_BIRTH_REGION = "placeOfBirthRegion";
+	public static final String PLACE_OF_BIRTH_DISTRICT = "placeOfBirthDistrict";
+	public static final String PLACE_OF_BIRTH_COMMUNITY = "placeOfBirthCommunity";
+	public static final String PLACE_OF_BIRTH_FACILITY = "placeOfBirthFacility";
+	public static final String PLACE_OF_BIRTH_FACILITY_DETAILS = "placeOfBirthFacilityDetails";
+	public static final String GESTATION_AGE_AT_BIRTH = "gestationAgeAtBirth";
+	public static final String BIRTH_WEIGHT = "birthWeight";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -88,7 +98,11 @@ public class PersonDto extends EntityDto {
 	@Required
 	private String lastName;
 	private String nickname;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private String mothersName;
 	private String mothersMaidenName;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private String fathersName;
 	@Outbreaks
 	private Sex sex;
 	@Outbreaks
@@ -103,6 +117,20 @@ public class PersonDto extends EntityDto {
 	private ApproximateAgeType approximateAgeType;
 	@Outbreaks
 	private Date approximateAgeReferenceDate;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private RegionReferenceDto placeOfBirthRegion;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private DistrictReferenceDto placeOfBirthDistrict;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private CommunityReferenceDto placeOfBirthCommunity;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private FacilityReferenceDto placeOfBirthFacility;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private String placeOfBirthFacilityDetails;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private Integer gestationAgeAtBirth;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private Integer birthWeight;
 	
 	@Outbreaks
 	private PresentCondition presentCondition;
@@ -395,6 +423,78 @@ public class PersonDto extends EntityDto {
 
 	public void setOccupationFacilityDetails(String occupationFacilityDetails) {
 		this.occupationFacilityDetails = occupationFacilityDetails;
+	}
+
+	public String getMothersName() {
+		return mothersName;
+	}
+
+	public void setMothersName(String mothersName) {
+		this.mothersName = mothersName;
+	}
+
+	public String getFathersName() {
+		return fathersName;
+	}
+
+	public void setFathersName(String fathersName) {
+		this.fathersName = fathersName;
+	}
+
+	public RegionReferenceDto getPlaceOfBirthRegion() {
+		return placeOfBirthRegion;
+	}
+
+	public void setPlaceOfBirthRegion(RegionReferenceDto placeOfBirthRegion) {
+		this.placeOfBirthRegion = placeOfBirthRegion;
+	}
+
+	public DistrictReferenceDto getPlaceOfBirthDistrict() {
+		return placeOfBirthDistrict;
+	}
+
+	public void setPlaceOfBirthDistrict(DistrictReferenceDto placeOfBirthDistrict) {
+		this.placeOfBirthDistrict = placeOfBirthDistrict;
+	}
+
+	public CommunityReferenceDto getPlaceOfBirthCommunity() {
+		return placeOfBirthCommunity;
+	}
+
+	public void setPlaceOfBirthCommunity(CommunityReferenceDto placeOfBirthCommunity) {
+		this.placeOfBirthCommunity = placeOfBirthCommunity;
+	}
+
+	public FacilityReferenceDto getPlaceOfBirthFacility() {
+		return placeOfBirthFacility;
+	}
+
+	public void setPlaceOfBirthFacility(FacilityReferenceDto placeOfBirthFacility) {
+		this.placeOfBirthFacility = placeOfBirthFacility;
+	}
+
+	public String getPlaceOfBirthFacilityDetails() {
+		return placeOfBirthFacilityDetails;
+	}
+
+	public void setPlaceOfBirthFacilityDetails(String placeOfBirthFacilityDetails) {
+		this.placeOfBirthFacilityDetails = placeOfBirthFacilityDetails;
+	}
+
+	public Integer getGestationAgeAtBirth() {
+		return gestationAgeAtBirth;
+	}
+
+	public void setGestationAgeAtBirth(Integer gestationAgeAtBirth) {
+		this.gestationAgeAtBirth = gestationAgeAtBirth;
+	}
+
+	public Integer getBirthWeight() {
+		return birthWeight;
+	}
+
+	public void setBirthWeight(Integer birthWeight) {
+		this.birthWeight = birthWeight;
 	}
 
 	@Override

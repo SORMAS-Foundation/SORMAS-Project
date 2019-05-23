@@ -72,8 +72,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private Label occupationHeader = new Label(LayoutUtil.h3(I18nProperties.getString(Strings.headingPersonOccupation)), ContentMode.HTML);
 	private Label addressHeader = new Label(LayoutUtil.h3(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS)), ContentMode.HTML);
 
-	private boolean facilityFieldsInitialized = false;
-
 	private Disease disease;
 	private String diseaseDetails;
 	private ComboBox causeOfDeathField;
@@ -88,10 +86,14 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			LayoutUtil.h3(I18nProperties.getString(Strings.headingPersonInformation))+
 			LayoutUtil.fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
 			LayoutUtil.fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
+			LayoutUtil.fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
 			LayoutUtil.fluidRow(
 					LayoutUtil.fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 					LayoutUtil.fluidRowLocs(PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE, PersonDto.APPROXIMATE_AGE_REFERENCE_DATE)
 					) +
+			LayoutUtil.fluidRowLocs(PersonDto.PLACE_OF_BIRTH_REGION, PersonDto.PLACE_OF_BIRTH_DISTRICT, PersonDto.PLACE_OF_BIRTH_COMMUNITY) +
+			LayoutUtil.fluidRowLocs(PersonDto.PLACE_OF_BIRTH_FACILITY, PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS) +
+			LayoutUtil.fluidRowLocs(PersonDto.GESTATION_AGE_AT_BIRTH, PersonDto.BIRTH_WEIGHT) +
 			LayoutUtil.fluidRowLocs(PersonDto.SEX, PersonDto.PRESENT_CONDITION) +
 			LayoutUtil.fluidRow(
 					LayoutUtil.oneOfFourCol(PersonDto.DEATH_DATE),
@@ -149,6 +151,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		ComboBox sex = addField(PersonDto.SEX, ComboBox.class);
 		addField(PersonDto.NICKNAME, TextField.class);
 		addField(PersonDto.MOTHERS_MAIDEN_NAME, TextField.class);
+		addFields(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME);
 		ComboBox presentCondition = addField(PersonDto.PRESENT_CONDITION, ComboBox.class);
 		birthDateDay = addField(PersonDto.BIRTH_DATE_DD, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
@@ -170,6 +173,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.APPROXIMATE_AGE_TYPE, ComboBox.class);
 		addField(PersonDto.APPROXIMATE_AGE_REFERENCE_DATE, DateField.class);
 		
+		TextField tfGestationAgeAtBirth = addField(PersonDto.GESTATION_AGE_AT_BIRTH, TextField.class);
+		tfGestationAgeAtBirth.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfGestationAgeAtBirth.getCaption()));
+		TextField tfBirthWeight = addField(PersonDto.BIRTH_WEIGHT, TextField.class);
+		tfBirthWeight.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfBirthWeight.getCaption()));
+		
 		AbstractSelect deathPlaceType = addField(PersonDto.DEATH_PLACE_TYPE, ComboBox.class);
 		deathPlaceType.setNullSelectionAllowed(true);
 		TextField deathPlaceDesc = addField(PersonDto.DEATH_PLACE_DESCRIPTION, TextField.class);
@@ -182,6 +190,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		
 		addFields(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS,
 				PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS);
+		
+		ComboBox cbPlaceOfBirthRegion = addField(PersonDto.PLACE_OF_BIRTH_REGION, ComboBox.class);
+		ComboBox cbPlaceOfBirthDistrict = addField(PersonDto.PLACE_OF_BIRTH_DISTRICT, ComboBox.class);
+		ComboBox cbPlaceOfBirthCommunity = addField(PersonDto.PLACE_OF_BIRTH_COMMUNITY, ComboBox.class);
+		ComboBox cbPlaceOfBirthFacility = addField(PersonDto.PLACE_OF_BIRTH_FACILITY, ComboBox.class);
+		TextField tfPlaceOfBirthFacilityDetails = addField(PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS, TextField.class);
 
 		causeOfDeathField = addField(PersonDto.CAUSE_OF_DEATH, ComboBox.class);
 		causeOfDeathDiseaseField = addDiseaseField(PersonDto.CAUSE_OF_DEATH_DISEASE, true);
@@ -276,37 +290,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			toogleOccupationMetaFields();
 		});
 
-		facilityRegion.addValueChangeListener(e -> {
-			RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
-			FieldHelper.updateItems(facilityDistrict, regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
-		});
-
-		facilityDistrict.addValueChangeListener(e -> {
-			if (facilityCommunity.getValue() == null) {
-				FieldHelper.removeItems(occupationFacility);
-			}
-			FieldHelper.removeItems(facilityCommunity);
-			DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
-			FieldHelper.updateItems(facilityCommunity, districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()) : null);
-			FieldHelper.updateItems(occupationFacility, districtDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, true) : null);
-		});
-
-		facilityCommunity.addValueChangeListener(e -> {
-			if(facilityFieldsInitialized || occupationFacility.getValue() == null) {
-				FieldHelper.removeItems(occupationFacility);
-				CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
-				FieldHelper.updateItems(occupationFacility, communityDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true) :
-					facilityDistrict.getValue() != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict((DistrictReferenceDto) facilityDistrict.getValue(), true) :
-						null);
-			}
-		});
-
+		addListenersToInfrastructureFields(cbPlaceOfBirthRegion, cbPlaceOfBirthDistrict, cbPlaceOfBirthCommunity, cbPlaceOfBirthFacility, tfPlaceOfBirthFacilityDetails);
+		addListenersToInfrastructureFields(facilityRegion, facilityDistrict, facilityCommunity, occupationFacility, occupationFacilityDetails);
+		cbPlaceOfBirthRegion.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 		facilityRegion.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		
 		addFieldListeners(PersonDto.PRESENT_CONDITION, e -> toogleDeathAndBurialFields());
-
-		occupationFacility.addValueChangeListener(e -> {
-			updateOccupationFacilityDetailsVisibility((FacilityReferenceDto) e.getProperty().getValue());
-		});
 
 		causeOfDeathField.addValueChangeListener(e -> {
 			toggleCauseOfDeathFields(presentCondition.getValue() != PresentCondition.ALIVE &&
@@ -334,6 +323,38 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		birthDateMonth.addValueChangeListener(e -> {
 			updateListOfDays((Integer) birthDateYear.getValue(), (Integer) e.getProperty().getValue());
 		});
+	}
+	
+	private void addListenersToInfrastructureFields(ComboBox regionField, ComboBox districtField, ComboBox communityField, ComboBox facilityField, TextField detailsField) {
+		regionField.addValueChangeListener(e -> {
+			RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
+			FieldHelper.updateItems(districtField, regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+		});
+
+		districtField.addValueChangeListener(e -> {
+			if (communityField.getValue() == null) {
+				FieldHelper.removeItems(facilityField);
+			}
+			FieldHelper.removeItems(communityField);
+			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+			FieldHelper.updateItems(communityField, districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()) : null);
+			FieldHelper.updateItems(facilityField, districtDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, true) : null);
+		});
+
+		communityField.addValueChangeListener(e -> {
+			if(occupationFacility.getValue() == null) {
+				FieldHelper.removeItems(facilityField);
+				CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
+				FieldHelper.updateItems(facilityField, communityDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true) :
+					districtField.getValue() != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict((DistrictReferenceDto) districtField.getValue(), true) :
+						null);
+			}
+		});
+		facilityField.addValueChangeListener(e -> {
+			updateFacilityDetailsVisibility(detailsField, (FacilityReferenceDto) e.getProperty().getValue());
+		});
+		// Set initial visibility
+		updateFacilityDetailsVisibility(detailsField, (FacilityReferenceDto) facilityField.getValue());
 	}
 	
 	private void updateListOfDays(Integer selectedYear, Integer selectedMonth) {
@@ -416,7 +437,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 						PersonDto.OCCUPATION_DISTRICT,
 						PersonDto.OCCUPATION_COMMUNITY,
 						PersonDto.OCCUPATION_FACILITY);
-				updateOccupationFacilityDetailsVisibility((FacilityReferenceDto) occupationFacility.getValue());
+				updateFacilityDetailsVisibility(occupationFacilityDetails, (FacilityReferenceDto) occupationFacility.getValue());
 				break;
 			default:
 				setVisible(false, 
@@ -439,10 +460,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		}
 	}
 
-	private void updateOccupationFacilityDetailsVisibility(FacilityReferenceDto facility) {
+	private void updateFacilityDetailsVisibility(TextField detailsField, FacilityReferenceDto facility) {
 		if (facility == null) {
-			occupationFacilityDetails.setVisible(false);
-			occupationFacilityDetails.clear();
+			detailsField.setVisible(false);
+			detailsField.clear();
 			return;
 		}
 
@@ -450,16 +471,16 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		boolean noneHealthFacility = facility.getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
 		boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
 
-		occupationFacilityDetails.setVisible(visibleAndRequired);
+		detailsField.setVisible(visibleAndRequired);
 		
 		if (otherHealthFacility) {
-			occupationFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
+			detailsField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
 		}
 		if (noneHealthFacility) {
-			occupationFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
+			detailsField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
 		}
 		if (!visibleAndRequired) {
-			occupationFacilityDetails.clear();
+			detailsField.clear();
 		}
 	}
 

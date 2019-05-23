@@ -87,11 +87,22 @@ public class Person extends AbstractDomainObject {
 	public static final String OCCUPATION_FACILITY_DETAILS = "occupationFacilityDetails";
 	public static final String PHONE = "phone";
 	public static final String PHONE_OWNER = "phoneOwner";
+	public static final String FATHERS_NAME = "fathersName";
+	public static final String MOTHERS_NAME = "mothersName";
+	public static final String PLACE_OF_BIRTH_REGION = "placeOfBirthRegion";
+	public static final String PLACE_OF_BIRTH_DISTRICT = "placeOfBirthDistrict";
+	public static final String PLACE_OF_BIRTH_COMMUNITY = "placeOfBirthCommunity";
+	public static final String PLACE_OF_BIRTH_FACILITY = "placeOfBirthFacility";
+	public static final String PLACE_OF_BIRTH_FACILITY_DETAILS = "placeOfBirthFacilityDetails";
+	public static final String GESTATION_AGE_AT_BIRTH = "gestationAgeAtBirth";
+	public static final String BIRTH_WEIGHT = "birthWeight";
 
 	private String firstName;
 	private String lastName;
 	private String nickname;
+	private String mothersName;
 	private String mothersMaidenName;
+	private String fathersName;
 	
 	private Integer approximateAge;
 	private ApproximateAgeType approximateAgeType;
@@ -116,6 +127,13 @@ public class Person extends AbstractDomainObject {
 	private Integer birthdateDD;
 	private Integer birthdateMM;
 	private Integer birthdateYYYY;
+	private Region placeOfBirthRegion;
+	private District placeOfBirthDistrict;
+	private Community placeOfBirthCommunity;
+	private Facility placeOfBirthFacility;
+	private String placeOfBirthFacilityDetails;
+	private Integer gestationAgeAtBirth;
+	private Integer birthWeight;
 	private Date deathDate;
 
 	private EducationType educationType;
@@ -384,6 +402,76 @@ public class Person extends AbstractDomainObject {
 	}
 	public void setOccupationFacilityDetails(String occupationFacilityDetails) {
 		this.occupationFacilityDetails = occupationFacilityDetails;
+	}
+
+	@Column(length = 512)
+	public String getMothersName() {
+		return mothersName;
+	}
+	public void setMothersName(String mothersName) {
+		this.mothersName = mothersName;
+	}
+
+	@Column(length = 512)
+	public String getFathersName() {
+		return fathersName;
+	}
+	public void setFathersName(String fathersName) {
+		this.fathersName = fathersName;
+	}
+
+	@ManyToOne(cascade = {})
+	public Region getPlaceOfBirthRegion() {
+		return placeOfBirthRegion;
+	}
+	public void setPlaceOfBirthRegion(Region placeOfBirthRegion) {
+		this.placeOfBirthRegion = placeOfBirthRegion;
+	}
+
+	@ManyToOne(cascade = {})
+	public District getPlaceOfBirthDistrict() {
+		return placeOfBirthDistrict;
+	}
+	public void setPlaceOfBirthDistrict(District placeOfBirthDistrict) {
+		this.placeOfBirthDistrict = placeOfBirthDistrict;
+	}
+
+	@ManyToOne(cascade = {})
+	public Community getPlaceOfBirthCommunity() {
+		return placeOfBirthCommunity;
+	}
+	public void setPlaceOfBirthCommunity(Community placeOfBirthCommunity) {
+		this.placeOfBirthCommunity = placeOfBirthCommunity;
+	}
+
+	@ManyToOne(cascade = {})
+	public Facility getPlaceOfBirthFacility() {
+		return placeOfBirthFacility;
+	}
+	public void setPlaceOfBirthFacility(Facility placeOfBirthFacility) {
+		this.placeOfBirthFacility = placeOfBirthFacility;
+	}
+
+	@Column(length = 512)
+	public String getPlaceOfBirthFacilityDetails() {
+		return placeOfBirthFacilityDetails;
+	}
+	public void setPlaceOfBirthFacilityDetails(String placeOfBirthFacilityDetails) {
+		this.placeOfBirthFacilityDetails = placeOfBirthFacilityDetails;
+	}
+	
+	public Integer getGestationAgeAtBirth() {
+		return gestationAgeAtBirth;
+	}
+	public void setGestationAgeAtBirth(Integer gestationAgeAtBirth) {
+		this.gestationAgeAtBirth = gestationAgeAtBirth;
+	}
+	
+	public Integer getBirthWeight() {
+		return birthWeight;
+	}
+	public void setBirthWeight(Integer birthWeight) {
+		this.birthWeight = birthWeight;
 	}
 	
 	@Override
