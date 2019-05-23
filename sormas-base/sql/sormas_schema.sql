@@ -3258,3 +3258,64 @@ ALTER TABLE cases ADD COLUMN notifyingclinic varchar(255);
 ALTER TABLE cases ADD COLUMN notifyingclinicdetails varchar(512);
 ALTER TABLE cases_history ADD COLUMN notifyingclinic varchar(255);
 ALTER TABLE cases_history ADD COLUMN notifyingclinicdetails varchar(512);
+
+CREATE TABLE maternalhistory(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	childrennumber integer,
+	ageatbirth integer,
+	conjunctivitis varchar(255),
+	conjunctivitisonset timestamp,
+	conjunctivitismonth integer,
+	maculopapularrash varchar(255),
+	maculopapularrashonset timestamp,
+	maculopapularrashmonth integer,
+	swollenlymphs varchar(255),
+	swollenlymphsonset timestamp,
+	swollenlymphsmonth integer,
+	arthralgiaarthritis varchar(255),
+	arthralgiaarthritisonset timestamp,
+	arthralgiaarthritismonth integer,
+	othercomplications varchar(255),
+	othercomplicationsonset timestamp,
+	othercomplicationsmonth integer,
+	othercomplicationsdetails varchar(512),
+	rubella varchar(255),
+	rubellaonset timestamp,
+	rashexposure varchar(255),
+	rashexposuredate timestamp,
+	rashexposuremonth integer,
+	rashexposureregion_id bigint,
+	rashexposuredistrict_id bigint,
+	rashexposurecommunity_id bigint,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+ALTER TABLE maternalhistory OWNER TO sormas_user;
+ALTER TABLE maternalhistory ADD CONSTRAINT fk_maternalhistory_rashexposureregion_id FOREIGN KEY (rashexposureregion_id) REFERENCES region (id);
+ALTER TABLE maternalhistory ADD CONSTRAINT fk_maternalhistory_rashexposuredistrict_id FOREIGN KEY (rashexposuredistrict_id) REFERENCES district (id);
+ALTER TABLE maternalhistory ADD CONSTRAINT fk_maternalhistory_rashexposurecommunity_id FOREIGN KEY (rashexposurecommunity_id) REFERENCES community (id);
+
+CREATE TABLE maternalhistory_history (LIKE maternalhistory);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON maternalhistory
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'maternalhistory_history', true);
+ALTER TABLE maternalhistory_history OWNER TO sormas_user;
+
+ALTER TABLE cases ADD COLUMN maternalhistory_id bigint;
+ALTER TABLE cases_history ADD COLUMN maternalhistory_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_maternalhistory_id FOREIGN KEY (maternalhistory_id) REFERENCES maternalhistory (id);
+
+DO $$
+DECLARE rec RECORD;
+DECLARE new_maternalhistory_id INTEGER;
+BEGIN
+FOR rec IN SELECT id FROM public.cases WHERE maternalhistory_id IS NULL
+LOOP
+INSERT INTO maternalhistory(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now()) RETURNING id INTO new_maternalhistory_id;
+UPDATE cases SET maternalhistory_id = new_maternalhistory_id WHERE id = rec.id;
+END LOOP;
+END;
+$$ LANGUAGE plpgsql;

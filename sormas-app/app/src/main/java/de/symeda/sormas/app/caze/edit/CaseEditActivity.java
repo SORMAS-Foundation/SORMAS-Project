@@ -24,6 +24,7 @@ import android.view.Menu;
 
 import java.util.List;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.user.UserHelper;
@@ -108,6 +109,9 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                 || (caze != null && !DiseaseConfigurationHelper.getInstance().hasFollowUp(caze.getDisease()))) {
             menuItems.remove(CaseSection.CONTACTS.ordinal());
         }
+        if (caze != null && caze.getDisease() != Disease.CONGENITAL_RUBELLA) {
+            menuItems.remove(CaseSection.MATERNAL_HISTORY.ordinal());
+        }
         return menuItems;
     }
 
@@ -122,6 +126,9 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                 break;
             case PERSON_INFO:
                 fragment = PersonEditFragment.newInstance(activityRootData);
+                break;
+            case MATERNAL_HISTORY:
+                fragment = CaseEditMaternalHistoryFragment.newInstance(activityRootData);
                 break;
             case HOSPITALIZATION:
                 fragment = CaseEditHospitalizationFragment.newInstance(activityRootData);

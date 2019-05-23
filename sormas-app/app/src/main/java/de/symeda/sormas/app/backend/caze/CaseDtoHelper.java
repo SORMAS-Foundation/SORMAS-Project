@@ -24,6 +24,7 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistoryDtoHelper;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -58,6 +59,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
     private EpiDataDtoHelper epiDataDtoHelper = new EpiDataDtoHelper();
     private TherapyDtoHelper therapyDtoHelper = new TherapyDtoHelper();
     private ClinicalCourseDtoHelper clinicalCourseDtoHelper = new ClinicalCourseDtoHelper();
+    private MaternalHistoryDtoHelper maternalHistoryDtoHelper = new MaternalHistoryDtoHelper();
 
     @Override
     protected Class<Case> getAdoClass() {
@@ -117,6 +119,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setEpiData(epiDataDtoHelper.fillOrCreateFromDto(target.getEpiData(), source.getEpiData()));
         target.setTherapy(therapyDtoHelper.fillOrCreateFromDto(target.getTherapy(), source.getTherapy()));
         target.setClinicalCourse(clinicalCourseDtoHelper.fillOrCreateFromDto(target.getClinicalCourse(), source.getClinicalCourse()));
+        target.setMaternalHistory(maternalHistoryDtoHelper.fillOrCreateFromDto(target.getMaternalHistory(), source.getMaternalHistory()));
 
         target.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getSurveillanceOfficer()));
         target.setClinicianDetails(source.getClinicianDetails());
@@ -247,6 +250,12 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
             target.setClinicalCourse(clinicalCourseDtoHelper.adoToDto(clinicalCourse));
         } else {
             target.setClinicalCourse(null);
+        }
+
+        if (source.getMaternalHistory() != null) {
+            target.setMaternalHistory(maternalHistoryDtoHelper.adoToDto(DatabaseHelper.getMaternalHistoryDao().queryForId(source.getMaternalHistory().getId())));
+        } else {
+            target.setMaternalHistory(null);
         }
 
         target.setClinicianDetails(source.getClinicianDetails());

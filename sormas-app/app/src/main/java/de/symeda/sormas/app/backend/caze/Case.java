@@ -42,6 +42,7 @@ import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.epidata.EpiData;
@@ -182,6 +183,9 @@ public class Case extends AbstractDomainObject {
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private ClinicalCourse clinicalCourse;
+
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private MaternalHistory maternalHistory;
 
     @Deprecated
     @Column
@@ -461,6 +465,14 @@ public class Case extends AbstractDomainObject {
 
     public void setClinicalCourse(ClinicalCourse clinicalCourse) {
         this.clinicalCourse = clinicalCourse;
+    }
+
+    public MaternalHistory getMaternalHistory() {
+        return maternalHistory;
+    }
+
+    public void setMaternalHistory(MaternalHistory maternalHistory) {
+        this.maternalHistory = maternalHistory;
     }
 
     public Double getReportLat() {

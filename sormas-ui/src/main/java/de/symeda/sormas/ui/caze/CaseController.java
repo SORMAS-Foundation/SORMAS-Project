@@ -66,6 +66,8 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryForm;
+import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryView;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseForm;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseView;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
@@ -92,6 +94,7 @@ public class CaseController {
 		navigator.addView(CasesView.VIEW_NAME, CasesView.class);
 		navigator.addView(CaseDataView.VIEW_NAME, CaseDataView.class);
 		navigator.addView(CasePersonView.VIEW_NAME, CasePersonView.class);
+		navigator.addView(MaternalHistoryView.VIEW_NAME, MaternalHistoryView.class);
 		navigator.addView(CaseSymptomsView.VIEW_NAME, CaseSymptomsView.class);
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 			navigator.addView(CaseContactsView.VIEW_NAME, CaseContactsView.class);
@@ -514,6 +517,24 @@ public class CaseController {
 		});
 
 		return editView;
+	}
+	
+	public CommitDiscardWrapperComponent<MaternalHistoryForm> getMaternalHistoryComponent(final String caseUuid, ViewMode viewMode) {
+		CaseDataDto caze = findCase(caseUuid);
+		MaternalHistoryForm form = new MaternalHistoryForm(UserRight.CASE_EDIT, viewMode);
+		form.setValue(caze.getMaternalHistory());
+		
+		final CommitDiscardWrapperComponent<MaternalHistoryForm> component = new CommitDiscardWrapperComponent<MaternalHistoryForm>(form, form.getFieldGroup());
+		component.addCommitListener(new CommitListener() {
+			@Override
+			public void onCommit() {
+				CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
+				caze.setMaternalHistory(form.getValue());
+				saveCase(caze);
+			}
+		});
+		
+		return component;
 	}
 
 	public CommitDiscardWrapperComponent<SymptomsForm> getSymptomsEditComponent(final String caseUuid, ViewMode viewMode) {

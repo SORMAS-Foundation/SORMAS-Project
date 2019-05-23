@@ -141,6 +141,11 @@ public class CaseDao extends AbstractAdoDao<Case> {
             date = clinicalCourseDate;
         }
 
+        Date maternalHistoryDate = DatabaseHelper.getMaternalHistoryDao().getLatestChangeDate();
+        if (maternalHistoryDate != null && maternalHistoryDate.after(date)) {
+            date = maternalHistoryDate;
+        }
+
         return date;
     }
 
@@ -198,6 +203,9 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
         // Clinical Course
         caze.setClinicalCourse(DatabaseHelper.getClinicalCourseDao().build());
+
+        // Maternal History
+        caze.setMaternalHistory(DatabaseHelper.getMaternalHistoryDao().build());
 
         // Location
         User currentUser = ConfigProvider.getUser();

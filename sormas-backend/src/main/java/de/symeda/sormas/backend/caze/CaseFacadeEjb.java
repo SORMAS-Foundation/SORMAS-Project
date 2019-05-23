@@ -72,6 +72,7 @@ import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
@@ -114,6 +115,9 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb;
+import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb.MaternalHistoryFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
@@ -267,6 +271,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private ClinicalVisitService clinicalVisitService;
 	@EJB
 	private OutbreakFacadeEjbLocal outbreakFacade;
+	@EJB
+	private MaternalHistoryFacadeEjbLocal maternalHistoryFacade;
 
 	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
 
@@ -1172,7 +1178,11 @@ public class CaseFacadeEjb implements CaseFacade {
 			source.setClinicalCourse(ClinicalCourseDto.build());
 		}
 		target.setClinicalCourse(clinicalCourseFacade.fromDto(source.getClinicalCourse()));
-
+		if (source.getMaternalHistory() == null) {
+			source.setMaternalHistory(MaternalHistoryDto.build());
+		}
+		target.setMaternalHistory(maternalHistoryFacade.fromDto(source.getMaternalHistory()));
+		
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
@@ -1240,6 +1250,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 		if (source.getClinicalCourse() != null) {
 			target.setClinicalCourse(ClinicalCourseFacadeEjb.toDto(source.getClinicalCourse()));
+		}
+		if (source.getMaternalHistory() != null) {
+			target.setMaternalHistory(MaternalHistoryFacadeEjb.toDto(source.getMaternalHistory()));
 		}
 
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));

@@ -174,6 +174,7 @@ public interface Strings {
 	public static String headingLaboratorySample = "headingLaboratorySample";
 	public static String headingLocation = "headingLocation";
 	public static String headingLoginFailed = "headingLoginFailed";
+	public static String headingMaternalHistory = "headingMaternalHistory";
 	public static String headingMedicalInformation = "headingMedicalInformation";
 	public static String headingMissingDateFilter = "headingMissingDateFilter";
 	public static String headingMissingEpiWeekFilter = "headingMissingEpiWeekFilter";

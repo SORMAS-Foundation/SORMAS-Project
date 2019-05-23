@@ -16,52 +16,54 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.caze.edit;
+package de.symeda.sormas.app.caze.read;
 
-import de.symeda.sormas.app.BaseEditFragment;
+import android.os.Bundle;
+
+import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.clinicalcourse.HealthConditions;
-import de.symeda.sormas.app.databinding.FragmentCaseEditHealthConditionsLayoutBinding;
+import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
+import de.symeda.sormas.app.databinding.FragmentCaseReadMaternalHistoryLayoutBinding;
 
-public class CaseEditHealthConditionsFragment extends BaseEditFragment<FragmentCaseEditHealthConditionsLayoutBinding, HealthConditions, Case> {
+public class CaseReadMaternalHistoryFragment extends BaseReadFragment<FragmentCaseReadMaternalHistoryLayoutBinding, MaternalHistory, Case> {
 
-    public static final String TAG = CaseEditHealthConditionsFragment.class.getSimpleName();
+    public static final String TAG = CaseReadMaternalHistoryFragment.class.getSimpleName();
 
-    private HealthConditions record;
+    private MaternalHistory record;
 
     // Static methods
 
-    public static CaseEditHealthConditionsFragment newInstance(Case activityRootData) {
-        return newInstance(CaseEditHealthConditionsFragment.class, null, activityRootData);
+    public static CaseReadMaternalHistoryFragment newInstance(Case activityRootData) {
+        return newInstance(CaseReadMaternalHistoryFragment.class, null, activityRootData);
     }
 
     // Overrides
 
     @Override
-    protected void prepareFragmentData() {
+    protected void prepareFragmentData(Bundle savedInstanceState) {
         Case caze = getActivityRootData();
-        record = caze.getClinicalCourse().getHealthConditions();
+        record = caze.getMaternalHistory();
     }
 
     @Override
-    public void onLayoutBinding(FragmentCaseEditHealthConditionsLayoutBinding contentBinding) {
+    public void onLayoutBinding(FragmentCaseReadMaternalHistoryLayoutBinding contentBinding) {
         contentBinding.setData(record);
     }
 
     @Override
     protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.caption_case_health_conditions);
+        return getResources().getString(R.string.caption_case_maternal_history);
     }
 
     @Override
-    public HealthConditions getPrimaryData() {
+    public MaternalHistory getPrimaryData() {
         return record;
     }
 
     @Override
-    public int getEditLayout() {
-        return R.layout.fragment_case_edit_health_conditions_layout;
+    public int getReadLayout() {
+        return R.layout.fragment_case_read_maternal_history_layout;
     }
 
 }
