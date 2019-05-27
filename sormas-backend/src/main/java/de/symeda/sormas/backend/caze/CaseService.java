@@ -330,10 +330,10 @@ public class CaseService extends AbstractAdoService<Case> {
 				.sorted(new Comparator<Case> () {
 					@Override
 					public int compare(Case o1, Case o2) {
-						if (CaseLogic.getStartDate(o1.getSymptoms().getOnsetDate(), o1.getDistrictLevelDate(), o1.getReportDate()).after(CaseLogic.getStartDate(o2.getSymptoms().getOnsetDate(), o2.getDistrictLevelDate(), o2.getReportDate()))) {
+						if (CaseLogic.getStartDate(o1.getSymptoms().getOnsetDate(), o1.getReportDate()).after(CaseLogic.getStartDate(o2.getSymptoms().getOnsetDate(), o2.getReportDate()))) {
 							return -1;
 						}
-						if (CaseLogic.getStartDate(o2.getSymptoms().getOnsetDate(), o2.getDistrictLevelDate(), o2.getReportDate()).after(CaseLogic.getStartDate(o1.getSymptoms().getOnsetDate(), o1.getDistrictLevelDate(), o1.getReportDate()))) {
+						if (CaseLogic.getStartDate(o2.getSymptoms().getOnsetDate(), o2.getReportDate()).after(CaseLogic.getStartDate(o1.getSymptoms().getOnsetDate(), o1.getReportDate()))) {
 							return 1;
 						}
 						return 0;
@@ -512,7 +512,7 @@ public class CaseService extends AbstractAdoService<Case> {
 	}
 
 	/**
-	 * A case is considered active when the time span between onset/reception/report date and outcome date overlaps
+	 * A case is considered active when the time span between onset/report date and outcome date overlaps
 	 * the time span defined by the fromDate and toDate.
 	 */
 	public Predicate createActiveCaseFilter(CriteriaBuilder cb, Root<Case> from, Date fromDate, Date toDate) {
@@ -525,17 +525,12 @@ public class CaseService extends AbstractAdoService<Case> {
 					);
 		}
 		if (toDate != null) {
-			// Onset date > reception date > report date (use report date as a fallback if none of the other dates is available)
+			// Onset date > report date
 			Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS, JoinType.LEFT);
 			dateToFilter = cb.or(
 					cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), toDate), 
 					cb.and(
 							cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), 
-							cb.lessThanOrEqualTo(from.get(Case.DISTRICT_LEVEL_DATE), toDate)
-							),
-					cb.and(
-							cb.isNull(symptoms.get(Symptoms.ONSET_DATE)),
-							cb.isNull(from.get(Case.DISTRICT_LEVEL_DATE)),
 							cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), toDate)
 							)
 					);
@@ -557,7 +552,6 @@ public class CaseService extends AbstractAdoService<Case> {
 		toDate = DateHelper.getEndOfDay(toDate);
 
 		Predicate onsetDateFilter = cb.between(symptoms.get(Symptoms.ONSET_DATE), fromDate, toDate);
-		Predicate districtLevelDateFilter = cb.between(caze.get(Case.DISTRICT_LEVEL_DATE), fromDate, toDate);
 		Predicate reportDateFilter = cb.between(caze.get(Case.REPORT_DATE), fromDate, toDate);
 
 		Predicate newCaseFilter = null;
@@ -566,16 +560,10 @@ public class CaseService extends AbstractAdoService<Case> {
 					onsetDateFilter,
 					cb.and(
 							cb.isNull(symptoms.get(Symptoms.ONSET_DATE)),
-							districtLevelDateFilter),
-					cb.and(
-							cb.isNull(symptoms.get(Symptoms.ONSET_DATE)),
-							cb.isNull(caze.get(Case.DISTRICT_LEVEL_DATE)),
 							reportDateFilter)
 					);
 		} else if (newCaseDateType == NewCaseDateType.ONSET) {
 			newCaseFilter = onsetDateFilter;
-		} else if (newCaseDateType == NewCaseDateType.RECEPTION) {
-			newCaseFilter = districtLevelDateFilter;
 		} else {
 			newCaseFilter = reportDateFilter;
 		}
@@ -673,17 +661,12 @@ public class CaseService extends AbstractAdoService<Case> {
 			filter = cb.and(filter, cb.equal(from.get(Case.DISEASE), disease));
 		}
 
-		// Onset date > reception date > report date (use report date as a fallback if none of the other dates is available)
+		// Onset date > report date
 		Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS, JoinType.LEFT);
 		Predicate onsetFilter = cb.or(
 				cb.between(symptoms.get(Symptoms.ONSET_DATE), onsetBetweenStart, onsetBetweenEnd), 
 				cb.and(
-						cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), 
-						cb.between(from.get(Case.DISTRICT_LEVEL_DATE), onsetBetweenStart, onsetBetweenEnd)
-						),
-				cb.and(
 						cb.isNull(symptoms.get(Symptoms.ONSET_DATE)),
-						cb.isNull(from.get(Case.DISTRICT_LEVEL_DATE)),
 						cb.between(from.get(Case.REPORT_DATE), onsetBetweenStart, onsetBetweenEnd)
 						)
 				);
@@ -691,7 +674,7 @@ public class CaseService extends AbstractAdoService<Case> {
 
 		cq.where(filter);
 
-		cq.orderBy(cb.asc(symptoms.get(Symptoms.ONSET_DATE)), cb.asc(from.get(Case.DISTRICT_LEVEL_DATE)), cb.asc(from.get(Case.REPORT_DATE)));
+		cq.orderBy(cb.asc(symptoms.get(Symptoms.ONSET_DATE)), cb.asc(from.get(Case.REPORT_DATE)));
 
 		List<Case> resultList = em.createQuery(cq).setMaxResults(1).getResultList();
 		if (!resultList.isEmpty())
@@ -720,7 +703,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		cq.where(filter);
 
 		Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS, JoinType.LEFT);
-		cq.orderBy(cb.desc(symptoms.get(Symptoms.ONSET_DATE)), cb.desc(from.get(Case.DISTRICT_LEVEL_DATE)), cb.desc(from.get(Case.REPORT_DATE)));
+		cq.orderBy(cb.desc(symptoms.get(Symptoms.ONSET_DATE)), cb.desc(from.get(Case.REPORT_DATE)));
 
 		List<Case> resultList = em.createQuery(cq).setMaxResults(1).getResultList();
 		if (!resultList.isEmpty())

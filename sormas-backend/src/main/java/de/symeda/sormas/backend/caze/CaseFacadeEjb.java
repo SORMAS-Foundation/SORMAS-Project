@@ -117,7 +117,6 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb.MaternalHistoryFacadeEjbLocal;
-import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
@@ -554,7 +553,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (filter != null) {
 			cq.where(filter);
 			cq.multiselect(caze.get(Case.REPORT_DATE), symptoms.get(Symptoms.ONSET_DATE),
-					caze.get(Case.DISTRICT_LEVEL_DATE), caze.get(Case.CASE_CLASSIFICATION), caze.get(Case.DISEASE),
+					caze.get(Case.CASE_CLASSIFICATION), caze.get(Case.DISEASE),
 					caze.get(Case.INVESTIGATION_STATUS), person.get(Person.PRESENT_CONDITION),
 					person.get(Person.CAUSE_OF_DEATH_DISEASE));
 
@@ -588,8 +587,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	public CaseDataDto getMatchingCaseForImport(CaseDataDto importCaze, PersonReferenceDto existingPerson,
 			String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		Date newCaseDate = CaseLogic.getStartDate(importCaze.getSymptoms().getOnsetDate(),
-				importCaze.getDistrictLevelDate(), importCaze.getReportDate());
+		Date newCaseDate = CaseLogic.getStartDate(importCaze.getSymptoms().getOnsetDate(), importCaze.getReportDate());
 
 		CaseCriteria criteria = new CaseCriteria().person(existingPerson).disease(importCaze.getDisease())
 				.archived(false).newCaseDateBetween(DateHelper.subtractMonths(newCaseDate, 2),
@@ -599,9 +597,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			@Override
 			public int compare(Case c1, Case c2) {
 				return CaseLogic
-						.getStartDate(c2.getSymptoms().getOnsetDate(), c2.getDistrictLevelDate(), c2.getReportDate())
-						.compareTo(CaseLogic.getStartDate(c1.getSymptoms().getOnsetDate(), c1.getDistrictLevelDate(),
-								c1.getReportDate()));
+						.getStartDate(c2.getSymptoms().getOnsetDate(), c2.getReportDate())
+						.compareTo(CaseLogic.getStartDate(c1.getSymptoms().getOnsetDate(), c1.getReportDate()));
 			}
 		}).collect(Collectors.toList());
 
@@ -883,7 +880,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		if (existingCase == null || newCase.getDisease() != existingCase.getDisease()
 				|| newCase.getReportDate() != existingCase.getReportDate()
-				|| newCase.getDistrictLevelDate() != existingCase.getDistrictLevelDate()
 				|| newCase.getSymptoms().getOnsetDate() != existingCase.getSymptoms().getOnsetDate()) {
 
 			// Update follow-up until and status of all contacts
@@ -1034,15 +1030,14 @@ public class CaseFacadeEjb implements CaseFacade {
 	private void updateCaseAge(CaseDataDto existingCase, Case newCase) {
 		if (newCase.getPerson().getApproximateAge() != null) {
 			if (existingCase == null || CaseLogic.getStartDate(existingCase.getSymptoms().getOnsetDate(),
-					existingCase.getDistrictLevelDate(),
 					existingCase.getReportDate()) != CaseLogic.getStartDate(newCase.getSymptoms().getOnsetDate(),
-							newCase.getDistrictLevelDate(), newCase.getReportDate())) {
+							newCase.getReportDate())) {
 				if (newCase.getPerson().getApproximateAgeType() == ApproximateAgeType.MONTHS) {
 					newCase.setCaseAge(0);
 				} else {
 					Date personChangeDate = newCase.getPerson().getChangeDate();
 					Date referenceDate = CaseLogic.getStartDate(newCase.getSymptoms().getOnsetDate(),
-							newCase.getDistrictLevelDate(), newCase.getReportDate());
+							newCase.getReportDate());
 					newCase.setCaseAge(newCase.getPerson().getApproximateAge()
 							- DateHelper.getYearsBetween(referenceDate, personChangeDate));
 					if (newCase.getCaseAge() < 0) {
@@ -1638,50 +1633,6 @@ public class CaseFacadeEjb implements CaseFacade {
 					caseCriteria.getOnsetDateTo(), Symptoms.TABLE_NAME, Symptoms.ONSET_DATE);
 		}
 
-		if (CollectionUtils.isNotEmpty(caseCriteria.getReceptionYears())) {
-			extendFilterBuilderWithDateElement(filterBuilder, filterBuilderParameters, "YEAR", Case.TABLE_NAME,
-					Case.DISTRICT_LEVEL_DATE, caseCriteria.getReceptionYears(), dateValue -> (dateValue.getValue()));
-		}
-
-		if (CollectionUtils.isNotEmpty(caseCriteria.getReceptionQuarters())) {
-			extendFilterBuilderWithDateElement(filterBuilder, filterBuilderParameters, "QUARTER", Case.TABLE_NAME,
-					Case.DISTRICT_LEVEL_DATE, caseCriteria.getReceptionQuarters(), dateValue -> (dateValue.getValue()));
-		}
-
-		if (CollectionUtils.isNotEmpty(caseCriteria.getReceptionMonths())) {
-			extendFilterBuilderWithDateElement(filterBuilder, filterBuilderParameters, "MONTH", Case.TABLE_NAME,
-					Case.DISTRICT_LEVEL_DATE, caseCriteria.getReceptionMonths(),
-					dateValue -> (dateValue.ordinal() + 1));
-		}
-
-		if (CollectionUtils.isNotEmpty(caseCriteria.getReceptionEpiWeeks())) {
-			extendFilterBuilderWithEpiWeek(filterBuilder, filterBuilderParameters, Case.TABLE_NAME,
-					Case.DISTRICT_LEVEL_DATE, caseCriteria.getReceptionEpiWeeks(), value -> value.getWeek());
-		}
-
-		if (CollectionUtils.isNotEmpty(caseCriteria.getReceptionQuartersOfYear())) {
-			extendFilterBuilderWithQuarterOfYear(filterBuilder, filterBuilderParameters, Case.TABLE_NAME,
-					Case.DISTRICT_LEVEL_DATE, caseCriteria.getReceptionQuartersOfYear(),
-					value -> value.getYear().getValue() * 10 + value.getQuarter().getValue());
-		}
-
-		if (CollectionUtils.isNotEmpty(caseCriteria.getReceptionMonthsOfYear())) {
-			extendFilterBuilderWithMonthOfYear(filterBuilder, filterBuilderParameters, Case.TABLE_NAME,
-					Case.DISTRICT_LEVEL_DATE, caseCriteria.getReceptionMonthsOfYear(),
-					value -> value.getYear().getValue() * 100 + (value.getMonth().ordinal() + 1));
-		}
-
-		if (CollectionUtils.isNotEmpty(caseCriteria.getReceptionEpiWeeksOfYear())) {
-			extendFilterBuilderWithEpiWeekOfYear(filterBuilder, filterBuilderParameters, Case.TABLE_NAME,
-					Case.DISTRICT_LEVEL_DATE, caseCriteria.getReceptionEpiWeeksOfYear(),
-					value -> value.getYear() * 100 + value.getWeek());
-		}
-
-		if (caseCriteria.getDistrictLevelDateFrom() != null || caseCriteria.getDistrictLevelDateTo() != null) {
-			extendFilterBuilderWithDate(filterBuilder, filterBuilderParameters, caseCriteria.getDistrictLevelDateFrom(),
-					caseCriteria.getDistrictLevelDateTo(), Case.TABLE_NAME, Case.DISTRICT_LEVEL_DATE);
-		}
-
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReportYears())) {
 			extendFilterBuilderWithDateElement(filterBuilder, filterBuilderParameters, "YEAR", Case.TABLE_NAME,
 					Case.REPORT_DATE, caseCriteria.getReportYears(), dateValue -> (dateValue.getValue()));
@@ -2053,16 +2004,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public Date getOldestDistrictLevelDate() {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Timestamp> cq = cb.createQuery(Timestamp.class);
-		Root<Case> from = cq.from(Case.class);
-
-		cq.select(cb.least(from.<Timestamp>get(Case.DISTRICT_LEVEL_DATE)));
-		return em.createQuery(cq).getSingleResult();
-	}
-
-	@Override
 	public Date getOldestCaseReportDate() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Timestamp> cq = cb.createQuery(Timestamp.class);
@@ -2160,40 +2101,6 @@ public class CaseFacadeEjb implements CaseFacade {
 			case EPI_WEEK_OF_YEAR:
 				extendGroupingBuilderWithEpiWeekOfYear(groupingSelectPartBuilder, Symptoms.TABLE_NAME,
 						Symptoms.ONSET_DATE, groupAlias);
-				break;
-			default:
-				throw new IllegalArgumentException(subGrouping.toString());
-			}
-			break;
-		case RECEPTION_TIME:
-			switch (subGrouping) {
-			case YEAR:
-				extendGroupingBuilderWithDate(groupingSelectPartBuilder, "YEAR", Case.TABLE_NAME,
-						Case.DISTRICT_LEVEL_DATE, groupAlias);
-				break;
-			case QUARTER:
-				extendGroupingBuilderWithDate(groupingSelectPartBuilder, "QUARTER", Case.TABLE_NAME,
-						Case.DISTRICT_LEVEL_DATE, groupAlias);
-				break;
-			case MONTH:
-				extendGroupingBuilderWithDate(groupingSelectPartBuilder, "MONTH", Case.TABLE_NAME,
-						Case.DISTRICT_LEVEL_DATE, groupAlias);
-				break;
-			case EPI_WEEK:
-				extendGroupingBuilderWithEpiWeek(groupingSelectPartBuilder, Case.TABLE_NAME, Case.DISTRICT_LEVEL_DATE,
-						groupAlias);
-				break;
-			case QUARTER_OF_YEAR:
-				extendGroupingBuilderWithQuarterOfYear(groupingSelectPartBuilder, Case.TABLE_NAME,
-						Case.DISTRICT_LEVEL_DATE, groupAlias);
-				break;
-			case MONTH_OF_YEAR:
-				extendGroupingBuilderWithMonthOfYear(groupingSelectPartBuilder, Case.TABLE_NAME,
-						Case.DISTRICT_LEVEL_DATE, groupAlias);
-				break;
-			case EPI_WEEK_OF_YEAR:
-				extendGroupingBuilderWithEpiWeekOfYear(groupingSelectPartBuilder, Case.TABLE_NAME,
-						Case.DISTRICT_LEVEL_DATE, groupAlias);
 				break;
 			default:
 				throw new IllegalArgumentException(subGrouping.toString());

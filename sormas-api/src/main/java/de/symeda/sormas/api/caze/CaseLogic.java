@@ -29,11 +29,9 @@ public class CaseLogic {
 		}
 	}
 	
-	public static Date getStartDate(Date onsetDate, Date districtLevelDate, Date reportDate) {
+	public static Date getStartDate(Date onsetDate, Date reportDate) {
 		if (onsetDate != null) {
 			return onsetDate;
-		} else if (districtLevelDate != null) {
-			return districtLevelDate;
 		} else {
 			return reportDate;
 		}

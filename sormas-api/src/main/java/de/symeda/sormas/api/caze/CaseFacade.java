@@ -110,8 +110,6 @@ public interface CaseFacade {
 	
 	Date getOldestCaseOnsetDate();
 	
-	Date getOldestDistrictLevelDate();
-	
 	Date getOldestCaseReportDate();
 	
 	boolean isArchived(String caseUuid);
