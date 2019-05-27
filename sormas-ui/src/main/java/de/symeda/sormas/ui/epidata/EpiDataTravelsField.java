@@ -38,16 +38,16 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 
 	private static final String PERIOD = Captions.EpiDataTravel_travelPeriod;
-	
+
 	@Override
 	public Class<EpiDataTravelDto> getEntryType() {
 		return EpiDataTravelDto.class;
 	}
-	
+
 	@Override
 	protected void updateColumns() {
 		Table table = getTable();
-		
+
 		table.addGeneratedColumn(PERIOD, new Table.ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
@@ -63,7 +63,7 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 				}
 			}
 		});
-		
+
 		table.setVisibleColumns(
 				EDIT_COLUMN_ID,
 				EpiDataTravelDto.TRAVEL_TYPE,
@@ -76,15 +76,17 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 		table.setColumnExpandRatio(PERIOD, 0);
 		
 		for (Object columnId : table.getVisibleColumns()) {
-			table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(EpiDataTravelDto.I18N_PREFIX, (String) columnId));
+			if (!columnId.equals(EDIT_COLUMN_ID)) {
+				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(EpiDataTravelDto.I18N_PREFIX, (String) columnId));
+			}
 		}
 	}
-	
+
 	@Override
 	protected boolean isEmpty(EpiDataTravelDto entry) {
 		return false;
 	}
-	
+
 	@Override
 	protected boolean isModified(EpiDataTravelDto oldEntry, EpiDataTravelDto newEntry) {
 		if (isModifiedObject(oldEntry.getTravelType(), newEntry.getTravelType()))
@@ -95,18 +97,18 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 			return true;
 		if (isModifiedObject(oldEntry.getTravelDateTo(), newEntry.getTravelDateTo()))
 			return true;
-		
+
 		return false;
 	}
-	
+
 	@Override
 	protected void editEntry(EpiDataTravelDto entry, boolean create, Consumer<EpiDataTravelDto> commitCallback) {
 		EpiDataTravelEditForm editForm = new EpiDataTravelEditForm(UserRight.CASE_EDIT);
 		editForm.setValue(entry);
-		
+
 		final CommitDiscardWrapperComponent<EpiDataTravelEditForm> editView = new CommitDiscardWrapperComponent<EpiDataTravelEditForm>(editForm, editForm.getFieldGroup());
 		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
-		
+
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.entityTravel));
 
 		editView.addCommitListener(new CommitListener() {
@@ -117,7 +119,7 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 				}
 			}
 		});
-		
+
 		if (!isEmpty(entry)) {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
@@ -128,5 +130,5 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 			}, I18nProperties.getCaption(EpiDataTravelDto.I18N_PREFIX));
 		}
 	}
-	
+
 }

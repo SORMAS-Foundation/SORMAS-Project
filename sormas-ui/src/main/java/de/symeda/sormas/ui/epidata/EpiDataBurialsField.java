@@ -39,22 +39,22 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
 public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
-	
+
 	private static final String EPI_DATA_BURIAL_TABLE_PREFIX = "EpiDataBurialTable";
-	
+
 	private static final String PERIOD = Captions.EpiDataBurialTable_burialPeriod;
 	private static final String CITY = LocationDto.CITY;
 	private static final String DISTRICT = LocationDto.DISTRICT;
-	
+
 	@Override
 	public Class<EpiDataBurialDto> getEntryType() {
 		return EpiDataBurialDto.class;
 	}
-	
+
 	@Override
 	protected void updateColumns() {
 		Table table = getTable();
-		
+
 		table.addGeneratedColumn(PERIOD, new Table.ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
@@ -70,7 +70,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 				}
 			}
 		});
-		
+
 		table.addGeneratedColumn(CITY, new Table.ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
@@ -79,7 +79,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 				return location.getCity();
 			}
 		});
-		
+
 		table.addGeneratedColumn(DISTRICT, new Table.ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
@@ -88,7 +88,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 				return location.getDistrict();
 			}
 		});
-		
+
 		table.setVisibleColumns(
 				EDIT_COLUMN_ID,
 				EpiDataBurialDto.BURIAL_PERSON_NAME,
@@ -107,17 +107,19 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 		table.setColumnExpandRatio(DISTRICT, 0);
 		table.setColumnExpandRatio(EpiDataBurialDto.BURIAL_ILL, 0);
 		table.setColumnExpandRatio(EpiDataBurialDto.BURIAL_TOUCHING, 0);
-		
+
 		for (Object columnId : table.getVisibleColumns()) {
-			table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(EPI_DATA_BURIAL_TABLE_PREFIX, (String) columnId));
+			if (!columnId.equals(EDIT_COLUMN_ID)) {
+				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(EPI_DATA_BURIAL_TABLE_PREFIX, (String) columnId));
+			}
 		}
 	}
-	
+
 	@Override
 	protected boolean isEmpty(EpiDataBurialDto entry) {
 		return false;
 	}
-	
+
 	@Override
 	protected boolean isModified(EpiDataBurialDto oldEntry, EpiDataBurialDto newEntry) {
 		if (isModifiedObject(oldEntry.getBurialDateFrom(), newEntry.getBurialDateFrom()))
@@ -134,20 +136,20 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 			return true;
 		if (isModifiedObject(oldEntry.getBurialTouching(), newEntry.getBurialTouching()))
 			return true;
-		
+
 		return false;
 	}
-	
+
 	@Override
 	protected void editEntry(EpiDataBurialDto entry, boolean create, Consumer<EpiDataBurialDto> commitCallback) {
 		EpiDataBurialEditForm editForm = new EpiDataBurialEditForm(create, UserRight.CASE_EDIT);
 		editForm.setValue(entry);
-		
+
 		final CommitDiscardWrapperComponent<EpiDataBurialEditForm> editView = new CommitDiscardWrapperComponent<EpiDataBurialEditForm>(editForm, editForm.getFieldGroup());
 		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.entityBurial));
-		
+
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
@@ -156,7 +158,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 				}
 			}
 		});
-		
+
 		if (!isEmpty(entry)) {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
@@ -167,7 +169,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 			}, I18nProperties.getCaption(EpiDataBurialDto.I18N_PREFIX));
 		}
 	}
-	
+
 	@Override
 	protected EpiDataBurialDto createEntry() {
 		EpiDataBurialDto burial = new EpiDataBurialDto();

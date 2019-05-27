@@ -39,20 +39,20 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
 public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringDto> {
-	
+
 	private static final String CITY = Captions.city;
 	private static final String DISTRICT = Captions.district;
 	private static final String GATHERING_DAY = Captions.EpiDataGathering_gatheringDay;
-	
+
 	@Override
 	public Class<EpiDataGatheringDto> getEntryType() {
 		return EpiDataGatheringDto.class;
 	}
-	
+
 	@Override
 	protected void updateColumns() {
 		Table table = getTable();
-		
+
 		table.addGeneratedColumn(CITY, new Table.ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
@@ -61,7 +61,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 				return location.getCity();
 			}
 		});
-		
+
 		table.addGeneratedColumn(DISTRICT, new Table.ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
@@ -70,7 +70,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 				return location.getDistrict();
 			}
 		});
-		
+
 		table.addGeneratedColumn(GATHERING_DAY, new Table.ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
@@ -82,7 +82,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 				}
 			}
 		});
-		
+
 		table.setVisibleColumns(
 				EDIT_COLUMN_ID,
 				EpiDataGatheringDto.DESCRIPTION,
@@ -95,12 +95,14 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 		table.setColumnExpandRatio(GATHERING_DAY, 0);
 		table.setColumnExpandRatio(CITY, 0);
 		table.setColumnExpandRatio(DISTRICT, 0);
-		
+
 		for (Object columnId : table.getVisibleColumns()) {
-			table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(EpiDataGatheringDto.I18N_PREFIX, (String) columnId));
+			if (!columnId.equals(EDIT_COLUMN_ID)) {
+				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(EpiDataGatheringDto.I18N_PREFIX, (String) columnId));
+			}
 		}
 	}
-	
+
 	@Override
 	protected boolean isEmpty(EpiDataGatheringDto entry) {
 		return false;
@@ -114,20 +116,20 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 			return true;
 		if (isModifiedObject(oldEntry.getGatheringAddress(), newEntry.getGatheringAddress()))
 			return true;
-		
+
 		return false;
 	}
-	
+
 	@Override
 	protected void editEntry(EpiDataGatheringDto entry, boolean create, Consumer<EpiDataGatheringDto> commitCallback) {
 		EpiDataGatheringEditForm editForm = new EpiDataGatheringEditForm(UserRight.CASE_EDIT);
 		editForm.setValue(entry);
-		
+
 		final CommitDiscardWrapperComponent<EpiDataGatheringEditForm> editView = new CommitDiscardWrapperComponent<EpiDataGatheringEditForm>(editForm, editForm.getFieldGroup());
 		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.entityGathering));
-		
+
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
@@ -136,7 +138,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 				}
 			}
 		});
-		
+
 		if (!isEmpty(entry)) {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
@@ -147,7 +149,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 			}, I18nProperties.getCaption(EpiDataGatheringDto.I18N_PREFIX));
 		}
 	}
-	
+
 	@Override
 	protected EpiDataGatheringDto createEntry() {
 		EpiDataGatheringDto gathering = new EpiDataGatheringDto();

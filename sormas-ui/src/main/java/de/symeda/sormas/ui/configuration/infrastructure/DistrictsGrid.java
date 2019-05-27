@@ -60,7 +60,7 @@ public class DistrictsGrid extends FilteredGrid<DistrictDto, DistrictCriteria> {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			Column<DistrictDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
 			editColumn.setId(EDIT_BTN_ID);
-			editColumn.setWidth(60);
+			editColumn.setWidth(20);
 
 			addItemClickListener(e -> {
 				if (e.getColumn() != null && (EDIT_BTN_ID.equals(e.getColumn().getId()) || e.getMouseEventDetails().isDoubleClick())) {

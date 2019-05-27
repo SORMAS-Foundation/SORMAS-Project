@@ -74,7 +74,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implement
 		
 		Column<TaskIndexDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
 		editColumn.setId(EDIT_BTN_ID);
-		editColumn.setWidth(60);
+		editColumn.setWidth(20);
 		
 		setStyleGenerator(item -> {
 			if (item != null && item.getTaskStatus() != null) {

@@ -74,7 +74,7 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 
 		Column<SampleIndexDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
 		editColumn.setId(EDIT_BTN_ID);
-		editColumn.setWidth(60);
+		editColumn.setWidth(20);
 
 		Column<SampleIndexDto, String> diseaseShortColumn = addColumn(sample -> 
 		DiseaseHelper.toString(sample.getDisease(), sample.getDiseaseDetails()));
