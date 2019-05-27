@@ -24,6 +24,8 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -38,6 +40,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
@@ -161,6 +164,12 @@ public class CaseListActivity extends PagedBaseListActivity {
         List<Item> outcomes = DataUtils.getEnumItems(CaseOutcome.class);
         filterBinding.outcomeFilter.initializeSpinner(outcomes);
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        List<Item> epiWeeks = DataUtils.toItems(DateHelper.createEpiWeekList(calendar.get(Calendar.YEAR), calendar.get(Calendar.WEEK_OF_YEAR)));
+        filterBinding.epiWeekFromFilter.initializeSpinner(epiWeeks);
+        filterBinding.epiWeekToFilter.initializeSpinner(epiWeeks);
+
         pageMenu.addFilter(caseListFilterView);
 
         filterBinding.applyFilters.setOnClickListener(e -> {
@@ -172,10 +181,14 @@ public class CaseListActivity extends PagedBaseListActivity {
         filterBinding.resetFilters.setOnClickListener(e -> {
             showPreloader();
             pageMenu.hideAll();
-            filterBinding.textFilter.setValue(null);
-            filterBinding.diseaseFilter.setValue(null);
-            filterBinding.classificationFilter.setValue(null);
-            filterBinding.outcomeFilter.setValue(null);
+            model.getCaseCriteria().setTextFilter(null);
+            model.getCaseCriteria().setDisease(null);
+            model.getCaseCriteria().setCaseClassification(null);
+            model.getCaseCriteria().setOutcome(null);
+            model.getCaseCriteria().setEpiWeekFrom(null);
+            model.getCaseCriteria().setEpiWeekTo(null);
+            filterBinding.invalidateAll();
+            filterBinding.executePendingBindings();
             model.notifyCriteriaUpdated();
         });
 

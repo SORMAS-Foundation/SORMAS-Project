@@ -535,6 +535,12 @@ public class CaseDao extends AbstractAdoDao<Case> {
         if (criteria.getOutcome() != null) {
             where.and().eq(Case.OUTCOME, criteria.getOutcome());
         }
+        if (criteria.getEpiWeekFrom() != null) {
+            where.and().ge(Case.REPORT_DATE, DateHelper.getEpiWeekStart(criteria.getEpiWeekFrom()));
+        }
+        if (criteria.getEpiWeekTo() != null) {
+            where.and().le(Case.REPORT_DATE, DateHelper.getEpiWeekEnd(criteria.getEpiWeekTo()));
+        }
         if (!StringUtils.isEmpty(criteria.getTextFilter())) {
             String[] textFilters = criteria.getTextFilter().split("\\s+");
             for (int i = 0; i < textFilters.length; i++) {
