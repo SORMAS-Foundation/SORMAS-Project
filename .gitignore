@@ -18,6 +18,7 @@ deploy
 /sormas-ui/src/main/webapp/VAADIN/themes/sormas/addons.scss
 /sormas-ui/src/main/webapp/VAADIN/themes/sormas/styles.css
 *.jks
+loadtests.zip
 /sormas-app/keystore.properties
 /sormas-app/java_pid21052.hprof
 bin
