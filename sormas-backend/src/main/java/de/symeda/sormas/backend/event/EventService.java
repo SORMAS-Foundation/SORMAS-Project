@@ -300,7 +300,9 @@ public class EventService extends AbstractAdoService<Event> {
 
 		// only show cases of a specific disease if a limited disease is set
 		if (filter != null && user.getLimitedDisease() != null) {
-			filter = cb.and(filter, cb.equal(eventPath.get(Event.DISEASE), user.getLimitedDisease()));
+			filter = cb.and(filter, cb.or(
+					cb.equal(eventPath.get(Event.DISEASE), user.getLimitedDisease()),
+					cb.isNull(eventPath.get(Event.DISEASE))));
 		}
 		
 		if (filter != null) {
