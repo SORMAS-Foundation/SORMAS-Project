@@ -143,7 +143,9 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 			}
 			menu.addView(HospitalizationView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HOSPITALIZATION), params);
 			menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
-			menu.addView(EpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), params);
+			if (caze.getDisease() != Disease.CONGENITAL_RUBELLA) {
+				menu.addView(EpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), params);
+			}
 			if (UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW)) {
 				menu.addView(TherapyView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.THERAPY), params);
 			}

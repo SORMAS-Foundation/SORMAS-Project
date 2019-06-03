@@ -109,6 +109,9 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                 || (caze != null && !DiseaseConfigurationHelper.getInstance().hasFollowUp(caze.getDisease()))) {
             menuItems.remove(CaseSection.CONTACTS.ordinal());
         }
+        if (caze != null && caze.getDisease() == Disease.CONGENITAL_RUBELLA) {
+            menuItems.remove(CaseSection.EPIDEMIOLOGICAL_DATA.ordinal());
+        }
         if (caze != null && caze.getDisease() != Disease.CONGENITAL_RUBELLA) {
             menuItems.remove(CaseSection.MATERNAL_HISTORY.ordinal());
         }

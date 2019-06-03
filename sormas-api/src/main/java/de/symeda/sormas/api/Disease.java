@@ -23,7 +23,7 @@ import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 public enum Disease implements StatisticsGroupingKey {
 	
 	CHOLERA(true, true, true, 5),
-	CONGENITAL_RUBELLA(true, true, false, 7),
+	CONGENITAL_RUBELLA(true, true, true, 21),
 	CSM(true, true, false, 10),
 	DENGUE(true, true, false, 14),
 	EVD(true, true, true, 21),

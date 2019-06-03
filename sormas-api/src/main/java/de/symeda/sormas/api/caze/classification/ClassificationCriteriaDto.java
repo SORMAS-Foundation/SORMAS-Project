@@ -47,7 +47,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 })
 public abstract class ClassificationCriteriaDto implements Serializable {
 	
-	protected String type = getClass().getSimpleName(); 
+	protected String type = getClass().getSimpleName();
 	
 	private static final long serialVersionUID = -3686569295881034008L;
 	

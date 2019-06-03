@@ -239,9 +239,9 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				suspect,
 				xOf(1,
 						allOf(positiveTestResult(Disease.DENGUE, PathogenTestType.IGM_SERUM_ANTIBODY),
-						noneOf(
-								positiveTestResult(Disease.WEST_NILE_FEVER, PathogenTestType.IGM_SERUM_ANTIBODY),
-								positiveTestResult(Disease.YELLOW_FEVER, PathogenTestType.IGM_SERUM_ANTIBODY))),
+								noneOf(
+										positiveTestResult(Disease.WEST_NILE_FEVER, PathogenTestType.IGM_SERUM_ANTIBODY),
+										positiveTestResult(Disease.YELLOW_FEVER, PathogenTestType.IGM_SERUM_ANTIBODY))),
 						positiveTestResult(Disease.DENGUE, PathogenTestType.PCR_RT_PCR), 
 						positiveTestResult(Disease.DENGUE, PathogenTestType.ISOLATION),
 						sampleTest(
@@ -257,7 +257,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 						symptom(SymptomsDto.DIFFICULTY_BREATHING)),
 				xOf(1, 
 						oneOfCompact(epiData(EpiDataDto.CLOSE_CONTACT_PROBABLE_CASE),
-						epiData(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE)),
+								epiData(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE)),
 						epiData(EpiDataDto.AREA_INFECTED_ANIMALS),
 						epiData(EpiDataDto.EATING_RAW_ANIMALS_IN_INFECTED_AREA),
 						epiData(EpiDataDto.PROCESSING_SUSPECTED_CASE_SAMPLE_UNSAFE)));
@@ -293,9 +293,9 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				personAgeBetweenYears(5, null),
 				xOf(1, 
 						symptom(SymptomsDto.DEHYDRATION),
-						allOf(
+						allOfCompact(
 								symptom(SymptomsDto.DIARRHEA),
-								xOfSub(1, 
+								oneOfCompact(
 										caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED),
 										epiData(EpiDataDto.AREA_CONFIRMED_CASES)))));
 		probable = null;
@@ -317,30 +317,76 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		// Plague
 		suspect = allOf(
 				xOf(1,
-				allOfCompact(
-						caseData(CaseDataDto.PLAGUE_TYPE, PlagueType.BUBONIC), 
-						symptom(SymptomsDto.FEVER),
-						symptom(SymptomsDto.PAINFUL_LYMPHADENITIS)),
-				allOf(
 						allOfCompact(
-								caseData(CaseDataDto.PLAGUE_TYPE, PlagueType.PNEUMONIC), 
-								symptom(SymptomsDto.FEVER)),
-						xOfSub(1, 
-								symptom(SymptomsDto.COUGH), 
-								symptom(SymptomsDto.CHEST_PAIN),
-								symptom(SymptomsDto.COUGHING_BLOOD))),
-				allOfCompact(
-						caseData(CaseDataDto.PLAGUE_TYPE, PlagueType.SEPTICAEMIC), 
-						symptom(SymptomsDto.FEVER),
-						symptom(SymptomsDto.CHILLS_SWEATS))));
+								caseData(CaseDataDto.PLAGUE_TYPE, PlagueType.BUBONIC), 
+								symptom(SymptomsDto.FEVER),
+								symptom(SymptomsDto.PAINFUL_LYMPHADENITIS)),
+						allOf(
+								allOfCompact(
+										caseData(CaseDataDto.PLAGUE_TYPE, PlagueType.PNEUMONIC), 
+										symptom(SymptomsDto.FEVER)),
+								xOfSub(1, 
+										symptom(SymptomsDto.COUGH), 
+										symptom(SymptomsDto.CHEST_PAIN),
+										symptom(SymptomsDto.COUGHING_BLOOD))),
+						allOfCompact(
+								caseData(CaseDataDto.PLAGUE_TYPE, PlagueType.SEPTICAEMIC), 
+								symptom(SymptomsDto.FEVER),
+								symptom(SymptomsDto.CHILLS_SWEATS))));
 		probable = allOf(
 				suspect, 
 				xOf(1, epiData(EpiDataDto.AREA_CONFIRMED_CASES),
-				positiveTestResult(Disease.PLAGUE, PathogenTestType.ANTIGEN_DETECTION)));
+						positiveTestResult(Disease.PLAGUE, PathogenTestType.ANTIGEN_DETECTION)));
 		confirmed = allOf(
 				suspect,
 				positiveTestResult(Disease.PLAGUE, PathogenTestType.ISOLATION, PathogenTestType.PCR_RT_PCR));
 		addCriteria(Disease.PLAGUE, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed);
+
+		// Congenital rubella
+		suspect = allOf(
+				xOf(1,
+						symptom(SymptomsDto.BILATERAL_CATARACTS),
+						symptom(SymptomsDto.UNILATERAL_CATARACTS),
+						symptom(SymptomsDto.CONGENITAL_GLAUCOMA),
+						symptom(SymptomsDto.CONGENITAL_HEART_DISEASE),
+						symptom(SymptomsDto.HEARINGLOSS),
+						symptom(SymptomsDto.PIGMENTARY_RETINOPATHY),
+						symptom(SymptomsDto.PURPURIC_RASH),
+						symptom(SymptomsDto.SPLENOMEGALY),
+						symptom(SymptomsDto.JAUNDICE),
+						symptom(SymptomsDto.MICROCEPHALY),
+						symptom(SymptomsDto.DEVELOPMENTAL_DELAY),
+						symptom(SymptomsDto.MENINGOENCEPHALITIS),
+						symptom(SymptomsDto.RADIOLUCENT_BONE_DISEASE)));
+		probable = xOf(1,
+				xOf(2,
+						oneOfCompact(
+								symptom(SymptomsDto.BILATERAL_CATARACTS),
+								symptom(SymptomsDto.UNILATERAL_CATARACTS),
+								symptom(SymptomsDto.CONGENITAL_GLAUCOMA)),
+						symptom(SymptomsDto.CONGENITAL_HEART_DISEASE),
+						symptom(SymptomsDto.HEARINGLOSS),
+						symptom(SymptomsDto.PIGMENTARY_RETINOPATHY)),
+				allOfTogether(
+						xOf(1,
+								oneOfCompact(
+										symptom(SymptomsDto.BILATERAL_CATARACTS),
+										symptom(SymptomsDto.UNILATERAL_CATARACTS),
+										symptom(SymptomsDto.CONGENITAL_GLAUCOMA)),
+								symptom(SymptomsDto.CONGENITAL_HEART_DISEASE),
+								symptom(SymptomsDto.HEARINGLOSS),
+								symptom(SymptomsDto.PIGMENTARY_RETINOPATHY)),
+						xOfSub(1, 
+								symptom(SymptomsDto.PURPURIC_RASH),
+								symptom(SymptomsDto.SPLENOMEGALY),
+								symptom(SymptomsDto.MICROCEPHALY),
+								symptom(SymptomsDto.DEVELOPMENTAL_DELAY),
+								symptom(SymptomsDto.MENINGOENCEPHALITIS),
+								symptom(SymptomsDto.RADIOLUCENT_BONE_DISEASE))));
+		confirmed = allOf(
+				suspect,
+				positiveTestResult(Disease.CONGENITAL_RUBELLA, PathogenTestType.ISOLATION, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestType.PCR_RT_PCR));
+		addCriteria(Disease.CONGENITAL_RUBELLA, DateHelper.getDateZero(2019, 6, 3), suspect, probable, confirmed);
 	}
 
 	private void addCriteria(Disease disease, Date changeDate, ClassificationCriteriaDto suspect,
@@ -353,6 +399,10 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 
 	private static ClassificationAllOfCriteriaDto allOf(ClassificationCriteriaDto... criteria) {
 		return new ClassificationAllOfCriteriaDto(criteria);
+	}
+	
+	private static ClassificationAllOfCriteriaDto allOfTogether(ClassificationCriteriaDto... criteria) {
+		return new ClassificationAllOfCriteriaDto(true, criteria);
 	}
 
 	private static ClassificationAllOfCompactCriteriaDto allOfCompact(ClassificationCriteriaDto... criteria) {
