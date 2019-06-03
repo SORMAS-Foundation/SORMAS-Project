@@ -98,10 +98,8 @@ public class PersonDto extends EntityDto {
 	@Required
 	private String lastName;
 	private String nickname;
-	@Diseases({Disease.CONGENITAL_RUBELLA})
 	private String mothersName;
 	private String mothersMaidenName;
-	@Diseases({Disease.CONGENITAL_RUBELLA})
 	private String fathersName;
 	@Outbreaks
 	private Sex sex;

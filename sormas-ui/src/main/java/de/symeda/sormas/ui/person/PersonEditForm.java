@@ -23,6 +23,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -169,15 +171,15 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		birthDateYear.addItems(DateHelper.getYearsToNow());
 		birthDateYear.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		DateField deathDate = addField(PersonDto.DEATH_DATE, DateField.class);
-		addField(PersonDto.APPROXIMATE_AGE, TextField.class);
-		addField(PersonDto.APPROXIMATE_AGE_TYPE, ComboBox.class);
+		TextField approximateAgeField = addField(PersonDto.APPROXIMATE_AGE, TextField.class);
+		ComboBox approximateAgeTypeField = addField(PersonDto.APPROXIMATE_AGE_TYPE, ComboBox.class);
 		addField(PersonDto.APPROXIMATE_AGE_REFERENCE_DATE, DateField.class);
-		
+
 		TextField tfGestationAgeAtBirth = addField(PersonDto.GESTATION_AGE_AT_BIRTH, TextField.class);
 		tfGestationAgeAtBirth.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfGestationAgeAtBirth.getCaption()));
 		TextField tfBirthWeight = addField(PersonDto.BIRTH_WEIGHT, TextField.class);
 		tfBirthWeight.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfBirthWeight.getCaption()));
-		
+
 		AbstractSelect deathPlaceType = addField(PersonDto.DEATH_PLACE_TYPE, ComboBox.class);
 		deathPlaceType.setNullSelectionAllowed(true);
 		TextField deathPlaceDesc = addField(PersonDto.DEATH_PLACE_DESCRIPTION, TextField.class);
@@ -187,10 +189,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.ADDRESS, LocationEditForm.class).setCaption(null);
 		addField(PersonDto.PHONE, TextField.class);
 		addField(PersonDto.PHONE_OWNER, TextField.class);
-		
+
 		addFields(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS,
 				PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS);
-		
+
 		ComboBox cbPlaceOfBirthRegion = addField(PersonDto.PLACE_OF_BIRTH_REGION, ComboBox.class);
 		ComboBox cbPlaceOfBirthDistrict = addField(PersonDto.PLACE_OF_BIRTH_DISTRICT, ComboBox.class);
 		ComboBox cbPlaceOfBirthCommunity = addField(PersonDto.PLACE_OF_BIRTH_COMMUNITY, ComboBox.class);
@@ -239,7 +241,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				PersonDto.CAUSE_OF_DEATH_DISEASE);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), PersonDto.EDUCATION_DETAILS, PersonDto.EDUCATION_TYPE, Arrays.asList(EducationType.OTHER), true);
-		
+
 		FieldHelper.addSoftRequiredStyle(presentCondition, sex, deathDate, deathPlaceDesc, deathPlaceType, 
 				causeOfDeathField, causeOfDeathDiseaseField, causeOfDeathDetailsField, 
 				burialDate, burialPlaceDesc, burialConductor);
@@ -255,7 +257,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			addressHeader.setVisible(false);
 
 		// Add listeners
-		
+
 		FieldHelper.setRequiredWhenNotNull(getFieldGroup(), PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE);
 		addFieldListeners(PersonDto.APPROXIMATE_AGE, e -> {
 			@SuppressWarnings("unchecked")
@@ -294,7 +296,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addListenersToInfrastructureFields(facilityRegion, facilityDistrict, facilityCommunity, occupationFacility, occupationFacilityDetails);
 		cbPlaceOfBirthRegion.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 		facilityRegion.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
-		
+
 		addFieldListeners(PersonDto.PRESENT_CONDITION, e -> toogleDeathAndBurialFields());
 
 		causeOfDeathField.addValueChangeListener(e -> {
@@ -309,13 +311,38 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		addValueChangeListener(e -> {
 			fillDeathAndBurialFields(deathPlaceType, deathPlaceDesc, burialPlaceDesc);
+
+			// Always show Mother's name/Father's name when they're filled in or the case is a CRS case;
+			// Otherwise, only show them when the approximate age is less than 5 years
+			if (disease != Disease.CONGENITAL_RUBELLA) {
+				// Initial visibility
+				Integer initialAge = ApproximateAgeHelper.getAgeYears(getValue().getApproximateAge(), getValue().getApproximateAgeType());
+				if (initialAge == null || initialAge > 5 && StringUtils.isEmpty(getValue().getMothersName()) && StringUtils.isEmpty(getValue().getFathersName())) {
+					setVisible(false, PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME);
+				}
+
+				approximateAgeField.addValueChangeListener(f -> {
+					Integer age = approximateAgeField.getValue() == null ? null
+							: ApproximateAgeHelper.getAgeYears(Integer.valueOf(approximateAgeField.getValue()), (ApproximateAgeType) approximateAgeTypeField.getValue());
+					setVisible((age != null && age <= 5)
+							|| !StringUtils.isEmpty(getValue().getMothersName()) || !StringUtils.isEmpty(getValue().getFathersName()),
+							PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME);
+				});
+				approximateAgeTypeField.addValueChangeListener(f -> {
+					Integer age = approximateAgeField.getValue() == null ? null
+							: ApproximateAgeHelper.getAgeYears(Integer.valueOf(approximateAgeField.getValue()), (ApproximateAgeType) approximateAgeTypeField.getValue());
+					setVisible((age != null && age <= 5)
+							|| !StringUtils.isEmpty(getValue().getMothersName()) || !StringUtils.isEmpty(getValue().getFathersName()),
+							PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME);
+				});
+			}
 		});
 
 		deathDate.addValidator(new DateComparisonValidator(deathDate, this::calcBirthDateValue, false, false, 
 				I18nProperties.getValidationError(Validations.afterDate, deathDate.getCaption(), birthDateYear.getCaption())));
 		burialDate.addValidator(new DateComparisonValidator(burialDate, deathDate, false, false, 
 				I18nProperties.getValidationError(Validations.afterDate, burialDate.getCaption(), deathDate.getCaption())));
-		
+
 		// Update the list of days according to the selected month and year
 		birthDateYear.addValueChangeListener(e -> {
 			updateListOfDays((Integer) e.getProperty().getValue(), (Integer) birthDateMonth.getValue());
@@ -324,7 +351,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			updateListOfDays((Integer) birthDateYear.getValue(), (Integer) e.getProperty().getValue());
 		});
 	}
-	
+
 	private void addListenersToInfrastructureFields(ComboBox regionField, ComboBox districtField, ComboBox communityField, ComboBox facilityField, TextField detailsField) {
 		regionField.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
@@ -356,7 +383,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		// Set initial visibility
 		updateFacilityDetailsVisibility(detailsField, (FacilityReferenceDto) facilityField.getValue());
 	}
-	
+
 	private void updateListOfDays(Integer selectedYear, Integer selectedMonth) {
 		Integer currentlySelected = (Integer) birthDateDay.getValue();
 		birthDateDay.removeAllItems();
@@ -394,9 +421,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	}
 
 	private void updateApproximateAge() {
-		
+
 		Date birthDate = calcBirthDateValue();
-		
+
 		if (birthDate != null) {
 			Pair<Integer, ApproximateAgeType> pair = ApproximateAgeHelper.getApproximateAge(
 					birthDate, (Date) getFieldGroup().getField(PersonDto.DEATH_DATE).getValue()
@@ -472,7 +499,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
 
 		detailsField.setVisible(visibleAndRequired);
-		
+
 		if (otherHealthFacility) {
 			detailsField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
 		}

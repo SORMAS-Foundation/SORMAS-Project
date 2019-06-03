@@ -20,8 +20,10 @@ package de.symeda.sormas.app.person.read;
 
 import android.os.Bundle;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
@@ -33,6 +35,9 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.databinding.FragmentPersonReadLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.util.InfrastructureHelper;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayoutBinding, Person, AbstractDomainObject> {
 
@@ -68,6 +73,17 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personPlaceOfBirthFacility, contentBinding.personPlaceOfBirthFacilityDetails);
         PersonEditFragment.initializeCauseOfDeathDetailsFieldVisibility(contentBinding.personCauseOfDeath, contentBinding.personCauseOfDeathDisease, contentBinding.personCauseOfDeathDetails);
+
+        if (rootDisease != Disease.CONGENITAL_RUBELLA) {
+            Integer age = ApproximateAgeHelper.getAgeYears(contentBinding.getData().getApproximateAge(), contentBinding.getData().getApproximateAgeType());
+            if ((age == null || age > 5) && StringUtils.isEmpty(contentBinding.getData().getMothersName()) && StringUtils.isEmpty(contentBinding.getData().getFathersName())) {
+                contentBinding.personMothersName.setVisibility(GONE);
+                contentBinding.personFathersName.setVisibility(GONE);
+            } else {
+                contentBinding.personMothersName.setVisibility(VISIBLE);
+                contentBinding.personFathersName.setVisibility(VISIBLE);
+            }
+        }
     }
 
     // Overrides

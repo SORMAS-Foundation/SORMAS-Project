@@ -20,6 +20,8 @@ package de.symeda.sormas.app.person.edit;
 
 import android.view.View;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -29,6 +31,7 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
@@ -148,17 +151,14 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         contentBinding.personEducationType.initializeSpinner(DataUtils.getEnumItems(EducationType.class, true));
         contentBinding.personPresentCondition.initializeSpinner(DataUtils.getEnumItems(PresentCondition.class, true));
 
-        contentBinding.personApproximateAge.addValueChangedListener(new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                if (DataHelper.isNullOrEmpty((String)field.getValue())) {
-                    contentBinding.personApproximateAgeType.setRequired(false);
-                    contentBinding.personApproximateAgeType.setValue(null);
-                } else {
-                    contentBinding.personApproximateAgeType.setRequired(true);
-                    if (contentBinding.personApproximateAgeType.getValue() == null) {
-                        contentBinding.personApproximateAgeType.setValue(ApproximateAgeType.YEARS);
-                    }
+        contentBinding.personApproximateAge.addValueChangedListener(field -> {
+            if (DataHelper.isNullOrEmpty((String)field.getValue())) {
+                contentBinding.personApproximateAgeType.setRequired(false);
+                contentBinding.personApproximateAgeType.setValue(null);
+            } else {
+                contentBinding.personApproximateAgeType.setRequired(true);
+                if (contentBinding.personApproximateAgeType.getValue() == null) {
+                    contentBinding.personApproximateAgeType.setValue(ApproximateAgeType.YEARS);
                 }
             }
         });
@@ -173,6 +173,39 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         // Initialize ControlDateFields
         contentBinding.personDeathDate.initializeDateField(fragment.getFragmentManager());
         contentBinding.personBurialDate.initializeDateField(fragment.getFragmentManager());
+
+        // Initialize parent names fields visibility
+        if (rootDisease != Disease.CONGENITAL_RUBELLA) {
+            // Initial visibility
+            Integer initialAge = ApproximateAgeHelper.getAgeYears(contentBinding.getData().getApproximateAge(), contentBinding.getData().getApproximateAgeType());
+            if (initialAge == null || initialAge > 5 && StringUtils.isEmpty(contentBinding.getData().getMothersName()) && StringUtils.isEmpty(contentBinding.getData().getFathersName())) {
+                contentBinding.personMothersName.setVisibility(GONE);
+                contentBinding.personFathersName.setVisibility(GONE);
+            }
+
+            contentBinding.personApproximateAge.addValueChangedListener(f -> {
+                Integer age = StringUtils.isEmpty(contentBinding.personApproximateAge.getValue()) ? null
+                        : ApproximateAgeHelper.getAgeYears(Integer.valueOf(contentBinding.personApproximateAge.getValue()), (ApproximateAgeType) contentBinding.personApproximateAgeType.getValue());
+                if ((age != null && age <= 5) || !StringUtils.isEmpty(contentBinding.personMothersName.getValue()) || !StringUtils.isEmpty(contentBinding.personFathersName.getValue())) {
+                    contentBinding.personMothersName.setVisibility(VISIBLE);
+                    contentBinding.personFathersName.setVisibility(VISIBLE);
+                } else {
+                    contentBinding.personMothersName.setVisibility(GONE);
+                    contentBinding.personFathersName.setVisibility(GONE);
+                }
+            });
+            contentBinding.personApproximateAgeType.addValueChangedListener(f -> {
+                Integer age = StringUtils.isEmpty(contentBinding.personApproximateAge.getValue()) ? null
+                        : ApproximateAgeHelper.getAgeYears(Integer.valueOf(contentBinding.personApproximateAge.getValue()), (ApproximateAgeType) contentBinding.personApproximateAgeType.getValue());
+                if ((age != null && age <= 5) || !StringUtils.isEmpty(contentBinding.personMothersName.getValue()) || !StringUtils.isEmpty(contentBinding.personFathersName.getValue())) {
+                    contentBinding.personMothersName.setVisibility(VISIBLE);
+                    contentBinding.personFathersName.setVisibility(VISIBLE);
+                } else {
+                    contentBinding.personMothersName.setVisibility(GONE);
+                    contentBinding.personFathersName.setVisibility(GONE);
+                }
+            });
+        }
     }
 
     private static void updateListOfDays(FragmentPersonEditLayoutBinding binding, Integer selectedYear, Integer selectedMonth) {
