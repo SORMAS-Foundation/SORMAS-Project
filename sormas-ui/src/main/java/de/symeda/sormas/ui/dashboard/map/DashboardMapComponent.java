@@ -589,6 +589,7 @@ public class DashboardMapComponent extends VerticalLayout {
 
 	private static HorizontalLayout buildLegendEntry(AbstractComponent icon, String labelCaption) {
 		HorizontalLayout entry = new HorizontalLayout();
+		entry.setSpacing(false);
 		entry.setSizeUndefined();
 		CssStyles.style(icon, CssStyles.HSPACE_RIGHT_4);
 		entry.addComponent(icon);
@@ -677,7 +678,7 @@ public class DashboardMapComponent extends VerticalLayout {
 					"> " + districtShapesUpperQuartile + " " + I18nProperties.getString(Strings.entityCases));
 			break;
 		case CASE_INCIDENCE:
-			legendEntry = buildMapIconLegendEntry("red-region-small",
+			legendEntry = buildMapIconLegendEntry("highest-region-small",
 					"> " + DataHelper.getTruncatedBigDecimal(districtShapesUpperQuartile) + " " + I18nProperties.getString(Strings.entityCases) + " / "
 							+ DistrictDto.CASE_INCIDENCE_DIVISOR);
 			break;
