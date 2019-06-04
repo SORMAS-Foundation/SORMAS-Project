@@ -34,7 +34,7 @@ C:/srv/payara-172/glassfish/bin/asadmin --port 6048 set server-config.security-s
 
 ## Maintenance Mode
 * ``a2dissite your.sormas.server.url.conf``
-* ``service apache2 reload``
+* ``apache2ctl graceful``
 
 ## Undeployment
 While server domain is running:
@@ -106,7 +106,7 @@ You can update the database schema manually if the automatic update fails for so
 ## Final Steps
 * Wait until the deployment is done (see log)
 * ``a2ensite your.sormas.server.url.conf``
-* ``service apache2 reload``
+* ``apache2ctl graceful``
 * Try to login at https://localhost:6081/sormas-ui (or the webadress of the server); if it doesn't work, restart the server
 * Update the mobile app with the new apk file 
 
