@@ -16,8 +16,8 @@ public interface Strings {
 	public static String classificationDaysBeforeCaseStart = "classificationDaysBeforeCaseStart";
 	public static String classificationForDisease = "classificationForDisease";
 	public static String classificationGeneratedFor = "classificationGeneratedFor";
-	public static String classificationInfoText = "classificationInfoText";
 	public static String classificationInfoNumberText = "classificationInfoNumberText";
+	public static String classificationInfoText = "classificationInfoText";
 	public static String classificationNoneOf = "classificationNoneOf";
 	public static String classificationNotWithin = "classificationNotWithin";
 	public static String classificationOneOf = "classificationOneOf";

@@ -26,6 +26,8 @@ import java.util.Optional;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -344,6 +346,16 @@ public class CaseService extends AbstractAdoService<Case> {
 		return latestCase.isPresent() ? latestCase.get() : null;
 	}
 
+	public String getHighestEpidNumber(String epidNumberPrefix) {
+		try {
+			Query query = em.createNativeQuery("SELECT epidnumber FROM " + Case.TABLE_NAME + " WHERE substring(" + Case.TABLE_NAME + ".epidnumber from 1 for 15) LIKE '" 
+							+ epidNumberPrefix + "' ORDER BY NULLIF(regexp_replace(" + Case.TABLE_NAME + ".epidnumber, '\\D', '', 'g'), '')::int DESC LIMIT 1");
+			return (String) query.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
 	public List<String> getArchivedUuidsSince(User user, Date since) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -507,7 +519,7 @@ public class CaseService extends AbstractAdoService<Case> {
 
 		Join<Case, MaternalHistory> maternalHistory = casePath.join(Case.MATERNAL_HISTORY, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter, cb.greaterThan(maternalHistory.get(AbstractDomainObject.CHANGE_DATE), date));
-		
+
 		return dateFilter;
 	}
 

@@ -117,6 +117,9 @@ public interface CaseFacade {
 	void archiveOrDearchiveCase(String caseUuid, boolean archive);
 	
 	List<String> getArchivedUuidsSince(String userUuid, Date since);
-
+	
+	boolean isDuplicateEpidNumber(String epidNumber);
+	
+	String generateEpidNumber(CaseReferenceDto caze);
 	
 }

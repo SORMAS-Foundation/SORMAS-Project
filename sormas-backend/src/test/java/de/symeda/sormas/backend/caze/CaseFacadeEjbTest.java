@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -57,12 +58,12 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
@@ -435,4 +436,23 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// List should have one entry
 		assertEquals(1, results.size());
 	}
+	
+//	@Test
+//	public void testEpidNumberGeneration() {
+//		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+//		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
+//				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+//		PersonDto cazePerson = creator.createPerson("Case", "Person");
+//		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
+//		
+//		Calendar calendar = Calendar.getInstance();
+//		String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
+//		
+//		assertEquals("COU-REG-DIS-" + year + "-01", caze.getEpidNumber());
+//
+//		CaseDataDto secondCaze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
+//		
+//		assertEquals("COU-REG-DIS-" + year + "-02", secondCaze.getEpidNumber());
+//	}
+	
 }

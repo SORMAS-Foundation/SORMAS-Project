@@ -161,10 +161,6 @@ public final class DataHelper {
 		}
 		return sb.toString();
 	}
-
-	public static String getEpidNumberRegexp() {
-		return "\\w{3}-\\w{3}-\\w{3}-\\d{2}-[A-Za-z0-9]+";
-	}
 	
 	public static String capitalize(String input) {
 		return input.substring(0, 1).toUpperCase() + input.substring(1);

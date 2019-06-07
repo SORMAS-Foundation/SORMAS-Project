@@ -334,6 +334,7 @@ public class TestDataCreator {
 		Region region = new Region();
 		region.setUuid(DataHelper.createUuid());
 		region.setName(regionName);
+		region.setEpidCode("COU-REG");
 		beanTest.getRegionService().persist(region);
 
 		return region;
@@ -344,6 +345,7 @@ public class TestDataCreator {
 		district.setUuid(DataHelper.createUuid());
 		district.setName(districtName);
 		district.setRegion(region);
+		district.setEpidCode("DIS");
 		beanTest.getDistrictService().persist(district);
 
 		return district;

@@ -11,6 +11,7 @@ public interface Captions {
 	public static String aboutWhatsNew = "aboutWhatsNew";
 	public static String actionApplyDateFilter = "actionApplyDateFilter";
 	public static String actionArchive = "actionArchive";
+	public static String actionAssignNewEpidNumber = "actionAssignNewEpidNumber";
 	public static String actionCancel = "actionCancel";
 	public static String actionClear = "actionClear";
 	public static String actionClearAll = "actionClearAll";
@@ -92,6 +93,7 @@ public interface Captions {
 	public static String CaseData_hospitalization = "CaseData.hospitalization";
 	public static String CaseData_investigatedDate = "CaseData.investigatedDate";
 	public static String CaseData_investigationStatus = "CaseData.investigationStatus";
+	public static String CaseData_maternalHistory = "CaseData.maternalHistory";
 	public static String CaseData_nationalLevelDate = "CaseData.nationalLevelDate";
 	public static String CaseData_noneHealthFacilityDetails = "CaseData.noneHealthFacilityDetails";
 	public static String CaseData_notifyingClinic = "CaseData.notifyingClinic";
@@ -518,6 +520,10 @@ public interface Captions {
 	public static String MaternalHistory_maculopapularRash = "MaternalHistory.maculopapularRash";
 	public static String MaternalHistory_maculopapularRashMonth = "MaternalHistory.maculopapularRashMonth";
 	public static String MaternalHistory_maculopapularRashOnset = "MaternalHistory.maculopapularRashOnset";
+	public static String MaternalHistory_otherComplications = "MaternalHistory.otherComplications";
+	public static String MaternalHistory_otherComplicationsDetails = "MaternalHistory.otherComplicationsDetails";
+	public static String MaternalHistory_otherComplicationsMonth = "MaternalHistory.otherComplicationsMonth";
+	public static String MaternalHistory_otherComplicationsOnset = "MaternalHistory.otherComplicationsOnset";
 	public static String MaternalHistory_rashExposure = "MaternalHistory.rashExposure";
 	public static String MaternalHistory_rashExposureCommunity = "MaternalHistory.rashExposureCommunity";
 	public static String MaternalHistory_rashExposureDate = "MaternalHistory.rashExposureDate";
@@ -559,6 +565,7 @@ public interface Captions {
 	public static String Person_birthdateDD = "Person.birthdateDD";
 	public static String Person_birthdateMM = "Person.birthdateMM";
 	public static String Person_birthdateYYYY = "Person.birthdateYYYY";
+	public static String Person_birthWeight = "Person.birthWeight";
 	public static String Person_burialConductor = "Person.burialConductor";
 	public static String Person_burialDate = "Person.burialDate";
 	public static String Person_burialPlaceDescription = "Person.burialPlaceDescription";
@@ -573,10 +580,13 @@ public interface Captions {
 	public static String Person_districtName = "Person.districtName";
 	public static String Person_educationDetails = "Person.educationDetails";
 	public static String Person_educationType = "Person.educationType";
+	public static String Person_fathersName = "Person.fathersName";
+	public static String Person_gestationAgeAtBirth = "Person.gestationAgeAtBirth";
 	public static String Person_healthcare_occupationDetails = "Person.healthcare.occupationDetails";
 	public static String Person_lastDisease = "Person.lastDisease";
 	public static String Person_matchingCase = "Person.matchingCase";
 	public static String Person_mothersMaidenName = "Person.mothersMaidenName";
+	public static String Person_mothersName = "Person.mothersName";
 	public static String Person_nickname = "Person.nickname";
 	public static String Person_occupationCommunity = "Person.occupationCommunity";
 	public static String Person_occupationDetails = "Person.occupationDetails";
@@ -588,6 +598,11 @@ public interface Captions {
 	public static String Person_other_occupationDetails = "Person.other.occupationDetails";
 	public static String Person_phone = "Person.phone";
 	public static String Person_phoneOwner = "Person.phoneOwner";
+	public static String Person_placeOfBirthCommunity = "Person.placeOfBirthCommunity";
+	public static String Person_placeOfBirthDistrict = "Person.placeOfBirthDistrict";
+	public static String Person_placeOfBirthFacility = "Person.placeOfBirthFacility";
+	public static String Person_placeOfBirthFacilityDetails = "Person.placeOfBirthFacilityDetails";
+	public static String Person_placeOfBirthRegion = "Person.placeOfBirthRegion";
 	public static String Person_presentCondition = "Person.presentCondition";
 	public static String Person_sex = "Person.sex";
 	public static String Person_transporter_occupationDetails = "Person.transporter.occupationDetails";
@@ -890,6 +905,7 @@ public interface Captions {
 	public static String View_cases_data = "View.cases.data";
 	public static String View_cases_epidata = "View.cases.epidata";
 	public static String View_cases_hospitalization = "View.cases.hospitalization";
+	public static String View_cases_maternalhistory = "View.cases.maternalhistory";
 	public static String View_cases_person = "View.cases.person";
 	public static String View_cases_sub = "View.cases.sub";
 	public static String View_cases_symptoms = "View.cases.symptoms";

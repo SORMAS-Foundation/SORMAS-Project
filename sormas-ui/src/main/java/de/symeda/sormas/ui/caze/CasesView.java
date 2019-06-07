@@ -45,7 +45,6 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -137,7 +136,6 @@ public class CasesView extends AbstractView {
 
 	public CasesView() {
 		super(VIEW_NAME);
-
 		originalViewTitle = getViewTitleLabel().getValue();
 		
 		criteria = ViewModelProviders.of(CasesView.class).get(CaseCriteria.class);
