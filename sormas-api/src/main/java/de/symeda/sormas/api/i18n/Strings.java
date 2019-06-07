@@ -234,6 +234,7 @@ public interface Strings {
 	public static String infoCaseIncidence = "infoCaseIncidence";
 	public static String infoCaseMap = "infoCaseMap";
 	public static String infoContactDashboard = "infoContactDashboard";
+	public static String infoDashboardIncidence = "infoDashboardIncidence";
 	public static String infoDatabaseExportTables = "infoDatabaseExportTables";
 	public static String infoDefineOutbreaks = "infoDefineOutbreaks";
 	public static String infoDetailedExport = "infoDetailedExport";

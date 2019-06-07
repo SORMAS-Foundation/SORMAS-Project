@@ -571,6 +571,10 @@ public class DashboardMapComponent extends VerticalLayout {
 			legendLayout.addComponent(districtsKeyLabel);
 			legendLayout.addComponent(buildRegionLegend(false, caseMeasure, emptyPopulationDistrictPresent,
 					districtValuesLowerQuartile, districtValuesMedian, districtValuesUpperQuartile));
+
+			Label descLabel = new Label(I18nProperties.getString(Strings.infoDashboardIncidence));
+			CssStyles.style(descLabel, CssStyles.LABEL_SMALL);
+			legendLayout.addComponent(descLabel);
 		}
 
 		return legendLayout;
@@ -613,8 +617,8 @@ public class DashboardMapComponent extends VerticalLayout {
 		case CASE_COUNT:
 			legendEntry = buildMapIconLegendEntry("lowest-region-small",
 					districtShapesLowerQuartile.compareTo(BigDecimal.ONE) > 0
-							? "1 - " + districtShapesLowerQuartile + " " + I18nProperties.getString(Strings.entityCases)
-							: "1 " + I18nProperties.getString(Strings.entityCase));
+					? "1 - " + districtShapesLowerQuartile + " " + I18nProperties.getString(Strings.entityCases)
+					: "1 " + I18nProperties.getString(Strings.entityCase));
 			break;
 		case CASE_INCIDENCE:
 			legendEntry = buildMapIconLegendEntry("lowest-region-small",
@@ -631,16 +635,16 @@ public class DashboardMapComponent extends VerticalLayout {
 			case CASE_COUNT:
 				legendEntry = buildMapIconLegendEntry("low-region-small",
 						districtShapesMedian.compareTo(districtShapesLowerQuartile.add(BigDecimal.ONE)) > 0
-								? districtShapesLowerQuartile.add(BigDecimal.ONE) + " - " + districtShapesMedian
-										+ " " + I18nProperties.getString(Strings.entityCases)
+						? districtShapesLowerQuartile.add(BigDecimal.ONE) + " - " + districtShapesMedian
+								+ " " + I18nProperties.getString(Strings.entityCases)
 								: districtShapesMedian + " " + I18nProperties.getString(Strings.entityCases));
 				break;
 			case CASE_INCIDENCE:
 				legendEntry = buildMapIconLegendEntry("low-region-small",
 						DataHelper.getTruncatedBigDecimal(
 								districtShapesLowerQuartile.add(new BigDecimal(0.1)).setScale(1, RoundingMode.HALF_UP))
-								+ " - " + DataHelper.getTruncatedBigDecimal(districtShapesMedian) + " " + I18nProperties.getString(Strings.entityCases) + " / "
-								+ DistrictDto.CASE_INCIDENCE_DIVISOR);
+						+ " - " + DataHelper.getTruncatedBigDecimal(districtShapesMedian) + " " + I18nProperties.getString(Strings.entityCases) + " / "
+						+ DistrictDto.CASE_INCIDENCE_DIVISOR);
 				break;
 			default:
 				throw new IllegalArgumentException(caseMeasure.toString());
@@ -654,8 +658,8 @@ public class DashboardMapComponent extends VerticalLayout {
 			case CASE_COUNT:
 				legendEntry = buildMapIconLegendEntry("high-region-small",
 						districtShapesUpperQuartile.compareTo(districtShapesMedian.add(BigDecimal.ONE)) > 0
-								? districtShapesMedian.add(BigDecimal.ONE) + " - " + districtShapesUpperQuartile
-										+ " " + I18nProperties.getString(Strings.entityCases)
+						? districtShapesMedian.add(BigDecimal.ONE) + " - " + districtShapesUpperQuartile
+								+ " " + I18nProperties.getString(Strings.entityCases)
 								: districtShapesUpperQuartile + " " + I18nProperties.getString(Strings.entityCases));
 				break;
 			case CASE_INCIDENCE:
@@ -740,13 +744,13 @@ public class DashboardMapComponent extends VerticalLayout {
 		if (caseMeasure == CaseMeasure.CASE_COUNT) {
 			districtValuesLowerQuartile = measurePerDistrict.size() > 0
 					? measurePerDistrict.get((int) (measurePerDistrict.size() * 0.25)).getElement1()
-					: null;
-			districtValuesMedian = measurePerDistrict.size() > 0
-					? measurePerDistrict.get((int) (measurePerDistrict.size() * 0.5)).getElement1()
-					: null;
-			districtValuesUpperQuartile = measurePerDistrict.size() > 0
-					? measurePerDistrict.get((int) (measurePerDistrict.size() * 0.75)).getElement1()
-					: null;
+							: null;
+					districtValuesMedian = measurePerDistrict.size() > 0
+							? measurePerDistrict.get((int) (measurePerDistrict.size() * 0.5)).getElement1()
+									: null;
+							districtValuesUpperQuartile = measurePerDistrict.size() > 0
+									? measurePerDistrict.get((int) (measurePerDistrict.size() * 0.75)).getElement1()
+											: null;
 		} else {
 			// For case incidence, districts without or with a population <= 0 should not be
 			// used for the calculation of the quartiles because they will falsify the
@@ -754,19 +758,19 @@ public class DashboardMapComponent extends VerticalLayout {
 			List<Pair<DistrictDto, BigDecimal>> measurePerDistrictWithoutMissingPopulations = new ArrayList<>();
 			measurePerDistrictWithoutMissingPopulations.addAll(measurePerDistrict);
 			measurePerDistrictWithoutMissingPopulations
-					.removeIf(d -> d.getElement0().getPopulation() == null || d.getElement0().getPopulation() <= 0);
+			.removeIf(d -> d.getElement0().getPopulation() == null || d.getElement0().getPopulation() <= 0);
 			districtValuesLowerQuartile = measurePerDistrictWithoutMissingPopulations.size() > 0
 					? measurePerDistrictWithoutMissingPopulations
 							.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.25)).getElement1()
-					: null;
-			districtValuesMedian = measurePerDistrictWithoutMissingPopulations.size() > 0
-					? measurePerDistrictWithoutMissingPopulations
-							.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.5)).getElement1()
-					: null;
-			districtValuesUpperQuartile = measurePerDistrictWithoutMissingPopulations.size() > 0
-					? measurePerDistrictWithoutMissingPopulations
-							.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.75)).getElement1()
-					: null;
+							: null;
+							districtValuesMedian = measurePerDistrictWithoutMissingPopulations.size() > 0
+									? measurePerDistrictWithoutMissingPopulations
+											.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.5)).getElement1()
+											: null;
+											districtValuesUpperQuartile = measurePerDistrictWithoutMissingPopulations.size() > 0
+													? measurePerDistrictWithoutMissingPopulations
+															.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.75)).getElement1()
+															: null;
 		}
 
 		List<LeafletPolygon> districtPolygons = new ArrayList<LeafletPolygon>();
@@ -1062,12 +1066,12 @@ public class DashboardMapComponent extends VerticalLayout {
 			MapContactDto contact = markerContacts.get(markerIndex);
 			ControllerProvider.getContactController().navigateToData(contact.getUuid(), true);
 		}
-			break;
+		break;
 		case EVENTS_GROUP_ID: {
 			DashboardEventDto event = markerEvents.get(markerIndex);
 			ControllerProvider.getEventController().navigateToData(event.getUuid(), true);
 		}
-			break;
+		break;
 		}
 	}
 }
