@@ -17,11 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -111,6 +114,8 @@ public class StartupShutdownService {
 
 	@PostConstruct
 	public void startup() {
+		updateDatabase();
+		
 		String countryName = configFacade.getCountryName();
 		
 		I18nProperties.setLocale(configFacade.getCountryLocale());
@@ -180,6 +185,52 @@ public class StartupShutdownService {
 			informant.setHealthFacility(facility);
 			informant.setAssociatedOfficer(surveillanceOfficer);
 			userService.persist(informant);
+		}
+	}
+	
+	private void updateDatabase() {
+		logger.info("Starting automatic database update.");
+		
+		Integer currentVersion = (Integer) em.createNativeQuery("SELECT version_number FROM schema_version ORDER BY changedate DESC LIMIT 1").getSingleResult();		
+		File schemaFile = new File(getClass().getClassLoader().getResource("sormas_schema.sql").getFile());
+		Scanner scanner = null;
+		
+		try {
+			scanner = new Scanner(schemaFile);
+			StringBuilder nextUpdateBuilder = new StringBuilder();
+			boolean currentVersionReached = currentVersion == null;
+			
+			while (scanner.hasNextLine()) {
+				String nextLine = scanner.nextLine();
+				
+				if (nextLine.isEmpty()) {
+					continue;
+				}
+				
+				if (!currentVersionReached) {
+					if (nextLine.contains("INSERT INTO schema_version (version_number, comment) VALUES (" + currentVersion)) {
+						currentVersionReached = true;
+					}
+
+					continue;
+				}
+				
+				// Add the line to the StringBuilder
+				nextUpdateBuilder.append(nextLine).append("\n");
+				
+				// Perform the current update when the INSERT INTO schema_version statement is reached
+				if (nextLine.contains("INSERT INTO schema_version")) {
+					String newVersion = nextLine.substring(61, nextLine.indexOf(",", 61));
+					logger.info("Updating database to version " + newVersion + "...");
+					em.createNativeQuery(nextUpdateBuilder.toString()).executeUpdate();
+				}
+			}
+		} catch (FileNotFoundException e) {
+			logger.error("Could not find sormas_schema.sql file. Database update not performed.");
+			throw new RuntimeException(e);
+		} finally {
+			scanner.close();
+			logger.info("Database update completed.");
 		}
 	}
 
