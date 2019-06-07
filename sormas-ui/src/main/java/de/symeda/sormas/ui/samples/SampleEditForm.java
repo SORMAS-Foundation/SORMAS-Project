@@ -21,16 +21,16 @@ import java.util.Arrays;
 import java.util.Date;
 
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.v7.ui.DateField;
-import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -72,9 +72,9 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.h3(I18nProperties.getString(Strings.headingLaboratorySample)) +
-			LayoutUtil.locCss(CssStyles.VSPACE_2, REPORT_INFORMATION_LOC) +
-			LayoutUtil.divsCss(CssStyles.VSPACE_3,
-					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_CODE),
+			LayoutUtil.loc(REPORT_INFORMATION_LOC) +
+			LayoutUtil.divs(
+					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_DATE_TIME),
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_MATERIAL, SampleDto.SAMPLE_MATERIAL_TEXT),
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_SOURCE, ""),
 					LayoutUtil.fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS)
@@ -108,7 +108,6 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 
 	@Override
 	protected void addFields() {
-		addField(SampleDto.SAMPLE_CODE, TextField.class);
 		addField(SampleDto.LAB_SAMPLE_ID, TextField.class);
 		DateTimeField sampleDateField = addField(SampleDto.SAMPLE_DATE_TIME, DateTimeField.class);
 		sampleDateField.setInvalidCommitted(false);
@@ -167,7 +166,6 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 				setRequired(true, SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_MATERIAL, SampleDto.LAB);
 			} else {
 				getField(SampleDto.SAMPLE_DATE_TIME).setEnabled(false);
-				getField(SampleDto.SAMPLE_CODE).setEnabled(false);
 				getField(SampleDto.SAMPLE_MATERIAL).setEnabled(false);
 				getField(SampleDto.SAMPLE_MATERIAL_TEXT).setEnabled(false);
 				getField(SampleDto.LAB).setEnabled(false);

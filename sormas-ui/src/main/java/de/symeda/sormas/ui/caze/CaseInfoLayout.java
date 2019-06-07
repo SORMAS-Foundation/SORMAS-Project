@@ -59,6 +59,10 @@ public class CaseInfoLayout extends HorizontalLayout {
 			addDescLabel(leftColumnLayout, DataHelper.getShortUuid(caseDto.getUuid()),
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.UUID))
 			.setDescription(caseDto.getUuid());
+			
+			addDescLabel(leftColumnLayout, caseDto.getEpidNumber(),
+					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPID_NUMBER))
+			.setDescription(caseDto.getEpidNumber());
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 				addDescLabel(leftColumnLayout, caseDto.getPerson(),

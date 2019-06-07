@@ -338,7 +338,7 @@ public class SampleService extends AbstractAdoService<Sample> {
 							cb.like(cb.lower(casePerson.get(Person.FIRST_NAME)), textFilter),
 							cb.like(cb.lower(casePerson.get(Person.LAST_NAME)), textFilter),
 							cb.like(cb.lower(from.get(Sample.LAB_SAMPLE_ID)), textFilter),
-							cb.like(cb.lower(from.get(Sample.SAMPLE_CODE)), textFilter));
+							cb.like(cb.lower(caze.get(Case.EPID_NUMBER)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}

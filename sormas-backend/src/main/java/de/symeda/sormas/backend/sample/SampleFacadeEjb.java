@@ -219,7 +219,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		Join<Case, District> caseDistrict = caze.join(Case.DISTRICT, JoinType.LEFT);
 
 		cq.multiselect(sample.get(Sample.UUID), 
-				sample.get(Sample.SAMPLE_CODE), sample.get(Sample.LAB_SAMPLE_ID), sample.get(Sample.SAMPLE_DATE_TIME), 
+				caze.get(Case.EPID_NUMBER), sample.get(Sample.LAB_SAMPLE_ID), sample.get(Sample.SAMPLE_DATE_TIME), 
 				sample.get(Sample.SHIPPED), sample.get(Sample.SHIPMENT_DATE), sample.get(Sample.RECEIVED), sample.get(Sample.RECEIVED_DATE), 
 				sample.get(Sample.SAMPLE_MATERIAL), sample.get(Sample.SPECIMEN_CONDITION), 
 				lab.get(Facility.UUID), lab.get(Facility.NAME), referredSample.get(Sample.UUID), 
@@ -249,7 +249,6 @@ public class SampleFacadeEjb implements SampleFacade {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case SampleIndexDto.UUID:
-				case SampleIndexDto.SAMPLE_CODE:
 				case SampleIndexDto.LAB_SAMPLE_ID:
 				case SampleIndexDto.SHIPPED:
 				case SampleIndexDto.RECEIVED:
@@ -264,6 +263,9 @@ public class SampleFacadeEjb implements SampleFacade {
 					break;
 				case SampleIndexDto.DISEASE:
 					expression = caze.get(Case.DISEASE);
+					break;
+				case SampleIndexDto.EPID_NUMBER:
+					expression = caze.get(Case.EPID_NUMBER);
 					break;
 				case SampleIndexDto.ASSOCIATED_CASE:
 					expression = cazePerson.get(Person.LAST_NAME);

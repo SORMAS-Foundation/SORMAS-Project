@@ -194,7 +194,8 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         // Disable fields the user doesn't have access to - this involves almost all fields when
         // the user is not the one that originally reported the sample
         if (!ConfigProvider.getUser().equals(record.getReportingUser())) {
-            contentBinding.sampleSampleCode.setEnabled(false);
+
+
             contentBinding.sampleSampleDateTime.setEnabled(false);
             contentBinding.sampleSampleMaterial.setEnabled(false);
             contentBinding.sampleSampleMaterialText.setEnabled(false);

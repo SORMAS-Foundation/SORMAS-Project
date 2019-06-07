@@ -76,11 +76,6 @@
 
                 </LinearLayout>
 
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/sample_sampleCode"
-                    app:value="@={data.sampleCode}"
-                    style="@style/ControlSingleColumnStyle" />
-
                 <de.symeda.sormas.app.component.controls.ControlDateTimeField
                     android:id="@+id/sample_sampleDateTime"
                     app:dateHint="@string/caption_date_of_sampling"
