@@ -96,14 +96,11 @@ public class SampleDataView extends AbstractSampleView {
 		caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(caseInfoLayout, CASE_LOC);
 
-		if (Boolean.TRUE.equals(sampleDto.getPathogenTestingRequested())) {
-			PathogenTestListComponent pathogenTestList = new PathogenTestListComponent(getSampleRef(), pathogenTestChangedCallback);
-			pathogenTestList.addStyleName(CssStyles.SIDE_COMPONENT);
-			layout.addComponent(pathogenTestList, PATHOGEN_TESTS_LOC);
-		}
+		PathogenTestListComponent pathogenTestList = new PathogenTestListComponent(getSampleRef(), pathogenTestChangedCallback);
+		pathogenTestList.addStyleName(CssStyles.SIDE_COMPONENT);
+		layout.addComponent(pathogenTestList, PATHOGEN_TESTS_LOC);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW) &&
-				Boolean.TRUE.equals(sampleDto.getAdditionalTestingRequested())) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
 			AdditionalTestListComponent additionalTestList = new AdditionalTestListComponent(getSampleRef().getUuid());
 			additionalTestList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(additionalTestList, ADDITIONAL_TESTS_LOC);

@@ -231,7 +231,6 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		OptionGroup pathogenTestingRequestedField = addField(SampleDto.PATHOGEN_TESTING_REQUESTED, OptionGroup.class);
 		CssStyles.style(pathogenTestingRequestedField, CssStyles.OPTIONGROUP_CAPTION_AREA_INLINE);
 		pathogenTestingRequestedField.setWidthUndefined();
-		pathogenTestingRequestedField.setRequired(true);
 		OptionGroup additionalTestingRequestedField = addField(SampleDto.ADDITIONAL_TESTING_REQUESTED, OptionGroup.class);
 		CssStyles.style(additionalTestingRequestedField, CssStyles.OPTIONGROUP_CAPTION_AREA_INLINE);
 		additionalTestingRequestedField.setWidthUndefined();
@@ -292,7 +291,6 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 						requestedAdditionalTestsField.setVisible(Boolean.TRUE.equals(getValue().getAdditionalTestingRequested()));
 						requestedAdditionalInfoLabel.setVisible(Boolean.TRUE.equals(getValue().getAdditionalTestingRequested()));
 						requestedOtherAdditionalTests.setVisible(Boolean.TRUE.equals(getValue().getAdditionalTestingRequested()));
-						additionalTestingRequestedField.setRequired(true);	
 						
 						additionalTestingRequestedField.addValueChangeListener(f -> {
 							requestedAdditionalInfoLabel.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
