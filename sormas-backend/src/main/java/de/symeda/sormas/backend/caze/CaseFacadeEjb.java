@@ -1494,15 +1494,18 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 	
 	@Override
-	public boolean isDuplicateEpidNumber(String epidNumber) {
+	public boolean doesEpidNumberExist(String epidNumber, String caseUuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Case> from = cq.from(Case.class);
 		
 		Predicate filter = cb.equal(from.get(Case.EPID_NUMBER), epidNumber);
+		if (caseUuid != null) {
+			filter = cb.and(filter, cb.notEqual(from.get(Case.UUID), caseUuid));
+		}
 		cq.where(filter);
 		cq.select(cb.count(from));
-		return em.createQuery(cq).getSingleResult() > 1;
+		return em.createQuery(cq).getSingleResult() > 0;
 	}
 
 	@Override

@@ -118,7 +118,7 @@ public interface CaseFacade {
 	
 	List<String> getArchivedUuidsSince(String userUuid, Date since);
 	
-	boolean isDuplicateEpidNumber(String epidNumber);
+	boolean doesEpidNumberExist(String epidNumber, String caseUuid);
 	
 	String generateEpidNumber(CaseReferenceDto caze);
 	

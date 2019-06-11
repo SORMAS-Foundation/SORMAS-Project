@@ -143,15 +143,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		assignNewEpidNumberButton.setVisible(false);
 		
 		TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
-		epidField.addValueChangeListener(e -> {
-			if (FacadeProvider.getCaseFacade().isDuplicateEpidNumber((String) e.getProperty().getValue())) {
-				epidField.setComponentError(new UserError(Validations.duplicateEpidNumber));
-				assignNewEpidNumberButton.setVisible(true);
-			} else {
-				epidField.setComponentError(null);
-				assignNewEpidNumberButton.setVisible(false);
-			}
-		});
 		epidField.setInvalidCommitted(true);
 		CssStyles.style(epidField, CssStyles.ERROR_COLOR_PRIMARY);
 		
@@ -310,6 +301,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				classifiedBySystemLabel.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLASSIFIED_BY));
 				getContent().addComponent(classifiedBySystemLabel, CLASSIFIED_BY_SYSTEM_LOC);
 			}
+	
+			setEpidNumberError(epidField, assignNewEpidNumberButton, getValue().getEpidNumber());
+			
+			epidField.addValueChangeListener(f -> {
+				setEpidNumberError(epidField, assignNewEpidNumberButton, (String) f.getProperty().getValue());
+			});
 		});
 
 		district.addValueChangeListener(e -> {
@@ -356,6 +353,17 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
+	}
+	
+	private void setEpidNumberError(TextField epidField, Button assignNewEpidNumberButton, String fieldValue) {
+		if (FacadeProvider.getCaseFacade().doesEpidNumberExist(fieldValue, getValue().getUuid())) {
+			epidField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.duplicateEpidNumber)));
+			assignNewEpidNumberButton.setVisible(true);
+		} else {
+			epidField.setComponentError(null);
+			assignNewEpidNumberButton.setVisible(!CaseLogic.isEpidNumberPrefix(fieldValue) 
+					&& !CaseLogic.isCompleteEpidNumber(fieldValue));
+		}
 	}
 
 	private static class DiseaseChangeListener implements ValueChangeListener {

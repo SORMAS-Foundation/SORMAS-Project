@@ -348,8 +348,8 @@ public class CaseService extends AbstractAdoService<Case> {
 
 	public String getHighestEpidNumber(String epidNumberPrefix) {
 		try {
-			Query query = em.createNativeQuery("SELECT epidnumber FROM " + Case.TABLE_NAME + " WHERE substring(" + Case.TABLE_NAME + ".epidnumber from 1 for 15) LIKE '" 
-							+ epidNumberPrefix + "' ORDER BY NULLIF(regexp_replace(" + Case.TABLE_NAME + ".epidnumber, '\\D', '', 'g'), '')::int DESC LIMIT 1");
+			Query query = em.createNativeQuery("SELECT epidnumber FROM " + Case.TABLE_NAME + " WHERE " + Case.TABLE_NAME + ".epidnumber LIKE '" 
+							+ epidNumberPrefix + "%' ORDER BY NULLIF(regexp_replace(" + Case.TABLE_NAME + ".epidnumber, '\\D', '', 'g'), '')::int DESC LIMIT 1");
 			return (String) query.getSingleResult();
 		} catch (NoResultException e) {
 			return null;
