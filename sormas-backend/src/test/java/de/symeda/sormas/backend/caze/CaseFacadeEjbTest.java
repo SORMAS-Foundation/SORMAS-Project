@@ -437,22 +437,22 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, results.size());
 	}
 	
-//	@Test
-//	public void testEpidNumberGeneration() {
-//		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-//		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
-//				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-//		PersonDto cazePerson = creator.createPerson("Case", "Person");
-//		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
-//		
-//		Calendar calendar = Calendar.getInstance();
-//		String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
-//		
-//		assertEquals("COU-REG-DIS-" + year + "-01", caze.getEpidNumber());
-//
-//		CaseDataDto secondCaze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
-//		
-//		assertEquals("COU-REG-DIS-" + year + "-02", secondCaze.getEpidNumber());
-//	}
+	@Test
+	public void testEpidNumberGeneration() {
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
+				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
+		
+		Calendar calendar = Calendar.getInstance();
+		String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
+		
+		assertEquals("COU-REG-DIS-" + year + "-01", caze.getEpidNumber());
+
+		CaseDataDto secondCaze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
+		
+		assertEquals("COU-REG-DIS-" + year + "-02", secondCaze.getEpidNumber());
+	}
 	
 }
