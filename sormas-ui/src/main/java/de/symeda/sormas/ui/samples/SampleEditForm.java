@@ -42,7 +42,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.AdditionalTestType;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -99,8 +98,6 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			LayoutUtil.fluidRowLocs(SampleDto.COMMENT, SampleDto.PATHOGEN_TEST_RESULT);
 
 	private boolean requestedTestsInitialized = false;
-	
-	private ComboBox pathogenTestResultField;
 
 	public SampleEditForm(UserRight editOrCreateUserRight) {
 		super(SampleDto.class, SampleDto.I18N_PREFIX, editOrCreateUserRight);
@@ -126,7 +123,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.COMMENT, TextArea.class).setRows(2);
 		CheckBox shipped = addField(SampleDto.SHIPPED, CheckBox.class);
 		CheckBox received = addField(SampleDto.RECEIVED, CheckBox.class);
-		pathogenTestResultField = addField(SampleDto.PATHOGEN_TEST_RESULT, ComboBox.class);
+		ComboBox pathogenTestResultField = addField(SampleDto.PATHOGEN_TEST_RESULT, ComboBox.class);
 
 		initializeRequestedTests();
 
@@ -148,7 +145,6 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), SampleDto.NO_TEST_POSSIBLE_REASON, SampleDto.SPECIMEN_CONDITION, Arrays.asList(SpecimenCondition.NOT_ADEQUATE), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SAMPLE_MATERIAL, Arrays.asList(SampleDto.SAMPLE_MATERIAL_TEXT), Arrays.asList(SampleMaterial.OTHER));
 		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SPECIMEN_CONDITION, Arrays.asList(SampleDto.NO_TEST_POSSIBLE_REASON), Arrays.asList(SpecimenCondition.NOT_ADEQUATE));
-		setRequired(true, SampleDto.PATHOGEN_TEST_RESULT);
 		
 		addValueChangeListener(e -> {
 			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getAssociatedCase().getUuid());
@@ -212,6 +208,10 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			}
 
 			getContent().addComponent(reportInfoLayout, REPORT_INFORMATION_LOC);
+			
+			if (FacadeProvider.getPathogenTestFacade().hasPathogenTest(getValue().toReference())) {
+				pathogenTestResultField.setRequired(true);
+			}
 		});
 
 		lab.addValueChangeListener(event -> {
@@ -224,6 +224,10 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 				labDetails.clear();
 			}
 		});
+	}
+	
+	public void makePathogenTestResultRequired() {
+		getFieldGroup().getField(SampleDto.PATHOGEN_TEST_RESULT).setRequired(true);
 	}
 
 	private void initializeRequestedTests() {
@@ -266,19 +270,12 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 					requestedPathogenTestsField.setVisible(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()));
 					requestedPathogenInfoLabel.setVisible(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()));
 					requestedOtherPathogenTests.setVisible(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()));
-					pathogenTestResultField.setVisible(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()));
-					pathogenTestResultField.setRequired(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()));
 					
 					// CheckBoxes should be hidden when no tests are requested
 					pathogenTestingRequestedField.addValueChangeListener(f -> {
 						requestedPathogenInfoLabel.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
 						requestedPathogenTestsField.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
 						requestedOtherPathogenTests.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
-						pathogenTestResultField.setVisible(Boolean.TRUE.equals(f.getProperty().getValue()));
-						pathogenTestResultField.setRequired(Boolean.TRUE.equals(f.getProperty().getValue()));
-						if (f.getProperty().getValue().equals(Boolean.TRUE) && pathogenTestResultField.getValue() == null) {
-							pathogenTestResultField.setValue(PathogenTestResultType.PENDING);
-						}
 					});
 
 					if (!UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {

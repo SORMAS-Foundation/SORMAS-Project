@@ -184,7 +184,6 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 		OptionGroup pathogenTestingRequestedField = addField(SampleDto.PATHOGEN_TESTING_REQUESTED, OptionGroup.class);
 		CssStyles.style(pathogenTestingRequestedField, CssStyles.OPTIONGROUP_CAPTION_AREA_INLINE);
 		pathogenTestingRequestedField.setWidthUndefined();
-		pathogenTestingRequestedField.setRequired(true);
 		OptionGroup additionalTestingRequestedField = addField(SampleDto.ADDITIONAL_TESTING_REQUESTED, OptionGroup.class);
 		CssStyles.style(additionalTestingRequestedField, CssStyles.OPTIONGROUP_CAPTION_AREA_INLINE);
 		additionalTestingRequestedField.setWidthUndefined();
@@ -230,9 +229,7 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 		if (!UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
 			// Hide additional testing fields when user is not allowed to see them
 			additionalTestingRequestedField.setVisible(false);
-		} else {
-			additionalTestingRequestedField.setRequired(true);
-			
+		} else {			
 			additionalTestingRequestedField.addValueChangeListener(f -> {
 				requestedAdditionalInfoLabel.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
 				requestedAdditionalTestsField.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));

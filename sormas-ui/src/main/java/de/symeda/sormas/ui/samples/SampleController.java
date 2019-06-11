@@ -84,9 +84,6 @@ public class SampleController {
 			public void onCommit() {
 				if( !createForm.getFieldGroup().isModified()) {
 					SampleDto dto = createForm.getValue();
-					if (dto.getPathogenTestingRequested()) {
-						dto.setPathogenTestResult(PathogenTestResultType.PENDING);
-					}
 					FacadeProvider.getSampleFacade().saveSample(dto);
 					callback.run();
 				}

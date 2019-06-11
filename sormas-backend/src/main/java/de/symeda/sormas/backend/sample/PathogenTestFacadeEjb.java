@@ -39,11 +39,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -181,6 +181,13 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		pathogenTestService.delete(pathogenTest);
 		
 		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(pathogenTest.getSample().getAssociatedCase()), pathogenTest.getSample().getAssociatedCase());
+	}
+	
+	@Override
+	public boolean hasPathogenTest(SampleReferenceDto sample) {
+		Sample sampleEntity = sampleService.getByReferenceDto(sample);
+		return pathogenTestService.hasPathogenTest(sampleEntity);
+		
 	}
 
 	public PathogenTest fromDto(@NotNull PathogenTestDto source) {

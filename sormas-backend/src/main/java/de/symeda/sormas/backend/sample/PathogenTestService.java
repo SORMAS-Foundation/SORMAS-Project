@@ -114,6 +114,15 @@ public class PathogenTestService extends AbstractAdoService<PathogenTest> {
 		List<PathogenTest> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}
+	
+	public boolean hasPathogenTest(Sample sample) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PathogenTest> cq = cb.createQuery(getElementClass());
+		Root<PathogenTest> from = cq.from(getElementClass());
+		
+		cq.where(cb.equal(from.get(PathogenTest.SAMPLE), sample));
+		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+	}
 
 	public List<PathogenTest> getAllByCase(Case caze) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();

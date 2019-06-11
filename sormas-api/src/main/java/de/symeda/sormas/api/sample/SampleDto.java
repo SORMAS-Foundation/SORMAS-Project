@@ -323,6 +323,7 @@ public class SampleDto extends EntityDto {
 		sample.setAssociatedCase(caseRef);
 		sample.setReportingUser(userRef);
 		sample.setReportDateTime(new Date());
+		sample.setPathogenTestResult(PathogenTestResultType.PENDING);
 
 		return sample;
 	}
@@ -338,6 +339,7 @@ public class SampleDto extends EntityDto {
 		sample.setAdditionalTestingRequested(referredSample.getAdditionalTestingRequested());
 		sample.setRequestedPathogenTests(referredSample.getRequestedPathogenTests());
 		sample.setRequestedAdditionalTests(referredSample.getRequestedAdditionalTests());
+		sample.setPathogenTestResult(PathogenTestResultType.PENDING);
 
 		return sample;
 	}
