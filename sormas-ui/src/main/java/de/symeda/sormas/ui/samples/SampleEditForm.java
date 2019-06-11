@@ -211,6 +211,8 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			
 			if (FacadeProvider.getPathogenTestFacade().hasPathogenTest(getValue().toReference())) {
 				pathogenTestResultField.setRequired(true);
+			} else {
+				pathogenTestResultField.setEnabled(false);
 			}
 		});
 
@@ -227,6 +229,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 	}
 	
 	public void makePathogenTestResultRequired() {
+		getFieldGroup().getField(SampleDto.PATHOGEN_TEST_RESULT).setEnabled(true);
 		getFieldGroup().getField(SampleDto.PATHOGEN_TEST_RESULT).setRequired(true);
 	}
 
