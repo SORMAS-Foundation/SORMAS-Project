@@ -311,31 +311,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		addValueChangeListener(e -> {
 			fillDeathAndBurialFields(deathPlaceType, deathPlaceDesc, burialPlaceDesc);
-
-			// Always show Mother's name/Father's name when they're filled in or the case is a CRS case;
-			// Otherwise, only show them when the approximate age is less than 5 years
-			if (disease != Disease.CONGENITAL_RUBELLA) {
-				// Initial visibility
-				Integer initialAge = ApproximateAgeHelper.getAgeYears(getValue().getApproximateAge(), getValue().getApproximateAgeType());
-				if (initialAge == null || initialAge > 5 && StringUtils.isEmpty(getValue().getMothersName()) && StringUtils.isEmpty(getValue().getFathersName())) {
-					setVisible(false, PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME);
-				}
-
-				approximateAgeField.addValueChangeListener(f -> {
-					Integer age = approximateAgeField.getValue() == null ? null
-							: ApproximateAgeHelper.getAgeYears(Integer.valueOf(approximateAgeField.getValue()), (ApproximateAgeType) approximateAgeTypeField.getValue());
-					setVisible((age != null && age <= 5)
-							|| !StringUtils.isEmpty(getValue().getMothersName()) || !StringUtils.isEmpty(getValue().getFathersName()),
-							PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME);
-				});
-				approximateAgeTypeField.addValueChangeListener(f -> {
-					Integer age = approximateAgeField.getValue() == null ? null
-							: ApproximateAgeHelper.getAgeYears(Integer.valueOf(approximateAgeField.getValue()), (ApproximateAgeType) approximateAgeTypeField.getValue());
-					setVisible((age != null && age <= 5)
-							|| !StringUtils.isEmpty(getValue().getMothersName()) || !StringUtils.isEmpty(getValue().getFathersName()),
-							PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME);
-				});
-			}
 		});
 
 		deathDate.addValidator(new DateComparisonValidator(deathDate, this::calcBirthDateValue, false, false, 

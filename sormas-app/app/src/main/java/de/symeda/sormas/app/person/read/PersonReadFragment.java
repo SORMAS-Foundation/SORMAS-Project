@@ -73,17 +73,6 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personPlaceOfBirthFacility, contentBinding.personPlaceOfBirthFacilityDetails);
         PersonEditFragment.initializeCauseOfDeathDetailsFieldVisibility(contentBinding.personCauseOfDeath, contentBinding.personCauseOfDeathDisease, contentBinding.personCauseOfDeathDetails);
-
-        if (rootDisease != Disease.CONGENITAL_RUBELLA) {
-            Integer age = ApproximateAgeHelper.getAgeYears(contentBinding.getData().getApproximateAge(), contentBinding.getData().getApproximateAgeType());
-            if ((age == null || age > 5) && StringUtils.isEmpty(contentBinding.getData().getMothersName()) && StringUtils.isEmpty(contentBinding.getData().getFathersName())) {
-                contentBinding.personMothersName.setVisibility(GONE);
-                contentBinding.personFathersName.setVisibility(GONE);
-            } else {
-                contentBinding.personMothersName.setVisibility(VISIBLE);
-                contentBinding.personFathersName.setVisibility(VISIBLE);
-            }
-        }
     }
 
     // Overrides
