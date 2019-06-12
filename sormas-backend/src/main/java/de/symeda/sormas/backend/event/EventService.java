@@ -272,7 +272,7 @@ public class EventService extends AbstractAdoService<Event> {
 			case STATE_OBSERVER:
 				// supervisors see all events of their region
 				if (user.getRegion() != null) {
-					filter = cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.REGION), user.getRegion());
+					filter = or(cb, filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.REGION), user.getRegion()));
 				}
 				break;
 			case SURVEILLANCE_OFFICER:
@@ -281,7 +281,7 @@ public class EventService extends AbstractAdoService<Event> {
 			case DISTRICT_OBSERVER:
 				// officers see all events of their district
 				if (user.getDistrict() != null) {
-					filter = cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.DISTRICT), user.getDistrict());
+					filter = or(cb, filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.DISTRICT), user.getDistrict()));
 				}
 				break;
 			case HOSPITAL_INFORMANT:

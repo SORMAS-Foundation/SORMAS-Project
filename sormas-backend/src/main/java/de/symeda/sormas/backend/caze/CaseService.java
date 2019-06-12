@@ -413,7 +413,7 @@ public class CaseService extends AbstractAdoService<Case> {
 			case STATE_OBSERVER:
 				// supervisors see all cases of their region
 				if (user.getRegion() != null) {
-					filter = cb.equal(casePath.get(Case.REGION), user.getRegion());
+					filter = or(cb, filter, cb.equal(casePath.get(Case.REGION), user.getRegion()));
 				}
 				break;
 			case SURVEILLANCE_OFFICER:
@@ -422,19 +422,19 @@ public class CaseService extends AbstractAdoService<Case> {
 			case DISTRICT_OBSERVER:
 				// officers see all cases of their district
 				if (user.getDistrict() != null) {
-					filter = cb.equal(casePath.get(Case.DISTRICT), user.getDistrict());
+					filter = or(cb, filter, cb.equal(casePath.get(Case.DISTRICT), user.getDistrict()));
 				}
 				break;
 			case HOSPITAL_INFORMANT:
 				// hospital informants see all cases of their facility
 				if (user.getHealthFacility() != null) {
-					filter = cb.equal(casePath.get(Case.HEALTH_FACILITY), user.getHealthFacility());
+					filter = or(cb, filter, cb.equal(casePath.get(Case.HEALTH_FACILITY), user.getHealthFacility()));
 				}
 				break;
 			case COMMUNITY_INFORMANT:
 				// community informants see all cases of their community
 				if (user.getCommunity() != null) {
-					filter = cb.equal(casePath.get(Case.COMMUNITY), user.getCommunity());
+					filter = or(cb, filter, cb.equal(casePath.get(Case.COMMUNITY), user.getCommunity()));
 				}
 				break;
 			case LAB_USER:
@@ -443,7 +443,7 @@ public class CaseService extends AbstractAdoService<Case> {
 				Root<Sample> sampleRoot = sampleCaseSubquery.from(Sample.class);
 				sampleCaseSubquery.where(sampleService.createUserFilterWithoutCase(cb, cq, sampleRoot, user));
 				sampleCaseSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CASE).get(Case.ID));
-				filter = cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery);
+				filter = or(cb, filter, cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery));
 				break;
 			case ADMIN:
 			case EXTERNAL_LAB_USER:
