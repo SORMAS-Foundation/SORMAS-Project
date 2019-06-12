@@ -24,8 +24,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto.ClassificationXOfSubCriteriaDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 
@@ -191,7 +193,7 @@ public class ClassificationHtmlRenderer {
 		}
 
 		// Add the criteria name to the div (e.g. "ONE OF")
-		if (!(criteria instanceof ClassificationAllOfCriteriaDto)) {
+		if (!(criteria instanceof ClassificationAllOfCriteriaDto) || ((ClassificationAllOfCriteriaDto) criteria).isDrawSubCriteriaTogether()) {
 			subCriteriaSb.append(createCriteriaItemDiv(((ClassificationCollectiveCriteria) criteria).getCriteriaName()));
 		}
 
@@ -203,7 +205,12 @@ public class ClassificationHtmlRenderer {
 					&& !(subCriteria.getClass() == ClassificationXOfCriteriaDto.class)) {
 				// For collective criteria, but not ClassificationAllOfCriteria, add a sub div with a slightly different color to make clear
 				// that it belongs to the criteria listed before
-				String itemDiv = createCriteriaItemDiv("<b>" + I18nProperties.getString(Strings.and).toUpperCase() + "</b>" + subCriteria.buildDescription());
+				String itemDiv = null;
+				if (subCriteria instanceof ClassificationXOfSubCriteriaDto && !((ClassificationXOfSubCriteriaDto) subCriteria).isAddition()) {
+					itemDiv = createCriteriaItemDiv(subCriteria.buildDescription());
+				} else {
+					itemDiv = createCriteriaItemDiv("<b>" + I18nProperties.getString(Strings.and).toUpperCase() + "</b>" + subCriteria.buildDescription());
+				}
 				subCriteriaSb.append(createSubCriteriaSurroundingDiv(itemDiv));
 			} else {
 				// For everything else, recursively call this method to determine how to display the sub criteria
@@ -244,7 +251,7 @@ public class ClassificationHtmlRenderer {
 	}
 
 	private static String createInfoDiv(int requirementsNumber) {
-		return String.format(I18nProperties.getString(Strings.classificationInfoNumberText), requirementsNumber);
+		return String.format(I18nProperties.getString(Strings.classificationInfoNumberText), DataHelper.parseNumberToString(requirementsNumber));
 	}
 
 	/**

@@ -325,7 +325,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 								allOfCompact(
 										caseData(CaseDataDto.PLAGUE_TYPE, PlagueType.PNEUMONIC), 
 										symptom(SymptomsDto.FEVER)),
-								xOfSub(1, 
+								xOfSub(1, true,
 										symptom(SymptomsDto.COUGH), 
 										symptom(SymptomsDto.CHEST_PAIN),
 										symptom(SymptomsDto.COUGHING_BLOOD))),
@@ -368,7 +368,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 						symptom(SymptomsDto.HEARINGLOSS),
 						symptom(SymptomsDto.PIGMENTARY_RETINOPATHY)),
 				allOfTogether(
-						xOf(1,
+						xOfSub(1, false,
 								oneOfCompact(
 										symptom(SymptomsDto.BILATERAL_CATARACTS),
 										symptom(SymptomsDto.UNILATERAL_CATARACTS),
@@ -376,7 +376,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 								symptom(SymptomsDto.CONGENITAL_HEART_DISEASE),
 								symptom(SymptomsDto.HEARINGLOSS),
 								symptom(SymptomsDto.PIGMENTARY_RETINOPATHY)),
-						xOfSub(1, 
+						xOfSub(1, false, 
 								symptom(SymptomsDto.PURPURIC_RASH),
 								symptom(SymptomsDto.SPLENOMEGALY),
 								symptom(SymptomsDto.MICROCEPHALY),
@@ -413,8 +413,8 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		return new ClassificationXOfCriteriaDto(requiredAmount, criteria);
 	}
 
-	private static ClassificationXOfSubCriteriaDto xOfSub(int requiredAmount, ClassificationCriteriaDto... criteria) {
-		return new ClassificationXOfSubCriteriaDto(requiredAmount, criteria);
+	private static ClassificationXOfSubCriteriaDto xOfSub(int requiredAmount, boolean isAddition, ClassificationCriteriaDto... criteria) {
+		return new ClassificationXOfSubCriteriaDto(requiredAmount, isAddition, criteria);
 	}
 
 	private static ClassificationOneOfCompactCriteriaDto oneOfCompact(ClassificationCriteriaDto... criteria) {
