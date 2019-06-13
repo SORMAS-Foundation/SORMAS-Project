@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -54,6 +55,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.DatabaseTable;
 import de.symeda.sormas.api.utils.CSVUtils;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ExportErrorException;
 import de.symeda.sormas.api.utils.Order;
@@ -204,11 +206,23 @@ public class DownloadUtil {
 										Method method = readMethods.get(i);
 										Function<T,?> subEntityProvider = subEntityProviders.getOrDefault(method, null);
 										Object entity = subEntityProvider != null ? subEntityProvider.apply(exportRow) : exportRow;
-										Object value = method.invoke(entity);
+										// Sub entity might be null
+										Object value = entity != null ? method.invoke(entity) : null;
 										if (value == null) {
 											fieldValues[i] = "";
 										} else if (value instanceof Date) {
 											fieldValues[i] = DateHelper.formatLocalShortDate((Date)value);
+										} else if (value.getClass().equals(boolean.class) || value.getClass().equals(Boolean.class)) {
+											fieldValues[i] = DataHelper.parseBoolean((Boolean) value);
+										} else if (value instanceof Set) {
+											StringBuilder sb = new StringBuilder();
+											for (Object o : (Set<?>) value) {
+												if (sb.length() != 0) {
+													sb.append(", ");
+												}
+												sb.append(o);
+											}
+											fieldValues[i] = sb.toString();
 										} else {
 											fieldValues[i] = value.toString();
 										}

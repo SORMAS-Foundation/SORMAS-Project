@@ -221,4 +221,14 @@ public final class DataHelper {
 		}
 	}
 	
+	public static String parseBoolean(Boolean value) {
+		if (value == null) {
+			return "";
+		} else if (Boolean.TRUE.equals(value)) {
+			return I18nProperties.getString(Strings.yes);
+		} else {
+			return I18nProperties.getString(Strings.no);
+		}
+	}
+	
 }

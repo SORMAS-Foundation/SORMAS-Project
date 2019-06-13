@@ -39,6 +39,8 @@ public interface SampleFacade {
 	
 	List<SampleIndexDto> getIndexList(String userUuid, SampleCriteria sampleCriteria, int first, int max, List<SortProperty> sortProperties);
 	
+	List<SampleExportDto> getExportList(String userUuid, SampleCriteria sampleCriteria, int first, int max);
+	
 	long count(String userUuid, SampleCriteria sampleCriteria);
 	
 	SampleDto getSampleByUuid(String uuid);

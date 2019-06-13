@@ -5,6 +5,7 @@ import java.util.Date;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.Order;
 
 public class AdditionalTestDto extends EntityDto {
 
@@ -97,126 +98,147 @@ public class AdditionalTestDto extends EntityDto {
 	public void setSample(SampleReferenceDto sample) {
 		this.sample = sample;
 	}
+	@Order(0)
 	public Date getTestDateTime() {
 		return testDateTime;
 	}
 	public void setTestDateTime(Date testDateTime) {
 		this.testDateTime = testDateTime;
 	}
+	@Order(10)
 	public SimpleTestResultType getHaemoglobinuria() {
 		return haemoglobinuria;
 	}
 	public void setHaemoglobinuria(SimpleTestResultType haemoglobinuria) {
 		this.haemoglobinuria = haemoglobinuria;
 	}
+	@Order(11)
 	public SimpleTestResultType getProteinuria() {
 		return proteinuria;
 	}
 	public void setProteinuria(SimpleTestResultType proteinuria) {
 		this.proteinuria = proteinuria;
 	}
+	@Order(12)
 	public SimpleTestResultType getHematuria() {
 		return hematuria;
 	}
 	public void setHematuria(SimpleTestResultType hematuria) {
 		this.hematuria = hematuria;
 	}
+	@Order(13)
 	public Integer getArterialVenousGasPH() {
 		return arterialVenousGasPH;
 	}
 	public void setArterialVenousGasPH(Integer arterialVenousGasPH) {
 		this.arterialVenousGasPH = arterialVenousGasPH;
 	}
+	@Order(14)
 	public Integer getArterialVenousGasPco2() {
 		return arterialVenousGasPco2;
 	}
 	public void setArterialVenousGasPco2(Integer arterialVenousGasPco2) {
 		this.arterialVenousGasPco2 = arterialVenousGasPco2;
 	}
+	@Order(15)
 	public Integer getArterialVenousGasPao2() {
 		return arterialVenousGasPao2;
 	}
 	public void setArterialVenousGasPao2(Integer arterialVenousGasPao2) {
 		this.arterialVenousGasPao2 = arterialVenousGasPao2;
 	}
+	@Order(16)
 	public Integer getArterialVenousGasHco3() {
 		return arterialVenousGasHco3;
 	}
 	public void setArterialVenousGasHco3(Integer arterialVenousGasHco3) {
 		this.arterialVenousGasHco3 = arterialVenousGasHco3;
 	}
+	@Order(17)
 	public Integer getGasOxygenTherapy() {
 		return gasOxygenTherapy;
 	}
 	public void setGasOxygenTherapy(Integer gasOxygenTherapy) {
 		this.gasOxygenTherapy = gasOxygenTherapy;
 	}
+	@Order(20)
 	public Integer getAltSgpt() {
 		return altSgpt;
 	}
 	public void setAltSgpt(Integer altSgpt) {
 		this.altSgpt = altSgpt;
 	}
+	@Order(21)
 	public Integer getAstSgot() {
 		return astSgot;
 	}
 	public void setAstSgot(Integer astSgot) {
 		this.astSgot = astSgot;
 	}
+	@Order(22)
 	public Integer getCreatinine() {
 		return creatinine;
 	}
 	public void setCreatinine(Integer creatinine) {
 		this.creatinine = creatinine;
 	}
+	@Order(23)
 	public Integer getPotassium() {
 		return potassium;
 	}
 	public void setPotassium(Integer potassium) {
 		this.potassium = potassium;
 	}
+	@Order(24)
 	public Integer getUrea() {
 		return urea;
 	}
 	public void setUrea(Integer urea) {
 		this.urea = urea;
 	}
+	@Order(25)
 	public Integer getHaemoglobin() {
 		return haemoglobin;
 	}
 	public void setHaemoglobin(Integer haemoglobin) {
 		this.haemoglobin = haemoglobin;
 	}
+	@Order(26)
 	public Integer getTotalBilirubin() {
 		return totalBilirubin;
 	}
 	public void setTotalBilirubin(Integer totalBilirubin) {
 		this.totalBilirubin = totalBilirubin;
 	}
+	@Order(27)
 	public Integer getConjBilirubin() {
 		return conjBilirubin;
 	}
 	public void setConjBilirubin(Integer conjBilirubin) {
 		this.conjBilirubin = conjBilirubin;
 	}
+	@Order(30)
 	public Integer getWbcCount() {
 		return wbcCount;
 	}
 	public void setWbcCount(Integer wbcCount) {
 		this.wbcCount = wbcCount;
 	}
+	@Order(31)
 	public Integer getPlatelets() {
 		return platelets;
 	}
 	public void setPlatelets(Integer platelets) {
 		this.platelets = platelets;
 	}
+	@Order(32)
 	public Integer getProthrombinTime() {
 		return prothrombinTime;
 	}
 	public void setProthrombinTime(Integer prothrombinTime) {
 		this.prothrombinTime = prothrombinTime;
 	}
+	@Order(33)
 	public String getOtherTestResults() {
 		return otherTestResults;
 	}
