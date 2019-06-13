@@ -81,6 +81,8 @@ public class StartupShutdownService {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME_AUDITLOG)
+	protected EntityManager emAudit;
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
@@ -114,7 +116,13 @@ public class StartupShutdownService {
 
 	@PostConstruct
 	public void startup() {
-		updateDatabase();
+		logger.info("Initiating automatic database update of main database...");
+		
+		updateDatabase(em, "/sql/sormas_schema.sql");
+		
+		logger.info("Initiating automatic database update of audit database...");
+		
+		updateDatabase(emAudit, "/sql/sormas_audit_schema.sql");
 		
 		String countryName = configFacade.getCountryName();
 		
@@ -188,11 +196,11 @@ public class StartupShutdownService {
 		}
 	}
 	
-	private void updateDatabase() {
-		logger.info("Starting automatic database update.");
+	private void updateDatabase(EntityManager entityManager, String schemaFileName) {
+		logger.info("Starting automatic database update...");
 		
-		Integer currentVersion = (Integer) em.createNativeQuery("SELECT version_number FROM schema_version ORDER BY changedate DESC LIMIT 1").getSingleResult();		
-		File schemaFile = new File(getClass().getClassLoader().getResource("sormas_schema.sql").getFile());
+		Integer currentVersion = (Integer) entityManager.createNativeQuery("SELECT version_number FROM schema_version ORDER BY changedate DESC LIMIT 1").getSingleResult();		
+		File schemaFile = new File(getClass().getClassLoader().getResource(schemaFileName).getFile());
 		Scanner scanner = null;
 		
 		try {
@@ -208,7 +216,7 @@ public class StartupShutdownService {
 				}
 				
 				if (!currentVersionReached) {
-					if (nextLine.contains("INSERT INTO schema_version (version_number, comment) VALUES (" + currentVersion)) {
+					if (nextLine.startsWith("INSERT INTO schema_version (version_number, comment) VALUES (" + currentVersion)) {
 						currentVersionReached = true;
 					}
 
@@ -219,14 +227,14 @@ public class StartupShutdownService {
 				nextUpdateBuilder.append(nextLine).append("\n");
 				
 				// Perform the current update when the INSERT INTO schema_version statement is reached
-				if (nextLine.contains("INSERT INTO schema_version")) {
+				if (nextLine.startsWith("INSERT INTO schema_version")) {
 					String newVersion = nextLine.substring(61, nextLine.indexOf(",", 61));
 					logger.info("Updating database to version " + newVersion + "...");
-					em.createNativeQuery(nextUpdateBuilder.toString()).executeUpdate();
+					entityManager.createNativeQuery(nextUpdateBuilder.toString()).executeUpdate();
 				}
 			}
 		} catch (FileNotFoundException e) {
-			logger.error("Could not find sormas_schema.sql file. Database update not performed.");
+			logger.error("Could not find " + schemaFileName + " file. Database update not performed.");
 			throw new RuntimeException(e);
 		} finally {
 			scanner.close();

@@ -20,6 +20,7 @@ CREATE TABLE schema_version (
   comment character varying(255),
   CONSTRAINT schema_version_pkey PRIMARY KEY (version_number)
 );
+ALTER TABLE schema_version OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (1, 'Basic database configuration');
 
