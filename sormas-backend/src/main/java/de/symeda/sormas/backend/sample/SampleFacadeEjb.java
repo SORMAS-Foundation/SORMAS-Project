@@ -49,6 +49,7 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardSampleDto;
@@ -321,7 +322,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		Join<Case, Community> caseCommunity = caze.join(Case.COMMUNITY, JoinType.LEFT);
 		Join<Case, Facility> caseFacility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
 		Join<Person, Location> personAddress = person.join(Person.ADDRESS, JoinType.LEFT);
-		
+
 		cq.multiselect(
 				sample.get(Sample.ID),
 				sample.get(Sample.UUID),
@@ -388,7 +389,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		for (SampleExportDto exportDto : resultList) {
 			exportDto.setCaseAddress(locationService.getById(exportDto.getCaseAddressId()).toString());
-			
+
 			List<PathogenTest> pathogenTests = pathogenTestService.getAllBySample(sampleService.getById(exportDto.getId()));
 			int count = 0;
 			for (PathogenTest pathogenTest : pathogenTests) {
@@ -424,6 +425,7 @@ public class SampleFacadeEjb implements SampleFacade {
 					}
 					sb.append(DateHelper.formatDateForExport(pathogenTest.getTestDateTime())).append(" (")
 					.append(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()))
+					.append(", ").append(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()))
 					.append(", ").append(pathogenTest.getTestResult()).append(")");
 					exportDto.setOtherPathogenTestsDetails(exportDto.getOtherPathogenTestsDetails() + sb.toString());
 					break;
@@ -431,24 +433,16 @@ public class SampleFacadeEjb implements SampleFacade {
 			}
 
 			List<AdditionalTest> additionalTests = additionalTestService.getAllBySample(sampleService.getById(exportDto.getId()));
-			count = 0;
-			for (AdditionalTest additionalTest : additionalTests) {
-				switch (++count) {
-				case 1:
-					exportDto.setAdditionalTest(additionalTestFacade.toDto(additionalTest));
-					break;
-				default:
-					StringBuilder sb = new StringBuilder();
-					if (!exportDto.getOtherAdditionalTestsDetails().isEmpty()) {
-						sb.append(", ");
-					}
-					sb.append(DateHelper.formatDateForExport(additionalTest.getTestDateTime()));
-					exportDto.setOtherAdditionalTestsDetails(exportDto.getOtherAdditionalTestsDetails() + sb.toString());
-					break;
-				}
+			if (additionalTests.size() > 0) {
+				exportDto.setAdditionalTest(additionalTestFacade.toDto(additionalTests.get(0)));
+			}
+			if (additionalTests.size() > 1) {
+				exportDto.setOtherAdditionalTestsDetails(I18nProperties.getString(Strings.yes));
+			} else {
+				exportDto.setOtherAdditionalTestsDetails(I18nProperties.getString(Strings.no));
 			}
 		}
-		
+
 		return resultList;
 	}
 

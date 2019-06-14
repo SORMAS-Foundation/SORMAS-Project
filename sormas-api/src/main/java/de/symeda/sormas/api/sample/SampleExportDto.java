@@ -14,7 +14,6 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.Order;
 
@@ -28,7 +27,8 @@ public class SampleExportDto implements Serializable {
 	private String uuid;
 	private String labSampleID;
 	private String epidNumber;
-	private String caseName;
+	private String firstName;
+	private String lastName;
 	private String disease;
 	private Date sampleDateTime;
 	private String sampleMaterial;
@@ -98,7 +98,8 @@ public class SampleExportDto implements Serializable {
 		this.uuid = uuid;
 		this.labSampleID = labSampleId;
 		this.epidNumber = epidNumber;
-		this.caseName = PersonDto.buildCaption(firstName, lastName);
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.disease = DiseaseHelper.toString(disease, diseaseDetails);
 		this.sampleDateTime = sampleDateTime;
 		this.sampleMaterial = SampleMaterial.toString(sampleMaterial, sampleMaterialDetails);
@@ -180,15 +181,24 @@ public class SampleExportDto implements Serializable {
 	}
 
 	@Order(4)
-	public String getCaseName() {
-		return caseName;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setCaseName(String caseName) {
-		this.caseName = caseName;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
 
 	@Order(5)
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	@Order(6)
 	public String getDisease() {
 		return disease;
 	}
