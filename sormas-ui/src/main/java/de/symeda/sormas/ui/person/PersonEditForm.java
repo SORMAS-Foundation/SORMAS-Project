@@ -23,8 +23,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -70,9 +68,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 	private static final String OCCUPATION_HEADER = "occupationHeader";
 	private static final String ADDRESS_HEADER = "addressHeader";
+	private static final String CONTACT_INFORMATION_HEADER = "contactInformationHeader";
 
 	private Label occupationHeader = new Label(LayoutUtil.h3(I18nProperties.getString(Strings.headingPersonOccupation)), ContentMode.HTML);
 	private Label addressHeader = new Label(LayoutUtil.h3(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS)), ContentMode.HTML);
+	private Label contactInformationHeader = new Label(LayoutUtil.h3(I18nProperties.getString(Strings.headingContactInformation)), ContentMode.HTML);
 
 	private Disease disease;
 	private String diseaseDetails;
@@ -87,8 +87,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.h3(I18nProperties.getString(Strings.headingPersonInformation))+
 			LayoutUtil.fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
-			LayoutUtil.fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
-			LayoutUtil.fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
 			LayoutUtil.fluidRow(
 					LayoutUtil.fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 					LayoutUtil.fluidRowLocs(PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE, PersonDto.APPROXIMATE_AGE_REFERENCE_DATE)
@@ -112,7 +110,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					LayoutUtil.oneOfFourCol(PersonDto.BURIAL_CONDUCTOR),
 					LayoutUtil.oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
 					) +
-			LayoutUtil.fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
 			LayoutUtil.loc(OCCUPATION_HEADER) +
 			LayoutUtil.divsCss(
 					CssStyles.VSPACE_3, 
@@ -122,7 +119,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					LayoutUtil.fluidRowLocs(PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS)
 					) +
 			LayoutUtil.loc(ADDRESS_HEADER) +
-			LayoutUtil.fluidRowLocs(PersonDto.ADDRESS)
+			LayoutUtil.divsCss(
+					CssStyles.VSPACE_3,
+					LayoutUtil.fluidRowLocs(PersonDto.ADDRESS) +
+					LayoutUtil.loc(CONTACT_INFORMATION_HEADER) +
+					LayoutUtil.fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
+					LayoutUtil.fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
+					LayoutUtil.fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER))
 			;
 
 	private boolean initialized = false;
@@ -136,6 +139,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
 		getContent().addComponent(addressHeader, ADDRESS_HEADER);
+		getContent().addComponent(contactInformationHeader, CONTACT_INFORMATION_HEADER);
 
 		initialized = true;
 		addFields();

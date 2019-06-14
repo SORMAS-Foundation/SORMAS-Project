@@ -112,6 +112,7 @@ public interface Strings {
 	public static String headingConfirmDeletion = "headingConfirmDeletion";
 	public static String headingContactData = "headingContactData";
 	public static String headingContactFollowUp = "headingContactFollowUp";
+	public static String headingContactInformation = "headingContactInformation";
 	public static String headingContactMap = "headingContactMap";
 	public static String headingContactsDeleted = "headingContactsDeleted";
 	public static String headingCreateAdditionalTest = "headingCreateAdditionalTest";
