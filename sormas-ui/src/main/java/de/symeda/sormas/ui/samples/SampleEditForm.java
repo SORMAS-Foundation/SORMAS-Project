@@ -42,6 +42,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.AdditionalTestType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -229,8 +230,13 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 	}
 	
 	public void makePathogenTestResultRequired() {
-		getFieldGroup().getField(SampleDto.PATHOGEN_TEST_RESULT).setEnabled(true);
-		getFieldGroup().getField(SampleDto.PATHOGEN_TEST_RESULT).setRequired(true);
+		ComboBox pathogenTestResultField = (ComboBox) getFieldGroup().getField(SampleDto.PATHOGEN_TEST_RESULT);
+		pathogenTestResultField.setEnabled(true);
+		pathogenTestResultField.setRequired(true);
+		
+		if (pathogenTestResultField.getValue() == null) {
+			pathogenTestResultField.setValue(PathogenTestResultType.PENDING);
+		}
 	}
 
 	private void initializeRequestedTests() {
