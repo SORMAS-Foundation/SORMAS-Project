@@ -46,6 +46,7 @@ import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -307,9 +308,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		List<SampleIndexDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 		return resultList;	
 	}
-
-	@Override
-	public List<SampleExportDto> getExportList(String userUuid, SampleCriteria criteria, int first, int max) {
+	
+	private List<SampleExportDto> getExportList(String userUuid, SampleCriteria sampleCriteria, CaseCriteria caseCriteria, int first, int max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SampleExportDto> cq = cb.createQuery(SampleExportDto.class);
 		Root<Sample> sample = cq.from(Sample.class);
@@ -372,11 +372,14 @@ public class SampleFacadeEjb implements SampleFacade {
 				);
 
 		User user = userService.getByUuid(userUuid);
-		Predicate filter = sampleService.createUserFilter(cb, cq, sample, user);
+		Predicate filter = null;
 
-		if (criteria != null) {
-			Predicate criteriaFilter = sampleService.buildCriteriaFilter(criteria, cb, sample);
+		if (sampleCriteria != null) {
+			filter = sampleService.createUserFilter(cb, cq, sample, user);
+			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, sample);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		} else if (caseCriteria != null) {
+			filter = sampleService.createUserFilter(cb, cq, sample, caseCriteria, user);
 		}
 
 		if (filter != null) {
@@ -444,6 +447,16 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		return resultList;
+	}
+
+	@Override
+	public List<SampleExportDto> getExportList(String userUuid, SampleCriteria criteria, int first, int max) {
+		return getExportList(userUuid, criteria, null, first, max);
+	}
+
+	@Override
+	public List<SampleExportDto> getExportList(String userUuid, CaseCriteria criteria, int first, int max) {
+		return getExportList(userUuid, null, criteria, first, max);
 	}
 
 	@Override

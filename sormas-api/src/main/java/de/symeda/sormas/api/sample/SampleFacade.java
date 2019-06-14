@@ -23,6 +23,7 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -40,6 +41,8 @@ public interface SampleFacade {
 	List<SampleIndexDto> getIndexList(String userUuid, SampleCriteria sampleCriteria, int first, int max, List<SortProperty> sortProperties);
 	
 	List<SampleExportDto> getExportList(String userUuid, SampleCriteria sampleCriteria, int first, int max);
+	
+	List<SampleExportDto> getExportList(String userUuid, CaseCriteria caseCriteria, int first, int max);
 	
 	long count(String userUuid, SampleCriteria sampleCriteria);
 	

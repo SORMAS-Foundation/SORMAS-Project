@@ -558,7 +558,7 @@ public class CaseService extends AbstractAdoService<Case> {
 	/**
 	 * @param toDate will automatically be set to the end of the day
 	 */
-	public Predicate createNewCaseFilter(CriteriaBuilder cb, Root<Case> caze, Date fromDate, Date toDate, NewCaseDateType newCaseDateType) {
+	public Predicate createNewCaseFilter(CriteriaBuilder cb, From<Case, Case> caze, Date fromDate, Date toDate, NewCaseDateType newCaseDateType) {
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 
 		toDate = DateHelper.getEndOfDay(toDate);
@@ -582,8 +582,8 @@ public class CaseService extends AbstractAdoService<Case> {
 
 		return newCaseFilter;
 	}
-
-	public Predicate buildCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, Root<Case> from) {
+	
+	public Predicate buildCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, From<Case, Case> from) {
 		Join<Case, Person> person = from.join(Case.PERSON, JoinType.LEFT);
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
