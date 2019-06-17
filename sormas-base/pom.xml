@@ -103,20 +103,20 @@
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
-				<version>3.0.1</version>
+				<version>4.0.1</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>javax</groupId>
 				<artifactId>javaee-web-api</artifactId>
 				<scope>provided</scope>
-				<version>7.0</version>
+				<version>8.0</version>
 			</dependency>
 			<dependency>
 				<groupId>javax</groupId>
 				<artifactId>javaee-api</artifactId>
 				<scope>provided</scope>
-				<version>7.0</version>
+				<version>8.0</version>
 			</dependency>
 
 			<!-- compile dependencies -->
@@ -335,12 +335,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.0</version>
+				<version>3.8.1</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.6</version>
+				<version>3.1.0</version>
 			</plugin>
 		</plugins>
 		<pluginManagement>
@@ -429,24 +429,24 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-ear-plugin</artifactId>
-					<version>2.10.1</version>
+					<version>3.0.1</version>
 					<configuration>
-						<version>6</version>
+						<version>7</version>
 						<defaultLibBundleDir>lib</defaultLibBundleDir>
 					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-ejb-plugin</artifactId>
-					<version>2.5.1</version>
+					<version>3.0.1</version>
 					<configuration>
-						<ejbVersion>3.1</ejbVersion>
+						<ejbVersion>3.2</ejbVersion>
 					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
-					<version>2.6</version>
+					<version>3.2.3</version>
 					<configuration>
 						<outputFileNameMapping>@{artifactId}@.@{extension}@</outputFileNameMapping>
 						<failOnMissingWebXml>false</failOnMissingWebXml>
@@ -460,7 +460,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>2.6</version>
+					<version>3.1.1</version>
 					<configuration>
 						<archive>
 							<manifest>
@@ -473,7 +473,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
-					<version>2.4</version>
+					<version>3.1.0</version>
 				</plugin>
 
 				<plugin>

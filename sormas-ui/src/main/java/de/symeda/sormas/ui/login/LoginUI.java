@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui;
+package de.symeda.sormas.ui.login;
 
 import javax.servlet.annotation.HttpConstraint;
 import javax.servlet.annotation.ServletSecurity;
@@ -28,12 +28,12 @@ import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.server.VaadinServletService;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.ui.UserProvider.HasUserProvider;
-import de.symeda.sormas.ui.ViewModelProviders.HasViewModelProviders;
+import de.symeda.sormas.ui.SormasErrorHandler;
+import de.symeda.sormas.ui.login.LoginScreen.LoginListener;
 import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
 
 /**
@@ -48,11 +48,7 @@ import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
 @Viewport("user-scalable=no,initial-scale=1.0")
 @Theme("sormas")
 @Widgetset("de.symeda.sormas.SormasWidgetset")
-public class SormasUI extends UI implements HasUserProvider, HasViewModelProviders {
-
-	
-	private final UserProvider userProvider = new UserProvider();
-	private final ViewModelProviders viewModelProviders = new ViewModelProviders();
+public class LoginUI extends UI {
 
 	@Override
 	public void init(VaadinRequest vaadinRequest) {
@@ -66,36 +62,19 @@ public class SormasUI extends UI implements HasUserProvider, HasViewModelProvide
 
 		getPage().setTitle("SORMAS");
 
-		initMainScreen();
-	}
-
-	protected void initMainScreen() {
-		addStyleName(ValoTheme.UI_WITH_MENU);
-		setContent(new MainScreen(SormasUI.this));
-	}
-
-	public static SormasUI get() {
-		return (SormasUI) UI.getCurrent();
-	}
-
-	@Override
-	public UserProvider getUserProvider() {
-		return userProvider;
-	}
-
-	@Override
-	public ViewModelProviders getViewModelProviders() {
-		return viewModelProviders;
-	}
-
-	@WebServlet(urlPatterns = {"/*"}, name = "SormasUIServlet", asyncSupported = true)
-	@VaadinServletConfiguration(ui = SormasUI.class, productionMode = false)
-	@ServletSecurity(@HttpConstraint(rolesAllowed = "USER"))
-	public static class SormasUIServlet extends VaadinServlet {
+		setContent(new LoginScreen(new LoginListener() {
+			@Override
+			public void loginSuccessful() {
+	        	UI.getCurrent().getPage().setLocation(VaadinServletService.getCurrentServletRequest().getContextPath() + "#" + UI.getCurrent().getPage().getUriFragment());
+			}
+		}));
 
 	}
-	
-	public static void refreshView() {
-		get().getNavigator().navigateTo(get().getNavigator().getState());
+
+	@WebServlet(urlPatterns = { "/login/*", "/VAADIN/*"}, name = "SormasLoginServlet", asyncSupported = true)
+	@VaadinServletConfiguration(ui = LoginUI.class, productionMode = true)
+	@ServletSecurity(@HttpConstraint)
+	public static class SormasLoginServlet extends VaadinServlet {
+
 	}
 }

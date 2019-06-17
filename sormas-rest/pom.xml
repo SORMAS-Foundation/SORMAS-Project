@@ -33,6 +33,13 @@
 		    <artifactId>jersey-media-json-jackson</artifactId>
 		</dependency>
 
+      <dependency>
+        <groupId>javax.security.enterprise</groupId>
+        <artifactId>javax.security.enterprise-api</artifactId>
+        <version>1.0</version>
+        <scope>provided</scope>
+</dependency>
+
 	</dependencies>
 
 	<build>
