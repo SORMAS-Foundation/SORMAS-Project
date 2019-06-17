@@ -199,7 +199,7 @@ public class StartupShutdownService {
 	private void updateDatabase(EntityManager entityManager, String schemaFileName) {
 		logger.info("Starting automatic database update...");
 		
-		Integer currentVersion = (Integer) entityManager.createNativeQuery("SELECT version_number FROM schema_version ORDER BY changedate DESC LIMIT 1").getSingleResult();		
+		Integer currentVersion = (Integer) entityManager.createNativeQuery("SELECT MAX(version_number) FROM schema_version").getSingleResult();		
 		File schemaFile = new File(getClass().getClassLoader().getResource(schemaFileName).getFile());
 		Scanner scanner = null;
 		
