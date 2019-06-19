@@ -15,40 +15,51 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #*******************************************************************************
-#  Requirements:
-#  * Payara 4.1.2.172 installed and proper Java-Version configured in asenv.conf 
-#  * Database created
-#  * setup directory prepared
 
+#!/bin/sh
 
-# ------ Config BEGIN ------
+# DEVELOPMENT ENVIRONMENT OR PRODUCTION/TEST SERVER?
+echo "Are you setting up a local system or a server?"
+select LS in "Local" "Server"; do
+    case $LS in
+        Local ) DEV_SYSTEM=true; break;;
+        Server ) DEV_SYSTEM=false; break;;
+    esac
+done
 
-# DEVELOPMENT ENVIRONMENT OR PRODUCTIVE SERVER?
-#DEV_SYSTEM=true
-DEV_SYSTEM=false
+if [ -d "/c/Windows" ]; then
+	WINDOWS=true
+else
+	WINDOWS=false
+fi
 
-# WINDOWS: You may need to prefix the directories with /c
-TEMP_DIR=/opt/sormas-temp
-GENERATED_DIR=/opt/sormas-generated
-PAYARA_HOME=/opt/payara-172/glassfish
+# DIRECTORIES
+if [ ${WINDOWS} = true ]; then
+	ROOT_PREFIX=/c
+	TEMP_DIR=${ROOT_PREFIX}/opt/sormas-temp
+	GENERATED_DIR=${ROOT_PREFIX}/opt/sormas-generated
+else 
+	ROOT_PREFIX=
+	USER_NAME=payara
+	TEMP_DIR=${ROOT_PREFIX}/home/${USER_NAME}/sormas-temp
+	GENERATED_DIR=${ROOT_PREFIX}/home/${USER_NAME}/sormas-generated
+	DOWNLOAD_DIR=${ROOT_PREFIX}/var/www/sormas/downloads
+fi
+
+PAYARA_HOME=${ROOT_PREFIX}/opt/payara5
+DOMAINS_HOME=${ROOT_PREFIX}/opt/domains
+
 DOMAIN_NAME=sormas
-DOMAINS_HOME=/opt/domains
-DOMAIN_DIR=${DOMAINS_HOME}/${DOMAIN_NAME}
-# keep this directory if possible - otherwise also adjust directory in logback.xml
-LOG_HOME=/var/log/glassfish/sormas
-DOWNLOAD_DIR=/var/www/sormas/downloads
 PORT_BASE=6000
 PORT_ADMIN=6048
+DOMAIN_DIR=${DOMAINS_HOME}/${DOMAIN_NAME}
 
 # DB
-DB_USER=sormas_user
-DB_USER_AUDIT=sormas_user
-DB_PW=sormas_db
-DB_PW_AUDIT=sormas_db
-DB_NAME=sormas_db
-DB_NAME_AUDIT=sormas_audit_db
 DB_SERVER=localhost
 DB_PORT=5432
+DB_NAME=sormas_db
+DB_NAME_AUDIT=sormas_audit_db
+DB_USER=sormas_user
 
 # MAIL
 MAIL_FROM=dummy@sormas.org
@@ -56,77 +67,107 @@ MAIL_FROM=dummy@sormas.org
 # ------ Config END ------
 
 echo "--- all values set properly?"
-echo "WINDOWS: You may need to prefix the directories with /c"
-echo "WINDOWS: setfacl and chown messages can be ignored"
-echo "------"
+if [ ${DEV_SYSTEM} = true ]; then
+	echo "System type: Local"
+else
+	echo "System type: Server"
+fi
+if [ ${WINDOWS} = true ]; then
+	echo "OS: Windows"
+else
+	echo "OS: Linux"
+fi
 echo "Temp Directory: ${TEMP_DIR}"
 echo "Generated Directory: ${GENERATED_DIR}"
 echo "Payara Home: ${PAYARA_HOME}"
-echo "Domain Name: ${DOMAIN_NAME}"
-echo "Domain Home: ${DOMAIN_DIR}"
-echo "Log Home: ${LOG_HOME}"
+echo "Domain Directory: ${DOMAIN_DIR}"
 echo "Port Base: ${PORT_BASE}"
 echo "Admin Port: ${PORT_ADMIN}"
 
 read -p "Press [Enter] to continue..."
 
+if [ -d "$DOMAIN_DIR" ]; then
+	echo "The directory/domain $DOMAIN_DIR already exists. Please remove it and restart the script."
+	exit 1
+fi
+
 # create needed directories and set user rights
+mkdir -p ${PAYARA_HOME}
 mkdir -p ${DOMAINS_HOME}
 mkdir -p ${TEMP_DIR}
 mkdir -p ${GENERATED_DIR}
-mkdir -p ${LOG_HOME}
-mkdir -p ${DOWNLOAD_DIR}
-chown -R payara:payara ${LOG_HOME}
-setfacl -m u:postgres:rwx ${TEMP_DIR} 
-setfacl -m u:payara:rwx ${TEMP_DIR}
-setfacl -m u:postgres:rwx ${GENERATED_DIR}
-setfacl -m u:payara:rwx ${GENERATED_DIR}
+
+if [ ${WINDOWS} != true ]; then
+	mkdir -p ${DOWNLOAD_DIR}
+
+	adduser ${USER_NAME}
+	setfacl -m u:${USER_NAME}:rwx ${DOMAINS_HOME}
+	setfacl -m u:${USER_NAME}:rwx ${TEMP_DIR}
+	setfacl -m u:${USER_NAME}:rwx ${GENERATED_DIR}
+
+	setfacl -m u:postgres:rwx ${TEMP_DIR} 
+	setfacl -m u:postgres:rwx ${GENERATED_DIR}
+fi
+
+# check Java version
+JAVA_VERSION=$(javac -version 2>&1 | sed -n 's/.*\.\(.*\)\..*/\1/p;')
+if [ "${JAVA_VERSION}" -eq 8 ]; then
+    echo "Found Java ${JAVA_VERSION}."
+elif [ "${JAVA_VERSION}" -gt 8 ]; then
+    echo "Found Java ${JAVA_VERSION} - this version may be too new - we can't guarantee that everything is working as expected."
+elif [ -z "${JAVA_VERSION}" ]; then
+	echo "ERROR: No Java Development Kit found on your system."
+	exit 1
+else
+    echo "ERROR: Found Java $VER - this version is too old."
+	exit 1
+fi 
+
+# download and unzip payara
+if [ -d ${PAYARA_HOME}/glassfish ]; then
+	echo "Found Payara (${PAYARA_HOME})"
+else
+	PAYARA_ZIP_FILE="${PAYARA_HOME}/payara-5.192.zip"
+	if [ -f ${PAYARA_ZIP_FILE} ]; then
+		echo "Payara already downloaded: ${PAYARA_ZIP_FILE}"
+	else
+		curl -o ${PAYARA_ZIP_FILE} "https://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/5.192/payara-5.192.zip"
+	fi
+
+	unzip -o ${PAYARA_ZIP_FILE} -d ${PAYARA_HOME}
+	mv "${PAYARA_HOME}/payara5"/* "${PAYARA_HOME}"
+	rm -R "${PAYARA_HOME}/payara5"
+	rm -R "${PAYARA_HOME}/glassfish/domains"
+fi
 
 # setting ASADMIN_CALL and creating domain
 ${PAYARA_HOME}/bin/asadmin create-domain --domaindir ${DOMAINS_HOME} --portbase ${PORT_BASE} --nopassword ${DOMAIN_NAME}
 ASADMIN="${PAYARA_HOME}/bin/asadmin --port ${PORT_ADMIN}"
 
-read -p "Press [Enter] to continue..."
-
-# copying server-libs
-cp serverlibs/*.jar ${DOMAIN_DIR}/lib/
-
-echo "copying libs completed"
-read -p "Press [Enter] to continue..."
-
-cat << END > ${DOMAIN_DIR}/config/login.conf
-${DOMAIN_NAME}Realm { org.wamblee.glassfish.auth.FlexibleJdbcLoginModule required; };
-END
-
-chown -R payara:payara ${PAYARA_HOME}
+if [ ${WINDOWS} != true ]; then
+	chown -R ${USER_NAME}:${USER_NAME} ${PAYARA_HOME}
+fi
 read -p "Press [Enter] to continue..."
 
 ${PAYARA_HOME}/bin/asadmin start-domain --domaindir ${DOMAINS_HOME} ${DOMAIN_NAME}
 read -p "Press [Enter] to continue..."
 
+if [ -z "${DB_PW}" ]; then
+	echo "Enter the password for the database user '${DB_USER}'"
+	read DB_PW
+fi
+
 # General domain settings
 ${ASADMIN} delete-jvm-options -Xmx512m
-${ASADMIN} create-jvm-options -Xmx1024m
+${ASADMIN} create-jvm-options -Xmx2048m
 
 # JDBC pool
 ${ASADMIN} create-jdbc-connection-pool --restype javax.sql.ConnectionPoolDataSource --datasourceclassname org.postgresql.ds.PGConnectionPoolDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME}:serverName=${DB_SERVER}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}DataPool
 ${ASADMIN} create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}DataPool jdbc/${DOMAIN_NAME}DataPool
 
 # Pool for audit log
-${ASADMIN} create-jdbc-connection-pool --restype javax.sql.XADataSource --datasourceclassname org.postgresql.xa.PGXADataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME_AUDIT}:serverName=${DB_SERVER}:user=${DB_USER_AUDIT}:password=${DB_PW_AUDIT}" ${DOMAIN_NAME}AuditlogPool
+${ASADMIN} create-jdbc-connection-pool --restype javax.sql.XADataSource --datasourceclassname org.postgresql.xa.PGXADataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME_AUDIT}:serverName=${DB_SERVER}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}AuditlogPool
 ${ASADMIN} create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}AuditlogPool jdbc/AuditlogPool
-
-# User datasource without pool (flexible jdbc realm seems to keep connections in cache)
-${ASADMIN} create-jdbc-connection-pool --restype javax.sql.DataSource --datasourceclassname org.postgresql.ds.PGSimpleDataSource --isconnectvalidatereq true --nontransactionalconnections true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME}:serverName=${DB_SERVER}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}UsersDataPool
-${ASADMIN} create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}UsersDataPool jdbc/${DOMAIN_NAME}UsersDataPool
-
-read -p "Press [Enter] to continue..."
-
-${ASADMIN} set server-config.security-service.activate-default-principal-to-role-mapping=true
-${ASADMIN} create-auth-realm --classname org.wamblee.glassfish.auth.FlexibleJdbcRealm --property "jaas.context=${DOMAIN_NAME}Realm:sql.password=SELECT password FROM users WHERE username\=? AND active\=true:sql.groups=SELECT userrole FROM users_userroles INNER JOIN users ON users_userroles.user_id\=users.id WHERE users.username\=?:sql.seed=SELECT seed FROM users WHERE username\=?:datasource.jndi=jdbc/${DOMAIN_NAME}UsersDataPool:assign-groups=AUTHED_USER:password.digest=SHA-256:charset=UTF-8" ${DOMAIN_NAME}-realm
-${ASADMIN} set server-config.security-service.default-realm=${DOMAIN_NAME}-realm
-
-read -p "Press [Enter] to continue..."
 
 ${ASADMIN} create-javamail-resource --mailhost localhost --mailuser user --fromaddress ${MAIL_FROM} mail/MailSession
 
@@ -136,22 +177,28 @@ cp sormas.properties ${DOMAIN_DIR}
 cp logback.xml ${DOMAIN_DIR}/config/
 # fixes outdated certificate
 cp cacerts.jks ${DOMAIN_DIR}/config/
-chown -R payara:payara ${DOMAIN_DIR}
+
+
+if [ ${WINDOWS} != true ]; then
+	cp payara-sormas /etc/init.d``
+	update-rc.d payara-sormas defaults
+	
+	chown -R ${USER_NAME}:${USER_NAME} ${DOMAIN_DIR}
+fi
 
 read -p "Press [Enter] to continue..."
 
 # Logging
 ${ASADMIN} create-jvm-options -Dlogback.configurationFile=\${com.sun.aas.instanceRoot}/config/logback.xml
-${ASADMIN} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.file=${LOG_HOME}/server.log
 ${ASADMIN} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.maxHistoryFiles=14
 ${ASADMIN} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.rotationLimitInBytes=0
 ${ASADMIN} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.rotationOnDateChange=true
-${ASADMIN} set-log-levels org.wamblee.glassfish.auth.HexEncoder=SEVERE
-${ASADMIN} set-log-levels javax.enterprise.system.util=SEVERE
+#${ASADMIN} set-log-levels org.wamblee.glassfish.auth.HexEncoder=SEVERE
+#${ASADMIN} set-log-levels javax.enterprise.system.util=SEVERE
 
 read -p "Press [Enter] to continue..."
 
-if [ $DEV_SYSTEM != true ]; then
+if [ ${DEV_SYSTEM} != true ]; then
   #make the payara listen to localhost only
   ${ASADMIN} set configs.config.server-config.http-service.virtual-server.server.network-listeners=http-listener-1
   ${ASADMIN} delete-network-listener --target=server-config http-listener-2
@@ -169,17 +216,8 @@ fi
 
 ${PAYARA_HOME}/bin/asadmin stop-domain --domaindir ${DOMAINS_HOME} ${DOMAIN_NAME}
 
-read -p "Press [Enter] to continue..."
+echo "setup completed. Please run the server using the init.d script for the proper permissions"
 
-chown -R payara:payara ${PAYARA_HOME}
-
-echo 'setup completed. Please run the server using the init.d script for the proper permissions' 
-
-echo 'Checklist'
-echo '  - update-rc.d payara-* defaults already executed?'
-echo '  - sormas.properties adjusted to this system?'
-echo '  - verify logback.xml'
-echo '  - JVM parameters fit?'
-echo '  - payara-default-domains deleted?'
-echo '  - Java-Version in asenv.conf?'
-echo '  - Apache properly configured?'
+echo "Checklist"
+echo "  - sormas.properties adjusted to this system?"
+echo "  - Apache properly configured?"

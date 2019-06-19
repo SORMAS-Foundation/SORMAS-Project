@@ -32,6 +32,7 @@ import com.vaadin.server.VaadinServletService;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasErrorHandler;
 import de.symeda.sormas.ui.login.LoginScreen.LoginListener;
 import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
@@ -65,7 +66,7 @@ public class LoginUI extends UI {
 		setContent(new LoginScreen(new LoginListener() {
 			@Override
 			public void loginSuccessful() {
-	        	UI.getCurrent().getPage().setLocation(VaadinServletService.getCurrentServletRequest().getContextPath() + "#" + UI.getCurrent().getPage().getUriFragment());
+	        	UI.getCurrent().getPage().setLocation(VaadinServletService.getCurrentServletRequest().getContextPath() + "#" + DataHelper.toStringNullable(UI.getCurrent().getPage().getUriFragment()));
 			}
 		}));
 

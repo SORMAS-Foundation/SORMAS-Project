@@ -20,14 +20,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.wamblee.glassfish</groupId>
-			<artifactId>flexiblejdbcrealm-deploy</artifactId>
-			<version>1.2</version>
-			<scope>compile</scope>
-			<classifier>all</classifier>
-		</dependency>
-		
-		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 		</dependency>

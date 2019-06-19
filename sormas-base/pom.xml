@@ -176,14 +176,6 @@
 				</exclusions>
 			</dependency>
 
-			<dependency>
-				<groupId>org.wamblee.glassfish</groupId>
-				<artifactId>flexiblejdbcrealm-deploy</artifactId>
-				<version>1.2</version>
-				<classifier>all</classifier>
-				<scope>provided</scope>
-			</dependency>
-
 			<!-- bundles -->
 
 			<dependency>

@@ -1,96 +1,85 @@
 
 
 # Installing a SORMAS Server
-**Note: All commands below are Linux commands. On windows systems use the corresponding commands or the windows explorer.**
-**To execute the shell script on Windows systems you can use git bash (MinGW64).**
+**Note: This guide is explains how to setup a SORMAS server on Linux systems and also on Windows systems. The later one is intended for use on development systems.**
 
 ## Content
-* [Postgres Database](#postgres-database)
-* [Payara Application Server](#payara-application-server)
-* [SORMAS Domain](#sormas-domain)
-* [Apache Web Server](#apache-web-server)
-* [Postfix Mail Server](#postfix-mail-server)
+* [Prerequisites](#prerequisites)
+  * [Java 8](#java-8)
+  * [Postgres Database](#postgres-database)
+* [SORMAS Server](#sormas-server)
+  * [Payara Server](#payara-server)
+  * [SORMAS Domain](#sormas-domain)
+* [Web Server Setup](#web-server-setup)
+  * [Apache Web Server](#apache-web-server)
+  * [Postfix Mail Server](#postfix-mail-server)
 * [Troubleshooting](#troubleshooting)
 
 ## Related
 * [Creating an App for a Demo Server](DEMO_APP.md)
 
-## Postgres Database
+## Prerequisites
 
-* Install PostgreSQL (currently 9.5, 9.6 or 10) on your system (manuals for all OS can be found here: https://www.postgresql.org/download)
-* **set max_prepared_transactions = 64 (at least) in postgresql.conf** in postgresql.conf (e.g. ``/etc/postgresql/9.5/main/postgresql.conf``; ``C:/Program Files/PostgreSQL/9.5/data``)
-* Install the "temporal tables" addon for Postgres (https://github.com/arkhipov/temporal_tables)
-    * **Windows**: Download latest version for your postgres version: https://github.com/arkhipov/temporal_tables/releases/latest 
-	Then you have to copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.	
-    * **Linux** (see https://github.com/arkhipov/temporal_tables#installation):
-        * ``sudo apt-get install libpq-dev``
-        * ``sudo apt-get install postgresql-server-dev-all``
-        * ``sudo apt install pgxnclient``
-	* Check for GCC: ``gcc --version`` - install if missing
-        * ``pgxn install temporal_tables``
-* Create a PostgreSQL database named "sormas_db" and "sormas_audit_db" with user "sormas_user" (make sure to generate a secure password) as its owner. You can use for this the query-tool of pgAdmin.
-    * ``sudo -u postgres psql``
-    * ``CREATE USER sormas_user WITH PASSWORD '***' CREATEDB;``
-    * ``CREATE DATABASE sormas_db WITH OWNER = sormas_user ENCODING = 'UTF8';``
-    * ``CREATE DATABASE sormas_audit_db WITH OWNER = sormas_user ENCODING = 'UTF8';``
-    * ``\q``
-* Setup database schemata
-	* Get the latest SORMAS build from github: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest (deploy.zip).
-	* Unzip and get the schemata from deploy\sql
-	* Setup the audit log database schema using the sormas_audit_schema.sql from the latest release:
-		* **Linux**
-			* ``sudo -u postgres psql sormas_audit_db < sql/sormas_audit_schema.sql``
-		* **Windows**
-			* Open sormas_audit_schema.sql with a texteditor and copy the content to the query-tool of sormas_audit_db (And execute the query).
-	* Setup the sormas database schema using the sormas_schema.sql from the latest release: 
-		* **Linux**
-			* ``sudo -u postgres psql sormas_db < sql/sormas_schema.sql``
-		* **Windows**
-			* Open sormas_schema.sql with a texteditor and copy the content to the query-tool of sormas_db (And execute the query).
-	
-## Payara Application Server
-* Download and install the latest Java 8 JDK for your operating system. We suggest to use the Zulu OpenJDK: https://www.azul.com/downloads/zulu/
+### Java 8
+
+* Download and install the latest Java 8 **JDK** (not JRE) for your operating system. We suggest to use the Zulu OpenJDK: https://www.azul.com/downloads/zulu/
   * **Linux**: https://docs.azul.com/zulu/zuludocs/#ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm
         
 		sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
 		sudo apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main'
 		sudo apt-get update
 		sudo apt-get install zulu-8
-* Make sure the JAVA_HOME environment variable is set to the correct directory
-  ``export JAVA_HOME=/usr/lib/jvm/<zulu_jdk>``
-* Download payara 4.1.2.172 [downloadlink](http://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/4.1.2.172/payara-4.1.2.172.zip) and extract it to the directory where your servers should be located (e.g. /opt/payara-172).  
-The `/opt/payara-172/` as payara-directory can, in some linux distros, only be modified by root. For a local development environment, it may be easier to use another directory owned by logged-in user. Same for `/opt/domains/` as domain directory and `/root/deploy/sormas/$(date +%F)` as directory for the sormas deploy (both used later in this document).
-* Check that the AS_JAVA entry in `/opt/payara-172/glassfish/config/asenv.conf` points to the correct JDK (should be Zulu OpenJDK).
-* **Linux** Create a payara group and user:
-	* ``addgroup --system payara``
-	* ``adduser --system --shell /bin/bash --ingroup payara payara``
-* Remove the default domains from the server:
-	* **Linux**
-		* ``rm -R /opt/payara-172/glassfish/domains/domain1``
-		* ``rm -R /opt/payara-172/glassfish/domains/payaradomain``
-	* **Windows**
-		* Remove folder ``payara-172/glassfish/domains``
-* Create a directory for your domains. Put it next to the payara server or somewhere else: 
-	* **Linux:** ``mkdir /opt/domains``
+  * **Windows**: For testing and development environments we suggest to download and run the installer of the Java 8 **JDK** for 32 or 64 bit client systems (depending on your system).
+* You can check your Java version from the shell/command line using: ``java -version``
 
-## SORMAS Domain
+### Postgres Database
+
+* Install PostgreSQL (currently 9.5, 9.6 or 10) on your system (manuals for all OS can be found here: https://www.postgresql.org/download)
+* **set max_prepared_transactions = 64 (at least)** in postgresql.conf (e.g. ``/etc/postgresql/10.0/main/postgresql.conf``; ``C:/Program Files/PostgreSQL/10.0/data``)
+* Install the "temporal tables" extension for Postgres (https://github.com/arkhipov/temporal_tables)
+    * **Windows**: Download latest version for your postgres version: https://github.com/arkhipov/temporal_tables/releases/latest 
+	Then you have to copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.	
+    * **Linux** (see https://github.com/arkhipov/temporal_tables#installation):
+        * ``sudo apt-get install libpq-dev``
+        * ``sudo apt-get install postgresql-server-dev-all``
+        * ``sudo apt install pgxnclient``
+		* Check for GCC: ``gcc --version`` - install if missing
+        * ``pgxn install temporal_tables``
+	
+## SORMAS Server	
+
+### SORMAS Database
+
+* Create a PostgreSQL database named "sormas_db" and "sormas_audit_db" with user "sormas_user" (make sure to generate a secure password) as its owner. 
+    * **Windows:** You can use the query-tool of pgAdmin to execute the SQL below
+	* **Linux:** ``sudo -u postgres psql`` (use ``\q`` to exit psql)
+	* SQL
+
+		CREATE USER sormas_user WITH PASSWORD '***' CREATEDB;
+		CREATE DATABASE sormas_db WITH OWNER = sormas_user ENCODING = 'UTF8';
+		CREATE DATABASE sormas_audit_db WITH OWNER = sormas_user ENCODING = 'UTF8';
+
+### SORMAS Domain Setup
+
 * Get the latest SORMAS build from github: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest (deploy.zip). 
-* Upload to /root/deploy/sormas/$(date +%F)
-* ``cd /root/deploy/sormas/$(date +%F)``
-* Open ``setup/server-setup.sh`` in a text editor and change DEV_SYSTEM, GLASSFISH_HOME, DOMAINS_HOME, PORT_BASE, PORT_ADMIN, DB_PW, DB_PW_AUDIT, MAIL_FROM to appropriate values for your server or development environment.
-* Make the file executable: ``chmod +x server-setup.sh``
-* Set up a payara domain called "sormas" by executing it: ``./server-setup.sh`` Press enter whenever asked for it.
+* **Linux**:
+  * Unzip the archive and copy/upload its contents to **/root/deploy/sormas/$(date +%F)**
+  * ``cd /root/deploy/sormas/$(date +%F)/setup``
+  * `chmod +x server-setup.sh`` to make the setup script executable
+* **Windows**:
+  * Download & install git for windows. This will provide a bash emulation that you can use to run the setup script: https://gitforwindows.org/
+  * Unzip the SORMAS deploy.zip (e.g. into you download directory)
+  * Open git bash and navigate to the setup sub-directory
+* Optional: Open ``server-setup.sh`` in a text editor to customize the install paths, database access and ports for the server. The default ports are 6080 (HTTP), 6081 (HTTPS) and 6048 (admin)
+* Set up a payara domain for SORMAS by executing the setup scrupt: ``./server-setup.sh`` Press enter whenever asked for it.
 * **IMPORTANT**: Make sure the script executed successfully. If anything goes you need to fix the problem (or ask for help), then delete the created domain directory and re-execute the script.
-* Adjust the logging configuration in opt/domains/sormas/config/logback.xml based on your needs (e.g. configure and activate email appender)
-* Make sure the domain folder is owned by the payara user: ``chown -R payara:payara opt/domains/sormas/``  
-This is not necessary when you setup a development environment and use another folder as domain directory. 
-* **Only** necessary if you are setting up a **productive environment**
-	* Copy the startup script to init.d: ``cp payara-sormas /etc/init.d``
-	* Add the server startup sequence: ``update-rc.d payara-sormas defaults``
-	* Start the server: ``service payara-sormas start``
-	* [Update the SORMAS domain](SERVER_UPDATE.md)
+* **IMPORTANT**: Adjust the SORMAS configuration for your country in /opt/domains/sormas/sormas.properties
+* Adjust the logging configuration in /opt/domains/sormas/config/logback.xml based on your needs (e.g. configure and activate email appender)
+* [Update the SORMAS domain](SERVER_UPDATE.md)
 
-## Apache Web Server
+## Web Server Setup
+
+### Apache Web Server
 **Note: This is not necessary for development systems.**
 When you are using SORMAS in a production environment you should use a http server like Apache 2 instead of putting the payara server in the first line.
 Here are some things that you should do to configure the apache server as proxy:
@@ -188,7 +177,7 @@ Here are some things that you should do to configure the apache server as proxy:
 
         apache2ctl graceful
 
-## Postfix Mail Server
+### Postfix Mail Server
 
 * Install postfix and mailutils
 
@@ -208,12 +197,11 @@ Here are some things that you should do to configure the apache server as proxy:
 
 ### Problem: Login fails
 
-1. Check that the users table does have a corresponding entry. If not, the database initialization that is done when deploying sormas-ear.ear probably had an error.
-2. Have a look into the server log. If you find `Web Login Failed: com.sun.enterprise.security.auth.login.common.LoginException: Login failed: No LoginModules configured for fileRealm` the domain was probably not correctly set up (see [SORMAS Domain](#sormas-domain)). Likely the flexiblejdbcrealm-deploy-1.2-all.jar was not copied to the domains /lib directory.
+Check that the users table does have a corresponding entry. If not, the database initialization that is done when deploying sormas-ear.ear probably had an error.
 
 ### Problem: Server is out of memory
 
-By default the server will be setup with a memory size of 1024MB. You can change this using the following command:
+Old server were setup with a memory size of less than 2048MB. You can change this using the following command:
 
 	/opt/payara-172/glassfish/bin/asadmin --port 6048 delete-jvm-options -Xmx512m
 	/opt/payara-172/glassfish/bin/asadmin --port 6048 delete-jvm-options -Xmx1024m
