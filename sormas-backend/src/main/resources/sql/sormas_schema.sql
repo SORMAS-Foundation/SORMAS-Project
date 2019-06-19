@@ -13,6 +13,7 @@ WITH (
   OIDS=FALSE
 );
 
+ALTER TABLE schema_version OWNER TO sormas_user;
 
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
@@ -24,11 +25,6 @@ SET client_min_messages = warning;
 -- TOC entry 483 (class 2612 OID 11574)
 -- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
 --
-
-CREATE OR REPLACE PROCEDURAL LANGUAGE plpgsql;
-
-
-ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO postgres;
 
 SET search_path = public, pg_catalog;
 
@@ -625,11 +621,6 @@ ALTER TABLE ONLY users
 -- Dependencies: 5
 -- Name: public; Type: ACL; Schema: -; Owner: postgres
 --
-
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM postgres;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT ALL ON SCHEMA public TO PUBLIC;
 
 ALTER TABLE person ADD COLUMN phoneowner character varying(255);
   
@@ -1378,8 +1369,6 @@ ALTER TABLE hospitalization ADD COLUMN changedateofembeddedlists timestamp witho
 INSERT INTO schema_version (version_number, comment) VALUES (48, 'Change data for embedded lists (epidata and hospitalization');
 
 -- 2017-06-20 data history for future reporting (postgres temporal tables) #170
-
-CREATE EXTENSION temporal_tables;
 
 ALTER TABLE cases ADD COLUMN sys_period tstzrange;
 UPDATE cases SET sys_period=tstzrange(creationdate, null);
