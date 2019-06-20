@@ -128,6 +128,8 @@ public class TestDataCreator {
 		caze.setDistrict(beanTest.getDistrictFacade().getDistrictReferenceByUuid(rdcf.district.getUuid()));
 		caze.setCommunity(beanTest.getCommunityFacade().getCommunityReferenceByUuid(rdcf.community.getUuid()));
 		caze.setHealthFacility(beanTest.getFacilityFacade().getFacilityReferenceByUuid(rdcf.facility.getUuid()));
+		// TODO: Remove when issue with H2 has been resolved
+		caze.setEpidNumber("ABC-DEF-GHI-19-1");
 
 		caze = beanTest.getCaseFacade().saveCase(caze);
 
