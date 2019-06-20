@@ -1,5 +1,5 @@
 # Updating a SORMAS Server
-SORMAS releases starting from 1.21.0 contain a script that automatically updates and deploys the server. If you use 1.21.0 or a later version, it's recommended to use this script instead of doing a manual update.
+SORMAS releases starting from 1.21.0 contain a script that automatically updates and deploys the server. If you use 1.21.0 or a later version, it's recommended to use this script and follow the instructions under "Automatic Server Update" instead of doing a manual update.
 
 ## Content
 * [Automatic Server Update](#automatic-server-update)
