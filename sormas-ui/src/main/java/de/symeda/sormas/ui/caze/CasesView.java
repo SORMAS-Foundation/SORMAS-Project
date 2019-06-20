@@ -221,6 +221,7 @@ public class CasesView extends AbstractView {
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
 
 			Button sampleExportButton = new Button(I18nProperties.getCaption(Captions.exportSamples));
+			sampleExportButton.setDescription(I18nProperties.getString(Strings.infoSampleExport));
 			sampleExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			sampleExportButton.setIcon(VaadinIcons.FILE_TEXT);
 			sampleExportButton.setWidth(100, Unit.PERCENTAGE);

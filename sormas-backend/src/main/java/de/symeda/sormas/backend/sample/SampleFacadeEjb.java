@@ -32,9 +32,11 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
@@ -309,6 +311,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		return resultList;	
 	}
 	
+	@SuppressWarnings("unchecked")
 	private List<SampleExportDto> getExportList(String userUuid, SampleCriteria sampleCriteria, CaseCriteria caseCriteria, int first, int max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SampleExportDto> cq = cb.createQuery(SampleExportDto.class);
@@ -372,14 +375,15 @@ public class SampleFacadeEjb implements SampleFacade {
 				);
 
 		User user = userService.getByUuid(userUuid);
-		Predicate filter = null;
+		Predicate filter = sampleService.createUserFilter(cb, cq, sample, user);
 
 		if (sampleCriteria != null) {
-			filter = sampleService.createUserFilter(cb, cq, sample, user);
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, sample);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		} else if (caseCriteria != null) {
-			filter = sampleService.createUserFilter(cb, cq, sample, caseCriteria, user);
+			Path<Case> casePath = sample.get(Sample.ASSOCIATED_CASE);
+			Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, (From<Case, Case>) casePath);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {
