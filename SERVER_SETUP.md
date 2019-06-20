@@ -1,7 +1,7 @@
 
 
 # Installing a SORMAS Server
-**Note: This guide is explains how to setup a SORMAS server on Linux systems and also on Windows systems. The later one is intended for use on development systems.**
+**Note: This guide explains how to set up a SORMAS server on Linux and Windows systems, the latter only being intended for usage on development systems. Please also note that certain parts of the setup script will not be executed on Windows. **
 
 ## Content
 * [Prerequisites](#prerequisites)
@@ -22,7 +22,7 @@
 
 ### Java 8
 
-* Download and install the latest Java 8 **JDK** (not JRE) for your operating system. We suggest to use the Zulu OpenJDK: https://www.azul.com/downloads/zulu/
+* Download and install the latest Java 8 **JDK** (not JRE) for your operating system. We suggest to use Zulu OpenJDK: https://www.azul.com/downloads/zulu/
   * **Linux**: https://docs.azul.com/zulu/zuludocs/#ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm
         
 		sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
@@ -35,44 +35,32 @@
 ### Postgres Database
 
 * Install PostgreSQL (currently 9.5, 9.6 or 10) on your system (manuals for all OS can be found here: https://www.postgresql.org/download)
-* **set max_prepared_transactions = 64 (at least)** in postgresql.conf (e.g. ``/etc/postgresql/10.0/main/postgresql.conf``; ``C:/Program Files/PostgreSQL/10.0/data``)
+* set **max_prepared_transactions = 64** (at least) in postgresql.conf (e.g. ``/etc/postgresql/10.0/main/postgresql.conf``; ``C:/Program Files/PostgreSQL/10.0/data``)
 * Install the "temporal tables" extension for Postgres (https://github.com/arkhipov/temporal_tables)
-    * **Windows**: Download latest version for your postgres version: https://github.com/arkhipov/temporal_tables/releases/latest 
-	Then you have to copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.	
+    * **Windows**: Download the latest version for your Postgres version: https://github.com/arkhipov/temporal_tables/releases/latest, then copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.	
     * **Linux** (see https://github.com/arkhipov/temporal_tables#installation):
         * ``sudo apt-get install libpq-dev``
         * ``sudo apt-get install postgresql-server-dev-all``
         * ``sudo apt install pgxnclient``
-		* Check for GCC: ``gcc --version`` - install if missing
+		* Check for GCC: ``gcc --version`` and install if missing
         * ``pgxn install temporal_tables``
 	
 ## SORMAS Server	
 
-### SORMAS Database
-
-* Create a PostgreSQL database named "sormas_db" and "sormas_audit_db" with user "sormas_user" (make sure to generate a secure password) as its owner. 
-    * **Windows:** You can use the query-tool of pgAdmin to execute the SQL below
-	* **Linux:** ``sudo -u postgres psql`` (use ``\q`` to exit psql)
-	* SQL
-
-		CREATE USER sormas_user WITH PASSWORD '***' CREATEDB;
-		CREATE DATABASE sormas_db WITH OWNER = sormas_user ENCODING = 'UTF8';
-		CREATE DATABASE sormas_audit_db WITH OWNER = sormas_user ENCODING = 'UTF8';
-
 ### SORMAS Domain Setup
 
-* Get the latest SORMAS build from github: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest (deploy.zip). 
+* Get the latest SORMAS build by downloading the deploy.zip file from GitHub: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest 
 * **Linux**:
   * Unzip the archive and copy/upload its contents to **/root/deploy/sormas/$(date +%F)**
   * ``cd /root/deploy/sormas/$(date +%F)/setup``
-  * `chmod +x server-setup.sh`` to make the setup script executable
+  * Make the setup script executable with ``chmod +x server-setup.sh``
 * **Windows**:
-  * Download & install git for windows. This will provide a bash emulation that you can use to run the setup script: https://gitforwindows.org/
-  * Unzip the SORMAS deploy.zip (e.g. into you download directory)
-  * Open git bash and navigate to the setup sub-directory
+  * Download & install Git for Windows. This will provide a bash emulation that you can use to run the setup script: https://gitforwindows.org/
+  * Unzip the deploy.zip archive (e.g. into you download directory)
+  * Open Git Bash and navigate to the setup sub-directory
 * Optional: Open ``server-setup.sh`` in a text editor to customize the install paths, database access and ports for the server. The default ports are 6080 (HTTP), 6081 (HTTPS) and 6048 (admin)
-* Set up a payara domain for SORMAS by executing the setup scrupt: ``./server-setup.sh`` Press enter whenever asked for it.
-* **IMPORTANT**: Make sure the script executed successfully. If anything goes you need to fix the problem (or ask for help), then delete the created domain directory and re-execute the script.
+* Set up the database and a Payara domain for SORMAS by executing the setup script: ``./server-setup.sh`` Press enter whenever asked for it
+* **IMPORTANT**: Make sure the script executed successfully. If anything goes wrong you need to fix the problem (or ask for help), then delete the created domain directory and re-execute the script.
 * **IMPORTANT**: Adjust the SORMAS configuration for your country in /opt/domains/sormas/sormas.properties
 * Adjust the logging configuration in /opt/domains/sormas/config/logback.xml based on your needs (e.g. configure and activate email appender)
 * [Update the SORMAS domain](SERVER_UPDATE.md)
@@ -80,19 +68,18 @@
 ## Web Server Setup
 
 ### Apache Web Server
-**Note: This is not necessary for development systems.**
-When you are using SORMAS in a production environment you should use a http server like Apache 2 instead of putting the payara server in the first line.
-Here are some things that you should do to configure the apache server as proxy:
+**Note: This is not necessary for development systems.** When you are using SORMAS in a production environment you should use a http server like Apache 2 instead of putting the Payara server in the first line.
+Here are some things that you should do to configure the Apache server as a proxy:
 
-* Activate all needed modules
+* Activate all needed modules:
 
 		a2enmod ssl
 		a2enmod rewrite
 		a2enmod proxy
 		a2enmod proxy_http
 		a2enmod headers
-* create a new site /etc/apache2/sites-available/your.sormas.server.url.conf (e.g. sormas.org.conf)
-* Force SSL secured connections: redirect from http to https
+* Create a new site /etc/apache2/sites-available/your.sormas.server.url.conf (e.g. sormas.org.conf)
+* Force SSL secured connections: redirect from http to https:
 
 		<VirtualHost *:80>
 			ServerName your.sormas.server.url
@@ -106,12 +93,12 @@ Here are some things that you should do to configure the apache server as proxy:
 			...
 		</VirtualHost>
 		</IfModule>
-* Configure Logging:
+* Configure logging:
 
         ErrorLog /var/log/apache2/error.log
         LogLevel warn
         CustomLog /var/log/apache2/access.log combined
-* SSL key config
+* SSL key config:
 
         SSLEngine on
         SSLCertificateFile    /etc/ssl/certs/your.sormas.server.url.crt
@@ -150,12 +137,12 @@ Here are some things that you should do to configure the apache server as proxy:
                 DeflateCompressionLevel 1
         </IfModule></code>
 
-* Provide the android apk
+* Provide the android apk:
 
         Options -Indexes
 		AliasMatch "/downloads/sormas-(.*)" "/var/www/sormas/downloads/sormas-$1"
 
-* For the apache 2 security configuration we suggest the following settings (``/etc/apache2/conf-available/security.conf``)
+* For the Apache 2 security configuration we suggest the following settings (``/etc/apache2/conf-available/security.conf``):
 
 		ServerTokens Prod
 		ServerSignature Off
@@ -179,14 +166,14 @@ Here are some things that you should do to configure the apache server as proxy:
 
 ### Postfix Mail Server
 
-* Install postfix and mailutils
+* Install postfix and mailutils:
 
 		apt install aptitude
 		aptitude install postfix
 		-> choose "satelite system"
 		apt install mailutils
 	
-* Configure your system
+* Configure your system:
 
 		nano /etc/aliases
 		-> add "root: enter-your@support-email-here.com"
@@ -201,10 +188,10 @@ Check that the users table does have a corresponding entry. If not, the database
 
 ### Problem: Server is out of memory
 
-Old server were setup with a memory size of less than 2048MB. You can change this using the following command:
+Old servers were set up with a memory size of less than 2048MB. You can change this using the following commands:
 
 	/opt/payara-172/glassfish/bin/asadmin --port 6048 delete-jvm-options -Xmx512m
 	/opt/payara-172/glassfish/bin/asadmin --port 6048 delete-jvm-options -Xmx1024m
 	/opt/payara-172/glassfish/bin/asadmin --port 6048 create-jvm-options -Xmx2048m
 
-Alternative: You can edit the setting directly in the domain.xml in the config directory of the sormas domain. Just search for ``Xmx`` - there should be two entries that need to be changed.
+Alternative: You can edit the settings directly in the domain.xml in the config directory of the SORMAS domain. Just search for ``Xmx`` - there should be two entries that need to be changed.
