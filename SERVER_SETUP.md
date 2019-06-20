@@ -8,8 +8,6 @@
   * [Java 8](#java-8)
   * [Postgres Database](#postgres-database)
 * [SORMAS Server](#sormas-server)
-  * [Payara Server](#payara-server)
-  * [SORMAS Domain](#sormas-domain)
 * [Web Server Setup](#web-server-setup)
   * [Apache Web Server](#apache-web-server)
   * [Postfix Mail Server](#postfix-mail-server)
@@ -46,8 +44,6 @@
         * ``pgxn install temporal_tables``
 	
 ## SORMAS Server	
-
-### SORMAS Domain Setup
 
 * Get the latest SORMAS build by downloading the deploy.zip file from GitHub: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest 
 * **Linux**:
