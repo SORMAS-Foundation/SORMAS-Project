@@ -5,7 +5,7 @@ SORMAS releases starting from 1.21.0 contain a script that automatically updates
 * Get the latest release files (deploy.zip) from https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest
 * Unzip the archive and copy/upload its contents to **/root/deploy/sormas/$(date +%F)**
 
-## Update Script
+## Automatic Server Update
 * Navigate to the "update" folder in the folder containing the unzipped deploy files:
 ``cd /root/deploy/sormas/$(date +%F)/update``
 * Make the update script executable:
