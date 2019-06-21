@@ -6,8 +6,8 @@ SORMAS releases starting from 1.21.0 contain a script that automatically updates
 * Unzip the archive and copy/upload its contents to **/root/deploy/sormas/$(date +%F)**
 
 ## Automatic Server Update
-* Navigate to the "update" folder in the folder containing the unzipped deploy files:
-``cd /root/deploy/sormas/$(date +%F)/update``
+* Navigate to the  folder containing the unzipped deploy files:
+``cd /root/deploy/sormas/$(date +%F)``
 * Make the update script executable:
 ``chmod +x server-update.sh``
 * Optional: Open server-update.sh in a text editor to customize the values for e.g. the domain path or the database name. You only need to do this if you used custom values while setting up the server.
