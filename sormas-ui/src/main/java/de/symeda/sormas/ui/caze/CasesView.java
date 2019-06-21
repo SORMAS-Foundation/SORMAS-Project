@@ -124,6 +124,7 @@ public class CasesView extends AbstractView {
 	private ComboBox facilityFilter;
 	private ComboBox officerFilter;
 	private ComboBox reportedByFilter;
+	private TextField reportingUserFilter;
 	private CheckBox casesWithoutGeoCoordsFilter;
 	private EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter;
 
@@ -429,7 +430,17 @@ public class CasesView extends AbstractView {
 				navigateTo(criteria);
 			});
 			secondFilterRowLayout.addComponent(reportedByFilter);
-
+			
+			reportingUserFilter = new TextField();
+			reportingUserFilter.setWidth(200, Unit.PIXELS);
+			reportingUserFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORTING_USER));
+			reportingUserFilter.setNullRepresentation("");
+			reportingUserFilter.addTextChangeListener(e -> {
+				criteria.reportingUserLike(e.getText());
+				grid.reload();
+			});
+			secondFilterRowLayout.addComponent(reportingUserFilter);
+			
 			casesWithoutGeoCoordsFilter = new CheckBox();
 			CssStyles.style(casesWithoutGeoCoordsFilter, CssStyles.CHECKBOX_FILTER_INLINE);
 			casesWithoutGeoCoordsFilter.setCaption(I18nProperties.getCaption(Captions.caseFilterWithoutGeo));
@@ -644,6 +655,7 @@ public class CasesView extends AbstractView {
 		facilityFilter.setValue(criteria.getHealthFacility());
 		officerFilter.setValue(criteria.getSurveillanceOfficer());
 		reportedByFilter.setValue(criteria.getReportingUserRole());
+		reportingUserFilter.setValue(criteria.getReportingUserLike());
 		casesWithoutGeoCoordsFilter.setValue(criteria.isMustHaveNoGeoCoordinates());
 		weekAndDateFilter.getDateTypeSelector().setValue(criteria.getNewCaseDateType());
 		weekAndDateFilter.getDateFromFilter().setValue(criteria.getNewCaseDateFrom());

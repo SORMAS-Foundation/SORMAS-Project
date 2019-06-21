@@ -51,7 +51,8 @@ public class CaseCriteria extends BaseCriteria implements Cloneable  {
 	private Boolean mustHaveNoGeoCoordinates;
 	private Boolean archived;
 	private String nameUuidEpidNumberLike;
-
+	private String reportingUserLike;
+	
 	@Override
 	public CaseCriteria clone() {
 		try {
@@ -226,5 +227,15 @@ public class CaseCriteria extends BaseCriteria implements Cloneable  {
 	@IgnoreForUrl
 	public String getNameUuidEpidNumberLike() {
 		return nameUuidEpidNumberLike;
+	}
+	
+	public CaseCriteria reportingUserLike(String reportingUserLike) {
+		this.reportingUserLike = reportingUserLike;
+		return this;
+	}
+	
+	@IgnoreForUrl
+	public String getReportingUserLike() {
+		return reportingUserLike;
 	}
 }
