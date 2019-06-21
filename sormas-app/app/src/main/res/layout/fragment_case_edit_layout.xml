@@ -36,6 +36,7 @@
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
         <import type="de.symeda.sormas.api.user.UserRight" />
+        <import type="de.symeda.sormas.api.caze.HospitalWardType" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
         <variable name="yesNoUnknownClass" type="Class" />
@@ -330,6 +331,18 @@
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_notifyingClinic"
+                    app:value="@={data.notifyingClinic}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/caseData_notifyingClinicDetails"
+                    app:value="@={data.notifyingClinicDetails}"
+                    app:dependencyParentField="@{caseDataNotifyingClinic}"
+                    app:dependencyParentValue="@{HospitalWardType.OTHER}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <ImageView style="@style/FullHorizontalDividerStyle" />
 

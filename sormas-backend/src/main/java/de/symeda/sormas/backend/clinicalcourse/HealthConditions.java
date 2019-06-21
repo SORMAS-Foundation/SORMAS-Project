@@ -29,6 +29,8 @@ public class HealthConditions extends AbstractDomainObject {
 	private YesNoUnknown chronicPulmonaryDisease;
 	private YesNoUnknown chronicKidneyDisease;
 	private YesNoUnknown chronicNeurologicCondition;
+	private YesNoUnknown downSyndrome;
+	private YesNoUnknown congenitalSyphilis;
 	private String otherConditions;
 
 	@Enumerated(EnumType.STRING)
@@ -125,6 +127,22 @@ public class HealthConditions extends AbstractDomainObject {
 	}
 	public void setChronicNeurologicCondition(YesNoUnknown chronicNeurologicCondition) {
 		this.chronicNeurologicCondition = chronicNeurologicCondition;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getDownSyndrome() {
+		return downSyndrome;
+	}
+	public void setDownSyndrome(YesNoUnknown downSyndrome) {
+		this.downSyndrome = downSyndrome;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getCongenitalSyphilis() {
+		return congenitalSyphilis;
+	}
+	public void setCongenitalSyphilis(YesNoUnknown congenitalSyphilis) {
+		this.congenitalSyphilis = congenitalSyphilis;
 	}
 	
 	@Column(length = 512)

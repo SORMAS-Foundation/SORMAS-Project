@@ -45,7 +45,6 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -65,6 +64,9 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.AdditionalTestDto;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -98,7 +100,7 @@ public class CasesView extends AbstractView {
 	public static final String VIEW_NAME = "cases";
 
 	private CaseCriteria criteria;
-	
+
 	private CaseGrid grid;    
 	private Button createButton;
 	private HashMap<Button, String> statusButtons;
@@ -137,14 +139,13 @@ public class CasesView extends AbstractView {
 
 	public CasesView() {
 		super(VIEW_NAME);
-
 		originalViewTitle = getViewTitleLabel().getValue();
-		
+
 		criteria = ViewModelProviders.of(CasesView.class).get(CaseCriteria.class);
 		if (criteria.getArchived() == null) {
 			criteria.archived(false);
 		}
-		
+
 		grid = new CaseGrid();
 		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
@@ -218,6 +219,29 @@ public class CasesView extends AbstractView {
 					},
 					"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
+
+			Button sampleExportButton = new Button(I18nProperties.getCaption(Captions.exportSamples));
+			sampleExportButton.setDescription(I18nProperties.getString(Strings.infoSampleExport));
+			sampleExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			sampleExportButton.setIcon(VaadinIcons.FILE_TEXT);
+			sampleExportButton.setWidth(100, Unit.PERCENTAGE);
+			exportLayout.addComponent(sampleExportButton);
+
+			StreamResource sampleExportStreamResource = DownloadUtil.createCsvExportStreamResource(SampleExportDto.class,
+					(Integer start, Integer max) -> FacadeProvider.getSampleFacade().getExportList(UserProvider.getCurrent().getUuid(), grid.getCriteria(), start, max), 
+					(propertyId,type) -> {
+						String caption = I18nProperties.getPrefixCaption(SampleExportDto.I18N_PREFIX, propertyId,
+								I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, propertyId,
+										I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
+												I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, propertyId,
+														I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, propertyId)))));
+						if (Date.class.isAssignableFrom(type)) {
+							caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+						}
+						return caption;
+					},
+					"sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			new FileDownloader(sampleExportStreamResource).extend(sampleExportButton);
 
 			// Warning if no filters have been selected
 			Label warningLabel = new Label(I18nProperties.getString(Strings.infoExportNoFilters), ContentMode.HTML);
@@ -293,7 +317,7 @@ public class CasesView extends AbstractView {
 			firstFilterRowLayout.addComponent(searchField);
 
 			addShowMoreOrLessFiltersButtons(firstFilterRowLayout);
-			
+
 			resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
 			resetButton.setVisible(false);
 			resetButton.addClickListener(event -> {
@@ -582,7 +606,7 @@ public class CasesView extends AbstractView {
 		parentLayout.setComponentAlignment(collapseFiltersButton, Alignment.TOP_LEFT);
 		collapseFiltersButton.setVisible(false);
 	}
-	
+
 	public void setFiltersExpanded(boolean expanded) {
 		expandFiltersButton.setVisible(!expanded);
 		collapseFiltersButton.setVisible(expanded);
@@ -600,13 +624,13 @@ public class CasesView extends AbstractView {
 		updateFilterComponents();
 		grid.reload();
 	}
-	
+
 	public void updateFilterComponents() {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
-		
+
 		resetButton.setVisible(criteria.hasAnyFilterActive());
-		
+
 		updateStatusButtons();
 		updateArchivedButton();
 
@@ -625,7 +649,7 @@ public class CasesView extends AbstractView {
 		weekAndDateFilter.getDateFromFilter().setValue(criteria.getNewCaseDateFrom());
 		weekAndDateFilter.getDateToFilter().setValue(criteria.getNewCaseDateTo());
 		weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.DATE);
-		
+
 		boolean hasExpandedFilter = FieldHelper.streamFields(secondFilterRowLayout)
 				.anyMatch(f -> !f.isEmpty());
 		hasExpandedFilter |=  FieldHelper.streamFields(dateFilterRowLayout)
@@ -634,7 +658,7 @@ public class CasesView extends AbstractView {
 		if (hasExpandedFilter) {
 			setFiltersExpanded(true);
 		}		    
-		
+
 		applyingCriteria = false;
 	}
 
@@ -661,7 +685,7 @@ public class CasesView extends AbstractView {
 		if (switchArchivedActiveButton == null) {
 			return;
 		}
-		
+
 		if (Boolean.TRUE.equals(criteria.getArchived())) {
 			getViewTitleLabel().setValue(I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", ".") + ".archive"));
 			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(Captions.caseShowActive));

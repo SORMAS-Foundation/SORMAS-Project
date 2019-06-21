@@ -28,10 +28,6 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 
-/**
- * Created by Mate Strysewske on 22.02.2017.
- */
-
 public class HospitalizationDao extends AbstractAdoDao<Hospitalization> {
 
     public HospitalizationDao(Dao<Hospitalization,Long> innerDao) throws SQLException {

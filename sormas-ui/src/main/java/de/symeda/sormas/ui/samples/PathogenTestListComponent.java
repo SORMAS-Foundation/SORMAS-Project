@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
@@ -44,7 +44,7 @@ public class PathogenTestListComponent extends VerticalLayout {
 	private PathogenTestList list;
 	private Button createButton;
 
-	public PathogenTestListComponent(SampleReferenceDto sampleRef, Consumer<PathogenTestResultType> testChangedCallback) {
+	public PathogenTestListComponent(SampleReferenceDto sampleRef, BiConsumer<PathogenTestResultType, Boolean> testChangedCallback) {
 		setWidth(100, Unit.PERCENTAGE);
 
 		HorizontalLayout componentHeader = new HorizontalLayout();

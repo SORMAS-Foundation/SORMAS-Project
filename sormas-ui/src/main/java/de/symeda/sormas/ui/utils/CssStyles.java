@@ -312,6 +312,8 @@ public final class CssStyles {
 			return "background-disease-west-nile-fever";
 		case YELLOW_FEVER:
 			return "background-disease-yellow-fever";
+		case CONGENITAL_RUBELLA:
+			return "background-disease-congenital-rubella";
 		default:
 			throw new IllegalArgumentException(disease.toString());
 		}

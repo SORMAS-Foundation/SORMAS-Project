@@ -29,8 +29,6 @@ import de.symeda.sormas.api.i18n.Strings;
 /**
  * View shown when trying to navigate to a view the user does not have access to using
  * {@link com.vaadin.navigator.Navigator}.
- * 
- * 
  */
 @SuppressWarnings("serial")
 public class AccessDeniedView extends VerticalLayout implements View {

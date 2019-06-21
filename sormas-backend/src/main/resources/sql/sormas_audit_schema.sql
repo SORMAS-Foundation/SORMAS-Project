@@ -7,9 +7,6 @@ SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
 SET search_path = public, pg_catalog;
 SET default_tablespace = '';
 SET default_with_oids = false;
@@ -20,6 +17,8 @@ CREATE TABLE schema_version (
   comment character varying(255),
   CONSTRAINT schema_version_pkey PRIMARY KEY (version_number)
 );
+
+ALTER TABLE schema_version OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (1, 'Basic database configuration');
 

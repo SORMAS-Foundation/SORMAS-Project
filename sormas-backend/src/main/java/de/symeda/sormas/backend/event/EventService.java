@@ -258,9 +258,10 @@ public class EventService extends AbstractAdoService<Event> {
 		}
 
 		// whoever created the event or is assigned to it is allowed to access it
-		Predicate filter = cb.equal(eventPath.join(Event.REPORTING_USER, JoinType.LEFT), user);
-		filter = cb.or(filter, cb.equal(eventPath.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT), user));
+		Predicate filterResponsible = cb.equal(eventPath.join(Event.REPORTING_USER, JoinType.LEFT), user);
+		filterResponsible = cb.or(filterResponsible, cb.equal(eventPath.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT), user));
 
+		Predicate filter = null;
 		// allow event access based on user role
 		for (UserRole userRole : user.getUserRoles()) {
 			switch (userRole) {
@@ -271,7 +272,7 @@ public class EventService extends AbstractAdoService<Event> {
 			case STATE_OBSERVER:
 				// supervisors see all events of their region
 				if (user.getRegion() != null) {
-					filter = cb.or(filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.REGION), user.getRegion()));
+					filter = or(cb, filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.REGION), user.getRegion()));
 				}
 				break;
 			case SURVEILLANCE_OFFICER:
@@ -280,7 +281,7 @@ public class EventService extends AbstractAdoService<Event> {
 			case DISTRICT_OBSERVER:
 				// officers see all events of their district
 				if (user.getDistrict() != null) {
-					filter = cb.or(filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.DISTRICT), user.getDistrict()));
+					filter = or(cb, filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.DISTRICT), user.getDistrict()));
 				}
 				break;
 			case HOSPITAL_INFORMANT:
@@ -296,6 +297,19 @@ public class EventService extends AbstractAdoService<Event> {
 		//		// events assigned with task
 		//		Join<Event, Task> tasksJoin = from.join(Event.TASKS, JoinType.LEFT);
 		//		filter = cb.or(filter, cb.equal(tasksJoin.get(Task.ASSIGNEE_USER), user));
+
+		// only show cases of a specific disease if a limited disease is set
+		if (filter != null && user.getLimitedDisease() != null) {
+			filter = cb.and(filter, cb.or(
+					cb.equal(eventPath.get(Event.DISEASE), user.getLimitedDisease()),
+					cb.isNull(eventPath.get(Event.DISEASE))));
+		}
+		
+		if (filter != null) {
+			filter = cb.or(filter, filterResponsible);
+		} else {
+			filter = filterResponsible;
+		}
 
 		return filter;
 	}

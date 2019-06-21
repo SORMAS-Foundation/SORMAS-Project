@@ -27,6 +27,7 @@ public enum CaseSection implements StatusElaborator {
 
     CASE_INFO(R.string.caption_case_information, R.drawable.ic_drawer_case_blue_24dp),
     PERSON_INFO(R.string.caption_person_information, R.drawable.ic_person_black_24dp),
+    MATERNAL_HISTORY(R.string.caption_case_maternal_history, R.drawable.ic_pregnant_woman_black_24dp),
     HOSPITALIZATION(R.string.caption_case_hospitalization, R.drawable.ic_local_hospital_black_24dp),
     SYMPTOMS(R.string.caption_symptoms, R.drawable.ic_healing_black_24dp),
     EPIDEMIOLOGICAL_DATA(R.string.caption_case_epidemiological_data, R.drawable.ic_pets_black_24dp),

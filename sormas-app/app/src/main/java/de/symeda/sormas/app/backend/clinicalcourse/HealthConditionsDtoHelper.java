@@ -67,6 +67,8 @@ public class HealthConditionsDtoHelper extends AdoDtoHelper<HealthConditions, He
         target.setChronicKidneyDisease(source.getChronicKidneyDisease());
         target.setChronicNeurologicCondition(source.getChronicNeurologicCondition());
         target.setOtherConditions(source.getOtherConditions());
+        target.setDownSyndrome(source.getDownSyndrome());
+        target.setCongenitalSyphilis(source.getCongenitalSyphilis());
     }
 
     @Override
@@ -84,6 +86,8 @@ public class HealthConditionsDtoHelper extends AdoDtoHelper<HealthConditions, He
         target.setChronicKidneyDisease(source.getChronicKidneyDisease());
         target.setChronicNeurologicCondition(source.getChronicNeurologicCondition());
         target.setOtherConditions(source.getOtherConditions());
+        target.setDownSyndrome(source.getDownSyndrome());
+        target.setCongenitalSyphilis(source.getCongenitalSyphilis());
     }
 
 }

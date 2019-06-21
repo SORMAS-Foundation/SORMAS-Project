@@ -32,6 +32,16 @@ import org.apache.commons.lang3.exception.CloneFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Container.ItemSetChangeEvent;
 import com.vaadin.v7.data.Container.ItemSetChangeListener;
 import com.vaadin.v7.data.Property;
@@ -40,20 +50,9 @@ import com.vaadin.v7.data.util.BeanItemContainer;
 import com.vaadin.v7.data.util.converter.Converter.ConversionException;
 import com.vaadin.v7.event.ItemClickEvent;
 import com.vaadin.v7.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
 import com.vaadin.v7.ui.CustomField;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.Table;
 import com.vaadin.v7.ui.Table.ColumnGenerator;
-import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -204,7 +203,7 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 			}
 		};
 		table.addGeneratedColumn(EDIT_COLUMN_ID, editColumnGenerator);
-		table.setColumnWidth(EDIT_COLUMN_ID, 30);
+		table.setColumnWidth(EDIT_COLUMN_ID, 20);
 		table.setColumnHeader(EDIT_COLUMN_ID, "");
 
 		table.addItemClickListener(new ItemClickListener() {
@@ -222,8 +221,13 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 		});
 	}
 
+	@SuppressWarnings("unchecked")
 	protected Object generateEditCell(Table source, Object itemId, Object columnId) {
-		return new Label(VaadinIcons.EDIT.getHtml(), ContentMode.HTML);
+		Button button = new Button(VaadinIcons.EDIT, e -> {
+			editEntry((E) itemId, false, result -> onEntryChanged(result));
+		});
+		button.setStyleName(ValoTheme.BUTTON_BORDERLESS);
+		return button;
 	}
 
 	protected Button createAddButton() {

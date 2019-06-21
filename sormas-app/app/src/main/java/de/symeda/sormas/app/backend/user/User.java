@@ -29,9 +29,12 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -89,6 +92,9 @@ public class User extends AbstractDomainObject {
 
     @ManyToOne(cascade = {})
     private User associatedOfficer;
+
+    @Enumerated(EnumType.STRING)
+    private Disease limitedDisease;
 
     @Column(name = "userRole")
     private String userRolesJson;
@@ -190,6 +196,14 @@ public class User extends AbstractDomainObject {
 
     public void setAssociatedOfficer(User associatedOfficer) {
         this.associatedOfficer = associatedOfficer;
+    }
+
+    public Disease getLimitedDisease() {
+        return limitedDisease;
+    }
+
+    public void setLimitedDisease(Disease limitedDisease) {
+        this.limitedDisease = limitedDisease;
     }
 
     public String getUserRolesJson() {

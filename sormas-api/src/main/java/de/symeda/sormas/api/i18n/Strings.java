@@ -16,6 +16,7 @@ public interface Strings {
 	public static String classificationDaysBeforeCaseStart = "classificationDaysBeforeCaseStart";
 	public static String classificationForDisease = "classificationForDisease";
 	public static String classificationGeneratedFor = "classificationGeneratedFor";
+	public static String classificationInfoNumberText = "classificationInfoNumberText";
 	public static String classificationInfoText = "classificationInfoText";
 	public static String classificationNoneOf = "classificationNoneOf";
 	public static String classificationNotWithin = "classificationNotWithin";
@@ -111,6 +112,7 @@ public interface Strings {
 	public static String headingConfirmDeletion = "headingConfirmDeletion";
 	public static String headingContactData = "headingContactData";
 	public static String headingContactFollowUp = "headingContactFollowUp";
+	public static String headingContactInformation = "headingContactInformation";
 	public static String headingContactMap = "headingContactMap";
 	public static String headingContactsDeleted = "headingContactsDeleted";
 	public static String headingCreateAdditionalTest = "headingCreateAdditionalTest";
@@ -174,6 +176,7 @@ public interface Strings {
 	public static String headingLaboratorySample = "headingLaboratorySample";
 	public static String headingLocation = "headingLocation";
 	public static String headingLoginFailed = "headingLoginFailed";
+	public static String headingMaternalHistory = "headingMaternalHistory";
 	public static String headingMedicalInformation = "headingMedicalInformation";
 	public static String headingMissingDateFilter = "headingMissingDateFilter";
 	public static String headingMissingEpiWeekFilter = "headingMissingEpiWeekFilter";
@@ -232,6 +235,7 @@ public interface Strings {
 	public static String infoCaseIncidence = "infoCaseIncidence";
 	public static String infoCaseMap = "infoCaseMap";
 	public static String infoContactDashboard = "infoContactDashboard";
+	public static String infoDashboardIncidence = "infoDashboardIncidence";
 	public static String infoDatabaseExportTables = "infoDatabaseExportTables";
 	public static String infoDefineOutbreaks = "infoDefineOutbreaks";
 	public static String infoDetailedExport = "infoDetailedExport";
@@ -247,6 +251,7 @@ public interface Strings {
 	public static String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
 	public static String infoNoPathogenTests = "infoNoPathogenTests";
 	public static String infoSampleAdditionalTesting = "infoSampleAdditionalTesting";
+	public static String infoSampleExport = "infoSampleExport";
 	public static String infoSamplePathogenTesting = "infoSamplePathogenTesting";
 	public static String infoStatisticsDisclaimer = "infoStatisticsDisclaimer";
 	public static String infoStatisticsFilter = "infoStatisticsFilter";

@@ -18,7 +18,6 @@
   -->
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/task_list_filters">
 
@@ -69,6 +68,20 @@
                 app:hint="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.OUTCOME)}"
                 app:showCaption="false"
                 app:value="@={criteria.outcome}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.FilterSpinnerField
+                android:id="@+id/epi_week_from_filter"
+                app:hint="@{I18nProperties.getString(Strings.promptCasesEpiWeekFrom)}"
+                app:showCaption="false"
+                app:value="@={criteria.epiWeekFrom}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.FilterSpinnerField
+                android:id="@+id/epi_week_to_filter"
+                app:hint="@{I18nProperties.getString(Strings.promptCasesEpiWeekTo)}"
+                app:showCaption="false"
+                app:value="@={criteria.epiWeekTo}"
                 style="@style/ControlSingleColumnStyle" />
 
             <LinearLayout

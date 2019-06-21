@@ -29,8 +29,10 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import de.symeda.sormas.api.symptoms.CongenitalHeartDiseaseType;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 
@@ -169,6 +171,8 @@ public class Symptoms extends AbstractDomainObject {
     @Enumerated(EnumType.STRING)
     private SymptomState jaundice;
     @Enumerated(EnumType.STRING)
+    private YesNoUnknown jaundiceWithin24HoursOfBirth;
+    @Enumerated(EnumType.STRING)
     private SymptomState darkUrine;
     @Enumerated(EnumType.STRING)
     private SymptomState stomachBleeding;
@@ -287,6 +291,33 @@ public class Symptoms extends AbstractDomainObject {
     private SymptomState sepsis;
     @Enumerated(EnumType.STRING)
     private SymptomState shock;
+    @Enumerated(EnumType.STRING)
+    private SymptomState bilateralCataracts;
+    @Enumerated(EnumType.STRING)
+    private SymptomState unilateralCataracts;
+    @Enumerated(EnumType.STRING)
+    private SymptomState congenitalGlaucoma;
+    @Enumerated(EnumType.STRING)
+    private SymptomState pigmentaryRetinopathy;
+    @Enumerated(EnumType.STRING)
+    private SymptomState purpuricRash;
+    @Enumerated(EnumType.STRING)
+    private SymptomState microcephaly;
+    @Enumerated(EnumType.STRING)
+    private SymptomState developmentalDelay;
+    @Enumerated(EnumType.STRING)
+    private SymptomState splenomegaly;
+    @Enumerated(EnumType.STRING)
+    private SymptomState meningoencephalitis;
+    @Enumerated(EnumType.STRING)
+    private SymptomState radiolucentBoneDisease;
+    @Enumerated(EnumType.STRING)
+    private SymptomState congenitalHeartDisease;
+    @Enumerated(EnumType.STRING)
+    private CongenitalHeartDiseaseType congenitalHeartDiseaseType;
+    @Column(length = 512)
+    private String congenitalHeartDiseaseDetails;
+
 
     @Override
     public String getI18nPrefix() {
@@ -1195,5 +1226,117 @@ public class Symptoms extends AbstractDomainObject {
 
     public void setSepsis(SymptomState sepsis) {
         this.sepsis = sepsis;
+    }
+
+    public YesNoUnknown getJaundiceWithin24HoursOfBirth() {
+        return jaundiceWithin24HoursOfBirth;
+    }
+
+    public void setJaundiceWithin24HoursOfBirth(YesNoUnknown jaundiceWithin24HoursOfBirth) {
+        this.jaundiceWithin24HoursOfBirth = jaundiceWithin24HoursOfBirth;
+    }
+
+    public SymptomState getBilateralCataracts() {
+        return bilateralCataracts;
+    }
+
+    public void setBilateralCataracts(SymptomState bilateralCataracts) {
+        this.bilateralCataracts = bilateralCataracts;
+    }
+
+    public SymptomState getUnilateralCataracts() {
+        return unilateralCataracts;
+    }
+
+    public void setUnilateralCataracts(SymptomState unilateralCataracts) {
+        this.unilateralCataracts = unilateralCataracts;
+    }
+
+    public SymptomState getCongenitalGlaucoma() {
+        return congenitalGlaucoma;
+    }
+
+    public void setCongenitalGlaucoma(SymptomState congenitalGlaucoma) {
+        this.congenitalGlaucoma = congenitalGlaucoma;
+    }
+
+    public SymptomState getPigmentaryRetinopathy() {
+        return pigmentaryRetinopathy;
+    }
+
+    public void setPigmentaryRetinopathy(SymptomState pigmentaryRetinopathy) {
+        this.pigmentaryRetinopathy = pigmentaryRetinopathy;
+    }
+
+    public SymptomState getPurpuricRash() {
+        return purpuricRash;
+    }
+
+    public void setPurpuricRash(SymptomState purpuricRash) {
+        this.purpuricRash = purpuricRash;
+    }
+
+    public SymptomState getMicrocephaly() {
+        return microcephaly;
+    }
+
+    public void setMicrocephaly(SymptomState microcephaly) {
+        this.microcephaly = microcephaly;
+    }
+
+    public SymptomState getDevelopmentalDelay() {
+        return developmentalDelay;
+    }
+
+    public void setDevelopmentalDelay(SymptomState developmentalDelay) {
+        this.developmentalDelay = developmentalDelay;
+    }
+
+    public SymptomState getSplenomegaly() {
+        return splenomegaly;
+    }
+
+    public void setSplenomegaly(SymptomState splenomegaly) {
+        this.splenomegaly = splenomegaly;
+    }
+
+    public SymptomState getMeningoencephalitis() {
+        return meningoencephalitis;
+    }
+
+    public void setMeningoencephalitis(SymptomState meningoencephalitis) {
+        this.meningoencephalitis = meningoencephalitis;
+    }
+
+    public SymptomState getRadiolucentBoneDisease() {
+        return radiolucentBoneDisease;
+    }
+
+    public void setRadiolucentBoneDisease(SymptomState radiolucentBoneDisease) {
+        this.radiolucentBoneDisease = radiolucentBoneDisease;
+    }
+
+    public SymptomState getCongenitalHeartDisease() {
+        return congenitalHeartDisease;
+    }
+
+    public void setCongenitalHeartDisease(SymptomState congenitalHeartDisease) {
+        this.congenitalHeartDisease = congenitalHeartDisease;
+    }
+
+    public CongenitalHeartDiseaseType getCongenitalHeartDiseaseType() {
+        return congenitalHeartDiseaseType;
+    }
+
+    public void setCongenitalHeartDiseaseType(CongenitalHeartDiseaseType congenitalHeartDiseaseType) {
+        this.congenitalHeartDiseaseType = congenitalHeartDiseaseType;
+    }
+
+    public String getCongenitalHeartDiseaseDetails() {
+        return congenitalHeartDiseaseDetails;
+    }
+
+    public void setCongenitalHeartDiseaseDetails(String congenitalHeartDiseaseDetails) {
+        this.congenitalHeartDiseaseDetails = congenitalHeartDiseaseDetails;
     }
 }

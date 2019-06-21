@@ -140,7 +140,7 @@ public class PersonGrid extends Grid {
 
 				if (caze != null) {
 					indexDto.setCaseDisease(caze.getDisease());
-					indexDto.setCaseDiseaseStartDate(CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getDistrictLevelDate(), caze.getReportDate()));
+					indexDto.setCaseDiseaseStartDate(CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate()));
 					indexDto.setCaseUuid(caze.getUuid());
 				}
 

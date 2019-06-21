@@ -40,11 +40,13 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.DengueFeverType;
+import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.epidata.EpiData;
@@ -90,6 +92,7 @@ public class Case extends AbstractDomainObject {
 	public static final String HOSPITALIZATION = "hospitalization";
 	public static final String EPI_DATA = "epiData";
 	public static final String CLINICAL_COURSE = "clinicalCourse";
+	public static final String MATERNAL_HISTORY = "maternalHistory";
 	public static final String PREGNANT = "pregnant";
 	public static final String VACCINATION = "vaccination";
 	public static final String VACCINATION_DOSES = "vaccinationDoses";
@@ -126,6 +129,7 @@ public class Case extends AbstractDomainObject {
 	private EpiData epiData;
 	private Therapy therapy;
 	private ClinicalCourse clinicalCourse;
+	private MaternalHistory maternalHistory;
 	
 	private Region region;
 	private District district;
@@ -147,6 +151,9 @@ public class Case extends AbstractDomainObject {
 	private User surveillanceOfficer;
 	private String clinicianDetails;
 	private User caseOfficer;
+	
+	private HospitalWardType notifyingClinic;
+	private String notifyingClinicDetails;
 
 	private Symptoms symptoms;
 
@@ -464,6 +471,19 @@ public class Case extends AbstractDomainObject {
 		this.clinicalCourse = clinicalCourse;
 	}
 	
+	// It's necessary to do a lazy fetch here because having three eager fetching
+	// one to one relations
+	// produces an error where two non-xa connections are opened
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public MaternalHistory getMaternalHistory() {
+		return maternalHistory;
+	}
+
+	public void setMaternalHistory(MaternalHistory maternalHistory) {
+		this.maternalHistory = maternalHistory;
+	}
+
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getPregnant() {
 		return pregnant;
@@ -623,7 +643,25 @@ public class Case extends AbstractDomainObject {
 	public void setSequelaeDetails(String sequelaeDetails) {
 		this.sequelaeDetails = sequelaeDetails;
 	}
-	
+
+	@Enumerated(EnumType.STRING)
+	public HospitalWardType getNotifyingClinic() {
+		return notifyingClinic;
+	}
+
+	public void setNotifyingClinic(HospitalWardType notifyingClinic) {
+		this.notifyingClinic = notifyingClinic;
+	}
+
+	@Column(length = 512)
+	public String getNotifyingClinicDetails() {
+		return notifyingClinicDetails;
+	}
+
+	public void setNotifyingClinicDetails(String notifyingClinicDetails) {
+		this.notifyingClinicDetails = notifyingClinicDetails;
+	}
+
 	public Integer getCaseAge() {
 		return caseAge;
 	}

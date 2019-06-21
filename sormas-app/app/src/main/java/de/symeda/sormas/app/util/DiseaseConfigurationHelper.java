@@ -22,10 +22,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.disease.DiseaseConfiguration;
+import de.symeda.sormas.app.backend.user.User;
 
 public class DiseaseConfigurationHelper {
 
@@ -76,7 +81,16 @@ public class DiseaseConfigurationHelper {
     }
 
     public List<Disease> getAllActiveDiseases() {
-        return activeDiseases;
+        User currentUser = ConfigProvider.getUser();
+        if (currentUser.getLimitedDisease() != null) {
+            ArrayList<Disease> list = new ArrayList<>();
+            if (isActiveDisease(currentUser.getLimitedDisease())) {
+                list.add(currentUser.getLimitedDisease());
+            }
+            return list;
+        } else {
+            return activeDiseases;
+        }
     }
 
     public boolean isPrimaryDisease(Disease disease) {
@@ -84,19 +98,45 @@ public class DiseaseConfigurationHelper {
     }
 
     public List<Disease> getAllPrimaryDiseases() {
-        return primaryDiseases;
+        User currentUser = ConfigProvider.getUser();
+        if (currentUser.getLimitedDisease() != null) {
+            ArrayList<Disease> list = new ArrayList<>();
+            if (isPrimaryDisease(currentUser.getLimitedDisease())) {
+                list.add(currentUser.getLimitedDisease());
+            }
+            return list;
+        } else {
+            return primaryDiseases;
+        }
     }
 
     public List<Disease> getAllActivePrimaryDiseases() {
-        return activePrimaryDiseases;
+        User currentUser = ConfigProvider.getUser();
+        if (currentUser.getLimitedDisease() != null) {
+            ArrayList<Disease> list = new ArrayList<>();
+            if (isPrimaryDisease(currentUser.getLimitedDisease()) && isActiveDisease(currentUser.getLimitedDisease())) {
+                list.add(currentUser.getLimitedDisease());
+            }
+            return list;
+        } else {
+            return activePrimaryDiseases;
+        }
     }
 
     public boolean hasFollowUp(Disease disease) {
         return followUpEnabledDiseases.contains(disease);
     }
 
-    public List<Disease> getAllDiseasesWithFollowUp() {
-        return followUpEnabledDiseases;
+    public List<Disease> getAllDiseasesWithFollowUp() {User currentUser = ConfigProvider.getUser();
+        if (currentUser.getLimitedDisease() != null) {
+            ArrayList<Disease> list = new ArrayList<>();
+            if (hasFollowUp(currentUser.getLimitedDisease())) {
+                list.add(currentUser.getLimitedDisease());
+            }
+            return list;
+        } else {
+            return followUpEnabledDiseases;
+        }
     }
 
     public int getFollowUpDuration(Disease disease) {

@@ -23,6 +23,7 @@ import java.util.List;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -109,6 +110,15 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
         target.setCauseOfDeath(source.getCauseOfDeath());
         target.setCauseOfDeathDisease(source.getCauseOfDeathDisease());
         target.setCauseOfDeathDetails(source.getCauseOfDeathDetails());
+        target.setMothersName(source.getMothersName());
+        target.setFathersName(source.getFathersName());
+        target.setPlaceOfBirthRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getPlaceOfBirthRegion()));
+        target.setPlaceOfBirthDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getPlaceOfBirthDistrict()));
+        target.setPlaceOfBirthCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getPlaceOfBirthCommunity()));
+        target.setPlaceOfBirthFacility(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getPlaceOfBirthFacility()));
+        target.setPlaceOfBirthFacilityDetails(source.getPlaceOfBirthFacilityDetails());
+        target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
+        target.setBirthWeight(source.getBirthWeight());
     }
 
     @Override
@@ -174,6 +184,34 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
         }
 
         target.setOccupationFacilityDetails(source.getOccupationFacilityDetails());
+
+        target.setMothersName(source.getMothersName());
+        target.setFathersName(source.getFathersName());
+
+        if (source.getPlaceOfBirthRegion() != null) {
+            target.setPlaceOfBirthRegion(RegionDtoHelper.toReferenceDto(DatabaseHelper.getRegionDao().queryForId(source.getPlaceOfBirthRegion().getId())));
+        } else {
+            target.setPlaceOfBirthRegion(null);
+        }
+        if (source.getPlaceOfBirthDistrict() != null) {
+            target.setPlaceOfBirthDistrict(DistrictDtoHelper.toReferenceDto(DatabaseHelper.getDistrictDao().queryForId(source.getPlaceOfBirthDistrict().getId())));
+        } else {
+            target.setPlaceOfBirthDistrict(null);
+        }
+        if (source.getPlaceOfBirthCommunity() != null) {
+            target.setPlaceOfBirthCommunity(CommunityDtoHelper.toReferenceDto(DatabaseHelper.getCommunityDao().queryForId(source.getPlaceOfBirthCommunity().getId())));
+        } else {
+            target.setPlaceOfBirthCommunity(null);
+        }
+        if (source.getPlaceOfBirthFacility() != null) {
+            target.setPlaceOfBirthFacility(FacilityDtoHelper.toReferenceDto(DatabaseHelper.getFacilityDao().queryForId(source.getPlaceOfBirthFacility().getId())));
+        } else {
+            target.setPlaceOfBirthFacility(null);
+        }
+
+        target.setPlaceOfBirthFacilityDetails(source.getPlaceOfBirthFacilityDetails());
+        target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
+        target.setBirthWeight(source.getBirthWeight());
     }
 
     public static PersonReferenceDto toReferenceDto(Person ado) {

@@ -39,8 +39,10 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.epidata.EpiData;
@@ -182,6 +184,9 @@ public class Case extends AbstractDomainObject {
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private ClinicalCourse clinicalCourse;
 
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private MaternalHistory maternalHistory;
+
     @Deprecated
     @Column
     private Long contactOfficer_id;
@@ -201,6 +206,10 @@ public class Case extends AbstractDomainObject {
     private YesNoUnknown sequelae;
     @Column(length = 512)
     private String sequelaeDetails;
+    @Enumerated(EnumType.STRING)
+    private HospitalWardType notifyingClinic;
+    @Column(length = 512)
+    private String notifyingClinicDetails;
 
     public Person getPerson() {
         return person;
@@ -458,6 +467,14 @@ public class Case extends AbstractDomainObject {
         this.clinicalCourse = clinicalCourse;
     }
 
+    public MaternalHistory getMaternalHistory() {
+        return maternalHistory;
+    }
+
+    public void setMaternalHistory(MaternalHistory maternalHistory) {
+        this.maternalHistory = maternalHistory;
+    }
+
     public Double getReportLat() {
         return reportLat;
     }
@@ -568,4 +585,19 @@ public class Case extends AbstractDomainObject {
         this.sequelaeDetails = sequelaeDetails;
     }
 
+    public HospitalWardType getNotifyingClinic() {
+        return notifyingClinic;
+    }
+
+    public void setNotifyingClinic(HospitalWardType notifyingClinic) {
+        this.notifyingClinic = notifyingClinic;
+    }
+
+    public String getNotifyingClinicDetails() {
+        return notifyingClinicDetails;
+    }
+
+    public void setNotifyingClinicDetails(String notifyingClinicDetails) {
+        this.notifyingClinicDetails = notifyingClinicDetails;
+    }
 }

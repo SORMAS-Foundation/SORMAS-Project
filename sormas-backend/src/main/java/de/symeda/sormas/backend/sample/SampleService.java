@@ -258,7 +258,8 @@ public class SampleService extends AbstractAdoService<Sample> {
 
 	@SuppressWarnings("rawtypes")
 	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, CriteriaQuery cq, From<Sample,Sample> samplePath, User user) {
-
+		Join<Sample, Case> caze = samplePath.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
+		
 		Predicate filter = null;
 		// user that reported it is not able to access it. Otherwise they would also need to access the case
 		//filter = cb.equal(samplePath.get(Sample.REPORTING_USER), user);
@@ -267,6 +268,11 @@ public class SampleService extends AbstractAdoService<Sample> {
 		if (user.getUserRoles().contains(UserRole.LAB_USER) || user.getUserRoles().contains(UserRole.EXTERNAL_LAB_USER)) {
 			if(user.getLaboratory() != null) {
 				filter = or(cb, filter, cb.equal(samplePath.get(Sample.LAB), user.getLaboratory()));			}
+		}
+
+		// only show samples of a specific disease if a limited disease is set
+		if (filter != null && user.getLimitedDisease() != null) {
+			filter = and(cb, filter, cb.equal(caze.get(Case.DISEASE), user.getLimitedDisease()));
 		}
 
 		return filter;
@@ -332,7 +338,7 @@ public class SampleService extends AbstractAdoService<Sample> {
 							cb.like(cb.lower(casePerson.get(Person.FIRST_NAME)), textFilter),
 							cb.like(cb.lower(casePerson.get(Person.LAST_NAME)), textFilter),
 							cb.like(cb.lower(from.get(Sample.LAB_SAMPLE_ID)), textFilter),
-							cb.like(cb.lower(from.get(Sample.SAMPLE_CODE)), textFilter));
+							cb.like(cb.lower(caze.get(Case.EPID_NUMBER)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}

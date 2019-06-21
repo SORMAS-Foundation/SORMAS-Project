@@ -306,6 +306,13 @@
 
                 </LinearLayout>
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_notifyingClinic"
+                    app:value="@{data.notifyingClinic}"
+                    app:appendValue="@{data.notifyingClinicDetails}"
+                    app:valueFormat="@string/two_strings_with_hyphen_format"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <ImageView style="@style/FullHorizontalDividerStyle"/>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField

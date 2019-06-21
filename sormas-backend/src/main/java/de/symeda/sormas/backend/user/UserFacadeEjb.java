@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -47,6 +48,7 @@ import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRole.UserRoleValidationException;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -66,6 +68,7 @@ import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.PasswordHelper;
 
 @Stateless(name = "UserFacade")
 public class UserFacadeEjb implements UserFacade {
@@ -276,6 +279,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
 		target.setAssociatedOfficer(toReferenceDto(source.getAssociatedOfficer()));
 		target.setLaboratory(FacilityFacadeEjb.toReferenceDto(source.getLaboratory()));
+		target.setLimitedDisease(source.getLimitedDisease());
 
 		source.getUserRoles().size();
 		target.setUserRoles(source.getUserRoles());
@@ -317,6 +321,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setHealthFacility(facilityService.getByReferenceDto(source.getHealthFacility()));
 		target.setAssociatedOfficer(userService.getByReferenceDto(source.getAssociatedOfficer()));
 		target.setLaboratory(facilityService.getByReferenceDto(source.getLaboratory()));
+		target.setLimitedDisease(source.getLimitedDisease());
 
 		target.setUserRoles(source.getUserRoles());
 
@@ -341,6 +346,17 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	public UserReferenceDto getCurrentUserAsReference() {
 		return new UserReferenceDto(userService.getCurrentUser().getUuid());
+	}
+
+	@Override
+	public Set<UserRole> getValidRoles(String userName, String password) {
+		User user = userService.getByUserName(userName);
+		if (user != null) {
+			if (DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) {
+				return user.getUserRoles();
+			}
+		}
+		return null;
 	}
 
 	@LocalBean

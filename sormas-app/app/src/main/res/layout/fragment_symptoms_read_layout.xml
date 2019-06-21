@@ -87,6 +87,26 @@
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <LinearLayout
+                android:id="@+id/symptoms_additional_fields_layout"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/symptoms_jaundiceWithin24HoursOfBirth"
+                    app:value="@{data.jaundiceWithin24HoursOfBirth}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/symptoms_congenitalHeartDiseaseType"
+                    app:value="@{data.congenitalHeartDiseaseType}"
+                    app:appendValue="@{data.congenitalHeartDiseaseDetails}"
+                    app:valueFormat="@string/two_strings_with_hyphen_format"
+                    style="@style/ControlSingleColumnStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/symptoms_lesionsLayout"
                 android:orientation="vertical"
                 android:layout_width="match_parent"

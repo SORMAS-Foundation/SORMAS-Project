@@ -79,10 +79,15 @@ public class Sample extends AbstractDomainObject {
 	public static final String SHIPPED = "shipped";
 	public static final String RECEIVED = "received";
 	public static final String SPECIMEN_CONDITION = "specimenCondition";
+	public static final String PATHOGEN_TESTING_REQUESTED = "pathogenTestingRequested";
 	public static final String ADDITIONAL_TESTING_REQUESTED = "additionalTestingRequested";
 	public static final String ADDITIONAL_TESTS = "additionalTests";
 	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
-
+	public static final String REQUESTED_PATHOGEN_TESTS_STRING = "requestedPathogenTestsString";
+	public static final String REQUESTED_ADDITIONAL_TESTS_STRING = "requestedAdditionalTestsString";
+	public static final String REQUESTED_OTHER_PATHOGEN_TESTS = "requestedOtherPathogenTests";
+	public static final String REQUESTED_OTHER_ADDITIONAL_TESTS = "requestedOtherAdditionalTests";
+	
 	private Case associatedCase;
 	private String sampleCode;
 	private String labSampleID;

@@ -18,21 +18,15 @@
 
 package de.symeda.sormas.app.sample.read;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.databinding.DataBindingUtil;
 import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
@@ -42,13 +36,11 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.sample.AdditionalTest;
-import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
+import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.databinding.FragmentSampleReadLayoutBinding;
-import de.symeda.sormas.app.databinding.RowAdditionalTestLayoutBinding;
 
 import static android.view.View.GONE;
-import static android.view.View.inflate;
 
 public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayoutBinding, Sample, Sample> {
 
@@ -179,10 +171,6 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
 
         if (requestedPathogenTests.isEmpty() && requestedAdditionalTests.isEmpty()) {
             contentBinding.pathogenTestingDivider.setVisibility(GONE);
-        }
-
-        if (!Boolean.TRUE.equals(record.getPathogenTestingRequested())) {
-            contentBinding.samplePathogenTestResult.setVisibility(GONE);
         }
     }
 

@@ -67,7 +67,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 
 		Column<EventParticipantIndexDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
 		editColumn.setId(EDIT_BTN_ID);
-		editColumn.setWidth(60);
+		editColumn.setWidth(20);
 		
 		Column<EventParticipantIndexDto, String> caseIdColumn = addColumn(entry -> {
 			if (entry.getCaseUuid() != null) {

@@ -26,6 +26,7 @@ import de.symeda.sormas.api.utils.DependantOn;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.Outbreaks;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class SymptomsDto extends EntityDto {
 
@@ -36,6 +37,7 @@ public class SymptomsDto extends EntityDto {
 	public static final String ANOREXIA_APPETITE_LOSS = "anorexiaAppetiteLoss";
 	public static final String BACKACHE = "backache";
 	public static final String BEDRIDDEN = "bedridden";
+	public static final String BILATERAL_CATARACTS = "bilateralCataracts";
 	public static final String BLACKENING_DEATH_OF_TISSUE = "blackeningDeathOfTissue";
 	public static final String BLEEDING_VAGINA = "bleedingVagina";
 	public static final String BLOOD_IN_STOOL = "bloodInStool";
@@ -50,11 +52,16 @@ public class SymptomsDto extends EntityDto {
 
 	public static final String CHILLS_SWEATS = "chillsSweats";
 	public static final String CONFUSED_DISORIENTED = "confusedDisoriented";
+	public static final String CONGENITAL_GLAUCOMA = "congenitalGlaucoma";
+	public static final String CONGENITAL_HEART_DISEASE = "congenitalHeartDisease";
+	public static final String CONGENITAL_HEART_DISEASE_TYPE = "congenitalHeartDiseaseType";
+	public static final String CONGENITAL_HEART_DISEASE_DETAILS = "congenitalHeartDiseaseDetails";
 	public static final String CONJUNCTIVITIS = "conjunctivitis";
 	public static final String COUGH = "cough";
 	public static final String COUGHING_BLOOD = "coughingBlood";
 	public static final String DARK_URINE = "darkUrine";
 	public static final String DEHYDRATION = "dehydration";
+	public static final String DEVELOPMENTAL_DELAY = "developmentalDelay";
 	public static final String DIARRHEA = "diarrhea";
 	public static final String DIFFICULTY_BREATHING = "difficultyBreathing";
 	public static final String DIGESTED_BLOOD_VOMIT = "digestedBloodVomit";
@@ -76,6 +83,7 @@ public class SymptomsDto extends EntityDto {
 	public static final String I18N_PREFIX = "Symptoms";
 	public static final String INJECTION_SITE_BLEEDING = "injectionSiteBleeding";
 	public static final String JAUNDICE = "jaundice";
+	public static final String JAUNDICE_WITHIN_24_HOURS_OF_BIRTH = "jaundiceWithin24HoursOfBirth";
 	public static final String JOINT_PAIN = "jointPain";
 	public static final String KOPLIKS_SPOTS = "kopliksSpots";
 	public static final String LESIONS = "lesions";
@@ -102,6 +110,8 @@ public class SymptomsDto extends EntityDto {
 	public static final String LYMPHADENOPATHY_INGUINAL = "lymphadenopathyInguinal";
 	public static final String MALAISE = "malaise";	
 	public static final String MENINGEAL_SIGNS = "meningealSigns";
+	public static final String MENINGOENCEPHALITIS = "meningoencephalitis";
+	public static final String MICROCEPHALY = "microcephaly";
 	public static final String MID_UPPER_ARM_CIRCUMFERENCE = "midUpperArmCircumference";
 	public static final String MUSCLE_PAIN = "musclePain";
 	public static final String NAUSEA = "nausea";
@@ -123,6 +133,9 @@ public class SymptomsDto extends EntityDto {
 	public static final String PATIENT_ILL_LOCATION = "patientIllLocation";
 	public static final String PHARYNGEAL_ERYTHEMA = "pharyngealErythema";
 	public static final String PHARYNGEAL_EXUDATE = "pharyngealExudate";
+	public static final String PIGMENTARY_RETINOPATHY = "pigmentaryRetinopathy";
+	public static final String PURPURIC_RASH = "purpuricRash";
+	public static final String RADIOLUCENT_BONE_DISEASE = "radiolucentBoneDisease";
 	public static final String RAPID_BREATHING = "rapidBreathing";
 	public static final String RED_BLOOD_VOMIT = "redBloodVomit";
 	public static final String REFUSAL_FEEDOR_DRINK = "refusalFeedorDrink";
@@ -136,6 +149,7 @@ public class SymptomsDto extends EntityDto {
 	public static final String SKIN_BRUISING = "skinBruising";
 	public static final String SKIN_RASH = "skinRash";
 	public static final String SORE_THROAT = "soreThroat";
+	public static final String SPLENOMEGALY = "splenomegaly";
 	public static final String STOMACH_BLEEDING = "stomachBleeding";
 	public static final String SUNKEN_EYES_FONTANELLE = "sunkenEyesFontanelle";
 	public static final String SWOLLEN_GLANDS = "swollenGlands";
@@ -146,6 +160,7 @@ public class SymptomsDto extends EntityDto {
 	public static final String THROBOCYTOPENIA = "throbocytopenia";
 	public static final String TREMOR = "tremor";
 	public static final String UNEXPLAINED_BLEEDING = "unexplainedBleeding";
+	public static final String UNILATERAL_CATARACTS = "unilateralCataracts";
 	public static final String VOMITING = "vomiting";	
 	
 	public static final String WEIGHT = "weight";
@@ -243,7 +258,7 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	@Outbreaks
 	private SymptomState headache;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.CONGENITAL_RUBELLA,Disease.OTHER})
 	private SymptomState hearingloss;
 	private Integer heartRate;
 	private Integer height;
@@ -261,8 +276,10 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState injectionSiteBleeding;
-	@Diseases({Disease.YELLOW_FEVER,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.OTHER})
+	@Diseases({Disease.YELLOW_FEVER,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.CONGENITAL_RUBELLA,Disease.OTHER})
 	private SymptomState jaundice;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private YesNoUnknown jaundiceWithin24HoursOfBirth;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.MEASLES,Disease.DENGUE,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	@Outbreaks
 	private SymptomState jointPain;
@@ -363,10 +380,10 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	@DependantOn(OTHER_HEMORRHAGIC_SYMPTOMS)
 	private String otherHemorrhagicSymptomsText;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.CONGENITAL_RUBELLA,Disease.OTHER})
 	@Outbreaks
 	private SymptomState otherNonHemorrhagicSymptoms;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.CONGENITAL_RUBELLA,Disease.OTHER})
 	@Outbreaks
 	@DependantOn(OTHER_NON_HEMORRHAGIC_SYMPTOMS)
 	private String otherNonHemorrhagicSymptomsText;
@@ -424,18 +441,44 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.DENGUE,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	private SymptomState swollenGlands;
 	private Boolean symptomatic;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.CONGENITAL_RUBELLA,Disease.OTHER})
 	private String symptomsComments;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.CONGENITAL_RUBELLA,Disease.OTHER})
 	@Outbreaks
 	private Float temperature;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.CONGENITAL_RUBELLA,Disease.OTHER})
 	@Outbreaks
 	private TemperatureSource temperatureSource;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	private SymptomState throbocytopenia;
 	@Diseases({Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	private SymptomState tremor;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private SymptomState bilateralCataracts;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private SymptomState unilateralCataracts;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private SymptomState congenitalGlaucoma;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private SymptomState pigmentaryRetinopathy;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private SymptomState purpuricRash;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private SymptomState microcephaly;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private SymptomState developmentalDelay;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private SymptomState splenomegaly;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private SymptomState meningoencephalitis;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private SymptomState radiolucentBoneDisease;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private SymptomState congenitalHeartDisease;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private CongenitalHeartDiseaseType congenitalHeartDiseaseType;
+	@Diseases({Disease.CONGENITAL_RUBELLA})
+	private String congenitalHeartDiseaseDetails;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.OTHER})
 	private SymptomState unexplainedBleeding;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.OTHER})
@@ -526,6 +569,14 @@ public class SymptomsDto extends EntityDto {
 	public SymptomState getBulgingFontanelle() {
 		return bulgingFontanelle;
 	}
+	@Order(116)
+	public SymptomState getBilateralCataracts() {
+		return bilateralCataracts;
+	}
+	@Order(117)
+	public SymptomState getUnilateralCataracts() {
+		return unilateralCataracts;
+	}
 	@Order(120)
 	public SymptomState getChestPain() {
 		return chestPain;
@@ -539,14 +590,30 @@ public class SymptomsDto extends EntityDto {
 		return confusedDisoriented;
 	}
 	@Order(123)
+	public SymptomState getCongenitalGlaucoma() {
+		return congenitalGlaucoma;
+	}
+	@Order(124)
+	public SymptomState getCongenitalHeartDisease() {
+		return congenitalHeartDisease;
+	}
+	@Order(125)
+	public CongenitalHeartDiseaseType getCongenitalHeartDiseaseType() {
+		return congenitalHeartDiseaseType;
+	}
+	@Order(126)
+	public String getCongenitalHeartDiseaseDetails() {
+		return congenitalHeartDiseaseDetails;
+	}
+	@Order(127)
 	public SymptomState getConjunctivitis() {
 		return conjunctivitis;
 	}
-	@Order(124)
+	@Order(128)
 	public SymptomState getCough() {
 		return cough;
 	}
-	@Order(125)
+	@Order(129)
 	public SymptomState getCoughingBlood() {
 		return coughingBlood;
 	}
@@ -559,18 +626,22 @@ public class SymptomsDto extends EntityDto {
 		return dehydration;
 	}
 	@Order(132)
+	public SymptomState getDevelopmentalDelay() {
+		return developmentalDelay;
+	}
+	@Order(133)
 	public SymptomState getDiarrhea() {
 		return diarrhea;
 	}	
-	@Order(133)
+	@Order(134)
 	public SymptomState getDifficultyBreathing() {
 		return difficultyBreathing;
 	}
-	@Order(134)
+	@Order(135)
 	public SymptomState getDigestedBloodVomit() {
 		return digestedBloodVomit;
 	}
-	@Order(135)
+	@Order(136)
 	public SymptomState getEyePainLightSensitive() {
 		return eyePainLightSensitive;
 	}
@@ -636,22 +707,26 @@ public class SymptomsDto extends EntityDto {
 		return jaundice;
 	}
 	@Order(161)
+	public YesNoUnknown getJaundiceWithin24HoursOfBirth() {
+		return jaundiceWithin24HoursOfBirth;
+	}
+	@Order(162)
 	public SymptomState getJointPain() {
 		return jointPain;
 	}
-	@Order(162)
+	@Order(163)
 	public SymptomState getKopliksSpots() {
 		return kopliksSpots;
 	}
-	@Order(163)
+	@Order(164)
 	public SymptomState getLesions() {
 		return lesions;
 	}
-	@Order(164)
+	@Order(165)
 	public Boolean getLesionsAllOverBody() {
 		return lesionsAllOverBody;
 	}
-	@Order(165)
+	@Order(166)
 	public Boolean getLesionsArms() {
 		return lesionsArms;
 	}
@@ -736,6 +811,14 @@ public class SymptomsDto extends EntityDto {
 		return meningealSigns;
 	}
 	@Order(195)
+	public SymptomState getMeningoencephalitis() {
+		return meningoencephalitis;
+	}
+	@Order(196)
+	public SymptomState getMicrocephaly() {
+		return microcephaly;
+	}
+	@Order(197)
 	public Integer getMidUpperArmCircumference() {
 		return midUpperArmCircumference;
 	}
@@ -808,6 +891,18 @@ public class SymptomsDto extends EntityDto {
 		return pharyngealExudate;
 	}
 	@Order(225)
+	public SymptomState getPigmentaryRetinopathy() {
+		return pigmentaryRetinopathy;
+	}
+	@Order(226)
+	public SymptomState getPurpuricRash() {
+		return purpuricRash;
+	}
+	@Order(227)
+	public SymptomState getRadiolucentBoneDisease() {
+		return radiolucentBoneDisease;
+	}
+	@Order(228)
 	public SymptomState getRapidBreathing() {
 		return rapidBreathing;
 	}
@@ -855,10 +950,14 @@ public class SymptomsDto extends EntityDto {
 		return soreThroat;
 	}
 	@Order(244)
+	public SymptomState getSplenomegaly() {
+		return splenomegaly;
+	}
+	@Order(245)
 	public SymptomState getStomachBleeding() {
 		return stomachBleeding;
 	}
-	@Order(245)
+	@Order(246)
 	public SymptomState getSunkenEyesFontanelle() {
 		return sunkenEyesFontanelle;
 	}
@@ -909,7 +1008,6 @@ public class SymptomsDto extends EntityDto {
 	public void setBloodInStool(SymptomState bloodInStool) {
 		this.bloodInStool = bloodInStool;
 	}
-	
 	public void setBloodPressureDiastolic(Integer bloodPressureDiastolic) {
 		this.bloodPressureDiastolic = bloodPressureDiastolic;
 	}
@@ -1224,7 +1322,48 @@ public class SymptomsDto extends EntityDto {
 	public void setVomiting(SymptomState vomiting) {
 		this.vomiting = vomiting;
 	}	
-
+	public void setJaundiceWithin24HoursOfBirth(YesNoUnknown jaundiceWithin24HoursOfBirth) {
+		this.jaundiceWithin24HoursOfBirth = jaundiceWithin24HoursOfBirth;
+	}
+	public void setBilateralCataracts(SymptomState bilateralCataracts) {
+		this.bilateralCataracts = bilateralCataracts;
+	}
+	public void setUnilateralCataracts(SymptomState unilateralCataracts) {
+		this.unilateralCataracts = unilateralCataracts;
+	}
+	public void setCongenitalGlaucoma(SymptomState congenitalGlaucoma) {
+		this.congenitalGlaucoma = congenitalGlaucoma;
+	}
+	public void setPigmentaryRetinopathy(SymptomState pigmentaryRetinopathy) {
+		this.pigmentaryRetinopathy = pigmentaryRetinopathy;
+	}
+	public void setPurpuricRash(SymptomState purpuricRash) {
+		this.purpuricRash = purpuricRash;
+	}
+	public void setMicrocephaly(SymptomState microcephaly) {
+		this.microcephaly = microcephaly;
+	}
+	public void setDevelopmentalDelay(SymptomState developmentalDelay) {
+		this.developmentalDelay = developmentalDelay;
+	}
+	public void setSplenomegaly(SymptomState splenomegaly) {
+		this.splenomegaly = splenomegaly;
+	}
+	public void setMeningoencephalitis(SymptomState meningoencephalitis) {
+		this.meningoencephalitis = meningoencephalitis;
+	}
+	public void setRadiolucentBoneDisease(SymptomState radiolucentBoneDisease) {
+		this.radiolucentBoneDisease = radiolucentBoneDisease;
+	}
+	public void setCongenitalHeartDisease(SymptomState congenitalHeartDisease) {
+		this.congenitalHeartDisease = congenitalHeartDisease;
+	}
+	public void setCongenitalHeartDiseaseType(CongenitalHeartDiseaseType congenitalHeartDiseaseType) {
+		this.congenitalHeartDiseaseType = congenitalHeartDiseaseType;
+	}
+	public void setCongenitalHeartDiseaseDetails(String congenitalHeartDiseaseDetails) {
+		this.congenitalHeartDiseaseDetails = congenitalHeartDiseaseDetails;
+	}
 	public void setWeight(Integer weight) {
 		this.weight = weight;
 	}

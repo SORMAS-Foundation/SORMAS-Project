@@ -36,7 +36,7 @@ public class SampleIndexDto implements Serializable {
 	public static final String ASSOCIATED_CASE = "associatedCase";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
-	public static final String SAMPLE_CODE = "sampleCode";
+	public static final String EPID_NUMBER = "epidNumber";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
 	public static final String CASE_REGION_UUID = "caseRegionUuid";
 	public static final String CASE_DISTRICT = "caseDistrict";
@@ -54,7 +54,7 @@ public class SampleIndexDto implements Serializable {
 
 	private String uuid;
 	private CaseReferenceDto associatedCase;
-	private String sampleCode;
+	private String epidNumber;
 	private String labSampleID;
 	private Disease disease;
 	private String diseaseDetails;
@@ -72,7 +72,7 @@ public class SampleIndexDto implements Serializable {
 	private PathogenTestResultType pathogenTestResult;
 	private AdditionalTestingStatus additionalTestingStatus;
 
-	public SampleIndexDto(String uuid, String sampleCode, String labSampleId, Date sampleDateTime,
+	public SampleIndexDto(String uuid, String epidNumber, String labSampleId, Date sampleDateTime,
 			boolean shipped, Date shipmentDate, boolean received, Date receivedDate, 
 			SampleMaterial sampleMaterial, SpecimenCondition specimenCondition,
 			String labUuid, String labName, String referredSampleUuid, 
@@ -82,7 +82,7 @@ public class SampleIndexDto implements Serializable {
 			Boolean additionalTestingRequested, Boolean additionalTestPerformed) {
 		this.uuid = uuid;
 		this.associatedCase = new CaseReferenceDto(associatedCaseUuid, associatedCaseFirstName, associatedCaseLastName);
-		this.sampleCode = sampleCode;
+		this.epidNumber = epidNumber;
 		this.labSampleID = labSampleId;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
@@ -126,11 +126,11 @@ public class SampleIndexDto implements Serializable {
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
 	}
-	public String getSampleCode() {
-		return sampleCode;
+	public String getEpidNumber() {
+		return epidNumber;
 	}
-	public void setSampleCode(String sampleCode) {
-		this.sampleCode = sampleCode;
+	public void setEpidNumber(String epidNumber) {
+		this.epidNumber = epidNumber;
 	}
 	public String getLabSampleID() {
 		return labSampleID;

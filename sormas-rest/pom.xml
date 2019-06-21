@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>de.symeda.sormas</groupId>
 		<artifactId>sormas-base</artifactId>
-		<version>1.20.0</version>
+		<version>1.21.0</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
 
@@ -32,6 +32,13 @@
 		    <groupId>org.glassfish.jersey.media</groupId>
 		    <artifactId>jersey-media-json-jackson</artifactId>
 		</dependency>
+
+      <dependency>
+        <groupId>javax.security.enterprise</groupId>
+        <artifactId>javax.security.enterprise-api</artifactId>
+        <version>1.0</version>
+        <scope>provided</scope>
+</dependency>
 
 	</dependencies>
 

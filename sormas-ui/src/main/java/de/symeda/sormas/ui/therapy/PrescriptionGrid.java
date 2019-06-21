@@ -65,7 +65,7 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 				PrescriptionIndexDto.ROUTE, PrescriptionIndexDto.PRESCRIBING_CLINICIAN, DOCUMENT_TREATMENT_BTN_ID);
 		
 		getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
-		getColumn(EDIT_BTN_ID).setWidth(60);
+		getColumn(EDIT_BTN_ID).setWidth(20);
 		getColumn(EDIT_BTN_ID).setHeaderCaption("");
 		getColumn(DOCUMENT_TREATMENT_BTN_ID).setRenderer(new GridButtonRenderer());
 		getColumn(DOCUMENT_TREATMENT_BTN_ID).setHeaderCaption("");

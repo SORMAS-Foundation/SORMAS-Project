@@ -61,7 +61,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 			LayoutUtil.fluidRowLocs(UserDto.ACTIVE) +
 			LayoutUtil.fluidRowLocs(UserDto.USER_NAME, UserDto.USER_ROLES) +
 			LayoutUtil.fluidRowLocs(UserDto.REGION, UserDto.DISTRICT, UserDto.COMMUNITY) +
-			LayoutUtil.fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY)
+			LayoutUtil.fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY) +
+			LayoutUtil.fluidRowLocs(UserDto.LIMITED_DISEASE, "", "")
 			;
     
     public UserEditForm(boolean create, UserRight editOrCreateUserRight) {
@@ -82,6 +83,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	addField(UserDto.USER_EMAIL, TextField.class);
     	TextField phone = addField(UserDto.PHONE, TextField.class);
     	phone.addValidator(new PhoneNumberValidator(I18nProperties.getValidationError(Validations.phoneNumberValidation)));
+    	addDiseaseField(UserDto.LIMITED_DISEASE, false);
     	
     	Label userEmailDesc = new Label(I18nProperties.getString(Strings.infoUserEmail));
     	getContent().addComponent(userEmailDesc, USER_EMAIL_DESC_LOC);

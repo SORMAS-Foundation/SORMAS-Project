@@ -19,19 +19,31 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.Date;
 
+import org.vaadin.hene.popupbutton.PopupButton;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.AdditionalTestDto;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 
 @SuppressWarnings("serial")
@@ -49,15 +61,49 @@ public class SamplesView extends AbstractView {
 		addComponent(sampleListComponent);
 		
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EXPORT)) {
-			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
-			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			PopupButton exportButton = new PopupButton(I18nProperties.getCaption(Captions.export)); 
 			exportButton.setIcon(VaadinIcons.DOWNLOAD);
+			VerticalLayout exportLayout = new VerticalLayout();
+			exportLayout.setSpacing(true); 
+			exportLayout.setMargin(true);
+			exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+			exportLayout.setWidth(200, Unit.PIXELS);
+			exportButton.setContent(exportLayout);
+			addHeaderComponent(exportButton);
 			
+			Button basicExportButton = new Button(I18nProperties.getCaption(Captions.exportBasic));
+			basicExportButton.setDescription(I18nProperties.getString(Strings.infoBasicExport));
+			basicExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			basicExportButton.setIcon(VaadinIcons.TABLE);
+			basicExportButton.setWidth(100, Unit.PERCENTAGE);
+			exportLayout.addComponent(basicExportButton);
+
 			StreamResource streamResource = new GridExportStreamResource(sampleListComponent.getGrid(), "sormas_samples", "sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv", SampleGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
-			fileDownloader.extend(exportButton);
+			fileDownloader.extend(basicExportButton);
+
+			Button extendedExportButton = new Button(I18nProperties.getCaption(Captions.exportDetailed));
+			extendedExportButton.setDescription(I18nProperties.getString(Strings.infoDetailedExport));
+			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			extendedExportButton.setIcon(VaadinIcons.FILE_TEXT);
+			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
+			exportLayout.addComponent(extendedExportButton);
 			
-			addHeaderComponent(exportButton);
+			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(SampleExportDto.class,
+					(Integer start, Integer max) -> FacadeProvider.getSampleFacade().getExportList(UserProvider.getCurrent().getUuid(), sampleListComponent.getGrid().getCriteria(), start, max), 
+					(propertyId,type) -> {
+						String caption = I18nProperties.getPrefixCaption(SampleExportDto.I18N_PREFIX, propertyId,
+								I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, propertyId,
+										I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
+												I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, propertyId,
+														I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, propertyId)))));
+						if (Date.class.isAssignableFrom(type)) {
+							caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+						}
+						return caption;
+					},
+					"sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
 		}
 	}
 	

@@ -25,6 +25,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 /**
  * A criteria determining that a specific number of sub criteria need to be true in order for the whole criteria
@@ -68,43 +69,12 @@ public class ClassificationXOfCriteriaDto extends ClassificationCriteriaDto impl
 
 	@Override
 	public String getCriteriaName() {
-		return "<b>" + parseAmountNumber() + " " + I18nProperties.getString(Strings.of).toUpperCase() + "</b>";
+		return "<b>" + DataHelper.parseNumberToString(requiredAmount) + " " + I18nProperties.getString(Strings.of).toUpperCase() + "</b>";
 	}
 
 	@Override
 	public List<ClassificationCriteriaDto> getSubCriteria() {
 		return classificationCriteria;
-	}
-
-	protected String parseAmountNumber() {
-		switch (requiredAmount) {
-		case 1:
-			return I18nProperties.getString(Strings.numberOne).toUpperCase();
-		case 2:
-			return I18nProperties.getString(Strings.numberTwo).toUpperCase();
-		case 3:
-			return I18nProperties.getString(Strings.numberThree).toUpperCase();
-		case 4:
-			return I18nProperties.getString(Strings.numberFour).toUpperCase();
-		case 5:
-			return I18nProperties.getString(Strings.numberFive).toUpperCase();
-		case 6:
-			return I18nProperties.getString(Strings.numberSix).toUpperCase();
-		case 7:
-			return I18nProperties.getString(Strings.numberSeven).toUpperCase();
-		case 8:
-			return I18nProperties.getString(Strings.numberEight).toUpperCase();
-		case 9:
-			return I18nProperties.getString(Strings.numberNine).toUpperCase();
-		case 10:
-			return I18nProperties.getString(Strings.numberTen).toUpperCase();
-		case 11:
-			return I18nProperties.getString(Strings.numberEleven).toUpperCase();
-		case 12:
-			return I18nProperties.getString(Strings.numberTwelve).toUpperCase();
-		default:
-			return Integer.toString(requiredAmount);
-		}
 	}
 
 	public int getRequiredAmount() {
@@ -131,12 +101,15 @@ public class ClassificationXOfCriteriaDto extends ClassificationCriteriaDto impl
 
 		private static final long serialVersionUID = 8374870595895910414L;
 
+		private boolean isAddition = true;
+		
 		public ClassificationXOfSubCriteriaDto() {
 			super();
 		}
 		
-		public ClassificationXOfSubCriteriaDto(int requiredAmount, ClassificationCriteriaDto... criteria) {
+		public ClassificationXOfSubCriteriaDto(int requiredAmount, boolean isAddition, ClassificationCriteriaDto... criteria) {
 			super(requiredAmount, criteria);
+			this.isAddition = isAddition;
 		}
 
 		@Override
@@ -149,6 +122,14 @@ public class ClassificationXOfCriteriaDto extends ClassificationCriteriaDto impl
 			}
 			
 			return stringBuilder.toString();
+		}
+
+		public boolean isAddition() {
+			return isAddition;
+		}
+
+		public void setAddition(boolean isAddition) {
+			this.isAddition = isAddition;
 		}
 		
 	}

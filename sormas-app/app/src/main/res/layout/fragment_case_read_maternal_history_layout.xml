@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/fragment_padding"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:id="@+id/main_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/maternalHistory_childrenNumber"
+                    app:value="@{data.childrenNumber}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/maternalHistory_ageAtBirth"
+                    app:value="@{data.ageAtBirth}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/maternalHistory_conjunctivitis"
+                app:value="@{data.conjunctivitis}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/maternalHistory_conjunctivitisOnset"
+                    app:value="@{data.conjunctivitisOnset}"
+                    app:dependencyParentField="@{maternalHistoryConjunctivitis}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/maternalHistory_conjunctivitisMonth"
+                    app:value="@{data.conjunctivitisMonth}"
+                    app:dependencyParentField="@{maternalHistoryConjunctivitis}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/maternalHistory_maculopapularRash"
+                app:value="@{data.maculopapularRash}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/maternalHistory_maculopapularRashOnset"
+                    app:value="@{data.maculopapularRashOnset}"
+                    app:dependencyParentField="@{maternalHistoryMaculopapularRash}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/maternalHistory_maculopapularRashMonth"
+                    app:value="@{data.maculopapularRashMonth}"
+                    app:dependencyParentField="@{maternalHistoryMaculopapularRash}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/maternalHistory_swollenLymphs"
+                app:value="@{data.swollenLymphs}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/maternalHistory_swollenLymphsOnset"
+                    app:value="@{data.swollenLymphsOnset}"
+                    app:dependencyParentField="@{maternalHistorySwollenLymphs}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/maternalHistory_swollenLymphsMonth"
+                    app:value="@{data.swollenLymphsMonth}"
+                    app:dependencyParentField="@{maternalHistorySwollenLymphs}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/maternalHistory_arthralgiaArthritis"
+                app:value="@{data.arthralgiaArthritis}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/maternalHistory_arthralgiaArthritisOnset"
+                    app:value="@{data.arthralgiaArthritisOnset}"
+                    app:dependencyParentField="@{maternalHistoryArthralgiaArthritis}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/maternalHistory_arthralgiaArthritisMonth"
+                    app:value="@{data.arthralgiaArthritisMonth}"
+                    app:dependencyParentField="@{maternalHistoryArthralgiaArthritis}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/maternalHistory_otherComplications"
+                app:value="@{data.otherComplications}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/maternalHistory_otherComplicationsOnset"
+                    app:value="@{data.otherComplicationsOnset}"
+                    app:dependencyParentField="@{maternalHistoryOtherComplications}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/maternalHistory_otherComplicationsMonth"
+                    app:value="@{data.otherComplicationsMonth}"
+                    app:dependencyParentField="@{maternalHistoryOtherComplications}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/maternalHistory_otherComplicationsDetails"
+                app:value="@{data.otherComplicationsDetails}"
+                app:dependencyParentField="@{maternalHistoryOtherComplications}"
+                app:dependencyParentValue="@{YesNoUnknown.YES}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/maternalHistory_rubella"
+                    app:value="@{data.rubella}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/maternalHistory_rubellaOnset"
+                    app:value="@{data.rubellaOnset}"
+                    app:dependencyParentField="@{maternalHistoryRubella}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/maternalHistory_rashExposure"
+                    app:value="@{data.rashExposure}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/maternalHistory_rashExposureDate"
+                    app:value="@{data.rashExposureDate}"
+                    app:dependencyParentField="@{maternalHistoryRashExposure}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/maternalHistory_rashExposureMonth"
+                    app:value="@{data.rashExposureMonth}"
+                    app:dependencyParentField="@{maternalHistoryRashExposure}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/maternalHistory_rashExposureRegion"
+                    app:value="@{data.rashExposureRegion}"
+                    app:dependencyParentField="@{maternalHistoryRashExposure}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/maternalHistory_rashExposureDistrict"
+                    app:value="@{data.rashExposureDistrict}"
+                    app:dependencyParentField="@{maternalHistoryRashExposure}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/maternalHistory_rashExposureCommunity"
+                    app:value="@{data.rashExposureCommunity}"
+                    app:dependencyParentField="@{maternalHistoryRashExposure}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</layout>
+

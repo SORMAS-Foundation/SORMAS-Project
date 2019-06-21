@@ -171,9 +171,6 @@ public class StatisticsHelper {
 		case ONSET_TIME:
 			oldestCaseDate = FacadeProvider.getCaseFacade().getOldestCaseOnsetDate();
 			break;
-		case RECEPTION_TIME:
-			oldestCaseDate = FacadeProvider.getCaseFacade().getOldestDistrictLevelDate();
-			break;
 		case REPORT_TIME:
 			oldestCaseDate = FacadeProvider.getCaseFacade().getOldestCaseReportDate();
 			break;

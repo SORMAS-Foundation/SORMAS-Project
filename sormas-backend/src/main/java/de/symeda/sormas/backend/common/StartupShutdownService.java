@@ -17,11 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -78,6 +81,8 @@ public class StartupShutdownService {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME_AUDITLOG)
+	protected EntityManager emAudit;
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
@@ -111,6 +116,14 @@ public class StartupShutdownService {
 
 	@PostConstruct
 	public void startup() {
+		logger.info("Initiating automatic database update of main database...");
+		
+		updateDatabase(em, "/sql/sormas_schema.sql");
+		
+		logger.info("Initiating automatic database update of audit database...");
+		
+		updateDatabase(emAudit, "/sql/sormas_audit_schema.sql");
+		
 		String countryName = configFacade.getCountryName();
 		
 		I18nProperties.setLocale(configFacade.getCountryLocale());
@@ -180,6 +193,52 @@ public class StartupShutdownService {
 			informant.setHealthFacility(facility);
 			informant.setAssociatedOfficer(surveillanceOfficer);
 			userService.persist(informant);
+		}
+	}
+	
+	private void updateDatabase(EntityManager entityManager, String schemaFileName) {
+		logger.info("Starting automatic database update...");
+		
+		Integer currentVersion = (Integer) entityManager.createNativeQuery("SELECT MAX(version_number) FROM schema_version").getSingleResult();		
+		File schemaFile = new File(getClass().getClassLoader().getResource(schemaFileName).getFile());
+		Scanner scanner = null;
+		
+		try {
+			scanner = new Scanner(schemaFile);
+			StringBuilder nextUpdateBuilder = new StringBuilder();
+			boolean currentVersionReached = currentVersion == null;
+			
+			while (scanner.hasNextLine()) {
+				String nextLine = scanner.nextLine();
+				
+				if (nextLine.isEmpty()) {
+					continue;
+				}
+				
+				if (!currentVersionReached) {
+					if (nextLine.startsWith("INSERT INTO schema_version (version_number, comment) VALUES (" + currentVersion)) {
+						currentVersionReached = true;
+					}
+
+					continue;
+				}
+				
+				// Add the line to the StringBuilder
+				nextUpdateBuilder.append(nextLine).append("\n");
+				
+				// Perform the current update when the INSERT INTO schema_version statement is reached
+				if (nextLine.startsWith("INSERT INTO schema_version")) {
+					String newVersion = nextLine.substring(61, nextLine.indexOf(",", 61));
+					logger.info("Updating database to version " + newVersion + "...");
+					entityManager.createNativeQuery(nextUpdateBuilder.toString()).executeUpdate();
+				}
+			}
+		} catch (FileNotFoundException e) {
+			logger.error("Could not find " + schemaFileName + " file. Database update not performed.");
+			throw new RuntimeException(e);
+		} finally {
+			scanner.close();
+			logger.info("Database update completed.");
 		}
 	}
 

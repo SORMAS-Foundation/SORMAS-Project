@@ -13,6 +13,7 @@ WITH (
   OIDS=FALSE
 );
 
+ALTER TABLE schema_version OWNER TO sormas_user;
 
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
@@ -24,11 +25,6 @@ SET client_min_messages = warning;
 -- TOC entry 483 (class 2612 OID 11574)
 -- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
 --
-
-CREATE OR REPLACE PROCEDURAL LANGUAGE plpgsql;
-
-
-ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO postgres;
 
 SET search_path = public, pg_catalog;
 
@@ -625,11 +621,6 @@ ALTER TABLE ONLY users
 -- Dependencies: 5
 -- Name: public; Type: ACL; Schema: -; Owner: postgres
 --
-
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM postgres;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT ALL ON SCHEMA public TO PUBLIC;
 
 ALTER TABLE person ADD COLUMN phoneowner character varying(255);
   
@@ -1378,8 +1369,6 @@ ALTER TABLE hospitalization ADD COLUMN changedateofembeddedlists timestamp witho
 INSERT INTO schema_version (version_number, comment) VALUES (48, 'Change data for embedded lists (epidata and hospitalization');
 
 -- 2017-06-20 data history for future reporting (postgres temporal tables) #170
-
-CREATE EXTENSION temporal_tables;
 
 ALTER TABLE cases ADD COLUMN sys_period tstzrange;
 UPDATE cases SET sys_period=tstzrange(creationdate, null);
@@ -3218,3 +3207,130 @@ ALTER TABLE cases ADD COLUMN cliniciandetails varchar(512);
 ALTER TABLE cases_history ADD COLUMN cliniciandetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (150, 'Add new fields for Yellow fever and Measles #1088');
+
+-- 2019-05-20 Add new fields for Congenital Rubella #1133
+ALTER TABLE users ADD COLUMN limiteddisease varchar(255);
+ALTER TABLE users_history ADD COLUMN limiteddisease varchar(255);
+ALTER TABLE symptoms ADD COLUMN bilateralcataracts varchar(255);
+ALTER TABLE symptoms ADD COLUMN unilateralcataracts varchar(255);
+ALTER TABLE symptoms ADD COLUMN congenitalglaucoma varchar(255);
+ALTER TABLE symptoms ADD COLUMN pigmentaryretinopathy varchar(255);
+ALTER TABLE symptoms ADD COLUMN purpuricrash varchar(255);
+ALTER TABLE symptoms ADD COLUMN microcephaly varchar(255);
+ALTER TABLE symptoms ADD COLUMN developmentaldelay varchar(255);
+ALTER TABLE symptoms ADD COLUMN splenomegaly varchar(255);
+ALTER TABLE symptoms ADD COLUMN meningoencephalitis varchar(255);
+ALTER TABLE symptoms ADD COLUMN radiolucentbonedisease varchar(255);
+ALTER TABLE symptoms ADD COLUMN congenitalheartdisease varchar(255);
+ALTER TABLE symptoms ADD COLUMN congenitalheartdiseasetype varchar(255);
+ALTER TABLE symptoms ADD COLUMN congenitalheartdiseasedetails varchar(512);
+ALTER TABLE symptoms ADD COLUMN jaundicewithin24hoursofbirth varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN bilateralcataracts varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN unilateralcataracts varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN congenitalglaucoma varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN pigmentaryretinopathy varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN purpuricrash varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN microcephaly varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN developmentaldelay varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN splenomegaly varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN meningoencephalitis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN radiolucentbonedisease varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN congenitalheartdisease varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN congenitalheartdiseasetype varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN congenitalheartdiseasedetails varchar(512);
+ALTER TABLE symptoms_history ADD COLUMN jaundicewithin24hoursofbirth varchar(255);
+ALTER TABLE healthconditions ADD COLUMN downsyndrome varchar(255);
+ALTER TABLE healthconditions ADD COLUMN congenitalsyphilis varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN downsyndrome varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN congenitalsyphilis varchar(255);
+ALTER TABLE cases ADD COLUMN notifyingclinic varchar(255);
+ALTER TABLE cases ADD COLUMN notifyingclinicdetails varchar(512);
+ALTER TABLE cases_history ADD COLUMN notifyingclinic varchar(255);
+ALTER TABLE cases_history ADD COLUMN notifyingclinicdetails varchar(512);
+
+CREATE TABLE maternalhistory(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	childrennumber integer,
+	ageatbirth integer,
+	conjunctivitis varchar(255),
+	conjunctivitisonset timestamp,
+	conjunctivitismonth integer,
+	maculopapularrash varchar(255),
+	maculopapularrashonset timestamp,
+	maculopapularrashmonth integer,
+	swollenlymphs varchar(255),
+	swollenlymphsonset timestamp,
+	swollenlymphsmonth integer,
+	arthralgiaarthritis varchar(255),
+	arthralgiaarthritisonset timestamp,
+	arthralgiaarthritismonth integer,
+	othercomplications varchar(255),
+	othercomplicationsonset timestamp,
+	othercomplicationsmonth integer,
+	othercomplicationsdetails varchar(512),
+	rubella varchar(255),
+	rubellaonset timestamp,
+	rashexposure varchar(255),
+	rashexposuredate timestamp,
+	rashexposuremonth integer,
+	rashexposureregion_id bigint,
+	rashexposuredistrict_id bigint,
+	rashexposurecommunity_id bigint,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+ALTER TABLE maternalhistory OWNER TO sormas_user;
+ALTER TABLE maternalhistory ADD CONSTRAINT fk_maternalhistory_rashexposureregion_id FOREIGN KEY (rashexposureregion_id) REFERENCES region (id);
+ALTER TABLE maternalhistory ADD CONSTRAINT fk_maternalhistory_rashexposuredistrict_id FOREIGN KEY (rashexposuredistrict_id) REFERENCES district (id);
+ALTER TABLE maternalhistory ADD CONSTRAINT fk_maternalhistory_rashexposurecommunity_id FOREIGN KEY (rashexposurecommunity_id) REFERENCES community (id);
+
+CREATE TABLE maternalhistory_history (LIKE maternalhistory);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON maternalhistory
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'maternalhistory_history', true);
+ALTER TABLE maternalhistory_history OWNER TO sormas_user;
+
+ALTER TABLE cases ADD COLUMN maternalhistory_id bigint;
+ALTER TABLE cases_history ADD COLUMN maternalhistory_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_maternalhistory_id FOREIGN KEY (maternalhistory_id) REFERENCES maternalhistory (id);
+
+DO $$
+DECLARE rec RECORD;
+DECLARE new_maternalhistory_id INTEGER;
+BEGIN
+FOR rec IN SELECT id FROM public.cases WHERE maternalhistory_id IS NULL
+LOOP
+INSERT INTO maternalhistory(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now()) RETURNING id INTO new_maternalhistory_id;
+UPDATE cases SET maternalhistory_id = new_maternalhistory_id WHERE id = rec.id;
+END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+ALTER TABLE person ADD COLUMN mothersname varchar(512);
+ALTER TABLE person ADD COLUMN fathersname varchar(512);
+ALTER TABLE person ADD COLUMN placeofbirthregion_id bigint;
+ALTER TABLE person ADD COLUMN placeofbirthdistrict_id bigint;
+ALTER TABLE person ADD COLUMN placeofbirthcommunity_id bigint;
+ALTER TABLE person ADD COLUMN placeofbirthfacility_id bigint;
+ALTER TABLE person ADD COLUMN placeofbirthfacilitydetails varchar(512);
+ALTER TABLE person ADD COLUMN gestationageatbirth integer;
+ALTER TABLE person ADD COLUMN birthweight integer;
+ALTER TABLE person_history ADD COLUMN mothersname varchar(512);
+ALTER TABLE person_history ADD COLUMN fathersname varchar(512);
+ALTER TABLE person_history ADD COLUMN placeofbirthregion_id bigint;
+ALTER TABLE person_history ADD COLUMN placeofbirthdistrict_id bigint;
+ALTER TABLE person_history ADD COLUMN placeofbirthcommunity_id bigint;
+ALTER TABLE person_history ADD COLUMN placeofbirthfacility_id bigint;
+ALTER TABLE person_history ADD COLUMN placeofbirthfacilitydetails varchar(512);
+ALTER TABLE person_history ADD COLUMN gestationageatbirth integer;
+ALTER TABLE person_history ADD COLUMN birthweight integer;
+
+ALTER TABLE person ADD CONSTRAINT fk_person_placeofbirthregion_id FOREIGN KEY (placeofbirthregion_id) REFERENCES region (id);
+ALTER TABLE person ADD CONSTRAINT fk_person_placeofbirthdistrict_id FOREIGN KEY (placeofbirthdistrict_id) REFERENCES district (id);
+ALTER TABLE person ADD CONSTRAINT fk_person_placeofbirthcommunity_id FOREIGN KEY (placeofbirthcommunity_id) REFERENCES community (id);
+ALTER TABLE person ADD CONSTRAINT fk_person_placeofbirthfacility_id FOREIGN KEY (placeofbirthfacility_id) REFERENCES facility (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (151, 'Add new fields for Congenital Rubella #1133');
