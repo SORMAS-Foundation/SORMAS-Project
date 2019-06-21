@@ -1,7 +1,7 @@
 
 
 # Installing a SORMAS Server
-**Note: This guide explains how to set up a SORMAS server on Linux and Windows systems, the latter only being intended for usage on development systems. Please also note that certain parts of the setup script will not be executed on Windows. **
+**Note: This guide explains how to set up a SORMAS server on Linux and Windows systems, the latter only being intended for usage on development systems. Please also note that certain parts of the setup script will not be executed on Windows.**
 
 ## Content
 * [Prerequisites](#prerequisites)
