@@ -65,7 +65,7 @@
 		</copy>
 	</target>
 
-	<target name="collect-setup" description="Collects setup scripts and config files">
+	<target name="collect-setup" description="Collects setup/update scripts and config files">
 
 		<delete failonerror="false" includeemptydirs="true">
 			<fileset dir="${collect.root.path}" casesensitive="false">
@@ -76,6 +76,12 @@
 
 		<copy todir="${collect.root.path}">
 			<fileset dir="setup">
+				<include name="*" />
+			</fileset>
+		</copy>
+		
+		<copy todir="${collect.root.path}">
+			<fileset dir="update">
 				<include name="*" />
 			</fileset>
 		</copy>
