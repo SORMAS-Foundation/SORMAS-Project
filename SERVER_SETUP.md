@@ -48,7 +48,7 @@
 * Get the latest SORMAS build by downloading the deploy.zip file from GitHub: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest 
 * **Linux**:
   * Unzip the archive and copy/upload its contents to **/root/deploy/sormas/$(date +%F)**
-  * ``cd /root/deploy/sormas/$(date +%F)/setup``
+  * ``cd /root/deploy/sormas/$(date +%F)``
   * Make the setup script executable with ``chmod +x server-setup.sh``
 * **Windows**:
   * Download & install Git for Windows. This will provide a bash emulation that you can use to run the setup script: https://gitforwindows.org/
