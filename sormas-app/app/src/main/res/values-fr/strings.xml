@@ -111,6 +111,7 @@
     <string name="caption_case_health_conditions">Pre-Existing Conditions</string>
     <string name="caption_case_hospitalization">Hospitalization Info</string>
     <string name="caption_case_information">Case Information</string>
+    <string name="caption_case_maternal_history">Maternal History</string>
     <string name="caption_case_prescriptions">Prescriptions</string>
     <string name="caption_case_samples">Case Samples</string>
     <string name="caption_case_tasks">Case Tasks</string>
