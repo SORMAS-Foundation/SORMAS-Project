@@ -196,7 +196,11 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 
 	public ADO getByReferenceDto(ReferenceDto dto) {
 		if (dto != null) {
-			return getByUuid(dto.getUuid());
+			ADO result = getByUuid(dto.getUuid());
+			if (result == null) {
+				logger.warn("Could not find entity for " + dto.getClass().getSimpleName() + " with uuid " + dto.getUuid());
+			}
+			return result;
 		} else {
 			return null;
 		}

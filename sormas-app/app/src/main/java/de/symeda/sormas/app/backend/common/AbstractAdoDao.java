@@ -341,7 +341,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 // get the embedded entity
                 AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(ado);
 
-                AbstractDomainObject embeddedAdoSnapshot;
+                AbstractDomainObject embeddedAdoSnapshot = null;
                 if (parentProperty.equals(property.getName())) {
 
                     // ignore parent property
@@ -349,18 +349,21 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                         continue;
 
                     // set reference to parent in snapshot
-                    embeddedAdoSnapshot = DatabaseHelper.getAdoDao(embeddedAdo.getClass()).querySnapshotByUuid(embeddedAdo.getUuid());
+                    if (embeddedAdo != null) {
+                        embeddedAdoSnapshot = DatabaseHelper.getAdoDao(embeddedAdo.getClass()).querySnapshotByUuid(embeddedAdo.getUuid());
+                    }
                 } else {
                     // save it - might return a created snapshot
-                    embeddedAdoSnapshot = DatabaseHelper.getAdoDao(embeddedAdo.getClass()).saveAndSnapshotWithCast(embeddedAdo);
+                    if (embeddedAdo != null) {
+                        embeddedAdoSnapshot = DatabaseHelper.getAdoDao(embeddedAdo.getClass()).saveAndSnapshotWithCast(embeddedAdo);
+                    }
                 }
 
                 if (withSnapshot) {
-                    if (embeddedAdoSnapshot == null) {
-                        throw new IllegalArgumentException("No snapshot was found or created for " + embeddedAdo);
+                    if (embeddedAdoSnapshot != null) {
+                        // write link for cloneCascading of embedded entity
+                        property.getWriteMethod().invoke(snapshot, embeddedAdoSnapshot);
                     }
-                    // write link for cloneCascading of embedded entity
-                    property.getWriteMethod().invoke(snapshot, embeddedAdoSnapshot);
                 }
             }
 
@@ -1147,11 +1150,12 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
     protected void update(ADO data) throws SQLException {
         if (data == null)
             return;
-        int resultRowCount = dao.update(data);
-        if (resultRowCount < 1) {
-            throw new SQLException("Database entry was not updated - update all entered fields and save again.\n" +
-                    "Type: " + data.getClass().getSimpleName() + ", UUID: " + data.getUuid());
-        }
+        dao.update(data);
+        // #1124 returns 0 when nothing has changed
+//        if (resultRowCount < 1) {
+//            throw new SQLException("Database entry was not updated - update all entered fields and save again.\n" +
+//                    "Type: " + data.getClass().getSimpleName() + ", UUID: " + data.getUuid());
+//        }
     }
 
     public void updateWithCast(AbstractDomainObject ado) throws SQLException {

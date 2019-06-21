@@ -24,6 +24,8 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -35,6 +37,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 
 	@EJB
 	private DiseaseConfigurationService service;
+	@EJB
+	private UserService userService;
 
 	private List<Disease> activeDiseases = new ArrayList<>();
 	private List<Disease> primaryDiseases = new ArrayList<>();
@@ -70,7 +74,12 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 
 	@Override
 	public List<Disease> getAllActiveDiseases() {
-		return activeDiseases;
+		User currentUser = userService.getCurrentUser();
+		if (currentUser.getLimitedDisease() != null) {
+			return activeDiseases.stream().filter(d -> d == currentUser.getLimitedDisease()).collect(Collectors.toList());
+		} else {
+			return activeDiseases;
+		}
 	}
 
 	@Override
@@ -80,12 +89,22 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 
 	@Override
 	public List<Disease> getAllPrimaryDiseases() {
-		return primaryDiseases;
+		User currentUser = userService.getCurrentUser();
+		if (currentUser.getLimitedDisease() != null) {
+			return primaryDiseases.stream().filter(d -> d == currentUser.getLimitedDisease()).collect(Collectors.toList());
+		} else {
+			return primaryDiseases;
+		}
 	}
 
 	@Override
 	public List<Disease> getAllActivePrimaryDiseases() {
-		return activePrimaryDiseases;
+		User currentUser = userService.getCurrentUser();
+		if (currentUser.getLimitedDisease() != null) {
+			return activePrimaryDiseases.stream().filter(d -> d == currentUser.getLimitedDisease()).collect(Collectors.toList());
+		} else {
+			return activePrimaryDiseases;
+		}
 	}
 
 	@Override
@@ -95,7 +114,12 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 
 	@Override
 	public List<Disease> getAllDiseasesWithFollowUp() {
-		return followUpEnabledDiseases;
+		User currentUser = userService.getCurrentUser();
+		if (currentUser.getLimitedDisease() != null) {
+			return followUpEnabledDiseases.stream().filter(d -> d == currentUser.getLimitedDisease()).collect(Collectors.toList());
+		} else {
+			return followUpEnabledDiseases;
+		}
 	}
 
 	@Override
@@ -169,7 +193,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		activePrimaryDiseases.clear();
 		followUpEnabledDiseases.clear();
 		followUpDurations.clear();
-		
+
 		for (Disease disease : Disease.values()) {
 			DiseaseConfigurationDto configuration = getDiseaseConfiguration(disease);
 

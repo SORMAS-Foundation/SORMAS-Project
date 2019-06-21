@@ -18,10 +18,16 @@
 package de.symeda.sormas.api.caze;
 
 import java.util.Date;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.utils.ValidationException;
 
 public class CaseLogic {
+	
+	private static final String EPID_PATTERN_COMPLETE = "([A-Z]{3}-){3}[0-9]{2}-[0-9]+";
+	private static final String EPID_PATTERN_PREFIX = "([A-Z]{3}-){3}[0-9]{2}-";
 
 	public static void validateInvestigationDoneAllowed(CaseDataDto caze) throws ValidationException {
 		if (caze.getCaseClassification() == CaseClassification.NOT_CLASSIFIED) {
@@ -29,14 +35,28 @@ public class CaseLogic {
 		}
 	}
 	
-	public static Date getStartDate(Date onsetDate, Date districtLevelDate, Date reportDate) {
+	public static Date getStartDate(Date onsetDate, Date reportDate) {
 		if (onsetDate != null) {
 			return onsetDate;
-		} else if (districtLevelDate != null) {
-			return districtLevelDate;
 		} else {
 			return reportDate;
 		}
+	}
+	
+	public static boolean isEpidNumberPrefix(String s) {
+		if (StringUtils.isEmpty(s)) {
+			return false;
+		}
+		
+		return Pattern.matches(EPID_PATTERN_PREFIX, s);
+	}
+	
+	public static boolean isCompleteEpidNumber(String s) {
+		if (StringUtils.isEmpty(s)) {
+			return false;
+		}
+		
+		return Pattern.matches(EPID_PATTERN_COMPLETE, s);
 	}
 	
 }

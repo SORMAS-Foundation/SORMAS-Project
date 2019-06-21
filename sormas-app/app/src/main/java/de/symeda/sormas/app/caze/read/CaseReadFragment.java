@@ -22,8 +22,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
 
-import com.google.android.gms.common.util.Strings;
-
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.person.Sex;

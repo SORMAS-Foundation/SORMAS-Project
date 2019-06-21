@@ -27,9 +27,9 @@ import java.util.List;
 
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.sample.AdditionalTestType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
-import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -38,8 +38,8 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.sample.AdditionalTest;
-import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
+import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
@@ -194,7 +194,6 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         // Disable fields the user doesn't have access to - this involves almost all fields when
         // the user is not the one that originally reported the sample
         if (!ConfigProvider.getUser().equals(record.getReportingUser())) {
-            contentBinding.sampleSampleCode.setEnabled(false);
             contentBinding.sampleSampleDateTime.setEnabled(false);
             contentBinding.sampleSampleMaterial.setEnabled(false);
             contentBinding.sampleSampleMaterialText.setEnabled(false);
@@ -234,10 +233,6 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
             if (requestedPathogenTests.isEmpty() && requestedAdditionalTests.isEmpty()) {
                 contentBinding.pathogenTestingDivider.setVisibility(GONE);
             }
-
-            if (!Boolean.TRUE.equals(record.getPathogenTestingRequested())) {
-                contentBinding.samplePathogenTestResult.setVisibility(GONE);
-            }
         } else {
             contentBinding.sampleRequestedPathogenTestsTags.setVisibility(GONE);
             contentBinding.sampleRequestedPathogenTests.removeItem(PathogenTestType.OTHER);
@@ -246,7 +241,6 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 
         if (!ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
             contentBinding.additionalTestingLayout.setVisibility(GONE);
-            contentBinding.sampleAdditionalTestingRequested.setRequired(false);
         }
     }
 

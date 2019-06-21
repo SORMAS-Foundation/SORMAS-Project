@@ -30,6 +30,12 @@ public class ClassificationAllOfCriteriaDto extends ClassificationCriteriaDto im
 
 	private static final long serialVersionUID = -6427002056924376593L;
 	
+	/**
+	 * Always draws all sub criteria in one component instead of providing a dedicated
+	 * component for all of them.
+	 */
+	protected boolean drawSubCriteriaTogether = false;
+	
 	protected List<ClassificationCriteriaDto> subCriteria;
 
 	public ClassificationAllOfCriteriaDto() {
@@ -38,6 +44,11 @@ public class ClassificationAllOfCriteriaDto extends ClassificationCriteriaDto im
 	
 	public ClassificationAllOfCriteriaDto(ClassificationCriteriaDto... criteria) {
 		this.subCriteria = Arrays.asList(criteria);
+	}
+	
+	public ClassificationAllOfCriteriaDto(boolean drawSubCriteriaTogether, ClassificationCriteriaDto... criteria) {
+		this(criteria);
+		this.drawSubCriteriaTogether = drawSubCriteriaTogether;
 	}
 
 	@Override
@@ -99,6 +110,14 @@ public class ClassificationAllOfCriteriaDto extends ClassificationCriteriaDto im
 
 	public void setSubCriteria(List<ClassificationCriteriaDto> subCriteria) {
 		this.subCriteria = subCriteria;
+	}
+
+	public boolean isDrawSubCriteriaTogether() {
+		return drawSubCriteriaTogether;
+	}
+
+	public void setDrawSubCriteriaTogether(boolean drawSubCriteriaTogether) {
+		this.drawSubCriteriaTogether = drawSubCriteriaTogether;
 	}
 	
 }

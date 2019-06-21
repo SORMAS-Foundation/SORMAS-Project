@@ -41,30 +41,21 @@ public class StatisticsCaseCriteria implements Serializable {
 	private static final long serialVersionUID = 4997176351789123549L;
 
 	private List<Year> onsetYears;
-	private List<Year> receptionYears;
 	private List<Year> reportYears;
 	private List<Quarter> onsetQuarters;
-	private List<Quarter> receptionQuarters;
 	private List<Quarter> reportQuarters;
 	private List<Month> onsetMonths;
-	private List<Month> receptionMonths;
 	private List<Month> reportMonths;
 	private List<EpiWeek> onsetEpiWeeks;
-	private List<EpiWeek> receptionEpiWeeks;
 	private List<EpiWeek> reportEpiWeeks;
 	private List<QuarterOfYear> onsetQuartersOfYear;
-	private List<QuarterOfYear> receptionQuartersOfYear;
 	private List<QuarterOfYear> reportQuartersOfYear;
 	private List<MonthOfYear> onsetMonthsOfYear;
-	private List<MonthOfYear> receptionMonthsOfYear;
 	private List<MonthOfYear> reportMonthsOfYear;
 	private List<EpiWeek> onsetEpiWeeksOfYear; 
-	private List<EpiWeek> receptionEpiWeeksOfYear; 
 	private List<EpiWeek> reportEpiWeeksOfYear; 
 	private Date onsetDateFrom;
 	private Date onsetDateTo;
-	private Date districtLevelDateFrom;
-	private Date districtLevelDateTo;
 	private Date reportDateFrom;
 	private Date reportDateTo;
 	private List<Sex> sexes;
@@ -79,21 +70,13 @@ public class StatisticsCaseCriteria implements Serializable {
 	public List<Year> getOnsetYears() {
 		return onsetYears;
 	}
-
-	public List<Year> getReceptionYears() {
-		return receptionYears;
-	}
-
+	
 	public List<Year> getReportYears() {
 		return reportYears;
 	}
 
 	public List<Quarter> getOnsetQuarters() {
 		return onsetQuarters;
-	}
-
-	public List<Quarter> getReceptionQuarters() {
-		return receptionQuarters;
 	}
 
 	public List<Quarter> getReportQuarters() {
@@ -104,20 +87,12 @@ public class StatisticsCaseCriteria implements Serializable {
 		return onsetMonths;
 	}
 
-	public List<Month> getReceptionMonths() {
-		return receptionMonths;
-	}
-
 	public List<Month> getReportMonths() {
 		return reportMonths;
 	}
 
 	public List<EpiWeek> getOnsetEpiWeeks() {
 		return onsetEpiWeeks;
-	}
-
-	public List<EpiWeek> getReceptionEpiWeeks() {
-		return receptionEpiWeeks;
 	}
 
 	public List<EpiWeek> getReportEpiWeeks() {
@@ -128,10 +103,6 @@ public class StatisticsCaseCriteria implements Serializable {
 		return onsetQuartersOfYear;
 	}
 
-	public List<QuarterOfYear> getReceptionQuartersOfYear() {
-		return receptionQuartersOfYear;
-	}
-
 	public List<QuarterOfYear> getReportQuartersOfYear() {
 		return reportQuartersOfYear;
 	}
@@ -140,20 +111,12 @@ public class StatisticsCaseCriteria implements Serializable {
 		return onsetMonthsOfYear;
 	}
 
-	public List<MonthOfYear> getReceptionMonthsOfYear() {
-		return receptionMonthsOfYear;
-	}
-
 	public List<MonthOfYear> getReportMonthsOfYear() {
 		return reportMonthsOfYear;
 	}
 
 	public List<EpiWeek> getOnsetEpiWeeksOfYear() {
 		return onsetEpiWeeksOfYear;
-	}
-
-	public List<EpiWeek> getReceptionEpiWeeksOfYear() {
-		return receptionEpiWeeksOfYear;
 	}
 
 	public List<EpiWeek> getReportEpiWeeksOfYear() {
@@ -166,14 +129,6 @@ public class StatisticsCaseCriteria implements Serializable {
 
 	public Date getOnsetDateTo() {
 		return onsetDateTo;
-	}
-
-	public Date getDistrictLevelDateFrom() {
-		return districtLevelDateFrom;
-	}
-
-	public Date getDistrictLevelDateTo() {
-		return districtLevelDateTo;
 	}
 
 	public Date getReportDateFrom() {
@@ -221,9 +176,6 @@ public class StatisticsCaseCriteria implements Serializable {
 		case ONSET_TIME:
 			this.onsetYears = years;
 			break;
-		case RECEPTION_TIME:
-			this.receptionYears = years;
-			break;
 		case REPORT_TIME:
 			this.reportYears = years;
 			break;
@@ -238,9 +190,6 @@ public class StatisticsCaseCriteria implements Serializable {
 		switch (mainAttribute) {
 		case ONSET_TIME:
 			this.onsetQuarters = quarters;
-			break;
-		case RECEPTION_TIME:
-			this.receptionQuarters = quarters;
 			break;
 		case REPORT_TIME:
 			this.reportQuarters = quarters;
@@ -257,9 +206,6 @@ public class StatisticsCaseCriteria implements Serializable {
 		case ONSET_TIME:
 			this.onsetMonths = months;
 			break;
-		case RECEPTION_TIME:
-			this.receptionMonths = months;
-			break;
 		case REPORT_TIME:
 			this.reportMonths = months;
 			break;
@@ -274,9 +220,6 @@ public class StatisticsCaseCriteria implements Serializable {
 		switch (mainAttribute) {
 		case ONSET_TIME:
 			this.onsetEpiWeeks = epiWeeks;
-			break;
-		case RECEPTION_TIME:
-			this.receptionEpiWeeks = epiWeeks;
 			break;
 		case REPORT_TIME:
 			this.reportEpiWeeks = epiWeeks;
@@ -293,9 +236,6 @@ public class StatisticsCaseCriteria implements Serializable {
 		case ONSET_TIME:
 			this.onsetQuartersOfYear = quartersOfYear;
 			break;
-		case RECEPTION_TIME:
-			this.receptionQuartersOfYear = quartersOfYear;
-			break;
 		case REPORT_TIME:
 			this.reportQuartersOfYear = quartersOfYear;
 			break;
@@ -310,9 +250,6 @@ public class StatisticsCaseCriteria implements Serializable {
 		switch (mainAttribute) {
 		case ONSET_TIME:
 			this.onsetMonthsOfYear = monthsOfYear;
-			break;
-		case RECEPTION_TIME:	
-			this.receptionMonthsOfYear = monthsOfYear;
 			break;
 		case REPORT_TIME:
 			this.reportMonthsOfYear = monthsOfYear;
@@ -329,9 +266,6 @@ public class StatisticsCaseCriteria implements Serializable {
 		case ONSET_TIME:
 			this.onsetEpiWeeksOfYear = epiWeeksOfYear;
 			break;
-		case RECEPTION_TIME:
-			this.receptionEpiWeeksOfYear = epiWeeksOfYear;
-			break;
 		case REPORT_TIME:
 			this.reportEpiWeeksOfYear = epiWeeksOfYear;
 			break;
@@ -347,10 +281,6 @@ public class StatisticsCaseCriteria implements Serializable {
 		case ONSET_TIME:
 			this.onsetDateFrom = from;
 			this.onsetDateTo = to;
-			break;
-		case RECEPTION_TIME:
-			this.districtLevelDateFrom = from;
-			this.districtLevelDateTo = to;
 			break;
 		case REPORT_TIME:
 			this.reportDateFrom = from;
@@ -418,8 +348,6 @@ public class StatisticsCaseCriteria implements Serializable {
 				switch (attribute) {
 				case ONSET_TIME:
 					return onsetYears;
-				case RECEPTION_TIME:
-					return receptionYears;
 				case REPORT_TIME:
 					return reportYears;
 				default:
@@ -429,8 +357,6 @@ public class StatisticsCaseCriteria implements Serializable {
 				switch (attribute) {
 				case ONSET_TIME:
 					return onsetQuarters;
-				case RECEPTION_TIME:
-					return receptionQuarters;
 				case REPORT_TIME:
 					return reportQuarters;
 				default:
@@ -440,8 +366,6 @@ public class StatisticsCaseCriteria implements Serializable {
 				switch (attribute) {
 				case ONSET_TIME:
 					return onsetMonths;
-				case RECEPTION_TIME:
-					return receptionMonths;
 				case REPORT_TIME:
 					return reportMonths;
 				default:
@@ -451,8 +375,6 @@ public class StatisticsCaseCriteria implements Serializable {
 				switch (attribute) {
 				case ONSET_TIME:
 					return onsetEpiWeeks;
-				case RECEPTION_TIME:
-					return receptionEpiWeeks;
 				case REPORT_TIME:
 					return reportEpiWeeks;
 				default:
@@ -462,8 +384,6 @@ public class StatisticsCaseCriteria implements Serializable {
 				switch (attribute) {
 				case ONSET_TIME:
 					return onsetQuartersOfYear;
-				case RECEPTION_TIME:
-					return receptionQuartersOfYear;
 				case REPORT_TIME:
 					return reportQuartersOfYear;
 				default:
@@ -473,8 +393,6 @@ public class StatisticsCaseCriteria implements Serializable {
 				switch (attribute) {
 				case ONSET_TIME:
 					return onsetMonthsOfYear;
-				case RECEPTION_TIME:
-					return receptionMonthsOfYear;
 				case REPORT_TIME:
 					return reportMonthsOfYear;
 				default:
@@ -484,8 +402,6 @@ public class StatisticsCaseCriteria implements Serializable {
 				switch (attribute) {
 				case ONSET_TIME:
 					return onsetEpiWeeksOfYear;
-				case RECEPTION_TIME:
-					return receptionEpiWeeksOfYear;
 				case REPORT_TIME:
 					return reportEpiWeeksOfYear;
 				default:

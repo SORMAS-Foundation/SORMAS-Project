@@ -21,14 +21,12 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 /**
  * Contains the different types of date that are used to determine the start date of a case.
- * Normally, symptom onset (ONSET) date is considered first, then case reception (RECEPTION)
- * date, and finally case report (REPORT) date.
+ * Normally, symptom onset (ONSET) date is considered first, then case report (REPORT) date.
  */
 public enum NewCaseDateType {
 
 	MOST_RELEVANT,
 	ONSET,
-	RECEPTION,
 	REPORT;
 	
 	public String toString() {

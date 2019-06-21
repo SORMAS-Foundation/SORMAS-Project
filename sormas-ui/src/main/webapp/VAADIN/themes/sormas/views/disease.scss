@@ -109,6 +109,15 @@
   		fill: #CBBE1D;
   	}
   }
+  .background-disease-congenital-rubella {
+    background-color: #d4d4f7;
+    fill: #d4d4f7;
+    
+    &.background-darker {
+    	background-color: #aaaaee;
+    	fill: #aaaaee;
+   	}
+  }
   .background-disease-other {
   	background-color: #888;
   	fill: #888;

@@ -20,6 +20,9 @@ package de.symeda.sormas.app.person.edit;
 
 import android.view.View;
 
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -28,6 +31,7 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
@@ -80,7 +84,19 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
     public static void setUpLayoutBinding(final BaseEditFragment fragment, final Person record, final FragmentPersonEditLayoutBinding contentBinding, AbstractDomainObject rootData) {
         setUpControlListeners(record, contentBinding);
 
-        List<Item> dayList = DataUtils.toItems(DateHelper.getDaysInMonth(), true);
+        Disease rootDisease = null;
+        if (rootData instanceof Case) {
+            rootDisease = ((Case) rootData).getDisease();
+        } else if (rootData instanceof Contact) {
+            rootDisease = ((Contact) rootData).getCaseDisease();
+        } else if (rootData instanceof Event) {
+            rootDisease = ((Event) rootData).getDisease();
+        }
+
+        if (rootDisease != null) {
+           fragment.setVisibilityByDisease(PersonDto.class, rootDisease, contentBinding.mainContent);
+        }
+
         List<Item> monthList = DataUtils.getMonthItems(true);
         List<Item> yearList = DataUtils.toItems(DateHelper.getYearsToNow(), true);
         List<Item> approximateAgeTypeList = DataUtils.getEnumItems(ApproximateAgeType.class, true);
@@ -95,7 +111,13 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         List<Item> initialOccupationCommunities = InfrastructureHelper.loadCommunities(record.getOccupationDistrict());
         List<Item> initialOccupationFacilities = InfrastructureHelper.loadFacilities(record.getOccupationDistrict(), record.getOccupationCommunity());
 
+        List<Item> initialPlaceOfBirthRegions = InfrastructureHelper.loadRegions();
+        List<Item> initialPlaceOfBirthDistricts = InfrastructureHelper.loadDistricts(record.getPlaceOfBirthRegion());
+        List<Item> initialPlaceOfBirthCommunities = InfrastructureHelper.loadCommunities(record.getPlaceOfBirthDistrict());
+        List<Item> initialPlaceOfBirthFacilities = InfrastructureHelper.loadFacilities(record.getPlaceOfBirthDistrict(), record.getPlaceOfBirthCommunity());
+
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
+        InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personPlaceOfBirthFacility, contentBinding.personPlaceOfBirthFacilityDetails);
         initializeCauseOfDeathDetailsFieldVisibility(contentBinding.personCauseOfDeath, contentBinding.personCauseOfDeathDisease, contentBinding.personCauseOfDeathDetails);
         initializeOccupationDetailsFieldVisibility(contentBinding.personOccupationType, contentBinding.personOccupationDetails);
 
@@ -103,25 +125,20 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
                 contentBinding.personOccupationDistrict, initialOccupationDistricts,
                 contentBinding.personOccupationCommunity, initialOccupationCommunities,
                 contentBinding.personOccupationFacility, initialOccupationFacilities);
+        InfrastructureHelper.initializeFacilityFields(contentBinding.personPlaceOfBirthRegion, initialPlaceOfBirthRegions,
+                contentBinding.personPlaceOfBirthDistrict, initialPlaceOfBirthDistricts,
+                contentBinding.personPlaceOfBirthCommunity, initialPlaceOfBirthCommunities,
+                contentBinding.personPlaceOfBirthFacility, initialPlaceOfBirthFacilities);
 
         // Initialize ControlSpinnerFields
-        contentBinding.personBirthdateDD.initializeSpinner(dayList, new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                updateApproximateAgeField(contentBinding);
-            }
+        contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>(), field -> updateApproximateAgeField(contentBinding));
+        contentBinding.personBirthdateMM.initializeSpinner(monthList, field -> {
+            updateApproximateAgeField(contentBinding);
+            updateListOfDays(contentBinding, (Integer) contentBinding.personBirthdateYYYY.getValue(), (Integer) field.getValue());
         });
-        contentBinding.personBirthdateMM.initializeSpinner(monthList, new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                updateApproximateAgeField(contentBinding);
-            }
-        });
-        contentBinding.personBirthdateYYYY.initializeSpinner(yearList, new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                updateApproximateAgeField(contentBinding);
-            }
+        contentBinding.personBirthdateYYYY.initializeSpinner(yearList, field -> {
+            updateApproximateAgeField(contentBinding);
+            updateListOfDays(contentBinding, (Integer) field.getValue(), (Integer) contentBinding.personBirthdateMM.getValue());
         });
         contentBinding.personBirthdateYYYY.setSelectionOnOpen(2000);
         contentBinding.personApproximateAgeType.initializeSpinner(approximateAgeTypeList);
@@ -134,17 +151,14 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         contentBinding.personEducationType.initializeSpinner(DataUtils.getEnumItems(EducationType.class, true));
         contentBinding.personPresentCondition.initializeSpinner(DataUtils.getEnumItems(PresentCondition.class, true));
 
-        contentBinding.personApproximateAge.addValueChangedListener(new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                if (DataHelper.isNullOrEmpty((String)field.getValue())) {
-                    contentBinding.personApproximateAgeType.setRequired(false);
-                    contentBinding.personApproximateAgeType.setValue(null);
-                } else {
-                    contentBinding.personApproximateAgeType.setRequired(true);
-                    if (contentBinding.personApproximateAgeType.getValue() == null) {
-                        contentBinding.personApproximateAgeType.setValue(ApproximateAgeType.YEARS);
-                    }
+        contentBinding.personApproximateAge.addValueChangedListener(field -> {
+            if (DataHelper.isNullOrEmpty((String)field.getValue())) {
+                contentBinding.personApproximateAgeType.setRequired(false);
+                contentBinding.personApproximateAgeType.setValue(null);
+            } else {
+                contentBinding.personApproximateAgeType.setRequired(true);
+                if (contentBinding.personApproximateAgeType.getValue() == null) {
+                    contentBinding.personApproximateAgeType.setValue(ApproximateAgeType.YEARS);
                 }
             }
         });
@@ -159,6 +173,15 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         // Initialize ControlDateFields
         contentBinding.personDeathDate.initializeDateField(fragment.getFragmentManager());
         contentBinding.personBurialDate.initializeDateField(fragment.getFragmentManager());
+    }
+
+    private static void updateListOfDays(FragmentPersonEditLayoutBinding binding, Integer selectedYear, Integer selectedMonth) {
+        Integer currentlySelected = (Integer) binding.personBirthdateDD.getValue();
+        List<Item> days = DataUtils.toItems(DateHelper.getDaysInMonth(selectedMonth, selectedYear));
+        binding.personBirthdateDD.setSpinnerData(days);
+        if (currentlySelected != null) {
+            binding.personBirthdateDD.setValue(currentlySelected);
+        }
     }
 
     public static void setUpControlListeners(final Person record, final FragmentPersonEditLayoutBinding contentBinding) {
@@ -328,7 +351,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
             rootData = ado;
         } else {
             throw new UnsupportedOperationException("ActivityRootData of class " + ado.getClass().getSimpleName()
-                    + " does not support PersonReadFragment");
+                    + " does not support PersonEditFragment");
         }
     }
 

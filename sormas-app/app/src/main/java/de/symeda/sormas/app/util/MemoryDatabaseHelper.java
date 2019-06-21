@@ -1105,7 +1105,7 @@ class PersonGenerator extends BaseDataGenerator {
             data1.setLastName(getRandomName());
             data1.setNickname(getRandomName());
             data1.setMothersMaidenName(getRandomName());
-            data1.setBirthdateDD((int) DataUtils.toItems(de.symeda.sormas.api.utils.DateHelper.getDaysInMonth(), false).get(7).getValue());
+            data1.setBirthdateDD((int) DataUtils.toItems(de.symeda.sormas.api.utils.DateHelper.getDaysInMonth(5, 2012), false).get(7).getValue());
             data1.setBirthdateMM((int) DataUtils.getMonthItems(false).get(7).getValue());
             data1.setBirthdateYYYY((int) DataUtils.toItems(de.symeda.sormas.api.utils.DateHelper.getYearsToNow(), false).get(20).getValue());
             data1.setApproximateAge(getRandomAge());

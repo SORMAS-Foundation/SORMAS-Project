@@ -316,7 +316,7 @@ public class PersonFacadeEjb implements PersonFacade {
 					personCase.setCaseAge(0);
 				} else {
 					Date now = new Date();
-					Date referenceDate = CaseLogic.getStartDate(personCase.getSymptoms().getOnsetDate(), personCase.getDistrictLevelDate(), personCase.getReportDate());
+					Date referenceDate = CaseLogic.getStartDate(personCase.getSymptoms().getOnsetDate(), personCase.getReportDate());
 					personCase.setCaseAge(newPerson.getApproximateAge() - DateHelper.getYearsBetween(referenceDate, now));
 					if (personCase.getCaseAge() < 0) {
 						personCase.setCaseAge(0);
@@ -390,6 +390,16 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setOccupationCommunity(communityService.getByReferenceDto(source.getOccupationCommunity()));
 		target.setOccupationFacility(facilityService.getByReferenceDto(source.getOccupationFacility()));
 		target.setOccupationFacilityDetails(source.getOccupationFacilityDetails());
+		
+		target.setMothersName(source.getMothersName());
+		target.setFathersName(source.getFathersName());
+		target.setPlaceOfBirthRegion(regionService.getByReferenceDto(source.getPlaceOfBirthRegion()));
+		target.setPlaceOfBirthDistrict(districtService.getByReferenceDto(source.getPlaceOfBirthDistrict()));
+		target.setPlaceOfBirthCommunity(communityService.getByReferenceDto(source.getPlaceOfBirthCommunity()));
+		target.setPlaceOfBirthFacility(facilityService.getByReferenceDto(source.getPlaceOfBirthFacility()));
+		target.setPlaceOfBirthFacilityDetails(source.getPlaceOfBirthFacilityDetails());
+		target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
+		target.setBirthWeight(source.getBirthWeight());
 		return target;
 	}
 
@@ -480,6 +490,16 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setOccupationCommunity(CommunityFacadeEjb.toReferenceDto(source.getOccupationCommunity()));
 		target.setOccupationFacility(FacilityFacadeEjb.toReferenceDto(source.getOccupationFacility()));
 		target.setOccupationFacilityDetails(source.getOccupationFacilityDetails());
+
+		target.setMothersName(source.getMothersName());
+		target.setFathersName(source.getFathersName());
+		target.setPlaceOfBirthRegion(RegionFacadeEjb.toReferenceDto(source.getPlaceOfBirthRegion()));
+		target.setPlaceOfBirthDistrict(DistrictFacadeEjb.toReferenceDto(source.getPlaceOfBirthDistrict()));
+		target.setPlaceOfBirthCommunity(CommunityFacadeEjb.toReferenceDto(source.getPlaceOfBirthCommunity()));
+		target.setPlaceOfBirthFacility(FacilityFacadeEjb.toReferenceDto(source.getPlaceOfBirthFacility()));
+		target.setPlaceOfBirthFacilityDetails(source.getPlaceOfBirthFacilityDetails());
+		target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
+		target.setBirthWeight(source.getBirthWeight());
 		return target;
 	}
 

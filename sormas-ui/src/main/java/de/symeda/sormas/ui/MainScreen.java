@@ -138,11 +138,7 @@ public class MainScreen extends HorizontalLayout {
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONFIGURATION_ACCESS)) {
 			AbstractConfigurationView.registerViews(navigator);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
-				menu.addView(RegionsView.class, AbstractConfigurationView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuConfiguration), VaadinIcons.COGS);
-			} else {
-				menu.addView(OutbreaksView.class, AbstractConfigurationView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuConfiguration), VaadinIcons.COGS);
-			}
+			menu.addView(OutbreaksView.class, AbstractConfigurationView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuConfiguration), VaadinIcons.COGS);
 		}
 		menu.addView(AboutView.class, AboutView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAbout), VaadinIcons.INFO_CIRCLE);
 

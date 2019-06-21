@@ -19,6 +19,7 @@ package de.symeda.sormas.api.user;
 
 import java.util.Set;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
@@ -47,6 +48,7 @@ public class UserDto extends EntityDto {
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
 	public static final String LABORATORY = "laboratory";
+	public static final String LIMITED_DISEASE = "limitedDisease";
 
 	private boolean active = true;
 	
@@ -70,6 +72,8 @@ public class UserDto extends EntityDto {
 	private FacilityReferenceDto laboratory;
 
 	private UserReferenceDto associatedOfficer;
+	
+	private Disease limitedDisease;
 	
 	public boolean isActive() {
 		return active;
@@ -196,4 +200,13 @@ public class UserDto extends EntityDto {
 	public UserReferenceDto toReference() {
 		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles());
 	}
+
+	public Disease getLimitedDisease() {
+		return limitedDisease;
+	}
+
+	public void setLimitedDisease(Disease limitedDisease) {
+		this.limitedDisease = limitedDisease;
+	}
+	
 }

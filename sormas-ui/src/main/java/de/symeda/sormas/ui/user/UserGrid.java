@@ -64,7 +64,7 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 
 		Column<UserDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
 		editColumn.setId(EDIT_BTN_ID);
-		editColumn.setWidth(60);
+		editColumn.setWidth(20);
 
 		setColumns(EDIT_BTN_ID, UserDto.UUID, UserDto.ACTIVE, UserDto.USER_ROLES, UserDto.USER_NAME, 
 				UserDto.NAME, UserDto.USER_EMAIL, UserDto.ADDRESS, UserDto.DISTRICT, UserDto.HEALTH_FACILITY);

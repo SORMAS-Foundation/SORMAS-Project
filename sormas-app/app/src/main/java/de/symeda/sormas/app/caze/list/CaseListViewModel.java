@@ -41,7 +41,7 @@ public class CaseListViewModel extends ViewModel {
     public CaseListViewModel() {
         caseDataFactory = new CaseDataFactory();
         CaseCriteria caseCriteria = new CaseCriteria();
-        caseCriteria.investigationStatus(InvestigationStatus.PENDING);
+        caseCriteria.setInvestigationStatus(InvestigationStatus.PENDING);
         caseDataFactory.setCaseCriteria(caseCriteria);
         PagedList.Config config = new PagedList.Config.Builder()
                         .setEnablePlaceholders(true)

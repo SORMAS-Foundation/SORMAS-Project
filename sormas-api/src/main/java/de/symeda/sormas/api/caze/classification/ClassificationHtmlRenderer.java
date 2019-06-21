@@ -24,8 +24,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto.ClassificationXOfSubCriteriaDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 
@@ -42,7 +44,11 @@ public class ClassificationHtmlRenderer {
 		if (suspectCriteria != null) {
 			StringBuilder suspectSb = new StringBuilder();
 			suspectSb.append(createHeadlineDiv(I18nProperties.getString(Strings.classificationSuspect)));
-			suspectSb.append(createInfoDiv());
+			if (suspectCriteria instanceof ClassificationXOfCriteriaDto) {
+				suspectSb.append(createInfoDiv(((ClassificationXOfCriteriaDto) suspectCriteria).getRequiredAmount()));
+			} else {
+				suspectSb.append(createInfoDiv());
+			}
 			suspectSb.append(buildCriteriaDiv(suspectCriteria));
 			sb.append(createSurroundingDiv(ClassificationCriteriaType.SUSPECT, suspectSb.toString(), true));
 		}
@@ -56,7 +62,11 @@ public class ClassificationHtmlRenderer {
 		if (probableCriteria != null) {
 			StringBuilder probableSb = new StringBuilder();
 			probableSb.append(createHeadlineDiv(I18nProperties.getString(Strings.classificationProbable)));
-			probableSb.append(createInfoDiv());
+			if (probableCriteria instanceof ClassificationXOfCriteriaDto) {
+				probableSb.append(createInfoDiv(((ClassificationXOfCriteriaDto) probableCriteria).getRequiredAmount()));
+			} else {
+				probableSb.append(createInfoDiv());
+			}
 			probableSb.append(buildCriteriaDiv(probableCriteria));
 			sb.append(createSurroundingDiv(ClassificationCriteriaType.PROBABLE, probableSb.toString(), true));
 		}
@@ -70,7 +80,11 @@ public class ClassificationHtmlRenderer {
 		if (confirmedCriteria != null) {
 			StringBuilder confirmedSb = new StringBuilder();
 			confirmedSb.append(createHeadlineDiv(I18nProperties.getString(Strings.classificationConfirmed)));
-			confirmedSb.append(createInfoDiv());
+			if (confirmedCriteria instanceof ClassificationXOfCriteriaDto) {
+				confirmedSb.append(createInfoDiv(((ClassificationXOfCriteriaDto) confirmedCriteria).getRequiredAmount()));
+			} else {
+				confirmedSb.append(createInfoDiv());
+			}
 			confirmedSb.append(buildCriteriaDiv(confirmedCriteria));
 			sb.append(createSurroundingDiv(ClassificationCriteriaType.CONFIRMED, confirmedSb.toString(), false));
 		}
@@ -157,7 +171,7 @@ public class ClassificationHtmlRenderer {
 		} else {
 			// Otherwise, create a div and fill it by iterating over the sub criteria
 			for (ClassificationCriteriaDto subCriteria : ((ClassificationCollectiveCriteria) criteria).getSubCriteria()) {
-				if (subCriteria instanceof ClassificationAllOfCriteriaDto) {
+				if (subCriteria instanceof ClassificationAllOfCriteriaDto && !((ClassificationAllOfCriteriaDto) subCriteria).isDrawSubCriteriaTogether()) {
 					// If the sub criteria is an AllOfCriteria, every one of its sub criteria needs its own div
 					for (ClassificationCriteriaDto subSubCriteria : ((ClassificationCollectiveCriteria) subCriteria).getSubCriteria()) {
 						sb.append(createCriteriaSurroundingDiv(buildSubCriteriaDiv(new StringBuilder(), subSubCriteria, subCriteria)));
@@ -179,7 +193,7 @@ public class ClassificationHtmlRenderer {
 		}
 
 		// Add the criteria name to the div (e.g. "ONE OF")
-		if (!(criteria instanceof ClassificationAllOfCriteriaDto)) {
+		if (!(criteria instanceof ClassificationAllOfCriteriaDto) || ((ClassificationAllOfCriteriaDto) criteria).isDrawSubCriteriaTogether()) {
 			subCriteriaSb.append(createCriteriaItemDiv(((ClassificationCollectiveCriteria) criteria).getCriteriaName()));
 		}
 
@@ -187,10 +201,16 @@ public class ClassificationHtmlRenderer {
 			if (!(subCriteria instanceof ClassificationCollectiveCriteria) || subCriteria instanceof ClassificationCompactCriteria) {
 				// For non-collective or compact collective criteria, add the description as a list item
 				subCriteriaSb.append("- " + subCriteria.buildDescription()+ "</br>");
-			} else if (parentCriteria instanceof ClassificationCollectiveCriteria && !(parentCriteria instanceof ClassificationAllOfCriteriaDto)) {
+			} else if (subCriteria instanceof ClassificationCollectiveCriteria && !(subCriteria instanceof ClassificationAllOfCriteriaDto)
+					&& !(subCriteria.getClass() == ClassificationXOfCriteriaDto.class)) {
 				// For collective criteria, but not ClassificationAllOfCriteria, add a sub div with a slightly different color to make clear
 				// that it belongs to the criteria listed before
-				String itemDiv = createCriteriaItemDiv("<b>" + I18nProperties.getString(Strings.and).toUpperCase() + "</b>" + subCriteria.buildDescription());
+				String itemDiv = null;
+				if (subCriteria instanceof ClassificationXOfSubCriteriaDto && !((ClassificationXOfSubCriteriaDto) subCriteria).isAddition()) {
+					itemDiv = createCriteriaItemDiv(subCriteria.buildDescription());
+				} else {
+					itemDiv = createCriteriaItemDiv("<b>" + I18nProperties.getString(Strings.and).toUpperCase() + "</b>" + subCriteria.buildDescription());
+				}
 				subCriteriaSb.append(createSubCriteriaSurroundingDiv(itemDiv));
 			} else {
 				// For everything else, recursively call this method to determine how to display the sub criteria
@@ -228,6 +248,10 @@ public class ClassificationHtmlRenderer {
 	 */
 	private static String createInfoDiv() {
 		return I18nProperties.getString(Strings.classificationInfoText);
+	}
+
+	private static String createInfoDiv(int requirementsNumber) {
+		return String.format(I18nProperties.getString(Strings.classificationInfoNumberText), DataHelper.parseNumberToString(requirementsNumber));
 	}
 
 	/**

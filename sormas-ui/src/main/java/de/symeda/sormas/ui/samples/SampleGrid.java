@@ -74,7 +74,7 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 
 		Column<SampleIndexDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
 		editColumn.setId(EDIT_BTN_ID);
-		editColumn.setWidth(60);
+		editColumn.setWidth(20);
 
 		Column<SampleIndexDto, String> diseaseShortColumn = addColumn(sample -> 
 		DiseaseHelper.toString(sample.getDisease(), sample.getDiseaseDetails()));
@@ -93,7 +93,7 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		pathogenTestResultColumn.setId(PATHOGEN_TEST_RESULT);
 		pathogenTestResultColumn.setSortProperty(SampleIndexDto.PATHOGEN_TEST_RESULT);
 
-		setColumns(EDIT_BTN_ID, SampleIndexDto.SAMPLE_CODE, SampleIndexDto.LAB_SAMPLE_ID, SampleIndexDto.ASSOCIATED_CASE, DISEASE_SHORT,
+		setColumns(EDIT_BTN_ID, SampleIndexDto.LAB_SAMPLE_ID, SampleIndexDto.EPID_NUMBER, SampleIndexDto.ASSOCIATED_CASE, DISEASE_SHORT,
 				SampleIndexDto.CASE_DISTRICT, SampleIndexDto.SHIPPED, SampleIndexDto.RECEIVED, SampleIndexDto.SHIPMENT_DATE, SampleIndexDto.RECEIVED_DATE, SampleIndexDto.LAB,
 				SampleIndexDto.SAMPLE_MATERIAL, PATHOGEN_TEST_RESULT, SampleIndexDto.ADDITIONAL_TESTING_STATUS);
 

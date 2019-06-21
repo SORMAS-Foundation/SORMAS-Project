@@ -110,8 +110,6 @@ public interface CaseFacade {
 	
 	Date getOldestCaseOnsetDate();
 	
-	Date getOldestDistrictLevelDate();
-	
 	Date getOldestCaseReportDate();
 	
 	boolean isArchived(String caseUuid);
@@ -119,6 +117,9 @@ public interface CaseFacade {
 	void archiveOrDearchiveCase(String caseUuid, boolean archive);
 	
 	List<String> getArchivedUuidsSince(String userUuid, Date since);
-
+	
+	boolean doesEpidNumberExist(String epidNumber, String caseUuid);
+	
+	String generateEpidNumber(CaseReferenceDto caze);
 	
 }

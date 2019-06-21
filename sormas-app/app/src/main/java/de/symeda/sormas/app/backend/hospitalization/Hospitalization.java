@@ -35,10 +35,6 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 
-/**
- * Created by Mate Strysewske on 22.02.2017.
- */
-
 @Entity(name = Hospitalization.TABLE_NAME)
 @DatabaseTable(tableName = Hospitalization.TABLE_NAME)
 @EmbeddedAdo

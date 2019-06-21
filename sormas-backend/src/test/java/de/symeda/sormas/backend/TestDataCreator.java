@@ -128,6 +128,8 @@ public class TestDataCreator {
 		caze.setDistrict(beanTest.getDistrictFacade().getDistrictReferenceByUuid(rdcf.district.getUuid()));
 		caze.setCommunity(beanTest.getCommunityFacade().getCommunityReferenceByUuid(rdcf.community.getUuid()));
 		caze.setHealthFacility(beanTest.getFacilityFacade().getFacilityReferenceByUuid(rdcf.facility.getUuid()));
+		// TODO: Remove when issue with H2 has been resolved
+		caze.setEpidNumber("ABC-DEF-GHI-19-1");
 
 		caze = beanTest.getCaseFacade().saveCase(caze);
 
@@ -334,6 +336,7 @@ public class TestDataCreator {
 		Region region = new Region();
 		region.setUuid(DataHelper.createUuid());
 		region.setName(regionName);
+		region.setEpidCode("COU-REG");
 		beanTest.getRegionService().persist(region);
 
 		return region;
@@ -344,6 +347,7 @@ public class TestDataCreator {
 		district.setUuid(DataHelper.createUuid());
 		district.setName(districtName);
 		district.setRegion(region);
+		district.setEpidCode("DIS");
 		beanTest.getDistrictService().persist(district);
 
 		return district;

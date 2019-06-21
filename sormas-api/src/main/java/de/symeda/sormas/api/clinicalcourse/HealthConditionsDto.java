@@ -22,6 +22,8 @@ public class HealthConditionsDto extends EntityDto {
 	public static final String CHRONIC_PULMONARY_DISEASE = "chronicPulmonaryDisease";
 	public static final String CHRONIC_KIDNEY_DISEASE = "chronicKidneyDisease";
 	public static final String CHRONIC_NEUROLOGIC_CONDITION = "chronicNeurologicCondition";
+	public static final String DOWN_SYNDROME = "downSyndrome";
+	public static final String CONGENITAL_SYPHILIS = "congenitalSyphilis";
 	public static final String OTHER_CONDITIONS = "otherConditions";
 	
 	private YesNoUnknown tuberculosis;
@@ -36,6 +38,8 @@ public class HealthConditionsDto extends EntityDto {
 	private YesNoUnknown chronicPulmonaryDisease;
 	private YesNoUnknown chronicKidneyDisease;
 	private YesNoUnknown chronicNeurologicCondition;
+	private YesNoUnknown downSyndrome;
+	private YesNoUnknown congenitalSyphilis;
 	private String otherConditions;
 	
 	public static HealthConditionsDto build() {
@@ -115,6 +119,18 @@ public class HealthConditionsDto extends EntityDto {
 	}
 	public void setChronicNeurologicCondition(YesNoUnknown chronicNeurologicCondition) {
 		this.chronicNeurologicCondition = chronicNeurologicCondition;
+	}
+	public YesNoUnknown getDownSyndrome() {
+		return downSyndrome;
+	}
+	public void setDownSyndrome(YesNoUnknown downSyndrome) {
+		this.downSyndrome = downSyndrome;
+	}
+	public YesNoUnknown getCongenitalSyphilis() {
+		return congenitalSyphilis;
+	}
+	public void setCongenitalSyphilis(YesNoUnknown congenitalSyphilis) {
+		this.congenitalSyphilis = congenitalSyphilis;
 	}
 	public String getOtherConditions() {
 		return otherConditions;

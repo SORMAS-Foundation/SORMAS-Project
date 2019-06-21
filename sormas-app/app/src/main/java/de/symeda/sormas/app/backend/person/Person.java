@@ -72,6 +72,10 @@ public class Person extends AbstractDomainObject {
 	private String nickname;
 	@Column(length = 255)
 	private String mothersMaidenName;
+	@Column(length = 512)
+	private String mothersName;
+	@Column(length = 512)
+	private String fathersName;
 	@Column
 	private Integer birthdateDD;
 	@Column
@@ -84,6 +88,22 @@ public class Person extends AbstractDomainObject {
 	private ApproximateAgeType approximateAgeType;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date approximateAgeReferenceDate;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+	private Region placeOfBirthRegion;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+	private District placeOfBirthDistrict;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+	private Community placeOfBirthCommunity;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+	private Facility placeOfBirthFacility;
+	@Column(length = 512)
+	private String placeOfBirthFacilityDetails;
+
+	@Column
+	private Integer gestationAgeAtBirth;
+	@Column
+	private Integer birthWeight;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 2)
 	private Location address;
@@ -395,5 +415,77 @@ public class Person extends AbstractDomainObject {
 
 	public void setEducationDetails(String educationDetails) {
 		this.educationDetails = educationDetails;
+	}
+
+	public String getMothersName() {
+		return mothersName;
+	}
+
+	public void setMothersName(String mothersName) {
+		this.mothersName = mothersName;
+	}
+
+	public String getFathersName() {
+		return fathersName;
+	}
+
+	public void setFathersName(String fathersName) {
+		this.fathersName = fathersName;
+	}
+
+	public Region getPlaceOfBirthRegion() {
+		return placeOfBirthRegion;
+	}
+
+	public void setPlaceOfBirthRegion(Region placeOfBirthRegion) {
+		this.placeOfBirthRegion = placeOfBirthRegion;
+	}
+
+	public District getPlaceOfBirthDistrict() {
+		return placeOfBirthDistrict;
+	}
+
+	public void setPlaceOfBirthDistrict(District placeOfBirthDistrict) {
+		this.placeOfBirthDistrict = placeOfBirthDistrict;
+	}
+
+	public Community getPlaceOfBirthCommunity() {
+		return placeOfBirthCommunity;
+	}
+
+	public void setPlaceOfBirthCommunity(Community placeOfBirthCommunity) {
+		this.placeOfBirthCommunity = placeOfBirthCommunity;
+	}
+
+	public Facility getPlaceOfBirthFacility() {
+		return placeOfBirthFacility;
+	}
+
+	public void setPlaceOfBirthFacility(Facility placeOfBirthFacility) {
+		this.placeOfBirthFacility = placeOfBirthFacility;
+	}
+
+	public String getPlaceOfBirthFacilityDetails() {
+		return placeOfBirthFacilityDetails;
+	}
+
+	public void setPlaceOfBirthFacilityDetails(String placeOfBirthFacilityDetails) {
+		this.placeOfBirthFacilityDetails = placeOfBirthFacilityDetails;
+	}
+
+	public Integer getGestationAgeAtBirth() {
+		return gestationAgeAtBirth;
+	}
+
+	public void setGestationAgeAtBirth(Integer gestationAgeAtBirth) {
+		this.gestationAgeAtBirth = gestationAgeAtBirth;
+	}
+
+	public Integer getBirthWeight() {
+		return birthWeight;
+	}
+
+	public void setBirthWeight(Integer birthWeight) {
+		this.birthWeight = birthWeight;
 	}
 }

@@ -23,7 +23,8 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 							LayoutUtil.locs(
 									HealthConditionsDto.TUBERCULOSIS, HealthConditionsDto.ASPLENIA,
 									HealthConditionsDto.HEPATITIS, HealthConditionsDto.DIABETES,
-									HealthConditionsDto.HIV, HealthConditionsDto.HIV_ART)),
+									HealthConditionsDto.HIV, HealthConditionsDto.HIV_ART, 
+									HealthConditionsDto.CONGENITAL_SYPHILIS, HealthConditionsDto.DOWN_SYNDROME)),
 					LayoutUtil.fluidColumn(6, 0, 
 							LayoutUtil.locs(
 									HealthConditionsDto.CHRONIC_LIVER_DISEASE, HealthConditionsDto.MALIGNANCY_CHEMOTHERAPY,
@@ -42,7 +43,8 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 				HealthConditionsDto.DIABETES, HealthConditionsDto.HIV, HealthConditionsDto.HIV_ART,
 				HealthConditionsDto.CHRONIC_LIVER_DISEASE, HealthConditionsDto.MALIGNANCY_CHEMOTHERAPY,
 				HealthConditionsDto.CHRONIC_HEART_FAILURE, HealthConditionsDto.CHRONIC_PULMONARY_DISEASE,
-				HealthConditionsDto.CHRONIC_KIDNEY_DISEASE, HealthConditionsDto.CHRONIC_NEUROLOGIC_CONDITION);
+				HealthConditionsDto.CHRONIC_KIDNEY_DISEASE, HealthConditionsDto.CHRONIC_NEUROLOGIC_CONDITION,
+				HealthConditionsDto.DOWN_SYNDROME, HealthConditionsDto.CONGENITAL_SYPHILIS);
 		addField(HealthConditionsDto.OTHER_CONDITIONS, TextArea.class).setRows(3);
 		
 		FieldHelper.setVisibleWhen(getFieldGroup(), HealthConditionsDto.HIV_ART, HealthConditionsDto.HIV, Arrays.asList(YesNoUnknown.YES), true);

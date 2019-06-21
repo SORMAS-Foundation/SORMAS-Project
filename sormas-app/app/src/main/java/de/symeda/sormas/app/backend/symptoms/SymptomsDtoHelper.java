@@ -170,6 +170,20 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         target.setWeight(source.getWeight());
         target.setHeight(source.getHeight());
         target.setGlasgowComaScale(source.getGlasgowComaScale());
+        target.setBilateralCataracts(source.getBilateralCataracts());
+        target.setUnilateralCataracts(source.getUnilateralCataracts());
+        target.setCongenitalGlaucoma(source.getCongenitalGlaucoma());
+        target.setCongenitalHeartDisease(source.getCongenitalHeartDisease());
+        target.setCongenitalHeartDiseaseType(source.getCongenitalHeartDiseaseType());
+        target.setCongenitalHeartDiseaseDetails(source.getCongenitalHeartDiseaseDetails());
+        target.setPigmentaryRetinopathy(source.getPigmentaryRetinopathy());
+        target.setPurpuricRash(source.getPurpuricRash());
+        target.setMicrocephaly(source.getMicrocephaly());
+        target.setMeningoencephalitis(source.getMeningoencephalitis());
+        target.setDevelopmentalDelay(source.getDevelopmentalDelay());
+        target.setSplenomegaly(source.getSplenomegaly());
+        target.setJaundiceWithin24HoursOfBirth(source.getJaundiceWithin24HoursOfBirth());
+        target.setRadiolucentBoneDisease(source.getRadiolucentBoneDisease());
     }
 
     @Override
@@ -287,5 +301,19 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         target.setWeight(source.getWeight());
         target.setHeight(source.getHeight());
         target.setGlasgowComaScale(source.getGlasgowComaScale());
+        target.setBilateralCataracts(source.getBilateralCataracts());
+        target.setUnilateralCataracts(source.getUnilateralCataracts());
+        target.setCongenitalGlaucoma(source.getCongenitalGlaucoma());
+        target.setCongenitalHeartDisease(source.getCongenitalHeartDisease());
+        target.setCongenitalHeartDiseaseType(source.getCongenitalHeartDiseaseType());
+        target.setCongenitalHeartDiseaseDetails(source.getCongenitalHeartDiseaseDetails());
+        target.setPigmentaryRetinopathy(source.getPigmentaryRetinopathy());
+        target.setPurpuricRash(source.getPurpuricRash());
+        target.setMicrocephaly(source.getMicrocephaly());
+        target.setMeningoencephalitis(source.getMeningoencephalitis());
+        target.setDevelopmentalDelay(source.getDevelopmentalDelay());
+        target.setSplenomegaly(source.getSplenomegaly());
+        target.setJaundiceWithin24HoursOfBirth(source.getJaundiceWithin24HoursOfBirth());
+        target.setRadiolucentBoneDisease(source.getRadiolucentBoneDisease());
     }
 }

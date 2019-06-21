@@ -103,6 +103,16 @@ public class SymptomsReadFragment extends BaseReadFragment<FragmentSymptomsReadL
             contentBinding.symptomsLesionsLayout.setVisibility(GONE);
         }
 
+        if (!Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, SymptomsDto.JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, disease)
+                || contentBinding.getData().getJaundice() != SymptomState.YES) {
+            contentBinding.symptomsJaundiceWithin24HoursOfBirth.setVisibility(GONE);
+        }
+
+        if (!Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, SymptomsDto.CONGENITAL_HEART_DISEASE, disease)
+                || contentBinding.getData().getCongenitalHeartDisease() != SymptomState.YES) {
+            contentBinding.symptomsCongenitalHeartDiseaseType.setVisibility(GONE);
+        }
+
         if (symptomsContext == SymptomsContext.CLINICAL_VISIT) {
             contentBinding.symptomsSeparator.setVisibility(GONE);
         }

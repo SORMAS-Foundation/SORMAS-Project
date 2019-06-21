@@ -33,6 +33,8 @@ import java.util.TreeSet;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 
 public final class DataHelper {
 
@@ -161,10 +163,6 @@ public final class DataHelper {
 		}
 		return sb.toString();
 	}
-
-	public static String getEpidNumberRegexp() {
-		return "\\w{3}-\\w{3}-\\w{3}-\\d{2}-[A-Za-z0-9]+";
-	}
 	
 	public static String capitalize(String input) {
 		return input.substring(0, 1).toUpperCase() + input.substring(1);
@@ -186,6 +184,51 @@ public final class DataHelper {
 	    );
 	    sortedEntries.addAll(map.entrySet());
 	    return sortedEntries;
+	}
+	
+	/**
+	 * Returns a String that prints all numbers from 0 to 12 spelled out. Higher numbers
+	 * are simply transformed into a String.
+	 */
+	public static String parseNumberToString(int number) {
+		switch (number) {
+		case 1:
+			return I18nProperties.getString(Strings.numberOne).toUpperCase();
+		case 2:
+			return I18nProperties.getString(Strings.numberTwo).toUpperCase();
+		case 3:
+			return I18nProperties.getString(Strings.numberThree).toUpperCase();
+		case 4:
+			return I18nProperties.getString(Strings.numberFour).toUpperCase();
+		case 5:
+			return I18nProperties.getString(Strings.numberFive).toUpperCase();
+		case 6:
+			return I18nProperties.getString(Strings.numberSix).toUpperCase();
+		case 7:
+			return I18nProperties.getString(Strings.numberSeven).toUpperCase();
+		case 8:
+			return I18nProperties.getString(Strings.numberEight).toUpperCase();
+		case 9:
+			return I18nProperties.getString(Strings.numberNine).toUpperCase();
+		case 10:
+			return I18nProperties.getString(Strings.numberTen).toUpperCase();
+		case 11:
+			return I18nProperties.getString(Strings.numberEleven).toUpperCase();
+		case 12:
+			return I18nProperties.getString(Strings.numberTwelve).toUpperCase();
+		default:
+			return Integer.toString(number);
+		}
+	}
+	
+	public static String parseBoolean(Boolean value) {
+		if (value == null) {
+			return "";
+		} else if (Boolean.TRUE.equals(value)) {
+			return I18nProperties.getString(Strings.yes);
+		} else {
+			return I18nProperties.getString(Strings.no);
+		}
 	}
 	
 }

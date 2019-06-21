@@ -5,12 +5,11 @@
 # Required-Stop:     postgresql
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Payara-Server SORMAS v4.1.2.172
+# Short-Description: Payara-Server SORMAS v5
 ### END INIT INFO
-# Author: Martin Wahnschaffe <m.wahnschaffe@symeda.de>
 
 
-GLASSFISH_HOME=${GLASSFISH_HOME:-"/opt/payara-172/glassfish"}
+GLASSFISH_HOME=${GLASSFISH_HOME:-"/opt/payara5/glassfish"}
 DOMAINS_DIR=${DOMAINS_DIR:-"/opt/domains"}
 
 case "$1" in

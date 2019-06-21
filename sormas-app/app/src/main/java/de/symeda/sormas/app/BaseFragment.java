@@ -72,7 +72,7 @@ public class BaseFragment extends Fragment {
         super.onPause();
     }
 
-    protected void setVisibilityByDisease(Class<?> dtoClass, Disease disease, ViewGroup viewGroup) {
+    public void setVisibilityByDisease(Class<?> dtoClass, Disease disease, ViewGroup viewGroup) {
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             View child = viewGroup.getChildAt(i);
             if (child instanceof ControlPropertyField) {

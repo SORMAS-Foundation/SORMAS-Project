@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.20.0-SNAPSHOT</version>
+	<version>1.21.0-SNAPSHOT</version>
 
 	<prerequisites>
 		<maven>3.0</maven>
@@ -15,7 +15,7 @@
 		<slf4j.version>1.7.21</slf4j.version>
 		<logback.version>1.1.7</logback.version>
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
-		<vaadin.version>8.7.1</vaadin.version>
+		<vaadin.version>8.8.3</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<jersey.version>2.22.1</jersey.version>
 		<jetty.plugin.version>9.2.3.v20140905</jetty.plugin.version>
@@ -103,20 +103,20 @@
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
-				<version>3.0.1</version>
+				<version>4.0.1</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>javax</groupId>
 				<artifactId>javaee-web-api</artifactId>
 				<scope>provided</scope>
-				<version>7.0</version>
+				<version>8.0</version>
 			</dependency>
 			<dependency>
 				<groupId>javax</groupId>
 				<artifactId>javaee-api</artifactId>
 				<scope>provided</scope>
-				<version>7.0</version>
+				<version>8.0</version>
 			</dependency>
 
 			<!-- compile dependencies -->
@@ -174,14 +174,6 @@
 						<groupId>com.github.dblock.waffle</groupId>
 					</exclusion>
 				</exclusions>
-			</dependency>
-
-			<dependency>
-				<groupId>org.wamblee.glassfish</groupId>
-				<artifactId>flexiblejdbcrealm-deploy</artifactId>
-				<version>1.2</version>
-				<classifier>all</classifier>
-				<scope>provided</scope>
 			</dependency>
 
 			<!-- bundles -->
@@ -335,12 +327,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.0</version>
+				<version>3.8.1</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.6</version>
+				<version>3.1.0</version>
 			</plugin>
 		</plugins>
 		<pluginManagement>
@@ -429,24 +421,24 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-ear-plugin</artifactId>
-					<version>2.10.1</version>
+					<version>3.0.1</version>
 					<configuration>
-						<version>6</version>
+						<version>7</version>
 						<defaultLibBundleDir>lib</defaultLibBundleDir>
 					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-ejb-plugin</artifactId>
-					<version>2.5.1</version>
+					<version>3.0.1</version>
 					<configuration>
-						<ejbVersion>3.1</ejbVersion>
+						<ejbVersion>3.2</ejbVersion>
 					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
-					<version>2.6</version>
+					<version>3.2.3</version>
 					<configuration>
 						<outputFileNameMapping>@{artifactId}@.@{extension}@</outputFileNameMapping>
 						<failOnMissingWebXml>false</failOnMissingWebXml>
@@ -460,7 +452,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>2.6</version>
+					<version>3.1.1</version>
 					<configuration>
 						<archive>
 							<manifest>
@@ -473,7 +465,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
-					<version>2.4</version>
+					<version>3.1.0</version>
 				</plugin>
 
 				<plugin>

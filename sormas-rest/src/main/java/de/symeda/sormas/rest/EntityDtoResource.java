@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import javax.ejb.EJB;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +17,9 @@ import de.symeda.sormas.api.utils.OutdatedEntityException;
 
 public abstract class EntityDtoResource {
 
+	@EJB
+	TransactionWrapper transactionWrapper;
+	
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	protected <T extends EntityDto> List<PushResult> savePushedDto(List<T> dtos, Function<T, T> saveEntityDto) {
@@ -23,7 +28,7 @@ public abstract class EntityDtoResource {
 		for (T dto : dtos) {
 			PushResult result;
 			try {
-				dto = saveEntityDto.apply(dto);
+				dto = transactionWrapper.execute(saveEntityDto, dto);
 				result = PushResult.OK;
 			} catch (Exception e) {
 				String errorMessage = dto.getClass().getSimpleName()

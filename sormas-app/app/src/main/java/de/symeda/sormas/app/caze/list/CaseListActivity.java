@@ -24,6 +24,8 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -38,6 +40,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
@@ -57,6 +60,7 @@ public class CaseListActivity extends PagedBaseListActivity {
 
     private InvestigationStatus statusFilters[] = new InvestigationStatus[]{InvestigationStatus.PENDING, InvestigationStatus.DONE, InvestigationStatus.DISCARDED};
     private CaseListViewModel model;
+    private FilterCaseListLayoutBinding filterBinding;
 
     public static void startActivity(Context context, InvestigationStatus listFilter) {
         BaseListActivity.startActivity(context, CaseListActivity.class, buildBundle(listFilter));
@@ -86,9 +90,11 @@ public class CaseListActivity extends PagedBaseListActivity {
             hidePreloader();
         });
 
+        filterBinding.setCriteria(model.getCaseCriteria());
+
         setOpenPageCallback(p -> {
             showPreloader();
-            model.getCaseCriteria().investigationStatus(statusFilters[((PageMenuItem) p).getKey()]);
+            model.getCaseCriteria().setInvestigationStatus(statusFilters[((PageMenuItem) p).getKey()]);
             model.notifyCriteriaUpdated();
         });
     }
@@ -149,43 +155,40 @@ public class CaseListActivity extends PagedBaseListActivity {
     @Override
     public void addFiltersToPageMenu() {
         View caseListFilterView = getLayoutInflater().inflate(R.layout.filter_case_list_layout, null);
-        FilterCaseListLayoutBinding caseListFilterBinding = DataBindingUtil.bind(caseListFilterView);
+        filterBinding = DataBindingUtil.bind(caseListFilterView);
 
         List<Item> diseases = DataUtils.toItems(DiseaseConfigurationHelper.getInstance().getAllActivePrimaryDiseases());
-        caseListFilterBinding.diseaseFilter.initializeSpinner(diseases);
+        filterBinding.diseaseFilter.initializeSpinner(diseases);
         List<Item> classifications = DataUtils.getEnumItems(CaseClassification.class);
-        caseListFilterBinding.classificationFilter.initializeSpinner(classifications);
+        filterBinding.classificationFilter.initializeSpinner(classifications);
         List<Item> outcomes = DataUtils.getEnumItems(CaseOutcome.class);
-        caseListFilterBinding.outcomeFilter.initializeSpinner(outcomes);
+        filterBinding.outcomeFilter.initializeSpinner(outcomes);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        List<Item> epiWeeks = DataUtils.toItems(DateHelper.createEpiWeekList(calendar.get(Calendar.YEAR), calendar.get(Calendar.WEEK_OF_YEAR)));
+        filterBinding.epiWeekFromFilter.initializeSpinner(epiWeeks);
+        filterBinding.epiWeekToFilter.initializeSpinner(epiWeeks);
 
         pageMenu.addFilter(caseListFilterView);
 
-        caseListFilterBinding.textFilter.addValueChangedListener(e -> {
-            model.getCaseCriteria().textFilter((String) e.getValue());
-        });
-        caseListFilterBinding.diseaseFilter.addValueChangedListener(e -> {
-            model.getCaseCriteria().disease((Disease) e.getValue());
-        });
-        caseListFilterBinding.classificationFilter.addValueChangedListener(e -> {
-            model.getCaseCriteria().caseClassification((CaseClassification) e.getValue());
-        });
-        caseListFilterBinding.outcomeFilter.addValueChangedListener(e -> {
-            model.getCaseCriteria().outcome((CaseOutcome) e.getValue());
-        });
-
-        caseListFilterBinding.applyFilters.setOnClickListener(e -> {
+        filterBinding.applyFilters.setOnClickListener(e -> {
             showPreloader();
             pageMenu.hideAll();
             model.notifyCriteriaUpdated();
         });
 
-        caseListFilterBinding.resetFilters.setOnClickListener(e -> {
+        filterBinding.resetFilters.setOnClickListener(e -> {
             showPreloader();
             pageMenu.hideAll();
-            caseListFilterBinding.textFilter.setValue(null);
-            caseListFilterBinding.diseaseFilter.setValue(null);
-            caseListFilterBinding.classificationFilter.setValue(null);
-            caseListFilterBinding.outcomeFilter.setValue(null);
+            model.getCaseCriteria().setTextFilter(null);
+            model.getCaseCriteria().setDisease(null);
+            model.getCaseCriteria().setCaseClassification(null);
+            model.getCaseCriteria().setOutcome(null);
+            model.getCaseCriteria().setEpiWeekFrom(null);
+            model.getCaseCriteria().setEpiWeekTo(null);
+            filterBinding.invalidateAll();
+            filterBinding.executePendingBindings();
             model.notifyCriteriaUpdated();
         });
 

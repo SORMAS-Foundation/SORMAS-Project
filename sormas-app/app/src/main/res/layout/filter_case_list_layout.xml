@@ -18,7 +18,6 @@
   -->
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/task_list_filters">
 
@@ -28,6 +27,8 @@
         <import type="de.symeda.sormas.api.i18n.Strings" />
         <import type="de.symeda.sormas.api.caze.CaseDataDto" />
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType"/>
+
+        <variable name="criteria" type="de.symeda.sormas.app.backend.caze.CaseCriteria"/>
     </data>
 
     <ScrollView
@@ -45,24 +46,42 @@
                 android:id="@+id/text_filter"
                 app:hint="@{I18nProperties.getString(Strings.promptCasesSearchField)}"
                 app:showCaption="false"
+                app:value="@={criteria.textFilter}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.FilterSpinnerField
                 android:id="@+id/disease_filter"
                 app:hint="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE)}"
                 app:showCaption="false"
+                app:value="@={criteria.disease}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.FilterSpinnerField
                 android:id="@+id/classification_filter"
                 app:hint="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION)}"
                 app:showCaption="false"
+                app:value="@={criteria.caseClassification}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.FilterSpinnerField
                 android:id="@+id/outcome_filter"
                 app:hint="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.OUTCOME)}"
                 app:showCaption="false"
+                app:value="@={criteria.outcome}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.FilterSpinnerField
+                android:id="@+id/epi_week_from_filter"
+                app:hint="@{I18nProperties.getString(Strings.promptCasesEpiWeekFrom)}"
+                app:showCaption="false"
+                app:value="@={criteria.epiWeekFrom}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.FilterSpinnerField
+                android:id="@+id/epi_week_to_filter"
+                app:hint="@{I18nProperties.getString(Strings.promptCasesEpiWeekTo)}"
+                app:showCaption="false"
+                app:value="@={criteria.epiWeekTo}"
                 style="@style/ControlSingleColumnStyle" />
 
             <LinearLayout

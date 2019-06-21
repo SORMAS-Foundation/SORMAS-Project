@@ -56,8 +56,8 @@ public class CaseExportDto implements Serializable {
 	private long districtId;
 	private String uuid;
 	private String epidNumber;
-	private String disease;
-	private Disease diseaseSource;
+	private String diseaseFormatted;
+	private Disease disease;
 	private String person;
 	private Sex sex;
 	private String approximateAge;
@@ -121,8 +121,8 @@ public class CaseExportDto implements Serializable {
 		this.districtId = districtId;
 		this.uuid = uuid;
 		this.epidNumber = epidNumber;
-		this.disease = DiseaseHelper.toString(disease, diseaseDetails);
-		this.diseaseSource = disease;
+		this.diseaseFormatted = DiseaseHelper.toString(disease, diseaseDetails);
+		this.disease = disease;
 		this.person = PersonDto.buildCaption(firstName, lastName);
 		this.sex = sex;
 		this.approximateAge = ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
@@ -203,8 +203,8 @@ public class CaseExportDto implements Serializable {
 	}
 
 	@Order(4)
-	public String getDisease() {
-		return disease;
+	public String getDiseaseFormatted() {
+		return diseaseFormatted;
 	}
 
 	@Order(10)
@@ -489,8 +489,8 @@ public class CaseExportDto implements Serializable {
 		this.epidNumber = epidNumber;
 	}
 
-	public void setDisease(String disease) {
-		this.disease = disease;
+	public void setDiseaseFormatted(String diseaseFormatted) {
+		this.diseaseFormatted = diseaseFormatted;
 	}
 
 	public void setPerson(String person) {
@@ -647,12 +647,12 @@ public class CaseExportDto implements Serializable {
 		this.symptoms = symptoms;
 	}
 
-	public Disease getDiseaseSource() {
-		return diseaseSource;
+	public Disease getDisease() {
+		return disease;
 	}
 
-	public void setDiseaseSource(Disease diseaseSource) {
-		this.diseaseSource = diseaseSource;
+	public void setDisease(Disease disease) {
+		this.disease = disease;
 	}
 	
 }

@@ -100,6 +100,23 @@
                 android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/healthConditions_congenitalSyphilis"
+                    app:value="@{data.congenitalSyphilis}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/healthConditions_downSyndrome"
+                    app:value="@{data.downSyndrome}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/healthConditions_chronicLiverDisease"
                     app:value="@{data.chronicLiverDisease}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />

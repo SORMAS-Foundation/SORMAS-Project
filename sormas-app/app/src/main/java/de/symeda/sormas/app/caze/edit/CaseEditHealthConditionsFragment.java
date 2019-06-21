@@ -18,15 +18,11 @@
 
 package de.symeda.sormas.app.caze.edit;
 
-import android.os.Bundle;
-
 import de.symeda.sormas.app.BaseEditFragment;
-import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.app.databinding.FragmentCaseEditHealthConditionsLayoutBinding;
-import de.symeda.sormas.app.databinding.FragmentCaseReadHealthConditionsLayoutBinding;
 
 public class CaseEditHealthConditionsFragment extends BaseEditFragment<FragmentCaseEditHealthConditionsLayoutBinding, HealthConditions, Case> {
 

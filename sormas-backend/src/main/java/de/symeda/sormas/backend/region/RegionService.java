@@ -38,11 +38,11 @@ import de.symeda.sormas.backend.util.InfrastructureDataImporter;
 @Stateless
 @LocalBean
 public class RegionService extends AbstractAdoService<Region> {
-	
+
 	public RegionService() {
 		super(Region.class);
 	}
-	
+
 	public List<Region> getAllWithoutEpidCode() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Region> cq = cb.createQuery(getElementClass());
@@ -67,19 +67,19 @@ public class RegionService extends AbstractAdoService<Region> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Region> cq = cb.createQuery(getElementClass());
 		Root<Region> from = cq.from(getElementClass());
-		
+
 		cq.where(cb.equal(from.get(Region.NAME), name));
 
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Region, Region> from, User user) {
-		// no fitler by user needed
+		// no filter by user needed
 		return null;
 	}
-	
+
 	public Predicate buildCriteriaFilter(RegionCriteria criteria, CriteriaBuilder cb, Root<Region> from) {
 		Predicate filter = null;
 		if (criteria.getNameEpidLike() != null) {
@@ -97,30 +97,30 @@ public class RegionService extends AbstractAdoService<Region> {
 		}
 		return filter;
 	}
-	
+
 	public void importRegions(String countryName, List<Region> regions) {
-		
+
 		InfrastructureDataImporter.importRegions(countryName, 
-			(regionName, epidCode, population, growthRate) -> {
-				
-				Optional<Region> regionResult = regions.stream()
-						.filter(r -> r.getName().equals(regionName))
-						.findFirst();
-				
-				Region region;
-				if (regionResult.isPresent()) {
-					region = regionResult.get();
-				} else {
-					region = new Region();
-					regions.add(region);
-					region.setName(regionName);
-				}
-				
-				region.setEpidCode(epidCode);
-				region.setPopulation(population);
-				region.setGrowthRate(growthRate);
-	
-				persist(region);
-			});
+				(regionName, epidCode, population, growthRate) -> {
+
+					Optional<Region> regionResult = regions.stream()
+							.filter(r -> r.getName().equals(regionName))
+							.findFirst();
+
+					Region region;
+					if (regionResult.isPresent()) {
+						region = regionResult.get();
+					} else {
+						region = new Region();
+						regions.add(region);
+						region.setName(regionName);
+					}
+
+					region.setEpidCode(epidCode);
+					region.setPopulation(population);
+					region.setGrowthRate(growthRate);
+
+					persist(region);
+				});
 	}
 }

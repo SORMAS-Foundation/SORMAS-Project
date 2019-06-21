@@ -33,6 +33,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.symptoms.CongenitalHeartDiseaseType;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -74,6 +75,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 
     private List<Item> bodyTempList;
     private List<Item> tempSourceList;
+    private List<Item> congenitalHeartDiseaseList;
 
     private IEntryItemOnClickListener clearAllCallback;
     private IEntryItemOnClickListener setClearedToNoCallback;
@@ -131,6 +133,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
                 || person.getApproximateAge() <= 1);
         bodyTempList = getTemperatures(true);
         tempSourceList = DataUtils.getEnumItems(TemperatureSource.class, true);
+        congenitalHeartDiseaseList = DataUtils.getEnumItems(CongenitalHeartDiseaseType.class, true);
     }
 
     @Override
@@ -159,12 +162,24 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 
         contentBinding.symptomsTemperature.initializeSpinner(DataUtils.addEmptyItem(bodyTempList));
         contentBinding.symptomsTemperatureSource.initializeSpinner(DataUtils.addEmptyItem(tempSourceList));
+        contentBinding.symptomsCongenitalHeartDiseaseType.initializeSpinner(congenitalHeartDiseaseList);
         contentBinding.symptomsOnsetSymptom.initializeSpinner(DataUtils.toItems(null, true));
 
         contentBinding.symptomsTemperature.setSelectionOnOpen(37.0f);
 
         initSymptomFields(contentBinding);
         initOnsetSymptomField(contentBinding);
+
+        // Remove the Complications heading for CRS; should be done automatically later
+        if (disease == Disease.CONGENITAL_RUBELLA) {
+            contentBinding.complicationsHeading.setVisibility(GONE);
+        }
+
+        contentBinding.symptomsCongenitalHeartDisease.addValueChangedListener(e -> {
+            if (e.getValue() != SymptomState.YES) {
+                contentBinding.symptomsCongenitalHeartDiseaseDetails.setVisibility(GONE);
+            }
+        });
     }
 
     private void initSymptomFields(FragmentSymptomsEditLayoutBinding contentBinding) {

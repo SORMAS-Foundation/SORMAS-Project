@@ -6,8 +6,7 @@ public interface Validations {
 	public static String afterDateSoft = "afterDateSoft";
 	public static String beforeDate = "beforeDate";
 	public static String beforeDateSoft = "beforeDateSoft";
-	public static String epidNumber = "epidNumber";
-	public static String epidNumberPattern = "epidNumberPattern";
+	public static String duplicateEpidNumber = "duplicateEpidNumber";
 	public static String futureDate = "futureDate";
 	public static String futureDateStrict = "futureDateStrict";
 	public static String importCasesPropertyTypeNotAllowed = "importCasesPropertyTypeNotAllowed";

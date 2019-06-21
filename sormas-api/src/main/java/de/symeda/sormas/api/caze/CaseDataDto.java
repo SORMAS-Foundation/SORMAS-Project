@@ -21,6 +21,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -73,6 +74,7 @@ public class CaseDataDto extends EntityDto {
 	public static final String EPI_DATA = "epiData";
 	public static final String THERAPY = "therapy";
 	public static final String CLINICAL_COURSE = "clinicalCourse";
+	public static final String MATERNAL_HISTORY = "maternalHistory";
 	public static final String PREGNANT = "pregnant";
 	public static final String VACCINATION = "vaccination";
 	public static final String VACCINATION_DOSES = "vaccinationDoses";
@@ -88,6 +90,8 @@ public class CaseDataDto extends EntityDto {
 	public static final String SEQUELAE = "sequelae";
 	public static final String SEQUELAE_DETAILS = "sequelaeDetails";
 	public static final String CLINICIAN_DETAILS = "clinicianDetails";
+	public static final String NOTIFYING_CLINIC = "notifyingClinic";
+	public static final String NOTIFYING_CLINIC_DETAILS = "notifyingClinicDetails";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -168,6 +172,10 @@ public class CaseDataDto extends EntityDto {
 	@Outbreaks
 	private UserReferenceDto surveillanceOfficer;
 	private String clinicianDetails;
+	@Diseases({ Disease.CONGENITAL_RUBELLA })
+	private HospitalWardType notifyingClinic;
+	@Diseases({ Disease.CONGENITAL_RUBELLA })
+	private String notifyingClinicDetails;
 	@Deprecated
 	private UserReferenceDto caseOfficer;
 	private Double reportLat;
@@ -178,6 +186,7 @@ public class CaseDataDto extends EntityDto {
 	private EpiDataDto epiData;
 	private TherapyDto therapy;
 	private ClinicalCourseDto clinicalCourse;
+	private MaternalHistoryDto maternalHistory;
 	
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();
@@ -188,6 +197,7 @@ public class CaseDataDto extends EntityDto {
 		caze.setSymptoms(SymptomsDto.build());
 		caze.setTherapy(TherapyDto.build());
 		caze.setClinicalCourse(ClinicalCourseDto.build());
+		caze.setMaternalHistory(MaternalHistoryDto.build());
 		caze.setDisease(disease);
 		caze.setInvestigationStatus(InvestigationStatus.PENDING);
 		caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
@@ -434,6 +444,14 @@ public class CaseDataDto extends EntityDto {
 		this.clinicalCourse = clinicalCourse;
 	}
 
+	public MaternalHistoryDto getMaternalHistory() {
+		return maternalHistory;
+	}
+
+	public void setMaternalHistory(MaternalHistoryDto maternalHistory) {
+		this.maternalHistory = maternalHistory;
+	}
+
 	public YesNoUnknown getPregnant() {
 		return pregnant;
 	}
@@ -552,6 +570,22 @@ public class CaseDataDto extends EntityDto {
 
 	public void setSequelaeDetails(String sequelaeDetails) {
 		this.sequelaeDetails = sequelaeDetails;
+	}
+
+	public HospitalWardType getNotifyingClinic() {
+		return notifyingClinic;
+	}
+
+	public void setNotifyingClinic(HospitalWardType notifyingClinic) {
+		this.notifyingClinic = notifyingClinic;
+	}
+
+	public String getNotifyingClinicDetails() {
+		return notifyingClinicDetails;
+	}
+
+	public void setNotifyingClinicDetails(String notifyingClinicDetails) {
+		this.notifyingClinicDetails = notifyingClinicDetails;
 	}
 	
 }

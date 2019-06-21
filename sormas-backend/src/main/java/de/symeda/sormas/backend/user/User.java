@@ -35,6 +35,7 @@ import javax.validation.constraints.Size;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedAttribute;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -91,6 +92,8 @@ public class User extends AbstractDomainObject {
 	private Facility laboratory;
 	
 	private User associatedOfficer;
+	
+	private Disease limitedDisease;
 	
 	@Column(nullable = false)
 	public String getUserName() {
@@ -249,4 +252,13 @@ public class User extends AbstractDomainObject {
 	public void setLaboratory(Facility laboratory) {
 		this.laboratory = laboratory;
 	}
+
+	@Enumerated(EnumType.STRING)
+	public Disease getLimitedDisease() {
+		return limitedDisease;
+	}
+	public void setLimitedDisease(Disease limitedDisease) {
+		this.limitedDisease = limitedDisease;
+	}
+	
 }

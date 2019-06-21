@@ -46,7 +46,7 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 				TreatmentIndexDto.DOSE, TreatmentIndexDto.ROUTE, TreatmentIndexDto.EXECUTING_CLINICIAN);
 		
 		getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
-		getColumn(EDIT_BTN_ID).setWidth(60);
+		getColumn(EDIT_BTN_ID).setWidth(20);
 		getColumn(EDIT_BTN_ID).setHeaderCaption("");
 		getColumn(TreatmentIndexDto.TREATMENT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
 		

@@ -106,6 +106,25 @@
                 android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/healthConditions_congenitalSyphilis"
+                    app:useAbbreviations="true"
+                    app:value="@={data.congenitalSyphilis}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/healthConditions_downSyndrome"
+                    app:useAbbreviations="true"
+                    app:value="@={data.downSyndrome}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/healthConditions_chronicLiverDisease"
                     app:useAbbreviations="true"
                     app:value="@={data.chronicLiverDisease}"

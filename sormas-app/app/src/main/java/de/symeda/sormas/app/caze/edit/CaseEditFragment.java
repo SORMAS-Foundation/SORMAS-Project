@@ -22,20 +22,18 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.webkit.WebView;
 
-import com.google.android.gms.common.util.Strings;
-
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.DengueFeverType;
+import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -72,6 +70,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     private List<Item> vaccinationInfoSourceList;
     private List<Item> plagueTypeList;
     private List<Item> dengueFeverTypeList;
+    private List<Item> hospitalWardTypeList;
 
     // Static methods
 
@@ -175,30 +174,12 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         vaccinationInfoSourceList = DataUtils.getEnumItems(VaccinationInfoSource.class, true);
         plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);
         dengueFeverTypeList = DataUtils.getEnumItems(DengueFeverType.class, true);
+        hospitalWardTypeList = DataUtils.getEnumItems(HospitalWardType.class, true);
     }
 
     @Override
     public void onLayoutBinding(FragmentCaseEditLayoutBinding contentBinding) {
         setUpButtonListeners(contentBinding);
-
-        // Epid number warning state
-        if (ConfigProvider.hasUserRight(UserRight.CASE_CHANGE_EPID_NUMBER)) {
-            contentBinding.caseDataEpidNumber.addValueChangedListener(new ValueChangeListener() {
-                @Override
-                public void onChange(ControlPropertyField field) {
-                    String value = (String) field.getValue();
-                    if (value.trim().isEmpty()) {
-                        getContentBinding().caseDataEpidNumber.enableWarningState(
-                                R.string.validation_soft_case_epid_number_empty);
-                    } else if (value.matches(DataHelper.getEpidNumberRegexp())) {
-                        getContentBinding().caseDataEpidNumber.disableWarningState();
-                    } else {
-                        getContentBinding().caseDataEpidNumber.enableWarningState(
-                                R.string.validation_soft_case_epid_number);
-                    }
-                }
-            });
-        }
 
         // Case classification warning state
         if (ConfigProvider.hasUserRight(UserRight.CASE_CLASSIFY)) {
@@ -230,6 +211,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         contentBinding.caseDataOutcome.initializeSpinner(caseOutcomeList);
         contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
         contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
+        contentBinding.caseDataNotifyingClinic.initializeSpinner(hospitalWardTypeList);
         contentBinding.caseDataVaccinationInfoSource.initializeSpinner(vaccinationInfoSourceList);
 
         // Initialize ControlDateFields

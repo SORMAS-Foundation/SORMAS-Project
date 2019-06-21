@@ -141,6 +141,11 @@ public class CaseDao extends AbstractAdoDao<Case> {
             date = clinicalCourseDate;
         }
 
+        Date maternalHistoryDate = DatabaseHelper.getMaternalHistoryDao().getLatestChangeDate();
+        if (maternalHistoryDate != null && maternalHistoryDate.after(date)) {
+            date = maternalHistoryDate;
+        }
+
         return date;
     }
 
@@ -198,6 +203,9 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
         // Clinical Course
         caze.setClinicalCourse(DatabaseHelper.getClinicalCourseDao().build());
+
+        // Maternal History
+        caze.setMaternalHistory(DatabaseHelper.getMaternalHistoryDao().build());
 
         // Location
         User currentUser = ConfigProvider.getUser();
@@ -501,7 +509,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
     public List<Case> queryByCriteria(CaseCriteria criteria, long offset, long limit) {
         try {
-            return buildQueryBuilder(criteria).orderBy(Case.CHANGE_DATE, true)
+            return buildQueryBuilder(criteria).orderBy(Case.CHANGE_DATE, false)
                     .offset(offset).limit(limit).query();
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform queryByCriteria on Case");
@@ -526,6 +534,12 @@ public class CaseDao extends AbstractAdoDao<Case> {
         }
         if (criteria.getOutcome() != null) {
             where.and().eq(Case.OUTCOME, criteria.getOutcome());
+        }
+        if (criteria.getEpiWeekFrom() != null) {
+            where.and().ge(Case.REPORT_DATE, DateHelper.getEpiWeekStart(criteria.getEpiWeekFrom()));
+        }
+        if (criteria.getEpiWeekTo() != null) {
+            where.and().le(Case.REPORT_DATE, DateHelper.getEpiWeekEnd(criteria.getEpiWeekTo()));
         }
         if (!StringUtils.isEmpty(criteria.getTextFilter())) {
             String[] textFilters = criteria.getTextFilter().split("\\s+");

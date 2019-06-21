@@ -50,6 +50,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.symptoms.CongenitalHeartDiseaseType;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -73,6 +74,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private static final String MONKEYPOX_LESIONS_IMG3 = "monkeypoxLesionsImg3";
 	private static final String MONKEYPOX_LESIONS_IMG4 = "monkeypoxLesionsImg4";
 	private static final String SYMPTOMS_HINT_LOC = "symptomsHintLoc";
+	private static final String COMPLICATIONS_HEADING = "complicationsHeading";
 
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.h3(I18nProperties.getString(Strings.headingClinicalMeasurements)) +
@@ -91,18 +93,20 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 							LayoutUtil.locsCss(CssStyles.VSPACE_3,
 									SymptomsDto.ABDOMINAL_PAIN, SymptomsDto.HEARINGLOSS, SymptomsDto.ANOREXIA_APPETITE_LOSS,
 									SymptomsDto.BACKACHE, SymptomsDto.BLACKENING_DEATH_OF_TISSUE, SymptomsDto.BLOOD_IN_STOOL, SymptomsDto.BUBOES_GROIN_ARMPIT_NECK, SymptomsDto.BULGING_FONTANELLE, 
-									SymptomsDto.CHEST_PAIN, SymptomsDto.CHILLS_SWEATS, SymptomsDto.CONJUNCTIVITIS, SymptomsDto.COUGH, 
-									SymptomsDto.DARK_URINE, SymptomsDto.DEHYDRATION, SymptomsDto.DIARRHEA, SymptomsDto.DIFFICULTY_BREATHING, 
-									SymptomsDto.LYMPHADENOPATHY_AXILLARY, SymptomsDto.LYMPHADENOPATHY_CERVICAL, SymptomsDto.LYMPHADENOPATHY_INGUINAL, SymptomsDto.FATIGUE_WEAKNESS, 
-									SymptomsDto.FEVER, SymptomsDto.FLUID_IN_LUNG_CAVITY, SymptomsDto.HEADACHE, SymptomsDto.HICCUPS, SymptomsDto.BEDRIDDEN, SymptomsDto.JAUNDICE, 
-									SymptomsDto.JOINT_PAIN, SymptomsDto.KOPLIKS_SPOTS, SymptomsDto.LOSS_SKIN_TURGOR, SymptomsDto.SKIN_RASH, SymptomsDto.MALAISE,
-									SymptomsDto.OTITIS_MEDIA, SymptomsDto.MUSCLE_PAIN, SymptomsDto.NAUSEA, SymptomsDto.NECK_STIFFNESS, 
-									SymptomsDto.OEDEMA_FACE_NECK, SymptomsDto.OEDEMA_LOWER_EXTREMITY, SymptomsDto.EYE_PAIN_LIGHT_SENSITIVE, SymptomsDto.PAINFUL_LYMPHADENITIS)),
+									SymptomsDto.BILATERAL_CATARACTS, SymptomsDto.UNILATERAL_CATARACTS, SymptomsDto.CHEST_PAIN, SymptomsDto.CHILLS_SWEATS, 
+									SymptomsDto.CONGENITAL_GLAUCOMA, SymptomsDto.CONGENITAL_HEART_DISEASE, SymptomsDto.CONGENITAL_HEART_DISEASE_TYPE, SymptomsDto.CONGENITAL_HEART_DISEASE_DETAILS,
+									SymptomsDto.CONJUNCTIVITIS, SymptomsDto.COUGH, SymptomsDto.DARK_URINE, SymptomsDto.DEHYDRATION, SymptomsDto.DEVELOPMENTAL_DELAY, SymptomsDto.DIARRHEA, 
+									SymptomsDto.DIFFICULTY_BREATHING, SymptomsDto.LYMPHADENOPATHY_AXILLARY, SymptomsDto.LYMPHADENOPATHY_CERVICAL, SymptomsDto.LYMPHADENOPATHY_INGUINAL, 
+									SymptomsDto.FATIGUE_WEAKNESS, SymptomsDto.FEVER, SymptomsDto.FLUID_IN_LUNG_CAVITY, SymptomsDto.HEADACHE, SymptomsDto.HICCUPS, SymptomsDto.BEDRIDDEN, 
+									SymptomsDto.JAUNDICE, SymptomsDto.JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, SymptomsDto.JOINT_PAIN, SymptomsDto.KOPLIKS_SPOTS, SymptomsDto.LOSS_SKIN_TURGOR, 
+									SymptomsDto.SKIN_RASH, SymptomsDto.MALAISE, SymptomsDto.MENINGOENCEPHALITIS, SymptomsDto.OTITIS_MEDIA, SymptomsDto.MICROCEPHALY, SymptomsDto.MUSCLE_PAIN, 
+									SymptomsDto.NAUSEA, SymptomsDto.NECK_STIFFNESS, SymptomsDto.OEDEMA_FACE_NECK, SymptomsDto.OEDEMA_LOWER_EXTREMITY, SymptomsDto.EYE_PAIN_LIGHT_SENSITIVE, 
+									SymptomsDto.PAINFUL_LYMPHADENITIS)),
 					LayoutUtil.fluidColumn(6, 0, 
 							LayoutUtil.locsCss(CssStyles.VSPACE_3,
-									SymptomsDto.PALPABLE_LIVER, SymptomsDto.PALPABLE_SPLEEN, SymptomsDto.PHARYNGEAL_ERYTHEMA, SymptomsDto.PHARYNGEAL_EXUDATE, 
-									SymptomsDto.RAPID_BREATHING, SymptomsDto.REFUSAL_FEEDOR_DRINK, SymptomsDto.RUNNY_NOSE, SymptomsDto.ORAL_ULCERS,
-									SymptomsDto.SIDE_PAIN, SymptomsDto.SORE_THROAT, SymptomsDto.SUNKEN_EYES_FONTANELLE, SymptomsDto.SWOLLEN_GLANDS, 
+									SymptomsDto.PALPABLE_LIVER, SymptomsDto.PALPABLE_SPLEEN, SymptomsDto.PHARYNGEAL_ERYTHEMA, SymptomsDto.PHARYNGEAL_EXUDATE, SymptomsDto.PIGMENTARY_RETINOPATHY,
+									SymptomsDto.PURPURIC_RASH, SymptomsDto.RADIOLUCENT_BONE_DISEASE, SymptomsDto.RAPID_BREATHING, SymptomsDto.REFUSAL_FEEDOR_DRINK, SymptomsDto.RUNNY_NOSE, 
+									SymptomsDto.ORAL_ULCERS, SymptomsDto.SIDE_PAIN, SymptomsDto.SORE_THROAT, SymptomsDto.SPLENOMEGALY, SymptomsDto.SUNKEN_EYES_FONTANELLE, SymptomsDto.SWOLLEN_GLANDS, 
 									SymptomsDto.THROBOCYTOPENIA, SymptomsDto.TREMOR, SymptomsDto.UNEXPLAINED_BLEEDING, SymptomsDto.EYES_BLEEDING, SymptomsDto.INJECTION_SITE_BLEEDING, 
 									SymptomsDto.BLEEDING_VAGINA, SymptomsDto.GUMS_BLEEDING, SymptomsDto.STOMACH_BLEEDING, SymptomsDto.BLOOD_URINE, SymptomsDto.BLOODY_BLACK_STOOL, 
 									SymptomsDto.SKIN_BRUISING, SymptomsDto.COUGHING_BLOOD, SymptomsDto.DIGESTED_BLOOD_VOMIT, SymptomsDto.RED_BLOOD_VOMIT, SymptomsDto.NOSE_BLEEDING, 
@@ -116,7 +120,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 							+ LayoutUtil.locsCss(CssStyles.VSPACE_3,
 									SymptomsDto.PATIENT_ILL_LOCATION, SymptomsDto.SYMPTOMS_COMMENTS))
 					) +
-			LayoutUtil.h3(I18nProperties.getString(Strings.headingComplications)) +
+			LayoutUtil.loc(COMPLICATIONS_HEADING) +
 			LayoutUtil.fluidRow(
 					LayoutUtil.fluidColumn(6, 0,
 							LayoutUtil.locsCss(CssStyles.VSPACE_3,
@@ -182,7 +186,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			temperature.setCaption(I18nProperties.getCaption(Captions.symptomsMaxTemperature));
 		}
 		addField(SymptomsDto.TEMPERATURE_SOURCE);
-		
+
 		ComboBox bloodPressureSystolic = addField(SymptomsDto.BLOOD_PRESSURE_SYSTOLIC, ComboBox.class);
 		bloodPressureSystolic.addItems(SymptomsHelper.getBloodPressureValues());
 		ComboBox bloodPressureDiastolic = addField(SymptomsDto.BLOOD_PRESSURE_DIASTOLIC, ComboBox.class);
@@ -205,7 +209,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 		ComboBox glasgowComaScale = addField(SymptomsDto.GLASGOW_COMA_SCALE, ComboBox.class);
 		glasgowComaScale.addItems(SymptomsHelper.getGlasgowComaScaleValues());
-		
+
 		addFields(SymptomsDto.FEVER, SymptomsDto.VOMITING, SymptomsDto.DIARRHEA, SymptomsDto.BLOOD_IN_STOOL, SymptomsDto.NAUSEA, 
 				SymptomsDto.ABDOMINAL_PAIN, SymptomsDto.HEADACHE, SymptomsDto.MUSCLE_PAIN, SymptomsDto.FATIGUE_WEAKNESS, SymptomsDto.SKIN_RASH, 
 				SymptomsDto.NECK_STIFFNESS, SymptomsDto.SORE_THROAT, SymptomsDto.COUGH, SymptomsDto.RUNNY_NOSE, 
@@ -223,7 +227,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.CHILLS_SWEATS, SymptomsDto.BEDRIDDEN, SymptomsDto.ORAL_ULCERS, SymptomsDto.PAINFUL_LYMPHADENITIS, SymptomsDto.BLACKENING_DEATH_OF_TISSUE, SymptomsDto.BUBOES_GROIN_ARMPIT_NECK, 
 				SymptomsDto.BULGING_FONTANELLE, SymptomsDto.PHARYNGEAL_ERYTHEMA, SymptomsDto.PHARYNGEAL_EXUDATE, SymptomsDto.OEDEMA_FACE_NECK, SymptomsDto.OEDEMA_LOWER_EXTREMITY,
 				SymptomsDto.LOSS_SKIN_TURGOR, SymptomsDto.PALPABLE_LIVER, SymptomsDto.PALPABLE_SPLEEN, SymptomsDto.MALAISE, SymptomsDto.SUNKEN_EYES_FONTANELLE,
-				SymptomsDto.SIDE_PAIN, SymptomsDto.FLUID_IN_LUNG_CAVITY, SymptomsDto.TREMOR, SymptomsDto.PATIENT_ILL_LOCATION);
+				SymptomsDto.SIDE_PAIN, SymptomsDto.FLUID_IN_LUNG_CAVITY, SymptomsDto.TREMOR, SymptomsDto.BILATERAL_CATARACTS, SymptomsDto.UNILATERAL_CATARACTS,
+				SymptomsDto.CONGENITAL_GLAUCOMA, SymptomsDto.CONGENITAL_HEART_DISEASE, SymptomsDto.PIGMENTARY_RETINOPATHY, SymptomsDto.RADIOLUCENT_BONE_DISEASE,
+				SymptomsDto.SPLENOMEGALY, SymptomsDto.MICROCEPHALY, SymptomsDto.MENINGOENCEPHALITIS, SymptomsDto.PURPURIC_RASH, SymptomsDto.DEVELOPMENTAL_DELAY, 
+				SymptomsDto.CONGENITAL_HEART_DISEASE_TYPE, SymptomsDto.CONGENITAL_HEART_DISEASE_DETAILS, SymptomsDto.JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, SymptomsDto.PATIENT_ILL_LOCATION);
 		addField(SymptomsDto.LESIONS_ONSET_DATE, DateField.class);
 
 		// complications
@@ -241,7 +248,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		// Set initial visibilities
 
 		initializeVisibilitiesAndAllowedVisibilities(disease, viewMode);
-		
+
 		if (symptomsContext != SymptomsContext.CLINICAL_VISIT) {
 			setVisible(false, SymptomsDto.BLOOD_PRESSURE_SYSTOLIC, SymptomsDto.BLOOD_PRESSURE_DIASTOLIC, SymptomsDto.HEART_RATE,
 					SymptomsDto.RESPIRATORY_RATE, SymptomsDto.WEIGHT, SymptomsDto.HEIGHT, SymptomsDto.MID_UPPER_ARM_CIRCUMFERENCE,
@@ -270,7 +277,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.LYMPHADENOPATHY_INGUINAL, SymptomsDto.CHILLS_SWEATS, SymptomsDto.BEDRIDDEN, SymptomsDto.ORAL_ULCERS, SymptomsDto.PAINFUL_LYMPHADENITIS,
 				SymptomsDto.BLACKENING_DEATH_OF_TISSUE, SymptomsDto.BUBOES_GROIN_ARMPIT_NECK, SymptomsDto.BULGING_FONTANELLE, SymptomsDto.PHARYNGEAL_ERYTHEMA, SymptomsDto.PHARYNGEAL_EXUDATE,
 				SymptomsDto.OEDEMA_FACE_NECK, SymptomsDto.OEDEMA_LOWER_EXTREMITY, SymptomsDto.LOSS_SKIN_TURGOR, SymptomsDto.PALPABLE_LIVER, SymptomsDto.PALPABLE_SPLEEN,
-				SymptomsDto.MALAISE, SymptomsDto.SUNKEN_EYES_FONTANELLE, SymptomsDto.SIDE_PAIN, SymptomsDto.FLUID_IN_LUNG_CAVITY, SymptomsDto.TREMOR,
+				SymptomsDto.MALAISE, SymptomsDto.SUNKEN_EYES_FONTANELLE, SymptomsDto.SIDE_PAIN, SymptomsDto.FLUID_IN_LUNG_CAVITY, SymptomsDto.TREMOR, SymptomsDto.BILATERAL_CATARACTS,
+				SymptomsDto.UNILATERAL_CATARACTS, SymptomsDto.CONGENITAL_GLAUCOMA, SymptomsDto.CONGENITAL_HEART_DISEASE, SymptomsDto.RADIOLUCENT_BONE_DISEASE, SymptomsDto.SPLENOMEGALY,
+				SymptomsDto.MICROCEPHALY, SymptomsDto.MENINGOENCEPHALITIS, SymptomsDto.DEVELOPMENTAL_DELAY, SymptomsDto.PURPURIC_RASH, SymptomsDto.PIGMENTARY_RETINOPATHY,
 				// complications
 				SymptomsDto.ALTERED_CONSCIOUSNESS, SymptomsDto.CONFUSED_DISORIENTED, SymptomsDto.HEMORRHAGIC_SYNDROME,
 				SymptomsDto.HYPERGLYCEMIA, SymptomsDto.HYPOGLYCEMIA, SymptomsDto.MENINGEAL_SIGNS,
@@ -308,6 +317,12 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.LESIONS, 
 				Arrays.asList(SymptomState.YES), true);
 
+		FieldHelper.setVisibleWhen(getFieldGroup(), SymptomsDto.CONGENITAL_HEART_DISEASE_TYPE, SymptomsDto.CONGENITAL_HEART_DISEASE, Arrays.asList(SymptomState.YES), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), SymptomsDto.CONGENITAL_HEART_DISEASE_DETAILS, SymptomsDto.CONGENITAL_HEART_DISEASE_TYPE, Arrays.asList(CongenitalHeartDiseaseType.OTHER), true);
+		if (isVisibleAllowed(getFieldGroup().getField(SymptomsDto.JAUNDICE_WITHIN_24_HOURS_OF_BIRTH))) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), SymptomsDto.JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, SymptomsDto.JAUNDICE, Arrays.asList(SymptomState.YES), true);
+		}
+
 		FieldHelper.addSoftRequiredStyle(getField(SymptomsDto.LESIONS_ONSET_DATE));
 
 		boolean isInfant = person != null && person.getApproximateAge() != null
@@ -325,7 +340,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		getFieldGroup().getField(SymptomsDto.LESIONS).addValueChangeListener(e -> {
 			getContent().getComponent(LESIONS_LOCATIONS_LOC).setVisible(e.getProperty().getValue() == SymptomState.YES);
 		});
-		
+
 		// Symptoms hint text
 		Label symptomsHint = new Label(I18nProperties.getString(symptomsContext == SymptomsContext.CASE ? Strings.messageSymptomsHint : Strings.messageSymptomsVisitHint), ContentMode.HTML);
 		getContent().addComponent(symptomsHint, SYMPTOMS_HINT_LOC);
@@ -404,6 +419,13 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				}
 			}
 		});
+		
+		// Complications heading - not displayed for Rubella (dirty, should be made generic)
+		Label complicationsHeading = new Label(I18nProperties.getString(Strings.headingComplications));
+		CssStyles.style(complicationsHeading, CssStyles.H3);
+		if (disease != Disease.CONGENITAL_RUBELLA) {
+			getContent().addComponent(complicationsHeading, COMPLICATIONS_HEADING);
+		}
 
 		HorizontalLayout buttonsLayout = new HorizontalLayout();
 		buttonsLayout.addComponent(clearAllButton);
