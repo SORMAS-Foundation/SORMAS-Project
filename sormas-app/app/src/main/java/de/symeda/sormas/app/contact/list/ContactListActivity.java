@@ -66,6 +66,13 @@ public class ContactListActivity extends PagedBaseListActivity {
                     }
                 }
             }
+            @Override
+            public void onItemRangeMoved(int positionStart, int toPosition, int itemCount) {
+                RecyclerView recyclerView = findViewById(R.id.recyclerViewForList);
+                if (recyclerView != null) {
+                    recyclerView.scrollToPosition(0);
+                }
+            }
         });
         model = ViewModelProviders.of(this).get(ContactListViewModel.class);
         model.initializeViewModel();
