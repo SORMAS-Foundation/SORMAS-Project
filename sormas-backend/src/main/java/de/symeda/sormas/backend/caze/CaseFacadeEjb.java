@@ -52,6 +52,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,6 +112,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -781,6 +783,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		validate(dto);
 
 		caze = fillOrBuildEntity(dto, caze);
+		
+		// Set version number on a new case
+		if (existingCaseDto == null && StringUtils.isEmpty(dto.getVersionCreated())) {
+			caze.setVersionCreated(InfoProvider.get().getVersion());
+		}
 
 		caseService.ensurePersisted(caze);
 		onCaseChanged(existingCaseDto, caze);
@@ -1247,6 +1254,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setSequelaeDetails(source.getSequelaeDetails());
 		target.setNotifyingClinic(source.getNotifyingClinic());
 		target.setNotifyingClinicDetails(source.getNotifyingClinicDetails());
+		
+		target.setVersionCreated(source.getVersionCreated());
 
 		return target;
 	}
@@ -1326,6 +1335,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setSequelaeDetails(source.getSequelaeDetails());
 		target.setNotifyingClinic(source.getNotifyingClinic());
 		target.setNotifyingClinicDetails(source.getNotifyingClinicDetails());
+		
+		target.setVersionCreated(source.getVersionCreated());
 
 		return target;
 	}

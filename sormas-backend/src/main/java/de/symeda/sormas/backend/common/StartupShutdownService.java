@@ -215,6 +215,10 @@ public class StartupShutdownService {
 					continue;
 				}
 				
+				if (nextLine.startsWith("--")) {
+					continue;
+				}
+				
 				if (!currentVersionReached) {
 					if (nextLine.startsWith("INSERT INTO schema_version (version_number, comment) VALUES (" + currentVersion)) {
 						currentVersionReached = true;

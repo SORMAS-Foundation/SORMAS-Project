@@ -176,6 +176,7 @@ public class Case extends AbstractDomainObject {
 	private Integer caseAge;
 	
 	private boolean archived;
+	private String versionCreated;
 
 	private List<Task> tasks;
 
@@ -679,6 +680,15 @@ public class Case extends AbstractDomainObject {
 		this.archived = archived;
 	}
 
+	@Column(length = 32)
+	public String getVersionCreated() {
+		return versionCreated;
+	}
+	
+	public void setVersionCreated(String versionCreated) {
+		this.versionCreated = versionCreated;
+	}
+	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	public CaseClassification getSystemCaseClassification() {

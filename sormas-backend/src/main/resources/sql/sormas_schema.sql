@@ -3334,3 +3334,8 @@ ALTER TABLE person ADD CONSTRAINT fk_person_placeofbirthcommunity_id FOREIGN KEY
 ALTER TABLE person ADD CONSTRAINT fk_person_placeofbirthfacility_id FOREIGN KEY (placeofbirthfacility_id) REFERENCES facility (id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (151, 'Add new fields for Congenital Rubella #1133');
+
+-- 2019-06-25 Add version case was created #1106
+ALTER TABLE cases ADD COLUMN versioncreated varchar(32);
+
+INSERT INTO schema_version (version_number, comment) VALUES (152, 'Add version case was created #1106');

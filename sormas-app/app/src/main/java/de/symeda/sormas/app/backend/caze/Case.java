@@ -211,6 +211,9 @@ public class Case extends AbstractDomainObject {
     @Column(length = 512)
     private String notifyingClinicDetails;
 
+    @Column(length = 32)
+    private String versionCreated;
+
     public Person getPerson() {
         return person;
     }
@@ -599,5 +602,13 @@ public class Case extends AbstractDomainObject {
 
     public void setNotifyingClinicDetails(String notifyingClinicDetails) {
         this.notifyingClinicDetails = notifyingClinicDetails;
+    }
+
+    public String getVersionCreated() {
+        return versionCreated;
+    }
+
+    public void setVersionCreated(String versionCreated) {
+        this.versionCreated = versionCreated;
     }
 }
