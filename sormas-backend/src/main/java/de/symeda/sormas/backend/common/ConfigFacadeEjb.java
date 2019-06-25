@@ -118,12 +118,12 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	@Override
 	public String getTempFilesPath() {
-		return getProperty(TEMP_FILES_PATH, "/opt/sormas-temp/");
+		return getProperty(TEMP_FILES_PATH, "/opt/sormas/temp/");
 	}
 	
 	@Override
 	public String getGeneratedFilesPath() {
-		return getProperty(GENERATED_FILES_PATH, "/opt/sormas-generated/");
+		return getProperty(GENERATED_FILES_PATH, "/opt/sormas/generated/");
 	}
 	
 	@Override

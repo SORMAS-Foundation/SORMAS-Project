@@ -1,3 +1,4 @@
+
 #*******************************************************************************
 # SORMAS® - Surveillance Outbreak Response Management & Analysis System
 # Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
@@ -40,16 +41,15 @@ fi
 # DIRECTORIES
 if [ ${LINUX} = true ]; then
 	ROOT_PREFIX=
+	# make sure to update payara-sormas script when changing the user name
 	USER_NAME=payara
-	TEMP_DIR=${ROOT_PREFIX}/home/${USER_NAME}/sormas-temp
-	GENERATED_DIR=${ROOT_PREFIX}/home/${USER_NAME}/sormas-generated
 	DOWNLOAD_DIR=${ROOT_PREFIX}/var/www/sormas/downloads
 else 
 	ROOT_PREFIX=/c
-	TEMP_DIR=${ROOT_PREFIX}/opt/sormas-temp
-	GENERATED_DIR=${ROOT_PREFIX}/opt/sormas-generated
 fi
 
+TEMP_DIR=${ROOT_PREFIX}/opt/sormas/temp
+GENERATED_DIR=${ROOT_PREFIX}/opt/sormas/generated
 PAYARA_HOME=${ROOT_PREFIX}/opt/payara5
 DOMAINS_HOME=${ROOT_PREFIX}/opt/domains
 
@@ -112,47 +112,6 @@ if [ ${LINUX} = true ]; then
 	setfacl -m u:postgres:rwx ${GENERATED_DIR}
 fi
 
-# Check Java version
-JAVA_VERSION=$(javac -version 2>&1 | sed -n 's/.*\.\(.*\)\..*/\1/p;')
-if [ "${JAVA_VERSION}" -eq 8 ]; then
-	echo "Found Java ${JAVA_VERSION}."
-elif [ "${JAVA_VERSION}" -gt 8 ]; then
-	echo "Found Java ${JAVA_VERSION} - This version may be too new, SORMAS functionality cannot be guaranteed. Consider downgrading to Java 8 and restarting the script."
-elif [ -z "${JAVA_VERSION}" ]; then
-	echo "ERROR: No Java Development Kit found on your system."
-	exit 1
-else
-	echo "ERROR: Found Java $VER - This version is too old."
-	exit 1
-fi
-
-# Set up the database
-if [ ${LINUX} = true ]; then
-	echo "Starting database setup..."
-
-	if [ -z "${DB_PW}" ]; then
-		echo "--- Create a password for the database user '${DB_USER}':"
-		read DB_PW
-	fi
-
-	sudo -h 127.0.0.1 -u postgres psql <<-EOF
-	CREATE USER $DB_USER WITH PASSWORD '$DB_PW' CREATEDB;
-	CREATE DATABASE $DB_NAME WITH OWNER = '$DB_USER' ENCODING = 'UTF8';
-	CREATE DATABASE $DB_NAME_AUDIT WITH OWNER = '$DB_USER' ENCODING = 'UTF8';
-	\c $DB_NAME
-	CREATE OR REPLACE PROCEDURAL LANGUAGE plpgsql;
-	ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO $DB_USER;
-	CREATE EXTENSION temporal_tables;
-	GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO $DB_USER;
-	\c $DB_NAME_AUDIT
-	CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-	COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-	GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO $DB_USER;
-	EOF
-
-	echo "Database setup completed."
-fi
-
 # Download and unzip payara
 if [ -d ${PAYARA_HOME}/glassfish ]; then
 	echo "Found Payara (${PAYARA_HOME})"
@@ -176,6 +135,73 @@ else
 	rm -R "${PAYARA_HOME}/payara5"
 	rm -R "${PAYARA_HOME}/glassfish/domains"
 fi
+
+# Check Java version
+if [ ${LINUX} = true ]; then
+	ASENV_PATH="${PAYARA_HOME}/glassfish/config/asenv.conf"
+else
+	ASENV_PATH="${PAYARA_HOME}/glassfish/config/asenv.bat"
+fi
+
+while read line; do
+	if [[ "$line" =~ ^AS_JAVA.* ]]; then
+		JAVA=$(echo ${line:8}/bin/javac | tr -d '"')
+	fi
+done < ${ASENV_PATH}
+
+if [ -z "${JAVA}" ]; then
+	JAVA="javac"
+fi
+
+JAVA_VERSION=$(${JAVA} -version 2>&1 | sed -n 's/.*\.\(.*\)\..*/\1/p;')
+if [[ ! ${JAVA_VERSION} =~ ^[0-9]+$ ]]; then
+	if [[ "${JAVA}" == "javac" ]]; then
+		echo "ERROR: No or multiple Java versions found. Please install Java 8 or, if you have multiple Java versions on the system, specify the Java version you want to use by adding AS_JAVA={PATH_TO_YOUR_JAVA_DIRECTORY} to ${ASENV_PATH}."
+	else
+		echo "ERROR: No Java version found in the path $JAVA specified in ${ASENV_PATH}. Please adjust the value of the AS_JAVA entry."
+	fi
+	exit 1
+elif [[ ${JAVA_VERSION} -eq 8 ]]; then
+	echo "Found Java ${JAVA_VERSION}."
+elif [[ ${JAVA_VERSION} -gt 8 ]]; then
+	echo "Found Java ${JAVA_VERSION} - This version may be too new, SORMAS functionality cannot be guaranteed. Consider downgrading to Java 8 and restarting the script."
+else
+	echo "ERROR: Found Java $VER - This version is too old."
+	exit 1
+fi
+
+if [ ${LINUX} = true ]; then
+	PSQL=sudo -u postgres psql
+else
+	echo "--- Enter the name install path of Postgres on your system (e.g. \"C:\\Program Files\\PostgreSQL\\10.0\":"
+	read -r PSQL
+	PSQL="${PSQL}/bin/psql.exe"
+fi
+# Set up the database
+echo "Starting database setup..."
+
+if [ -z "${DB_PW}" ]; then
+	echo "--- Create a password for the database user '${DB_USER}':"
+	read DB_PW
+fi
+
+"${PSQL}" -p ${DB_PORT} -U postgres <<-EOF
+CREATE USER $DB_USER WITH PASSWORD '$DB_PW' CREATEDB;
+CREATE DATABASE $DB_NAME WITH OWNER = '$DB_USER' ENCODING = 'UTF8';
+CREATE DATABASE $DB_NAME_AUDIT WITH OWNER = '$DB_USER' ENCODING = 'UTF8';
+\c $DB_NAME
+CREATE OR REPLACE PROCEDURAL LANGUAGE plpgsql;
+ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO $DB_USER;
+CREATE EXTENSION temporal_tables;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO $DB_USER;
+\c $DB_NAME_AUDIT
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO $DB_USER;
+ALTER TABLE IF EXISTS schema_version OWNER TO $DB_USER;
+EOF
+
+echo "Database setup completed."
 
 # Setting ASADMIN_CALL and creating domain
 echo "Creating domain for Payara..."
@@ -221,7 +247,8 @@ cp cacerts.jks ${DOMAIN_DIR}/config/
 
 
 if [ ${LINUX} = true ]; then
-	cp payara-sormas /etc/init.d``
+	cp payara-sormas /etc/init.d
+	chmod 755 /etc/init.d/payara-sormas
 	update-rc.d payara-sormas defaults
 	
 	chown -R ${USER_NAME}:${USER_NAME} ${DOMAIN_DIR}
@@ -250,6 +277,7 @@ if [ ${DEV_SYSTEM} != true ]; then
 	${ASADMIN} set configs.config.server-config.iiop-service.iiop-listener.SSL_MUTUALAUTH.address=127.0.0.1
 	${ASADMIN} set configs.config.server-config.jms-service.jms-host.default_JMS_host.host=127.0.0.1
 	${ASADMIN} set configs.config.server-config.admin-service.jmx-connector.system.address=127.0.0.1
+	${ASADMIN} set-hazelcast-configuration --enabled=false
 fi
 
 read -p "--- Press [Enter] to continue..."
