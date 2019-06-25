@@ -37,7 +37,7 @@ DOWNLOADS_PATH=/var/www/sormas/downloads
 DB_BACKUP_PATH=/root/deploy/sormas/backup
 DATABASE_NAME="sormas_db"
 DATABASE_AUDIT_NAME="sormas_audit_db"
-LOG_FILE_PATH=/var/log/glassfish/sormas
+LOG_FILE_PATH=$DOMAIN_PATH/$DOMAIN_NAME/logs
 UPDATE_LOG_PATH=$DOMAIN_PATH/$DOMAIN_NAME/update-logs
 UPDATE_LOG_FILE_NAME=server_update_`date +"%Y-%m-%d_%H-%M-%S"`.txt
 
