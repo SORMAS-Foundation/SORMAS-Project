@@ -83,7 +83,6 @@ public class VisitService extends AbstractAdoService<Visit> {
 		Predicate filter = cb.in(visitRoot.get(Visit.PERSON).get(Person.ID)).value(contactPersonSubquery);
 		visitsQuery.where(filter);
 		visitsQuery.distinct(true);
-		visitsQuery.orderBy(cb.asc(visitRoot.get(AbstractDomainObject.ID)));
 
 		List<String> resultList = em.createQuery(visitsQuery).getResultList();
 		return resultList;	

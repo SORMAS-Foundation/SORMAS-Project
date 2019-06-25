@@ -53,15 +53,20 @@
 		<!-- Testing -->
 
 		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>org.eclipse.persistence.jpa</artifactId>
+		    <groupId>org.hibernate</groupId>
+		    <artifactId>hibernate-core</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
-
+			
+		<dependency>
+		    <groupId>org.glassfish</groupId>
+		    <artifactId>javax.el</artifactId>
+		</dependency>
+			
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>

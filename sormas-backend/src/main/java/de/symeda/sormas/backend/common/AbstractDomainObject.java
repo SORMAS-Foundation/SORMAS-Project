@@ -73,7 +73,7 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 	}
 
 	@Basic(optional = false)
-	@Size(min = 29, max = 29)
+	@Size(min = 20, max = 36)
 	@Column(nullable = false, unique = true, length = 36)
 	public String getUuid() {
 		if (uuid == null) {

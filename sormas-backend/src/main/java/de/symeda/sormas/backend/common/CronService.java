@@ -32,12 +32,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.importexport.ImportExportUtils;
-import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
+import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 
 @Singleton
 @RunAs(UserRole._SYSTEM)
@@ -50,7 +50,7 @@ public class CronService {
 	@EJB
 	private WeeklyReportFacadeEjbLocal weeklyReportFacade;
 	@EJB
-	private TaskFacade taskFacade;
+	private TaskFacadeEjbLocal taskFacade;
 
 	public static final int REPEATEDLY_PER_HOUR_INTERVAL = 10;
 	
