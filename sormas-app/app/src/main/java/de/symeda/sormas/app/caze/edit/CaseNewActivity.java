@@ -198,12 +198,9 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
         }
 
         if (caze.getPerson().getId() == null) {
-            SelectOrCreatePersonDialog.selectOrCreatePerson(caze.getPerson(), new Consumer<Person>() {
-                @Override
-                public void accept(Person person) {
-                    caze.setPerson(person);
-                    saveDataInner(caze);
-                }
+            SelectOrCreatePersonDialog.selectOrCreatePerson(caze.getPerson(), person -> {
+                caze.setPerson(person);
+                saveDataInner(caze);
             });
         } else {
             saveDataInner(caze);
@@ -256,7 +253,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                 super.onPostExecute(taskResult);
                 if (taskResult.getResultStatus().isSuccess()) {
                     finish();
-                    CaseEditActivity.startActivity(getContext(), caseToSave.getUuid(), CaseSection.PERSON_INFO);
+                    CaseEditActivity.startActivity(getContext(), caseToSave.getUuid(), CaseSection.CASE_INFO);
                 }
                 saveTask = null;
             }
