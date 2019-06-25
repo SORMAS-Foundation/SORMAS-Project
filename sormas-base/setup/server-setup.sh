@@ -242,6 +242,8 @@ ${ASADMIN} create-javamail-resource --mailhost localhost --mailuser user --froma
 ${ASADMIN} create-custom-resource --restype java.util.Properties --factoryclass org.glassfish.resources.custom.factory.PropertiesFactory --property "org.glassfish.resources.custom.factory.PropertiesFactory.fileName=\${com.sun.aas.instanceRoot}/sormas.properties" sormas/Properties
 
 cp sormas.properties ${DOMAIN_DIR}
+cp start-payara-sormas.sh ${DOMAIN_DIR}
+cp stop-payara-sormas.sh ${DOMAIN_DIR}
 cp logback.xml ${DOMAIN_DIR}/config/
 # Fixes outdated certificate
 cp cacerts.jks ${DOMAIN_DIR}/config/
