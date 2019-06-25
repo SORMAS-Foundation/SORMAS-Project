@@ -1,7 +1,7 @@
 
 #*******************************************************************************
-# SORMAS® - Surveillance Outbreak Response Management & Analysis System
-# Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+# SORMASï¿½ - Surveillance Outbreak Response Management & Analysis System
+# Copyright ï¿½ 2016-2018 Helmholtz-Zentrum fï¿½r Infektionsforschung GmbH (HZI)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -194,6 +194,7 @@ CREATE OR REPLACE PROCEDURAL LANGUAGE plpgsql;
 ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO $DB_USER;
 CREATE EXTENSION temporal_tables;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO $DB_USER;
+GRANT ALL ON TABLE schema_version TO sormas_user;
 \c $DB_NAME_AUDIT
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';

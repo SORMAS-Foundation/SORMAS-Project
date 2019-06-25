@@ -2168,7 +2168,8 @@ INSERT INTO schema_version (version_number, comment) VALUES (96, 'SQL function t
 -- 2018-03-05 Add upgrade column to schema_version for backend upgrade logic #402
 ALTER TABLE schema_version ADD COLUMN upgradeNeeded boolean NOT NULL DEFAULT false;
 UPDATE schema_version SET upgradeNeeded=true WHERE version_number=95;
-GRANT SELECT, UPDATE ON TABLE schema_version TO sormas_user;
+-- fixed 2019-06-25 #1126
+GRANT ALL ON TABLE schema_version TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (97, 'Add upgrade column to schema_version for backend upgrade logic #402');
 
