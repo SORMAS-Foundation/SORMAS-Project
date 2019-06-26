@@ -54,6 +54,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	
 	public static final String TEMP_FILES_PATH = "temp.path";
 	public static final String GENERATED_FILES_PATH = "generated.path";
+	public static final String CUSTOM_FILES_PATH = "custom.path";
 	public static final String CSV_SEPARATOR = "csv.separator";
 	
 	public static final String EMAIL_SENDER_ADDRESS = "email.sender.address";
@@ -124,6 +125,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getGeneratedFilesPath() {
 		return getProperty(GENERATED_FILES_PATH, "/opt/sormas/generated/");
+	}
+	
+	@Override
+	public String getCustomFilesPath() {
+		return getProperty(CUSTOM_FILES_PATH, "/opt/sormas/custom/");
 	}
 	
 	@Override

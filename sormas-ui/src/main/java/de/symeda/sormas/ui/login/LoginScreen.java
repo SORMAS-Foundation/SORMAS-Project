@@ -17,7 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.login;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
@@ -31,6 +35,7 @@ import com.vaadin.ui.LoginForm;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.UserRightsException;
@@ -52,21 +57,29 @@ public class LoginScreen extends CssLayout {
 		addStyleName("login-screen");
 
 		// login form, centered in the available part of the screen
+		VerticalLayout loginFormLayout = new VerticalLayout();
+		loginFormLayout.addStyleName("login-form");
+		loginFormLayout.setMargin(false);
 		Component loginForm = buildLoginForm();
+		loginFormLayout.addComponent(loginForm);
+		loginFormLayout.addComponent(buildLoginDetailsLayout());
 
 		// layout to center login form when there is sufficient screen space
 		// - see the theme for how this is made responsive for various screen
 		// sizes
-		VerticalLayout centeringLayout = new VerticalLayout();
-		centeringLayout.setStyleName("centering-layout");
-		centeringLayout.addComponent(loginForm);
-		centeringLayout.setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
-
+		CssLayout loginLayout = new CssLayout();
+		loginLayout.setStyleName("login-form-container");
+		loginLayout.addComponent(loginFormLayout);
+		
 		// information text about logging in
 		CssLayout loginInformation = buildLoginInformation();
+		
+		// custom html layout
+		CssLayout loginSidebarLayout = buildLoginSidebarLayout();
 
-		addComponent(centeringLayout);
 		addComponent(loginInformation);
+		addComponent(loginLayout);
+		addComponent(loginSidebarLayout);
 	}
 
 	private Component buildLoginForm() {
@@ -76,7 +89,6 @@ public class LoginScreen extends CssLayout {
 			login(event.getLoginParameter("username").trim(), event.getLoginParameter("password"));
 		});
 
-		loginForm.addStyleName("login-form");
 		loginForm.setSizeUndefined();
 
 		return loginForm;
@@ -111,6 +123,48 @@ public class LoginScreen extends CssLayout {
 
 		loginInformation.addComponent(innerLayout);
 		return loginInformation;
+	}
+	
+	private CssLayout buildLoginSidebarLayout() {
+		CssLayout loginSidebarLayout = new CssLayout();
+		loginSidebarLayout.setStyleName("login-sidebar");
+		
+		Label htmlLabel = new Label();
+		htmlLabel.setContentMode(ContentMode.HTML);
+		
+		Path customHtmlDirectory = Paths.get(FacadeProvider.getConfigFacade().getCustomFilesPath());
+		Path filePath = customHtmlDirectory.resolve("loginsidebar.html");
+		
+		try {
+			byte[] encoded = Files.readAllBytes(filePath);
+			htmlLabel.setValue(new String(encoded, "UTF-8"));
+		} catch (IOException e) {
+			htmlLabel.setValue("");
+		}
+		
+		loginSidebarLayout.addComponent(htmlLabel);
+		return loginSidebarLayout;
+	}
+	
+	private CssLayout buildLoginDetailsLayout() {
+		CssLayout loginDetailsLayout = new CssLayout();
+		loginDetailsLayout.setStyleName("login-details");
+		
+		Label htmlLabel = new Label();
+		htmlLabel.setContentMode(ContentMode.HTML);
+		
+		Path customHtmlDirectory = Paths.get(FacadeProvider.getConfigFacade().getCustomFilesPath());
+		Path filePath = customHtmlDirectory.resolve("logindetails.html");
+
+		try {
+			byte[] encoded = Files.readAllBytes(filePath);
+			htmlLabel.setValue(new String(encoded, "UTF-8"));
+		} catch (IOException e) {
+			htmlLabel.setValue("");
+		}
+		
+		loginDetailsLayout.addComponent(htmlLabel);
+		return loginDetailsLayout;
 	}
 
 	private void login(String username, String password) {
