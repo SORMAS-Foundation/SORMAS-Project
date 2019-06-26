@@ -32,6 +32,18 @@ select LS in "Local" "Server"; do
     esac
 done
 
+if [ ${DEV_SYSTEM} != true ]; then
+	echo "--- Is the server meant to be a demo/test or a production server?"
+	select LS in "Demo/Test" "Production"; do
+		case $LS in
+			Demo/Test ) DEMO_SYSTEM=true; break;;
+			Production ) DEMO_SYSTEM=false; break;;
+		esac
+	done
+else
+	DEMO_SYSTEM=false
+fi
+
 if [ $(expr substr "$(uname -a)" 1 5) = "Linux" ]; then
 	LINUX=true
 else
@@ -50,6 +62,7 @@ fi
 
 TEMP_DIR=${ROOT_PREFIX}/opt/sormas/temp
 GENERATED_DIR=${ROOT_PREFIX}/opt/sormas/generated
+CUSTOM_DIR=${ROOT_PREFIX}/opt/sormas/custom
 PAYARA_HOME=${ROOT_PREFIX}/opt/payara5
 DOMAINS_HOME=${ROOT_PREFIX}/opt/domains
 
@@ -80,6 +93,7 @@ else
 fi
 echo "Temp directory: ${TEMP_DIR}"
 echo "Directory for generated files: ${GENERATED_DIR}"
+echo "Directory for custom files: ${CUSTOM_DIR}"
 echo "Payara home: ${PAYARA_HOME}"
 echo "Domain directory: ${DOMAIN_DIR}"
 echo "Base port: ${PORT_BASE}"
@@ -99,6 +113,7 @@ mkdir -p ${PAYARA_HOME}
 mkdir -p ${DOMAINS_HOME}
 mkdir -p ${TEMP_DIR}
 mkdir -p ${GENERATED_DIR}
+mkdir -p ${CUSTOM_DIR}
 
 if [ ${LINUX} = true ]; then
 	mkdir -p ${DOWNLOAD_DIR}
@@ -107,9 +122,11 @@ if [ ${LINUX} = true ]; then
 	setfacl -m u:${USER_NAME}:rwx ${DOMAINS_HOME}
 	setfacl -m u:${USER_NAME}:rwx ${TEMP_DIR}
 	setfacl -m u:${USER_NAME}:rwx ${GENERATED_DIR}
+	setfacl -m u:${USER_NAME}:rwx ${CUSTOM_DIR}
 
 	setfacl -m u:postgres:rwx ${TEMP_DIR} 
 	setfacl -m u:postgres:rwx ${GENERATED_DIR}
+	setfacl -m u:postgres:rwx ${CUSTOM_DIR}
 fi
 
 # Download and unzip payara
@@ -247,6 +264,12 @@ cp stop-payara-sormas.sh ${DOMAIN_DIR}
 cp logback.xml ${DOMAIN_DIR}/config/
 # Fixes outdated certificate
 cp cacerts.jks ${DOMAIN_DIR}/config/
+cp loginsidebar.html ${CUSTOM_DIR}
+if [ ${DEMO_SYSTEM} = true ]; then
+	cp demologindetails.html ${CUSTOM_DIR}/logindetails.html
+else
+	cp logindetails.html ${CUSTOM_DIR}
+fi
 
 
 if [ ${LINUX} = true ]; then
