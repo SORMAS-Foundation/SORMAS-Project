@@ -75,82 +75,82 @@ public class EpiDataDto extends EntityDto {
 
 	// Fields are declared in the order they should appear in the import template
 	
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown burialAttended;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown gatheringAttended;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown traveled;
 	
 	private List<EpiDataBurialDto> burials = new ArrayList<>();
 	private List<EpiDataGatheringDto> gatherings = new ArrayList<>();
 	private List<EpiDataTravelDto> travels = new ArrayList<>();
 
-	@Diseases({Disease.EVD,Disease.NEW_INFLUENCA,Disease.CSM,Disease.MEASLES,Disease.UNSPECIFIED_VHF,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.NEW_INFLUENCA,Disease.CSM,Disease.MEASLES,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown directContactConfirmedCase;
-	@Diseases({Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.OTHER})
+	@Diseases({Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown directContactProbableCase;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown closeContactProbableCase;
-	@Diseases({Disease.DENGUE, Disease.EVD, Disease.PLAGUE, Disease.YELLOW_FEVER,Disease.UNSPECIFIED_VHF, Disease.OTHER})
+	@Diseases({Disease.DENGUE, Disease.EVD, Disease.PLAGUE, Disease.YELLOW_FEVER,Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER})
 	private YesNoUnknown areaConfirmedCases;
-	@Diseases({Disease.EVD,Disease.UNSPECIFIED_VHF, Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER})
 	private YesNoUnknown processingConfirmedCaseFluidUnsafe;
-	@Diseases({Disease.EVD,Disease.UNSPECIFIED_VHF, Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER})
 	private YesNoUnknown percutaneousCaseBlood;
-	@Diseases({Disease.EVD,Disease.UNSPECIFIED_VHF, Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER})
 	private YesNoUnknown directContactDeadUnsafe;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA, Disease.UNDEFINED, Disease.OTHER})
 	private YesNoUnknown processingSuspectedCaseSampleUnsafe;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA, Disease.UNDEFINED, Disease.OTHER})
 	private YesNoUnknown areaInfectedAnimals;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA, Disease.UNDEFINED, Disease.OTHER})
 	private YesNoUnknown sickDeadAnimals;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA, Disease.UNDEFINED, Disease.OTHER})
 	private String sickDeadAnimalsDetails;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA, Disease.UNDEFINED, Disease.OTHER})
 	private Date sickDeadAnimalsDate;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA, Disease.UNDEFINED, Disease.OTHER})
 	private String sickDeadAnimalsLocation;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA, Disease.UNDEFINED, Disease.OTHER})
 	private YesNoUnknown eatingRawAnimalsInInfectedArea;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA, Disease.UNDEFINED, Disease.OTHER})
 	private YesNoUnknown eatingRawAnimals;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA, Disease.UNDEFINED, Disease.OTHER})
 	private String eatingRawAnimalsDetails;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown rodents;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown bats;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.UNSPECIFIED_VHF,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown primates;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown swine;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown birds;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown cattle;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.UNSPECIFIED_VHF,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown otherAnimals;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.UNSPECIFIED_VHF,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private String otherAnimalsDetails;
-	@Diseases({Disease.CHOLERA,Disease.OTHER})
+	@Diseases({Disease.CHOLERA,Disease.UNDEFINED,Disease.OTHER})
 	private WaterSource waterSource;
-	@Diseases({Disease.CHOLERA,Disease.OTHER})
+	@Diseases({Disease.CHOLERA,Disease.UNDEFINED,Disease.OTHER})
 	private String waterSourceOther;
-	@Diseases({Disease.CHOLERA,Disease.OTHER})
+	@Diseases({Disease.CHOLERA,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown waterBody;
-	@Diseases({Disease.CHOLERA,Disease.OTHER})
+	@Diseases({Disease.CHOLERA,Disease.UNDEFINED,Disease.OTHER})
 	private String waterBodyDetails;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown tickBite;
-	@Diseases({Disease.PLAGUE,Disease.OTHER})
+	@Diseases({Disease.PLAGUE,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown fleaBite;
-	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.MONKEYPOX,Disease.UNDEFINED,Disease.OTHER})
 	private Date dateOfLastExposure;
-	@Diseases({Disease.MONKEYPOX,Disease.OTHER})	
+	@Diseases({Disease.MONKEYPOX,Disease.UNDEFINED,Disease.OTHER})	
 	private String placeOfLastExposure;
-	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.MONKEYPOX,Disease.UNDEFINED,Disease.OTHER})
 	private AnimalCondition animalCondition;
 	
 	public YesNoUnknown getBurialAttended() {
