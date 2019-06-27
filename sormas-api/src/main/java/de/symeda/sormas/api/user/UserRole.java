@@ -46,8 +46,8 @@ public enum UserRole {
 	EXTERNAL_LAB_USER(false, false, false),
 	NATIONAL_OBSERVER(false, false, false),
 	STATE_OBSERVER(false, false, false),
-	DISTRICT_OBSERVER(false, false, false)
-	;
+	DISTRICT_OBSERVER(false, false, false),
+	NATIONAL_CLINICIAN(false, false, false);
 	
 	public static final String _SYSTEM = "SYSTEM";
 	public static final String _USER = "USER";
@@ -65,6 +65,7 @@ public enum UserRole {
 	public static final String _LAB_USER = LAB_USER.name();
 	public static final String _EXTERNAL_LAB_USER = EXTERNAL_LAB_USER.name();
 	public static final String _NATIONAL_OBSERVER = NATIONAL_OBSERVER.name();
+	public static final String _NATIONAL_CLINICIAN = NATIONAL_CLINICIAN.name();
 	
 	private final boolean supervisor;
 	private final boolean officer;
@@ -103,7 +104,7 @@ public enum UserRole {
 	}
 	
 	public boolean isNational() {
-		return this == UserRole.NATIONAL_OBSERVER || this == UserRole.NATIONAL_USER;
+		return this == UserRole.NATIONAL_OBSERVER || this == UserRole.NATIONAL_USER || this == UserRole.NATIONAL_CLINICIAN;
 	}
 	
 	public HashSet<UserRight> getDefaultUserRights() {
@@ -140,6 +141,7 @@ public enum UserRole {
 			collection.add(NATIONAL_OBSERVER);
 			collection.add(STATE_OBSERVER);
 			collection.add(DISTRICT_OBSERVER);
+			collection.add(NATIONAL_CLINICIAN);
 			break;
 		case SURVEILLANCE_SUPERVISOR:
 			collection.add(SURVEILLANCE_OFFICER);
@@ -180,11 +182,13 @@ public enum UserRole {
 			return Arrays.asList(
 					SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR,
 					EVENT_OFFICER, LAB_USER,
-					NATIONAL_USER, NATIONAL_OBSERVER
+					NATIONAL_USER, NATIONAL_OBSERVER, NATIONAL_CLINICIAN
 					);
 		case NATIONAL_USER:
 			return Arrays.asList(LAB_USER, ADMIN);
 		case NATIONAL_OBSERVER:
+			return Arrays.asList(ADMIN);
+		case NATIONAL_CLINICIAN:
 			return Arrays.asList(ADMIN);
 		case STATE_OBSERVER:
 			return Collections.emptyList();

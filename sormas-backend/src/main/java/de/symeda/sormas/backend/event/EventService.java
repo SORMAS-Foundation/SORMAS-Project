@@ -253,6 +253,7 @@ public class EventService extends AbstractAdoService<Event> {
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Event,Event> eventPath, User user) {
 		// National users can access all events in the system
 		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)
+				|| user.getUserRoles().contains(UserRole.NATIONAL_CLINICIAN)
 				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
 			return null;
 		}

@@ -393,6 +393,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		// National users can access all cases in the system
 		if (user == null
 				|| user.getUserRoles().contains(UserRole.NATIONAL_USER)
+				|| user.getUserRoles().contains(UserRole.NATIONAL_CLINICIAN)
 				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
 			return null;
 		}
