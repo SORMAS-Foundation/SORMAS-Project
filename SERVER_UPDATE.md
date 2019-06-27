@@ -15,6 +15,11 @@ SORMAS releases starting from 1.21.0 contain a script that automatically updates
 ``./server-update.sh``
 * If anything goes wrong, open the latest update log file (by default located in the "update-logs" folder in the domain directory) and check it for errors.
 
+## Restoring the Database
+If anything goes wrong during the automatic database update process when deploying the server, you can use the following command to restore the data:
+
+``pg_restore --clean -U postgres -Fc -d sormas_db sormas_db_....dump``
+
 ## Default Logins
 These are the default users for demo systems. Make sure to deactivate them or change the passwords on productive systems:
 
