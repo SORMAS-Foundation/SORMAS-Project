@@ -35,6 +35,7 @@ The project consists of the following modules:
 ## Contributing
 
 * [Translating SORMAS](I18N.md)
+* [Defining new diseases](SOP_DISEASES.md)
 * TODO: Reporting an issue
 * TODO: Code of conduct
 * [Setting up your local environment](DEVELOPMENT_ENVIRONMENT.md)
