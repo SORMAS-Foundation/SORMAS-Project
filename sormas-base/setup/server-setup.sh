@@ -188,7 +188,7 @@ else
 fi
 
 if [ ${LINUX} = true ]; then
-	PSQL=sudo -u postgres psql
+	PSQL="sudo -u postgres psql"
 else
 	echo "--- Enter the name install path of Postgres on your system (e.g. \"C:\\Program Files\\PostgreSQL\\10.0\":"
 	read -r PSQL
@@ -202,7 +202,7 @@ if [ -z "${DB_PW}" ]; then
 	read DB_PW
 fi
 
-"${PSQL}" -p ${DB_PORT} -U postgres <<-EOF
+${PSQL} -p ${DB_PORT} -U postgres <<-EOF
 CREATE USER $DB_USER WITH PASSWORD '$DB_PW' CREATEDB;
 CREATE DATABASE $DB_NAME WITH OWNER = '$DB_USER' ENCODING = 'UTF8';
 CREATE DATABASE $DB_NAME_AUDIT WITH OWNER = '$DB_USER' ENCODING = 'UTF8';
@@ -263,7 +263,7 @@ cp start-payara-sormas.sh ${DOMAIN_DIR}
 cp stop-payara-sormas.sh ${DOMAIN_DIR}
 cp logback.xml ${DOMAIN_DIR}/config/
 # Fixes outdated certificate
-cp cacerts.jks ${DOMAIN_DIR}/config/
+cp cacerts.txt ${DOMAIN_DIR}/config/cacerts.jks
 cp loginsidebar.html ${CUSTOM_DIR}
 if [ ${DEMO_SYSTEM} = true ]; then
 	cp demologindetails.html ${CUSTOM_DIR}/logindetails.html

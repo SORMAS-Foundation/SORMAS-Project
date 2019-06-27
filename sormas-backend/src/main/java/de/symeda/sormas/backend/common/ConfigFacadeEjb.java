@@ -134,7 +134,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	
 	@Override
 	public boolean isFeatureAutomaticCaseClassification() {
-		return getBoolean(FEATURE_AUTOMATIC_CASE_CLASSIFICATION, false);
+		return getBoolean(FEATURE_AUTOMATIC_CASE_CLASSIFICATION, true);
 	}
 
 	@Override
