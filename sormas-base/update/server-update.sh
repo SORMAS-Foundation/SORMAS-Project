@@ -1,6 +1,6 @@
 #*******************************************************************************
-# SORMAS® - Surveillance Outbreak Response Management & Analysis System
-# Copyright © 2016-2019 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+# SORMASï¿½ - Surveillance Outbreak Response Management & Analysis System
+# Copyright ï¿½ 2016-2019 Helmholtz-Zentrum fï¿½r Infektionsforschung GmbH (HZI)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,6 +40,8 @@ DATABASE_AUDIT_NAME="sormas_audit_db"
 LOG_FILE_PATH=$DOMAIN_PATH/$DOMAIN_NAME/logs
 UPDATE_LOG_PATH=$DOMAIN_PATH/$DOMAIN_NAME/update-logs
 UPDATE_LOG_FILE_NAME=server_update_`date +"%Y-%m-%d_%H-%M-%S"`.txt
+CUSTOM_DIR=/opt/sormas/custom
+USER_NAME=payara
 
 echo "# SORMAS SERVER UPDATE"
 echo "# Welcome to the SORMAS server update routine. This script will automatically update your SORMAS server."
@@ -82,6 +84,12 @@ fi
 if [ ! -d $DOWNLOADS_PATH ]; then
 	echo "Download directory not found. Make sure it's located in the following path: $DOWNLOADS_PATH"
 	exit 1
+fi
+
+if [ ! -d $CUSTOM_DIR ]; then
+	mkdir -p ${CUSTOM_DIR}
+	setfacl -m u:${USER_NAME}:rwx ${CUSTOM_DIR}
+	setfacl -m u:postgres:rwx ${CUSTOM_DIR}
 fi
 
 # Create a file to log errors and messages not produced by this script during the update process
@@ -143,6 +151,14 @@ rm $DOMAIN_PATH/$DOMAIN_NAME/lib/*.jar
 echo "Copying server libs..."
 
 cp $DEPLOY_PATH/serverlibs/* $DOMAIN_PATH/$DOMAIN_NAME/lib/
+
+if [ ! -f $CUSTOM_DIR/loginsidebar.html ]; then
+	cp loginsidebar.html ${CUSTOM_DIR}
+fi
+
+if [ ! -f $CUSTOM_DIR/logindetails.html ]; then
+	cp logindetails.html ${CUSTOM_DIR}
+fi
 
 # You can use the following command to use a backup to restore the data in case the automatic database update process during deployment fails:
 # pg_restore --clean -U postgres -Fc -d sormas_db sormas_db_....dump
