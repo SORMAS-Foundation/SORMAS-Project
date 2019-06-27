@@ -170,7 +170,7 @@ if [ -z "${JAVA}" ]; then
 	JAVA="javac"
 fi
 
-JAVA_VERSION=$(${JAVA} -version 2>&1 | sed -n 's/.*\.\(.*\)\..*/\1/p;')
+JAVA_VERSION=$("${JAVA}" -version 2>&1 | sed -n 's/.*\.\(.*\)\..*/\1/p;')
 if [[ ! ${JAVA_VERSION} =~ ^[0-9]+$ ]]; then
 	if [[ "${JAVA}" == "javac" ]]; then
 		echo "ERROR: No or multiple Java versions found. Please install Java 8 or, if you have multiple Java versions on the system, specify the Java version you want to use by adding AS_JAVA={PATH_TO_YOUR_JAVA_DIRECTORY} to ${ASENV_PATH}."
